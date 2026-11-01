@@ -96,14 +96,15 @@ export default async function EpisodeSeriePage({
   const navSeries = orderSeries(seriesRows);
   const opener = episodes[0]!;
   const coverage = summarizeEpisodeSources(episodes);
+  const resolvedBackdrop =
+    (await bannerForSeries(series)) ||
+    opener.image ||
+    (series === DBS_BEERUS_SERIES_CODE ? "/banners/dbs-beerus-2026.jpg" : "");
 
   return (
     <>
-      {series === "DBS" || series === DBS_BEERUS_SERIES_CODE ? (
-        <DbsBeerusSpotlight catalogue />
-      ) : null}
       <Billboard
-        backdrop={await bannerForSeries(series)}
+        backdrop={resolvedBackdrop}
         eyebrow={SERIES_YEARS[series] ? `Anime · ${SERIES_YEARS[series]}` : "Anime"}
         title={SERIES_LABELS[series] ?? series}
         meta={[<T key="count" k="episodeSeries.episodeCount" values={{ count: total }} />]}
@@ -116,6 +117,7 @@ export default async function EpisodeSeriePage({
         secondaryHref="/wiki/timeline"
         secondaryLabel={<T k="episodeSeries.timeline" />}
       />
+      {series === "DBS" ? <DbsBeerusSpotlight catalogue /> : null}
       <WikiPageShell
         adminBar
         crumbs={[
@@ -127,10 +129,10 @@ export default async function EpisodeSeriePage({
           { label: SERIES_LABELS[series] ?? series },
         ]}
       >
-        <nav className="mb-8 flex flex-wrap gap-2">
+        <nav className="mb-6 flex flex-wrap gap-2">
           <Link
             href="/wiki/episodes"
-            className="rounded-full bg-white/[0.06] px-3 py-1.5 font-display text-[12px] font-semibold uppercase tracking-[0.08em] text-white/72 transition-colors hover:bg-white/[0.12]"
+            className="inline-flex min-h-9 items-center rounded-full bg-white/[0.06] px-3.5 py-1.5 font-display text-[12px] font-semibold uppercase tracking-[0.08em] text-white/80 transition-colors hover:bg-white/[0.12] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
           >
             ← <T k="episodeSeries.all" />
           </Link>
@@ -138,10 +140,11 @@ export default async function EpisodeSeriePage({
             <Link
               key={key}
               href={`/wiki/episodes/series/${key}`}
-              className={`rounded-full px-3 py-1.5 font-display text-[12px] font-semibold uppercase tracking-[0.08em] transition-colors ${
+              aria-current={series === key ? "page" : undefined}
+              className={`inline-flex min-h-9 items-center rounded-full px-3.5 py-1.5 font-display text-[12px] font-semibold uppercase tracking-[0.08em] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${
                 series === key
-                  ? "bg-dbz-orange text-black"
-                  : "bg-white/[0.06] text-white/72 hover:bg-white/[0.12]"
+                  ? "bg-dbz-orange text-black shadow-sm"
+                  : "bg-white/[0.06] text-white/80 hover:bg-white/[0.12]"
               }`}
             >
               {SERIES_LABELS[key] ?? key}
@@ -149,24 +152,16 @@ export default async function EpisodeSeriePage({
           ))}
         </nav>
 
-        <h2 className="mb-6 flex items-center gap-2.5 border-b border-white/10 pb-3 font-display text-[20px] font-bold text-white">
+        <h2 className="mb-5 flex items-center gap-2.5 border-b border-white/10 pb-3 font-display text-[20px] font-bold text-white">
           <span
             className="h-5 w-1.5 rounded-full"
             style={{ backgroundColor: ERA_ACCENT[eraOf(series)] }}
           />
           {SERIES_LABELS[series] ?? series}
-          <span className="font-mono text-[14px] font-normal text-white/50">
+          <span className="font-mono text-[14px] font-normal tabular-nums text-white/60">
             <T k="episodeSeries.episodeCount" values={{ count: total }} />
           </span>
         </h2>
-
-        <div className="mb-8">
-          <VideoSourceSummary players={[]} coverage={coverage} />
-        </div>
-        <div className="mb-8">
-          <VideoSourceLinks links={collectEpisodeSourceLinks(episodes)} />
-        </div>
-        {series === "SDBH" ? <OfficialEpisodeSourceLinks episodes={episodes} /> : null}
 
         <EpisodeSeriesGrid
           episodes={episodes.map((ep) => ({
@@ -177,6 +172,7 @@ export default async function EpisodeSeriePage({
             image: ep.image,
             synopsis: stripSourceTags(ep.synopsis),
             year: yearOf(ep.air_date),
+            durationSec: ep.duration_sec,
             hasVf: hasLang(ep.players, "vf"),
             hasVostfr: hasLang(ep.players, "vostfr"),
             hasVost: hasLang(ep.players, "vost"),
@@ -186,6 +182,17 @@ export default async function EpisodeSeriePage({
             playerCount: ep.players?.length ?? 0,
           }))}
         />
+
+        <div className="mt-8 space-y-6">
+          {series === DBS_BEERUS_SERIES_CODE ? (
+            <div className="overflow-hidden rounded-2xl border border-white/10">
+              <DbsBeerusSpotlight catalogue />
+            </div>
+          ) : null}
+          <VideoSourceSummary players={[]} coverage={coverage} />
+          <VideoSourceLinks links={collectEpisodeSourceLinks(episodes)} />
+          {series === "SDBH" ? <OfficialEpisodeSourceLinks episodes={episodes} /> : null}
+        </div>
         <ContributeRail quoiKey="kit.contribute.what.episode" />
       </WikiPageShell>
     </>

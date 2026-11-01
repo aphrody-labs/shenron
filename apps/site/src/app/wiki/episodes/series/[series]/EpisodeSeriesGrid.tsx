@@ -26,6 +26,7 @@ export interface SeriesEpisode {
   image: string | null;
   synopsis: string | null;
   year: number | null;
+  durationSec?: number | null;
   hasVf: boolean;
   hasVostfr: boolean;
   hasVost?: boolean;
@@ -105,31 +106,10 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
 
   return (
     <div className="shenron-episode-series @container min-w-0 space-y-6">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label={labels("coverage")}>
-        {[
-          [labels("episodes"), episodes.length],
-          [labels("vfSources"), vfCount],
-          [labels("vostfrSources"), vostfrCount],
-          [t("vost"), vostCount],
-          [labels("vfMissing"), vfMissing],
-          [labels("vostfrMissing"), vostfrMissing],
-          [labels("thumbnails"), imageCount],
-        ].map(([label, value]) => (
-          <div key={label} className="min-w-0 rounded-2xl border border-border bg-card px-4 py-3">
-            <div className="text-xl font-bold tabular-nums text-card-foreground sm:text-2xl">
-              {value}
-            </div>
-            <div className="text-xs uppercase tracking-wide text-[var(--muted-foreground)] [overflow-wrap:anywhere]">
-              {label}
-            </div>
-          </div>
-        ))}
-      </div>
-      <p className="text-sm text-white/60">{labels("coverageNote")}</p>
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03] p-3 backdrop-blur-xs">
         <div className="relative min-w-0 basis-64 flex-1 max-w-md">
           <Recherche
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50"
+            className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50"
             aria-hidden
           />
           <input
@@ -141,12 +121,12 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
             }}
             aria-label={labels("searchLabel")}
             placeholder={labels("searchPlaceholder")}
-            className="min-h-11 w-full rounded-full border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-[var(--muted-foreground)] focus:border-primary"
+            className="min-h-11 w-full rounded-full border border-white/12 bg-card pl-10 pr-4 text-sm text-foreground placeholder:text-[var(--muted-foreground)] focus:border-primary focus:outline-none"
           />
         </div>
         <a
           href="#episode-grid"
-          className="inline-flex min-h-11 items-center rounded-full border border-border bg-card px-4 text-sm font-semibold text-foreground hover:border-primary hover:text-primary"
+          className="inline-flex min-h-11 items-center rounded-full border border-white/12 bg-card px-4 text-sm font-semibold text-foreground transition-colors hover:border-primary hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
         >
           {labels("jump")}
         </a>
@@ -170,26 +150,29 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
                 setLimit(PAGE);
               }}
               aria-pressed={language === key}
-              className={`min-h-11 shrink-0 rounded-full px-4 text-sm font-semibold transition-colors ${language === key ? "bg-primary text-primary-foreground" : "bg-card text-foreground hover:bg-primary/15"}`}
+              className={`min-h-11 shrink-0 cursor-pointer rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange ${language === key ? "bg-primary text-primary-foreground shadow-sm" : "border border-white/10 bg-card text-foreground hover:bg-primary/15"}`}
             >
               {label}
             </button>
           ))}
         </fieldset>
-        <p className="text-[13px] text-white/50" aria-live="polite">
+        <p
+          className="ml-auto text-[13px] font-medium tabular-nums text-white/65"
+          aria-live="polite"
+        >
           {labels("results", { count: filtered.length, total: episodes.length })}
         </p>
       </div>
 
       {filtered.length === 0 ? (
-        <p className="dbz-panel py-12 text-center text-white/50">{labels("empty")}</p>
+        <p className="dbz-panel py-12 text-center text-white/60">{labels("empty")}</p>
       ) : (
         <>
           <div
             id="episode-grid"
-            className="grid scroll-mt-6 grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            className="grid scroll-mt-6 grid-cols-1 gap-x-5 gap-y-7 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
           >
-            {visible.map((ep) => (
+            {visible.map((ep, index) => (
               <EpisodeCard
                 key={ep.href ?? ep.id}
                 href={ep.href ?? `/wiki/episodes/${ep.id}`}
@@ -199,10 +182,12 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
                 image={ep.image}
                 synopsis={ep.synopsis}
                 year={ep.year}
+                durationSec={ep.durationSec}
                 hasVf={ep.hasVf}
                 hasVostfr={ep.hasVostfr}
                 hasVost={ep.hasVost}
                 playerCount={ep.playerCount}
+                eager={index < 4}
                 width="full"
               />
             ))}
@@ -223,6 +208,36 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
           )}
         </>
       )}
+
+      <div className="space-y-3 pt-2">
+        <div
+          className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-7"
+          aria-label={labels("coverage")}
+        >
+          {[
+            [labels("episodes"), episodes.length],
+            [labels("vfSources"), vfCount],
+            [labels("vostfrSources"), vostfrCount],
+            [t("vost"), vostCount],
+            [labels("vfMissing"), vfMissing],
+            [labels("vostfrMissing"), vostfrMissing],
+            [labels("thumbnails"), imageCount],
+          ].map(([label, value]) => (
+            <div
+              key={label}
+              className="min-w-0 rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2.5"
+            >
+              <div className="text-lg font-bold tabular-nums text-card-foreground sm:text-xl">
+                {value}
+              </div>
+              <div className="text-[11px] font-medium uppercase tracking-wide text-[var(--muted-foreground)] [overflow-wrap:anywhere]">
+                {label}
+              </div>
+            </div>
+          ))}
+        </div>
+        <p className="text-xs leading-relaxed text-white/55">{labels("coverageNote")}</p>
+      </div>
     </div>
   );
 }

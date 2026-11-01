@@ -11,6 +11,19 @@
 export function stripSourceTags(s: string | null | undefined): string | null {
   if (!s) return s ?? null;
   let out = s;
+  // Retire les sections markdown de galerie/extrait ajoutées en fin de fiche
+  // (« ## Images officielles… », « ## Extrait animé… ») et les images markdown.
+  out = out.replace(/\n+##\s+[\s\S]*$/m, "");
+  out = out.replace(/!\[[^\]]*\]\([^)]+\)/g, "");
+  // Retire les paragraphes de pied de source éditoriale (« [Synopsis et images officiels…](…) », « [Netflix — …](…) »).
+  out = out.replace(
+    /\n+\[(?:Synopsis et images officiels|Netflix\s*[—-]|Regards sur|Réserves sur|Discussion sur)[^\n]*$/gi,
+    "",
+  );
+  // Déplie les liens et emphases markdown inline pour un rendu texte propre en carte/bannière.
+  out = out.replace(/\[([^\]]+)\]\((?:https?:\/\/|\/)[^)]+\)/g, "$1");
+  out = out.replace(/\*\*([^*]+)\*\*/g, "$1");
+  out = out.replace(/(^|[\s(«"'])([*_])([^*\n_]+)\2(?=[\s).,;:!?»"']|$)/g, "$1$3");
   let prev: string;
   do {
     prev = out;
@@ -21,7 +34,7 @@ export function stripSourceTags(s: string | null | undefined): string | null {
       "",
     );
   } while (out !== prev);
-  return out.trimEnd();
+  return out.replace(/\n{3,}/g, "\n\n").trim();
 }
 
 type Player = { lang?: "vf" | "vostfr" | "vost" };
