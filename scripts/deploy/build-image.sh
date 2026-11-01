@@ -14,7 +14,8 @@
 #                         (default: dist/vfs/shenron-vfs.public.sqlite already in the worktree)
 #   SHENRON_CONTAINER     docker | podman (default: whichever is installed, docker first)
 #   SHENRON_IMAGE         image name (default: localhost/shenron)
-#   SHENRON_COMPILE_BUN   Bun used to compile the release binaries (default: bun on PATH)
+#   SHENRON_COMPILE_BUN   Bun used to compile the release binaries (default: the qualified
+#                         SHENRON_BUN_EXECUTABLE, then bun on PATH)
 #   SHENRON_CARGO_JOBS    Cargo jobs (default: all CPUs)
 #   SHENRON_SITE_BUILD_CPUS, SHENRON_SITE_BUILD_MIN_GIB, SHENRON_PAYLOAD_ZSTD_LEVEL,
 #   SHENRON_NEXT_BUILD_CACHE (1), SHENRON_KEEP_IMAGES (3)
@@ -29,7 +30,7 @@ LOCK=${SHENRON_BUILD_LOCK:-$W.lock}
 IMAGE=${SHENRON_IMAGE:-localhost/shenron}
 ENGINE=${SHENRON_CONTAINER:-$(command -v docker >/dev/null 2>&1 && echo docker || echo podman)}
 command -v "$ENGINE" >/dev/null 2>&1 || { echo "No container engine: install docker or podman" >&2; exit 1; }
-export SHENRON_COMPILE_BUN=${SHENRON_COMPILE_BUN:-$(command -v bun)}
+export SHENRON_COMPILE_BUN=${SHENRON_COMPILE_BUN:-${SHENRON_BUN_EXECUTABLE:-$(command -v bun)}}
 case "$("$SHENRON_COMPILE_BUN" --version)" in
   *debug*) echo "Refusing a debug runtime for production compilation" >&2; exit 1 ;;
 esac
