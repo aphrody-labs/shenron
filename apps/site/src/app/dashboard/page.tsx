@@ -4,11 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowUpRight,
+  CreditCard,
+  Crown,
   FilePenLine,
   Heart,
   ListOrdered,
   MessageSquareText,
   PenLine,
+  ShieldCheck,
   ShoppingBag,
   Sparkles,
   Star,
@@ -232,6 +235,24 @@ export default async function DashboardPage() {
               icon={Sparkles}
               title={<T k="dashboard.actionGames" />}
               text={<T k="dashboard.actionGamesText" />}
+            />
+            <Action
+              href="/vip"
+              icon={Crown}
+              title={<T k="dashboard.actionVip" />}
+              text={<T k="dashboard.actionVipText" />}
+            />
+            <Action
+              href="/account/billing"
+              icon={CreditCard}
+              title={<T k="dashboard.actionBilling" />}
+              text={<T k="dashboard.actionBillingText" />}
+            />
+            <Action
+              href="/settings"
+              icon={ShieldCheck}
+              title={<T k="dashboard.actionSecurity" />}
+              text={<T k="dashboard.actionSecurityText" />}
             />
           </div>
         </section>

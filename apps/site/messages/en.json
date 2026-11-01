@@ -535,6 +535,22 @@
     "studio": {
       "label": "Shenron Studio",
       "blurb": "Shenron's manga translation editor"
+    },
+    "vip": {
+      "label": "VIP Club & Subscription",
+      "blurb": "Ad-free reading and monthly or annual support (Stripe & PayPal)"
+    },
+    "donations": {
+      "label": "Donations & Spirit Bomb",
+      "blurb": "Support hosting and digitization with a one-time donation (Stripe & PayPal)"
+    },
+    "billing": {
+      "label": "Subscriptions & payments",
+      "blurb": "Manage your VIP subscription (Stripe, PayPal) and review your donation history"
+    },
+    "watchlist": {
+      "label": "My watchlist",
+      "blurb": "Episodes, movies and chapters saved to watch or read next"
     }
   },
   "dashboard": {
@@ -580,6 +596,14 @@
     "actionLeaderboardText": "Compare your progress",
     "actionGames": "Mini-games",
     "actionGamesText": "Earn XP and Zenis",
+    "actionVip": "Ad-free VIP Club",
+    "actionVipText": "Support the archive and browse without ads (Stripe & PayPal)",
+    "actionDonations": "Donations & Spirit Bomb",
+    "actionDonationsText": "Make a one-time donation for hosting and digitization",
+    "actionBilling": "Subscriptions & payments",
+    "actionBillingText": "Manage your VIP subscription and donation history",
+    "actionSecurity": "Accounts & security",
+    "actionSecurityText": "Discord, Google, email, Passkey and 2FA",
     "warningBot": "Bot data is temporarily unavailable.",
     "warningSummary": "Your activity on the site could not be read again: the counters displayed above do not reflect your history.",
     "warningTail": "Your account and settings remain accessible.",
@@ -1481,6 +1505,8 @@
     "donationHistory": "Donation history",
     "noDonations": "No donations are associated with this account.",
     "accountBillingLink": "Manage my subscription",
+    "donationsLink": "Make a one-time donation (Spirit Bomb)",
+    "vipLink": "Explore the ad-free VIP Club",
     "statusActive": "Active",
     "statusTrialing": "Trial period",
     "statusPastDue": "Payment needs attention",

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { DonationModal } from "@/components/stripe/DonationModal";
@@ -65,7 +66,7 @@ export function DonationsClientView() {
           alimente directement l'hébergement haute vitesse et la numérisation des trésors Toriyama.
         </p>
 
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <button
             type="button"
             onClick={() => setModalOpen(true)}
@@ -74,7 +75,22 @@ export function DonationsClientView() {
             <span>🐉</span>
             <span>Contribuer à la Genki Dama</span>
           </button>
+          <Link
+            href="/vip"
+            className="flex items-center gap-2 rounded-2xl border border-amber-500/35 bg-amber-500/10 px-5 py-3.5 text-sm font-bold text-amber-300 transition-colors hover:bg-amber-500/20"
+          >
+            <span>⚡</span>
+            <span>{tBilling("vipLink")}</span>
+          </Link>
         </div>
+        <p className="mt-3 text-xs text-neutral-400">
+          <Link
+            href="/account/billing"
+            className="underline underline-offset-4 hover:text-amber-300"
+          >
+            {tBilling("accountBillingLink")}
+          </Link>
+        </p>
       </div>
 
       {paymentNotice && (

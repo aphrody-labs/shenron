@@ -14,6 +14,7 @@ const ITEMS = [
   { href: "/favorites", label: "Favoris" },
   { href: "/profile/me", label: "Profil public" },
   { href: "/tierlists/mine", label: "Mes tier lists" },
+  { href: "/account/billing", label: "Abonnements & paiements" },
   { href: "/settings", label: "Paramètres" },
 ] as const;
 

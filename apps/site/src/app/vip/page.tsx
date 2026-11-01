@@ -21,12 +21,16 @@ export default async function VipPage() {
 
       <div className="relative z-10 pt-16 pb-24">
         <VipPricingCards />
-        <p className="mt-3 text-center text-sm text-white/55">
+        <p className="mt-4 flex flex-wrap items-center justify-center gap-4 text-center text-sm text-white/55">
           <Link
             href="/account/billing"
             className="underline underline-offset-4 hover:text-amber-300"
           >
             {tBilling("accountBillingLink")}
+          </Link>
+          <span aria-hidden="true">·</span>
+          <Link href="/donations" className="underline underline-offset-4 hover:text-amber-300">
+            {tBilling("donationsLink")}
           </Link>
         </p>
       </div>

@@ -535,6 +535,22 @@
     "studio": {
       "label": "Shenron Studio（翻訳エディタ）",
       "blurb": "Shenron の漫画翻訳エディタ"
+    },
+    "vip": {
+      "label": "VIPクラブ・サブスクリプション",
+      "blurb": "広告なし読書と月額・年額サポート（Stripe & PayPal）"
+    },
+    "donations": {
+      "label": "寄付・元気玉",
+      "blurb": "サーバー運営と資料デジタル化を単発寄付で支援（Stripe & PayPal）"
+    },
+    "billing": {
+      "label": "サブスクリプションと支払い",
+      "blurb": "VIPサブスクリプション（Stripe・PayPal）の管理と寄付履歴の確認"
+    },
+    "watchlist": {
+      "label": "ウォッチリスト",
+      "blurb": "あとで見るエピソード、映画、漫画チャプター"
     }
   },
   "dashboard": {
@@ -580,6 +596,14 @@
     "actionLeaderboardText": "進捗状況を比較する",
     "actionGames": "Mini-ゲーム",
     "actionGamesText": "XPとZenisを獲得",
+    "actionVip": "広告なしVIPクラブ",
+    "actionVipText": "アーカイブを支援し広告を非表示にする（Stripe & PayPal）",
+    "actionDonations": "寄付・元気玉",
+    "actionDonationsText": "サーバー運営とアーカイブ化を単発寄付で応援",
+    "actionBilling": "サブスクリプションと支払い",
+    "actionBillingText": "VIPプランと寄付履歴の管理",
+    "actionSecurity": "アカウント・セキュリティ",
+    "actionSecurityText": "Discord、Google、メール、パスキー、二要素認証（2FA）",
     "warningBot": "ボット データは一時的に利用できなくなります。",
     "warningSummary": "サイト上のアクティビティを再度読み取ることができませんでした。上に表示されるカウンターは履歴を反映しません。",
     "warningTail": "アカウントと設定には引き続きアクセスできます。",
@@ -1481,6 +1505,8 @@
     "donationHistory": "寄付履歴",
     "noDonations": "このアカウントに関連付けられた寄付はありません。",
     "accountBillingLink": "サブスクリプションを管理",
+    "donationsLink": "単発の寄付で支援する（元気玉）",
+    "vipLink": "広告なしVIPクラブを見る",
     "statusActive": "有効",
     "statusTrialing": "試用期間",
     "statusPastDue": "お支払いをご確認ください",

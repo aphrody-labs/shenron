@@ -68,6 +68,10 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
             <DragonBall size={18} />
             {dico.common.mySpace}
           </Link>
+          <Link href="/account/billing" className={`shenron-account-option ${FOCUS}`}>
+            <DragonBall size={18} />
+            {dico.billing.accountTitle}
+          </Link>
           {me.isAdmin && (
             <Link href="/admin" className={`shenron-account-option ${FOCUS}`}>
               <Curseurs size={18} />
@@ -96,17 +100,29 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
   if (variant === "sheet") {
     if (!me.authenticated) {
       return (
-        <SignInDiscord
-          className={`flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary font-display text-[0.875rem] font-bold text-primary-foreground ${FOCUS}`}
-        >
-          <DragonBall size={18} />
-          {dico.common.signInDiscord}
-        </SignInDiscord>
+        <div className="flex flex-col gap-2">
+          <SignInDiscord
+            className={`flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary font-display text-[0.875rem] font-bold text-primary-foreground ${FOCUS}`}
+          >
+            <DragonBall size={18} />
+            {dico.common.signInDiscord}
+          </SignInDiscord>
+          <Link
+            href="/signin"
+            className={`flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-secondary px-4 font-display text-[0.8125rem] font-semibold text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground ${FOCUS}`}
+          >
+            {dico.common.signIn}
+          </Link>
+        </div>
       );
     }
     const row = `flex min-h-12 items-center gap-3 rounded-xl px-4 font-display text-[0.875rem] font-semibold text-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground ${FOCUS}`;
     return (
       <div className="flex flex-col">
+        <Link href="/account/billing" className={row}>
+          <DragonBall size={18} />
+          {dico.billing.accountTitle}
+        </Link>
         {me.isAdmin && (
           <Link href="/admin" className={row}>
             <Curseurs size={18} />
@@ -128,12 +144,20 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
   // Barre latérale.
   if (!me.authenticated) {
     return (
-      <SignInDiscord
-        className={`flex min-h-11 w-full items-center gap-3 rounded-lg border border-border bg-secondary px-3 font-display text-[0.8125rem] font-bold text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground ${FOCUS}`}
-      >
-        <DragonBall size={18} />
-        {dico.common.signInDiscord}
-      </SignInDiscord>
+      <div className="flex flex-col gap-1.5">
+        <SignInDiscord
+          className={`flex min-h-11 w-full items-center gap-3 rounded-lg border border-border bg-secondary px-3 font-display text-[0.8125rem] font-bold text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground ${FOCUS}`}
+        >
+          <DragonBall size={18} />
+          {dico.common.signInDiscord}
+        </SignInDiscord>
+        <Link
+          href="/signin"
+          className={`flex min-h-9 w-full items-center justify-center rounded-lg px-3 text-xs font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground ${FOCUS}`}
+        >
+          {dico.common.signIn} · Google / E-mail / Passkey
+        </Link>
+      </div>
     );
   }
   return (

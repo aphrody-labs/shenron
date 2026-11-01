@@ -535,6 +535,22 @@
     "studio": {
       "label": "Shenron Studio",
       "blurb": "L'éditeur de traduction manga de Shenron"
+    },
+    "vip": {
+      "label": "Club VIP & Abonnement",
+      "blurb": "Lecture sans publicité et soutien mensuel ou annuel (Stripe & PayPal)"
+    },
+    "donations": {
+      "label": "Dons & Genki Dama",
+      "blurb": "Soutenir l'hébergement et la numérisation par un don ponctuel (Stripe & PayPal)"
+    },
+    "billing": {
+      "label": "Abonnements & paiements",
+      "blurb": "Gérer son abonnement VIP (Stripe, PayPal) et consulter l'historique des dons"
+    },
+    "watchlist": {
+      "label": "Ma watchlist",
+      "blurb": "Les épisodes, films et chapitres mis de côté à suivre"
     }
   },
   "dashboard": {
@@ -580,6 +596,14 @@
     "actionLeaderboardText": "Comparer votre progression",
     "actionGames": "Mini-jeux",
     "actionGamesText": "Gagner de l'XP et des zénis",
+    "actionVip": "Club VIP sans publicité",
+    "actionVipText": "Soutenir l'archive et désactiver les annonces (Stripe & PayPal)",
+    "actionDonations": "Dons & Genki Dama",
+    "actionDonationsText": "Offrir un don ponctuel pour l'hébergement et les scans",
+    "actionBilling": "Abonnements & paiements",
+    "actionBillingText": "Gérer votre abonnement VIP et votre historique de dons",
+    "actionSecurity": "Comptes & sécurité",
+    "actionSecurityText": "Discord, Google, e-mail, clés d'accès (Passkey) et 2FA",
     "warningBot": "Les données du bot sont temporairement indisponibles.",
     "warningSummary": "Votre activité sur le site n'a pas pu être relue : les compteurs affichés ci-dessus ne reflètent pas votre historique.",
     "warningTail": "Votre compte et vos réglages restent accessibles.",
@@ -1481,6 +1505,8 @@
     "donationHistory": "Historique des dons",
     "noDonations": "Aucun don associé à ce compte.",
     "accountBillingLink": "Gérer mon abonnement",
+    "donationsLink": "Faire un don ponctuel (Genki Dama)",
+    "vipLink": "Découvrir le Club VIP sans publicité",
     "statusActive": "Actif",
     "statusTrialing": "Période d'essai",
     "statusPastDue": "Paiement à régulariser",
