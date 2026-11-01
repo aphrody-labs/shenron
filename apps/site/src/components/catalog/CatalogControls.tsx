@@ -81,7 +81,10 @@ export function CatalogControls({
     <div className="my-6 flex min-w-0 flex-wrap items-center gap-4" data-testid="catalog-controls">
       {search !== undefined ? (
         <search className="w-full min-w-0">
-          <form method="get" className="flex w-full min-w-0 flex-wrap gap-2">
+          <form
+            method="get"
+            className="grid w-full min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4"
+          >
             <label className="sr-only" htmlFor="catalog-search">
               {t("catalog.search")}
             </label>
@@ -92,19 +95,22 @@ export function CatalogControls({
               type="search"
               defaultValue={search}
               maxLength={120}
-              className="input min-w-0 flex-1"
+              className="input col-span-full min-w-0"
               placeholder={t("catalog.search")}
             />
             {options ? (
               <>
-                <label className="flex min-w-0 flex-col gap-1 text-sm" htmlFor="archive-series">
+                <label
+                  className="col-span-1 flex min-w-0 flex-col gap-1 text-sm lg:col-span-2"
+                  htmlFor="archive-series"
+                >
                   {t("catalog.archive.work")}
                   <select
                     id="archive-series"
                     name="series"
                     key={series}
                     defaultValue={series}
-                    className="input max-w-full"
+                    className="input w-full min-w-0"
                   >
                     <option value="">{t("catalog.archive.allWorks")}</option>
                     {options.series.map((value) => (
@@ -114,14 +120,17 @@ export function CatalogControls({
                     ))}
                   </select>
                 </label>
-                <label className="flex min-w-0 flex-col gap-1 text-sm" htmlFor="archive-language">
+                <label
+                  className="col-span-1 flex min-w-0 flex-col gap-1 text-sm lg:col-span-2"
+                  htmlFor="archive-language"
+                >
                   {t("catalog.archive.language")}
                   <select
                     id="archive-language"
                     name="mediaLang"
                     key={mediaLang}
                     defaultValue={mediaLang}
-                    className="input max-w-full"
+                    className="input w-full min-w-0"
                   >
                     <option value="">{t("catalog.archive.allLanguages")}</option>
                     {options.languages.map((value) => (
@@ -136,7 +145,7 @@ export function CatalogControls({
             {parent ? <input type="hidden" name="parent" value={parent} /> : null}
             {source ? (
               <div
-                className="grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
+                className="col-span-full grid w-full min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4"
                 key={`${source.order}:${source.focus}:${source.kind}:${source.domain}`}
               >
                 <label className="grid min-w-0 gap-1 text-sm">
@@ -184,7 +193,7 @@ export function CatalogControls({
                 </label>
               </div>
             ) : null}
-            <button className="dbz-button" type="submit">
+            <button className="dbz-button justify-self-start" type="submit">
               {t("catalog.submit")}
             </button>
           </form>

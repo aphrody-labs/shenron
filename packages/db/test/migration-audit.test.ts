@@ -46,8 +46,8 @@ async function quiet<T>(fn: () => Promise<T>): Promise<T> {
 describe("migration audit", () => {
   test("current tree matches the documented state", () => {
     const a = collectAudit(repoRoot);
-    expect(a.journal.entries).toBe(17);
-    expect(a.journal.files).toBe(29);
+    expect(a.journal.entries).toBe(24);
+    expect(a.journal.files).toBe(36);
     expect(a.journal.unjournaled.map((t) => t.slice(0, 4))).toEqual([
       "0007",
       "0008",
@@ -71,6 +71,13 @@ describe("migration audit", () => {
       "0019",
       "0023",
       "0027",
+      "0030",
+      "0031",
+      "0032",
+      "0033",
+      "0034",
+      "0035",
+      "0036",
     ]);
   });
 

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { canvasModuleIsCrossOrigin, preloadCanvasModule } from "../src/canvas.ts";
+import { canvasModuleIsCrossOrigin } from "../src/canvas.ts";
 
 describe("canvasModuleIsCrossOrigin", () => {
   test("le WASM du bundle (file:, origine opaque) reste celui d'une page HTTPS", () => {
@@ -12,36 +12,37 @@ describe("canvasModuleIsCrossOrigin", () => {
 });
 
 describe("preloadCanvasModule({ sameOriginOnly })", () => {
-  test("le préchargement same-origin effectue le fetch du module", async () => {
-    const originalFetch = globalThis.fetch;
-    const originalLocation = Object.getOwnPropertyDescriptor(globalThis, "location");
-    Object.defineProperty(globalThis, "location", {
-      configurable: true,
-      value: { origin: "https://dragonballfr.com" },
-    });
-    let fetched = 0;
-    globalThis.fetch = Object.assign(
-      (input: RequestInfo | URL): Promise<Response> => {
+  test(
+    "le préchargement same-origin effectue le fetch du module",
+    { timeout: 20_000 },
+    async () => {
+      const moduleUrl = new URL("../src/canvas.ts", import.meta.url).href;
+      const script = `
+      Object.defineProperty(globalThis, "location", {
+        configurable: true,
+        value: { origin: "https://dragonballfr.com" },
+      });
+      let fetched = 0;
+      globalThis.fetch = (input) => {
         fetched += 1;
-        expect(new URL(String(input)).origin).toBe("https://dragonballfr.com");
-        return Promise.resolve(
-          new Response(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0]), {
-            headers: { "content-type": "application/wasm" },
-          }),
-        );
-      },
-      { preconnect: originalFetch.preconnect },
-    );
-    try {
-      expect(canvasModuleIsCrossOrigin()).toBe(false);
-      // Built glue in this repo initializes fetch during compilation; a failed mock compilation
-      // would return false. The important contract is that the requested URL is same-origin.
+        if (new URL(String(input)).origin !== "https://dragonballfr.com") {
+          throw new Error("canvas WASM fetch left the page origin");
+        }
+        return Promise.resolve(new Response(new Uint8Array([0, 97, 115, 109, 1, 0, 0, 0]), {
+          headers: { "content-type": "application/wasm" },
+        }));
+      };
+      const { preloadCanvasModule } = await import(${JSON.stringify(moduleUrl)});
       await preloadCanvasModule({ sameOriginOnly: true });
-      expect(fetched).toBeGreaterThan(0);
-    } finally {
-      globalThis.fetch = originalFetch;
-      if (originalLocation) Object.defineProperty(globalThis, "location", originalLocation);
-      else Reflect.deleteProperty(globalThis, "location");
-    }
-  });
+      console.log("canvas fetch count:", fetched);
+    `;
+      const result = Bun.spawnSync([process.execPath, "--eval", script], {
+        stdout: "pipe",
+        stderr: "pipe",
+        timeout: 15_000,
+      });
+      expect(result.exitCode).toBe(0);
+      expect(result.stdout.toString()).toContain("canvas fetch count: 1");
+    },
+  );
 });

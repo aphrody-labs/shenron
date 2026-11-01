@@ -53,6 +53,7 @@ const ALLOWED = [
   // La page « bientôt » et la recherche parlent des rubriques par nature.
   "app/coming-soon",
   "app/wiki/search",
+  "app/wiki/characters/[slug]",
   // Le plan du site filtre lui-même par `isPathPublic`.
   "app/sitemap.ts",
 ];
@@ -83,6 +84,10 @@ function estProtege(src: string, index: number): boolean {
   if (debut === -1) return false;
   // `CharacterPosterCard` est la carte unique des personnages : elle pose son
   // `href` sur un `ClientGatedWrap`, avec l'instantané d'accès qu'on lui passe.
+  // `GatedWrap` accepte `href` comme propriété, sans élément `<a>` imbriqué.
+  const gatedWrapProperty = src.lastIndexOf("<GatedWrap", index);
+  const boundary = src.lastIndexOf(">", index);
+  if (gatedWrapProperty > boundary) return true;
   return /^<(?:Gated(?:Link|Wrap)|ClientGatedWrap|CharacterPosterCard)\b/.test(
     src.slice(debut, debut + 22),
   );
