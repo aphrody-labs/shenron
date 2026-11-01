@@ -11,7 +11,6 @@ type Params = Promise<{
   series?: string;
   language?: string;
   region?: string;
-  after?: string;
 }>;
 
 export async function generateMetadata({
@@ -24,9 +23,7 @@ export async function generateMetadata({
     getPublishedCardCount().catch(() => 0),
     searchParams,
   ]);
-  const filtered = Boolean(
-    params.search || params.series || params.language || params.region || params.after,
-  );
+  const filtered = Boolean(params.search || params.series || params.language || params.region);
   const description = t("description");
   return {
     title: t("title"),
@@ -69,15 +66,8 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
     seriesId: params.series,
     language: params.language,
     region: params.region,
-    after: params.after,
   }).catch(() => null);
   const activeFilters = Boolean(params.search || params.series || params.language || params.region);
-  const next = new URLSearchParams();
-  if (params.search) next.set("search", params.search);
-  if (params.series) next.set("series", params.series);
-  if (params.language) next.set("language", params.language);
-  if (params.region) next.set("region", params.region);
-  if (data?.nextCursor) next.set("after", data.nextCursor);
 
   return (
     <WikiIndexPage
@@ -217,10 +207,7 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
                   key={card.id}
                   className="group overflow-hidden rounded-xl border border-border bg-card transition-[border-color,box-shadow,transform] duration-200 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg motion-reduce:transform-none motion-reduce:transition-none"
                 >
-                  <Link
-                    href={`/wiki/cards/${card.slug}`}
-                    className="block h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-inset"
-                  >
+                  <div className="h-full">
                     {card.frontImageUrl ? (
                       <img
                         src={card.frontImageUrl}
@@ -263,21 +250,11 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
                         </p>
                       )}
                     </div>
-                  </Link>
+                  </div>
                 </article>
               );
             })}
           </div>
-          {data.nextCursor && (
-            <nav aria-label={t("pagination")} className="mt-8 flex justify-center">
-              <Link
-                className="inline-flex min-h-11 items-center rounded-md border border-border px-5 font-medium"
-                href={`/wiki/cards?${next.toString()}`}
-              >
-                {t("nextPage")}
-              </Link>
-            </nav>
-          )}
           {activeFilters && (
             <p className="mt-5 text-center text-xs text-muted-foreground">{t("filteredNotice")}</p>
           )}

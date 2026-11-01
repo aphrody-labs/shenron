@@ -1,14 +1,7 @@
 import type { MetadataRoute } from "next";
 import { SITE_URL } from "@/lib/config";
 import { db } from "@/lib/db";
-import {
-  cardCatalogCards,
-  cardCatalogSeries,
-  cardCatalogSets,
-  posts,
-  wikiCategories,
-  wikiPages,
-} from "@/db/schema";
+import { posts, wikiCategories, wikiPages } from "@/db/schema";
 import {
   botEpisodes,
   botMovies,
@@ -118,28 +111,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }
       for (const s of series) out.push([`/wiki/episodes/series/${s}`, 0.7, new Date()]);
       return out;
-    }),
-    // Le catalogue de cartes n'est indexé que lorsqu'il contient des fiches
-    // publiées sous une série et un set eux-mêmes publiés.
-    block(entries, isPublic, async () => {
-      const rows = await db
-        .select({
-          slug: cardCatalogCards.slug,
-          updatedAt: cardCatalogCards.updatedAt,
-        })
-        .from(cardCatalogCards)
-        .innerJoin(cardCatalogSets, eq(cardCatalogCards.setId, cardCatalogSets.id))
-        .innerJoin(cardCatalogSeries, eq(cardCatalogSets.seriesId, cardCatalogSeries.id))
-        .where(
-          and(
-            eq(cardCatalogCards.status, "published"),
-            eq(cardCatalogSets.status, "published"),
-            eq(cardCatalogSeries.status, "published"),
-          ),
-        );
-      return rows.map(
-        (row) => [`/wiki/cards/${row.slug}`, 0.5, row.updatedAt ?? new Date()] as const,
-      );
     }),
     block(entries, isPublic, async () => {
       const rows = await db
