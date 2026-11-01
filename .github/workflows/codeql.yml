@@ -22,7 +22,8 @@ concurrency:
 jobs:
   analyze:
     name: Analyze JavaScript/TypeScript
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    # Code scanning uploads require Advanced Security, which is unavailable on this private repo.
+    if: github.event.repository.private != true && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
