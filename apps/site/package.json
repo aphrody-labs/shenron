@@ -46,6 +46,7 @@
     "@aphrody/shenron-native": "workspace:*",
     "@aphrody/shenron-pipeline": "workspace:*",
     "@aphrody/shenron-ui": "workspace:*",
+    "@better-auth/passkey": "catalog:",
     "@codemirror/lang-markdown": "catalog:",
     "@codemirror/language-data": "catalog:",
     "@codemirror/state": "catalog:",

@@ -1,23 +1,55 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { DonationModal } from "@/components/stripe/DonationModal";
-import { DONATION_TIERS } from "@/lib/stripe";
+import { DONATION_TIERS } from "@/lib/billing-catalog";
 
 export function DonationsClientView() {
   const [modalOpen, setModalOpen] = useState(false);
   const [donations, setDonations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [paymentNotice, setPaymentNotice] = useState<string | null>(null);
+  const tBilling = useTranslations("billing");
 
   useEffect(() => {
-    fetch("/api/stripe/donate")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.donations) setDonations(data.donations);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+    let cancelled = false;
+    async function load() {
+      const query = new URLSearchParams(window.location.search);
+      const token = query.get("token");
+      if (query.get("provider") === "paypal" && token && query.get("result") === "approved") {
+        try {
+          const response = await fetch("/api/paypal/donate/capture", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderId: token }),
+          });
+          if (!response.ok) throw new Error("capture");
+          if (!cancelled) setPaymentNotice(tBilling("paypalCompleted"));
+        } catch {
+          if (!cancelled) setPaymentNotice(tBilling("paypalCapturePending"));
+        }
+        window.history.replaceState({}, "", "/donations");
+      } else if (query.get("provider") === "paypal" && query.get("result") === "cancelled") {
+        if (!cancelled) setPaymentNotice(tBilling("paypalCancelled"));
+        window.history.replaceState({}, "", "/donations");
+      }
+
+      try {
+        const response = await fetch("/api/stripe/donate");
+        const data = await response.json();
+        if (!cancelled && data.donations) setDonations(data.donations);
+      } catch {
+        // The wall of supporters is optional; payment status is never inferred here.
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [tBilling]);
 
   return (
     <div className="mx-auto w-full max-w-5xl px-4 py-12">
@@ -44,6 +76,12 @@ export function DonationsClientView() {
           </button>
         </div>
       </div>
+
+      {paymentNotice && (
+        <p className="mt-5 text-center text-sm text-amber-200" role="status">
+          {paymentNotice}
+        </p>
+      )}
 
       {/* Paliers visuels */}
       <div className="mt-16">

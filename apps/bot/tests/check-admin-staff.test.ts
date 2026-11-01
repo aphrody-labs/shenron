@@ -260,11 +260,11 @@ describe("B10 — options Better Auth du bot", () => {
     });
   });
 
-  it("chemin partagé, préfixe de cookie inchangé, cache 300 s, crochet S1b", () => {
+  it("chemin partagé, préfixe de cookie inchangé, cache désactivé, crochet S1b", () => {
     expect(options.basePath).toBe("/api/auth");
     expect(options.advanced.cookiePrefix).toBe("shenron_ba");
     expect(options.advanced.useSecureCookies).toBe(true);
-    expect(options.session.cookieCache).toEqual({ enabled: true, maxAge: 300 });
+    expect(options.session.cookieCache).toEqual({ enabled: false });
     expect(typeof options.databaseHooks.session.create.before).toBe("function");
   });
 

@@ -6,6 +6,8 @@ import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { db, schema } from "@/lib/db";
 import { and, eq } from "drizzle-orm";
+import { env } from "@/lib/env";
+import SecuritySettings from "./SecuritySettings";
 
 export const dynamic = "force-dynamic";
 // Page strictement personnelle (sessions, export, suppression) : comme
@@ -44,6 +46,7 @@ export default async function ParametresPage({
           steamError: query.steam === "error",
         }}
       />
+      <SecuritySettings googleEnabled={Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET)} />
     </PageShell>
   );
 }

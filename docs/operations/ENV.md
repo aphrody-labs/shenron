@@ -15,6 +15,25 @@ Règles :
 - Nom canonique d'abord ; les noms historiques restent acceptés en lecture. Quand plusieurs
   noms sont posés, la première valeur non vide dans l'ordre de lecture l'emporte.
 
+## Paiements et monétisation du site
+
+Variables consommées par `apps/site/src/lib/stripe.ts` et `apps/site/src/lib/env.ts` :
+
+| Variable                                               | Portée                | Contrat                                                                                                                                                       |
+| ------------------------------------------------------ | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `STRIPE_SECRET_KEY`                                    | secrète, runtime site | Clé Stripe restreinte de moindre privilège, propre à l'environnement ; aucune valeur de repli dans le code. Sans elle, les routes de paiement échouent fermé. |
+| `STRIPE_WEBHOOK_SECRET`                                | secrète, runtime site | Secret du seul endpoint webhook correspondant à l'environnement Stripe. Les signatures sont vérifiées sur le corps HTTP brut.                                 |
+| `STRIPE_PRICE_VIP_MONTHLY` / `STRIPE_PRICE_VIP_ANNUAL` | runtime site          | Price IDs correspondant au catalogue public, provisionnés séparément en sandbox et en production ; aucun ID de test codé en dur.                              |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`                   | publique              | Facultative pour les pages utilisant uniquement Checkout hébergé ; jamais une clé secrète.                                                                    |
+| `PAYPAL_CLIENT_ID` / `PAYPAL_CLIENT_SECRET`            | secrets runtime site  | Identifiants OAuth API propre à l'environnement, transmis à PayPal uniquement côté serveur.                                                                   |
+| `PAYPAL_WEBHOOK_ID`                                    | runtime site          | ID du webhook enregistré dans l'environnement PayPal ; utilisé par l'API officielle de vérification avant toute mutation.                                     |
+| `PAYPAL_ENV`                                           | runtime site          | Obligatoire pour les opérations PayPal : `sandbox` ou `live`, sans détection depuis la requête navigateur.                                                    |
+| `PAYPAL_PLAN_VIP_MONTHLY` / `PAYPAL_PLAN_VIP_ANNUAL`   | runtime site          | Plan IDs PayPal actifs correspondant aux mêmes offres que Stripe.                                                                                             |
+| `NEXT_PUBLIC_ADSENSE_CLIENT`                           | publique/build site   | Identifiant éditeur AdSense fourni après approbation du compte. Vide ou invalide : aucun tag publicitaire.                                                    |
+| `NEXT_PUBLIC_ADSENSE_SLOT_*`                           | publique/build site   | Identifiants de blocs réels créés dans AdSense. Aucun emplacement de remplissage n'est inventé.                                                               |
+
+Les Price IDs Stripe et plan IDs PayPal sont des références de configuration non secrètes mais propres à l'environnement ; ils doivent être vérifiés contre les consoles prestataires avant activation commerciale. Les secrets sont provisionnés par Aphrody Infra, jamais inclus dans une image ou un fichier versionné. L'état des abonnements provient des webhooks vérifiés ; un callback navigateur PayPal déclenche une capture relue côté serveur et n'accorde pas seul de privilège.
+
 ## Moteur Studio hébergé
 
 `apps/server/src/site.ts` monte le moteur canonique pour un compte authentifié.
@@ -174,10 +193,27 @@ Usage : [`docs/products/dbxv2-plugin.md`](../products/dbxv2-plugin.md).
 | ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `BETTER_AUTH_SECRET`                                                                      | Secret Better Auth, lu par `resolveBetterAuthSecret` ; repli `SESSION_SECRET`. Obligatoire en production, une valeur trop courte est refusée.                                                                                                                                                                                                                                           |
 | `BETTER_AUTH_URL`                                                                         | Base URL Better Auth de l'app (aussi dernier repli de l'origine du site).                                                                                                                                                                                                                                                                                                               |
+| `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`                                                | Client Google OAuth Web, hôte Better Auth et site ; laisser les deux absents pour désactiver Google. Callback : `<origine>/api/auth/callback/google`. Ne jamais exposer le secret au client.                                                                                                                                                                                            |
+| `SMTP_PASSWORD`                                                                           | Secret de la boîte OVH, suffisant pour activer SMTP. Le compte par défaut est `contact@aphrody.com`, expéditeur `Dragon Ball France <contact@aphrody.com>`, serveur TLS implicite `ssl0.ovh.net:465`. À provisionner par Aphrody Infra, jamais dans le dépôt ou un journal.                                                                                                             |
+| `SMTP_USER`, `AUTH_EMAIL_FROM`                                                            | Surcharges facultatives du compte et de l’expéditeur SMTP OVH. Sans `SMTP_PASSWORD`, l’API HTTPS Resend de repli demande `RESEND_API_KEY` et `AUTH_EMAIL_FROM`.                                                                                                                                                                                                                         |
+| `RESEND_API_KEY`, `AUTH_EMAIL_FROM`                                                       | Transport HTTPS Resend de repli pour les e-mails transactionnels. L’adresse expéditrice doit être vérifiée dans Resend.                                                                                                                                                                                                                                                                 |
 | `SHENRON_ADMIN_TOKEN`                                                                     | Jeton d'administration maître. Utilisable via le formulaire `/admin-access` (POST, jamais dans une URL), `Authorization: Bearer <token>`, `x-admin-token` ou le cookie HMAC signé `dbfr_admin` (30 jours après connexion durable). `aphrody shenron auth url` n'affiche que l'URL du formulaire.                                                                                        |
 | `SHENRON_ADMIN_IPS`                                                                       | Postes d'administration (adresses ou CIDR, séparés par virgules) : staff sans session ni jeton pour `/admin`, la session (`ADMIN_IP_ACTOR`) et les routes « admin ou jeton » (desktop, CLI, scripts). Adresse lue dans `X-Real-IP` posé par nginx (`@/lib/admin-ip`). Tenue à jour par `scripts/ops/admin-access.ts`, avec `SHENRON_MCP_ALLOWED_IPS` du MCP. Vide : aucun accès par IP. |
 | `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `OAUTH_REDIRECT_URI`, `OAUTH_ALLOWED_USERS` | OAuth Discord.                                                                                                                                                                                                                                                                                                                                                                          |
 | `AgentKey` (table PG)                                                                     | Jetons d'agents autonomes (`dbfr_agent_...`) avec portées explicites (`moderate`, `write:articles`, etc.) acceptés par le proxy et `getCurrentUser()`.                                                                                                                                                                                                                                  |
+
+### E-mails de confirmation des paiements
+
+`SHENRON_BILLING_OUTBOX_TOKEN` est un jeton aléatoire d’au moins 32 caractères pour
+`POST /api/cron/billing-outbox`. Aphrody Infra doit l’appeler périodiquement avec
+`Authorization: Bearer <jeton>`. Les confirmations restent en file jusqu’à configuration du jeton
+et de `SMTP_PASSWORD` ; les échecs SMTP sont repris avec un délai progressif puis terminés après
+six tentatives. La file contient temporairement l’adresse e-mail et le texte de confirmation ;
+prévoir une purge Infra des éléments envoyés après 90 jours. La livraison est au moins une fois :
+un arrêt après acceptation SMTP mais avant l’enregistrement local peut provoquer un doublon.
+L’expéditeur SMTP par défaut est `contact@aphrody.com` via `ssl0.ovh.net:465`. Aucun mot de passe
+SMTP ni jeton de planification n’est conservé dans le dépôt ; Aphrody Infra doit les configurer
+dans le coffre et planifier le worker avant l’activation en production.
 
 ## Serveur MCP — `apps/site/src/lib/ai-access.ts` et `crates/shenron-mcp`
 

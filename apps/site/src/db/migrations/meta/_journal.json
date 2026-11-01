@@ -169,6 +169,62 @@
       "when": 1793481706354,
       "tag": "0036_character_variant_supplements",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1793495700000,
+      "tag": "0037_site_billing_webhook_events",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1793495701000,
+      "tag": "0038_paypal_subscriptions",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1793495702000,
+      "tag": "0039_direct_advertising",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1793495703000,
+      "tag": "0040_better_auth_features_oauth",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1793495704000,
+      "tag": "0041_ad_campaign_placements",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1793495705000,
+      "tag": "0042_site_email_outbox",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1793495706000,
+      "tag": "0043_site_subscription_checkout_reservations",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1793495707000,
+      "tag": "0044_site_donation_refund_state",
+      "breakpoints": true
     }
   ]
 }

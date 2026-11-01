@@ -51,6 +51,7 @@ the root `AGENTS.md`.
 | Wiki data ingestion                                              | [`guides/wiki-data-ingestion.md`](guides/wiki-data-ingestion.md)                                                                                    |
 | Measured pitfalls                                                | [`guides/pieges.md`](guides/pieges.md)                                                                                                              |
 | Security                                                         | [Security policy](SECURITY.md)                                                                                                                      |
+| Unified accounts, Better Auth, Google/Discord/email, and Shenron OAuth | [`products/authentication.md`](products/authentication.md)                                                                                         |
 | Licenses of bundled components                                   | [`licenses/`](licenses/)                                                                                                                            |
 
 Les adresses publiques et les chemins opérationnels documentés ne remplacent pas la

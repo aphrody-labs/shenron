@@ -57,8 +57,8 @@ describe("presets @aphrody/shenron-auth/options", () => {
     expect(drizzleDebugLogs("test")).toBe(true);
   });
 
-  test("cache de cookie de session : 300 s", () => {
-    expect(SESSION_COOKIE_CACHE).toEqual({ enabled: true, maxAge: 300 });
+  test("cache de cookie de session désactivé", () => {
+    expect(SESSION_COOKIE_CACHE).toEqual({ enabled: false });
   });
 });
 
@@ -76,7 +76,7 @@ describe("câblage de src/lib/auth.ts", () => {
 
   test("cache de session, cookies sécurisés et URL normalisée", () => {
     const prod = options("production");
-    expect(prod.session.cookieCache).toEqual({ enabled: true, maxAge: 300 });
+    expect(prod.session.cookieCache).toEqual({ enabled: false });
     expect(prod.advanced.useSecureCookies).toBe(true);
     expect(options("development").advanced.useSecureCookies).toBe(false);
     expect(prod.baseURL.fallback).toBe("https://dragonballfr.com");

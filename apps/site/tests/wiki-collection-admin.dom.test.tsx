@@ -23,12 +23,9 @@ mock.module("next/navigation", () => ({
   useRouter: () => ({ push: () => {}, refresh: () => {} }),
   useSearchParams: () => new URLSearchParams(),
 }));
-// Keep the client hook mock, but retain next-intl's server exports for modules
-// loaded transitively by the admin page during the isolated CI run.
-const nextIntl = await import("next-intl");
-mock.module("next-intl", () => ({
-  ...nextIntl,
-  useTranslations: () => (key: string) => key,
+mock.module("next-intl", () => ({ useTranslations: () => (key: string) => key }));
+mock.module("@/lib/admin-catalog-text", () => ({
+  useAdminCatalogText: () => (key: string) => key,
 }));
 mock.module("@/components/admin/SmartField", () => ({ SmartField: () => null }));
 const { default: TablePage } = await import("../src/app/admin/database/[table]/page");
