@@ -20,6 +20,7 @@
 import { createPublicRagPort } from "./rag";
 export { sendSmtpEmail } from "./smtp-email";
 import { createHostFavorites } from "./favorites";
+import { createHostWatch } from "./watch";
 import type { Database } from "bun:sqlite";
 import { existsSync, statSync } from "node:fs";
 import { homedir } from "node:os";
@@ -666,6 +667,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   const homeConfig = createHostHome(env);
   const siteTheme = createHostSiteTheme(env);
   const favorites = createHostFavorites(env);
+  const watch = createHostWatch(env);
   const api = createShenronApi(
     {
       wikiLaunch: wikiLaunch?.port,
@@ -674,6 +676,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       homeConfig: homeConfig?.port,
       siteTheme: siteTheme?.port,
       favorites: favorites?.port,
+      watch: watch?.port,
       wiki,
       rag,
       chat,
@@ -817,6 +820,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       await homeConfig?.close();
       await siteTheme?.close();
       await favorites?.close();
+      await watch?.close();
       if ("close" in authBuilt) await authBuilt.close();
       mcp?.close();
       opened?.vfs.db.close();

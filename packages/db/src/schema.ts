@@ -2,6 +2,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { relations, sql } from "drizzle-orm";
 import type { AgentScope } from "./constants";
 import {
+  bigint,
   bigserial,
   boolean,
   date,
@@ -1629,3 +1630,32 @@ export const agentAudit = pgTable(
 );
 
 export type AgentAuditRow = typeof agentAudit.$inferSelect;
+
+// Progression de lecture des comptes connectés (« continuer à regarder ») : une ligne par
+// épisode ou film. Le statut de la watchlist (à voir / en cours / terminé) en est dérivé,
+// les éléments sauvegardés restant dans les favoris. Dernier écrivain gagnant sur `updatedAtMs`.
+export const siteWatchProgress = pgTable(
+  "site_watch_progress",
+  {
+    userId: text("userId").notNull(),
+    // "episode" | "movie"
+    kind: text("kind").notNull(),
+    itemId: text("itemId").notNull(),
+    seconds: integer("seconds").notNull(),
+    duration: integer("duration").notNull(),
+    completed: boolean("completed").notNull().default(false),
+    language: text("language"),
+    // Instantané d'affichage, pour dessiner le rail sans relire le catalogue.
+    title: text("title").notNull(),
+    href: text("href").notNull(),
+    image: text("image"),
+    caption: text("caption"),
+    // Horodatage client borné par le serveur, en millisecondes d'époque.
+    updatedAtMs: bigint("updatedAtMs", { mode: "number" }).notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.kind, t.itemId], name: "site_watch_progress_pk" }),
+    index("site_watch_progress_user_recent_idx").on(t.userId, t.updatedAtMs),
+  ],
+);
+export type SiteWatchProgress = typeof siteWatchProgress.$inferSelect;

@@ -163,3 +163,35 @@ export function observePlaybackProgress(
     save();
   };
 }
+
+/** Merges account entries into the device store, preserving their own timestamps. */
+export function importPlaybackProgress(entries: readonly PlaybackProgress[]): void {
+  if (typeof window === "undefined" || entries.length === 0) return;
+  try {
+    const byKey = new Map(readPlaybackProgress().map((e) => [`${e.kind}:${e.id}`, e]));
+    for (const entry of entries) {
+      if (!isProgress(entry)) continue;
+      const key = `${entry.kind}:${entry.id}`;
+      const previous = byKey.get(key);
+      if (!previous || entry.updatedAt > previous.updatedAt) byKey.set(key, entry);
+    }
+    const next = [...byKey.values()]
+      .toSorted((a, b) => b.updatedAt - a.updatedAt)
+      .slice(0, MAX_ENTRIES);
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    window.dispatchEvent(new CustomEvent(PLAYBACK_PROGRESS_EVENT));
+  } catch {
+    // A blocked or full store must never affect playback.
+  }
+}
+
+export function forgetPlaybackProgress(kind: PlaybackKind, id: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    const next = readPlaybackProgress().filter((e) => e.kind !== kind || e.id !== id);
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    window.dispatchEvent(new CustomEvent(PLAYBACK_PROGRESS_EVENT));
+  } catch {
+    // A blocked store must never surface an error.
+  }
+}

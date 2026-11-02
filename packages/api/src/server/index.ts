@@ -32,6 +32,12 @@ import {
 import { type EndpointSpec, endpoints } from "../contract/endpoints";
 import type { ApiErrorCode } from "../contract/error";
 import type { AccountSessionProfile } from "../contract/account";
+import {
+  sanitizeWatchEntries,
+  type WatchEntry,
+  type WatchKind,
+  type WatchRemoveBody,
+} from "../contract/watch";
 import type { TimelineEvent, TimelineAtlas } from "../contract/chronology";
 import {
   resolveChronologyConfig,
@@ -121,6 +127,13 @@ export interface VfsPort {
 export interface FavoritesPort {
   read(userId: string): Promise<unknown>;
   save(userId: string, favorites: Favorite[]): Promise<void>;
+}
+
+export interface WatchPort {
+  list(userId: string): Promise<WatchEntry[]>;
+  /** Last writer wins per entry; returns the number of rows kept after the merge. */
+  save(userId: string, entries: WatchEntry[]): Promise<number>;
+  remove(userId: string, items: Array<{ kind: WatchKind; id: string }>): Promise<number>;
 }
 
 export interface HostSession {
@@ -244,6 +257,7 @@ export interface ShenronApiPorts {
   /** Better Auth handler on `/api/auth/*`; absent → group disabled, the path is not claimed. */
   betterAuth?: BetterAuthPort | null;
   favorites?: FavoritesPort | null;
+  watch?: WatchPort | null;
   mcp?: McpProxyPort | null;
   /** Plugin « shenron » relu depuis `plugin/` du déploiement (`@aphrody/shenron-api/plugin`). */
   plugin?: PluginPort | null;
@@ -618,6 +632,28 @@ export function createShenronApi(
       "Cache-Control": "private, no-store",
     });
   });
+  const watchEnabled = Boolean(ports.watch && ports.betterAuth?.session);
+  add(endpoints.watchProgress, watchEnabled, async ({ request }) => {
+    const session = await ports.betterAuth!.session!(request.headers);
+    if (!session) return json({ entries: [] }, 200, { "Cache-Control": "private, no-store" });
+    if (!session.profile)
+      return json({ error: "Reader profile unavailable", code: "unavailable" }, 503, {
+        "Cache-Control": "private, no-store",
+      });
+    return json({ entries: await ports.watch!.list(session.profile.id) }, 200, {
+      "Cache-Control": "private, no-store",
+    });
+  });
+  add(endpoints.watchProgressSave, watchEnabled, async ({ body, reader }) => {
+    const entries = sanitizeWatchEntries((body as { entries: unknown }).entries);
+    const count = await ports.watch!.save(reader!.profile!.id, entries);
+    return json({ ok: true, count }, 200, { "Cache-Control": "private, no-store" });
+  });
+  add(endpoints.watchProgressRemove, watchEnabled, async ({ body, reader }) => {
+    const { items } = body as z.infer<typeof WatchRemoveBody>;
+    const removed = await ports.watch!.remove(reader!.profile!.id, items);
+    return json({ ok: true, removed }, 200, { "Cache-Control": "private, no-store" });
+  });
   add(endpoints.wikiLaunch, Boolean(ports.wikiLaunch), async () =>
     json({ config: await ports.wikiLaunch!.read() }, 200, { "Cache-Control": "no-store" }),
   );
@@ -712,6 +748,7 @@ export function createShenronApi(
     ports.homeConfig,
     ports.siteTheme,
     favoritesEnabled ? ports.favorites : null,
+    watchEnabled ? ports.watch : null,
     ports.wiki,
     ports.rag,
     ports.chat,

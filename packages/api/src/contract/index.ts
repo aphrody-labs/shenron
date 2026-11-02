@@ -13,6 +13,7 @@ export * from "./account";
 export * from "./site-theme";
 
 export * from "./favorites";
+export * from "./watch";
 
 export * from "./home";
 
