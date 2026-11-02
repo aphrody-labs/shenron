@@ -120,7 +120,7 @@ export function Billboard({
             )}
 
             {synopsis && (
-              <p className="mb-5 line-clamp-3 max-w-2xl text-sm leading-relaxed text-white/85">
+              <p className="mb-5 max-w-2xl text-sm leading-relaxed text-white/85">
                 {synopsis}
               </p>
             )}
