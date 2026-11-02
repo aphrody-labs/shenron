@@ -59,11 +59,27 @@ export function ImageCropDialog({
   useEffect(() => {
     const element = viewportRef.current;
     if (!element) return;
+
+    const measure = () => {
+      const { width, height } = element.getBoundingClientRect();
+      if (width > 0 && height > 0) setSize({ width, height });
+    };
+
+    // Seed the crop dimensions immediately. ResizeObserver's first callback can
+    // be deferred while a native dialog enters the top layer, leaving finish()
+    // with a zero-sized viewport even though the preview is visible.
+    measure();
     const observer = new ResizeObserver(([entry]) => {
-      setSize({ width: entry.contentRect.width, height: entry.contentRect.height });
+      const { width, height } = entry.contentRect;
+      if (width > 0 && height > 0) setSize({ width, height });
     });
     observer.observe(element);
-    return () => observer.disconnect();
+
+    const frame = requestAnimationFrame(measure);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
   }, [aspect]);
 
   const baseScale = Math.max(
@@ -89,7 +105,10 @@ export function ImageCropDialog({
   const finish = useCallback(() => {
     const image = imageRef.current;
     const canvas = document.createElement("canvas");
-    if (!image || !natural.width || !natural.height || !size.width || !size.height) return;
+    if (!image || !natural.width || !natural.height || !size.width || !size.height) {
+      setError(t("cropFailed"));
+      return;
+    }
     const scale = Math.max(size.width / natural.width, size.height / natural.height) * zoom;
     const left = (size.width - natural.width * scale) / 2 + pan.x;
     const top = (size.height - natural.height * scale) / 2 + pan.y;
