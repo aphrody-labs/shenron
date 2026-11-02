@@ -2,6 +2,15 @@
 
 import { useEffect, useState } from "react";
 import { ImageField } from "@/components/admin/ImageField";
+import { ASSET_BASE } from "@/lib/config";
+
+function cardImageUrl(value: string | null | undefined) {
+  const path = value?.trim();
+  if (!path) return "";
+  if (/^https?:\/\//i.test(path)) return path;
+  const assetPath = path.replace(/^\.\//, "").replace(/^\/+/, "");
+  return `${ASSET_BASE.replace(/\/+$/, "")}/${assetPath}`;
+}
 
 /** Uploads card artwork and keeps the path in the enclosing server-action form. */
 export function CardCatalogImageField({
@@ -21,7 +30,7 @@ export function CardCatalogImageField({
   width?: number | null;
   height?: number | null;
 }) {
-  const [image, setImage] = useState(value ?? "");
+  const [image, setImage] = useState(() => cardImageUrl(value));
   const [dimensions, setDimensions] = useState({
     width: value ? (width ?? null) : null,
     height: value ? (height ?? null) : null,
@@ -45,8 +54,9 @@ export function CardCatalogImageField({
   }, [image]);
 
   function changeImage(nextImage: string) {
-    setImage(nextImage);
-    if (nextImage !== image) setDimensions({ width: null, height: null });
+    const normalized = cardImageUrl(nextImage);
+    setImage(normalized);
+    if (normalized !== image) setDimensions({ width: null, height: null });
   }
 
   return (
