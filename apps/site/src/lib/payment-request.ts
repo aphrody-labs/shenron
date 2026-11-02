@@ -36,8 +36,8 @@ export function isSameOriginPaymentRequest(request: Request): boolean {
 export function paymentProviderUnavailable(provider: "stripe" | "paypal"): Response {
   return Response.json(
     {
-      error: "Paiement temporairement indisponible.",
-      code: "payment_provider_unavailable",
+      error: "provider_unavailable",
+      message: "Paiement temporairement indisponible.",
       provider,
     },
     { status: 503, headers: { "Cache-Control": "private, no-store" } },

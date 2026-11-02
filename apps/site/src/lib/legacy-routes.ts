@@ -26,4 +26,10 @@ export const AUTH_ROUTE_ALIASES: readonly RouteRename[] = [
   { from: "/inscription", to: "/signin", exact: true },
   { from: "/account", to: "/account/billing", exact: true },
   { from: "/compte", to: "/account/billing", exact: true },
+  { from: "/dons", to: "/donations", exact: true },
+  { from: "/don", to: "/donations", exact: true },
+  { from: "/donate", to: "/donations", exact: true },
+  { from: "/abonnement", to: "/vip", exact: true },
+  { from: "/subscribe", to: "/vip", exact: true },
+  { from: "/premium", to: "/vip", exact: true },
 ];

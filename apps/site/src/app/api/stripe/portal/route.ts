@@ -9,7 +9,10 @@ import { getStripe } from "@/lib/stripe";
 export async function POST() {
   const user = await getCurrentUser();
   if (!user?.sessionUserId || user.sessionUserId === "token-admin") {
-    return NextResponse.json({ error: "Authentification requise" }, { status: 401 });
+    return NextResponse.json(
+      { error: "unauthenticated", message: "Authentification requise" },
+      { status: 401 },
+    );
   }
   const [authUser] = await db
     .select({ customerId: baUser.stripeCustomerId })
@@ -17,7 +20,10 @@ export async function POST() {
     .where(eq(baUser.id, user.sessionUserId))
     .limit(1);
   if (!authUser?.customerId) {
-    return NextResponse.json({ error: "Aucun profil de facturation Stripe" }, { status: 404 });
+    return NextResponse.json(
+      { error: "no_billing_profile", message: "Aucun profil de facturation Stripe" },
+      { status: 404 },
+    );
   }
 
   try {
@@ -27,6 +33,9 @@ export async function POST() {
     });
     return NextResponse.json({ url: portal.url });
   } catch {
-    return NextResponse.json({ error: "Portail de facturation indisponible" }, { status: 503 });
+    return NextResponse.json(
+      { error: "provider_unavailable", message: "Portail de facturation indisponible" },
+      { status: 503 },
+    );
   }
 }

@@ -12,7 +12,10 @@ export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   if (!isSameOriginPaymentRequest(req)) {
-    return NextResponse.json({ error: "Requête de paiement invalide" }, { status: 403 });
+    return NextResponse.json(
+      { error: "invalid_origin", message: "Requête de paiement invalide" },
+      { status: 403 },
+    );
   }
   // No key, no pending row: the visitor gets an explicit 503 before anything is written.
   if (!isStripeConfigured()) return paymentProviderUnavailable("stripe");
@@ -31,20 +34,30 @@ export async function POST(req: NextRequest) {
 
     if (tierId) {
       const tier = DONATION_TIERS.find((t) => t.id === tierId);
-      if (!tier) return NextResponse.json({ error: "Palier de don inconnu." }, { status: 400 });
+      if (!tier)
+        return NextResponse.json(
+          { error: "unknown_tier", message: "Palier de don inconnu." },
+          { status: 400 },
+        );
       amount = tier.amount;
     }
 
     if (!Number.isSafeInteger(amount) || amount < 100 || amount > 500_000) {
       return NextResponse.json(
-        { error: "Le montant doit être compris entre 1,00 € et 5 000,00 €." },
+        {
+          error: "invalid_amount",
+          message: "Le montant doit être compris entre 1,00 € et 5 000,00 €.",
+        },
         { status: 400 },
       );
     }
 
     if (donorName.length > 120 || message.length > 500 || (donorEmail && donorEmail.length > 254)) {
       return NextResponse.json(
-        { error: "Les informations du don dépassent les limites autorisées." },
+        {
+          error: "payload_too_large",
+          message: "Les informations du don dépassent les limites autorisées.",
+        },
         { status: 400 },
       );
     }
@@ -123,7 +136,7 @@ export async function POST(req: NextRequest) {
       code: typeof err?.code === "string" ? err.code : "unclassified",
     });
     return NextResponse.json(
-      { error: "Impossible de démarrer le paiement du don.", code: "payment_checkout_failed" },
+      { error: "checkout_failed", message: "Impossible de démarrer le paiement du don." },
       { status: 503, headers: { "Cache-Control": "private, no-store" } },
     );
   }
@@ -169,7 +182,11 @@ export async function GET() {
       code: typeof err?.code === "string" ? err.code : "unclassified",
     });
     return NextResponse.json(
-      { donations: [], error: "Impossible de récupérer les dons", code: "donations_unavailable" },
+      {
+        donations: [],
+        error: "donations_unavailable",
+        message: "Impossible de récupérer les dons",
+      },
       { status: 503, headers: { "Cache-Control": "private, no-store" } },
     );
   }

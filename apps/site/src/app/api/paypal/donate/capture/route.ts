@@ -18,12 +18,18 @@ type PayPalOrder = {
 
 export async function POST(request: NextRequest) {
   if (!isSameOriginPaymentRequest(request)) {
-    return NextResponse.json({ error: "Requête de paiement invalide" }, { status: 403 });
+    return NextResponse.json(
+      { error: "invalid_origin", message: "Requête de paiement invalide" },
+      { status: 403 },
+    );
   }
   const body = await request.json().catch(() => null);
   const orderId = body?.orderId;
   if (typeof orderId !== "string" || !/^[A-Z0-9-]{8,64}$/.test(orderId)) {
-    return NextResponse.json({ error: "Commande PayPal invalide" }, { status: 400 });
+    return NextResponse.json(
+      { error: "invalid_order", message: "Commande PayPal invalide" },
+      { status: 400 },
+    );
   }
 
   try {
@@ -37,7 +43,10 @@ export async function POST(request: NextRequest) {
       typeof donationId !== "string" ||
       purchase?.amount?.currency_code !== "EUR"
     ) {
-      return NextResponse.json({ error: "Paiement PayPal non reconnu" }, { status: 400 });
+      return NextResponse.json(
+        { error: "invalid_order", message: "Paiement PayPal non reconnu" },
+        { status: 400 },
+      );
     }
 
     const [donation] = await db
@@ -51,17 +60,24 @@ export async function POST(request: NextRequest) {
         ),
       )
       .limit(1);
-    if (!donation) return NextResponse.json({ error: "Don non trouvé" }, { status: 404 });
+    if (!donation)
+      return NextResponse.json(
+        { error: "donation_not_found", message: "Don non trouvé" },
+        { status: 404 },
+      );
 
     const user = await getCurrentUser();
     if (donation.userId && user?.sessionUserId !== donation.userId) {
-      return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
+      return NextResponse.json({ error: "forbidden", message: "Accès refusé" }, { status: 403 });
     }
     if (!donation.userId && !user?.sessionUserId && donation.status !== "pending") {
-      return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
+      return NextResponse.json({ error: "forbidden", message: "Accès refusé" }, { status: 403 });
     }
     if (purchase.amount?.value !== (donation.amount / 100).toFixed(2)) {
-      return NextResponse.json({ error: "Montant PayPal incohérent" }, { status: 409 });
+      return NextResponse.json(
+        { error: "amount_mismatch", message: "Montant PayPal incohérent" },
+        { status: 409 },
+      );
     }
     if (donation.status === "succeeded") return NextResponse.json({ status: "succeeded" });
 
@@ -81,7 +97,10 @@ export async function POST(request: NextRequest) {
       (item) => item.status === "COMPLETED",
     );
     if (completedOrder.status !== "COMPLETED" || !capture) {
-      return NextResponse.json({ error: "Paiement PayPal non confirmé" }, { status: 409 });
+      return NextResponse.json(
+        { error: "payment_not_confirmed", message: "Paiement PayPal non confirmé" },
+        { status: 409 },
+      );
     }
 
     const changed = await db.transaction(async (tx) => {
@@ -99,10 +118,16 @@ export async function POST(request: NextRequest) {
         .where(eq(siteDonations.id, donation.id))
         .limit(1);
       if (current?.status !== "succeeded")
-        return NextResponse.json({ error: "État du don modifié" }, { status: 409 });
+        return NextResponse.json(
+          { error: "state_changed", message: "État du don modifié" },
+          { status: 409 },
+        );
     }
     return NextResponse.json({ status: "succeeded" });
   } catch {
-    return NextResponse.json({ error: "Confirmation PayPal indisponible" }, { status: 503 });
+    return NextResponse.json(
+      { error: "capture_unavailable", message: "Confirmation PayPal indisponible" },
+      { status: 503 },
+    );
   }
 }

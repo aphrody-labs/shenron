@@ -8,16 +8,25 @@ import { isSameOriginPaymentRequest } from "@/lib/payment-request";
 
 export async function POST(request: NextRequest) {
   if (!isSameOriginPaymentRequest(request)) {
-    return NextResponse.json({ error: "Requête de paiement invalide" }, { status: 403 });
+    return NextResponse.json(
+      { error: "invalid_origin", message: "Requête de paiement invalide" },
+      { status: 403 },
+    );
   }
   const user = await getCurrentUser();
   if (!user?.sessionUserId || user.sessionUserId === "token-admin") {
-    return NextResponse.json({ error: "Authentification requise" }, { status: 401 });
+    return NextResponse.json(
+      { error: "unauthenticated", message: "Authentification requise" },
+      { status: 401 },
+    );
   }
   const body = await request.json().catch(() => null);
   const subscriptionId = body?.subscriptionId;
   if (typeof subscriptionId !== "string" || !/^[A-Z0-9-]{8,64}$/.test(subscriptionId)) {
-    return NextResponse.json({ error: "Abonnement PayPal invalide" }, { status: 400 });
+    return NextResponse.json(
+      { error: "invalid_subscription", message: "Abonnement PayPal invalide" },
+      { status: 400 },
+    );
   }
 
   const [subscription] = await db
@@ -36,7 +45,11 @@ export async function POST(request: NextRequest) {
       ),
     )
     .limit(1);
-  if (!subscription) return NextResponse.json({ error: "Abonnement introuvable" }, { status: 404 });
+  if (!subscription)
+    return NextResponse.json(
+      { error: "subscription_not_found", message: "Abonnement introuvable" },
+      { status: 404 },
+    );
 
   try {
     await paypalRequest<void>(
@@ -49,6 +62,9 @@ export async function POST(request: NextRequest) {
       .where(eq(sitePaypalSubscriptions.id, subscription.id));
     return NextResponse.json({ status: "cancelled" });
   } catch {
-    return NextResponse.json({ error: "Annulation PayPal indisponible" }, { status: 503 });
+    return NextResponse.json(
+      { error: "provider_unavailable", message: "Annulation PayPal indisponible" },
+      { status: 503 },
+    );
   }
 }

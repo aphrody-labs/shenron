@@ -14,6 +14,10 @@ describe("auth and account aliases", () => {
     ["/signup", "/signin"],
     ["/register", "/signin"],
     ["/account", "/account/billing"],
+    ["/connexion", "/signin"],
+    ["/sign-up", "/signin"],
+    ["/dons", "/donations"],
+    ["/abonnement", "/vip"],
   ])("%s → %s in one hop", (from, to) => {
     expect(followRedirects(from)).toEqual({ target: to, hops: 1 });
   });

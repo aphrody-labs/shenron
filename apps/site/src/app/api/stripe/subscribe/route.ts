@@ -19,7 +19,10 @@ import { isSameOriginPaymentRequest, paymentProviderUnavailable } from "@/lib/pa
 
 export async function POST(req: NextRequest) {
   if (!isSameOriginPaymentRequest(req)) {
-    return NextResponse.json({ error: "Requête de paiement invalide" }, { status: 403 });
+    return NextResponse.json(
+      { error: "invalid_origin", message: "Requête de paiement invalide" },
+      { status: 403 },
+    );
   }
   if (!isStripeConfigured()) return paymentProviderUnavailable("stripe");
   let reservationId: string | undefined;
@@ -27,11 +30,17 @@ export async function POST(req: NextRequest) {
   try {
     const authHost = hostAuthUrl();
     if (!authHost) {
-      return NextResponse.json({ error: "Authentification indisponible" }, { status: 503 });
+      return NextResponse.json(
+        { error: "auth_unavailable", message: "Authentification indisponible" },
+        { status: 503 },
+      );
     }
     const session = await hostGetSession(authHost, req.headers);
     if (!session?.user.id) {
-      return NextResponse.json({ error: "Authentification requise" }, { status: 401 });
+      return NextResponse.json(
+        { error: "unauthenticated", message: "Authentification requise" },
+        { status: 401 },
+      );
     }
     userId = session.user.id;
     const [authUser] = await db
@@ -40,7 +49,10 @@ export async function POST(req: NextRequest) {
       .where(eq(baUser.id, session.user.id))
       .limit(1);
     if (!authUser) {
-      return NextResponse.json({ error: "Compte introuvable" }, { status: 401 });
+      return NextResponse.json(
+        { error: "account_not_found", message: "Compte introuvable" },
+        { status: 401 },
+      );
     }
 
     const body = await req.json().catch(() => ({}));
@@ -48,7 +60,10 @@ export async function POST(req: NextRequest) {
     const plan = STRIPE_PLANS[planKey];
 
     if (!plan) {
-      return NextResponse.json({ error: "Plan d'abonnement inconnu" }, { status: 400 });
+      return NextResponse.json(
+        { error: "unknown_plan", message: "Plan d'abonnement inconnu" },
+        { status: 400 },
+      );
     }
 
     const stripe = getStripe();
@@ -61,7 +76,10 @@ export async function POST(req: NextRequest) {
     });
     if (!createdReservationId) {
       return NextResponse.json(
-        { error: "Un abonnement ou un paiement est déjà en cours pour ce compte." },
+        {
+          error: "checkout_in_progress",
+          message: "Un abonnement ou un paiement est déjà en cours pour ce compte.",
+        },
         { status: 409 },
       );
     }
@@ -113,8 +131,8 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json(
       {
-        error: "Impossible de démarrer le paiement de l'abonnement.",
-        code: "payment_checkout_failed",
+        error: "checkout_failed",
+        message: "Impossible de démarrer le paiement de l'abonnement.",
       },
       { status: 503, headers: { "Cache-Control": "private, no-store" } },
     );

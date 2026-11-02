@@ -27,20 +27,30 @@ const MAX_AMOUNT = 500_000;
 
 export async function POST(request: NextRequest) {
   if (!isSameOriginPaymentRequest(request)) {
-    return NextResponse.json({ error: "Requête de paiement invalide" }, { status: 403 });
+    return NextResponse.json(
+      { error: "invalid_origin", message: "Requête de paiement invalide" },
+      { status: 403 },
+    );
   }
   // No credentials, no pending row: an explicit 503 before anything is written.
   if (!isPayPalConfigured()) return paymentProviderUnavailable("paypal");
   const body = await request.json().catch(() => null);
   if (!body || typeof body !== "object") {
-    return NextResponse.json({ error: "Données du don invalides" }, { status: 400 });
+    return NextResponse.json(
+      { error: "invalid_request", message: "Données du don invalides" },
+      { status: 400 },
+    );
   }
 
   let amount = Number(body.amount);
   const tierId = typeof body.tierId === "string" ? body.tierId : undefined;
   if (tierId) {
     const tier = DONATION_TIERS.find((item) => item.id === tierId);
-    if (!tier) return NextResponse.json({ error: "Palier de don inconnu" }, { status: 400 });
+    if (!tier)
+      return NextResponse.json(
+        { error: "unknown_tier", message: "Palier de don inconnu" },
+        { status: 400 },
+      );
     amount = tier.amount;
   }
   const donorName =
@@ -49,10 +59,16 @@ export async function POST(request: NextRequest) {
   const message = typeof body.message === "string" ? body.message.trim() : "";
   const isAnonymous = body.isAnonymous === true;
   if (!Number.isSafeInteger(amount) || amount < MIN_AMOUNT || amount > MAX_AMOUNT) {
-    return NextResponse.json({ error: "Montant de don hors limites" }, { status: 400 });
+    return NextResponse.json(
+      { error: "invalid_amount", message: "Montant de don hors limites" },
+      { status: 400 },
+    );
   }
   if (donorName.length > 120 || donorEmail.length > 254 || message.length > 500) {
-    return NextResponse.json({ error: "Informations du don trop longues" }, { status: 400 });
+    return NextResponse.json(
+      { error: "payload_too_large", message: "Informations du don trop longues" },
+      { status: 400 },
+    );
   }
 
   const user = await getCurrentUser();
@@ -106,7 +122,10 @@ export async function POST(request: NextRequest) {
     const expectedOrigin =
       env.PAYPAL_ENV === "live" ? "https://www.paypal.com" : "https://www.sandbox.paypal.com";
     if (!order.id || !approvalUrl || new URL(approvalUrl).origin !== expectedOrigin) {
-      return NextResponse.json({ error: "PayPal n'a pas créé le paiement" }, { status: 502 });
+      return NextResponse.json(
+        { error: "checkout_failed", message: "PayPal n'a pas créé le paiement" },
+        { status: 502 },
+      );
     }
 
     await db
@@ -117,7 +136,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ orderId: order.id, url: approvalUrl });
   } catch {
     return NextResponse.json(
-      { error: "Création du paiement PayPal indisponible", code: "payment_checkout_failed" },
+      { error: "checkout_failed", message: "Création du paiement PayPal indisponible" },
       { status: 503, headers: { "Cache-Control": "private, no-store" } },
     );
   }

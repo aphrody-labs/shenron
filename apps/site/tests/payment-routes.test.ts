@@ -52,6 +52,7 @@ mock.module("../src/lib/db", () => {
 const { isSameOriginPaymentRequest, paymentOrigins } = await import("../src/lib/payment-request");
 const stripeDonate = await import("../src/app/api/stripe/donate/route");
 const paypalDonate = await import("../src/app/api/paypal/donate/route");
+const paypalSubscribe = await import("../src/app/api/paypal/subscribe/route");
 
 /** A request as Next sees it behind the gateway: its own listening address in `url`. */
 function behindGateway(body: unknown, origin = "https://dragonballfr.com") {
@@ -94,7 +95,7 @@ describe("POST /api/stripe/donate", () => {
     const response = await stripeDonate.POST(behindGateway({ amount: 500 }));
     expect(response.status).toBe(503);
     expect(await response.json()).toMatchObject({
-      code: "payment_provider_unavailable",
+      error: "provider_unavailable",
       provider: "stripe",
     });
     expect(writes).toEqual([]);
@@ -127,7 +128,7 @@ describe("GET /api/stripe/donate (wall of supporters)", () => {
     selectFails = true;
     const response = await stripeDonate.GET();
     expect(response.status).toBe(503);
-    expect(await response.json()).toMatchObject({ donations: [], code: "donations_unavailable" });
+    expect(await response.json()).toMatchObject({ donations: [], error: "donations_unavailable" });
   });
 });
 
@@ -136,7 +137,7 @@ describe("POST /api/paypal/donate", () => {
     const response = await paypalDonate.POST(behindGateway({ amount: 500 }));
     expect(response.status).toBe(503);
     expect(await response.json()).toMatchObject({
-      code: "payment_provider_unavailable",
+      error: "provider_unavailable",
       provider: "paypal",
     });
     expect(writes).toEqual([]);
@@ -145,5 +146,13 @@ describe("POST /api/paypal/donate", () => {
   test("serves POST only: Next answers 405 to GET", () => {
     expect("GET" in paypalDonate).toBe(false);
     expect(typeof paypalDonate.POST).toBe("function");
+  });
+});
+
+describe("POST /api/paypal/subscribe", () => {
+  test("anonymous visitor: 401 unauthenticated, not a generic 403", async () => {
+    const response = await paypalSubscribe.POST(behindGateway({ plan: "vip_monthly" }));
+    expect(response.status).toBe(401);
+    expect(await response.json()).toMatchObject({ error: "unauthenticated" });
   });
 });
