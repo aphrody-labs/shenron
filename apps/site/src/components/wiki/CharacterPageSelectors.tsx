@@ -25,6 +25,7 @@ export function CharacterPageSelectors({
   selectedTimelineSlug,
   selectedSagaSlug,
   preview = false,
+  showcaseChoices = false,
 }: {
   character: CharacterChoice;
   versions: CharacterChoice[];
@@ -39,6 +40,7 @@ export function CharacterPageSelectors({
   selectedTimelineSlug: string;
   selectedSagaSlug: string | null;
   preview?: boolean;
+  showcaseChoices?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -48,13 +50,16 @@ export function CharacterPageSelectors({
       setPendingTimelineSlug(null);
     }
   }, [pendingTimelineSlug, selectedTimelineSlug]);
+  const useShowcaseChoices = preview || showcaseChoices;
   const timelineTransitionPending =
-    preview && pendingTimelineSlug !== null && pendingTimelineSlug !== selectedTimelineSlug;
-  const choiceSet = preview ? previewChoices : [character, ...versions];
+    useShowcaseChoices &&
+    pendingTimelineSlug !== null &&
+    pendingTimelineSlug !== selectedTimelineSlug;
+  const choiceSet = useShowcaseChoices ? previewChoices : [character, ...versions];
   const choices = [...new Map(choiceSet.map((choice) => [choice.id, choice])).values()];
   const mainName = character.name.replace(/\s+\([^()]*\)\s*$/, "");
   const previewMain = previewChoices[0] ?? character;
-  const mainCharacter = preview
+  const mainCharacter = useShowcaseChoices
     ? previewMain
     : (choices.find((choice) => choice.isMain) ??
       choices.find((choice) => choice.name === mainName) ??
@@ -72,7 +77,7 @@ export function CharacterPageSelectors({
         <select
           value={
             pendingTimelineSlug ??
-            (selectedTimelineSlug || (preview ? previewMain.slug : character.slug))
+            (selectedTimelineSlug || (useShowcaseChoices ? previewMain.slug : character.slug))
           }
           aria-label={labels.version}
           onChange={(event) => {
@@ -81,9 +86,9 @@ export function CharacterPageSelectors({
             );
             if (!target) return;
             if (target.slug === SUMMARY_VERSION_SLUG) {
-              if (preview) setPendingTimelineSlug(target.slug);
+              if (useShowcaseChoices) setPendingTimelineSlug(target.slug);
               router.replace(`${pathname}?timeline=${SUMMARY_VERSION_SLUG}`, { scroll: false });
-            } else if (preview) {
+            } else if (useShowcaseChoices) {
               setPendingTimelineSlug(target.slug);
               const query = new URLSearchParams({ timeline: target.slug });
               router.replace(`${pathname}?${query}`, { scroll: false });
@@ -95,7 +100,7 @@ export function CharacterPageSelectors({
         >
           {orderedChoices.map((version) => (
             <option key={version.id} value={version.slug}>
-              {preview || version.id !== mainCharacter.id
+              {useShowcaseChoices || version.id !== mainCharacter.id
                 ? version.label || version.name
                 : `${labels.main}: ${version.label || version.name}`}
             </option>
@@ -132,7 +137,8 @@ export function CharacterPageSelectors({
             onChange={(event) => {
               const next = event.currentTarget.value;
               const query = new URLSearchParams();
-              if (preview) query.set("timeline", selectedTimelineSlug || previewMain.slug);
+              if (useShowcaseChoices)
+                query.set("timeline", selectedTimelineSlug || previewMain.slug);
               query.set("saga", next);
               router.replace(`${pathname}?${query.toString()}`, { scroll: false });
             }}
