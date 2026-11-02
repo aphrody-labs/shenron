@@ -3363,5 +3363,37 @@
     "renewalBody": "Bonjour {name}, nous confirmons le paiement de {amount} pour le renouvellement de votre abonnement DBFR VIP. Gérer votre abonnement : {billingUrl}. Référence : {reference}. Ce message confirme le paiement ; ce n’est ni une facture ni un reçu fiscal.",
     "paymentFailedSubject": "Action requise pour votre abonnement DBFR VIP",
     "paymentFailedBody": "Bonjour {name}, le dernier paiement de votre abonnement DBFR VIP n’a pas abouti. Vérifiez votre moyen de paiement auprès du prestataire : {billingUrl}. Référence : {reference}."
+  },
+  "vie": {
+    "empty": {
+      "warriors": {
+        "title": "Le podium attend ses guerriers",
+        "description": "Le bot ne renvoie aucun guerrier pour l’instant. Le podium se remplit dès qu’un membre gagne de l’XP sur le serveur Discord."
+      },
+      "news": {
+        "title": "Aucun article publié",
+        "description": "La rédaction n’a encore rien mis en ligne. Le wiki, lui, est là : le manga, les épisodes et les films se parcourent dès maintenant."
+      },
+      "shop": {
+        "title": "Rien ne correspond à ta recherche",
+        "description": "Aucun article ne porte ce nom. Efface la recherche ou parcours le catalogue complet."
+      }
+    },
+    "cta": {
+      "readManga": "Lire le manga",
+      "exploreWiki": "Explorer le wiki",
+      "joinDiscord": "Rejoindre le Discord",
+      "fullBoard": "Classement complet",
+      "rate": "Noter une œuvre",
+      "clearSearch": "Voir tout le catalogue"
+    },
+    "notFound": {
+      "sector": "Secteur inconnu",
+      "title": "404",
+      "line1": "Cette page s’est perdue dans le néant cosmique.",
+      "line2": "Même les sept boules de cristal sont dispersées ici.",
+      "home": "Retour à la base",
+      "manga": "Lire le manga"
+    }
   }
 }

@@ -3363,5 +3363,37 @@
     "renewalBody": "Hello {name}, we confirm your {amount} payment for renewing your DBFR VIP subscription. Manage your subscription: {billingUrl}. Reference: {reference}. This message confirms the payment; it is not an invoice or tax receipt.",
     "paymentFailedSubject": "Action required for your DBFR VIP subscription",
     "paymentFailedBody": "Your latest DBFR VIP subscription payment could not be completed. Please check your payment method with the provider: {billingUrl}. Reference: {reference}."
+  },
+  "vie": {
+    "empty": {
+      "warriors": {
+        "title": "The podium is waiting for its warriors",
+        "description": "The bot returns no warrior for now. The podium fills up as soon as a member earns XP on the Discord server."
+      },
+      "news": {
+        "title": "No article published yet",
+        "description": "The editorial team has not published anything yet. The wiki is here, though: manga, episodes and films can be browsed right now."
+      },
+      "shop": {
+        "title": "Nothing matches your search",
+        "description": "No item has that name. Clear the search or browse the full catalogue."
+      }
+    },
+    "cta": {
+      "readManga": "Read the manga",
+      "exploreWiki": "Explore the wiki",
+      "joinDiscord": "Join the Discord",
+      "fullBoard": "Full leaderboard",
+      "rate": "Rate a title",
+      "clearSearch": "See the whole catalogue"
+    },
+    "notFound": {
+      "sector": "Unknown sector",
+      "title": "404",
+      "line1": "This page got lost in the cosmic void.",
+      "line2": "Even the seven Dragon Balls are scattered here.",
+      "home": "Back to base",
+      "manga": "Read the manga"
+    }
   }
 }

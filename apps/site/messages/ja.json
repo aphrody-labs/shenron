@@ -3363,5 +3363,37 @@
     "renewalBody": "{name} 様、DBFR VIP の更新のお支払い {amount} を確認しました。登録の管理: {billingUrl}。照会番号: {reference}。このメールはお支払いの確認であり、請求書または税控除用領収書ではありません。",
     "paymentFailedSubject": "DBFR VIP のお支払いに対応が必要です",
     "paymentFailedBody": "DBFR VIP の最新のお支払いを完了できませんでした。決済サービスでお支払い方法をご確認ください: {billingUrl}。照会番号: {reference}。"
+  },
+  "vie": {
+    "empty": {
+      "warriors": {
+        "title": "表彰台は戦士を待っています",
+        "description": "現在、ボットから戦士の情報が返っていません。Discord サーバーでメンバーが XP を獲得すると表彰台が埋まります。"
+      },
+      "news": {
+        "title": "公開済みの記事はまだありません",
+        "description": "編集部はまだ何も公開していません。ただし Wiki は利用できます。マンガ、エピソード、映画を今すぐ閲覧できます。"
+      },
+      "shop": {
+        "title": "検索に一致する商品がありません",
+        "description": "その名前の商品はありません。検索をクリアするか、カタログ全体をご覧ください。"
+      }
+    },
+    "cta": {
+      "readManga": "マンガを読む",
+      "exploreWiki": "Wiki を探索",
+      "joinDiscord": "Discord に参加",
+      "fullBoard": "ランキング全体",
+      "rate": "作品を評価する",
+      "clearSearch": "カタログ全体を見る"
+    },
+    "notFound": {
+      "sector": "未知の領域",
+      "title": "404",
+      "line1": "このページは宇宙の虚無に迷い込みました。",
+      "line2": "ここでは七つのドラゴンボールも散らばっています。",
+      "home": "基地に戻る",
+      "manga": "マンガを読む"
+    }
   }
 }
