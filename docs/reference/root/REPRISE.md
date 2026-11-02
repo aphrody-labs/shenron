@@ -1,12 +1,13 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
-## 2026-11-02 — Consolidation pilotée depuis Prod (en cours)
+## 2026-11-02 — Shenron consolidé sur Prod
 
-- Référence : docs/operations/PROD-HOSTING.md. L’utilisateur demande SSH Prod + tmux et Bun officiel upstream canary ; aucun passage par Aphrody Infra pour cette consolidation.
-- Source e9 rejetée après l’échec rollbacké de 0049. Correctif SQL poussé sur le commit aac017cec3887c7f445284fcfd22fb22dbdf0bae ; migrations 0049 et 0050 ensuite appliquées avec succès après backup pré-0049 de 645287891 octets. Build aac017 sous Bun 1.4.4-canary.1 encore en cours ; aucune activation.
-- Backup Prod pré-déploiement vérifié par pg_restore --list (955 entrées, 645287642 octets).
-- DBFR : dump PostgreSQL custom-format et copie Redis après SAVE encore en cours de transfert/vérification ; ne supprimer les conteneurs ni volumes avant validation et fin du rsync. Archive : /srv/shenron/archive/retired-dbfr-20261102.
-- VPS : aucun checkout/service applicatif Shenron trouvé ; verrou tmux obsolète shenron-crawl-heavy-lock arrêté. Sessions Bun OS préservées. DBFR garde PostgreSQL/Redis temporairement ; auto-minio et auto-extraction-ia restent hors périmètre.
+- Référence et graphe des trois hôtes : docs/operations/PROD-HOSTING.md. L’opérateur a demandé SSH `prod` + tmux, sans Aphrody Infra ; Bun global upstream officiel oven-sh canary.
+- Checkout distant Prod : `6b24de0f` = `origin/main`. Build réussi avec Bun `1.4.4-canary.1+129f3c7a8` ; image `aac017cec3887c7f445284fcfd22fb22dbdf0bae` active sur site et bot, tous deux sains. `/api/health` 200 ; `/api/local/health` rapporte le chat disponible. WebSocket monté et garde vérifiée par réponse 401 sans session ; handshake authentifié non vérifié.
+- Migrations 0049/0050 appliquées ; sauvegarde pré-déploiement 645287642 octets (955 entrées), backup pré-0049 645287891 octets en mode 600.
+- DBFR archivé sur Prod dans `/srv/shenron/archive/retired-dbfr-20261102`, puis ressources et fichiers Shenron retirés. Dump PostgreSQL entièrement lu (951 entrées), Redis vérifié par SHA-256 identique. Environ 3 Go libérés par le retrait des répertoires de données. Préservés : `auto-minio`, `auto-extraction-ia`.
+- Résidu DBFR : état systemd `shenron-sqlite-sync.service` `not-found/failed`, aucun fichier d’unité installé ; pas de vérification possible après retrait de l’accès temporaire. Mesure disque post-purge indisponible.
+- VPS : aucune ressource Shenron trouvée ; workloads Bun OS préservés. `webos-qualify` absent des sockets tmux contrôlés, sans action dessus. Espace libre observé : 32 Go sur `/`, 47 Go sur `/home`.
 ## 2026-10-30 — Doublons d'interface retirés (accueil et wiki)
 
 - Accueil : logo d'en-tête masqué sous le héros, recherche et lien éditorial du héros, épisode
