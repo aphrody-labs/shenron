@@ -1961,7 +1961,21 @@
       "watchEpisode": "第{number}話を見る",
       "episodeNumber": "第{number}話",
       "pauseFrames": "画像を一時停止",
-      "resumeFrames": "画像を動かす"
+      "resumeFrames": "画像を動かす",
+      "carousel": {
+        "label": "ドラゴンボール超 ビルス編の最新エピソード",
+        "roleDescription": "カルーセル",
+        "slideRoleDescription": "スライド",
+        "slideOf": "{current} / {total}",
+        "goTo": "第{number}話：{title}",
+        "segments": "エピソードを選ぶ",
+        "previous": "前のエピソード",
+        "next": "次のエピソード",
+        "pause": "自動切り替えを一時停止",
+        "play": "自動切り替えを再開",
+        "aired": "{date} 放送",
+        "duration": "{minutes}分"
+      }
     },
     "search": {
       "label": "百科事典を検索",

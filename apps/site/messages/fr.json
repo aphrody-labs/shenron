@@ -1958,10 +1958,24 @@
     "hero": {
       "title": "Dragon Ball, en français et sourcé",
       "featureEyebrow": "À l’affiche",
-      "watchEpisode": "Voir l’épisode {number}",
+      "watchEpisode": "Regarder l’épisode {number}",
       "episodeNumber": "Épisode {number}",
       "pauseFrames": "Mettre les images en pause",
-      "resumeFrames": "Animer les images"
+      "resumeFrames": "Animer les images",
+      "carousel": {
+        "label": "Derniers épisodes de Dragon Ball Super : Beerus",
+        "roleDescription": "carrousel",
+        "slideRoleDescription": "diapositive",
+        "slideOf": "{current} sur {total}",
+        "goTo": "Épisode {number} : {title}",
+        "segments": "Choisir un épisode",
+        "previous": "Épisode précédent",
+        "next": "Épisode suivant",
+        "pause": "Mettre le défilement en pause",
+        "play": "Reprendre le défilement",
+        "aired": "Diffusé {date}",
+        "duration": "{minutes} min"
+      }
     },
     "search": {
       "label": "Rechercher dans l'encyclopédie",

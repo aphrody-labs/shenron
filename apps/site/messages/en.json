@@ -1961,7 +1961,21 @@
       "watchEpisode": "Watch episode {number}",
       "episodeNumber": "Episode {number}",
       "pauseFrames": "Pause images",
-      "resumeFrames": "Animate images"
+      "resumeFrames": "Animate images",
+      "carousel": {
+        "label": "Latest Dragon Ball Super: Beerus episodes",
+        "roleDescription": "carousel",
+        "slideRoleDescription": "slide",
+        "slideOf": "{current} of {total}",
+        "goTo": "Episode {number}: {title}",
+        "segments": "Choose an episode",
+        "previous": "Previous episode",
+        "next": "Next episode",
+        "pause": "Pause auto-advance",
+        "play": "Resume auto-advance",
+        "aired": "Aired {date}",
+        "duration": "{minutes} min"
+      }
     },
     "search": {
       "label": "Search the encyclopedia",
