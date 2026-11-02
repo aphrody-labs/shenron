@@ -3409,5 +3409,20 @@
       "home": "Back to base",
       "manga": "Read the manga"
     }
+  },
+  "stream": {
+    "continue": {
+      "title": "Continue watching",
+      "forget": "Remove \"{titre}\" from the list"
+    },
+    "status": {
+      "planned": "To watch",
+      "watching": "In progress",
+      "completed": "Watched"
+    },
+    "watchlist": {
+      "empty": "Your watchlist is empty. Add an episode or a film from its page.",
+      "resumeAt": "Resume at {time}"
+    }
   }
 }

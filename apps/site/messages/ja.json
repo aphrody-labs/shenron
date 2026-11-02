@@ -3409,5 +3409,20 @@
       "home": "基地に戻る",
       "manga": "マンガを読む"
     }
+  },
+  "stream": {
+    "continue": {
+      "title": "続きを見る",
+      "forget": "「{titre}」をリストから外す"
+    },
+    "status": {
+      "planned": "未視聴",
+      "watching": "視聴中",
+      "completed": "視聴済み"
+    },
+    "watchlist": {
+      "empty": "ウォッチリストは空です。エピソードや映画のページから追加してください。",
+      "resumeAt": "{time}から再開"
+    }
   }
 }

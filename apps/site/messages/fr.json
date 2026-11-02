@@ -3409,5 +3409,20 @@
       "home": "Retour à la base",
       "manga": "Lire le manga"
     }
+  },
+  "stream": {
+    "continue": {
+      "title": "Continuer à regarder",
+      "forget": "Retirer « {titre} » de la liste"
+    },
+    "status": {
+      "planned": "À voir",
+      "watching": "En cours",
+      "completed": "Terminé"
+    },
+    "watchlist": {
+      "empty": "Ta watchlist est vide. Ajoute un épisode ou un film depuis sa fiche.",
+      "resumeAt": "Reprendre à {time}"
+    }
   }
 }
