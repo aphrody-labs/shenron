@@ -192,7 +192,7 @@ chemin absolu n'est codé : tout se règle par variables d'environnement (table 
    Lancer un build long dans une session détachée avec journal durable, puis sonder ce journal
    par extraits bornés.
 
-2. Livraison (`ship-image.sh`) selon `SHENRON_DEPLOY_TARGET` : `ssh:<hôte>` (défaut `ssh:dbfr`)
+2. Livraison (`ship-image.sh`) selon `SHENRON_DEPLOY_TARGET` : `ssh:<hôte>` (défaut `ssh:prod`)
    diffuse l'image en zstd et lance `SHENRON_DEPLOY_COMMAND <sha> <tar>` sur la cible, par défaut
    `~/deploy-shenron-image.sh`, l'entrée d'activation Infra de DBFR ; `registry:<dépôt>` pousse
    l'image ; `local` démarre `deploy/docker/compose.yaml`. Le garde de rollback lit la release

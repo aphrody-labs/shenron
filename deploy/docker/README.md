@@ -15,7 +15,7 @@ with Git, Bun, Rust and docker or podman (see the headers of
 ```sh
 SHENRON_VFS_SOURCE=<file|URL|host:path> scripts/deploy/release.sh [revision]
 scripts/deploy/release.sh --build-only [revision]   # image localhost/shenron:<sha>, verified
-scripts/deploy/release.sh --ship-only [revision]    # SHENRON_DEPLOY_TARGET, default ssh:dbfr
+scripts/deploy/release.sh --ship-only [revision]    # SHENRON_DEPLOY_TARGET, default ssh:prod
 ```
 
 `build-image.sh` fetches the public VFS, builds the site, the bot and the native

@@ -49,7 +49,7 @@ Sans ces services, le bot et le site démarrent et dégradent explicitement.
   release active, sondée par `aphrody-infra`, fait foi.
 - Mise en production outillée : `scripts/deploy/release.sh [revision]` construit et vérifie
   l'image sur un hôte de build Linux x64, puis la livre à la cible (`SHENRON_DEPLOY_TARGET`,
-  défaut `ssh:dbfr`) où l'entrée d'activation Infra (`~/deploy-shenron-image.sh`) assemble,
+  défaut `ssh:prod`) où l'entrée d'activation Infra (`/root/deploy-shenron-image.sh`) assemble,
   scelle, vérifie et active la release (voir `CONTAINER-COMPLET.md`).
 - Exception voulue par le propriétaire : `scripts/ops/admin-access.ts` tient la liste
   des postes d'administration (IP publique du poste, VPS, WireGuard, comptes désignés)

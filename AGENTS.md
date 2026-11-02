@@ -231,7 +231,7 @@ podman, sans checkout Aphrody local ni nom d'hôte figé. Tout se règle par var
 d'environnement (`docs/operations/ENV.md`) : `SHENRON_BUILD_REPO` (worktree de build réutilisé,
 défaut `$HOME/build/shenron`), `SHENRON_VFS_SOURCE` (fichier, URL ou `hôte:chemin`),
 `SHENRON_CONTAINER`, `SHENRON_DEPLOY_TARGET` (`ssh:<hôte>` | `registry:<dépôt>` | `local`,
-défaut `ssh:dbfr`), `SHENRON_DEPLOY_COMMAND`, `SHENRON_ACTIVE_COMMAND`, `SHENRON_ALLOW_ROLLBACK`,
+défaut `ssh:prod`), `SHENRON_DEPLOY_COMMAND`, `SHENRON_ACTIVE_COMMAND`, `SHENRON_ALLOW_ROLLBACK`,
 `SHENRON_FORCE_RUST`, `SHENRON_NEXT_BUILD_CACHE`, `SHENRON_PAYLOAD_ZSTD_LEVEL`,
 `SHENRON_SITE_BUILD_MIN_GIB`…
 
@@ -242,8 +242,8 @@ défaut `ssh:dbfr`), `SHENRON_DEPLOY_COMMAND`, `SHENRON_ACTIVE_COMMAND`, `SHENRO
   chaque phase est horodatée (`== <phase> (+Ns)`). L'image est vérifiée (`version`, bot
   `--smoke`) avant tout envoi. Une sortie 143 du site vient d'un tueur OOM : le build attend
   `SHENRON_SITE_BUILD_MIN_GIB` (20 par défaut) de mémoire disponible.
-- Livraison : la cible `ssh:dbfr` diffuse l'image (zstd) et lance
-  `~/deploy-shenron-image.sh <sha> <tar>`, l'entrée d'activation Infra de DBFR, qui charge, assemble, scelle, vérifie puis
+- Livraison : la cible `ssh:prod` diffuse l'image (zstd) et lance
+  `/root/deploy-shenron-image.sh <sha> <tar>`, l’entrée d’activation Infra de la production, qui charge, assemble, scelle, vérifie puis
   active. Les mutations de production restent celles d'Aphrody Infra sur la cible. Le garde de
   rollback refuse un commit qui ne descend pas de la release active, sauf
   `SHENRON_ALLOW_ROLLBACK=1`.
