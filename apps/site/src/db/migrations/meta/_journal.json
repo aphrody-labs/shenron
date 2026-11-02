@@ -253,6 +253,13 @@
       "when": 1793590986000,
       "tag": "0048_character_variant_admin_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1793592387000,
+      "tag": "0049_character_variant_schema_repair",
+      "breakpoints": true
     }
   ]
 }

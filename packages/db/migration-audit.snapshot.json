@@ -1,7 +1,7 @@
 {
   "journal": {
-    "entries": 36,
-    "files": 48,
+    "entries": 37,
+    "files": 49,
     "journaled": [
       "0000_dark_johnny_blaze",
       "0001_natural_switch",
@@ -38,7 +38,8 @@
       "0045_card_catalog_bilingual_names",
       "0046_card_catalog_image_dimensions",
       "0047_site_watch_progress",
-      "0048_character_variant_admin_grants"
+      "0048_character_variant_admin_grants",
+      "0049_character_variant_schema_repair"
     ],
     "unjournaled": [
       "0007_post_cms",
@@ -271,6 +272,12 @@
         "tag": "0048_character_variant_admin_grants",
         "when": 1793590986000,
         "breakpoints": true
+      },
+      {
+        "idx": 36,
+        "tag": "0049_character_variant_schema_repair",
+        "when": 1793592387000,
+        "breakpoints": true
       }
     ]
   },
@@ -326,7 +333,8 @@
     "0034_character_variant_technique_uses",
     "0035_character_variant_appearances",
     "0036_character_variant_supplements",
-    "0048_character_variant_admin_grants"
+    "0048_character_variant_admin_grants",
+    "0049_character_variant_schema_repair"
   ],
   "hashes": {
     "0000_dark_johnny_blaze": "4acfbb67d895cfc6d575f03198d0f353e688c5c918bc7c1f29e82de7707b5636",
@@ -376,6 +384,7 @@
     "0045_card_catalog_bilingual_names": "8a35776656f510f449e332fcc1341dbf9ff671bd1f561f44fcaf64b1d853ba15",
     "0046_card_catalog_image_dimensions": "1921b3ae2347b8084046089f9504903c843c6705f978f76a0ae99977bad45f23",
     "0047_site_watch_progress": "1ae68dcbc9297b42b2121d3b9ab0a6c1fb7e039e4b32e0921d42f807f25d0919",
-    "0048_character_variant_admin_grants": "97a10756cce6f7e3a6b682ce6c574b0429492478ecc001c14540951db09fac23"
+    "0048_character_variant_admin_grants": "97a10756cce6f7e3a6b682ce6c574b0429492478ecc001c14540951db09fac23",
+    "0049_character_variant_schema_repair": "788d57d9f37b4221f88c021eaaa94cc461de193d6d866ebe9fac1c6f9cd347ce"
   }
 }
