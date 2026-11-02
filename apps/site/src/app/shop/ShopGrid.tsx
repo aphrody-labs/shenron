@@ -22,6 +22,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Cadenas, Chargement, Coche, Piece, Sac } from "@aphrody/shenron-ui/icones";
 import { onTablistKeyDown } from "@/lib/tablist-keys";
+import { VieEmpty } from "@/components/site/VieEmpty";
 import type { CanonPrice, ShopEconomy } from "@/lib/shenron";
 import { formatZeni } from "@aphrody/shenron-config/zeni";
 
@@ -559,11 +560,7 @@ export function ShopGrid({ items, economy }: { items: ShopItem[]; economy: ShopE
           className="h-10 rounded-xl border border-white/10 bg-[#151412] px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-dbz-yellow sm:w-64"
         />
       </div>
-      {visibleItems.length === 0 && (
-        <div className="rounded-xl border border-dashed border-white/15 bg-[#151412] p-10 text-center text-sm text-white/50">
-          Aucun article ne correspond à ta recherche.
-        </div>
-      )}
+      {visibleItems.length === 0 && <VieEmpty kind="shop" />}
 
       {/* ── Catalogue ────────────────────────────────────────────────── */}
       {TYPE_ORDER.filter((t) => grouped[t]?.length).map((type) => (

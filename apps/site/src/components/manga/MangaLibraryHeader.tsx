@@ -18,6 +18,7 @@ export function MangaLibraryHeader({
       eyebrow="Manga"
       title={t("title")}
       size="md"
+      art="kinto"
       subtitle={t("lead", { readable, chapters, total })}
       className="mb-4"
     />

@@ -36,7 +36,8 @@ import { posts as postsTable } from "@/db/schema";
 import { publicPostFilter } from "@/lib/posts";
 import { countCommentsBatch, reactionCounts } from "@/lib/social";
 import { listFeed, feedHref, FEED_FILTER_LABELS, FEED_FILTERS } from "@/lib/feed";
-import { DISCORD_INVITE } from "@/lib/config";
+import { VieEmpty } from "@/components/site/VieEmpty";
+import { VieStage } from "@aphrody/shenron-ui/vie/VieStage";
 import { AdUnit } from "@/components/ads/AdUnit";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { FeedStream } from "@/components/feed/FeedStream";
@@ -45,7 +46,6 @@ import {
   Chip,
   ChipRow,
   DomainBar,
-  EmptyState,
   LinkPager,
   MangaCard,
   SocialCounts,
@@ -180,21 +180,23 @@ export async function JournalIndex({
         </div>
       )}
 
-      <SectionHeading
-        level={1}
-        title={<T k="communaute.news.title" />}
-        standfirst={<T k="communaute.news.standfirst" />}
-        actions={
-          <>
-            <Link href={feedHref("all")} className="toriyama-btn !text-[0.75rem]">
-              <T k="communaute.news.viewFeed" />
-            </Link>
-            <a href="/news/rss.xml" className="toriyama-btn-secondary !text-[0.75rem]">
-              <T k="communaute.news.rss" />
-            </a>
-          </>
-        }
-      />
+      <VieStage art="kinto">
+        <SectionHeading
+          level={1}
+          title={<T k="communaute.news.title" />}
+          standfirst={<T k="communaute.news.standfirst" />}
+          actions={
+            <>
+              <Link href={feedHref("all")} className="toriyama-btn !text-[0.75rem]">
+                <T k="communaute.news.viewFeed" />
+              </Link>
+              <a href="/news/rss.xml" className="toriyama-btn-secondary !text-[0.75rem]">
+                <T k="communaute.news.rss" />
+              </a>
+            </>
+          }
+        />
+      </VieStage>
 
       <p className="mt-4 text-sm tabular-nums text-white/55">
         {totalCount} article{totalCount > 1 ? "s" : ""} publié{totalCount > 1 ? "s" : ""}
@@ -222,15 +224,7 @@ export async function JournalIndex({
         {/* État vide sans onomatopée décorative : il dit ce qui manque et où
 				    aller, il ne le meuble pas. */}
         {rows.length === 0 ? (
-          <EmptyState
-            title="Aucun article publié"
-            description="La rédaction n'a encore rien mis en ligne. Le wiki, lui, est là : le manga, les épisodes et les films se parcourent dès maintenant."
-            actions={[
-              { href: "/wiki/manga", label: "Lire le manga" },
-              { href: "/wiki", label: "Explorer le wiki" },
-              { href: DISCORD_INVITE, label: "Rejoindre le Discord", external: true },
-            ]}
-          />
+          <VieEmpty kind="news" />
         ) : (
           <section aria-label="Articles" className="min-w-0">
             {lead && (

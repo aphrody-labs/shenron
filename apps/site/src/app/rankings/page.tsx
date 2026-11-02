@@ -8,6 +8,8 @@ import { DomainBar } from "@/components/kit";
 import { GatedLink } from "@/components/GatedLink";
 import { Avatar } from "@/components/Avatar";
 import { T } from "@/components/T";
+import { VieEmpty } from "@/components/site/VieEmpty";
+import { SectionDivider } from "@aphrody/shenron-ui/vie/SectionDivider";
 import { CommunityTopsFull } from "@/components/ratings/CommunityTops";
 import { Podium, PodiumCard, RANK_META, type PodiumRank } from "@/components/ratings/Podium";
 import { TopRatersBoard, TopZeniBoard } from "@/components/contest/ContestBoards";
@@ -116,6 +118,7 @@ export default async function ClassementsPage() {
       <PageHeader
         title="Classements et podiums"
         subtitle="Le Panthéon des guerriers du serveur, les champions du concours et les Top 3 des œuvres, classés par les membres."
+        art="spheres"
         className="mb-8"
       />
 
@@ -164,12 +167,11 @@ export default async function ClassementsPage() {
             {warriors.length > 0 ? (
               <Podium render={(rank) => <WarriorStep entry={warriors[rank - 1]} rank={rank} />} />
             ) : (
-              <p className="rounded-lg border border-white/12 p-6 text-center text-sm text-white/65">
-                Le bot ne renvoie aucun guerrier pour l&apos;instant. Le podium se remplit dès
-                qu&apos;un membre gagne de l&apos;XP sur le serveur Discord.
-              </p>
+              <VieEmpty kind="warriors" />
             )}
           </section>
+
+          <SectionDivider className="-my-4" />
 
           <section aria-labelledby="concours-titre" className="space-y-6">
             <SectionHeading
@@ -182,6 +184,8 @@ export default async function ClassementsPage() {
               <TopZeniBoard rows={richest} />
             </div>
           </section>
+
+          <SectionDivider className="-my-4" />
 
           <section className="space-y-6">
             <SectionHeading

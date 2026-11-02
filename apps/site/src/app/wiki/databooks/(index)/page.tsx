@@ -98,6 +98,7 @@ export default async function DatabooksIndexPage() {
         items={[{ label: "Databooks", display: <T k="wiki.databooks.breadcrumb" /> }]}
       />
       <PageHeader
+        art="ki"
         className="mb-6"
         eyebrow={<T k="wiki.databooks.eyebrow" />}
         title={<T k="wiki.databooks.title" />}

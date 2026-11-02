@@ -62,6 +62,7 @@ export default async function WorkshopPage() {
         ]}
       />
       <PageHeader
+        art="senzu"
         className="mb-6"
         eyebrow={<T k="library.eyebrow" />}
         title={<T k="library.workshop.title" />}
