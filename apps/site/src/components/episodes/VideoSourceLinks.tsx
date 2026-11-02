@@ -2,10 +2,12 @@
 
 import { useTranslations } from "next-intl";
 import type { EpisodeSourceLink } from "@/lib/episode-source-coverage";
+import { officialProviderName } from "@/lib/video-languages";
 
 /** Direct links behind the observed language coverage, split by source type. */
 export function VideoSourceLinks({ links }: { links: EpisodeSourceLink[] }) {
   const t = useTranslations("mediaPlayback");
+  const neutral = t("officialPlatform");
   const official = links.filter((link) => link.kind === "official");
   const external = links.filter((link) => link.kind === "external");
   if (official.length === 0 && external.length === 0) return null;
@@ -29,7 +31,8 @@ export function VideoSourceLinks({ links }: { links: EpisodeSourceLink[] }) {
               <details key={key} className="rounded-lg border border-white/10 bg-white/[0.03]">
                 <summary className="flex min-h-11 cursor-pointer list-none items-center gap-3 px-3 py-2 text-sm font-semibold text-white/85 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange">
                   <span>
-                    {t(first.language)} · {first.label}
+                    {t(first.language)} ·{" "}
+                    {officialProviderName(first.provider, first.label, neutral)}
                   </span>
                   <span aria-hidden className="ml-auto text-white/60">
                     ⌄
@@ -42,7 +45,7 @@ export function VideoSourceLinks({ links }: { links: EpisodeSourceLink[] }) {
                         href={item.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        aria-label={`${t(item.language)} · ${item.label} · ${item.episodeLabel}`}
+                        aria-label={`${t(item.language)} · ${officialProviderName(item.provider, item.label, neutral)} · ${item.episodeLabel}`}
                         className="flex min-h-11 items-center justify-between gap-3 rounded-md px-2 py-2 text-sm text-white/75 underline decoration-white/25 underline-offset-4 transition-colors hover:bg-white/5 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
                       >
                         <span className="min-w-0 truncate">{item.episodeLabel}</span>

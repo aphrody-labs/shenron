@@ -1,221 +1,251 @@
 "use client";
 
 // SPDX-License-Identifier: Apache-2.0
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { Bookmark, Play, X } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { EmptyState } from "@/components/kit/EmptyState";
 import { assetUrl } from "@/lib/assets";
+import { FAVORITES_EVENT, readFavorites, syncFavorites, toggleFavorite } from "@/lib/favorites";
+import type { Favorite } from "@/lib/favorites";
+import {
+  PLAYBACK_PROGRESS_EVENT,
+  readPlaybackProgress,
+  type PlaybackProgress,
+} from "@/lib/playback-progress";
+import { useMe } from "@/lib/use-me";
 
-export interface WatchlistEntry {
-  id: string;
-  seriesId: string;
-  seriesTitle: string;
-  episodeNumber?: number;
-  episodeTitle?: string;
-  thumbnailUrl?: string;
-  watchUrl: string;
-  durationMinutes?: number;
-  progressPercent?: number;
-  availableLangs: Array<"vf" | "vostfr" | "vost">;
-  provider: "crunchyroll" | "shenron";
+type Filter = "all" | "resume" | "todo" | "done";
+type Sort = "recent" | "title";
+type Status = "todo" | "resume" | "done";
+
+interface Row {
+  favorite: Favorite;
+  percent: number;
+  status: Status;
 }
 
-const DEFAULT_WATCHLIST: WatchlistEntry[] = [
-  {
-    id: "GE00389313JAJP",
-    seriesId: "GT00389311",
-    seriesTitle: "Dragon Ball Super: Beerus",
-    episodeNumber: 1,
-    episodeTitle: "Le dieu de la Destruction",
-    thumbnailUrl: "/banners/dbs-beerus-2026.jpg",
-    watchUrl: "/wiki/episodes/875",
-    durationMinutes: 24,
-    progressPercent: 35,
-    availableLangs: ["vostfr"],
-    provider: "crunchyroll",
-  },
-  {
-    id: "GE00389314JAJP",
-    seriesId: "GT00389311",
-    seriesTitle: "Dragon Ball Super: Beerus",
-    episodeNumber: 2,
-    episodeTitle: "Le dieu de la Destruction se rend sur la planète de Kaïo",
-    thumbnailUrl: "/banners/dbs-beerus-2026.jpg",
-    watchUrl: "/wiki/episodes/876",
-    durationMinutes: 24,
-    progressPercent: 0,
-    availableLangs: ["vostfr"],
-    provider: "crunchyroll",
-  },
-  {
-    id: "DBS-001",
-    seriesId: "G63VGG2NY",
-    seriesTitle: "Dragon Ball Super",
-    episodeNumber: 1,
-    episodeTitle: "Le prix de la paix : À qui reviennent les 100 millions de zénis ?",
-    thumbnailUrl: "/wiki/media/episodes/dbs-001.webp",
-    watchUrl: "/wiki/episodes/445",
-    durationMinutes: 23,
-    progressPercent: 100,
-    availableLangs: ["vf", "vostfr"],
-    provider: "shenron",
-  },
-  {
-    id: "DB_DAIMA-001",
-    seriesId: "GR243XG4R",
-    seriesTitle: "Dragon Ball Daima",
-    episodeNumber: 1,
-    episodeTitle: "Conspiration",
-    thumbnailUrl: "/wiki/media/episodes/daima-001.webp",
-    watchUrl: "/wiki/episodes/545",
-    durationMinutes: 32,
-    progressPercent: 10,
-    availableLangs: ["vostfr"],
-    provider: "crunchyroll",
-  },
-];
+const FILTERS: readonly Filter[] = ["all", "resume", "todo", "done"];
+const FILTER_KEY = {
+  all: "filterAll",
+  resume: "filterResume",
+  todo: "filterTodo",
+  done: "filterDone",
+} as const;
 
+const CHIP =
+  "inline-flex min-h-11 items-center rounded-full px-4 text-xs font-bold uppercase tracking-wider transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange";
+
+function toRow(favorite: Favorite, progress: PlaybackProgress[]): Row {
+  const entry = progress.find((p) => p.kind === favorite.kind && p.id === favorite.id);
+  if (!entry) return { favorite, percent: 0, status: "todo" };
+  const percent = Math.min(100, Math.round((entry.seconds / entry.duration) * 100));
+  if (entry.completed) return { favorite, percent: 100, status: "done" };
+  return { favorite, percent, status: percent > 0 ? "resume" : "todo" };
+}
+
+/**
+ * Watchlist : les épisodes et films mis de côté (favoris, locaux d'abord et
+ * synchronisés pour un compte connecté) croisés avec la progression de lecture
+ * réellement enregistrée sur cet appareil.
+ */
 export function WatchlistClient() {
-  const [filter, setFilter] = useState<"all" | "in-progress" | "completed">("all");
-  const entries = DEFAULT_WATCHLIST;
+  const t = useTranslations("watchlistPage");
+  const me = useMe();
+  const [rows, setRows] = useState<Row[] | null>(null);
+  const [filter, setFilter] = useState<Filter>("all");
+  const [sort, setSort] = useState<Sort>("recent");
 
-  const filteredEntries = entries.filter((e) => {
-    if (filter === "in-progress")
-      return (e.progressPercent ?? 0) > 0 && (e.progressPercent ?? 0) < 95;
-    if (filter === "completed") return (e.progressPercent ?? 0) >= 95;
-    return true;
-  });
+  useEffect(() => {
+    const refresh = () => {
+      const progress = readPlaybackProgress();
+      setRows(
+        readFavorites()
+          .filter((f) => f.kind === "episode" || f.kind === "movie")
+          .map((f) => toRow(f, progress)),
+      );
+    };
+    refresh();
+    window.addEventListener(FAVORITES_EVENT, refresh);
+    window.addEventListener(PLAYBACK_PROGRESS_EVENT, refresh);
+    window.addEventListener("storage", refresh);
+    return () => {
+      window.removeEventListener(FAVORITES_EVENT, refresh);
+      window.removeEventListener(PLAYBACK_PROGRESS_EVENT, refresh);
+      window.removeEventListener("storage", refresh);
+    };
+  }, []);
 
-  return (
-    <div className="flex flex-col gap-8">
-      {/* Barre d'outils Néo-Brutaliste & Filtres */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border-2 border-border/80 bg-zinc-950/70 p-4 backdrop-blur-xl shadow-[4px_4px_0px_0px_rgba(0,0,0,0.8)]">
-        <div className="flex items-center gap-3">
-          <span className="flex h-3 w-3 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-dbz-orange" />
-          </span>
-          <span className="font-display text-sm font-bold tracking-wider uppercase text-white">
-            {filteredEntries.length} série{filteredEntries.length > 1 ? "s" : ""} en cours
-          </span>
-        </div>
+  useEffect(() => {
+    if (me?.authenticated) void syncFavorites();
+  }, [me?.authenticated]);
 
-        {/* Segmented Filter */}
-        <div className="inline-flex rounded-xl bg-zinc-900/90 p-1 border border-zinc-800 shadow-inner">
-          {[
-            { id: "all", label: "Tous" },
-            { id: "in-progress", label: "À continuer" },
-            { id: "completed", label: "Terminés" },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => setFilter(tab.id as any)}
-              className={`rounded-lg px-3.5 py-1.5 font-display text-xs font-bold uppercase tracking-wider transition-all ${
-                filter === tab.id
-                  ? "bg-dbz-orange text-black shadow-md"
-                  : "text-zinc-400 hover:text-white hover:bg-zinc-800/50"
-              }`}
-            >
-              {tab.label}
-            </button>
+  const visible = useMemo(() => {
+    const kept = (rows ?? []).filter((r) => filter === "all" || r.status === filter);
+    return sort === "title"
+      ? kept.toSorted((a, b) => a.favorite.title.localeCompare(b.favorite.title))
+      : kept;
+  }, [rows, filter, sort]);
+
+  if (rows === null) {
+    return (
+      <div role="status" aria-label={t("loading")} className="flex flex-col gap-6">
+        <div className="h-11 animate-pulse rounded-full bg-dbz-card" />
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {[0, 1, 2].map((i) => (
+            <div key={i} className="aspect-[16/11] animate-pulse rounded-xl bg-dbz-card" />
           ))}
         </div>
       </div>
+    );
+  }
 
-      {/* Grille des Cartes Épisodes Watchlist (Pixel Perfect vs Crunchyroll) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredEntries.map((item) => (
-          <div
-            key={item.id}
-            className="group relative flex flex-col overflow-hidden rounded-2xl border-2 border-zinc-800/90 bg-zinc-950/80 p-3 transition-all duration-300 hover:-translate-y-1 hover:border-dbz-orange hover:shadow-[0_0_24px_rgba(255,102,0,0.25)]"
-          >
-            {/* Image / Miniature 16:9 */}
-            <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-zinc-900">
-              {item.thumbnailUrl ? (
-                <img
-                  src={assetUrl(item.thumbnailUrl)}
-                  alt={item.episodeTitle ?? item.seriesTitle}
-                  className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  loading="lazy"
-                />
-              ) : (
-                <div className="grid h-full w-full place-items-center font-display text-xs text-zinc-600">
-                  {item.seriesTitle}
-                </div>
-              )}
+  if (rows.length === 0) {
+    return (
+      <EmptyState
+        illustration="senzu"
+        title={t("emptyTitle")}
+        description={t("emptyDescription")}
+        actions={[
+          { href: "/wiki/episodes", label: t("browseEpisodes") },
+          { href: "/wiki/movies", label: t("browseMovies") },
+        ]}
+      />
+    );
+  }
 
-              {/* Badges Scouter & Provider */}
-              <div className="absolute top-2 left-2 flex items-center gap-1.5">
-                <span className="rounded bg-black/80 px-2 py-0.5 font-mono text-[10px] font-bold tracking-wider text-cyan-400 backdrop-blur-md border border-cyan-500/20">
-                  EP {String(item.episodeNumber ?? 1).padStart(2, "0")}
-                </span>
-                <span className="rounded bg-orange-600/90 px-2 py-0.5 font-display text-[9px] font-extrabold uppercase tracking-widest text-black">
-                  {item.provider}
-                </span>
-              </div>
-
-              {/* Indicateur de Durée */}
-              {item.durationMinutes && (
-                <span className="absolute bottom-2 right-2 rounded bg-black/75 px-1.5 py-0.5 font-mono text-[10px] text-zinc-300">
-                  {item.durationMinutes}m
-                </span>
-              )}
-
-              {/* Barre de Progression */}
-              {(item.progressPercent ?? 0) > 0 && (
-                <div className="absolute bottom-0 inset-x-0 h-1.5 bg-black/70">
-                  <div
-                    className="h-full bg-gradient-to-r from-orange-500 to-amber-400"
-                    style={{ width: `${item.progressPercent}%` }}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Titres & Métadonnées */}
-            <div className="flex flex-col gap-1.5 pt-3">
-              <span className="font-display text-[11px] font-bold uppercase tracking-wider text-dbz-orange/90 line-clamp-1">
-                {item.seriesTitle}
-              </span>
-              <h3 className="font-display text-sm font-bold text-white line-clamp-1 group-hover:text-dbz-orange transition-colors">
-                {item.episodeTitle ?? `Épisode ${item.episodeNumber}`}
-              </h3>
-
-              <div className="flex items-center justify-between pt-1">
-                {/* Langues */}
-                <div className="flex items-center gap-1">
-                  {item.availableLangs.map((l) => (
-                    <span
-                      key={l}
-                      className="rounded bg-zinc-900 border border-zinc-800 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase text-zinc-400"
-                    >
-                      {l}
-                    </span>
-                  ))}
-                </div>
-
-                {/* État de lecture */}
-                {(item.progressPercent ?? 0) >= 95 ? (
-                  <span className="font-mono text-[10px] font-bold text-emerald-400">VU</span>
-                ) : (item.progressPercent ?? 0) > 0 ? (
-                  <span className="font-mono text-[10px] font-bold text-amber-400">
-                    {item.progressPercent}%
-                  </span>
-                ) : null}
-              </div>
-
-              {/* Bouton Regarder */}
+  return (
+    <div className="flex flex-col gap-6">
+      <div className="flex min-h-11 flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm text-white/75">
+        <p>
+          {me === undefined ? null : me.authenticated ? (
+            t("statusSynced")
+          ) : (
+            <>
+              {t("statusDevice")}{" "}
               <Link
-                href={item.watchUrl}
-                className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-900 py-2 font-display text-xs font-bold text-white transition-colors hover:bg-dbz-orange hover:text-black border border-zinc-800 hover:border-dbz-orange shadow-sm"
+                href="/signin?callbackURL=/watchlist"
+                className="inline-flex min-h-11 items-center font-bold text-dbz-gold underline underline-offset-4 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
               >
-                <span>Reprendre la lecture</span>
-                <span>▶</span>
+                {t("signIn")}
               </Link>
-            </div>
-          </div>
-        ))}
+            </>
+          )}
+        </p>
+        <p className="font-mono tabular-nums">{t("count", { count: rows.length })}</p>
       </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div role="group" aria-label={t("filterLabel")} className="flex flex-wrap gap-2">
+          {FILTERS.map((id) => (
+            <button
+              key={id}
+              type="button"
+              aria-pressed={filter === id}
+              onClick={() => setFilter(id)}
+              className={`${CHIP} ${
+                filter === id
+                  ? "bg-dbz-orange text-black"
+                  : "border border-white/20 text-white/80 hover:border-dbz-gold hover:text-white"
+              }`}
+            >
+              {t(FILTER_KEY[id])}
+            </button>
+          ))}
+        </div>
+        <label className="flex items-center gap-2 text-sm text-white/75">
+          <span>{t("sortLabel")}</span>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value === "title" ? "title" : "recent")}
+            className="min-h-11 rounded-xl border border-white/20 bg-dbz-card px-3 text-sm text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
+          >
+            <option value="recent">{t("sortRecent")}</option>
+            <option value="title">{t("sortTitle")}</option>
+          </select>
+        </label>
+      </div>
+
+      {visible.length === 0 ? (
+        <EmptyState
+          illustration="ki"
+          title={t("emptyFilter")}
+          actions={[{ href: "/watchlist", label: t("resetFilter") }]}
+        />
+      ) : (
+        <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {visible.map(({ favorite: f, percent, status }) => {
+            const cta = status === "resume" ? "resume" : status === "done" ? "rewatch" : "watch";
+            return (
+              <li
+                key={`${f.kind}:${f.id}`}
+                className="group relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-white/[0.12] bg-dbz-card transition-colors hover:border-dbz-gold focus-within:border-dbz-gold"
+              >
+                <div className="relative aspect-video w-full overflow-hidden bg-black/40">
+                  {f.image ? (
+                    <img
+                      src={assetUrl(f.image)}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="grid h-full w-full place-items-center text-white/50">
+                      <Bookmark aria-hidden className="h-8 w-8" />
+                    </div>
+                  )}
+                  <span className="absolute left-2.5 top-2.5 rounded bg-black/75 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-dbz-gold ring-1 ring-white/10">
+                    {f.kind === "movie" ? t("kindMovie") : t("kindEpisode")}
+                  </span>
+                  {percent > 0 && (
+                    <div
+                      role="progressbar"
+                      aria-label={t("progress", { percent })}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-valuenow={percent}
+                      className="absolute inset-x-0 bottom-0 h-1.5 bg-black/70"
+                    >
+                      <div className="h-full bg-dbz-orange" style={{ width: `${percent}%` }} />
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex flex-1 flex-col gap-1 p-4">
+                  <h2 className="line-clamp-2 font-display text-base font-bold leading-snug text-white">
+                    {f.title}
+                  </h2>
+                  {f.caption && <p className="line-clamp-1 text-sm text-white/75">{f.caption}</p>}
+                  {status !== "todo" && (
+                    <p className="font-mono text-xs tabular-nums text-white/75">
+                      {status === "done" ? t("done") : t("progress", { percent })}
+                    </p>
+                  )}
+                  <Link
+                    href={f.href}
+                    aria-label={`${t(cta)} · ${f.title}`}
+                    className="mt-3 inline-flex min-h-11 items-center justify-center gap-2 self-start rounded-full bg-dbz-orange px-5 text-sm font-bold text-black transition-colors hover:bg-dbz-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange after:absolute after:inset-0 after:content-['']"
+                  >
+                    <Play aria-hidden className="h-4 w-4" fill="currentColor" />
+                    {t(cta)}
+                  </Link>
+                </div>
+
+                <button
+                  type="button"
+                  aria-label={t("remove", { title: f.title })}
+                  onClick={() => toggleFavorite(f)}
+                  className="absolute right-2 top-2 z-10 grid h-11 w-11 place-items-center rounded-full bg-black/60 text-white/85 transition-colors hover:bg-black/85 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
+                >
+                  <X aria-hidden className="h-4 w-4" />
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </div>
   );
 }

@@ -12,6 +12,17 @@ export {
   playersForVideoLanguage,
 } from "@aphrody/shenron-media/episode-playback";
 
+const BRANDED_PROVIDER = /crunchyroll/i;
+
+/**
+ * Display name of an official offer. The stored provider and URL stay untouched
+ * (links, analytics, admin); only the visible text never names the broadcaster
+ * brand and falls back to the neutral, localized `neutral` label.
+ */
+export function officialProviderName(provider: string, label: string, neutral: string): string {
+  return BRANDED_PROVIDER.test(provider) || BRANDED_PROVIDER.test(label) ? neutral : label;
+}
+
 /** Preserve provider observations without synthesizing a supplier or version. */
 export function normalizeAvailability(raw: unknown): Availability[] | null {
   if (!Array.isArray(raw)) return null;

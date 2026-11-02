@@ -13,6 +13,7 @@ import { officialCrunchyrollWatchURL } from "@aphrody/shenron-config/video-provi
 import { normalizeVideoPlayers } from "@aphrody/shenron-media/episode-playback";
 import {
   normalizeVideoLanguage,
+  officialProviderName,
   playersForVideoLanguage,
   resolveVideoSelection,
   videoLanguages,
@@ -311,7 +312,7 @@ export function VideoLecteurs({
               type="button"
               onClick={() => setActive(i)}
               aria-pressed={i === safeActive}
-              title={`${cleanName(p.name)} · ${p.provider}`}
+              title={`${officialProviderName(p.provider, cleanName(p.name), t("officialPlatform"))} · ${officialProviderName(p.provider, p.provider, t("officialPlatform"))}`}
             >
               {t("playerNumber", { number: i + 1 })}
             </button>
@@ -357,7 +358,13 @@ export function VideoLecteurs({
             rel="noopener noreferrer"
             className="inline-flex min-h-11 items-center rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground"
           >
-            {ui("openOfficialProvider", { provider: current.provider })}
+            {ui("openOfficialProvider", {
+              provider: officialProviderName(
+                current.provider,
+                current.provider,
+                t("officialPlatform"),
+              ),
+            })}
           </a>
         </div>
       ) : status === "failed" ? (
