@@ -1,43 +1,50 @@
 # Hôte unique de production — Shenron
 
-Dernière mise à jour : 2026-11-02. Cette page décrit la consolidation réalisée à la demande du propriétaire.
+Dernière mise à jour : 2026-11-02. État vérifié depuis SSH `prod`.
 
 ## Topologie
 
 ~~~mermaid
 flowchart LR
   Operateur["Opérations propriétaire"]
-  Prod["Prod — hôte Shenron<br/>Site · API · Bot · PostgreSQL · Redis · chat temps réel"]
-  Archive["Archives DBFR<br/>/srv/shenron/archive/retired-dbfr-20261102"]
-  DBFR["DBFR — Shenron retiré<br/>auto-minio · auto-extraction-ia préservés"]
-  VPS["VPS — aucun service Shenron<br/>Bun OS et autres projets préservés"]
+  Prod["Prod — Shenron actif<br/>Site · API · Bot · PostgreSQL · Redis · chat temps réel · origine CDN"]
+  DBFR["DBFR — disque de secours Shenron<br/>réception rsync restreinte · auto-minio · auto-extraction-ia"]
+  VPS["VPS — autres projets préservés<br/>services et résidus dédiés Shenron purgés"]
+  Archive["Archive privée sur Prod<br/>DBFR retiré · instantanés Prod · VPS archivé"]
   Operateur -->|SSH prod + tmux| Prod
-  DBFR -->|données vérifiées avant purge| Archive
+  Prod -->|snapshot vérifié quotidien| DBFR
+  DBFR -->|données DBFR archivées| Archive
+  VPS -->|export SSH épinglé avant purge| Archive
 ~~~
 
-Prod est le seul hôte Shenron. DBFR et VPS restent disponibles pour leurs services indépendants ; ils ne servent plus l’application Shenron.
+Prod porte l’application Shenron et son stockage de production. DBFR ne sert plus Shenron en direct : il reçoit une copie de secours quotidienne et conserve ses deux workloads indépendants. Le VPS héberge Bun OS et d’autres projets indépendants ; aucun service Shenron n’y tourne. Les dépôts, caches, données et unités Shenron dédiés ont été archivés sur Prod puis purgés du VPS.
 
 ## Procédure d’exploitation
 
-- Piloter les opérations Shenron par SSH `prod`, avec tmux pour les tâches longues et leurs journaux. Cette migration a été faite directement, sans Aphrody Infra.
-- Le Bun global utilisé est l’upstream officiel oven-sh : `/root/.bun/bin/bun`, `1.4.4-canary.1+129f3c7a8` (`Bun.revision` `129f3c7a8`). Ne pas employer le runtime dérivé Aphrody pour ce projet.
-- Conserver les instantanés DBFR dans l’archive : la base DBFR était différente de la base Prod. Ne pas restaurer son dump par-dessus Prod sans comparaison explicite.
-- Préserver sur DBFR `auto-minio` et `auto-extraction-ia` ; sur VPS préserver Bun OS et les workloads sans lien avec Shenron.
-- Retirer les clés et fichiers temporaires de migration après la fin des transferts.
+- Piloter Shenron par SSH `prod`, avec tmux pour les tâches longues et leurs journaux. Cette migration a été faite directement, sans Aphrody Infra.
+- Runtime global : `/usr/local/bin/bun`, upstream officiel oven-sh canary `1.4.4-canary.1+a4c3a5eee`. Les services systemd CDN, audit Cloudflare, renouvellement S3 et copie DBFR l’utilisent. L’ancien binaire Aphrody isolé sous `/srv/shenron/config/cloudflare/runtime/bun` a été retiré.
+- Le pair WireGuard Prod↔VPS utilise le port d’écoute UDP fixe 52244 et l’endpoint IPv6 épinglé `[2001:41d0:404:200::4d8e]:51821`. Le handshake, le ping privé et SSH vers `10.200.77.1` ont été rétablis et vérifiés.
+- Le timer Prod `shenron-autodeploy.timer` reste désactivé : il pointait vers l’ancienne cible de fabrique.
+- DBFR reçoit `/srv/backups/prod-shenron/current` par une clé SSH dédiée limitée à rsync. Le service `shenron-dbfr-backup.timer` copie l’instantané vérifié chaque jour vers 04:00 UTC, avec délai aléatoire et rattrapage au démarrage.
+- Conserver séparément les archives DBFR et les sauvegardes Prod : les bases éditoriales diffèrent. Ne jamais restaurer le dump DBFR par-dessus Prod sans comparaison explicite.
+- Préserver sur DBFR `auto-minio` et `auto-extraction-ia`, et sur le VPS Bun OS ainsi que les workloads sans lien avec Shenron.
 
-## État observé le 2026-11-02
+## Prod — état observé le 2026-11-02
 
-Le checkout Prod est sur `6b24de0f` (`origin/main`), qui intègre le correctif `aac017cec3887c7f445284fcfd22fb22dbdf0bae`. Le build officiel canary a réussi et l’image `localhost/shenron:aac017cec3887c7f445284fcfd22fb22dbdf0bae` est active pour `shenron-site` et `shenron-bot` ; les deux conteneurs sont sains. `/api/health` répond 200. `/api/local/health` rapporte `chat.available=true`. La route `/api/v1/chat/ws` est montée et protégée : sans session, elle répond 401. Une connexion WebSocket authentifiée n’a pas été exercée.
-Le pointeur historique /srv/shenron/current référence encore une ancienne release Docker scellée ; les conteneurs Compose actifs utilisent l’image ci-dessus. Ce pointeur n’a pas été modifié.
+Le checkout de build est propre à `3fdad5b8` avant les changements de modèles et de documentation de ce lot. L’image `localhost/shenron:aac017cec3887c7f445284fcfd22fb22dbdf0bae` est active sur `shenron-site` et `shenron-bot` ; les deux sont sains. `shenron-gateway`, `shenron-cloudflared`, `shenron-compute`, `shenron-embed`, `shenron-chat`, `shenron-postgres` et `shenron-redis` sont aussi actifs sur Prod. L’origine CDN écoute sur `127.0.0.1:9077` et répond `cdn ok`. `/api/health` répond 200 ; `/api/local/health` avait rapporté `chat.available=true`. La route `/api/v1/chat/ws` est montée et protégée (401 sans session) ; aucun handshake WebSocket authentifié n’a été qualifié.
+
+Le pointeur historique `/srv/shenron/current` référence encore une ancienne release Docker scellée. Compose fournit l’image réellement active ; le pointeur n’a pas été modifié.
 
 Les migrations 0049 et 0050 ont été appliquées après sauvegardes Prod vérifiées. Le backup pré-déploiement fait 645287642 octets (955 entrées pg_restore) ; le backup pré-0049 fait 645287891 octets en mode 600.
 
-### DBFR
+## DBFR — archive historique et secours
 
-L’archive Prod `/srv/shenron/archive/retired-dbfr-20261102` conserve les dumps et données utiles, ainsi que les profils, secrets, mémoires, sources, rapports, sauvegardes de déploiement, releases et caches. Le dump PostgreSQL de 643981581 octets a été entièrement lu par `pg_restore -f /dev/null` (951 entrées) ; le snapshot Redis de 13556892 octets a le même SHA-256 sur source et archive (`19056f30eddc00f5b06b3b1d399ed483b9df14028403c242909ce15a73d29d37` pour PostgreSQL, `5cd5fc1d53537d836fe51cc08459d4fd9c6fd77cf3f8c40949a918ca92df5c87` pour Redis). Les services, conteneurs, images et fichiers Shenron ont été retirés ; environ 3 Go de répertoires de données PostgreSQL/Redis ont été libérés. Seuls `auto-minio` et `auto-extraction-ia` restent parmi les conteneurs observés.
+L’archive Prod `/srv/shenron/archive/retired-dbfr-20261102` conserve les dumps et données DBFR, profils, secrets, mémoires, sources, rapports, sauvegardes de déploiement, releases et caches. Le dump PostgreSQL de 643981581 octets a été entièrement lu par `pg_restore -f /dev/null` (951 entrées) ; le snapshot Redis de 13556892 octets a le même SHA-256 source/archives. Les conteneurs, images, unités et fichiers Shenron ont été retirés de DBFR ; environ 3 Go de répertoires de données PostgreSQL/Redis ont été libérés. `auto-minio` et `auto-extraction-ia` sont préservés.
 
-Un résidu systemd `shenron-sqlite-sync.service` était encore visible comme `not-found/failed`, sans fichier d’unité installé. Il n’a pas été possible de vérifier ou réinitialiser cet état d’exécution après le retrait de l’accès temporaire. La mesure disque finale DBFR n’a pas été obtenue.
+Le snapshot Prod `20261102T030452729859Z` est reçu dans `/srv/backups/prod-shenron/current` (PostgreSQL, Redis, SQLite bot et serveur, manifeste). La lecture de retour avec la clé restreinte et `rsync --checksum --dry-run` ne rapporte aucun delta par rapport au snapshot vérifié sur Prod. Le dernier lancement manuel du service de copie s’est terminé avec le code 0. La clé de lecture est volontairement limitée à rsync ; la capacité disque libre de DBFR n’a donc pas été mesurée dans cet audit.
 
-### VPS
+## VPS — résidus Shenron purgés
 
-Aucun conteneur, image, unité installée ou chemin Shenron n’a été trouvé lors de l’audit conduit depuis Prod. Les sessions tmux sans lien Shenron ont été préservées ; l’espace libre observé était de 32 Go sur `/` et 47 Go sur `/home`. `webos-qualify` n’était présent dans aucun des sockets tmux contrôlés ; aucune conclusion n’est tirée sur d’autres sockets non contrôlés.
+Le timer utilisateur shenron-web-engine-publish.timer a été désactivé avant le nettoyage. Les dépôts, anciennes releases, workspaces privés, modèle, configs, caches, unités utilisateur, outils et artefacts Shenron dédiés ont été archivés dans /srv/shenron/archive/retired-vps-shenron-20261102, puis retirés. Le tar fait 105324800000 octets (99 Go), son listing s’est lu complètement, le manifeste couvre 65/65 entrées et le SHA-256 a été vérifié : df789333e2abbc10afa8b974e16c732d5da2eb7c74b06631fc2662c07d9b28dd. La cible apps/shenron-cdn n’existait pas ; les symlinks vers elle ont été archivés puis retirés. La bibliothèque libshenron_ffi.so découverte ensuite a été vérifiée et conservée séparément dans supplemental-dbfr-shenron-lib.tar avant sa suppression.
+
+L’audit final ne trouve plus de chemins dédiés parmi les 65 entrées, ni unité système/utilisateur, timer, processus, conteneur ou session tmux Shenron. L’espace libre observé après purge est de 79 Go sur / et 128 Go sur /home. Bun OS, ses sessions et les autres workloads ont été préservés. Les sources d’intégration Shenron qui appartiennent au dépôt distinct Bun Video restent dans ce dépôt ; elles ne constituent pas un déploiement ou un service Shenron.

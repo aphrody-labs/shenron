@@ -4,7 +4,7 @@
 set -eu
 source_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 target_dir="$HOME/.local/share/aphrody/cloudflare-cli/orchestration"
-test -x "$HOME/.local/share/aphrody/cloudflare-cli/runtime/bun"
+test -x /usr/local/bin/bun
 test -x "$HOME/.local/bin/wrangler"
 umask 077
 mkdir -p "$target_dir" "$HOME/.local/state/aphrody/cloudflare" "$HOME/.config/aphrody/cloudflare"
@@ -17,10 +17,10 @@ if [ ! -f "$catalog_source" ]; then
 fi
 install -m 600 "$catalog_source" "$target_dir/public-cdn-catalog.ts"
 mkdir -p "$HOME/.local/bin"
-printf '%s\n' '#!/bin/sh' 'exec "$HOME/.local/share/aphrody/cloudflare-cli/runtime/bun" "$HOME/.local/share/aphrody/cloudflare-cli/orchestration/cloudflare-ops.ts" "$@"' > "$HOME/.local/bin/cloudflare-ops"
+printf '%s\n' '#!/bin/sh' 'exec "/usr/local/bin/bun" "$HOME/.local/share/aphrody/cloudflare-cli/orchestration/cloudflare-ops.ts" "$@"' > "$HOME/.local/bin/cloudflare-ops"
 chmod 700 "$HOME/.local/bin/cloudflare-ops"
 install -m 700 "$source_dir/s3-profile.sh" "$HOME/.local/bin/cloudflare-s3"
-printf '%s\n' '#!/bin/sh' 'exec sudo -n /usr/bin/env BUN_DEBUG_QUIET_LOGS=1 /home/ubuntu/.local/share/aphrody/cloudflare-cli/runtime/bun /etc/aphrody/cloudflare/cli/transfer.ts "$@"' > "$HOME/.local/bin/cloudflare-transfer"
+printf '%s\n' '#!/bin/sh' 'exec sudo -n /usr/bin/env BUN_DEBUG_QUIET_LOGS=1 /usr/local/bin/bun /etc/aphrody/cloudflare/cli/transfer.ts "$@"' > "$HOME/.local/bin/cloudflare-transfer"
 chmod 700 "$HOME/.local/bin/cloudflare-transfer"
 if [ "${1:-}" = "--install-owner-s3" ]; then
   # Explicit Infra SSH owner phase; require the existing credential, never create one.

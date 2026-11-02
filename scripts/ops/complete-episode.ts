@@ -384,7 +384,7 @@ await run([
 await run([
   "ssh",
   SSH_HOST,
-  'sudo -n "$(command -v bun || echo /srv/shenron/config/cloudflare/runtime/bun)" /tmp/cdn-origin-add.ts /tmp/cdn-entries.json',
+  'sudo -n "$(command -v bun || echo /usr/local/bin/bun)" /tmp/cdn-origin-add.ts /tmp/cdn-entries.json',
 ]);
 
 // 8. Database: back up the row, then update it in one transaction.
