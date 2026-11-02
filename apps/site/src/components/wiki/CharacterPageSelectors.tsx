@@ -26,7 +26,6 @@ export function CharacterPageSelectors({
   selectedTimelineSlug,
   selectedSagaSlug,
   preview = false,
-  showcaseChoices = false,
 }: {
   character: CharacterChoice;
   versions: CharacterChoice[];
@@ -41,7 +40,6 @@ export function CharacterPageSelectors({
   selectedTimelineSlug: string;
   selectedSagaSlug: string | null;
   preview?: boolean;
-  showcaseChoices?: boolean;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -51,7 +49,7 @@ export function CharacterPageSelectors({
       setPendingTimelineSlug(null);
     }
   }, [pendingTimelineSlug, selectedTimelineSlug]);
-  const useShowcaseChoices = preview || showcaseChoices;
+  const useShowcaseChoices = preview;
   const timelineTransitionPending =
     useShowcaseChoices &&
     pendingTimelineSlug !== null &&

@@ -80,19 +80,9 @@ describe("Goku visual preview", () => {
     expect(resolveGokuPreviewTimeline("unknown")).toBe("goku-summary");
   });
 
-  test("uses showcase timelines only until DBZ editorial data is configured", () => {
-    expect(shouldUseGokuShowcasePreview(false, true, ["goku-main", "future"])).toBe(true);
-    expect(shouldUseGokuShowcasePreview(false, true, ["goku-dbz"])).toBe(false);
-    expect(shouldUseGokuShowcasePreview(false, false, [])).toBe(false);
-    expect(shouldUseGokuShowcasePreview(false, true, [], true)).toBe(false);
-    expect(shouldUseGokuShowcasePreview(true, false, [])).toBe(true);
-  });
-
-  test("uses showcase timelines only until DBZ editorial data is configured", () => {
-    expect(shouldUseGokuShowcasePreview(false, true, ["goku-main", "future"])).toBe(true);
-    expect(shouldUseGokuShowcasePreview(false, true, ["goku-dbz"])).toBe(false);
-    expect(shouldUseGokuShowcasePreview(false, false, [])).toBe(false);
-    expect(shouldUseGokuShowcasePreview(true, false, [])).toBe(true);
+  test("uses illustrative timelines on the explicit preview route only", () => {
+    expect(shouldUseGokuShowcasePreview(false)).toBe(false);
+    expect(shouldUseGokuShowcasePreview(true)).toBe(true);
   });
 
   test("scopes each saga menu to its selected series or game version", () => {

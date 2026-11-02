@@ -477,12 +477,7 @@ export default async function CharacterPage({
   const locale = await getLocale();
   const versionT = getWikiCharacterVersionText(locale);
   const isGokuMainCharacter = normalizeVersionLabel(character.name) === "songoku";
-  const showcasePreview = shouldUseGokuShowcasePreview(
-    preview,
-    isGokuMainCharacter,
-    continuities.map(({ slug }) => slug),
-    loadedVariants.length > 0,
-  );
+  const showcasePreview = shouldUseGokuShowcasePreview(preview);
   const requestedTimeline = Array.isArray(query.timeline) ? query.timeline[0] : query.timeline;
   const previewTimeline = resolveGokuPreviewTimeline(requestedTimeline);
   const previewChoices = isGokuMainCharacter
@@ -665,38 +660,42 @@ export default async function CharacterPage({
   );
   const summaryTimelines =
     isSummaryVersion && !showcasePreview
-      ? await Promise.all([
-          ...getGokuSeriesTimelineChoices((key) => versionT(key)).map((timeline) => ({
-            ...timeline,
-            description: null,
-            sagas: filterGokuVariantsByTimeline(loadedVariants, timeline.seriesGroup!),
-          })),
-          ...liveTimelineChoices.map(async (continuity) => ({
-            ...continuity,
-            sagas: await getShenronCharacterVariants(continuity.id),
-          })),
-        ])
+      ? (
+          await Promise.all([
+            ...getGokuSeriesTimelineChoices((key) => versionT(key)).map((timeline) => ({
+              ...timeline,
+              description: null,
+              sagas: filterGokuVariantsByTimeline(loadedVariants, timeline.seriesGroup!),
+            })),
+            ...liveTimelineChoices.map(async (continuity) => ({
+              ...continuity,
+              sagas: await getShenronCharacterVariants(continuity.id),
+            })),
+          ])
+        ).filter((timeline) => timeline.sagas.length > 0)
       : [];
   const summaryArticle = isSummaryVersion
     ? showcasePreview
       ? getGokuPreviewSummaryArticle(versionT)
-      : [
-          `## ${versionT("sagaHistoryHeading")}`,
-          versionT("summaryIntro"),
-          ...summaryTimelines.map((timeline) => {
-            const heading = `### ${timeline.label || timeline.name}`;
-            const sagaRows = timeline.sagas.map((saga) => {
-              const url = timeline.seriesGroup
-                ? `/wiki/characters/${character.slug}?timeline=${encodeURIComponent(timeline.seriesGroup)}&saga=${encodeURIComponent(saga.slug)}`
-                : `/wiki/characters/${timeline.slug}?saga=${encodeURIComponent(saga.slug)}`;
-              const title = `${saga.sagaSeries && !timeline.seriesGroup ? `${saga.sagaSeries} · ` : ""}${saga.sagaName}`;
-              return `- [${title}](${url})${saga.summary ? ` — ${saga.summary.replace(/\s+/g, " ").trim()}` : ""}`;
-            });
-            return [heading, `#### ${versionT("summarySagasHeading")}`, ...sagaRows]
-              .filter(Boolean)
-              .join("\n\n");
-          }),
-        ].join("\n\n")
+      : summaryTimelines.length > 0
+        ? [
+            `## ${versionT("sagaHistoryHeading")}`,
+            versionT("summaryIntro"),
+            ...summaryTimelines.map((timeline) => {
+              const heading = `### ${timeline.label || timeline.name}`;
+              const sagaRows = timeline.sagas.map((saga) => {
+                const url = timeline.seriesGroup
+                  ? `/wiki/characters/${character.slug}?timeline=${encodeURIComponent(timeline.seriesGroup)}&saga=${encodeURIComponent(saga.slug)}`
+                  : `/wiki/characters/${timeline.slug}?saga=${encodeURIComponent(saga.slug)}`;
+                const title = `${saga.sagaSeries && !timeline.seriesGroup ? `${saga.sagaSeries} · ` : ""}${saga.sagaName}`;
+                return `- [${title}](${url})${saga.summary ? ` — ${saga.summary.replace(/\s+/g, " ").trim()}` : ""}`;
+              });
+              return [heading, `#### ${versionT("summarySagasHeading")}`, ...sagaRows]
+                .filter(Boolean)
+                .join("\n\n");
+            }),
+          ].join("\n\n")
+        : null
     : null;
   const variantBattles =
     isSummaryVersion && showcasePreview
@@ -2010,7 +2009,6 @@ export default async function CharacterPage({
         }
         selectedSagaSlug={activeVariant?.slug ?? null}
         preview={preview}
-        showcaseChoices={showcasePreview && !preview}
         labels={{
           version: versionT("versionLabel"),
           saga: versionT("sagaLabel"),
