@@ -1,0 +1,36 @@
+feature,area,priority,original,clone,notes
+Bandeau héros à diapositives avec bouton reprendre ou lancer,discover,should,yes,no,verbe de reprise avec numéro d'épisode ; composant bandeau manquant
+Rail de reprise (continuer à regarder),discover,must,yes,yes,ContinueWatchingRail + watch-sync livrés ; carte avec progression à aligner
+Rails thématiques (tendance, nouveautés) à défilement horizontal,discover,must,yes,no,pas de rail à accrochage dans le kit ; voir design/components.md
+Carte série portrait avec coin « dans ma liste »,discover,must,yes,no,MangaCard existe ; pas de carte série avec drapeau
+Navigation globale (nouveautés, populaire, catégories),shell,must,yes,yes,shell du site existant
+Recherche de titres,discover,should,yes,yes,recherche du site existante
+Fiche série : logo, méta, genres cliquables,series,must,yes,no,en-tête de série à spécifier
+Fiche série : note moyenne et évaluation en étoiles,series,could,yes,no,exige une base d'utilisateurs
+Fiche série : synopsis replié avec plus de détails,series,should,yes,no,
+Fiche série : grille d'épisodes par saison avec tri,series,must,yes,yes,EpisodesCatalogue et EpisodeTimeline existants
+Carte épisode avec temps restant et barre de progression,series,must,yes,no,progression dans playback-progress ; carte à créer
+Menu d'options d'épisode (kebab),series,could,yes,no,
+Rail de titres similaires,series,could,yes,no,dérivable des relations du wiki
+Page de lecture : lecteur 16:9 centré,watch,must,yes,yes,VideoPlayer et WatchLayout existants
+Contrôles : -10 s +10 s volume vitesse plein écran,watch,must,yes,yes,VideoPlayer ; à qualifier sur média réel autorisé
+Choix langue audio et sous-titres,watch,must,yes,yes,video-languages et VideoTrackControls existants
+Panneau latéral épisode précédent et voir plus d'épisodes,watch,should,yes,no,WatchLayout à étendre
+Épisode suivant automatique,watch,should,unknown,no,non observé (lecture non lancée)
+Reprise à la position enregistrée,watch,must,yes,yes,watch-sync et /api/progress
+J'aime et je n'aime pas par épisode,watch,could,yes,no,
+Partage d'épisode,watch,could,yes,no,
+Bascule liste de suivi sur 3 écrans (bandeau fiche lecture),watchlist,must,yes,no,bascule existe côté liste ; à poser sur fiche et lecture
+Page liste de suivi avec filtres et tri,watchlist,must,unknown,yes,WatchlistClient (tout reprendre à voir terminé ; récent titre) ; page originale non lue
+État vide de la liste de suivi,watchlist,must,unknown,yes,EmptyState existant
+Synchronisation liste et progression entre appareils,watchlist,must,yes,yes,/api/watchlist et /api/progress
+Profils multiples par compte,account,could,yes,no,hors tranche
+Notifications de nouveaux épisodes,engage,could,yes,no,voir streaming-replica-etat.md section 6
+Mobile 390 px : rails tactiles et cibles 44 px,mobile,must,unknown,no,non capturé ; à vérifier
+Catalogue sous licence du tiers,content,skip,yes,no,licence ; notre catalogue est Dragon Ball
+Base d'utilisateurs et réactions agrégées,content,skip,yes,no,effet réseau
+DRM et chiffrement de flux,player,skip,yes,no,interdit ; aucune extraction ni contournement
+Abonnement paiements partenaires et publicité,billing,skip,yes,no,hors périmètre
+Applications TV et consoles,platform,skip,yes,no,hors périmètre
+Téléchargement hors ligne,player,skip,yes,no,hors périmètre
+Jeux et boutique,other,skip,yes,no,hors périmètre

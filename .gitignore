@@ -104,6 +104,7 @@ apps/site/.next-ui-preview/
 
 # Reference screenshots of third-party originals (never shipped)
 /replica/screens/
+/replica/crunchyroll/screens/
 
 # Generated from packages/ui/assets by the host asset sync.
 /apps/site/public/techniques/

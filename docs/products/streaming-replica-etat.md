@@ -138,3 +138,9 @@ lecture) et `/api/watchlist` liste les éléments sauvegardés comme « à voir 
 
 Tests automatisés ajoutés : `packages/api/test/watch-progress.test.ts`,
 `apps/site/tests/watch-sync.test.ts` (fusion, statut dérivé, route watchlist, préférence de langue).
+
+## 7. Spécifications design
+
+Mesures et rôles des écrans découvrir, fiche série, lecture et liste de suivi : `replica/crunchyroll/design/components.md` (jetons : `tokens.json`, contraste : `contrast.ts`).
+Composants manquants du kit, à construire par l agent « replica build » : rail à accrochage, carte série et carte épisode avec progression, bandeau de reprise, bascule liste de suivi partagée, panneau « épisode suivant ».
+Échec de contraste existant : `.btn-danger` (blanc sur rouge, 4,32:1), à corriger côté `packages/ui`.
