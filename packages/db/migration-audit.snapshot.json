@@ -1,7 +1,7 @@
 {
   "journal": {
-    "entries": 24,
-    "files": 36,
+    "entries": 26,
+    "files": 38,
     "journaled": [
       "0000_dark_johnny_blaze",
       "0001_natural_switch",
@@ -26,7 +26,9 @@
       "0033_character_variant_battles",
       "0034_character_variant_technique_uses",
       "0035_character_variant_appearances",
-      "0036_character_variant_supplements"
+      "0036_character_variant_supplements",
+      "0037_card_catalog_bilingual_names",
+      "0038_card_catalog_image_dimensions"
     ],
     "unjournaled": [
       "0007_post_cms",
@@ -187,6 +189,18 @@
         "tag": "0036_character_variant_supplements",
         "when": 1793481706354,
         "breakpoints": true
+      },
+      {
+        "idx": 24,
+        "tag": "0037_card_catalog_bilingual_names",
+        "when": 1793577600000,
+        "breakpoints": true
+      },
+      {
+        "idx": 25,
+        "tag": "0038_card_catalog_image_dimensions",
+        "when": 1793577660000,
+        "breakpoints": true
       }
     ]
   },
@@ -275,6 +289,8 @@
     "0033_character_variant_battles": "8af7884a900b138b03bf7c86a01d9cc66323b2fc2b3421a7f277d9806bc89899",
     "0034_character_variant_technique_uses": "2c99df95ff303e186a7402b7ff98219ab2c526814dd6cc0480e6c3bc2c40939b",
     "0035_character_variant_appearances": "ea9e5704adaff6b2d455679706156db4d6f8de068461b4a8cb6c59030d1bcacc",
-    "0036_character_variant_supplements": "ffa83d37ba0b0a4f410893ab8502ce2986343ade616dea998ad0b7968d450225"
+    "0036_character_variant_supplements": "ffa83d37ba0b0a4f410893ab8502ce2986343ade616dea998ad0b7968d450225",
+    "0037_card_catalog_bilingual_names": "8a35776656f510f449e332fcc1341dbf9ff671bd1f561f44fcaf64b1d853ba15",
+    "0038_card_catalog_image_dimensions": "1921b3ae2347b8084046089f9504903c843c6705f978f76a0ae99977bad45f23"
   }
 }

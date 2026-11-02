@@ -169,6 +169,20 @@
       "when": 1793481706354,
       "tag": "0036_character_variant_supplements",
       "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1793577600000,
+      "tag": "0037_card_catalog_bilingual_names",
+      "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1793577660000,
+      "tag": "0038_card_catalog_image_dimensions",
+      "breakpoints": true
     }
   ]
 }

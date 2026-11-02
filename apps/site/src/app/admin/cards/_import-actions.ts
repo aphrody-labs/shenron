@@ -17,6 +17,8 @@ const cardImportRow = z
     setSlug: z.string().trim().min(1).max(180),
     cardNumber: z.string().trim().min(1).max(100),
     name: z.string().trim().min(1).max(240),
+    nameJa: z.string().trim().min(1).max(240).optional(),
+    nameFr: z.string().trim().min(1).max(240).optional(),
     language: z.string().trim().min(1).max(30),
     region: z.string().trim().min(1).max(80),
     rarity: z.string().trim().max(80).optional(),
@@ -28,12 +30,25 @@ const cardImportRow = z
     sourceUrl: z.string().url().max(2048),
     sourceAccessedAt: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     frontImageUrl: z.string().url().max(2048).optional(),
+    frontImageWidth: z.number().int().min(1).max(10000).optional(),
+    frontImageHeight: z.number().int().min(1).max(10000).optional(),
     frontImageSourceUrl: z.string().url().max(2048).optional(),
     frontImageRights: z.string().trim().max(500).optional(),
     status: z.enum(["draft", "published"]).optional(),
   })
   .strict()
   .superRefine((row, context) => {
+    if (
+      (row.frontImageWidth === undefined) !== (row.frontImageHeight === undefined) ||
+      ((row.frontImageWidth !== undefined || row.frontImageHeight !== undefined) &&
+        !row.frontImageUrl)
+    ) {
+      context.addIssue({
+        code: "custom",
+        message: "Front image dimensions must be supplied together with the image",
+        path: ["frontImageWidth"],
+      });
+    }
     const imageFields = [row.frontImageUrl, row.frontImageSourceUrl, row.frontImageRights];
     if (imageFields.some(Boolean) && !imageFields.every(Boolean)) {
       context.addIssue({
@@ -301,19 +316,27 @@ export async function importCardCatalogBatch(
       continue;
     }
     try {
+      const frontImageUrl = row.frontImageUrl ?? before?.frontImageUrl ?? null;
+      const dimensionsMatchExisting = before?.frontImageUrl === frontImageUrl;
       await db.transaction(async (tx) => {
         const id = before?.id ?? createId();
         const afterFields = {
           setId: row.setId,
           slug: before?.slug ?? `${slugify(`${row.cardNumber}-${row.name}`)}-${id.slice(0, 8)}`,
           name: row.name,
+          nameJa: row.nameJa ?? before?.nameJa ?? (row.language === "ja" ? row.name : null),
+          nameFr: row.nameFr ?? before?.nameFr ?? (row.language === "fr" ? row.name : null),
           cardNumber: row.cardNumber,
           language: row.language,
           region: row.region,
           rarity: row.rarity || null,
           releaseDate: row.releaseDate ?? null,
           description: before?.description ?? null,
-          frontImageUrl: row.frontImageUrl ?? before?.frontImageUrl ?? null,
+          frontImageUrl,
+          frontImageWidth:
+            row.frontImageWidth ?? (dimensionsMatchExisting ? before?.frontImageWidth : null),
+          frontImageHeight:
+            row.frontImageHeight ?? (dimensionsMatchExisting ? before?.frontImageHeight : null),
           frontImageSourceUrl: row.frontImageSourceUrl ?? before?.frontImageSourceUrl ?? null,
           frontImageRights: row.frontImageRights ?? before?.frontImageRights ?? null,
           backImageUrl: before?.backImageUrl ?? null,

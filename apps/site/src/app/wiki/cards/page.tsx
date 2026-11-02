@@ -197,6 +197,12 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
             {data.rows.map(({ card, set, series }) => {
               const valuation = data.latestValuations.get(card.id);
+              const frenchName = card.nameFr ?? (card.language === "fr" ? card.name : null);
+              const japaneseName = card.nameJa ?? (card.language === "ja" ? card.name : null);
+              const displayName =
+                locale === "ja"
+                  ? (japaneseName ?? frenchName ?? card.name)
+                  : (frenchName ?? japaneseName ?? card.name);
               const releaseDate = dateLabel(
                 card.releaseDate ?? set.releaseDate,
                 locale,
@@ -209,13 +215,25 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
                 >
                   <div className="h-full">
                     {card.frontImageUrl ? (
-                      <img
-                        src={card.frontImageUrl}
-                        alt={`${card.name} — ${t("front")}`}
-                        loading="lazy"
-                        decoding="async"
-                        className="aspect-[3/4] w-full border-b border-border/70 bg-background object-contain p-2 transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transform-none motion-reduce:transition-none"
-                      />
+                      <div
+                        className="relative w-full overflow-hidden border-b border-border/70 bg-background"
+                        style={{
+                          aspectRatio:
+                            card.frontImageWidth && card.frontImageHeight
+                              ? `${card.frontImageWidth} / ${card.frontImageHeight}`
+                              : "3 / 4",
+                        }}
+                      >
+                        <img
+                          src={card.frontImageUrl}
+                          alt={`${displayName} — ${t("front")}`}
+                          width={card.frontImageWidth ?? undefined}
+                          height={card.frontImageHeight ?? undefined}
+                          loading="lazy"
+                          decoding="async"
+                          className="absolute inset-0 h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transform-none motion-reduce:transition-none"
+                        />
+                      </div>
                     ) : (
                       <div className="grid aspect-[3/4] place-items-center border-b border-border/70 bg-muted/30 p-6 text-center">
                         <span className="rounded-lg border border-border bg-card px-4 py-3 font-mono text-sm font-semibold tracking-wide text-muted-foreground shadow-sm">
@@ -228,8 +246,18 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
                         {series.name} · {set.name}
                       </p>
                       <h2 className="line-clamp-2 min-h-14 text-lg font-semibold text-foreground">
-                        {card.name}
+                        {displayName}
                       </h2>
+                      {frenchName && japaneseName && (
+                        <p className="space-y-1 text-xs text-muted-foreground">
+                          <span className="block">
+                            {t("nameJa")}: {japaneseName}
+                          </span>
+                          <span className="block">
+                            {t("nameFr")}: {frenchName}
+                          </span>
+                        </p>
+                      )}
                       <p className="text-sm text-muted-foreground">
                         {t("number")}: {card.cardNumber}
                         {card.rarity ? ` · ${card.rarity}` : ""}
