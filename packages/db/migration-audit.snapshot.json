@@ -1,7 +1,7 @@
 {
   "journal": {
-    "entries": 26,
-    "files": 38,
+    "entries": 27,
+    "files": 39,
     "journaled": [
       "0000_dark_johnny_blaze",
       "0001_natural_switch",
@@ -28,7 +28,8 @@
       "0035_character_variant_appearances",
       "0036_character_variant_supplements",
       "0037_card_catalog_bilingual_names",
-      "0038_card_catalog_image_dimensions"
+      "0038_card_catalog_image_dimensions",
+      "0039_character_variant_admin_grants"
     ],
     "unjournaled": [
       "0007_post_cms",
@@ -201,6 +202,12 @@
         "tag": "0038_card_catalog_image_dimensions",
         "when": 1793577660000,
         "breakpoints": true
+      },
+      {
+        "idx": 26,
+        "tag": "0039_character_variant_admin_grants",
+        "when": 1793590986000,
+        "breakpoints": true
       }
     ]
   },
@@ -251,7 +258,8 @@
     "0033_character_variant_battles",
     "0034_character_variant_technique_uses",
     "0035_character_variant_appearances",
-    "0036_character_variant_supplements"
+    "0036_character_variant_supplements",
+    "0039_character_variant_admin_grants"
   ],
   "hashes": {
     "0000_dark_johnny_blaze": "4acfbb67d895cfc6d575f03198d0f353e688c5c918bc7c1f29e82de7707b5636",
@@ -291,6 +299,7 @@
     "0035_character_variant_appearances": "ea9e5704adaff6b2d455679706156db4d6f8de068461b4a8cb6c59030d1bcacc",
     "0036_character_variant_supplements": "ffa83d37ba0b0a4f410893ab8502ce2986343ade616dea998ad0b7968d450225",
     "0037_card_catalog_bilingual_names": "8a35776656f510f449e332fcc1341dbf9ff671bd1f561f44fcaf64b1d853ba15",
-    "0038_card_catalog_image_dimensions": "1921b3ae2347b8084046089f9504903c843c6705f978f76a0ae99977bad45f23"
+    "0038_card_catalog_image_dimensions": "1921b3ae2347b8084046089f9504903c843c6705f978f76a0ae99977bad45f23",
+    "0039_character_variant_admin_grants": "97a10756cce6f7e3a6b682ce6c574b0429492478ecc001c14540951db09fac23"
   }
 }

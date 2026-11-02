@@ -183,6 +183,13 @@
       "when": 1793577660000,
       "tag": "0038_card_catalog_image_dimensions",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1793590986000,
+      "tag": "0039_character_variant_admin_grants",
+      "breakpoints": true
     }
   ]
 }
