@@ -2042,12 +2042,12 @@ export default async function CharacterPage({
         {character.race && (
           <div className="wiki-infobox-row">
             <span className="wiki-infobox-label">Race</span>
-            <Link
+            <GatedWrap
               href={`/wiki/races/${slugDeRace(character.race, character.name)}`}
               className="wiki-infobox-value text-dbz-yellow underline decoration-dbz-yellow/30 underline-offset-4 hover:decoration-dbz-yellow"
             >
               {character.race}
-            </Link>
+            </GatedWrap>
           </div>
         )}
         {pageAffiliation && (
@@ -2125,12 +2125,12 @@ export default async function CharacterPage({
           badges={
             <>
               {character.race && (
-                <Link
+                <GatedWrap
                   href={`/wiki/races/${slugDeRace(character.race, character.name)}`}
                   className="toriyama-badge bg-dbz-orange px-3.5 py-1 text-xs font-black text-black hover:underline"
                 >
                   <span>{character.race}</span>
-                </Link>
+                </GatedWrap>
               )}
               {pageAffiliation && (
                 <span className="toriyama-badge bg-white px-3.5 py-1 text-xs font-black text-black">

@@ -210,6 +210,10 @@
     "voNaked": "VO seule",
     "legalOfferNote": "Proposé par {providers}. Le lien ouvre le catalogue du fournisseur ; abonnement ou achat selon le titre.",
     "numberUnverified": "Numéro non établi",
+    "officialPlatform": "Plateforme officielle",
+    "allVersions": "Toutes",
+    "officialOfferIntro": "Ouvre la page du diffuseur officiel. Abonnement ou achat selon le titre et le territoire.",
+    "openOfficialOffer": "Voir l’offre officielle",
     "play": "Lire",
     "pause": "Pause",
     "speed": "Vitesse",
@@ -282,6 +286,51 @@
     "otherSections": "Autres rubriques",
     "closeMenu": "Fermer le menu",
     "accountSettings": "Paramètres du compte"
+  },
+  "watchlistPage": {
+    "metaTitle": "Ma watchlist — Dragon Ball France",
+    "metaDescription": "Les épisodes et films Dragon Ball que tu as mis de côté, avec ta progression de lecture.",
+    "eyebrow": "Ton espace",
+    "title": "Ma watchlist",
+    "subtitle": "Les épisodes et films mis de côté, et l’endroit où tu t’es arrêté.",
+    "count": "{count, plural, one {# titre} other {# titres}}",
+    "filterLabel": "Filtrer la liste",
+    "filterAll": "Tous",
+    "filterResume": "À reprendre",
+    "filterTodo": "À voir",
+    "filterDone": "Vus",
+    "sortLabel": "Trier par",
+    "sortRecent": "Ajout récent",
+    "sortTitle": "Titre",
+    "statusSynced": "Synchronisée avec ton compte.",
+    "statusDevice": "Conservée sur cet appareil. Connecte-toi pour la retrouver partout.",
+    "statusUnavailable": "Ta liste de compte est momentanément indisponible : affichage de la liste de cet appareil.",
+    "signIn": "Se connecter",
+    "kindEpisode": "Épisode",
+    "kindMovie": "Film",
+    "resume": "Reprendre",
+    "watch": "Regarder",
+    "rewatch": "Revoir",
+    "progress": "{percent} % vus",
+    "done": "Vu",
+    "remove": "Retirer « {title} » de la liste",
+    "loading": "Chargement de ta liste…",
+    "emptyTitle": "Ta liste est vide",
+    "emptyDescription": "Le marque-page d’une fiche d’épisode ou de film l’ajoute ici. Ta progression de lecture s’y affiche ensuite.",
+    "browseEpisodes": "Parcourir les épisodes",
+    "browseMovies": "Parcourir les films",
+    "emptyFilter": "Aucun titre ne correspond à ce filtre.",
+    "resetFilter": "Afficher tous les titres"
+  },
+  "userNav": {
+    "ariaLabel": "Espace membre",
+    "overview": "Vue d’ensemble",
+    "watchlist": "À voir",
+    "favorites": "Favoris",
+    "publicProfile": "Profil public",
+    "tierlists": "Mes tier lists",
+    "billing": "Abonnement et paiements",
+    "settings": "Paramètres"
   },
   "footer": {
     "tagline": "Le plus grand serveur Dragon Ball francophone — épisodes, films, manga, actualités et une communauté Discord active. Site fan, non affilié aux ayants droit.",
@@ -539,18 +588,34 @@
     "studio": {
       "label": "Shenron Studio",
       "blurb": "L'éditeur de traduction manga de Shenron"
+    },
+    "vip": {
+      "label": "Club VIP & Abonnement",
+      "blurb": "Lecture sans publicité et soutien mensuel ou annuel (Stripe & PayPal)"
+    },
+    "donations": {
+      "label": "Dons & Genki Dama",
+      "blurb": "Soutenir l'hébergement et la numérisation par un don ponctuel (Stripe & PayPal)"
+    },
+    "billing": {
+      "label": "Abonnements & paiements",
+      "blurb": "Gérer son abonnement VIP (Stripe, PayPal) et consulter l'historique des dons"
+    },
+    "watchlist": {
+      "label": "Ma watchlist",
+      "blurb": "Les épisodes, films et chapitres mis de côté à suivre"
     }
   },
   "dashboard": {
-    "heroSelection": "Votre sélection, {name}",
-    "heroFallbackTitle": "Tout Dragon Ball vous attend",
-    "heroFallbackLead": "Épisodes, films, manga et ouvrages officiels réunis dans votre espace.",
-    "heroEpisode": " · Épisode {number}",
+    "heroSelection": "Ta sélection, {name}",
+    "heroFallbackTitle": "Ton espace",
+    "heroFallbackLead": "Reprends tes épisodes, tes lectures et tes favoris depuis cette page.",
+    "heroEpisode": "épisode {number}",
     "watch": "Regarder l'épisode",
     "discover": "Découvrir les épisodes",
     "myList": "Ma liste",
     "progressTitle": "Progression communautaire",
-    "progressLead": "Votre activité avec le bot Discord",
+    "progressLead": "Ton activité avec le bot Discord",
     "level": "Niveau {level}",
     "profile": "Profil",
     "progressBar": "Progression vers le prochain niveau",
@@ -561,32 +626,38 @@
     "metricAchievements": "Succès",
     "metricFavorites": "Favoris",
     "seeProfile": "Voir mon profil",
-    "footprintTitle": "Votre empreinte DBFR",
-    "footprintLead": "Ce que vous avez apporté à la communauté",
+    "footprintTitle": "Tes contributions",
+    "footprintLead": "Ce que tu as publié ou proposé sur le site",
     "metricWikiProposals": "Propositions wiki",
     "metricRatings": "Notes publiées",
     "metricTierlists": "Tier lists créées",
     "metricComments": "Commentaires",
     "recentTitle": "Activité récente",
-    "recentLead": "Vos dernières actions sur le site",
-    "recentEmpty": "Vos notes, signalements et propositions apparaîtront ici.",
+    "recentLead": "Tes dernières actions sur le site",
+    "recentEmpty": "Tes notes, signalements et propositions apparaîtront ici.",
     "continueTitle": "Continuer",
-    "continueLead": "Vos raccourcis personnels",
+    "continueLead": "Tes raccourcis personnels",
     "actionFavorites": "Mes favoris",
     "actionFavoritesText": "Reprendre une fiche sauvegardée",
     "actionShop": "Boutique",
-    "actionShopText": "Utiliser vos zénis",
+    "actionShopText": "Utiliser tes zénis",
     "actionTierlists": "Mes tier lists",
-    "actionTierlistsText": "Gérer vos classements publiés",
+    "actionTierlistsText": "Gérer tes classements publiés",
     "actionContribute": "Contribuer au wiki",
     "actionContributeText": "Proposer une correction sourcée",
     "actionLeaderboard": "Classement",
-    "actionLeaderboardText": "Comparer votre progression",
+    "actionLeaderboardText": "Comparer ta progression",
     "actionGames": "Mini-jeux",
     "actionGamesText": "Gagner de l'XP et des zénis",
+    "actionVip": "Club VIP",
+    "actionVipText": "Masquer les publicités compatibles avec un abonnement",
+    "actionBilling": "Abonnement et paiements",
+    "actionBillingText": "Gérer ton abonnement et consulter tes dons",
+    "actionSecurity": "Comptes et sécurité",
+    "actionSecurityText": "Comptes liés, adresse e-mail et mot de passe",
     "warningBot": "Les données du bot sont temporairement indisponibles.",
-    "warningSummary": "Votre activité sur le site n'a pas pu être relue : les compteurs affichés ci-dessus ne reflètent pas votre historique.",
-    "warningTail": "Votre compte et vos réglages restent accessibles.",
+    "warningSummary": "Ton activité sur le site n’a pas pu être chargée : les compteurs ci-dessus ne reflètent pas ton historique.",
+    "warningTail": "Ton compte et tes réglages restent accessibles.",
     "activity": {
       "proposalOn": "Proposition sur {label}",
       "proposal": "Proposition wiki",
@@ -610,7 +681,8 @@
       "episode": "Épisode",
       "movie": "Film",
       "arc": "Arc"
-    }
+    },
+    "heroSelectionNoName": "Ta sélection"
   },
   "legal": {
     "eyebrow": "Mentions légales",
@@ -1294,7 +1366,8 @@
     "of": "sur",
     "totalResults": "résultats au total",
     "noResults": "Aucun résultat ne correspond à votre recherche",
-    "readMore": "Lire la suite"
+    "readMore": "Lire la suite",
+    "signInOtherMethods": "Autres méthodes de connexion"
   },
   "communaute": {
     "news": {
@@ -1448,6 +1521,130 @@
     },
     "skipToContent": "Aller au contenu"
   },
+  "billing": {
+    "vip": {
+      "title": "Club VIP",
+      "description": "Un abonnement pour soutenir le site. Une fois connecté, il masque les publicités sur les emplacements compatibles.",
+      "monthly": "Formule mensuelle",
+      "annual": "Formule annuelle",
+      "monthlyDescription": "Renouvelée chaque mois. Résiliable à tout moment depuis ton compte.",
+      "annualDescription": "Renouvelée chaque année. Revient au prix de dix mois de la formule mensuelle.",
+      "perMonth": "/ mois",
+      "perYear": "/ an",
+      "equivalentMonthly": "soit {amount} par mois",
+      "benefitAds": "Pas de publicité sur les emplacements compatibles quand tu es connecté",
+      "benefitSupport": "Participe aux frais d’hébergement du site",
+      "stripe": "S’abonner par carte",
+      "paypal": "S’abonner avec PayPal",
+      "metaDescription": "Abonnement mensuel ou annuel qui soutient Dragon Ball France et masque les publicités compatibles.",
+      "note": "Tout le contenu du site reste gratuit, avec ou sans abonnement.",
+      "redirecting": "Redirection vers le paiement…"
+    },
+    "cardPayment": "Carte bancaire (Stripe)",
+    "paypalCompleted": "Paiement PayPal confirmé. Merci pour ton soutien !",
+    "paypalCapturePending": "PayPal confirme encore ton paiement.",
+    "paypalCancelled": "Paiement PayPal annulé. Aucun don n’a été débité.",
+    "accountTitle": "Abonnement et paiements",
+    "accountDescription": "Tes abonnements et l’historique de tes dons. Le renouvellement se gère chez le prestataire choisi à l’abonnement.",
+    "manageStripe": "Gérer l’abonnement sur Stripe",
+    "cancelPaypal": "Résilier l’abonnement PayPal",
+    "cancellationDone": "Résiliation transmise à PayPal.",
+    "donationHistory": "Historique des dons",
+    "noDonations": "Aucun don associé à ce compte.",
+    "accountBillingLink": "Gérer mon abonnement",
+    "donationsLink": "Faire un don ponctuel",
+    "vipLink": "Voir le Club VIP",
+    "statusActive": "Actif",
+    "statusTrialing": "Période d'essai",
+    "statusPastDue": "Paiement à régulariser",
+    "statusCancelled": "Résilié",
+    "statusPending": "En attente de confirmation",
+    "statusOther": "État à vérifier",
+    "subscriptionsTitle": "Abonnements",
+    "noSubscriptions": "Aucun abonnement en cours.",
+    "providerStripe": "Carte bancaire (Stripe)",
+    "providerPaypal": "PayPal",
+    "renewsOn": "Renouvellement le {date}",
+    "endsOn": "Se termine le {date}, sans renouvellement",
+    "nextBilling": "Prochain prélèvement le {date}",
+    "cancelConfirm": "Résilier cet abonnement ? Il ne sera plus renouvelé.",
+    "confirmCancel": "Confirmer la résiliation",
+    "keepSubscription": "Garder l’abonnement",
+    "donationDate": "Date",
+    "donationAmount": "Montant",
+    "donationState": "État",
+    "donationStatus": {
+      "succeeded": "Reçu",
+      "pending": "En attente",
+      "failed": "Échoué",
+      "disputed": "Contesté",
+      "other": "À vérifier"
+    },
+    "donations": {
+      "title": "Faire un don",
+      "metaDescription": "Soutenir Dragon Ball France par un don ponctuel, par carte (Stripe) ou PayPal.",
+      "description": "Les dons ponctuels aident à payer l’hébergement et le stockage du site. Le paiement se fait par carte (Stripe) ou avec PayPal.",
+      "amountsTitle": "Montants proposés",
+      "give": "Donner {amount}",
+      "tiers": {
+        "senzu": "Haricot magique",
+        "dragon_ball": "Dragon Ball à quatre étoiles",
+        "kamehameha": "Kamehameha",
+        "genki_dama": "Genki Dama"
+      },
+      "wallTitle": "Derniers dons",
+      "wallLead": "Les vingt derniers dons reçus. Un don anonyme n’affiche pas de nom.",
+      "loading": "Chargement des derniers dons…",
+      "wallEmpty": "Aucun don n’a encore été reçu. Le tien sera le premier de la liste.",
+      "anonymous": "Donateur anonyme",
+      "dialog": {
+        "close": "Fermer",
+        "amountLegend": "Montant",
+        "custom": "Autre montant",
+        "customLabel": "Montant en euros",
+        "customHint": "Entre 1 € et 5 000 €.",
+        "amountError": "Saisis un montant entre 1 € et 5 000 €.",
+        "nameLabel": "Nom affiché dans les derniers dons",
+        "nameHint": "Facultatif. Laissé vide, ton pseudo est utilisé si tu es connecté.",
+        "messageLabel": "Message",
+        "messageHint": "Facultatif, {max} caractères maximum. Visible dans les derniers dons.",
+        "anonymousLabel": "Ne pas afficher mon nom",
+        "providerLegend": "Moyen de paiement",
+        "submit": "Faire un don de {amount}",
+        "redirecting": "Redirection vers le paiement…",
+        "cancel": "Annuler"
+      }
+    },
+    "errors": {
+      "unauthenticated": "Connecte-toi pour continuer. Tu reviendras ensuite sur cette page.",
+      "account_not_found": "Ton compte est introuvable. Reconnecte-toi puis réessaie.",
+      "invalid_origin": "La demande de paiement a été refusée. Recharge la page puis réessaie.",
+      "forbidden": "Cette action n’est pas autorisée pour ton compte.",
+      "unknown_plan": "Cette formule n’existe pas. Recharge la page et choisis une formule.",
+      "unknown_tier": "Ce montant n’est plus proposé. Choisis un autre montant.",
+      "invalid_amount": "Saisis un montant entre 1 € et 5 000 €.",
+      "payload_too_large": "Le nom ou le message est trop long. Raccourcis-le puis réessaie.",
+      "invalid_request": "La demande est incomplète. Recharge la page puis réessaie.",
+      "invalid_order": "Ce paiement PayPal est introuvable. Recommence le don.",
+      "invalid_subscription": "Cet abonnement est introuvable. Recharge la page.",
+      "no_billing_profile": "Aucun abonnement par carte n’est associé à ton compte. Abonne-toi depuis le Club VIP.",
+      "subscription_not_found": "Cet abonnement est introuvable. Recharge la page.",
+      "donation_not_found": "Ce don est introuvable. Recommence le don.",
+      "checkout_in_progress": "Ton compte a déjà un abonnement ou un paiement en cours. Consulte la page Abonnement et paiements.",
+      "amount_mismatch": "Le montant a changé pendant le paiement. Recommence le don.",
+      "payment_not_confirmed": "PayPal n’a pas encore confirmé le paiement. Recharge la page dans un instant.",
+      "state_changed": "L’état de l’abonnement a changé entre-temps. Recharge la page.",
+      "provider_unavailable": "Ce moyen de paiement est indisponible pour le moment. Choisis l’autre moyen de paiement ou réessaie plus tard.",
+      "auth_unavailable": "La connexion est momentanément indisponible. Réessaie dans quelques minutes.",
+      "checkout_failed": "Le paiement n’a pas démarré. Réessaie dans quelques minutes ou choisis l’autre moyen de paiement.",
+      "capture_unavailable": "La confirmation PayPal est momentanément indisponible. Recharge la page dans quelques minutes.",
+      "donations_unavailable": "La liste des dons n’a pas pu être chargée.",
+      "default": "L’opération n’a pas abouti. Réessaie, ou choisis l’autre moyen de paiement.",
+      "signIn": "Se connecter",
+      "retry": "Réessayer",
+      "providerDisabled": "{provider} est indisponible pour le moment."
+    }
+  },
   "admin": {
     "families": {
       "pilotage": "Pilotage",
@@ -1545,6 +1742,10 @@
       "banners": {
         "title": "Bannières des pages",
         "description": "Visuels éditoriaux et annonces mises en avant."
+      },
+      "monetization": {
+        "title": "Monétisation et campagnes",
+        "description": "Gérer les annonceurs directs, leurs budgets et la revue des créations publicitaires."
       },
       "logs": {
         "title": "Journaux du service",
@@ -1796,10 +1997,24 @@
     "hero": {
       "title": "Dragon Ball, en français et sourcé",
       "featureEyebrow": "À l’affiche",
-      "watchEpisode": "Voir l’épisode {number}",
+      "watchEpisode": "Regarder l’épisode {number}",
       "episodeNumber": "Épisode {number}",
       "pauseFrames": "Mettre les images en pause",
-      "resumeFrames": "Animer les images"
+      "resumeFrames": "Animer les images",
+      "carousel": {
+        "label": "Derniers épisodes de Dragon Ball Super : Beerus",
+        "roleDescription": "carrousel",
+        "slideRoleDescription": "diapositive",
+        "slideOf": "{current} sur {total}",
+        "goTo": "Épisode {number} : {title}",
+        "segments": "Choisir un épisode",
+        "previous": "Épisode précédent",
+        "next": "Épisode suivant",
+        "pause": "Mettre le défilement en pause",
+        "play": "Reprendre le défilement",
+        "aired": "Diffusé {date}",
+        "duration": "{minutes} min"
+      }
     },
     "search": {
       "label": "Rechercher dans l'encyclopédie",
@@ -2268,7 +2483,7 @@
     "episodeProviderNote": "DBFR ne reproduit pas le flux du diffuseur. Consultez sa fiche officielle pour vérifier les conditions de lecture dans votre région.",
     "episodeSource": "Histoire officielle · site Dragon Ball Super",
     "episodeReleaseDate": "Première diffusion au Japon : 11 octobre 2026",
-    "watchEpisode": "Ouvrir la fiche officielle Crunchyroll",
+    "watchEpisode": "Voir l’offre officielle",
     "originalVideo": "Vidéo officielle",
     "originalVideoNote": "Consultez la fiche du diffuseur officiel.",
     "heroEyebrow": "Nouvelle série · chaque dimanche",
@@ -2457,12 +2672,26 @@
     "designDescription": "Personnaliser les couleurs, la typographie, les panneaux et les boutons.",
     "homeLayoutDescription": "Régler l’ordre et la visibilité des sections, scènes et destinations.",
     "panelStyle": "Style des panneaux",
-    "panelStyles": { "comic": "Bande dessinée", "soft": "Doux", "flat": "Plat" },
+    "panelStyles": {
+      "comic": "Bande dessinée",
+      "soft": "Doux",
+      "flat": "Plat"
+    },
     "homeActionLayout": "Disposition des boutons du hero",
     "homeActionAlignment": "Alignement des boutons du hero",
-    "homeActionLayouts": { "row": "Sur une ligne", "stacked": "Empilés" },
-    "homeActionAlignments": { "start": "À gauche", "center": "Centrés", "end": "À droite" },
-    "previewDevices": { "desktop": "Ordinateur", "mobile": "Mobile" },
+    "homeActionLayouts": {
+      "row": "Sur une ligne",
+      "stacked": "Empilés"
+    },
+    "homeActionAlignments": {
+      "start": "À gauche",
+      "center": "Centrés",
+      "end": "À droite"
+    },
+    "previewDevices": {
+      "desktop": "Ordinateur",
+      "mobile": "Mobile"
+    },
     "buttonsTitle": "Style des boutons",
     "buttonSize": "Encombrement des boutons",
     "buttonShape": "Forme des boutons",
@@ -3009,5 +3238,230 @@
   "studioVideo": {
     "auraIntensity": "Intensité de l’aura pourpre",
     "timelinePosition": "Position temporelle"
+  },
+  "monetization": {
+    "loadError": "Impossible de charger les données de monétisation.",
+    "actionRejected": "Action refusée. Vérifie les données et le statut des éléments liés.",
+    "saved": "Enregistrement effectué.",
+    "saveError": "Erreur lors de l’enregistrement.",
+    "newAdvertiser": "Nouvel annonceur",
+    "legalName": "Raison sociale",
+    "contactEmail": "E-mail de contact",
+    "contractReference": "Référence du contrat (facultatif)",
+    "createAdvertiser": "Créer l’annonceur",
+    "newCampaign": "Nouvelle campagne",
+    "chooseApprovedAdvertiser": "Choisir un annonceur approuvé",
+    "campaignName": "Nom de campagne",
+    "totalBudgetEur": "Budget total en EUR",
+    "dailyCapEur": "Plafond quotidien en EUR (facultatif)",
+    "requiredPlacements": "Emplacements activés requis",
+    "createCampaign": "Créer la campagne",
+    "newCreative": "Nouvelle création publicitaire",
+    "chooseEditableCampaign": "Choisir une campagne modifiable",
+    "headline": "Titre",
+    "body": "Texte complémentaire",
+    "imageUrl": "Image HTTPS (facultative)",
+    "destinationUrl": "Destination HTTPS",
+    "submitForReview": "Soumettre pour revue",
+    "advertisers": "Annonceurs",
+    "campaigns": "Campagnes",
+    "activate": "Activer",
+    "pause": "Suspendre",
+    "placements": "Emplacements sponsorisés",
+    "placementPolicy": "Les emplacements sont désactivés à la création. N’active que les pages couvertes par les droits et le contrat.",
+    "placementKey": "Clé (ex. news-article)",
+    "internalName": "Nom interne",
+    "allowedFormats": "Formats admis",
+    "allowedPaths": "Une route autorisée par ligne, ex. /news",
+    "savePlacement": "Créer / mettre à jour (désactivé)",
+    "vipExcluded": "VIP exclus",
+    "vipIncluded": "VIP inclus",
+    "deactivate": "Désactiver",
+    "creativesToReview": "Créations à contrôler",
+    "dailyReport": "Bilan quotidien des campagnes",
+    "reportingNote": "Impressions et clics agrégés sans identifiant visiteur. Les campagnes sont facturées au forfait convenu et rapprochées manuellement.",
+    "dailyEvent": "{day} · campagne {campaign} · {impressions} impression(s) · {clicks} clic(s)",
+    "language": {
+      "fr": "Français",
+      "en": "English",
+      "ja": "日本語"
+    },
+    "format": {
+      "native": "Natif",
+      "banner": "Bannière",
+      "rectangle": "Rectangle"
+    },
+    "status": {
+      "approved": "Approuvé",
+      "paused": "Suspendu",
+      "rejected": "Refusé",
+      "pending": "En attente",
+      "draft": "Brouillon",
+      "pending_review": "À valider",
+      "active": "Actif"
+    }
+  },
+  "ads": {
+    "label": "Publicité",
+    "sponsored": "Publicité partenaire",
+    "developmentPlacement": "Emplacement publicitaire · {placement} · {format}"
+  },
+  "auth": {
+    "security": {
+      "title": "Sécurité et connexions",
+      "lead": "Gère les fournisseurs liés et les clés d’accès de ton compte unifié.",
+      "loadError": "Impossible de charger les méthodes de connexion.",
+      "actionError": "Cette opération n’a pas abouti. Réessaie.",
+      "linkedAccounts": "Comptes liés",
+      "linkedLead": "Connecte-toi avec une méthode existante avant d’en associer une autre.",
+      "connected": "· associé",
+      "notConnected": "· non associé",
+      "notConfigured": "· non configuré",
+      "link": "Associer",
+      "unlink": "Dissocier",
+      "keepOne": "Garde au moins une méthode de connexion associée à ton compte.",
+      "passkeys": "Clés d’accès",
+      "passkeyLead": "Connecte-toi avec l’empreinte, le visage ou le code de ton appareil.",
+      "passkeyDefault": "Clé d’accès",
+      "addPasskey": "Ajouter une clé d’accès",
+      "remove": "Supprimer",
+      "passkeyAdded": "Clé d’accès ajoutée.",
+      "passkeyRemoved": "Clé d’accès supprimée.",
+      "unlinked": "Compte externe dissocié.",
+      "emailPassword": "E-mail et mot de passe",
+      "emailPasswordConfigured": "· configuré",
+      "emailPasswordNotConfigured": "· non configuré",
+      "emailPasswordLead": "Définis un mot de passe pour te connecter aussi avec l’adresse de ce compte.",
+      "addEmailPassword": "Configurer",
+      "resetEmailPassword": "Réinitialiser le mot de passe"
+    },
+    "reset": {
+      "requestTitle": "Réinitialiser ton mot de passe",
+      "requestLead": "Si un compte vérifié utilise cette adresse, tu recevras un lien de réinitialisation.",
+      "requestSent": "Si cette adresse correspond à un compte, un e-mail de réinitialisation a été envoyé.",
+      "send": "Envoyer le lien",
+      "title": "Choisir un nouveau mot de passe",
+      "submit": "Enregistrer le mot de passe",
+      "changed": "Mot de passe modifié. Les autres sessions ont été fermées.",
+      "error": "Le lien est invalide ou a expiré. Demande-en un nouveau.",
+      "back": "Retour à la connexion"
+    },
+    "twoFactor": {
+      "title": "Vérification en deux étapes",
+      "lead": "Saisis le code de ton application d’authentification ou un code de secours.",
+      "code": "Code à usage unique",
+      "backupCode": "Code de secours",
+      "submit": "Vérifier et continuer",
+      "useBackup": "Utiliser un code de secours",
+      "useApp": "Utiliser l’application d’authentification",
+      "error": "Code invalide ou expiré. Réessaie."
+    },
+    "signin": {
+      "title": "Connexion",
+      "lead": "Un seul compte pour ton profil, tes favoris, tes tier lists et ton abonnement.",
+      "discord": "Se connecter avec Discord",
+      "google": "Se connecter avec Google",
+      "orEmail": "Ou avec ton adresse e-mail",
+      "name": "Pseudo affiché",
+      "email": "Adresse e-mail",
+      "password": "Mot de passe",
+      "createAccount": "Créer un compte",
+      "emailSubmit": "Se connecter",
+      "haveAccount": "Se connecter avec un compte existant",
+      "magicLink": "Recevoir un lien de connexion par e-mail",
+      "forgotPassword": "Mot de passe oublié ?",
+      "magicLinkSent": "Si cette adresse est vérifiée, un lien de connexion vient d’être envoyé.",
+      "passkey": "Se connecter avec une clé d’accès",
+      "emailUnavailable": "La connexion par e-mail est indisponible pour le moment. Utilise une des méthodes ci-dessus.",
+      "passkeyError": "La connexion par clé d’accès n’a pas abouti. Réessaie ou choisis une autre méthode.",
+      "verifyEmail": "Vérifie ta boîte e-mail pour confirmer ton adresse avant de continuer.",
+      "verified": "Adresse e-mail confirmée. Tu peux te connecter.",
+      "oauthError": "La connexion externe n’a pas abouti. Réessaie ou choisis une autre méthode.",
+      "emailError": "Adresse e-mail ou mot de passe incorrect. Vérifie-les puis réessaie.",
+      "termsLead": "En continuant, tu acceptes les",
+      "terms": "conditions d’utilisation",
+      "home": "Retour à l’accueil",
+      "signupTitle": "Créer un compte",
+      "metaDescription": "Connecte-toi pour retrouver ton profil, tes favoris, tes tier lists et ton abonnement.",
+      "nameHint": "Entre {min} et {max} caractères.",
+      "passwordHint": "{min} caractères minimum.",
+      "showPassword": "Afficher le mot de passe",
+      "hidePassword": "Masquer le mot de passe",
+      "magicLinkNeedsEmail": "Saisis ton adresse e-mail pour recevoir un lien de connexion.",
+      "signupError": "Le compte n’a pas pu être créé. Vérifie les champs, ou connecte-toi si l’adresse est déjà inscrite.",
+      "working": "Connexion en cours…"
+    },
+    "consent": {
+      "eyebrow": "Autorisation Shenron",
+      "title": "Autoriser {client}",
+      "lead": "Cette application demande l’accès à ton compte Shenron.",
+      "loading": "Lecture de la demande…",
+      "openid": "Confirmer ton identité",
+      "profile": "Lire ton nom de profil",
+      "email": "Lire ton adresse e-mail",
+      "offline_access": "Garder l’accès actif jusqu’à révocation",
+      "unknownScope": "Accès demandé : {scope}",
+      "approve": "Autoriser",
+      "deny": "Refuser",
+      "error": "La demande d’autorisation n’a pas pu aboutir.",
+      "privacy": "Tu peux révoquer les accès autorisés dans les paramètres de sécurité de ton compte."
+    }
+  },
+  "billingEmail": {
+    "donationSubject": "Confirmation de votre contribution à Dragon Ball France",
+    "donationBody": "Bonjour {name}, nous confirmons la réception de votre contribution de {amount} à Dragon Ball France. Référence : {reference}. Ce message confirme le paiement ; ce n’est ni une facture ni un reçu fiscal.",
+    "subscriptionSubject": "Votre abonnement DBFR VIP est activé",
+    "subscriptionBody": "Bonjour {name}, votre abonnement DBFR VIP ({plan}) est actif. Montant : {amount} par {interval}. Gérer votre abonnement : {billingUrl}. Référence : {reference}. Ce message confirme le paiement ; ce n’est ni une facture ni un reçu fiscal.",
+    "renewalSubject": "Paiement reçu pour votre abonnement DBFR VIP",
+    "renewalBody": "Bonjour {name}, nous confirmons le paiement de {amount} pour le renouvellement de votre abonnement DBFR VIP. Gérer votre abonnement : {billingUrl}. Référence : {reference}. Ce message confirme le paiement ; ce n’est ni une facture ni un reçu fiscal.",
+    "paymentFailedSubject": "Action requise pour votre abonnement DBFR VIP",
+    "paymentFailedBody": "Bonjour {name}, le dernier paiement de votre abonnement DBFR VIP n’a pas abouti. Vérifiez votre moyen de paiement auprès du prestataire : {billingUrl}. Référence : {reference}."
+  },
+  "vie": {
+    "empty": {
+      "warriors": {
+        "title": "Le podium attend ses guerriers",
+        "description": "Le bot ne renvoie aucun guerrier pour l’instant. Le podium se remplit dès qu’un membre gagne de l’XP sur le serveur Discord."
+      },
+      "news": {
+        "title": "Aucun article publié",
+        "description": "La rédaction n’a encore rien mis en ligne. Le wiki, lui, est là : le manga, les épisodes et les films se parcourent dès maintenant."
+      },
+      "shop": {
+        "title": "Rien ne correspond à ta recherche",
+        "description": "Aucun article ne porte ce nom. Efface la recherche ou parcours le catalogue complet."
+      }
+    },
+    "cta": {
+      "readManga": "Lire le manga",
+      "exploreWiki": "Explorer le wiki",
+      "joinDiscord": "Rejoindre le Discord",
+      "fullBoard": "Classement complet",
+      "rate": "Noter une œuvre",
+      "clearSearch": "Voir tout le catalogue"
+    },
+    "notFound": {
+      "sector": "Secteur inconnu",
+      "title": "404",
+      "line1": "Cette page s’est perdue dans le néant cosmique.",
+      "line2": "Même les sept boules de cristal sont dispersées ici.",
+      "home": "Retour à la base",
+      "manga": "Lire le manga"
+    }
+  },
+  "stream": {
+    "continue": {
+      "title": "Continuer à regarder",
+      "forget": "Retirer « {titre} » de la liste"
+    },
+    "status": {
+      "planned": "À voir",
+      "watching": "En cours",
+      "completed": "Terminé"
+    },
+    "watchlist": {
+      "empty": "Ta watchlist est vide. Ajoute un épisode ou un film depuis sa fiche.",
+      "resumeAt": "Reprendre à {time}"
+    }
   }
 }

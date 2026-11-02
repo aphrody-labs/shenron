@@ -11,6 +11,7 @@ import { DomainBar } from "@/components/kit";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { VieArt } from "@aphrody/shenron-ui/vie/VieArt";
 
 export const dynamic = "force-dynamic";
 
@@ -1133,7 +1134,11 @@ export default async function SearchPage({
           )}
 
           {totalResults === 0 && (
-            <div className="dbz-panel p-10 max-w-3xl border-l-4 border-l-dbz-red reveal-up">
+            <div className="dbz-panel relative overflow-hidden p-10 max-w-3xl border-l-4 border-l-dbz-red reveal-up">
+              <VieArt
+                kind="ki"
+                className="absolute -bottom-6 right-2 scale-75 opacity-40 max-sm:invisible"
+              />
               <h2 className="font-saiyan text-3xl text-white mb-4 tracking-widest">
                 AUCUNE ÉNERGIE DÉTECTÉE
               </h2>

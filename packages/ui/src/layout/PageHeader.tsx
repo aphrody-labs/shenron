@@ -1,4 +1,6 @@
 import type { ReactNode } from "react";
+import { VieArt, type VieArtKind } from "../vie/VieArt";
+import { Reveal } from "../vie/Reveal";
 import { HeroTitles } from "./HeroTitles";
 
 /**
@@ -17,6 +19,7 @@ export function PageHeader({
   subtitle,
   actions,
   size = "lg",
+  art,
   className = "mb-8 md:mb-12",
 }: {
   /** Surtitre orange. Omis, l'en-tête garde le filet mais pas la ligne d'accent. */
@@ -26,10 +29,22 @@ export function PageHeader({
   /** Boutons ou liens propres à la page (créer, filtrer, exporter). */
   actions?: ReactNode;
   size?: "md" | "lg";
+  /** Scène décorative à droite (desktop seulement) et lignes de vitesse en fond. */
+  art?: VieArtKind;
   className?: string;
 }) {
+  const Shell = art ? Reveal : "header";
   return (
-    <header className={`border-b border-white/[0.08] pb-6 ${className}`}>
+    <Shell
+      {...(art ? { as: "header" } : {})}
+      className={`border-b border-white/[0.08] pb-6 ${art ? "vie-speed relative overflow-hidden" : ""} ${className}`}
+    >
+      {art && (
+        <VieArt
+          kind={art}
+          className="absolute bottom-2 right-2 origin-bottom-right scale-[.8] opacity-60 max-lg:invisible xl:right-10"
+        />
+      )}
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="min-w-0">
           <HeroTitles
@@ -39,8 +54,10 @@ export function PageHeader({
             regime={size === "md" ? "compact" : "plain"}
           />
         </div>
-        {actions && <div className="flex shrink-0 flex-wrap items-center gap-2">{actions}</div>}
+        {actions && (
+          <div className="relative z-10 flex shrink-0 flex-wrap items-center gap-2">{actions}</div>
+        )}
       </div>
-    </header>
+    </Shell>
   );
 }

@@ -56,9 +56,15 @@ const env: Record<string, string> = { CARGO_TARGET_DIR: join(ROOT, "target") };
 const runner = join(ROOT, "scripts/build/rust/cargo-runner.ts");
 
 async function run(command: string[], cwd: string, env: Record<string, string> = {}) {
+  const baseEnv =
+    "PATH" in env
+      ? Object.fromEntries(
+          Object.entries(process.env).filter(([key]) => key.toUpperCase() !== "PATH"),
+        )
+      : process.env;
   const child = Bun.spawn(command, {
     cwd,
-    env: { ...process.env, ...env },
+    env: { ...baseEnv, ...env },
     stdio: ["inherit", "inherit", "inherit"],
   });
   if ((await child.exited) !== 0) throw new Error(`${command.slice(0, 3).join(" ")} failed`);

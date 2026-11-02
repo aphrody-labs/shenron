@@ -4,7 +4,7 @@ import { T } from "@/components/T";
 import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import { SectionUnavailable } from "@/components/wiki/SectionUnavailable";
 import { ContributeRail } from "@/components/kit";
-import { ContinueRail } from "@/components/history/ContinueRail";
+import { ContinueWatchingRail } from "@/components/continue-watching/ContinueWatchingRail";
 import { dbUniverse } from "@/lib/db-universe";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import {
@@ -17,6 +17,8 @@ import {
 import { streamingEpisode, streamingFeature, type StreamingGroup } from "@/lib/streaming-catalogue";
 import { StreamingHero, StreamingNotice, StreamingNavigation } from "./StreamingHero";
 import { StreamingBrowser } from "./StreamingBrowser";
+import { VieStage } from "@aphrody/shenron-ui/vie/VieStage";
+import { SectionDivider } from "@aphrody/shenron-ui/vie/SectionDivider";
 import { StreamingSavedRail } from "./StreamingSavedRail";
 
 export default async function StreamingCatalogue() {
@@ -48,9 +50,11 @@ export default async function StreamingCatalogue() {
     <WikiPageShell width="wide" className="min-w-0">
       <StreamingNavigation />
       {!featured && (
-        <h1>
-          <T k="wiki.episodes.title" />
-        </h1>
+        <VieStage art="kinto" className="pb-4">
+          <h1>
+            <T k="wiki.episodes.title" />
+          </h1>
+        </VieStage>
       )}
       {featured && (
         <StreamingHero
@@ -58,9 +62,10 @@ export default async function StreamingCatalogue() {
           seriesLabel={SERIES_LABELS[featured.series] ?? featured.series}
         />
       )}
-      <ContinueRail kinds={["episode"]} titleKey="history.resumeWatching" />
+      <ContinueWatchingRail kinds={["episode"]} />
       <StreamingSavedRail />
       {(loaded.length !== groups.length || !sagaData) && <StreamingNotice />}
+      <SectionDivider className="my-2" />
       <StreamingBrowser
         groups={groups}
         access={access ? { openKeys: access.openKeys, access: access.access } : null}

@@ -112,7 +112,7 @@ export function SagaBestOf({
               setSeries(f.id);
               setSelectedSlug(sagas.find((item) => matchesSeries(item.seriesLabel, f.id))?.slug);
             }}
-            className={`min-h-11 shrink-0 rounded-full border px-4 font-display text-sm font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${focus} ${
+            className={`cursor-pointer min-h-11 shrink-0 rounded-full border px-4 font-display text-sm font-semibold transition-[border-color,background-color,color,scale] duration-150 ease-out active:scale-[0.96] motion-reduce:transition-none motion-reduce:active:scale-100 disabled:cursor-not-allowed disabled:opacity-50 ${focus} ${
               series === f.id
                 ? "border-dbz-orange bg-dbz-orange/15 text-white"
                 : "border-white/15 text-white/70 hover:border-dbz-gold hover:text-white"
@@ -161,10 +161,10 @@ export function SagaBestOf({
                 aria-controls={panelId}
                 tabIndex={s.slug === saga.slug ? 0 : -1}
                 onClick={() => setSelectedSlug(s.slug)}
-                className={`flex min-h-14 w-44 shrink-0 snap-start items-center gap-3 rounded-xl border p-2 text-left transition-colors lg:w-full ${focus} ${
+                className={`cursor-pointer flex min-h-14 w-44 shrink-0 snap-start items-center gap-3 rounded-xl border p-2 text-left transition-[border-color,background-color,scale,translate] duration-150 ease-out active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100 lg:w-full ${focus} ${
                   s.slug === saga.slug
-                    ? "border-dbz-orange bg-dbz-orange/10"
-                    : "border-white/[0.08] bg-dbz-card/80 hover:border-dbz-gold"
+                    ? "border-dbz-orange bg-dbz-orange/15"
+                    : "border-white/[0.08] bg-dbz-card/80 hover:-translate-y-0.5 hover:border-dbz-gold motion-reduce:hover:translate-y-0"
                 }`}
               >
                 <span className="relative size-10 shrink-0 overflow-hidden rounded-lg bg-dbz-bg">
@@ -235,7 +235,7 @@ export function SagaBestOf({
                 {open(saga.watchHref) && (
                   <Link
                     href={saga.watchHref}
-                    className={`inline-flex min-h-11 items-center rounded-lg bg-dbz-orange px-5 font-display text-sm font-bold text-dbz-bg transition-colors hover:bg-dbz-gold ${focus}`}
+                    className={`cursor-pointer inline-flex min-h-11 items-center rounded-lg bg-dbz-orange px-5 font-display text-sm font-bold text-dbz-bg transition-[background-color,scale,translate] duration-150 ease-out hover:-translate-y-0.5 hover:bg-dbz-gold active:scale-[0.96] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100 ${focus}`}
                   >
                     {saga.watchLabel}
                   </Link>
@@ -243,7 +243,7 @@ export function SagaBestOf({
                 {open("/wiki/timeline") && (
                   <Link
                     href="/wiki/timeline"
-                    className={`inline-flex min-h-11 items-center rounded-lg border border-white/15 px-5 font-display text-sm font-bold text-white transition-colors hover:border-dbz-gold hover:text-dbz-gold ${focus}`}
+                    className={`cursor-pointer inline-flex min-h-11 items-center rounded-lg border border-white/15 px-5 font-display text-sm font-bold text-white transition-[border-color,color,scale,translate] duration-150 ease-out hover:-translate-y-0.5 hover:border-dbz-gold hover:text-dbz-gold active:scale-[0.96] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100 ${focus}`}
                   >
                     {t("home.bestof.fullTimeline")}
                   </Link>

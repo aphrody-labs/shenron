@@ -329,8 +329,8 @@ export async function importCardCatalogBatch(
           cardNumber: row.cardNumber,
           language: row.language,
           region: row.region,
-          rarity: row.rarity || null,
-          releaseDate: row.releaseDate ?? null,
+          rarity: row.rarity === undefined ? (before?.rarity ?? null) : row.rarity || null,
+          releaseDate: row.releaseDate ?? before?.releaseDate ?? null,
           description: before?.description ?? null,
           frontImageUrl,
           frontImageWidth:

@@ -94,7 +94,7 @@ function SourceList({ cited, accentClass }: { cited: WikiSource[]; accentClass: 
   return (
     <ol className="space-y-1.5 text-sm">
       {cited.map((s) => (
-        <li key={s.n} className="flex gap-3 text-white/60">
+        <li key={s.n} id={`ref-${s.n}`} className="flex gap-3 text-white/60">
           <span className={`shrink-0 font-mono text-xs ${accentClass}`}>[{s.n}]</span>
           {s.url ? (
             <a
@@ -146,9 +146,14 @@ export function WikiSources({
 			    de la dernière rubrique affichée, avec laquelle il n'a rien à voir.
 			    Le `h3` de `WikiArticle` reste juste, lui : il vit dans le `<footer>`
 			    d'une section qui porte déjà son `h2`. */}
-      <h2 className="text-[10px] font-bold text-white/50 uppercase tracking-[0.3em] mb-4">
-        Sources & références
-      </h2>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <h2 className="text-[10px] font-bold text-white/50 uppercase tracking-[0.3em]">
+          Sources & références
+        </h2>
+        <span className="rounded-full border border-white/10 bg-white/[0.04] px-2.5 py-0.5 font-mono text-[11px] tabular-nums text-white/55">
+          {cited.length} réf.
+        </span>
+      </div>
       <SourceList cited={cited} accentClass={style.text} />
     </section>
   );

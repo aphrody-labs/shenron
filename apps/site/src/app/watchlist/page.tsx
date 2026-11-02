@@ -1,27 +1,35 @@
 import { PageShell } from "@/components/kit";
 import type { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WatchlistClient } from "./WatchlistClient";
 import { UserNav } from "@/components/user/UserNav";
 
-export const metadata: Metadata = {
-  title: "Ma Watchlist & Favoris — Dragon Ball France",
-  description:
-    "Ta liste de visionnage et tes séries Dragon Ball préférées synchronisées en direct avec Crunchyroll et Dragon Ball France.",
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("watchlistPage");
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription"),
+    robots: { index: false, follow: false },
+  };
+}
 
-export default function WatchlistPage() {
+/**
+ * `/watchlist` : coquille statique (ni cookie ni session lus au rendu, pour rester
+ * cachée par le CDN) ; la liste personnelle arrive à l'hydratation.
+ */
+export default async function WatchlistPage() {
+  const t = await getTranslations("watchlistPage");
   return (
     <PageShell width="default">
       <UserNav />
-      <Breadcrumbs className="mb-8" items={[{ label: "Watchlist" }]} />
+      <Breadcrumbs className="mb-8" items={[{ label: t("title") }]} />
       <PageHeader
-        eyebrow="Visionnage & Séries"
-        title="Ma Watchlist Crunchyroll & Shenron"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         className="mb-10"
-        subtitle="Retrouve l'ensemble de tes séries, saisons et épisodes Dragon Ball prêts à regarder, synchronisés entre ton profil et le catalogue officiel."
+        subtitle={t("subtitle")}
       />
       <WatchlistClient />
     </PageShell>

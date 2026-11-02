@@ -82,7 +82,7 @@ d("render pool throughput", () => {
   const cores = navigator.hardwareConcurrency || 1;
   const all = workerCount(null);
 
-  test(
+  test.skipIf(all < 2)(
     "every core renders more cards per second than one worker",
     { timeout: 180_000 },
     async () => {

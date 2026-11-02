@@ -30,6 +30,7 @@
  */
 import { useLangue } from "@/lib/i18n/client";
 import type { Dictionary } from "@/lib/i18n";
+import { useCallback } from "react";
 
 /** Walks `nav.wiki` through the dictionary. Returns null rather than a half-path. */
 export function lookup(dico: Dictionary, key: string): string | null {
@@ -57,17 +58,20 @@ function interpolate(text: string, values?: Record<string, string | number>): st
  */
 export function useT(): (key: string, values?: Record<string, string | number>) => string {
   const { dico } = useLangue();
-  return (key, values) => {
-    const found = lookup(dico, key);
-    if (found === null) {
-      if (!manquantes.has(key)) {
-        manquantes.add(key);
-        console.warn(`[i18n] clé absente : ${key}`);
+  return useCallback(
+    (key: string, values?: Record<string, string | number>) => {
+      const found = lookup(dico, key);
+      if (found === null) {
+        if (!manquantes.has(key)) {
+          manquantes.add(key);
+          console.warn(`[i18n] clé absente : ${key}`);
+        }
+        return "";
       }
-      return "";
-    }
-    return interpolate(found, values);
-  };
+      return interpolate(found, values);
+    },
+    [dico],
+  );
 }
 
 export function T({

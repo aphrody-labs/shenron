@@ -5,17 +5,21 @@
   isolation: isolate;
   background: var(--background);
 }
+
 .home-screen-deck {
   position: relative;
   overflow-x: clip;
 }
+
 .home-screen {
   scroll-margin-top: 5rem;
   display: grid;
   align-content: center;
   padding: clamp(1rem, 3vh, 2.5rem) var(--shell-pad, 1rem);
   min-width: 0;
+  position: relative;
 }
+
 .home-screen-content {
   width: 100%;
   max-width: var(--shell-max, 80rem);
@@ -23,75 +27,232 @@
   min-width: 0;
   position: relative;
 }
+
 .home-screen:has(.home-section-scene) {
   padding: 0;
 }
+
 .home-screen-content:has(.home-section-scene),
 .home-screen-content:has(#hero) {
   max-width: none;
 }
+
+/* Immersive atmospheric section scenes (pure CSS, zero background video or extra network fetches) */
 .home-screen .home-section-scene {
-  min-height: 20rem;
+  --scene-tone: var(--scene-accent, var(--primary));
+  min-height: 22rem;
   border: 0;
+  border-bottom: 1px solid color-mix(in oklab, var(--scene-tone) 18%, var(--border));
   border-radius: 0;
   display: grid;
   align-items: center;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(
+      ellipse 58% 68% at 88% 18%,
+      color-mix(in oklab, var(--scene-tone) 14%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 50% 60% at 12% 85%,
+      color-mix(in oklab, var(--scene-tone) 9%, transparent) 0%,
+      transparent 68%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in oklab, var(--card) 55%, var(--background)) 0%,
+      var(--background) 50%,
+      color-mix(in oklab, var(--card) 45%, var(--background)) 100%
+    );
 }
+
+.home-screen:nth-child(even) .home-section-scene {
+  background:
+    radial-gradient(
+      ellipse 58% 68% at 14% 22%,
+      color-mix(in oklab, var(--scene-tone) 15%, transparent) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 52% 62% at 86% 82%,
+      color-mix(in oklab, var(--scene-tone) 10%, transparent) 0%,
+      transparent 68%
+    ),
+    linear-gradient(
+      180deg,
+      var(--background) 0%,
+      color-mix(in oklab, var(--card) 68%, var(--background)) 50%,
+      var(--background) 100%
+    );
+}
+
+.home-section-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image:
+    radial-gradient(color-mix(in oklab, var(--scene-tone) 22%, transparent) 1px, transparent 1px),
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in oklab, var(--scene-tone) 6%, transparent) 50%,
+      transparent 100%
+    );
+  background-size:
+    24px 24px,
+    100% 100%;
+  mask-image: radial-gradient(ellipse 80% 75% at 50% 50%, black 20%, transparent 90%);
+}
+
+.home-screen[data-active="true"] .home-section-backdrop {
+  opacity: 0.85;
+}
+
 .home-screen .home-section-scene > div:last-child {
+  position: relative;
+  z-index: 1;
   width: 100%;
   max-width: var(--shell-max, 80rem);
   margin-inline: auto;
-  padding: clamp(1.25rem, 4vw, 4rem);
+  padding: clamp(1.75rem, 4.2vw, 4rem) clamp(1.25rem, 3.5vw, 3.5rem);
 }
+
 .home-screen:first-child {
   padding: 0;
 }
+
+/* Tactile click burst & Ki ripple overlay */
+.home-click-fx-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.home-click-fx {
+  position: fixed;
+  left: var(--click-x, 50%);
+  top: var(--click-y, 50%);
+  width: 2.25rem;
+  height: 2.25rem;
+  margin-left: -1.125rem;
+  margin-top: -1.125rem;
+  border-radius: 999px;
+  border: 2px solid color-mix(in oklab, var(--primary) 82%, white);
+  background: radial-gradient(
+    circle,
+    color-mix(in oklab, var(--primary) 38%, transparent) 0%,
+    transparent 70%
+  );
+  animation: home-ki-ripple 520ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.home-click-fx[data-strong] {
+  width: 3rem;
+  height: 3rem;
+  margin-left: -1.5rem;
+  margin-top: -1.5rem;
+  border-color: var(--primary);
+  box-shadow: 0 0 18px color-mix(in oklab, var(--primary) 55%, transparent);
+}
+
+@keyframes home-ki-ripple {
+  0% {
+    opacity: 0.92;
+    scale: 0.25;
+  }
+  70% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0;
+    scale: 2.35;
+  }
+}
+
 .home-screen-controls {
   position: sticky;
   width: max-content;
-  margin: 1rem var(--shell-pad, 1rem) 1rem auto;
-  bottom: calc(4.5rem + env(safe-area-inset-bottom));
+  margin: 0.75rem var(--shell-pad, 1rem) 0.75rem auto;
+  bottom: calc(4.75rem + env(safe-area-inset-bottom));
   z-index: 10;
   display: flex;
   align-items: center;
   gap: 0.25rem;
-  padding: 0.25rem;
-  border: 1px solid var(--border);
+  padding: 0.25rem 0.35rem;
+  border: 1px solid color-mix(in oklab, var(--primary) 32%, var(--border));
   border-radius: 999px;
-  background: var(--background);
+  background: color-mix(in oklab, var(--background) 90%, transparent);
+  backdrop-filter: blur(10px);
   color: var(--foreground);
+  box-shadow: 0 2px 0 var(--color-encre, #000);
 }
+
 .home-screen-controls button {
+  cursor: pointer;
   display: grid;
   place-items: center;
   width: 44px;
   height: 44px;
   border-radius: 50%;
   color: inherit;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    scale 0.12s ease;
 }
-.home-screen-controls button:hover {
-  background: var(--secondary);
-  color: var(--secondary-foreground);
+
+.home-screen-controls button:hover:not(:disabled) {
+  background: color-mix(in oklab, var(--primary) 18%, var(--secondary));
+  color: var(--foreground);
 }
+
+.home-screen-controls button:active:not(:disabled) {
+  scale: 0.9;
+}
+
 .home-screen-controls button:disabled {
   opacity: 0.35;
+  cursor: not-allowed;
 }
+
 .home-screen-controls button:focus-visible,
 .home-screen-deck:focus-visible {
   outline: 2px solid var(--primary);
   outline-offset: 3px;
 }
+
 .home-screen-count {
   padding-inline: 0.5rem;
   font-variant-numeric: tabular-nums;
+  font-weight: 700;
   font-size: 0.75rem;
 }
+
 [data-home-motion="paused"] .kt-volant,
-[data-home-motion="paused"] .kt-volant * {
+[data-home-motion="paused"] .kt-volant *,
+[data-home-motion="paused"] .home-click-fx {
   animation-play-state: paused;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .home-click-fx {
+    display: none;
+  }
+  .home-screen-controls button {
+    transition: none;
+  }
+  .home-screen-controls button:active:not(:disabled) {
+    scale: 1;
+  }
+}
+
 @media (min-width: 768px) {
   .home-screen-controls {
-    bottom: 1rem;
+    bottom: 1.25rem;
   }
 }

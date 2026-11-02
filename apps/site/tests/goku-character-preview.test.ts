@@ -88,6 +88,13 @@ describe("Goku visual preview", () => {
     expect(shouldUseGokuShowcasePreview(true, false, [])).toBe(true);
   });
 
+  test("uses showcase timelines only until DBZ editorial data is configured", () => {
+    expect(shouldUseGokuShowcasePreview(false, true, ["goku-main", "future"])).toBe(true);
+    expect(shouldUseGokuShowcasePreview(false, true, ["goku-dbz"])).toBe(false);
+    expect(shouldUseGokuShowcasePreview(false, false, [])).toBe(false);
+    expect(shouldUseGokuShowcasePreview(true, false, [])).toBe(true);
+  });
+
   test("scopes each saga menu to its selected series or game version", () => {
     const db = variantsFor("goku-db");
     const dbz = variantsFor("goku-dbz");

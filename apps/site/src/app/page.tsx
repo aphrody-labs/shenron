@@ -142,6 +142,7 @@ async function getBeerusFeature(): Promise<BeerusFeature | null> {
         titleJa: ep.title_ja,
         airDate: ep.air_date,
         image: ep.image || "/banners/dbs-beerus-2026.jpg",
+        duration: ep.duration_sec,
       }));
     const latest = aired.at(-1) ?? null;
     return {

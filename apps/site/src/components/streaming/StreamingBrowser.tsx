@@ -14,6 +14,20 @@ import { StreamingSaveButton } from "./StreamingSaveButton";
 import styles from "./StreamingBrowser.module.css";
 
 const PAGE_SIZE = 24;
+const LANGUAGES = ["vf", "vostfr", "vost"] as const;
+const SORTS = ["catalogue", "recent", "title"] as const;
+type Language = (typeof LANGUAGES)[number] | "";
+type Sort = (typeof SORTS)[number];
+
+interface View {
+  query: string;
+  series: string;
+  language: Language;
+  sort: Sort;
+}
+
+const isDefaultView = (v: View) =>
+  !v.query.trim() && !v.series && !v.language && v.sort === "catalogue";
 
 /** Keep the client projection small and reject malformed public API rows. */
 export function readStreamingSearch(value: unknown): {
@@ -88,7 +102,7 @@ function CatalogueCard({
 }) {
   const t = useStreamingText();
   return (
-    <article className={styles.card}>
+    <article className={`${styles.card} vie-glow`}>
       <Link href={`/wiki/episodes/${episode.id}`} prefetch={false} className={styles.cardLink}>
         <div className={styles.artwork}>
           {episode.image && (
@@ -149,13 +163,16 @@ export function StreamingBrowser({
   const id = useId();
   const [query, setQuery] = useState("");
   const [series, setSeries] = useState("");
+  const [language, setLanguage] = useState<Language>("");
+  const [sort, setSort] = useState<Sort>("catalogue");
   const [request, setRequest] = useState({ offset: 0, attempt: 0 });
   const [result, setResult] = useState<{ episodes: StreamingEpisode[]; total: number } | null>(
     null,
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
-  const searchMode = Boolean(query.trim() || series);
+  const view: View = { query, series, language, sort };
+  const searchMode = !isDefaultView(view);
   const total = groups.reduce((sum, group) => sum + group.total, 0);
 
   useEffect(() => {
@@ -166,9 +183,20 @@ export function StreamingBrowser({
       const restoredSeries = groups.some((group) => group.series === requestedSeries)
         ? requestedSeries
         : "";
+      const restoredLanguage = LANGUAGES.find((value) => value === params.get("lang")) ?? "";
+      const restoredSort = SORTS.find((value) => value === params.get("sort")) ?? "catalogue";
       setQuery(restoredQuery);
       setSeries(restoredSeries);
-      setLoading(Boolean(restoredQuery.trim() || restoredSeries));
+      setLanguage(restoredLanguage);
+      setSort(restoredSort);
+      setLoading(
+        !isDefaultView({
+          query: restoredQuery,
+          series: restoredSeries,
+          language: restoredLanguage,
+          sort: restoredSort,
+        }),
+      );
       setError(false);
       setRequest({ offset: 0, attempt: 0 });
       setResult(null);
@@ -178,17 +206,19 @@ export function StreamingBrowser({
     return () => window.removeEventListener("popstate", restore);
   }, [groups]);
 
-  const updateUrl = (nextQuery: string, nextSeries: string) => {
+  const updateUrl = (next: View) => {
     const url = new URL(window.location.href);
-    if (nextQuery.trim()) url.searchParams.set("q", nextQuery.trim());
-    else url.searchParams.delete("q");
-    if (nextSeries) url.searchParams.set("series", nextSeries);
-    else url.searchParams.delete("series");
+    const set = (key: string, value: string) =>
+      value ? url.searchParams.set(key, value) : url.searchParams.delete(key);
+    set("q", next.query.trim());
+    set("series", next.series);
+    set("lang", next.language);
+    set("sort", next.sort === "catalogue" ? "" : next.sort);
     window.history.replaceState(window.history.state, "", url);
   };
 
   useEffect(() => {
-    if (!query.trim() && !series) return;
+    if (!searchMode) return;
     const { offset } = request;
     const controller = new AbortController();
     const timer = window.setTimeout(
@@ -197,6 +227,8 @@ export function StreamingBrowser({
           const params = new URLSearchParams({ limit: String(PAGE_SIZE), offset: String(offset) });
           if (query.trim()) params.set("q", query.trim());
           if (series) params.set("series", series);
+          if (language) params.set("mediaLang", language);
+          if (sort !== "catalogue") params.set("sort", sort);
           const response = await fetch(`/api/episodes?${params}`, { signal: controller.signal });
           if (!response.ok) throw new Error("Catalogue unavailable");
           const next = readStreamingSearch(await response.json());
@@ -224,33 +256,21 @@ export function StreamingBrowser({
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [query, series, request]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- searchMode derives from the listed values
+  }, [query, series, language, sort, request]);
 
-  const changeQuery = (value: string) => {
-    setQuery(value);
+  const apply = (next: View) => {
+    setQuery(next.query);
+    setSeries(next.series);
+    setLanguage(next.language);
+    setSort(next.sort);
     setRequest({ offset: 0, attempt: 0 });
     setResult(null);
-    setLoading(Boolean(value.trim() || series));
+    setLoading(!isDefaultView(next));
     setError(false);
-    updateUrl(value, series);
+    updateUrl(next);
   };
-  const changeSeries = (value: string) => {
-    setSeries(value);
-    setRequest({ offset: 0, attempt: 0 });
-    setResult(null);
-    setLoading(Boolean(query.trim() || value));
-    setError(false);
-    updateUrl(query, value);
-  };
-  const clear = () => {
-    setQuery("");
-    setSeries("");
-    setRequest({ offset: 0, attempt: 0 });
-    setResult(null);
-    setLoading(false);
-    setError(false);
-    updateUrl("", "");
-  };
+  const clear = () => apply({ query: "", series: "", language: "", sort: "catalogue" });
 
   return (
     <section id="streaming-browse" className={styles.browser} aria-labelledby={`${id}-title`}>
@@ -270,7 +290,7 @@ export function StreamingBrowser({
               type="search"
               maxLength={200}
               value={query}
-              onChange={(event) => changeQuery(event.target.value)}
+              onChange={(event) => apply({ ...view, query: event.target.value })}
               placeholder={t("searchPlaceholder")}
               autoComplete="off"
             />
@@ -281,7 +301,7 @@ export function StreamingBrowser({
           <select
             id={`${id}-series`}
             value={series}
-            onChange={(event) => changeSeries(event.target.value)}
+            onChange={(event) => apply({ ...view, series: event.target.value })}
           >
             <option value="">{t("allSeries")}</option>
             {groups.map((group) => (
@@ -289,6 +309,49 @@ export function StreamingBrowser({
                 {group.label}
               </option>
             ))}
+          </select>
+        </div>
+        <div className={styles.seriesField}>
+          <label htmlFor={`${id}-language`}>{t("languageLabel")}</label>
+          <select
+            id={`${id}-language`}
+            value={language}
+            onChange={(event) =>
+              apply({
+                ...view,
+                language: LANGUAGES.find((value) => value === event.target.value) ?? "",
+              })
+            }
+          >
+            <option value="">{t("allLanguages")}</option>
+            {LANGUAGES.map((value) => (
+              <option key={value} value={value}>
+                {t(
+                  value === "vf"
+                    ? "languageVf"
+                    : value === "vostfr"
+                      ? "languageVostfr"
+                      : "languageVost",
+                )}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className={styles.seriesField}>
+          <label htmlFor={`${id}-sort`}>{t("sortLabel")}</label>
+          <select
+            id={`${id}-sort`}
+            value={sort}
+            onChange={(event) =>
+              apply({
+                ...view,
+                sort: SORTS.find((value) => value === event.target.value) ?? "catalogue",
+              })
+            }
+          >
+            <option value="catalogue">{t("sortCatalogue")}</option>
+            <option value="recent">{t("sortRecent")}</option>
+            <option value="title">{t("sortTitle")}</option>
           </select>
         </div>
         {searchMode && (

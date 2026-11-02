@@ -55,7 +55,7 @@ export function createCliOcr(o: { binary?: string; timeoutMs?: number } = {}) {
   const binary = o.binary ?? "aphrody";
   return {
     available(): boolean {
-      return binary.includes("/") ? Bun.file(binary).size > 0 : Bun.which(binary) !== null;
+      return /[\\/]/.test(binary) ? Bun.file(binary).size > 0 : Bun.which(binary) !== null;
     },
     async recognize(bytes: Uint8Array, mediaType: string): Promise<OcrResponse> {
       const ext = EXT[mediaType];

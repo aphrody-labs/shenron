@@ -68,7 +68,7 @@ export default async function PlanDuSitePage() {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="group flex h-full flex-col border border-white/[0.08] bg-dbz-card/80 p-4 transition-transform duration-150 hover:-translate-y-0.5 hover:border-dbz-orange"
+                    className="group flex h-full flex-col rounded-xl border border-white/[0.08] bg-dbz-card/80 p-4 transition-transform duration-150 hover:-translate-y-0.5 hover:border-dbz-orange"
                   >
                     <span className="flex items-baseline justify-between gap-2">
                       <span className="font-display text-[1rem] font-bold tracking-[-0.01em] text-white group-hover:text-dbz-orange">

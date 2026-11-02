@@ -300,3 +300,49 @@ volumes existent dans l'API mais n'ont aucune page listée. Le rapport reste
 incomplet : il ne qualifie ni ces sources manquantes, ni l'OCR, ni leur
 présence dans le RAG, ni l'intégralité du CDN. Les rapports et exports
 restent dans le profil privé `dbfr` des hôtes ; aucune donnée n'est commitée.
+
+## Services web et crawl du VPS (observation du 1er novembre 2026)
+
+Cette section décrit l'état observé à cette date ; elle ne garantit pas l'état
+présent. Les unités utilisateur `shenron-site-crawl.service` et
+`shenron-web-engine.service` étaient actives, mais désactivées au démarrage.
+`shenron-crunchyroll.service` était active et activée. Aphrody Infra reste
+propriétaire des unités système, du proxy, des secrets, des sauvegardes et de la
+persistance.
+
+Vérifier l'état et consulter les journaux :
+
+```sh
+systemctl --user status shenron-site-crawl.service shenron-web-engine.service shenron-crunchyroll.service
+journalctl --user -u shenron-site-crawl.service -f
+journalctl --user -u shenron-web-engine.service -f
+```
+
+Le crawler récursif utilise `https://dragonballfr.com` et conserve sa frontier
+SQLite dans `~/apps/shenron/state/crawl/frontier.sqlite`. Le moteur web
+conserve son état dans `~/apps/shenron/state/web-engine/engine.sqlite`. Ces
+bases appartiennent aux services Shenron et restent séparées du cache de
+recherche Aphrody.
+
+Le moteur web démarre depuis le sitemap avec les tiers fetch, Lightpanda et
+Obscura. L'unité observée ne passait pas `--publish` : elle ne publiait donc
+pas ses artefacts vers Cloudflare/R2. Ses limites cgroup runtime étaient de
+200 % CPU et 4 Gio mémoire ; elles n'étaient pas persistantes au redémarrage.
+
+La politique du script traite Dragon Ball France comme une source opérée et ne
+consulte pas son `robots.txt`. Les sources tierces conservent leurs contrôles
+robots. Vérifier la politique et les budgets avant d'ajouter des graines. Les
+unités de crawl n'étaient pas activées au démarrage lors de cette observation.
+
+Obscura CDP et le pont Playwright étaient accessibles seulement sur
+`127.0.0.1:9222` et `127.0.0.1:9230`. Redis répondait sur loopback au port
+6379, mais son keyspace était vide.
+
+Le service `aphrody-google` écoutait sur `127.0.0.1:8802` ; les routes `/`
+et `/health` renvoyaient 404 et ne constituent pas des contrôles de santé.
+`aphrody_google_suggest` fonctionnait. La recherche Google SERP publique
+échouait lors de l'observation (erreur fetch ou interstitiel anti-bot) : ne pas
+la présenter comme qualifiée et ne pas contourner l'interstitiel.
+
+L'API Crunchyroll répondait sur `127.0.0.1:9120`, mais sans identifiants
+configurés, l'indexation du catalogue restait partielle.\n

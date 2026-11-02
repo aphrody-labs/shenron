@@ -23,6 +23,7 @@ const { filterSeriesEpisodes, EpisodeSeriesGrid } =
 const { dbsBeerusEpisodeCard, DBS_BEERUS_SERIES_CODE } =
   await import("../src/lib/episode-series-catalogue");
 const { DbsBeerusSpotlight } = await import("../src/components/home/DbsBeerusSpotlight");
+const { stripSourceTags } = await import("../src/lib/media");
 
 test("the compact spotlight uses the official logo in the reader language", () => {
   for (locale of ["fr", "en", "ja"] as const) {
@@ -142,6 +143,36 @@ test("official metadata grid localizes title and synopsis without introducing pl
     expect(html).toContain(dictionaries[locale].dbsBeerus.episodeTitle);
     expect(html).toContain(dictionaries[locale].dbsBeerus.episodeSynopsis);
     expect(html).not.toContain("<video");
+    expect(html).not.toContain("Aucune source");
+  }
+  locale = "fr";
+});
+
+test("episode cards localize player counts, display duration and Japanese title, and strip markdown from synopses", () => {
+  const cleaned = stripSourceTags(
+    "L'épisode 4, **« Le dieu des Saiyans »**, oppose Beerus à Goku.\n\n[Synopsis et images officiels de l’épisode 4](https://dragonball-super.com/#story).\n\n## Images officielles de l’épisode 4\n\n![Visuel 1](https://cdn.dragonballfr.com/assets/crawl/dragon-ball-super.com/st04-01.jpg)",
+  );
+  expect(cleaned).toBe("L'épisode 4, « Le dieu des Saiyans », oppose Beerus à Goku.");
+
+  const ep4 = {
+    id: 878,
+    href: "/wiki/episodes/878",
+    number: 4,
+    title: "Le dieu des Saiyans",
+    titleJa: "サイヤ人の神",
+    image: "https://cdn.dragonballfr.com/assets/crawl/dragon-ball-super.com/st04-01.jpg",
+    synopsis: cleaned,
+    year: 2026,
+    durationSec: 1397,
+    hasVf: false,
+    hasVostfr: true,
+    playerCount: 1,
+  };
+  for (locale of ["fr", "en", "ja"] as const) {
+    const html = renderToStaticMarkup(createElement(EpisodeSeriesGrid, { episodes: [ep4] }));
+    expect(html).toContain("23 min");
+    expect(html).toContain("サイヤ人の神");
+    expect(html).toContain(`${dictionaries[locale].mediaPlayback.externalPlayers}: 1`);
   }
   locale = "fr";
 });

@@ -283,15 +283,17 @@ export class VfsRag {
   #rows(ids: readonly number[]): Map<number, ChunkRow> {
     const out = new Map<number, ChunkRow>();
     if (ids.length === 0) return out;
-    const stmt = this.db.query(
-      `SELECT c.id AS chunk_id, c.doc_id, d.title, d.path, d.language, c.heading, c.content,
-              a.kind, a.url, a.corpus, a.source_id, a.entity_id, a.visibility
-       FROM chunks c JOIN docs d ON d.id = c.doc_id LEFT JOIN rag_doc_attrs a ON a.doc_id = c.doc_id
-       WHERE c.id = ?`,
-    );
-    for (const id of ids) {
-      const row = stmt.get(id) as ChunkRow | null;
-      if (row) out.set(id, row);
+    const placeholders = ids.map(() => "?").join(", ");
+    const rows = this.db
+      .query(
+        `SELECT c.id AS chunk_id, c.doc_id, d.title, d.path, d.language, c.heading, c.content,
+                a.kind, a.url, a.corpus, a.source_id, a.entity_id, a.visibility
+         FROM chunks c JOIN docs d ON d.id = c.doc_id LEFT JOIN rag_doc_attrs a ON a.doc_id = c.doc_id
+         WHERE c.id IN (${placeholders})`,
+      )
+      .all(...ids) as ChunkRow[];
+    for (const row of rows) {
+      out.set(row.chunk_id, row);
     }
     return out;
   }

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
 import { SignInDiscord } from "@/components/SignInDiscord";
 import { SignOut } from "@/components/SignOut";
-import { Curseurs, DragonBall } from "@aphrody/shenron-ui/icones";
+import { Bouclier, Curseurs, DragonBall, Piece } from "@aphrody/shenron-ui/icones";
 import { useMe } from "@/lib/use-me";
 import { useLangue } from "@/lib/i18n/client";
 import { Popover, PopoverPopup, PopoverTitle, PopoverTrigger } from "@aphrody/shenron-ui/popover";
@@ -68,9 +68,13 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
             <DragonBall size={18} />
             {dico.common.mySpace}
           </Link>
+          <Link href="/account/billing" className={`shenron-account-option ${FOCUS}`}>
+            <Piece size={18} />
+            {dico.billing.accountTitle}
+          </Link>
           {me.isAdmin && (
             <Link href="/admin" className={`shenron-account-option ${FOCUS}`}>
-              <Curseurs size={18} />
+              <Bouclier size={18} />
               {dico.nav.admin}
             </Link>
           )}
@@ -96,20 +100,32 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
   if (variant === "sheet") {
     if (!me.authenticated) {
       return (
-        <SignInDiscord
-          className={`flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary font-display text-[0.875rem] font-bold text-primary-foreground ${FOCUS}`}
-        >
-          <DragonBall size={18} />
-          {dico.common.signInDiscord}
-        </SignInDiscord>
+        <div className="flex flex-col gap-2">
+          <SignInDiscord
+            className={`flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary font-display text-[0.875rem] font-bold text-primary-foreground ${FOCUS}`}
+          >
+            <DragonBall size={18} />
+            {dico.common.signInDiscord}
+          </SignInDiscord>
+          <Link
+            href="/signin"
+            className={`flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-border bg-secondary px-4 font-display text-[0.8125rem] font-semibold text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground ${FOCUS}`}
+          >
+            {dico.common.signInOtherMethods}
+          </Link>
+        </div>
       );
     }
     const row = `flex min-h-12 items-center gap-3 rounded-xl px-4 font-display text-[0.875rem] font-semibold text-foreground transition-colors hover:bg-secondary hover:text-secondary-foreground ${FOCUS}`;
     return (
       <div className="flex flex-col">
+        <Link href="/account/billing" className={row}>
+          <Piece size={18} />
+          {dico.billing.accountTitle}
+        </Link>
         {me.isAdmin && (
           <Link href="/admin" className={row}>
-            <Curseurs size={18} />
+            <Bouclier size={18} />
             {dico.nav.admin}
           </Link>
         )}
@@ -117,7 +133,7 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
           <Curseurs size={18} />
           {dico.mobileNav.accountSettings}
         </Link>
-        <SignOut className={`${row} w-full disabled:opacity-50`}>
+        <SignOut className={`${row} mt-2 w-full border-t border-border pt-2 disabled:opacity-50`}>
           <LogoutGlyph />
           {dico.common.signOut}
         </SignOut>
@@ -128,12 +144,20 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
   // Barre latérale.
   if (!me.authenticated) {
     return (
-      <SignInDiscord
-        className={`flex min-h-11 w-full items-center gap-3 rounded-lg border border-border bg-secondary px-3 font-display text-[0.8125rem] font-bold text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground ${FOCUS}`}
-      >
-        <DragonBall size={18} />
-        {dico.common.signInDiscord}
-      </SignInDiscord>
+      <div className="flex flex-col gap-1.5">
+        <SignInDiscord
+          className={`flex min-h-11 w-full items-center gap-3 rounded-lg border border-border bg-secondary px-3 font-display text-[0.8125rem] font-bold text-secondary-foreground transition-colors hover:bg-primary hover:text-primary-foreground ${FOCUS}`}
+        >
+          <DragonBall size={18} />
+          {dico.common.signInDiscord}
+        </SignInDiscord>
+        <Link
+          href="/signin"
+          className={`flex min-h-11 w-full items-center justify-center rounded-lg px-3 text-[0.8125rem] font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground ${FOCUS}`}
+        >
+          {dico.common.signInOtherMethods}
+        </Link>
+      </div>
     );
   }
   return (
@@ -155,7 +179,7 @@ export function NavAuth({ variant }: { variant: "sidebar" | "compact" | "sheet" 
           title={dico.nav.admin}
           className={`${ICON} ${FOCUS}`}
         >
-          <Curseurs size={18} />
+          <Bouclier size={18} />
         </Link>
       )}
       <Link

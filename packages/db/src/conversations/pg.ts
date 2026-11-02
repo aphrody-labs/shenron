@@ -275,14 +275,16 @@ export class PgConversationStore implements ConversationStore {
     const t = this.#t;
     const after = decodeCursor(cursor);
     const max = clampLimit(limit);
-    const conversations = (await this.sql.unsafe(
-      `SELECT * FROM ${t.conversations} WHERE owner_id = $1 AND seq > $2 ORDER BY seq LIMIT $3`,
-      [ownerId, after, max + 1],
-    )) as Record<string, unknown>[];
-    const messages = (await this.sql.unsafe(
-      `SELECT * FROM ${t.messages} WHERE owner_id = $1 AND seq > $2 ORDER BY seq LIMIT $3`,
-      [ownerId, after, max + 1],
-    )) as Record<string, unknown>[];
+    const [conversations, messages] = (await Promise.all([
+      this.sql.unsafe(
+        `SELECT * FROM ${t.conversations} WHERE owner_id = $1 AND seq > $2 ORDER BY seq LIMIT $3`,
+        [ownerId, after, max + 1],
+      ),
+      this.sql.unsafe(
+        `SELECT * FROM ${t.messages} WHERE owner_id = $1 AND seq > $2 ORDER BY seq LIMIT $3`,
+        [ownerId, after, max + 1],
+      ),
+    ])) as [Record<string, unknown>[], Record<string, unknown>[]];
     const merged = [
       ...conversations.map((row) => ({ seq: Number(row.seq), row, kind: "c" as const })),
       ...messages.map((row) => ({ seq: Number(row.seq), row, kind: "m" as const })),
@@ -331,18 +333,29 @@ export class PgConversationStore implements ConversationStore {
        ORDER BY last_seq LIMIT $2`,
       [after, clampLimit(limit)],
     )) as Record<string, unknown>[];
-    const items = [];
-    for (const row of rows) {
-      const messages = (await this.sql.unsafe(
-        `SELECT * FROM ${t.messages} WHERE conversation_id = $1 AND deleted_at IS NULL ORDER BY created_at, seq`,
-        [row.id],
-      )) as Record<string, unknown>[];
-      items.push({
-        ownerId: String(row.owner_id),
-        conversation: toConversation(row),
-        messages: messages.map(toMessage),
-      });
+    if (rows.length === 0) {
+      return { items: [], cursor: encodeCursor(after) };
     }
+    const convIds = rows.map((row) => String(row.id));
+    const allMessages = (await this.sql.unsafe(
+      `SELECT * FROM ${t.messages} WHERE conversation_id = ANY($1) AND deleted_at IS NULL ORDER BY created_at, seq`,
+      [convIds],
+    )) as Record<string, unknown>[];
+    const messagesByConv = new Map<string, ReturnType<typeof toMessage>[]>();
+    for (const msgRow of allMessages) {
+      const cid = String(msgRow.conversation_id);
+      let list = messagesByConv.get(cid);
+      if (!list) {
+        list = [];
+        messagesByConv.set(cid, list);
+      }
+      list.push(toMessage(msgRow));
+    }
+    const items = rows.map((row) => ({
+      ownerId: String(row.owner_id),
+      conversation: toConversation(row),
+      messages: messagesByConv.get(String(row.id)) ?? [],
+    }));
     return { items, cursor: encodeCursor(Number(rows.at(-1)?.last_seq ?? after)) };
   }
 }

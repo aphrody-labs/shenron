@@ -53,16 +53,53 @@ async function run(): Promise<number> {
         ];
   console.log(`Native quality runtime: ${runtime}`);
   let result = 0;
-  for (const command of commands) {
-    const child = Bun.spawn([runtime, ...command.args], {
-      cwd: command.cwd,
-      env: nativeEnvironment(runtime, mode!),
-      stdin: "inherit",
-      stdout: "inherit",
-      stderr: "inherit",
-    });
-    const code = await child.exited;
-    if (code !== 0) result = code || 1;
+  if (commands.length <= 1) {
+    for (const command of commands) {
+      const child = Bun.spawn([runtime, ...command.args], {
+        cwd: command.cwd,
+        env: nativeEnvironment(runtime, mode!),
+        stdin: "inherit",
+        stdout: "inherit",
+        stderr: "inherit",
+      });
+      const code = await child.exited;
+      if (code !== 0) result = code || 1;
+    }
+    return result;
+  }
+
+  const concurrency = Math.max(1, Number(process.env.SHENRON_GATE_CONCURRENCY ?? 6) || 6);
+  const outputs = Array.from<{ stdout: string; stderr: string; code: number } | undefined>({
+    length: commands.length,
+  });
+  let nextIndex = 0;
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, commands.length) }, async () => {
+      for (;;) {
+        const index = nextIndex++;
+        if (index >= commands.length) break;
+        const command = commands[index]!;
+        const child = Bun.spawn([runtime, ...command.args], {
+          cwd: command.cwd,
+          env: nativeEnvironment(runtime, mode!),
+          stdin: "ignore",
+          stdout: "pipe",
+          stderr: "pipe",
+        });
+        const [stdout, stderr, code] = await Promise.all([
+          new Response(child.stdout).text(),
+          new Response(child.stderr).text(),
+          child.exited,
+        ]);
+        outputs[index] = { stdout, stderr, code };
+      }
+    }),
+  );
+  for (const out of outputs) {
+    if (!out) continue;
+    if (out.stdout) process.stdout.write(out.stdout);
+    if (out.stderr) process.stderr.write(out.stderr);
+    if (out.code !== 0) result = out.code || 1;
   }
   return result;
 }

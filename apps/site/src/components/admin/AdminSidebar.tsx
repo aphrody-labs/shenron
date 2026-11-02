@@ -57,6 +57,7 @@ import {
   ListOrdered,
   History,
   Flag,
+  CircleDollarSign,
 } from "lucide-react";
 
 // Types internes
@@ -376,6 +377,13 @@ const ADMIN_LINKS: AdminLink[] = [
     label: "Bannières",
     description: "Visuels éditoriaux et annonces mises en avant",
     icon: <ImageIcon className="h-4 w-4" />,
+    section: "site",
+  },
+  {
+    href: "/admin/monetization",
+    label: "Monétisation",
+    description: "Abonnements, annonceurs et campagnes publicitaires",
+    icon: <CircleDollarSign className="h-4 w-4" />,
     section: "site",
   },
   {

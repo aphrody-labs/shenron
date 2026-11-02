@@ -20,6 +20,7 @@ import type { BestOfSagaView } from "@/lib/home-bestof";
 import {
   DEFAULT_PLAY_CARDS,
   SECTION_DESTINATIONS,
+  SECTION_SCENE,
   type HomeConfig,
   type HomeSectionConfig,
   type HomeSectionId,
@@ -84,7 +85,7 @@ const OMITTED: ReadonlySet<string> = new Set(["universe"]);
 const FIXED: ReadonlySet<string> = new Set(["news", "pantheon", "community"]);
 
 const card =
-  "rounded-xl border border-white/[0.08] bg-dbz-card/80 transition-colors hover:border-dbz-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange";
+  "cursor-pointer rounded-xl border border-white/[0.08] bg-dbz-card/80 transition-[border-color,background-color,color,scale,translate] duration-150 ease-out hover:-translate-y-0.5 hover:border-dbz-gold active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange";
 
 const label = (s: HomeSectionConfig, fallback: string) =>
   s.title.trim() || s.navLabel.trim() || fallback;
@@ -174,12 +175,13 @@ export function HomeView(rawProps: HomeViewProps) {
     blocks.splice(
       canonAt,
       0,
-      <HomeCanonArbitre
-        key="canon"
-        config={config.canon}
-        doctrine={props.canon.doctrine}
-        references={props.canon.references}
-      />,
+      <SectionScene key="canon" scene={SECTION_SCENE.guardians}>
+        <HomeCanonArbitre
+          config={config.canon}
+          doctrine={props.canon.doctrine}
+          references={props.canon.references}
+        />
+      </SectionScene>,
     );
   }
 
@@ -202,7 +204,7 @@ export function HomeView(rawProps: HomeViewProps) {
         />
         {/* One screen for the live server and its ranking, side by side on wide screens. */}
         {(showCommunity || showPantheon) && (
-          <SectionScene scene={(community ?? pantheon)?.scene}>
+          <SectionScene scene={(community ?? pantheon)?.scene ?? SECTION_SCENE.community}>
             <div
               className={
                 showCommunity && showPantheon
@@ -219,7 +221,9 @@ export function HomeView(rawProps: HomeViewProps) {
         {blocks}
 
         {showJourney && (
-          <HomeMenuJourney access={access} config={config.journey} covered={covered} />
+          <SectionScene scene={SECTION_SCENE.universe}>
+            <HomeMenuJourney access={access} config={config.journey} covered={covered} />
+          </SectionScene>
         )}
 
         {/* Tout en bas, dans cet ordre : les dernières nouvelles, puis les mini-jeux. */}
@@ -330,10 +334,10 @@ function EditorialBlock({
                     src={c.image}
                     alt=""
                     sizes="(min-width: 1024px) 15vw, (min-width: 640px) 23vw, 31vw"
-                    className="absolute inset-0 h-full w-full object-cover object-top"
+                    className="absolute inset-0 h-full w-full object-cover object-top transition-transform duration-300 ease-out group-hover:scale-[1.04] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                   />
-                  <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/75 to-transparent px-2 pb-2 pt-8">
-                    <span className="block truncate font-display text-[0.8125rem] font-bold text-white">
+                  <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black via-black/80 to-transparent px-2.5 pb-2.5 pt-9">
+                    <span className="block truncate font-display text-[0.8125rem] font-bold text-white transition-colors group-hover:text-dbz-gold">
                       {c.name}
                     </span>
                     {c.race && (

@@ -8,6 +8,7 @@
 import { useEffect, useRef } from "react";
 import { recordHistory, type HistoryKind } from "@/lib/history";
 import { observePlaybackProgress } from "@/lib/playback-progress";
+import { syncWatchProgress } from "@/lib/watch-sync";
 
 export function TrackHistory({
   kind,
@@ -30,7 +31,13 @@ export function TrackHistory({
   }, [kind, id, title, href, image, caption]);
   useEffect(() => {
     if ((kind !== "episode" && kind !== "movie") || !marker.current) return;
-    return observePlaybackProgress(marker.current, kind, String(id), href);
+    // Reconcile with the account on arrival and again once this item's progress is saved.
+    void syncWatchProgress();
+    const stop = observePlaybackProgress(marker.current, kind, String(id), href);
+    return () => {
+      stop();
+      void syncWatchProgress();
+    };
   }, [kind, id, href]);
   return <span ref={marker} hidden aria-hidden="true" />;
 }

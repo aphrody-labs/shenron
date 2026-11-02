@@ -209,7 +209,7 @@ export function createGeminiWebBackend(o: {
   let lastError: string | undefined;
   const cookie = () => o.cookiePaths.find((path) => existsSync(path)) ?? null;
   const installed = () =>
-    o.binary.includes("/") ? existsSync(o.binary) : Bun.which(o.binary) !== null;
+    /[\\/]/.test(o.binary) ? existsSync(o.binary) : Bun.which(o.binary) !== null;
   return {
     id: "gemini-web",
     model: `gemini-web/${model}`,

@@ -1,87 +1,39 @@
 // SPDX-License-Identifier: Apache-2.0
+/**
+ * The reader's watchlist: saved episodes and movies joined with measured playback progress.
+ * Real account data only; a signed-out reader gets an explicit empty list. Writes go through
+ * `/api/favorites` (save) and `/api/progress` (playback), which the host owns.
+ */
 import { NextResponse, type NextRequest } from "next/server";
-import { CRUNCHYROLL_SERIES_BY_SHENRON } from "@aphrody/shenron-media/crunchyroll-mapping";
+import { endpoints, type WatchEntry } from "@aphrody/shenron-api/contract";
+import { callHost, PRIVATE_JSON_HEADERS } from "@/lib/host-forward";
+import { buildWatchlist, WATCHLIST_STATUSES } from "@/lib/watchlist-view";
 
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-const WATCHLIST_STORAGE: Array<{
-  id: string;
-  seriesId: string;
-  seriesTitle: string;
-  episodeNumber?: number;
-  episodeTitle?: string;
-  thumbnailUrl?: string;
-  watchUrl: string;
-  durationMinutes?: number;
-  progressPercent?: number;
-  availableLangs: Array<"vf" | "vostfr" | "vost">;
-  provider: "crunchyroll" | "shenron";
-}> = [
-  {
-    id: "GE00389313JAJP",
-    seriesId: CRUNCHYROLL_SERIES_BY_SHENRON.DBS_BEERUS,
-    seriesTitle: "Dragon Ball Super: Beerus",
-    episodeNumber: 1,
-    episodeTitle: "Le dieu de la Destruction",
-    thumbnailUrl: "/banners/dbs-beerus-2026.jpg",
-    watchUrl: "/wiki/episodes/875",
-    durationMinutes: 24,
-    progressPercent: 35,
-    availableLangs: ["vostfr"],
-    provider: "crunchyroll",
-  },
-  {
-    id: "GE00389314JAJP",
-    seriesId: CRUNCHYROLL_SERIES_BY_SHENRON.DBS_BEERUS,
-    seriesTitle: "Dragon Ball Super: Beerus",
-    episodeNumber: 2,
-    episodeTitle: "Le dieu de la Destruction se rend sur la planète de Kaïo",
-    thumbnailUrl: "/banners/dbs-beerus-2026.jpg",
-    watchUrl: "/wiki/episodes/876",
-    durationMinutes: 24,
-    progressPercent: 0,
-    availableLangs: ["vostfr"],
-    provider: "crunchyroll",
-  },
-];
-
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const wanted = request.nextUrl.searchParams.get("status");
+  const status = WATCHLIST_STATUSES.find((s) => s === wanted) ?? null;
+  if (wanted && !status)
+    return NextResponse.json(
+      { error: "status must be planned, watching or completed" },
+      { status: 400, headers: PRIVATE_JSON_HEADERS },
+    );
+  const [favorites, progress] = await Promise.all([
+    callHost<{ favorites?: unknown }>(request, endpoints.favorites.path),
+    callHost<{ entries?: WatchEntry[] }>(request, endpoints.watchProgress.path),
+  ]);
+  if (!favorites.ok)
+    return NextResponse.json(
+      { error: favorites.error },
+      { status: favorites.status, headers: PRIVATE_JSON_HEADERS },
+    );
+  // Progress is an enrichment: without it items are listed as planned, never dropped.
+  const entries = progress.ok && Array.isArray(progress.data.entries) ? progress.data.entries : [];
+  const items = buildWatchlist(favorites.data.favorites, entries, status);
   return NextResponse.json(
-    {
-      total: WATCHLIST_STORAGE.length,
-      items: WATCHLIST_STORAGE,
-    },
-    {
-      headers: {
-        "Cache-Control": "private, no-cache",
-        "Content-Type": "application/json",
-      },
-    },
+    { total: items.length, progressAvailable: progress.ok, items },
+    { headers: PRIVATE_JSON_HEADERS },
   );
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const body = await request.json();
-    if (!body || !body.seriesTitle || !body.watchUrl) {
-      return NextResponse.json({ error: "seriesTitle and watchUrl are required" }, { status: 400 });
-    }
-    const newEntry = {
-      id: body.id || `custom-${Date.now()}`,
-      seriesId: body.seriesId || "CUSTOM",
-      seriesTitle: String(body.seriesTitle),
-      episodeNumber: body.episodeNumber ? Number(body.episodeNumber) : undefined,
-      episodeTitle: body.episodeTitle ? String(body.episodeTitle) : undefined,
-      thumbnailUrl: body.thumbnailUrl ? String(body.thumbnailUrl) : undefined,
-      watchUrl: String(body.watchUrl),
-      durationMinutes: body.durationMinutes ? Number(body.durationMinutes) : undefined,
-      progressPercent: body.progressPercent ? Number(body.progressPercent) : 0,
-      availableLangs: body.availableLangs || ["vostfr"],
-      provider: body.provider || "crunchyroll",
-    };
-    WATCHLIST_STORAGE.push(newEntry);
-    return NextResponse.json({ success: true, item: newEntry }, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
-  }
 }

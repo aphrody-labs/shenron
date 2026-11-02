@@ -2,6 +2,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { relations, sql } from "drizzle-orm";
 import type { AgentScope } from "./constants";
 import {
+  bigint,
   bigserial,
   boolean,
   date,
@@ -10,6 +11,7 @@ import {
   jsonb,
   numeric,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   unique,
@@ -211,6 +213,7 @@ export const baUser = pgTable("ba_user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("emailVerified").notNull(),
   image: text("image"),
+  twoFactorEnabled: boolean("twoFactorEnabled").default(false),
   stripeCustomerId: text("stripeCustomerId"),
   createdAt: timestamp("createdAt").notNull(),
   updatedAt: timestamp("updatedAt").notNull(),
@@ -258,6 +261,222 @@ export const baVerification = pgTable("ba_verification", {
   updatedAt: timestamp("updatedAt"),
 });
 
+export const baTwoFactor = pgTable("two_factor", {
+  id: text("id").primaryKey(),
+  secret: text("secret").notNull(),
+  backupCodes: text("backupCodes").notNull(),
+  userId: text("userId")
+    .notNull()
+    .references(() => baUser.id, { onDelete: "cascade" })
+    .unique(),
+  verified: boolean("verified").default(true),
+  failedVerificationCount: integer("failedVerificationCount").default(0),
+  lockedUntil: timestamp("lockedUntil", { withTimezone: true }),
+});
+
+export const baPasskey = pgTable(
+  "passkey",
+  {
+    id: text("id").primaryKey(),
+    name: text("name"),
+    publicKey: text("publicKey").notNull(),
+    userId: text("userId")
+      .notNull()
+      .references(() => baUser.id, { onDelete: "cascade" }),
+    credentialID: text("credentialID").notNull(),
+    counter: integer("counter").notNull(),
+    deviceType: text("deviceType").notNull(),
+    backedUp: boolean("backedUp").notNull(),
+    transports: text("transports"),
+    createdAt: timestamp("createdAt", { withTimezone: true }),
+    aaguid: text("aaguid"),
+  },
+  (table) => [
+    index("passkey_user_id_idx").on(table.userId),
+    unique("passkey_credential_id_idx").on(table.credentialID),
+  ],
+);
+
+export const baJwks = pgTable("jwks", {
+  id: text("id").primaryKey(),
+  publicKey: text("publicKey").notNull(),
+  privateKey: text("privateKey").notNull(),
+  createdAt: timestamp("createdAt", { withTimezone: true }).notNull().defaultNow(),
+  expiresAt: timestamp("expiresAt", { withTimezone: true }),
+  alg: text("alg"),
+  crv: text("crv"),
+});
+
+export const baOauthClient = pgTable(
+  "oauth_client",
+  {
+    id: text("id").primaryKey(),
+    clientId: text("clientId").notNull().unique(),
+    clientSecret: text("clientSecret"),
+    clientDiscoveryId: text("clientDiscoveryId"),
+    disabled: boolean("disabled"),
+    skipConsent: boolean("skipConsent"),
+    enableEndSession: boolean("enableEndSession"),
+    subjectType: text("subjectType"),
+    scopes: jsonb("scopes"),
+    clientCredentialsScopes: jsonb("clientCredentialsScopes"),
+    userId: text("userId").references(() => baUser.id, { onDelete: "cascade" }),
+    createdAt: timestamp("createdAt", { withTimezone: true }),
+    updatedAt: timestamp("updatedAt", { withTimezone: true }),
+    name: text("name"),
+    uri: text("uri"),
+    icon: text("icon"),
+    contacts: jsonb("contacts"),
+    tos: text("tos"),
+    policy: text("policy"),
+    softwareId: text("softwareId"),
+    softwareVersion: text("softwareVersion"),
+    softwareStatement: text("softwareStatement"),
+    redirectUris: jsonb("redirectUris").notNull(),
+    postLogoutRedirectUris: jsonb("postLogoutRedirectUris"),
+    backchannelLogoutUri: text("backchannelLogoutUri"),
+    backchannelLogoutSessionRequired: boolean("backchannelLogoutSessionRequired"),
+    tokenEndpointAuthMethod: text("tokenEndpointAuthMethod"),
+    applicationType: text("applicationType"),
+    jwks: text("jwks"),
+    jwksUri: text("jwksUri"),
+    grantTypes: jsonb("grantTypes"),
+    responseTypes: jsonb("responseTypes"),
+    requirePKCE: boolean("requirePKCE"),
+    dpopBoundAccessTokens: boolean("dpopBoundAccessTokens"),
+    referenceId: text("referenceId"),
+    metadata: jsonb("metadata"),
+  },
+  (table) => [index("oauth_client_user_id_idx").on(table.userId)],
+);
+
+export const baOauthResource = pgTable("oauth_resource", {
+  id: text("id").primaryKey(),
+  identifier: text("identifier").notNull().unique(),
+  name: text("name").notNull(),
+  accessTokenTtl: integer("accessTokenTtl"),
+  refreshTokenTtl: integer("refreshTokenTtl"),
+  signingAlgorithm: text("signingAlgorithm"),
+  signingKeyId: text("signingKeyId"),
+  allowedScopes: jsonb("allowedScopes"),
+  customClaims: jsonb("customClaims"),
+  dpopBoundAccessTokensRequired: boolean("dpopBoundAccessTokensRequired"),
+  disabled: boolean("disabled"),
+  createdAt: timestamp("createdAt", { withTimezone: true }),
+  updatedAt: timestamp("updatedAt", { withTimezone: true }),
+  policyVersion: integer("policyVersion"),
+  metadata: jsonb("metadata"),
+});
+
+export const baOauthClientResource = pgTable(
+  "oauth_client_resource",
+  {
+    id: text("id").primaryKey(),
+    clientId: text("clientId")
+      .notNull()
+      .references(() => baOauthClient.clientId, { onDelete: "cascade" }),
+    resourceId: text("resourceId")
+      .notNull()
+      .references(() => baOauthResource.identifier, { onDelete: "cascade" }),
+    metadata: jsonb("metadata"),
+    createdAt: timestamp("createdAt", { withTimezone: true }),
+  },
+  (table) => [
+    index("oauth_client_resource_resource_id_idx").on(table.resourceId),
+    unique("oauth_client_resource_client_id_resource_id_uidx").on(table.clientId, table.resourceId),
+  ],
+);
+
+export const baOauthRefreshToken = pgTable(
+  "oauth_refresh_token",
+  {
+    id: text("id").primaryKey(),
+    token: text("token").notNull().unique(),
+    clientId: text("clientId")
+      .notNull()
+      .references(() => baOauthClient.clientId, { onDelete: "cascade" }),
+    sessionId: text("sessionId").references(() => baSession.id, { onDelete: "set null" }),
+    userId: text("userId")
+      .notNull()
+      .references(() => baUser.id, { onDelete: "cascade" }),
+    referenceId: text("referenceId"),
+    authorizationCodeId: text("authorizationCodeId"),
+    resources: jsonb("resources"),
+    requestedUserInfoClaims: jsonb("requestedUserInfoClaims"),
+    expiresAt: timestamp("expiresAt", { withTimezone: true }).notNull(),
+    createdAt: timestamp("createdAt", { withTimezone: true }).notNull(),
+    revoked: timestamp("revoked", { withTimezone: true }),
+    rotatedAt: timestamp("rotatedAt", { withTimezone: true }),
+    rotationReplayResponse: text("rotationReplayResponse"),
+    rotationReplayExpiresAt: timestamp("rotationReplayExpiresAt", { withTimezone: true }),
+    authTime: timestamp("authTime", { withTimezone: true }),
+    confirmation: jsonb("confirmation"),
+    scopes: jsonb("scopes").notNull(),
+  },
+  (table) => [
+    index("oauth_refresh_token_client_id_idx").on(table.clientId),
+    index("oauth_refresh_token_session_id_idx").on(table.sessionId),
+    index("oauth_refresh_token_user_id_idx").on(table.userId),
+    index("oauth_refresh_token_authorization_code_id_idx").on(table.authorizationCodeId),
+  ],
+);
+
+export const baOauthAccessToken = pgTable(
+  "oauth_access_token",
+  {
+    id: text("id").primaryKey(),
+    token: text("token").notNull().unique(),
+    clientId: text("clientId")
+      .notNull()
+      .references(() => baOauthClient.clientId, { onDelete: "cascade" }),
+    sessionId: text("sessionId").references(() => baSession.id, { onDelete: "set null" }),
+    userId: text("userId").references(() => baUser.id, { onDelete: "cascade" }),
+    referenceId: text("referenceId"),
+    authorizationCodeId: text("authorizationCodeId"),
+    resources: jsonb("resources"),
+    requestedUserInfoClaims: jsonb("requestedUserInfoClaims"),
+    refreshId: text("refreshId").references(() => baOauthRefreshToken.id, { onDelete: "cascade" }),
+    expiresAt: timestamp("expiresAt", { withTimezone: true }).notNull(),
+    createdAt: timestamp("createdAt", { withTimezone: true }).notNull(),
+    revoked: timestamp("revoked", { withTimezone: true }),
+    confirmation: jsonb("confirmation"),
+    scopes: jsonb("scopes").notNull(),
+  },
+  (table) => [
+    index("oauth_access_token_client_id_idx").on(table.clientId),
+    index("oauth_access_token_session_id_idx").on(table.sessionId),
+    index("oauth_access_token_user_id_idx").on(table.userId),
+    index("oauth_access_token_authorization_code_id_idx").on(table.authorizationCodeId),
+    index("oauth_access_token_refresh_id_idx").on(table.refreshId),
+  ],
+);
+
+export const baOauthConsent = pgTable(
+  "oauth_consent",
+  {
+    id: text("id").primaryKey(),
+    clientId: text("clientId")
+      .notNull()
+      .references(() => baOauthClient.clientId, { onDelete: "cascade" }),
+    userId: text("userId").references(() => baUser.id, { onDelete: "cascade" }),
+    referenceId: text("referenceId"),
+    resources: jsonb("resources"),
+    requestedUserInfoClaims: jsonb("requestedUserInfoClaims"),
+    scopes: jsonb("scopes").notNull(),
+    createdAt: timestamp("createdAt", { withTimezone: true }).notNull(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true }).notNull(),
+  },
+  (table) => [
+    index("oauth_consent_client_id_idx").on(table.clientId),
+    index("oauth_consent_user_id_idx").on(table.userId),
+  ],
+);
+
+export const baOauthClientAssertion = pgTable("oauth_client_assertion", {
+  id: text("id").primaryKey(),
+  expiresAt: timestamp("expiresAt", { withTimezone: true }).notNull(),
+});
+
 export const baSubscription = pgTable(
   "ba_subscription",
   {
@@ -287,6 +506,67 @@ export const baSubscription = pgTable(
   ],
 );
 
+/** Verified provider webhook receipt. Insert and business mutation share one transaction. */
+export const siteBillingWebhookEvents = pgTable(
+  "site_billing_webhook_events",
+  {
+    id: cuid(),
+    provider: text("provider").notNull(),
+    eventId: text("event_id").notNull(),
+    eventType: text("event_type").notNull(),
+    receivedAt: timestamp("received_at", { withTimezone: true }).notNull().defaultNow(),
+    processedAt: timestamp("processed_at", { withTimezone: true }),
+  },
+  (table) => [
+    unique("site_billing_webhook_provider_event_unique").on(table.provider, table.eventId),
+    index("site_billing_webhook_received_idx").on(table.receivedAt),
+  ],
+);
+
+/** Cross-provider lock preventing concurrent Stripe and PayPal subscriptions for one account. */
+export const siteSubscriptionCheckoutReservations = pgTable(
+  "site_subscription_checkout_reservations",
+  {
+    id: text("id")
+      .notNull()
+      .$defaultFn(() => createId()),
+    userId: text("user_id")
+      .primaryKey()
+      .references(() => baUser.id, { onDelete: "cascade" }),
+    provider: text("provider").notNull(),
+    plan: text("plan").notNull(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("site_subscription_checkout_reservations_id_unique").on(table.id),
+    index("site_subscription_checkout_reservations_expiry_idx").on(table.expiresAt),
+  ],
+);
+
+/** Durable, retryable transactional mail generated from verified provider events. */
+export const siteEmailOutbox = pgTable(
+  "site_email_outbox",
+  {
+    id: cuid(),
+    dedupeKey: text("dedupe_key").notNull().unique(),
+    recipient: text("recipient").notNull(),
+    subject: text("subject").notNull(),
+    textBody: text("text_body").notNull(),
+    status: text("status").notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    availableAt: timestamp("available_at", { withTimezone: true }).notNull().defaultNow(),
+    lockedAt: timestamp("locked_at", { withTimezone: true }),
+    sentAt: timestamp("sent_at", { withTimezone: true }),
+    lastErrorCode: text("last_error_code"),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("site_email_outbox_ready_idx").on(table.status, table.availableAt),
+    index("site_email_outbox_locked_idx").on(table.status, table.lockedAt),
+  ],
+);
+
 export const siteDonations = pgTable(
   "site_donations",
   {
@@ -300,8 +580,12 @@ export const siteDonations = pgTable(
     isAnonymous: boolean("isAnonymous").notNull().default(false),
     stripeCheckoutSessionId: text("stripeCheckoutSessionId").unique(),
     stripePaymentIntentId: text("stripePaymentIntentId").unique(),
+    refundedAmount: integer("refundedAmount").notNull().default(0),
     status: text("status").notNull().default("pending"),
     tier: text("tier"),
+    paymentProvider: text("paymentProvider").notNull().default("stripe"),
+    paypalOrderId: text("paypalOrderId").unique("site_donations_paypal_order_unique"),
+    paypalCaptureId: text("paypalCaptureId").unique("site_donations_paypal_capture_unique"),
     createdAt: timestamp("createdAt")
       .notNull()
       .default(sql`CURRENT_TIMESTAMP`),
@@ -312,6 +596,28 @@ export const siteDonations = pgTable(
   (table) => [
     index("site_donations_status_idx").on(table.status),
     index("site_donations_user_idx").on(table.userId),
+  ],
+);
+
+export const sitePaypalSubscriptions = pgTable(
+  "site_paypal_subscriptions",
+  {
+    id: cuid(),
+    userId: text("userId").references(() => baUser.id, { onDelete: "set null" }),
+    plan: text("plan").notNull(),
+    paypalSubscriptionId: text("paypalSubscriptionId").notNull(),
+    status: text("status").notNull().default("APPROVAL_PENDING"),
+    startedAt: timestamp("startedAt", { withTimezone: true }),
+    nextBillingAt: timestamp("nextBillingAt", { withTimezone: true }),
+    lastPaymentAt: timestamp("lastPaymentAt", { withTimezone: true }),
+    cancelledAt: timestamp("cancelledAt", { withTimezone: true }),
+    createdAt: timestamp("createdAt", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("site_paypal_subscriptions_user_status_idx").on(table.userId, table.status),
+    index("site_paypal_subscriptions_status_idx").on(table.status, table.updatedAt),
+    unique("site_paypal_subscriptions_provider_subscription_unique").on(table.paypalSubscriptionId),
   ],
 );
 
@@ -331,6 +637,152 @@ export const siteAdSlots = pgTable("site_ad_slots", {
     .notNull()
     .default(sql`CURRENT_TIMESTAMP`),
 });
+
+export const siteAdvertisers = pgTable(
+  "site_advertisers",
+  {
+    id: cuid(),
+    legalName: text("legalName").notNull(),
+    contactEmail: text("contactEmail").notNull(),
+    status: text("status").notNull().default("pending"),
+    contractReference: text("contractReference"),
+    createdBy: text("createdBy").references(() => users.id, { onDelete: "set null" }),
+    createdAt: timestamp("createdAt", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("site_advertisers_status_idx").on(table.status, table.createdAt)],
+);
+
+export const siteAdCampaigns = pgTable(
+  "site_ad_campaigns",
+  {
+    id: cuid(),
+    advertiserId: text("advertiserId")
+      .notNull()
+      .references(() => siteAdvertisers.id, { onDelete: "restrict" }),
+    name: text("name").notNull(),
+    status: text("status").notNull().default("draft"),
+    startsAt: timestamp("startsAt", { withTimezone: true }),
+    endsAt: timestamp("endsAt", { withTimezone: true }),
+    budgetMinor: integer("budgetMinor").notNull(),
+    dailyCapMinor: integer("dailyCapMinor"),
+    currency: text("currency").notNull().default("EUR"),
+    approvedBy: text("approvedBy").references(() => users.id, { onDelete: "set null" }),
+    approvedAt: timestamp("approvedAt", { withTimezone: true }),
+    createdAt: timestamp("createdAt", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("site_ad_campaigns_advertiser_status_idx").on(table.advertiserId, table.status),
+    index("site_ad_campaigns_schedule_idx").on(table.status, table.startsAt, table.endsAt),
+  ],
+);
+
+export const siteAdCreatives = pgTable(
+  "site_ad_creatives",
+  {
+    id: cuid(),
+    campaignId: text("campaignId")
+      .notNull()
+      .references(() => siteAdCampaigns.id, { onDelete: "cascade" }),
+    locale: text("locale").notNull(),
+    format: text("format").notNull(),
+    headline: text("headline").notNull(),
+    body: text("body"),
+    imageUrl: text("imageUrl"),
+    destinationUrl: text("destinationUrl").notNull(),
+    contentSha256: text("contentSha256").notNull(),
+    status: text("status").notNull().default("pending_review"),
+    reviewedBy: text("reviewedBy").references(() => users.id, { onDelete: "set null" }),
+    reviewedAt: timestamp("reviewedAt", { withTimezone: true }),
+    createdAt: timestamp("createdAt", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("site_ad_creatives_campaign_status_idx").on(table.campaignId, table.status)],
+);
+
+export const siteAdPlacements = pgTable(
+  "site_ad_placements",
+  {
+    id: cuid(),
+    slotKey: text("slotKey").notNull().unique(),
+    name: text("name").notNull(),
+    formats: text("formats")
+      .array()
+      .notNull()
+      .default(sql`'{}'::text[]`),
+    allowedPathPrefixes: text("allowedPathPrefixes")
+      .array()
+      .notNull()
+      .default(sql`'{}'::text[]`),
+    blockedPathPrefixes: text("blockedPathPrefixes")
+      .array()
+      .notNull()
+      .default(sql`'{/admin,/studio,/desktop,/workshop}'::text[]`),
+    exemptVip: boolean("exemptVip").notNull().default(true),
+    active: boolean("active").notNull().default(false),
+    createdAt: timestamp("createdAt", { withTimezone: true }).notNull().defaultNow(),
+    updatedAt: timestamp("updatedAt", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [index("site_ad_placements_active_idx").on(table.active, table.slotKey)],
+);
+
+export const siteAdCampaignPlacements = pgTable(
+  "site_ad_campaign_placements",
+  {
+    campaignId: text("campaignId")
+      .notNull()
+      .references(() => siteAdCampaigns.id, { onDelete: "cascade" }),
+    placementId: text("placementId")
+      .notNull()
+      .references(() => siteAdPlacements.id, { onDelete: "restrict" }),
+    createdAt: timestamp("createdAt", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.campaignId, table.placementId] }),
+    index("site_ad_campaign_placements_placement_idx").on(table.placementId, table.campaignId),
+  ],
+);
+
+export const siteAdEventsDaily = pgTable(
+  "site_ad_events_daily",
+  {
+    id: cuid(),
+    day: date("day", { mode: "string" }).notNull(),
+    campaignId: text("campaignId")
+      .notNull()
+      .references(() => siteAdCampaigns.id, { onDelete: "cascade" }),
+    placementId: text("placementId")
+      .notNull()
+      .references(() => siteAdPlacements.id, { onDelete: "restrict" }),
+    impressions: integer("impressions").notNull().default(0),
+    clicks: integer("clicks").notNull().default(0),
+    spendMinor: integer("spendMinor").notNull().default(0),
+    currency: text("currency").notNull().default("EUR"),
+    updatedAt: timestamp("updatedAt", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    unique("site_ad_events_daily_key").on(table.day, table.campaignId, table.placementId),
+    index("site_ad_events_campaign_day_idx").on(table.campaignId, table.day),
+  ],
+);
+
+export const siteBillingAudit = pgTable(
+  "site_billing_audit",
+  {
+    id: cuid(),
+    actorUserId: text("actorUserId").references(() => users.id, { onDelete: "set null" }),
+    actorKind: text("actorKind").notNull(),
+    action: text("action").notNull(),
+    entityType: text("entityType").notNull(),
+    entityId: text("entityId").notNull(),
+    createdAt: timestamp("createdAt", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    index("site_billing_audit_entity_idx").on(table.entityType, table.entityId, table.createdAt),
+    index("site_billing_audit_actor_idx").on(table.actorUserId, table.createdAt),
+  ],
+);
 // --- Dragon Ball official card catalog -------------------------------------
 // Editorial records are entered manually with provenance. No vendor catalog
 // crawler or card image mirror is implied by these tables.
@@ -1178,3 +1630,32 @@ export const agentAudit = pgTable(
 );
 
 export type AgentAuditRow = typeof agentAudit.$inferSelect;
+
+// Progression de lecture des comptes connectés (« continuer à regarder ») : une ligne par
+// épisode ou film. Le statut de la watchlist (à voir / en cours / terminé) en est dérivé,
+// les éléments sauvegardés restant dans les favoris. Dernier écrivain gagnant sur `updatedAtMs`.
+export const siteWatchProgress = pgTable(
+  "site_watch_progress",
+  {
+    userId: text("userId").notNull(),
+    // "episode" | "movie"
+    kind: text("kind").notNull(),
+    itemId: text("itemId").notNull(),
+    seconds: integer("seconds").notNull(),
+    duration: integer("duration").notNull(),
+    completed: boolean("completed").notNull().default(false),
+    language: text("language"),
+    // Instantané d'affichage, pour dessiner le rail sans relire le catalogue.
+    title: text("title").notNull(),
+    href: text("href").notNull(),
+    image: text("image"),
+    caption: text("caption"),
+    // Horodatage client borné par le serveur, en millisecondes d'époque.
+    updatedAtMs: bigint("updatedAtMs", { mode: "number" }).notNull(),
+  },
+  (t) => [
+    primaryKey({ columns: [t.userId, t.kind, t.itemId], name: "site_watch_progress_pk" }),
+    index("site_watch_progress_user_recent_idx").on(t.userId, t.updatedAtMs),
+  ],
+);
+export type SiteWatchProgress = typeof siteWatchProgress.$inferSelect;

@@ -18,6 +18,10 @@ function Metric({ metric }: { metric: CoverageMetric }) {
   const known = metric.available !== null && metric.total !== null;
   const missing = known ? Math.max(0, metric.total! - metric.available!) : null;
   const complete = !metric.referenceOnly && known && metric.total! > 0 && missing === 0;
+  const pct =
+    !metric.referenceOnly && known && metric.total! > 0
+      ? Math.min(100, Math.round((metric.available! / metric.total!) * 100))
+      : null;
 
   return (
     <div className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5">
@@ -57,6 +61,19 @@ function Metric({ metric }: { metric: CoverageMetric }) {
           )}
         </span>
       </div>
+      {pct !== null && (
+        <div className="mt-3 space-y-1" data-coverage-pct={pct}>
+          <div aria-hidden className="h-1.5 w-full overflow-hidden rounded-full bg-white/[0.08]">
+            <div
+              className={`h-full rounded-full transition-all ${
+                complete ? "bg-emerald-400" : "bg-dbz-orange"
+              }`}
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+          <p className="text-right font-mono text-[10px] tabular-nums text-white/45">{pct}%</p>
+        </div>
+      )}
       <p className="mt-1 text-xs text-white/50">
         {metric.unit}
         {metric.referenceOnly ? (

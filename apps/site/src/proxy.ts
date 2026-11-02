@@ -162,6 +162,18 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(target, 308);
   }
 
+  // Espaces membres (`/dashboard`, `/account/billing`) : sans aucun identifiant, 307 vers la
+  // connexion AVANT le rendu (un `redirect()` de page dégradait en 200 + `<meta refresh>` sous
+  // le streaming). Un cookie présent mais périmé traverse : la page le revérifie.
+  if (
+    (pathname === "/dashboard" || pathname === "/account/billing") &&
+    !hasAuthCredentials(request)
+  ) {
+    const target = new URL("/signin", request.url);
+    target.searchParams.set("callbackURL", pathname);
+    return NextResponse.redirect(target, 307);
+  }
+
   // Espace d'administration : arbitré ICI, avant tout rendu.
   //
   // `app/admin/layout.tsx` appelle bien `requireAdmin()`, mais sous Next 16 le

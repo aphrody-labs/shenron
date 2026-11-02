@@ -29,7 +29,7 @@ test("native web placement survives a lost ACK and process restart, with private
     if (request.tool === "aphrody_job_submit") {
       submissions++;
       expect(request.arguments.idempotency_key).toBe("web-job-001");
-      const args = request.arguments.payload.args;
+      const args = (request.arguments.payload as { args: unknown }).args;
       expect(args).toEqual(
         expect.arrayContaining([
           "dragon-ball",

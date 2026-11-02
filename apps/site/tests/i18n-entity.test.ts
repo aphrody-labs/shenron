@@ -48,6 +48,12 @@ describe("locales", () => {
     // Un volume (« 826 épisodes », « 1 300+ fiches ») se mesure en base ; un
     // nom propre chiffré, comme le jeu 2048, et l'architecture 64 bits n'en sont pas.
     const COMPTEUR = /\d[\d\s.,]*\+|\b\d{2,}\s+(?!bits\b)\p{L}+s\b/u;
-    for (const dico of [fr, en, ja]) expect(JSON.stringify(dico)).not.toMatch(COMPTEUR);
+    const BILLING_CURRENCY = /\d{1,3}(?:[ ,.\u00a0]\d{3})*,\d{2}\s*€/u;
+    for (const dico of [fr, en, ja]) {
+      const serialized = JSON.stringify(dico);
+      expect(serialized).not.toMatch(COMPTEUR);
+      // Le catalogue tarifaire réglementaire peut afficher des exemples de prix.
+      expect(serialized.replaceAll(/€\s*\d+[,.]?\d*/gu, "€ montant")).not.toMatch(BILLING_CURRENCY);
+    }
   });
 });

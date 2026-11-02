@@ -1,187 +1,172 @@
 "use client";
 
-import { useState } from "react";
-import { useTranslations } from "next-intl";
-import { STRIPE_PLANS } from "@/lib/stripe";
+import Link from "next/link";
+import { useId, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { Coche } from "@aphrody/shenron-ui/icones";
+import { STRIPE_PLANS } from "@/lib/billing-catalog";
+import {
+  PROVIDER_LABEL_KEY,
+  readPaymentFailure,
+  signInHref,
+  type PaymentFailure,
+} from "@/components/stripe/payment-errors";
 
+type PlanKey = keyof typeof STRIPE_PLANS;
+type Provider = "stripe" | "paypal";
+
+const PLANS: { key: PlanKey; title: "monthly" | "annual"; per: "perMonth" | "perYear" }[] = [
+  { key: "vip_monthly", title: "monthly", per: "perMonth" },
+  { key: "vip_annual", title: "annual", per: "perYear" },
+];
+
+/**
+ * The two VIP plans. Only what the code delivers is listed: ad placements flagged
+ * `exemptVip` are skipped for a signed-in subscriber (`/api/ads/*`).
+ */
 export function VipPricingCards() {
-  const tCommon = useTranslations("common");
-  const [billingInterval, setBillingInterval] = useState<"month" | "year">("month");
-  const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const locale = useLocale();
+  const t = useTranslations("billing.vip");
+  const tBilling = useTranslations("billing");
+  const id = useId();
+  const [pending, setPending] = useState<{ plan: PlanKey; provider: Provider } | null>(null);
+  const [failure, setFailure] = useState<PaymentFailure | null>(null);
+  const [unavailable, setUnavailable] = useState<Record<Provider, boolean>>({
+    stripe: false,
+    paypal: false,
+  });
+  const formatPrice = (amount: number) =>
+    new Intl.NumberFormat(locale, { style: "currency", currency: "EUR" }).format(amount / 100);
 
-  const handleSubscribe = async (planKey: "vip_monthly" | "vip_annual") => {
+  const subscribe = async (plan: PlanKey, provider: Provider) => {
+    setPending({ plan, provider });
+    setFailure(null);
     try {
-      setLoadingPlan(planKey);
-      setError(null);
-
-      const res = await fetch("/api/stripe/subscribe", {
+      const response = await fetch(`/api/${provider}/subscribe`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan: planKey }),
+        body: JSON.stringify({ plan }),
       });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Erreur lors de l'accès au paiement");
+      if (!response.ok) {
+        const next = await readPaymentFailure(response);
+        if (next.providerUnavailable)
+          setUnavailable((current) => ({ ...current, [provider]: true }));
+        setFailure(next);
+        return;
       }
-
-      if (data.url) {
-        window.location.href = data.url;
+      const data = (await response.json().catch(() => null)) as { url?: unknown } | null;
+      if (typeof data?.url === "string") {
+        window.location.assign(data.url);
+        return;
       }
-    } catch (err: any) {
-      setError(err.message);
+      setFailure({ key: "errors.default", providerUnavailable: false, signInRequired: false });
+    } catch {
+      setFailure({ key: "errors.default", providerUnavailable: false, signInRequired: false });
     } finally {
-      setLoadingPlan(null);
+      setPending(null);
     }
   };
 
-  const monthlyPlan = STRIPE_PLANS.vip_monthly;
-  const annualPlan = STRIPE_PLANS.vip_annual;
-
   return (
-    <div className="mx-auto w-full max-w-5xl px-4 py-12">
-      {/* Header section */}
-      <div className="text-center">
-        <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1 text-xs font-semibold text-amber-400 backdrop-blur-md">
-          <span>👑</span> DBFR VIP CLUB
-        </div>
-        <h2 className="mt-4 text-3xl font-black tracking-tight sm:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-orange-400 to-amber-500">
-          Rejoignez l'Élite des Guerriers Z
-        </h2>
-        <p className="mx-auto mt-3 max-w-2xl text-sm sm:text-base text-neutral-400">
-          Profitez d'une expérience de lecture manga pure, sans interruption, avec des scans en
-          résolution originale et un accès exclusif aux archives inédites.
-        </p>
-
-        {/* Interval Switcher */}
-        <div className="mt-8 flex justify-center">
-          <div className="relative flex rounded-xl border border-neutral-800 bg-neutral-900/80 p-1 backdrop-blur-md">
-            <button
-              type="button"
-              onClick={() => setBillingInterval("month")}
-              className={`rounded-lg px-4 py-1.5 text-xs font-semibold transition-all ${
-                billingInterval === "month"
-                  ? "bg-amber-500 text-black shadow-md shadow-amber-500/20"
-                  : "text-neutral-400 hover:text-white"
-              }`}
-            >
-              Facturation Mensuelle
-            </button>
-            <button
-              type="button"
-              onClick={() => setBillingInterval("year")}
-              className={`relative rounded-lg px-4 py-1.5 text-xs font-semibold transition-all ${
-                billingInterval === "year"
-                  ? "bg-amber-500 text-black shadow-md shadow-amber-500/20"
-                  : "text-neutral-400 hover:text-white"
-              }`}
-            >
-              Facturation Annuelle
-              <span className="ml-1.5 rounded-full bg-orange-600/30 px-1.5 py-0.2 text-[10px] font-bold text-orange-300">
-                -17%
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {error && (
-        <div className="mx-auto mt-6 max-w-md rounded-xl border border-red-500/30 bg-red-950/40 p-3 text-center text-xs text-red-300">
-          {error}
+    <div>
+      {failure && (
+        <div
+          role="alert"
+          className={`mb-6 rounded-xl border p-4 text-sm leading-relaxed text-white ${
+            failure.signInRequired
+              ? "border-dbz-yellow/60 bg-dbz-yellow/10"
+              : "border-dbz-red bg-dbz-red/15"
+          }`}
+        >
+          <p>{tBilling(failure.key)}</p>
+          {failure.signInRequired && (
+            <Link href={signInHref()} className="toriyama-btn mt-3 normal-case tracking-normal">
+              {tBilling("errors.signIn")}
+            </Link>
+          )}
         </div>
       )}
-
-      {/* Cards Grid */}
-      <div className="mt-10 grid gap-6 md:grid-cols-2 max-w-3xl mx-auto">
-        {/* Pass Mensuel */}
-        <div
-          className={`relative flex flex-col justify-between rounded-3xl border p-7 backdrop-blur-md transition-all ${
-            billingInterval === "month"
-              ? "border-amber-500/60 bg-gradient-to-b from-amber-950/20 via-neutral-900/80 to-black shadow-xl shadow-amber-500/10 ring-1 ring-amber-500/50"
-              : "border-neutral-800/80 bg-neutral-900/40 opacity-80 hover:opacity-100"
-          }`}
-        >
-          <div>
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-lg text-white">Pass Mensuel</h3>
-              <span className="text-xl">🌙</span>
-            </div>
-            <p className="mt-1 text-xs text-neutral-400">
-              Flexibilité totale, annulable en 1 clic.
-            </p>
-
-            <div className="mt-5 flex items-baseline gap-1">
-              <span className="text-4xl font-black text-amber-400">4,99 €</span>
-              <span className="text-xs text-neutral-400">/ mois</span>
-            </div>
-
-            <ul className="mt-6 space-y-3 text-xs text-neutral-300">
-              {monthlyPlan.features.map((feature, idx) => (
-                <li key={idx} className="flex items-start gap-2.5">
-                  <span className="text-amber-400 font-bold">✓</span>
-                  <span>{feature}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <button
-            type="button"
-            disabled={loadingPlan === "vip_monthly"}
-            onClick={() => handleSubscribe("vip_monthly")}
-            className="mt-8 w-full rounded-xl border border-amber-500/30 bg-amber-500/10 py-3 text-xs font-bold text-amber-300 transition-all hover:bg-amber-500 hover:text-black active:scale-98 disabled:opacity-50"
-          >
-            {loadingPlan === "vip_monthly" ? tCommon("loading") : "Choisir le Pass Mensuel"}
-          </button>
-        </div>
-
-        {/* Pass Annuel (Best Value) */}
-        <div
-          className={`relative flex flex-col justify-between rounded-3xl border p-7 backdrop-blur-md transition-all ${
-            billingInterval === "year"
-              ? "border-amber-400 bg-gradient-to-b from-orange-950/30 via-neutral-900/90 to-black shadow-2xl shadow-orange-500/15 ring-2 ring-amber-400"
-              : "border-neutral-800/80 bg-neutral-900/40 opacity-80 hover:opacity-100"
-          }`}
-        >
-          <div className="absolute -top-3.5 right-6 rounded-full bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider text-black shadow-md">
-            Meilleure Offre (2 mois offerts)
-          </div>
-
-          <div>
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-lg text-white">Pass Annuel Shenron</h3>
-              <span className="text-xl">🌟</span>
-            </div>
-            <p className="mt-1 text-xs text-neutral-400">
-              Le choix des vrais passionnés de Dragon Ball.
-            </p>
-
-            <div className="mt-5 flex items-baseline gap-1">
-              <span className="text-4xl font-black text-amber-400">49,90 €</span>
-              <span className="text-xs text-neutral-400">/ an</span>
-              <span className="ml-2 text-[11px] text-amber-400/80">(~4,15 € / mois)</span>
-            </div>
-
-            <ul className="mt-6 space-y-3 text-xs text-neutral-300">
-              {annualPlan.features.map((feature, idx) => (
-                <li key={idx} className="flex items-start gap-2.5">
-                  <span className="text-amber-400 font-bold">★</span>
-                  <span className={idx === 0 ? "font-semibold text-white" : ""}>{feature}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <button
-            type="button"
-            disabled={loadingPlan === "vip_annual"}
-            onClick={() => handleSubscribe("vip_annual")}
-            className="mt-8 w-full rounded-xl bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-300 py-3 text-xs font-black text-black shadow-lg shadow-amber-500/25 transition-all hover:brightness-110 active:scale-98 disabled:opacity-50"
-          >
-            {loadingPlan === "vip_annual" ? tCommon("loading") : "Débloquer l'Accès Annuel ⚡"}
-          </button>
-        </div>
+      <div className="grid gap-5 md:grid-cols-2">
+        {PLANS.map((plan) => {
+          const offer = STRIPE_PLANS[plan.key];
+          const annual = plan.key === "vip_annual";
+          const titleId = `${id}-${plan.key}`;
+          const label = (provider: Provider) =>
+            pending?.plan === plan.key && pending.provider === provider
+              ? t("redirecting")
+              : t(provider);
+          return (
+            <article
+              key={plan.key}
+              aria-labelledby={titleId}
+              className={`toriyama-panel flex min-w-0 flex-col p-6 sm:p-7 ${annual ? "border-dbz-orange" : ""}`}
+            >
+              <h2 id={titleId} className="font-display text-xl font-bold text-white">
+                {t(plan.title)}
+              </h2>
+              <p className="mt-4 font-saiyan text-4xl leading-none text-dbz-yellow tabular-nums">
+                {formatPrice(offer.amount)}
+                <span className="ml-2 font-sans text-base text-white/80">{t(plan.per)}</span>
+              </p>
+              {annual && (
+                <p className="mt-2 text-sm text-white/80">
+                  {t("equivalentMonthly", { amount: formatPrice(Math.round(offer.amount / 12)) })}
+                </p>
+              )}
+              <p className="mt-4 text-[0.9375rem] leading-relaxed text-white/80">
+                {t(annual ? "annualDescription" : "monthlyDescription")}
+              </p>
+              <ul className="mt-5 grid gap-2.5 text-[0.9375rem] leading-relaxed text-white">
+                {(["benefitAds", "benefitSupport"] as const).map((benefit) => (
+                  <li key={benefit} className="flex gap-3">
+                    <Coche size={18} className="mt-0.5 shrink-0 text-dbz-orange" aria-hidden />
+                    <span>{t(benefit)}</span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-auto grid gap-3 pt-7">
+                <button
+                  type="button"
+                  disabled={pending !== null || unavailable.stripe}
+                  aria-busy={pending?.plan === plan.key && pending.provider === "stripe"}
+                  aria-describedby={
+                    unavailable.stripe ? `${titleId} ${titleId}-stripe-off` : titleId
+                  }
+                  onClick={() => void subscribe(plan.key, "stripe")}
+                  className="toriyama-btn min-h-12 w-full normal-case tracking-normal text-[0.9375rem]"
+                >
+                  {label("stripe")}
+                </button>
+                <button
+                  type="button"
+                  disabled={pending !== null || unavailable.paypal}
+                  aria-busy={pending?.plan === plan.key && pending.provider === "paypal"}
+                  aria-describedby={
+                    unavailable.paypal ? `${titleId} ${titleId}-paypal-off` : titleId
+                  }
+                  onClick={() => void subscribe(plan.key, "paypal")}
+                  className="toriyama-btn-secondary w-full normal-case tracking-normal"
+                >
+                  {label("paypal")}
+                </button>
+                {(["stripe", "paypal"] as const).map(
+                  (provider) =>
+                    unavailable[provider] && (
+                      <p
+                        key={provider}
+                        id={`${titleId}-${provider}-off`}
+                        className="text-[0.8125rem] text-white/75"
+                      >
+                        {tBilling("errors.providerDisabled", {
+                          provider: tBilling(PROVIDER_LABEL_KEY[provider]),
+                        })}
+                      </p>
+                    ),
+                )}
+              </div>
+            </article>
+          );
+        })}
       </div>
     </div>
   );

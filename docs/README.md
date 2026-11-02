@@ -15,6 +15,7 @@ the root `AGENTS.md`.
 | SVG pipeline                                                     | [`architecture/pipeline-svg.md`](architecture/pipeline-svg.md)                                                                                      |
 | Lecteur HLS et génération vidéo                                  | [`video/README.md`](video/README.md)                                                                                                                |
 | Environment variables                                            | [`operations/ENV.md`](operations/ENV.md)                                                                                                            |
+| Dragon Ball web crawler, collecte, indexation et services VPS | [operations/dragon-ball-web.md](operations/dragon-ball-web.md) |
 | Database parity (PostgreSQL, SQLite)                             | [`operations/database-parity.md`](operations/database-parity.md)                                                                                    |
 | RAG and LLM compute (compute host, databases, tunnels)           | [`operations/compute-rag.md`](operations/compute-rag.md)                                                                                            |
 | Pilotage admin natif (FFI, WASM, jobs et services Docker)        | [`operations/admin-native-pipeline.md`](operations/admin-native-pipeline.md)                                                                        |
@@ -51,6 +52,7 @@ the root `AGENTS.md`.
 | Wiki data ingestion                                              | [`guides/wiki-data-ingestion.md`](guides/wiki-data-ingestion.md)                                                                                    |
 | Measured pitfalls                                                | [`guides/pieges.md`](guides/pieges.md)                                                                                                              |
 | Security                                                         | [Security policy](SECURITY.md)                                                                                                                      |
+| Unified accounts, Better Auth, Google/Discord/email, and Shenron OAuth | [`products/authentication.md`](products/authentication.md)                                                                                         |
 | Licenses of bundled components                                   | [`licenses/`](licenses/)                                                                                                                            |
 
 Les adresses publiques et les chemins opérationnels documentés ne remplacent pas la

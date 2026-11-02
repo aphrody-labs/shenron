@@ -15,7 +15,22 @@ test("Bun profile updates reject invalid input before writing and preserve parti
   const auth = betterAuth({
     ...options,
     baseURL: "http://localhost:3000",
-    database: memoryAdapter({ user: [], session: [], account: [], verification: [] }),
+    database: memoryAdapter({
+      user: [],
+      session: [],
+      account: [],
+      verification: [],
+      twoFactor: [],
+      passkey: [],
+      jwks: [],
+      oauthClient: [],
+      oauthResource: [],
+      oauthClientResource: [],
+      oauthRefreshToken: [],
+      oauthAccessToken: [],
+      oauthConsent: [],
+      oauthClientAssertion: [],
+    }),
     emailAndPassword: { enabled: true },
     logger: { disabled: true },
   });
@@ -125,9 +140,12 @@ test("extra hosts and origins of a desktop profile are appended from the environ
 });
 
 test("a missing piece disables the group with a reason, never throws", () => {
-  expect(buildHostAuthOptions({ BETTER_AUTH_SECRET: longSecret }, undefined)).toEqual({
-    reason: "application Discord non configurée",
-  });
+  const withoutDiscord = buildHostAuthOptions({ BETTER_AUTH_SECRET: longSecret }, undefined);
+  expect("reason" in withoutDiscord).toBe(false);
+  if (!("reason" in withoutDiscord)) {
+    expect(withoutDiscord.socialProviders).toEqual({});
+    expect(withoutDiscord.emailAndPassword).toMatchObject({ enabled: true });
+  }
   expect(buildHostAuthOptions({ NODE_ENV: "production", ...discord }, undefined)).toEqual({
     reason: "BETTER_AUTH_SECRET absent ou trop court",
   });

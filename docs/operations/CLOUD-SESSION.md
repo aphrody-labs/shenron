@@ -23,7 +23,7 @@ façon. Sans ces variables, la session code, teste et pousse, mais ne livre pas 
 
 ## Du code à la production
 `gates (typecheck, lint, tests, format)` → commit + push `main` → `scripts/deploy/release.sh`
-(build et vérification de l'image sur un hôte Linux x64, livraison à `SHENRON_DEPLOY_TARGET`, défaut `ssh:dbfr`, activation par l'entrée Infra de la cible, sondes) → réglages d'hôte par
+(build et vérification de l'image sur un hôte Linux x64, livraison à `SHENRON_DEPLOY_TARGET`, défaut `ssh:prod`, activation par l'entrée Infra de la cible, sondes) → réglages d'hôte par
 `aphrody-infra ssh exec --host vps|dbfr` (env sous `/etc/rose-griffon/`, redémarrages) → vérification
 publique. Les hôtes restent propriété de l'Infra d'Aphrody : pas de manipulation hors `aphrody-infra` et de
 la release, et jamais de secret dans un journal ou un message.

@@ -195,7 +195,7 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
       ) : (
         <>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
-            {data.rows.map(({ card, set, series }) => {
+            {data.rows.map(({ card, set, series }, index) => {
               const valuation = data.latestValuations.get(card.id);
               const frenchName = card.nameFr ?? (card.language === "fr" ? card.name : null);
               const japaneseName = card.nameJa ?? (card.language === "ja" ? card.name : null);
@@ -229,9 +229,9 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
                           alt={`${displayName} — ${t("front")}`}
                           width={card.frontImageWidth ?? undefined}
                           height={card.frontImageHeight ?? undefined}
-                          loading="lazy"
+                          loading={index < 20 ? "eager" : "lazy"}
                           decoding="async"
-                          className="absolute inset-0 h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transform-none motion-reduce:transition-none"
+                          className="absolute inset-0 h-full w-full object-contain"
                         />
                       </div>
                     ) : (

@@ -71,7 +71,9 @@ async function cycle(): Promise<void> {
         if ((ep.framesCount ?? 0) < 20) episodesToCheck.push(ep.id);
       }
     }
-    if (!episodesToCheck.includes(876)) episodesToCheck.push(876);
+    for (const knownId of [876, 877, 878]) {
+      if (!episodesToCheck.includes(knownId)) episodesToCheck.push(knownId);
+    }
 
     for (const epId of episodesToCheck) {
       const res = await fetch(`${SITE}/api/episodes/${epId}`, { headers: ua });

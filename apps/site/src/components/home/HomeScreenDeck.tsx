@@ -1,16 +1,35 @@
 "use client";
 
-import { Children, isValidElement, useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  Children,
+  isValidElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+  type ReactNode,
+} from "react";
 import { MaterialSymbol } from "@aphrody/shenron-ui/icones";
 import { useT } from "@/components/T";
 import { HomeMotion } from "./HomeMotion";
 import "./home-screen-deck.css";
 
-/** Document scrolling preserves compact sections and accessible panel navigation. */
+interface ClickBurst {
+  id: number;
+  x: number;
+  y: number;
+  strong: boolean;
+}
+
+/** Document scrolling preserves compact sections, tactile click feedback, and accessible panel navigation. */
 export function HomeScreenDeck({ children }: { children: ReactNode }) {
   const ref = useRef<HTMLElement>(null);
+  const burstSeq = useRef(0);
   const [active, setActive] = useState(0);
   const [motion, setMotion] = useState(true);
+  const [bursts, setBursts] = useState<ClickBurst[]>([]);
   const t = useT();
   const screens = Children.toArray(children);
 
@@ -40,6 +59,30 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  const handlePointerDown = useCallback(
+    (event: ReactPointerEvent<HTMLDivElement>) => {
+      if (!motion || event.button !== 0) return;
+      if (
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches
+      ) {
+        return;
+      }
+      const target = event.target as HTMLElement | null;
+      const strong = Boolean(
+        target?.closest("a, button, [role='tab'], input, summary, [data-clickable]"),
+      );
+      const id = ++burstSeq.current;
+      const x = Math.round(event.clientX);
+      const y = Math.round(event.clientY);
+      setBursts((prev) => [...prev.slice(-5), { id, x, y, strong }]);
+      window.setTimeout(() => {
+        setBursts((prev) => prev.filter((item) => item.id !== id));
+      }, 560);
+    },
+    [motion],
+  );
+
   const go = (index: number) => {
     const deck = ref.current;
     const screen = deck?.children[index] as HTMLElement | undefined;
@@ -55,7 +98,11 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
 
   return (
     <HomeMotion value={motion}>
-      <div className="home-screen-experience" data-home-motion={motion ? "running" : "paused"}>
+      <div
+        className="home-screen-experience"
+        data-home-motion={motion ? "running" : "paused"}
+        onPointerDown={handlePointerDown}
+      >
         <section ref={ref} className="home-screen-deck" aria-label={t("accueil.hero.title")}>
           {screens.map((screen, index) => (
             <div
@@ -69,6 +116,23 @@ export function HomeScreenDeck({ children }: { children: ReactNode }) {
             </div>
           ))}
         </section>
+        {bursts.length > 0 && (
+          <div className="home-click-fx-layer" aria-hidden="true">
+            {bursts.map((burst) => (
+              <span
+                key={burst.id}
+                data-strong={burst.strong || undefined}
+                className="home-click-fx"
+                style={
+                  {
+                    "--click-x": `${burst.x}px`,
+                    "--click-y": `${burst.y}px`,
+                  } as CSSProperties
+                }
+              />
+            ))}
+          </div>
+        )}
         <div className="home-screen-controls">
           <button
             type="button"

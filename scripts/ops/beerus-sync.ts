@@ -22,6 +22,7 @@ const crawl = process.argv.includes("--crawl");
 const SERIES = "DBS_BEERUS";
 const ARC_ID = 18;
 const SITE = "https://dragonballfr.com";
+const SSH_HOST = process.env.SHENRON_SSH_HOST ?? "prod";
 const ua = {
   "user-agent":
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/155 Safari/537.36 Shenron/1.0",
@@ -40,7 +41,7 @@ const psql = (sql: string) =>
   run(
     [
       "ssh",
-      "dbfr",
+      SSH_HOST,
       "sudo -n docker exec -i shenron-postgres psql -U postgres -d shenron_site -v ON_ERROR_STOP=1 -At",
     ],
     sql,
@@ -92,6 +93,8 @@ const FRENCH_TITLES: Record<string, string> = {
   "The God Who Destroys": "Le dieu de la Destruction",
   "The God of Destruction Heads to the Planet of the Kai":
     "Le dieu de la Destruction se rend sur la planète de Kaïo",
+  "The God of Destruction Heads to Earth": "Le dieu de la Destruction se dirige vers la Terre",
+  "The God of Saiyans": "Le dieu des Saiyans",
 };
 
 if (import.meta.main) {

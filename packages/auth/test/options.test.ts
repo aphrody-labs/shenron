@@ -49,8 +49,8 @@ describe("logging, cookie cache, advanced", () => {
     expect(drizzleDebugLogs("test")).toBe(true);
   });
 
-  test("cookie cache 300 s", () => {
-    expect(SESSION_COOKIE_CACHE).toEqual({ enabled: true, maxAge: 300 });
+  test("session cookie cache is disabled", () => {
+    expect(SESSION_COOKIE_CACHE).toEqual({ enabled: false });
     expect(Object.isFrozen(SESSION_COOKIE_CACHE)).toBe(true);
   });
 

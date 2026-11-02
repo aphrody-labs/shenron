@@ -66,6 +66,23 @@
   }
 }
 
+/* Sous 768 px l'invitation Discord quitte le flottant et rejoint le flux, au-dessus du pied de
+   page : calée en bas à gauche elle recouvrait les actions principales des pages (mesuré à
+   390 px sur /vip : « S'abonner par carte »). Elle reste visible, sans rien masquer. */
+@media (max-width: 767px) {
+  .fab-discord:not([data-inline]),
+  html[data-footer-visible] .fab-discord:not([data-inline]) {
+    position: relative !important;
+    bottom: auto !important;
+    left: auto !important;
+    margin: 1rem auto;
+    width: fit-content;
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+  }
+}
+
 /* Au-dessus de 1024 px, la barre latérale du shell occupe le bord gauche (17rem, 4,5rem
    repliée) : les pastilles flottantes de gauche se posaient sur son pied — connexion,
    réglages, « Replier la barre latérale » — et en volaient les clics. Elles longent

@@ -23,18 +23,21 @@ test("Crunchyroll joins existing OAuth providers only after explicit registered 
     undefined,
   );
   if ("reason" in options || "reason" in configured) throw Error("Missing base auth configuration");
-  expect(options.plugins?.map((plugin) => plugin.id)).toEqual(["bearer"]);
-  expect(configured.plugins?.map((plugin) => plugin.id)).toEqual(["bearer", "generic-oauth"]);
+  expect(options.plugins?.map((plugin) => plugin.id)).toContain("bearer");
+  expect(options.plugins?.map((plugin) => plugin.id)).toContain("oauth-provider");
+  expect(options.plugins?.map((plugin) => plugin.id)).toContain("cimd");
+  expect(options.plugins?.map((plugin) => plugin.id)).not.toContain("generic-oauth");
+  expect(configured.plugins?.map((plugin) => plugin.id)).toContain("generic-oauth");
   expect(configured.socialProviders?.discord).toBeDefined();
   expect(configured.account?.encryptOAuthTokens).toBe(true);
 });
 test("Better Auth encryption preserves existing plaintext token reads and decrypts new tokens", async () => {
-  const options = buildHostAuthOptions(base, undefined);
-  if ("reason" in options) throw Error(options.reason);
   for (const stored of [
     "legacy-provider-token",
     await symmetricEncrypt({ key: secret, data: "legacy-provider-token" }),
   ]) {
+    const options = buildHostAuthOptions(base, undefined);
+    if ("reason" in options) throw Error(options.reason);
     const auth = betterAuth({
       ...options,
       baseURL: "http://localhost:3000",
@@ -43,6 +46,16 @@ test("Better Auth encryption preserves existing plaintext token reads and decryp
         user: [],
         session: [],
         verification: [],
+        twoFactor: [],
+        passkey: [],
+        jwks: [],
+        oauthClient: [],
+        oauthResource: [],
+        oauthClientResource: [],
+        oauthRefreshToken: [],
+        oauthAccessToken: [],
+        oauthConsent: [],
+        oauthClientAssertion: [],
         account: [
           {
             id: "account-id",

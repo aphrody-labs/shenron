@@ -30,6 +30,10 @@ const args = new Set(process.argv.slice(2));
 const apply = args.has("--apply");
 const restartPostgres = args.has("--restart-postgres");
 
+function infraCommand(args: string[]): string[] {
+  return process.platform === "win32" ? ["aphrody", "infra", ...args] : ["aphrody-infra", ...args];
+}
+
 async function publicIp(url: string): Promise<string | null> {
   try {
     const text = (await (await fetch(url, { signal: AbortSignal.timeout(8000) })).text()).trim();
@@ -44,7 +48,7 @@ function onHost(host: string, script: string, arg: string): string {
   const b64 = Buffer.from(script).toString("base64");
   const quoted = `'${arg.replace(/'/g, `'\\''`)}'`;
   const cmd = `f=$(mktemp --suffix=.ts) && echo ${b64} | base64 -d > "$f" && ${REMOTE_BUN} "$f" ${quoted}; c=$?; rm -f "$f"; exit $c`;
-  const p = Bun.spawnSync(["aphrody-infra", "ssh", "exec", "--host", host, "-c", cmd], {
+  const p = Bun.spawnSync(infraCommand(["ssh", "exec", "--host", host, "-c", cmd]), {
     env: { ...process.env, APHRODY_SSH_COMMAND_TIMEOUT_SECS: "300" },
     stdout: "pipe",
     stderr: "pipe",
@@ -65,15 +69,14 @@ function accountIps(accounts: readonly string[]): string[] {
   const sql = `select distinct on ("userId") "ipAddress" from public.ba_session where "userId" in (${ids.map((id) => `'${id}'`).join(",")}) and "updatedAt" > now() - interval '14 days' and "ipAddress" is not null order by "userId", "updatedAt" desc;`;
   const b64 = Buffer.from(sql).toString("base64");
   const p = Bun.spawnSync(
-    [
-      "aphrody-infra",
+    infraCommand([
       "ssh",
       "exec",
       "--host",
       "dbfr",
       "-c",
       `echo ${b64} | base64 -d | sudo -n -u postgres psql -At -d shenron_site`,
-    ],
+    ]),
     { stdout: "pipe", stderr: "pipe" },
   );
   if (p.exitCode !== 0) return [];

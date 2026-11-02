@@ -34,7 +34,7 @@ export function Chip({
   className?: string;
   linkComponent?: UiLinkComponent;
 }) {
-  const base = `inline-flex min-h-[2rem] items-center gap-1.5 border-2 px-3 py-1 font-display text-[0.6875rem] font-bold uppercase tracking-[0.08em] transition-colors ${TONES[tone]} ${className}`;
+  const base = `inline-flex min-h-[2rem] items-center gap-1.5 rounded-full border-2 px-3 py-1 font-display text-[0.6875rem] font-bold uppercase tracking-[0.08em] transition-colors ${TONES[tone]} ${className}`;
   if (!href) {
     return (
       <span className={base} title={title}>
@@ -43,7 +43,7 @@ export function Chip({
     );
   }
   return (
-    <Link href={href} className={base} title={title}>
+    <Link href={href} className={`${base} min-h-11`} title={title}>
       {children}
     </Link>
   );

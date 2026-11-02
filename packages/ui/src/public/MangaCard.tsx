@@ -79,7 +79,7 @@ export function MangaCard({
 }: MangaCardProps) {
   return (
     <article
-      className={`group relative flex flex-col overflow-hidden rounded-xl border border-white/[0.08] bg-dbz-card/80 transition-colors duration-200 focus-within:border-dbz-orange/60 hover:border-dbz-orange/60 ${className}`}
+      className={`vie-glow group relative flex flex-col overflow-hidden rounded-xl border border-white/[0.08] bg-dbz-card/80 transition-colors duration-200 focus-within:border-dbz-orange/60 hover:border-dbz-orange/60 ${className}`}
     >
       {image && (
         <Link href={href} tabIndex={-1} aria-hidden className="block">

@@ -1,0 +1,15 @@
+id,priority,feature,screen,status
+F01,must,Identité Better Auth unifiée avec Discord Google e-mail vérifié et OAuth Shenron,S01;S07,présent-à-qualifier-en-production
+F02,must,Offres VIP avec Price IDs Stripe URLs canoniques et réservation cross-provider idempotente,S02,présent-à-qualifier-en-production
+F03,must,Webhooks Stripe vérifiés idempotents et réessai quand l'intention locale manque,S02,présent-à-qualifier
+F04,must,Portail Stripe autonome et historique de facturation du compte,S04,présent-à-qualifier-en-production
+F05,must,Don avec contrôles de confidentialité et confirmation par le prestataire,S03,présent-à-qualifier-en-production
+F06,must,Abonnement et don PayPal avec webhooks vérifiés réessayables et réservation cross-provider,S02;S03,présent-à-qualifier-en-production
+F07,must,Droits VIP calculés depuis l'abonnement actif et appliqués aux avantages,S02;S04,partiel-exemption-publicitaire-seule-qualifiée
+F08,must,Rapprochement des revenus remboursements et litiges dans l'administration,S05,partiel-rapprochement-prestataires-absent
+F09,should,Gestion directe des annonceurs campagnes créations placements et rapports,S05,présent-à-qualifier-en-production
+F10,should,Diffusion publicitaire selon consentement avec exemption VIP,S06,partiel-CMP-à-qualifier
+F11,should,Reçus et e-mails du cycle de vie des paiements,S02;S03,présent-en-outbox-a-qualifier-smtp
+F12,should,Remboursements litiges annulations et journal d'audit complet,S04;S05,partiel
+F13,could,Rapports agrégés avec seuils minimaux de cohortes,S05,partiel-seuils-de-cohorte-absents
+F14,could,Google Ad Manager après approbation du compte et qualification CMP,S06,absent

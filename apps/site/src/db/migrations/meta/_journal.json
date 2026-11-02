@@ -173,22 +173,92 @@
     {
       "idx": 24,
       "version": "7",
-      "when": 1793577600000,
-      "tag": "0037_card_catalog_bilingual_names",
+      "when": 1793495700000,
+      "tag": "0037_site_billing_webhook_events",
       "breakpoints": true
     },
     {
       "idx": 25,
       "version": "7",
-      "when": 1793577660000,
-      "tag": "0038_card_catalog_image_dimensions",
+      "when": 1793495701000,
+      "tag": "0038_paypal_subscriptions",
       "breakpoints": true
     },
     {
       "idx": 26,
       "version": "7",
+      "when": 1793495702000,
+      "tag": "0039_direct_advertising",
+      "breakpoints": true
+    },
+    {
+      "idx": 27,
+      "version": "7",
+      "when": 1793495703000,
+      "tag": "0040_better_auth_features_oauth",
+      "breakpoints": true
+    },
+    {
+      "idx": 28,
+      "version": "7",
+      "when": 1793495704000,
+      "tag": "0041_ad_campaign_placements",
+      "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1793495705000,
+      "tag": "0042_site_email_outbox",
+      "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1793495706000,
+      "tag": "0043_site_subscription_checkout_reservations",
+      "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1793495707000,
+      "tag": "0044_site_donation_refund_state",
+      "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1793577600000,
+      "tag": "0045_card_catalog_bilingual_names",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1793577660000,
+      "tag": "0046_card_catalog_image_dimensions",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1793577720000,
+      "tag": "0047_site_watch_progress",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
       "when": 1793590986000,
-      "tag": "0039_character_variant_admin_grants",
+      "tag": "0048_character_variant_admin_grants",
+      "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1793592387000,
+      "tag": "0049_character_variant_schema_repair",
       "breakpoints": true
     }
   ]

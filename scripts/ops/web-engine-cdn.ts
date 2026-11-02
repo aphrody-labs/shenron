@@ -128,7 +128,7 @@ export async function putObject(
       ...send,
       authorization: `AWS4-HMAC-SHA256 Credential=${creds.accessKeyId}/${scope}, SignedHeaders=${names.join(";")}, Signature=${signature}`,
     },
-    signal: AbortSignal.timeout(120_000),
+    signal: AbortSignal.timeout(900_000),
   });
   if (!response.ok)
     throw new Error(`put ${key}: ${response.status} ${(await response.text()).slice(0, 80)}`);

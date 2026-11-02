@@ -128,7 +128,19 @@ function BoardPodium({ board, compact }: { board: CommunityTopBoard; compact: bo
         )}
       </div>
 
-      <Podium render={(rank) => <TopEntryCard board={board} rank={rank} compact={compact} />} />
+      {compact && board.entries.length < 3 ? (
+        // Fewer than three ranked entries on the home: a podium would leave its empty steps
+        // as blank columns around one card, so the cards sit left-aligned in a plain row.
+        <ol className="flex flex-wrap items-start gap-3 sm:gap-5">
+          {board.entries.map((entry) => (
+            <li key={entry.rank} className="w-[10.5rem] min-w-0 sm:w-[12.5rem]">
+              <TopEntryCard board={board} rank={entry.rank} compact={compact} />
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <Podium render={(rank) => <TopEntryCard board={board} rank={rank} compact={compact} />} />
+      )}
 
       <div className="flex flex-wrap items-center gap-3">
         <Link

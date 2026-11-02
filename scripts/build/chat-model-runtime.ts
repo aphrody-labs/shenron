@@ -80,8 +80,11 @@ export async function stageLlamaRuntime(target: DesktopTarget, dest: string): Pr
   rmSync(unpacked, { recursive: true, force: true });
   mkdirSync(unpacked, { recursive: true });
   if (asset.name.endsWith(".zip")) {
-    const unzip = Bun.spawnSync(["unzip", "-q", "-o", archive, "-d", unpacked]);
-    if (unzip.exitCode !== 0) throw new Error(`unzip ${asset.name} failed`);
+    const cmd = Bun.which("unzip")
+      ? ["unzip", "-q", "-o", archive, "-d", unpacked]
+      : ["tar", "-xf", archive, "-C", unpacked];
+    const unzip = Bun.spawnSync(cmd);
+    if (unzip.exitCode !== 0) throw new Error(`unpack ${asset.name} failed`);
   } else {
     await new Bun.Archive(await Bun.file(archive).bytes()).extract(unpacked);
   }

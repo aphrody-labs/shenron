@@ -12,7 +12,7 @@
 #                locally with `<sha> <repository>:<sha>` when it is set
 #   local        Compose on this host: deploy/docker/compose.yaml with SHENRON_IMAGE_TAG=<sha>
 #                (override with SHENRON_COMPOSE_FILE), or SHENRON_DEPLOY_COMMAND when set
-# Default target: ssh:dbfr.
+# Default target: ssh:prod.
 #
 # Rollback guard (ssh targets): SHENRON_ACTIVE_COMMAND prints the active release; the first
 # 40-hex commit in its output must be an ancestor of the shipped commit unless
@@ -22,7 +22,7 @@ HERE=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 W=${SHENRON_BUILD_REPO:-$HOME/build/shenron}
 IMAGE=${SHENRON_IMAGE:-localhost/shenron}
 ENGINE=${SHENRON_CONTAINER:-$(command -v docker >/dev/null 2>&1 && echo docker || echo podman)}
-TARGET=${SHENRON_DEPLOY_TARGET:-ssh:${SHENRON_DEPLOY_HOST:-dbfr}}
+TARGET=${SHENRON_DEPLOY_TARGET:-ssh:${SHENRON_DEPLOY_HOST:-prod}}
 SHA=$(git -C "$W" rev-parse --verify "${1:-HEAD}^{commit}")
 "$ENGINE" image inspect "$IMAGE:$SHA" >/dev/null
 SSH=(ssh -o ConnectTimeout=15 -o BatchMode=yes)
@@ -49,14 +49,23 @@ case "$TARGET" in
     phase "transfer to $host"
     tar=/tmp/shenron-$SHA.tar
     "$ENGINE" save "$IMAGE:$SHA" | zstd -q -T0 -1 | "${SSH[@]}" "$host" "zstd -q -d -o $tar"
+    # Pending site migrations go first, after a dump, in one transaction each; a failure aborts the
+    # release before it is activated. The script and the SQL come from the shipped revision itself.
+    if [ "${SHENRON_REMOTE_MIGRATE:-1}" = 1 ] && git -C "$W" cat-file -e "$SHA:deploy/prod/apply-migrations.py" 2>/dev/null; then
+      phase "migrate on $host"
+      mig=/tmp/shenron-migrations-$SHA
+      git -C "$W" archive "$SHA" apps/site/src/db/migrations deploy/prod/apply-migrations.py \
+        | "${SSH[@]}" "$host" "rm -rf $mig && mkdir -p $mig && tar -x -C $mig \
+          && python3 $mig/deploy/prod/apply-migrations.py $mig/apps/site/src/db/migrations; rc=\$?; rm -rf $mig; exit \$rc"
+    fi
     phase "activate on $host"
     "${SSH[@]}" "$host" "${SHENRON_DEPLOY_COMMAND:-bash ~/deploy-shenron-image.sh} $SHA $tar"
     # Keep the newest SHENRON_REMOTE_KEEP_IMAGES revisions (rollback targets); an image in use
     # is never removed (no --force). Each image is about 1.8 GiB on the target root disk.
     keep=${SHENRON_REMOTE_KEEP_IMAGES:-4}
-    [ "$keep" = 0 ] || "${SSH[@]}" "$host" "sudo -n docker image ls --format '{{.Repository}}:{{.Tag}}' localhost/shenron \
+    [ "$keep" = 0 ] || "${SSH[@]}" "$host" "DOCKER=\$([ \"\$(id -u)\" = 0 ] && echo docker || echo 'sudo -n docker'); \$DOCKER image ls --format '{{.Repository}}:{{.Tag}}' localhost/shenron \
       | grep -vE ':(local|active)\$' | sed -n '$((keep + 1)),\$p' \
-      | xargs -r -n1 sudo -n docker image rm >/dev/null 2>&1 || true"
+      | xargs -r -n1 \$DOCKER image rm >/dev/null 2>&1 || true"
     ;;
   registry:*)
     repository=${TARGET#registry:}

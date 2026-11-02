@@ -72,7 +72,7 @@ export function HomeCanonArbitre({
           />
           <button
             type="submit"
-            className="min-h-12 rounded-lg bg-dbz-orange px-5 font-display text-sm font-bold text-dbz-bg transition-colors hover:bg-dbz-gold focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
+            className="cursor-pointer min-h-12 rounded-lg bg-dbz-orange px-5 font-display text-sm font-bold text-dbz-bg transition-[background-color,scale,translate] duration-150 ease-out hover:-translate-y-0.5 hover:bg-dbz-gold active:scale-[0.96] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
           >
             <T k="home.canon.submit" />
           </button>
@@ -109,7 +109,7 @@ export function HomeCanonArbitre({
                   <li key={sujet.id}>
                     <Link
                       href={`/wiki/canon?q=${encodeURIComponent(sujet.title)}`}
-                      className="group flex min-h-12 items-center gap-3 py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
+                      className="group -mx-2 flex min-h-12 cursor-pointer items-center gap-3 rounded-lg px-2 py-2 transition-[background-color,scale] duration-150 ease-out hover:bg-white/[0.04] active:scale-[0.99] motion-reduce:transition-none motion-reduce:active:scale-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
                     >
                       <span
                         aria-hidden

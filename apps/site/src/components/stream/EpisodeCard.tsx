@@ -22,6 +22,7 @@ export function EpisodeCard({
   image,
   synopsis,
   year,
+  durationSec,
   hasVf,
   hasVostfr,
   hasVost,
@@ -37,6 +38,7 @@ export function EpisodeCard({
   image: string | null;
   synopsis?: string | null;
   year?: number | null;
+  durationSec?: number | null;
   hasVf?: boolean;
   hasVostfr?: boolean;
   hasVost?: boolean;
@@ -56,14 +58,24 @@ export function EpisodeCard({
 }) {
   const t = useTranslations("mediaPlayback");
   const num = episodeNumberText(number, true);
+  const durationMinutes =
+    typeof durationSec === "number" && Number.isFinite(durationSec) && durationSec > 0
+      ? Math.max(1, Math.round(durationSec / 60))
+      : null;
+  const playerSummary =
+    playerCount != null
+      ? playerCount > 0
+        ? `${t("externalPlayers")}: ${playerCount}`
+        : t("sourceMissing")
+      : null;
   return (
     <Link
       href={href}
-      className={`group/card block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange focus-visible:ring-offset-2 focus-visible:ring-offset-dbz-bg ${
+      className={`group/card block rounded-xl outline-none transition-transform duration-300 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-dbz-orange focus-visible:ring-offset-2 focus-visible:ring-offset-dbz-bg ${
         width === "rail" ? "w-[260px] shrink-0 snap-start sm:w-[300px]" : "w-full"
       }`}
     >
-      <div className="relative aspect-video overflow-hidden rounded-lg bg-gradient-to-br from-dbz-card to-black shadow-lg ring-1 ring-white/[0.06] transition-all duration-300 group-hover/card:z-10 group-hover/card:ring-dbz-orange/60 group-focus-visible/card:ring-dbz-orange/60">
+      <div className="relative aspect-video overflow-hidden rounded-xl bg-gradient-to-br from-dbz-card to-black shadow-lg ring-1 ring-white/[0.08] transition-all duration-300 group-hover/card:z-10 group-hover/card:shadow-xl group-hover/card:shadow-black/60 group-hover/card:ring-dbz-orange/65 group-focus-visible/card:ring-dbz-orange/65">
         {/* Filigrane du numéro : visible tant que la vignette n'a pas peint
 				    (la carte ne paraît jamais « vide/cassée » pendant le chargement).
 				    `aria-hidden` : purement décoratif, et la pastille HUD plus bas
@@ -86,9 +98,9 @@ export function EpisodeCard({
             sizes={
               width === "rail"
                 ? "(min-width: 640px) 300px, 260px"
-                : "(min-width: 1024px) 320px, (min-width: 640px) 45vw, 90vw"
+                : "(min-width: 1280px) 320px, (min-width: 1024px) 33vw, (min-width: 640px) 48vw, 94vw"
             }
-            quality={70}
+            quality={75}
             priority={priority}
             loading={eager || priority ? "eager" : "lazy"}
             // Téléversements de l'admin : remplaçables au même chemin, donc servis
@@ -99,24 +111,29 @@ export function EpisodeCard({
         )}
 
         {/* Dégradé permanent bas + numéro HUD */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
-        <span className="scouter-text absolute left-2 top-2 bg-black/60 px-1.5 py-0.5 text-[10px] text-dbz-orange">
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/95 via-black/35 to-transparent" />
+        <span className="scouter-text absolute left-2.5 top-2.5 rounded bg-black/75 px-2 py-0.5 text-[11px] font-bold text-dbz-orange ring-1 ring-white/10 backdrop-blur-xs">
           {num === null ? t("numberUnverified") : `#${num}`}
         </span>
-        {(hasVf || hasVostfr || hasVost) && (
-          <div className="absolute right-2 top-2 flex gap-1">
+        {(hasVf || hasVostfr || hasVost || durationMinutes !== null) && (
+          <div className="absolute right-2.5 top-2.5 flex items-center gap-1.5">
+            {durationMinutes !== null && (
+              <span className="rounded bg-black/75 px-1.5 py-0.5 font-mono text-[11px] font-semibold tabular-nums text-white/90 ring-1 ring-white/10 backdrop-blur-xs">
+                {durationMinutes} min
+              </span>
+            )}
             {hasVf && (
-              <span className="rounded bg-namek/85 px-1 py-0.5 text-[10px] font-bold uppercase text-black">
+              <span className="rounded bg-namek/90 px-1.5 py-0.5 text-[11px] font-bold uppercase text-black shadow-xs">
                 {t("vf")}
               </span>
             )}
             {hasVostfr && (
-              <span className="rounded bg-dbz-blue-light/85 px-1 py-0.5 text-[10px] font-bold uppercase text-black">
+              <span className="rounded bg-dbz-blue-light/90 px-1.5 py-0.5 text-[11px] font-bold uppercase text-black shadow-xs">
                 {t("vostfr")}
               </span>
             )}
             {hasVost && (
-              <span className="rounded bg-dbz-blue-light/85 px-1 py-0.5 text-[10px] font-bold uppercase text-black">
+              <span className="rounded bg-dbz-blue-light/90 px-1.5 py-0.5 text-[11px] font-bold uppercase text-black shadow-xs">
                 {t("vost")}
               </span>
             )}
@@ -125,35 +142,26 @@ export function EpisodeCard({
 
         {/* Bouton play au survol/focus */}
         <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover/card:opacity-100 group-focus-visible/card:opacity-100">
-          <span className="grid h-12 w-12 place-items-center rounded-full bg-dbz-orange text-black shadow-lg">
+          <span className="grid h-12 w-12 place-items-center rounded-full bg-dbz-orange text-black shadow-lg ring-2 ring-black/20">
             <Lecture className="h-5 w-5 translate-x-[1px] fill-current" />
           </span>
         </div>
 
         {/* Titre en bas de la vignette */}
-        <div className="absolute inset-x-0 bottom-0 p-2.5">
-          <p className="line-clamp-1 font-display text-[13px] font-bold text-white drop-shadow">
+        <div className="absolute inset-x-0 bottom-0 p-3">
+          <p className="line-clamp-1 font-display text-[14px] font-bold leading-snug text-white drop-shadow">
             {title}
           </p>
-          <p className="line-clamp-1 text-[10px] text-white/50">
-            {[
-              year,
-              playerCount != null
-                ? playerCount > 0
-                  ? `${playerCount} lecteur${playerCount > 1 ? "s" : ""}`
-                  : "Aucune source"
-                : null,
-            ]
-              .filter(Boolean)
-              .join(" · ") ||
-              titleJa ||
-              " "}
+          <p className="mt-0.5 line-clamp-1 text-[11px] font-medium text-white/70">
+            {[year, titleJa, playerSummary].filter(Boolean).join(" · ") || " "}
           </p>
         </div>
       </div>
       {/* Synopsis en grille (width="full") uniquement */}
       {synopsis && width === "full" && (
-        <p className="mt-2 line-clamp-2 text-[12px] leading-relaxed text-white/50">{synopsis}</p>
+        <p className="mt-2.5 line-clamp-2 text-[12.5px] leading-relaxed text-white/65">
+          {synopsis}
+        </p>
       )}
     </Link>
   );

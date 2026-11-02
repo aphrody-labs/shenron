@@ -26,9 +26,12 @@ export async function GET(req: Request) {
     const limit = Math.min(200, Math.max(1, parseInt(searchParams.get("limit") ?? "50", 10) || 50));
     const offset = Math.max(0, parseInt(searchParams.get("offset") ?? "0", 10) || 0);
 
+    const sortParam = searchParams.get("sort");
+    const sort = sortParam === "recent" || sortParam === "title" ? sortParam : "catalogue";
+
     const [seriesList, episodesResult] = await Promise.all([
       dbUniverse.episodeSeries().catch(() => []),
-      dbUniverse.episodes(seriesParam, limit, offset, q, mediaLang),
+      dbUniverse.episodes(seriesParam, limit, offset, q, mediaLang, sort),
     ]);
 
     const seriesSummary = (seriesList ?? []).map((s) => ({

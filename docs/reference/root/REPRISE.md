@@ -23,7 +23,7 @@
   ne font plus référence.
 - Entrée unique : `scripts/deploy/release.sh [--build-only | --ship-only] [revision]` sur tout
   hôte Linux x64 (Git, Bun, Rust, docker ou podman), réglé par variables `SHENRON_*`
-  (`docs/operations/ENV.md`, § Release) ; cible par défaut `ssh:dbfr`, qui lance
+  (`docs/operations/ENV.md`, § Release) ; cible par défaut `ssh:prod`, qui lance
   `~/deploy-shenron-image.sh <sha> <tar>`, l'entrée d'activation Infra de DBFR.
 - La production était bloquée sur `a2671e1e` depuis le 2026-10-27 : 233 fichiers copiés à la
   main, hors manifeste, dans `public/assets` de cette release empêchaient toute activation

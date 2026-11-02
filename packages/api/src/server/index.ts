@@ -32,6 +32,12 @@ import {
 import { type EndpointSpec, endpoints } from "../contract/endpoints";
 import type { ApiErrorCode } from "../contract/error";
 import type { AccountSessionProfile } from "../contract/account";
+import {
+  sanitizeWatchEntries,
+  type WatchEntry,
+  type WatchKind,
+  type WatchRemoveBody,
+} from "../contract/watch";
 import type { TimelineEvent, TimelineAtlas } from "../contract/chronology";
 import {
   resolveChronologyConfig,
@@ -123,6 +129,13 @@ export interface FavoritesPort {
   save(userId: string, favorites: Favorite[]): Promise<void>;
 }
 
+export interface WatchPort {
+  list(userId: string): Promise<WatchEntry[]>;
+  /** Last writer wins per entry; returns the number of rows kept after the merge. */
+  save(userId: string, entries: WatchEntry[]): Promise<number>;
+  remove(userId: string, items: Array<{ kind: WatchKind; id: string }>): Promise<number>;
+}
+
 export interface HostSession {
   userId: string;
   discordId?: string | null;
@@ -141,6 +154,18 @@ export interface BetterAuthPort {
 
 /** Base path of {@link BetterAuthPort}. */
 export const BETTER_AUTH_PATH = "/api/auth";
+
+/** Root-level OAuth/MCP metadata aliases defined by the Better Auth plugins. */
+const AUTH_WELL_KNOWN_PATHS = new Set([
+  "/.well-known/oauth-protected-resource",
+  "/.well-known/oauth-protected-resource/mcp",
+  "/.well-known/oauth-authorization-server/api/auth",
+]);
+
+export const isBetterAuthPath = (pathname: string) =>
+  pathname === BETTER_AUTH_PATH ||
+  pathname.startsWith(`${BETTER_AUTH_PATH}/`) ||
+  AUTH_WELL_KNOWN_PATHS.has(pathname);
 
 export interface AuthPort {
   /** Conversation owner of the request (site session, signed bot user, desktop user), or null. */
@@ -232,6 +257,7 @@ export interface ShenronApiPorts {
   /** Better Auth handler on `/api/auth/*`; absent → group disabled, the path is not claimed. */
   betterAuth?: BetterAuthPort | null;
   favorites?: FavoritesPort | null;
+  watch?: WatchPort | null;
   mcp?: McpProxyPort | null;
   /** Plugin « shenron » relu depuis `plugin/` du déploiement (`@aphrody/shenron-api/plugin`). */
   plugin?: PluginPort | null;
@@ -606,6 +632,28 @@ export function createShenronApi(
       "Cache-Control": "private, no-store",
     });
   });
+  const watchEnabled = Boolean(ports.watch && ports.betterAuth?.session);
+  add(endpoints.watchProgress, watchEnabled, async ({ request }) => {
+    const session = await ports.betterAuth!.session!(request.headers);
+    if (!session) return json({ entries: [] }, 200, { "Cache-Control": "private, no-store" });
+    if (!session.profile)
+      return json({ error: "Reader profile unavailable", code: "unavailable" }, 503, {
+        "Cache-Control": "private, no-store",
+      });
+    return json({ entries: await ports.watch!.list(session.profile.id) }, 200, {
+      "Cache-Control": "private, no-store",
+    });
+  });
+  add(endpoints.watchProgressSave, watchEnabled, async ({ body, reader }) => {
+    const entries = sanitizeWatchEntries((body as { entries: unknown }).entries);
+    const count = await ports.watch!.save(reader!.profile!.id, entries);
+    return json({ ok: true, count }, 200, { "Cache-Control": "private, no-store" });
+  });
+  add(endpoints.watchProgressRemove, watchEnabled, async ({ body, reader }) => {
+    const { items } = body as z.infer<typeof WatchRemoveBody>;
+    const removed = await ports.watch!.remove(reader!.profile!.id, items);
+    return json({ ok: true, removed }, 200, { "Cache-Control": "private, no-store" });
+  });
   add(endpoints.wikiLaunch, Boolean(ports.wikiLaunch), async () =>
     json({ config: await ports.wikiLaunch!.read() }, 200, { "Cache-Control": "no-store" }),
   );
@@ -700,6 +748,7 @@ export function createShenronApi(
     ports.homeConfig,
     ports.siteTheme,
     favoritesEnabled ? ports.favorites : null,
+    watchEnabled ? ports.watch : null,
     ports.wiki,
     ports.rag,
     ports.chat,
@@ -1142,11 +1191,8 @@ export function createShenronApi(
   const mcpPrefix = "/mcp";
 
   const betterAuth = ports.betterAuth ?? null;
-  const isAuthPath = (pathname: string) =>
-    pathname === BETTER_AUTH_PATH || pathname.startsWith(`${BETTER_AUTH_PATH}/`);
-
   const handles = (pathname: string): boolean =>
-    (betterAuth !== null && isAuthPath(pathname)) ||
+    (betterAuth !== null && isBetterAuthPath(pathname)) ||
     router.match(pathname).length > 0 ||
     (mcp !== null && (pathname === mcpPrefix || pathname.startsWith(`${mcpPrefix}/`)));
 
@@ -1205,7 +1251,7 @@ export function createShenronApi(
       });
       return response;
     };
-    if (betterAuth && isAuthPath(path)) {
+    if (betterAuth && isBetterAuthPath(path)) {
       try {
         return finish(await betterAuth.handler(request));
       } catch (error) {
@@ -1419,6 +1465,9 @@ export function createShenronApi(
       POST: handler,
       OPTIONS: handler,
     };
+    for (const path of AUTH_WELL_KNOWN_PATHS) {
+      routes[path] = { GET: handler, HEAD: handler, OPTIONS: handler };
+    }
   }
   if (mcp) {
     const proxy: RouteFn = (request, server) => dispatch(request, server);

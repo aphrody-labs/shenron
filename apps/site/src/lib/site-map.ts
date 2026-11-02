@@ -69,7 +69,8 @@ const JOURNEY_META: Record<Journey, JourneyMeta> = {
   communaute: {
     key: "communaute",
     label: "Communauté",
-    blurb: "L'actualité, les classements, les tier lists, la boutique et les mini-jeux.",
+    blurb:
+      "L'actualité, les classements, les tier lists, la boutique, les mini-jeux, le Club VIP et les dons.",
   },
   participer: {
     key: "participer",
@@ -79,7 +80,7 @@ const JOURNEY_META: Record<Journey, JourneyMeta> = {
   espace: {
     key: "espace",
     label: "Mon espace",
-    blurb: "Profil, favoris, progression et réglages du compte.",
+    blurb: "Profil, watchlist, favoris, progression, abonnements et réglages du compte.",
   },
   legal: {
     key: "legal",
@@ -170,6 +171,14 @@ const EXTRA_DESTINATIONS: readonly SiteDestination[] = [
     priority: 0,
   },
   {
+    href: "/watchlist",
+    label: "Ma watchlist",
+    blurb: "Les épisodes, films et chapitres mis de côté à suivre.",
+    journey: "espace",
+    audience: "member",
+    priority: 0,
+  },
+  {
     href: "/favorites",
     label: "Mes favoris",
     blurb: "Les fiches mises de côté.",
@@ -186,9 +195,18 @@ const EXTRA_DESTINATIONS: readonly SiteDestination[] = [
     priority: 0,
   },
   {
+    href: "/account/billing",
+    label: "Abonnements & paiements",
+    blurb: "Gérer son abonnement VIP (Stripe, PayPal) et consulter l'historique des dons.",
+    journey: "espace",
+    audience: "member",
+    priority: 0,
+  },
+  {
     href: "/settings",
     label: "Paramètres",
-    blurb: "Confidentialité, sessions, export et suppression du compte.",
+    blurb:
+      "Comptes liés (Discord, Google), e-mail, clés d'accès (Passkey), 2FA, sessions et confidentialité.",
     journey: "espace",
     audience: "member",
     priority: 0,

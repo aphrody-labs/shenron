@@ -1,5 +1,5 @@
 import { betterAuth, type BetterAuthOptions } from "better-auth";
-import { bearer } from "better-auth/plugins";
+import { bearer } from "better-auth/plugins/bearer";
 import { APIError } from "better-auth/api";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db";
@@ -112,6 +112,12 @@ export function buildAuthOptions(deps: SiteAuthDeps) {
     },
 
     basePath: AUTH_BASE_PATH,
+    emailAndPassword: {
+      enabled: true,
+      minPasswordLength: 12,
+      maxPasswordLength: 256,
+      revokeSessionsOnPasswordReset: true,
+    },
     // Même résolution que le bot : >= 32 caractères, fail-closed en production.
     // En phase de build Next.js (prerendering/static analysis sans secrets de prod injectés),
     // repli sur secret éphémère pour permettre la collecte des routes.
@@ -201,14 +207,8 @@ export function buildAuthOptions(deps: SiteAuthDeps) {
         },
       },
     },
-    // Cache de session signé en cookie (300 s, `SESSION_COOKIE_CACHE`) :
-    // getSession lit le cookie au lieu de requêter ba_session à chaque appel.
-    // ba_user ne porte que name/email/image : AUCUN champ additionnel (rôle
-    // staff compris) n'est déclaré, car le cookie cache n'embarque pas les
-    // champs custom et une vérification admin y lirait une valeur absente ou
-    // périmée. roleAdmin est recalculé côté serveur à chaque requête
-    // (lib/session.ts : politique staff + table users), jamais lu en session. maxAge borne la fenêtre
-    // pendant laquelle une session révoquée reste acceptée.
+    // Cache de session désactivé pour que suspension, rôle et révocation soient
+    // appliqués dès la requête suivante.
     session: {
       cookieCache: { ...SESSION_COOKIE_CACHE },
       expiresIn: 60 * 60 * 24 * 30, // 30 jours durable

@@ -1,12 +1,15 @@
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { DomainBar } from "@/components/kit/DomainBar";
 import { T } from "@/components/T";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
+import { getWikiReaderMessages, type WikiLocale } from "@/lib/wiki-character-version-messages";
 import { db } from "@/lib/db";
 import { isCurrentUserAdmin } from "@/lib/session";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Image from "next/image";
+import { getLocale } from "next-intl/server";
 
 /** Extrait lisible du corps markdown, pour la balise description. */
 function extrait(body: string, max = 160): string {
@@ -72,10 +75,17 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
   )
     notFound();
 
-  const isAdmin = await isCurrentUserAdmin();
+  const [isAdmin, rawLocale] = await Promise.all([
+    isCurrentUserAdmin(),
+    getLocale().catch(() => "fr"),
+  ]);
+  const locale: WikiLocale = rawLocale === "en" || rawLocale === "ja" ? rawLocale : "fr";
+  const r = getWikiReaderMessages(locale);
+  const dateLocale = locale === "ja" ? "ja-JP" : locale === "en" ? "en-US" : "fr-FR";
 
   return (
     <div className="wiki-container">
+      <DomainBar domain="wiki" />
       <Breadcrumbs
         className="mb-8"
         items={[
@@ -101,7 +111,7 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
             href={`/admin/wiki/page/${page.id}`}
             className="shrink-0 inline-flex items-center gap-2 rounded border-2 border-black bg-dbz-orange/20 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-dbz-orange shadow-[2px_2px_0px_#000] hover:bg-dbz-orange hover:text-black transition-all"
           >
-            Éditer cette page
+            {r("editPage")}
           </Link>
         )}
       </div>
@@ -111,7 +121,7 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
         </div>
       </div>
       <div className="mt-16 pt-8 border-t border-dbz-border text-xs text-gray-500">
-        Dernière mise à jour le {new Date(page.updatedAt).toLocaleDateString("fr-FR")}
+        {r("lastUpdated", { date: new Date(page.updatedAt).toLocaleDateString(dateLocale) })}
       </div>
     </div>
   );

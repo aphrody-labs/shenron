@@ -131,7 +131,7 @@ export function PodiumCard({
   return (
     <Link
       href={href}
-      className={`group relative flex w-full flex-col overflow-hidden rounded-lg border-2 bg-dbz-card transition-colors hover:border-dbz-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere ${RANK_META[rank].border} ${WIDTH[rank]} ${className}`}
+      className={`vie-glow group relative flex w-full flex-col overflow-hidden rounded-lg border-2 bg-dbz-card transition-colors hover:border-dbz-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere ${RANK_META[rank].border} ${WIDTH[rank]} ${className}`}
     >
       <RankBadge rank={rank} className="absolute left-2 top-2 z-20" />
       {children}

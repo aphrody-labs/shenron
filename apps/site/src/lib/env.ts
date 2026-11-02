@@ -30,6 +30,23 @@ export const env = createEnv({
     BETTER_AUTH_URL: z.string().trim().url().optional(),
     DISCORD_CLIENT_ID: z.string().trim().min(10),
     DISCORD_CLIENT_SECRET: z.string().trim().min(10),
+    GOOGLE_CLIENT_ID: z.string().trim().min(1).optional(),
+    GOOGLE_CLIENT_SECRET: z.string().trim().min(1).optional(),
+    RESEND_API_KEY: z.string().trim().min(1).optional(),
+    AUTH_EMAIL_FROM: z.string().trim().min(3).optional(),
+    SMTP_USER: z.string().trim().min(3).optional(),
+    SMTP_PASSWORD: z.string().min(1).optional(),
+    SHENRON_BILLING_OUTBOX_TOKEN: z.string().trim().min(32).optional(),
+    STRIPE_SECRET_KEY: z.string().trim().min(1).optional(),
+    STRIPE_WEBHOOK_SECRET: z.string().trim().min(1).optional(),
+    STRIPE_PRICE_VIP_MONTHLY: z.string().trim().min(1).optional(),
+    STRIPE_PRICE_VIP_ANNUAL: z.string().trim().min(1).optional(),
+    PAYPAL_CLIENT_ID: z.string().trim().min(1).optional(),
+    PAYPAL_CLIENT_SECRET: z.string().trim().min(1).optional(),
+    PAYPAL_WEBHOOK_ID: z.string().trim().min(1).optional(),
+    PAYPAL_ENV: z.enum(["sandbox", "live"]).optional(),
+    PAYPAL_PLAN_VIP_MONTHLY: z.string().trim().min(1).optional(),
+    PAYPAL_PLAN_VIP_ANNUAL: z.string().trim().min(1).optional(),
     BUN_VIDEO_CRUNCHYROLL_ACCESS_TOKEN: z.string().trim().min(1).optional(),
     BUN_VIDEO_CRUNCHYROLL_BASIC_AUTHORIZATION: z
       .string()
@@ -80,6 +97,7 @@ export const env = createEnv({
     NEXT_PUBLIC_GTM_ID: z.string().optional(),
     NEXT_PUBLIC_GA_ID: z.string().optional(),
     NEXT_PUBLIC_ADSENSE_CLIENT: z.string().optional(),
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: z.string().trim().min(1).optional(),
     // IDs des blocs AdSense (`data-ad-slot`, 10 chiffres). Résolus par
     // `@/lib/ads` ; un emplacement sans ID reste éteint. Les annonces
     // automatiques ne dépendent d'aucun de ces IDs.
@@ -100,6 +118,7 @@ export const env = createEnv({
     NEXT_PUBLIC_GTM_ID: process.env.NEXT_PUBLIC_GTM_ID,
     NEXT_PUBLIC_GA_ID: process.env.NEXT_PUBLIC_GA_ID,
     NEXT_PUBLIC_ADSENSE_CLIENT: process.env.NEXT_PUBLIC_ADSENSE_CLIENT,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
     NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE: process.env.NEXT_PUBLIC_ADSENSE_SLOT_ARTICLE,
     NEXT_PUBLIC_ADSENSE_SLOT_DISPLAY: process.env.NEXT_PUBLIC_ADSENSE_SLOT_DISPLAY,
     NEXT_PUBLIC_ADSENSE_SLOT_INFEED: process.env.NEXT_PUBLIC_ADSENSE_SLOT_INFEED,

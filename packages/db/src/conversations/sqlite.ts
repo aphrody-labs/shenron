@@ -357,16 +357,13 @@ export class SqliteConversationStore implements ConversationStore {
          ORDER BY last_seq LIMIT ?2`,
       )
       .all(after, clampLimit(limit)) as (ConversationRow & { last_seq: number })[];
+    const msgQuery = this.db.query(
+      "SELECT * FROM chat_messages WHERE conversation_id = ? AND deleted_at IS NULL ORDER BY created_at, seq",
+    );
     const items = rows.map((row) => ({
       ownerId: row.owner_id,
       conversation: rowToConversation(row),
-      messages: (
-        this.db
-          .query(
-            "SELECT * FROM chat_messages WHERE conversation_id = ? AND deleted_at IS NULL ORDER BY created_at, seq",
-          )
-          .all(row.id) as MessageRow[]
-      ).map(rowToMessage),
+      messages: (msgQuery.all(row.id) as MessageRow[]).map(rowToMessage),
     }));
     return { items, cursor: encodeCursor(rows.at(-1)?.last_seq ?? after) };
   }

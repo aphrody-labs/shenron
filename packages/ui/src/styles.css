@@ -254,6 +254,11 @@
   --background: #0a0e27;
   --foreground: #fff7e0;
   --radius: 0.5rem;
+  /* Un seul langage d'arrondi pour les boutons : pilule pour l'action principale,
+	   12 px pour les boutons secondaires et les outils carrés. Hors `--radius-*` : ces
+	   deux jetons ne sont pas des échelles de thème. */
+  --btn-radius-cta: 9999px;
+  --btn-radius-control: 0.75rem;
 
   /* Miroir des tokens de palette pour le CSS écrit à la main (var(--color-dbz-*,…)) :
 	   le bloc @theme inline ne les expose PAS sur :root, donc on les redéclare ici en
@@ -397,7 +402,7 @@
     border-color: var(--color-dbz-yellow);
   }
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2 text-sm font-bold tracking-wide uppercase transition-all duration-150 select-none cursor-pointer disabled:pointer-events-none disabled:opacity-50;
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--btn-radius-control)] px-4 py-2 text-sm font-bold tracking-wide uppercase transition-all duration-150 select-none cursor-pointer disabled:pointer-events-none disabled:opacity-50;
   }
   .btn-primary {
     @apply bg-dbz-orange text-black border-2 border-black;
@@ -418,7 +423,9 @@
     transform: translate(1px, 1px);
   }
   .btn-danger {
-    @apply bg-dbz-red text-white border-2 border-black;
+    @apply text-white border-2 border-black;
+    /* 8 % black keeps white text above 4.5:1 (the raw red measures 4.32:1). */
+    background-color: color-mix(in srgb, var(--color-dbz-red) 92%, black);
   }
   .btn-danger:hover {
     filter: brightness(1.1);
@@ -427,7 +434,7 @@
     transform: translate(1px, 1px);
   }
   .input {
-    @apply w-full rounded-lg border-2 border-dbz-border bg-dbz-bg/90 px-3.5 py-2 text-sm text-white placeholder:text-white/50 transition-all duration-150 focus:border-dbz-orange focus:outline-none;
+    @apply w-full rounded-[var(--btn-radius-control)] border-2 border-dbz-border bg-dbz-bg/90 px-3.5 py-2 text-sm text-white placeholder:text-white/50 transition-all duration-150 focus:border-dbz-orange focus:outline-none;
   }
   select.input {
     @apply appearance-none;

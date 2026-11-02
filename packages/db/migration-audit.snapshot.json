@@ -1,7 +1,7 @@
 {
   "journal": {
-    "entries": 27,
-    "files": 39,
+    "entries": 37,
+    "files": 49,
     "journaled": [
       "0000_dark_johnny_blaze",
       "0001_natural_switch",
@@ -27,9 +27,19 @@
       "0034_character_variant_technique_uses",
       "0035_character_variant_appearances",
       "0036_character_variant_supplements",
-      "0037_card_catalog_bilingual_names",
-      "0038_card_catalog_image_dimensions",
-      "0039_character_variant_admin_grants"
+      "0037_site_billing_webhook_events",
+      "0038_paypal_subscriptions",
+      "0039_direct_advertising",
+      "0040_better_auth_features_oauth",
+      "0041_ad_campaign_placements",
+      "0042_site_email_outbox",
+      "0043_site_subscription_checkout_reservations",
+      "0044_site_donation_refund_state",
+      "0045_card_catalog_bilingual_names",
+      "0046_card_catalog_image_dimensions",
+      "0047_site_watch_progress",
+      "0048_character_variant_admin_grants",
+      "0049_character_variant_schema_repair"
     ],
     "unjournaled": [
       "0007_post_cms",
@@ -193,20 +203,80 @@
       },
       {
         "idx": 24,
-        "tag": "0037_card_catalog_bilingual_names",
-        "when": 1793577600000,
+        "tag": "0037_site_billing_webhook_events",
+        "when": 1793495700000,
         "breakpoints": true
       },
       {
         "idx": 25,
-        "tag": "0038_card_catalog_image_dimensions",
-        "when": 1793577660000,
+        "tag": "0038_paypal_subscriptions",
+        "when": 1793495701000,
         "breakpoints": true
       },
       {
         "idx": 26,
-        "tag": "0039_character_variant_admin_grants",
+        "tag": "0039_direct_advertising",
+        "when": 1793495702000,
+        "breakpoints": true
+      },
+      {
+        "idx": 27,
+        "tag": "0040_better_auth_features_oauth",
+        "when": 1793495703000,
+        "breakpoints": true
+      },
+      {
+        "idx": 28,
+        "tag": "0041_ad_campaign_placements",
+        "when": 1793495704000,
+        "breakpoints": true
+      },
+      {
+        "idx": 29,
+        "tag": "0042_site_email_outbox",
+        "when": 1793495705000,
+        "breakpoints": true
+      },
+      {
+        "idx": 30,
+        "tag": "0043_site_subscription_checkout_reservations",
+        "when": 1793495706000,
+        "breakpoints": true
+      },
+      {
+        "idx": 31,
+        "tag": "0044_site_donation_refund_state",
+        "when": 1793495707000,
+        "breakpoints": true
+      },
+      {
+        "idx": 32,
+        "tag": "0045_card_catalog_bilingual_names",
+        "when": 1793577600000,
+        "breakpoints": true
+      },
+      {
+        "idx": 33,
+        "tag": "0046_card_catalog_image_dimensions",
+        "when": 1793577660000,
+        "breakpoints": true
+      },
+      {
+        "idx": 34,
+        "tag": "0047_site_watch_progress",
+        "when": 1793577720000,
+        "breakpoints": true
+      },
+      {
+        "idx": 35,
+        "tag": "0048_character_variant_admin_grants",
         "when": 1793590986000,
+        "breakpoints": true
+      },
+      {
+        "idx": 36,
+        "tag": "0049_character_variant_schema_repair",
+        "when": 1793592387000,
         "breakpoints": true
       }
     ]
@@ -220,12 +290,15 @@
     "0005_snapshot.json"
   ],
   "tablesFilter": {
-    "filtered": 21,
-    "schemaTables": 40,
+    "filtered": 39,
+    "schemaTables": 62,
     "uncovered": [
       "ba_subscription",
+      "site_subscription_checkout_reservations",
+      "site_email_outbox",
       "site_donations",
       "site_ad_slots",
+      "site_ad_campaign_placements",
       "ContributionRights",
       "CanonConfig",
       "WikiLaunch",
@@ -241,7 +314,8 @@
       "ContentComment",
       "ContentReaction",
       "AgentKey",
-      "AgentAudit"
+      "AgentAudit",
+      "site_watch_progress"
     ],
     "unknown": []
   },
@@ -259,7 +333,8 @@
     "0034_character_variant_technique_uses",
     "0035_character_variant_appearances",
     "0036_character_variant_supplements",
-    "0039_character_variant_admin_grants"
+    "0048_character_variant_admin_grants",
+    "0049_character_variant_schema_repair"
   ],
   "hashes": {
     "0000_dark_johnny_blaze": "4acfbb67d895cfc6d575f03198d0f353e688c5c918bc7c1f29e82de7707b5636",
@@ -298,8 +373,18 @@
     "0034_character_variant_technique_uses": "2c99df95ff303e186a7402b7ff98219ab2c526814dd6cc0480e6c3bc2c40939b",
     "0035_character_variant_appearances": "ea9e5704adaff6b2d455679706156db4d6f8de068461b4a8cb6c59030d1bcacc",
     "0036_character_variant_supplements": "ffa83d37ba0b0a4f410893ab8502ce2986343ade616dea998ad0b7968d450225",
-    "0037_card_catalog_bilingual_names": "8a35776656f510f449e332fcc1341dbf9ff671bd1f561f44fcaf64b1d853ba15",
-    "0038_card_catalog_image_dimensions": "1921b3ae2347b8084046089f9504903c843c6705f978f76a0ae99977bad45f23",
-    "0039_character_variant_admin_grants": "97a10756cce6f7e3a6b682ce6c574b0429492478ecc001c14540951db09fac23"
+    "0037_site_billing_webhook_events": "745c86a2f60c7093bb5cc190b2d010d44d97a502d05f804a7b2caeb351f9a124",
+    "0038_paypal_subscriptions": "d926c6e21f78c5592b1a05b74d57a9872c2f6f447a92a68fead604e60b0e7750",
+    "0039_direct_advertising": "0d9261302776864e5149613423255b554182928b26e62f03f3550e30d40ac17a",
+    "0040_better_auth_features_oauth": "caba440bf8ea94ad749bd1e3fd9bc7a358144612b0e06b633b28b9cf062c7d6e",
+    "0041_ad_campaign_placements": "6f239a2ebdfee0b6bb6d2d89a0168463c15d043d817215c0609363310eb14489",
+    "0042_site_email_outbox": "3e164d8432c5eada403c552227a38f851019cf9811b6b65006f50d840fb70a62",
+    "0043_site_subscription_checkout_reservations": "9225bfb997dab629f43a026f7d77a05c514da2ec92983ca3ce042064fce1aee4",
+    "0044_site_donation_refund_state": "cd11b308f77f9c37d2bf2c9f459ce701a120bcd88487e09b2bc2d4525375137b",
+    "0045_card_catalog_bilingual_names": "8a35776656f510f449e332fcc1341dbf9ff671bd1f561f44fcaf64b1d853ba15",
+    "0046_card_catalog_image_dimensions": "1921b3ae2347b8084046089f9504903c843c6705f978f76a0ae99977bad45f23",
+    "0047_site_watch_progress": "1ae68dcbc9297b42b2121d3b9ab0a6c1fb7e039e4b32e0921d42f807f25d0919",
+    "0048_character_variant_admin_grants": "97a10756cce6f7e3a6b682ce6c574b0429492478ecc001c14540951db09fac23",
+    "0049_character_variant_schema_repair": "788d57d9f37b4221f88c021eaaa94cc461de193d6d866ebe9fac1c6f9cd347ce"
   }
 }

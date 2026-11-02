@@ -41,7 +41,7 @@ export function VideoSourceSummary({
       aria-label={t("sourceCoverage")}
       className="rounded-xl border border-white/10 bg-white/[0.04] p-3"
     >
-      <h2 className="mb-2 text-xs font-bold uppercase tracking-wide text-white/70">
+      <h2 className="mb-2 text-xs font-bold uppercase tracking-wide text-white/75">
         {t("sourceCoverage")}
       </h2>
       <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
@@ -64,7 +64,7 @@ export function VideoSourceSummary({
             >
               <div className="flex items-center justify-between gap-2">
                 <span className="text-sm font-bold text-white">{t(language)}</span>
-                <span className="text-xs font-semibold text-white/70">
+                <span className="text-xs font-semibold text-white/75">
                   {present
                     ? t("sourceListed")
                     : coverage || offers !== undefined
@@ -72,7 +72,7 @@ export function VideoSourceSummary({
                       : t("sourceNotTracked")}
                 </span>
               </div>
-              <p className="mt-1 text-xs leading-snug text-white/65">
+              <p className="mt-1 text-xs leading-snug text-white/75">
                 {coverage
                   ? t("sourceEvidenceAggregate", {
                       players: playerCount,
@@ -93,7 +93,7 @@ export function VideoSourceSummary({
         >
           <div className="flex items-center justify-between gap-2">
             <span className="text-sm font-bold text-white">{t("vo")}</span>
-            <span className="text-xs font-semibold text-white/70">
+            <span className="text-xs font-semibold text-white/75">
               {originalAudio.players > 0 || originalAudio.official > 0
                 ? t("sourceListed")
                 : coverage || offers !== undefined
@@ -101,7 +101,7 @@ export function VideoSourceSummary({
                   : t("sourceNotTracked")}
             </span>
           </div>
-          <p className="mt-1 text-xs leading-snug text-white/65">
+          <p className="mt-1 text-xs leading-snug text-white/75">
             {coverage
               ? t("sourceEvidenceAggregate", {
                   players: originalAudio.players,
@@ -113,11 +113,11 @@ export function VideoSourceSummary({
                   official: originalAudio.official,
                 })}
           </p>
-          <p className="mt-1 text-xs leading-snug text-white/45">{t("voTrackingNote")}</p>
+          <p className="mt-1 text-xs leading-snug text-white/75">{t("voTrackingNote")}</p>
         </li>
       </ul>
       {(sources.length > 0 || (Number.isFinite(subtitles) && subtitles > 0)) && (
-        <p className="mt-2 text-xs text-white/65">
+        <p className="mt-2 text-xs text-white/75">
           {t("externalPlayerCount", { count: sources.length })}
           {subtitles > 0 ? ` · ${t("captions")}: ${subtitles}` : ""}
         </p>

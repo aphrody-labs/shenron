@@ -15,6 +15,8 @@
  */
 import type { ReactNode } from "react";
 import type { UiLinkComponent } from "../navigation/link";
+import { VieArt, type VieArtKind } from "../vie/VieArt";
+import { SenzuBean } from "../toriyama/SenzuBean";
 
 export interface EmptyAction {
   href: string;
@@ -28,28 +30,43 @@ export function EmptyState({
   description,
   actions = [],
   className = "",
+  illustration,
   linkComponent: Link = "a",
 }: {
   title: ReactNode;
   description?: ReactNode;
   actions?: readonly EmptyAction[];
   className?: string;
+  /** Scène décorative (mesurée) : l'état vide cesse d'être une coquille. */
+  illustration?: VieArtKind;
   linkComponent?: UiLinkComponent;
 }) {
   return (
     <div
-      className={`rounded-xl border border-white/[0.08] bg-dbz-card/70 p-6 sm:p-10 ${className}`}
+      data-empty-state=""
+      className={`relative overflow-hidden rounded-xl border border-white/[0.08] bg-dbz-card/70 p-6 sm:p-10 ${className}`}
     >
-      <h2 className="font-display text-[1.25rem] font-bold tracking-[-0.01em] text-white sm:text-[1.5rem]">
+      {illustration && (
+        <VieArt
+          kind={illustration}
+          className="absolute bottom-3 right-3 scale-90 opacity-70 max-sm:invisible md:right-10 md:scale-100"
+        />
+      )}
+      {illustration && (
+        <div aria-hidden className="mb-4 flex justify-center sm:hidden">
+          <SenzuBean size={96} decorative />
+        </div>
+      )}
+      <h2 className="relative font-display text-[1.25rem] font-bold tracking-[-0.01em] text-white sm:text-[1.5rem]">
         {title}
       </h2>
       {description && (
-        <p className="mt-3 max-w-[52ch] text-[0.9375rem] leading-relaxed text-white/60">
+        <p className="relative mt-3 max-w-[52ch] text-[0.9375rem] leading-relaxed text-white/60">
           {description}
         </p>
       )}
       {actions.length > 0 && (
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="relative mt-6 flex flex-wrap gap-3">
           {actions.map((a) =>
             a.external ? (
               <a

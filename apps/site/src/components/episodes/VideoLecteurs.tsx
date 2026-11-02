@@ -9,10 +9,16 @@ import { isShenronEpisodeVideoURL } from "@/lib/episode-video-source";
 import { nextPlayerIndex, resolvePlayerIndex } from "@/lib/video-selection-state";
 import { useTranslations } from "next-intl";
 import { useVideoUIText } from "@/lib/video-ui-text";
+import {
+  preferredSelection,
+  readVideoLanguagePreference,
+  writeVideoLanguagePreference,
+} from "@/lib/video-language-preference";
 import { officialCrunchyrollWatchURL } from "@aphrody/shenron-config/video-providers";
 import { normalizeVideoPlayers } from "@aphrody/shenron-media/episode-playback";
 import {
   normalizeVideoLanguage,
+  officialProviderName,
   playersForVideoLanguage,
   resolveVideoSelection,
   videoLanguages,
@@ -155,6 +161,20 @@ export function VideoLecteurs({
   const networkFailure = useRef<string | null>(null);
   const [probeAttempt, setProbeAttempt] = useState(0);
 
+  // Remembered version: applied once after hydration (the server render keeps the default so
+  // cached HTML never diverges), and only when this item really offers it.
+  const preferenceApplied = useRef(false);
+  useEffect(() => {
+    if (preferenceApplied.current || langs.length === 0) return;
+    preferenceApplied.current = true;
+    const preferred = preferredSelection(langs, readVideoLanguagePreference());
+    if (preferred && preferred !== lang) {
+      setLang(preferred);
+      setActive(0);
+      setStatus("probing");
+    }
+  }, [langs, lang]);
+
   // Derived selection prevents an empty render while the state catches up.
   useEffect(() => {
     if (lang !== selectedLang) {
@@ -280,6 +300,8 @@ export function VideoLecteurs({
     setModeVo(false);
     setLang(c);
     setActive(0);
+    const version = normalizeVideoLanguage(c);
+    if (version) writeVideoLanguagePreference(version);
   };
   const estChoisi = (c: string) => (c === "vo" ? enVo : !enVo && selectedLang === c);
   const retry = () => {
@@ -311,7 +333,7 @@ export function VideoLecteurs({
               type="button"
               onClick={() => setActive(i)}
               aria-pressed={i === safeActive}
-              title={`${cleanName(p.name)} · ${p.provider}`}
+              title={`${officialProviderName(p.provider, cleanName(p.name), t("officialPlatform"))} · ${officialProviderName(p.provider, p.provider, t("officialPlatform"))}`}
             >
               {t("playerNumber", { number: i + 1 })}
             </button>
@@ -357,7 +379,13 @@ export function VideoLecteurs({
             rel="noopener noreferrer"
             className="inline-flex min-h-11 items-center rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground"
           >
-            {ui("openOfficialProvider", { provider: current.provider })}
+            {ui("openOfficialProvider", {
+              provider: officialProviderName(
+                current.provider,
+                current.provider,
+                t("officialPlatform"),
+              ),
+            })}
           </a>
         </div>
       ) : status === "failed" ? (

@@ -30,6 +30,13 @@ import {
 } from "./web";
 import { FAVORITES_BODY_MAX } from "@aphrody/shenron-config/favorites";
 import { FavoritesResponse, FavoritesSaveResponse } from "./favorites";
+import {
+  WATCH_BODY_MAX,
+  WatchListResponse,
+  WatchRemoveBody,
+  WatchRemoveResponse,
+  WatchSaveResponse,
+} from "./watch";
 import { AccountSessionResponse } from "./account";
 import {
   ChronologyResponse,
@@ -235,6 +242,37 @@ export const endpoints = {
     body: z.object({ favorites: z.unknown() }),
     maxBodyBytes: FAVORITES_BODY_MAX,
     response: FavoritesSaveResponse,
+    cache: "no-store",
+    native: true,
+  },
+  watchProgress: {
+    id: "watchProgress",
+    method: "get",
+    path: "/api/v1/account/watch-progress",
+    auth: "public",
+    response: WatchListResponse,
+    cache: "no-store",
+    native: true,
+  },
+  watchProgressSave: {
+    id: "watchProgressSave",
+    method: "post",
+    path: "/api/v1/account/watch-progress",
+    auth: "reader",
+    body: z.object({ entries: z.unknown() }),
+    maxBodyBytes: WATCH_BODY_MAX,
+    response: WatchSaveResponse,
+    cache: "no-store",
+    native: true,
+  },
+  watchProgressRemove: {
+    id: "watchProgressRemove",
+    method: "post",
+    path: "/api/v1/account/watch-progress/remove",
+    auth: "reader",
+    body: WatchRemoveBody,
+    maxBodyBytes: 32 * 1024,
+    response: WatchRemoveResponse,
     cache: "no-store",
     native: true,
   },

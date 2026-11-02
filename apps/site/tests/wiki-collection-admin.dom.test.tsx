@@ -24,6 +24,9 @@ mock.module("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 mock.module("next-intl", () => ({ useTranslations: () => (key: string) => key }));
+mock.module("@/lib/admin-catalog-text", () => ({
+  useAdminCatalogText: () => (key: string) => key,
+}));
 mock.module("@/components/admin/SmartField", () => ({ SmartField: () => null }));
 const { default: TablePage } = await import("../src/app/admin/database/[table]/page");
 

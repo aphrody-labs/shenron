@@ -102,17 +102,17 @@ export function Billboard({
                   </span>
                 ))}
                 {hasVf && (
-                  <span className="rounded bg-namek/85 px-1.5 py-0.5 text-[10px] text-black">
+                  <span className="rounded bg-namek/90 px-2 py-0.5 text-[11px] font-bold text-black">
                     {t("vf")}
                   </span>
                 )}
                 {hasVostfr && (
-                  <span className="rounded bg-dbz-blue-light/85 px-1.5 py-0.5 text-[10px] text-black">
+                  <span className="rounded bg-dbz-blue-light/90 px-2 py-0.5 text-[11px] font-bold text-black">
                     {t("vostfr")}
                   </span>
                 )}
                 {hasVost && (
-                  <span className="rounded bg-dbz-blue-light/85 px-1.5 py-0.5 text-[10px] text-black">
+                  <span className="rounded bg-dbz-blue-light/90 px-2 py-0.5 text-[11px] font-bold text-black">
                     {t("vost")}
                   </span>
                 )}
@@ -120,7 +120,7 @@ export function Billboard({
             )}
 
             {synopsis && (
-              <p className="mb-4 max-w-xl text-sm leading-relaxed text-white/80">{synopsis}</p>
+              <p className="mb-5 max-w-2xl text-sm leading-relaxed text-white/85">{synopsis}</p>
             )}
 
             <div className="flex flex-wrap items-center gap-3">
@@ -129,7 +129,7 @@ export function Billboard({
                 // pleine page (lecteur) plutôt qu'un aperçu.
                 <a
                   href={primaryHref}
-                  className="inline-flex items-center gap-2 rounded-lg bg-dbz-orange px-6 py-3 font-display text-[15px] font-bold text-black shadow-lg transition-colors hover:bg-dbz-orange-dark"
+                  className="inline-flex min-h-11 items-center gap-2.5 rounded-xl bg-dbz-orange px-6 py-2.5 font-display text-[15px] font-bold text-black shadow-lg shadow-dbz-orange/20 transition-all hover:bg-dbz-orange-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
                   <Lecture className="h-5 w-5 fill-current" />
                   {primaryLabel}
@@ -137,7 +137,7 @@ export function Billboard({
               ) : (
                 <Link
                   href={primaryHref}
-                  className="inline-flex items-center gap-2 rounded-lg bg-dbz-orange px-6 py-3 font-display text-[15px] font-bold text-black shadow-lg transition-colors hover:bg-dbz-orange-dark"
+                  className="inline-flex min-h-11 items-center gap-2.5 rounded-xl bg-dbz-orange px-6 py-2.5 font-display text-[15px] font-bold text-black shadow-lg shadow-dbz-orange/20 transition-all hover:bg-dbz-orange-dark focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 >
                   <Lecture className="h-5 w-5 fill-current" />
                   {primaryLabel}
@@ -146,7 +146,7 @@ export function Billboard({
               {secondaryHref && secondaryLabel && (
                 <Link
                   href={secondaryHref}
-                  className="inline-flex items-center gap-2 rounded-lg bg-white/12 px-6 py-3 font-display text-[15px] font-bold text-white backdrop-blur transition-colors hover:bg-white/20"
+                  className="inline-flex min-h-11 items-center gap-2.5 rounded-xl border border-white/15 bg-white/10 px-6 py-2.5 font-display text-[15px] font-bold text-white backdrop-blur-sm transition-colors hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
                 >
                   <Info className="h-5 w-5" />
                   {secondaryLabel}
