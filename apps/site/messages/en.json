@@ -304,6 +304,7 @@
     "sortTitle": "Title",
     "statusSynced": "Synced with your account.",
     "statusDevice": "Kept on this device. Sign in to find it everywhere.",
+    "statusUnavailable": "Your account list is temporarily unavailable: showing this device’s list.",
     "signIn": "Sign in",
     "kindEpisode": "Episode",
     "kindMovie": "Film",

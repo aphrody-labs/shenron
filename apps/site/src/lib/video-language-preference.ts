@@ -42,3 +42,14 @@ export function pickPreferredLanguage(
   if (preferred && available.includes(preferred)) return preferred;
   return VIDEO_LANGUAGE_ORDER.find((language) => available.includes(language)) ?? null;
 }
+
+/**
+ * Selection to apply on mount for an item: the saved preference only when this item really
+ * offers it, otherwise null (the caller keeps its own default, never an invented version).
+ */
+export function preferredSelection(
+  available: readonly VideoLanguage[],
+  preferred: VideoLanguage | null,
+): VideoLanguage | null {
+  return preferred && available.includes(preferred) ? preferred : null;
+}

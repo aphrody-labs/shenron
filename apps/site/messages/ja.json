@@ -304,6 +304,7 @@
     "sortTitle": "タイトル順",
     "statusSynced": "アカウントと同期しています。",
     "statusDevice": "この端末に保存されています。ログインするとどこでも利用できます。",
+    "statusUnavailable": "アカウントのリストを一時的に読み込めません。この端末のリストを表示しています。",
     "signIn": "ログイン",
     "kindEpisode": "エピソード",
     "kindMovie": "映画",

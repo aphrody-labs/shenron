@@ -304,6 +304,7 @@
     "sortTitle": "Titre",
     "statusSynced": "Synchronisée avec ton compte.",
     "statusDevice": "Conservée sur cet appareil. Connecte-toi pour la retrouver partout.",
+    "statusUnavailable": "Ta liste de compte est momentanément indisponible : affichage de la liste de cet appareil.",
     "signIn": "Se connecter",
     "kindEpisode": "Épisode",
     "kindMovie": "Film",

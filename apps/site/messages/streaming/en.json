@@ -32,5 +32,11 @@
   "partialCatalogue": "Some series could not be loaded. Please try again later.",
   "navigation": "Video library",
   "episodes": "Episodes",
-  "films": "Movies"
+  "films": "Movies",
+  "languageLabel": "Version",
+  "allLanguages": "All versions",
+  "sortLabel": "Sort by",
+  "sortCatalogue": "Catalogue order",
+  "sortRecent": "Most recent",
+  "sortTitle": "Title (A to Z)"
 }

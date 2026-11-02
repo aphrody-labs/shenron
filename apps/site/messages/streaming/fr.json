@@ -32,5 +32,11 @@
   "partialCatalogue": "Certaines séries n’ont pas pu être chargées. Réessayez plus tard.",
   "navigation": "Vidéothèque",
   "episodes": "Épisodes",
-  "films": "Films"
+  "films": "Films",
+  "languageLabel": "Version",
+  "allLanguages": "Toutes les versions",
+  "sortLabel": "Trier par",
+  "sortCatalogue": "Ordre du catalogue",
+  "sortRecent": "Plus récents",
+  "sortTitle": "Titre (A à Z)"
 }

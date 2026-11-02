@@ -4,7 +4,7 @@ import { T } from "@/components/T";
 import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import { SectionUnavailable } from "@/components/wiki/SectionUnavailable";
 import { ContributeRail } from "@/components/kit";
-import { ContinueRail } from "@/components/history/ContinueRail";
+import { ContinueWatchingRail } from "@/components/continue-watching/ContinueWatchingRail";
 import { dbUniverse } from "@/lib/db-universe";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import {
@@ -62,7 +62,7 @@ export default async function StreamingCatalogue() {
           seriesLabel={SERIES_LABELS[featured.series] ?? featured.series}
         />
       )}
-      <ContinueRail kinds={["episode"]} titleKey="history.resumeWatching" />
+      <ContinueWatchingRail kinds={["episode"]} />
       <StreamingSavedRail />
       {(loaded.length !== groups.length || !sagaData) && <StreamingNotice />}
       <SectionDivider className="my-2" />
