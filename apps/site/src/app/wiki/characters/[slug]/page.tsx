@@ -49,11 +49,14 @@ import { getWikiCharacterVersionText } from "@/lib/wiki-character-version-messag
 import { verifiedCharacterVariantImage } from "@/lib/wiki-image-evidence";
 import {
   createGokuPreviewVariants,
+  filterGokuVariantsByTimeline,
+  getGokuSeriesTimelineChoices,
   getGokuPreviewTimelines,
   getGokuPreviewRelationSlugs,
   getGokuPreviewBattles,
   getGokuPreviewSummaryArticle,
   resolveGokuPreviewTimeline,
+  shouldUseGokuShowcasePreview,
 } from "@/lib/goku-character-preview";
 import { CHARACTER_CANONICAL_SLUGS, resolveCharacterParam } from "@/lib/wiki-slugs";
 
@@ -462,7 +465,9 @@ export default async function CharacterPage({
   ] = await Promise.all([
     preview ? Promise.resolve([]) : getShenronCharacterVariants(character.id),
     getLaunchConfig().catch(() => null),
-    preview ? getShenronCharacterCards().catch(() => []) : Promise.resolve([]),
+    preview || normalizeVersionLabel(character.name) === "songoku"
+      ? getShenronCharacterCards().catch(() => [])
+      : Promise.resolve([]),
     preview ? Promise.resolve([]) : getShenronCharacterContinuities(character.id),
     preview ? Promise.resolve([]) : getShenronCharacterVariantTechniqueUses(character.id),
     preview ? Promise.resolve([]) : getShenronCharacterVariantAppearances(character.id),
@@ -472,23 +477,51 @@ export default async function CharacterPage({
   const locale = await getLocale();
   const versionT = getWikiCharacterVersionText(locale);
   const isGokuMainCharacter = normalizeVersionLabel(character.name) === "songoku";
+  const showcasePreview = shouldUseGokuShowcasePreview(
+    preview,
+    isGokuMainCharacter,
+    continuities.map(({ slug }) => slug),
+    loadedVariants.length > 0,
+  );
   const requestedTimeline = Array.isArray(query.timeline) ? query.timeline[0] : query.timeline;
   const previewTimeline = resolveGokuPreviewTimeline(requestedTimeline);
   const previewChoices = isGokuMainCharacter
     ? getGokuPreviewTimelines(versionT, character.name)
     : [];
-  const liveTimelineChoices =
+  const liveTimelineChoices = (
     continuities.length > 0
-      ? continuities.map(({ id, name, slug, label, isMain }) => ({
+      ? continuities.map(({ id, name, slug, label, isMain }) => ({ id, name, slug, label, isMain }))
+      : character.versions.map(({ id, name, slug }) => ({
           id,
           name,
           slug,
-          label,
-          isMain,
+          label: null,
+          isMain: false,
         }))
-      : character.versions.map(({ id, name, slug }) => ({ id, name, slug }));
+  )
+    .filter(({ name, label }) => {
+      const identity = normalizeVersionLabel(`${name} ${label ?? ""}`);
+      return (
+        identity.includes("xeno") ||
+        identity.includes("jumpforce") ||
+        identity.includes("gokucc") ||
+        identity.includes("fusion")
+      );
+    })
+    .map(({ id, name, slug, label, isMain }) => {
+      const identity = normalizeVersionLabel(`${name} ${label ?? ""}`);
+      const displayName = identity.includes("xeno")
+        ? versionT("xenoGoku")
+        : identity.includes("jumpforce")
+          ? versionT("gokuJumpForce")
+          : identity.includes("gokucc")
+            ? versionT("gokuCc")
+            : versionT("gokuFusion");
+      return { id, name: displayName, slug, label: displayName, isMain, seriesGroup: undefined };
+    });
   const versionChoices = isGokuMainCharacter
     ? [
+        ...(showcasePreview ? [] : getGokuSeriesTimelineChoices((key) => versionT(key))),
         ...liveTimelineChoices,
         {
           id: -9000,
@@ -501,9 +534,11 @@ export default async function CharacterPage({
     : liveTimelineChoices;
   const isSummaryVersion =
     isGokuMainCharacter &&
-    (preview ? previewTimeline === "goku-summary" : requestedTimeline === "goku-summary");
+    (showcasePreview
+      ? previewTimeline === "goku-summary"
+      : (requestedTimeline ?? "goku-summary") === "goku-summary");
   const variants =
-    preview && isGokuMainCharacter
+    showcasePreview && isGokuMainCharacter
       ? createGokuPreviewVariants(
           character.id,
           previewTimeline,
@@ -512,8 +547,13 @@ export default async function CharacterPage({
           versionT,
         )
       : loadedVariants;
-  const sagaVariants = isSummaryVersion ? [] : variants;
   const requestedSaga = Array.isArray(query.saga) ? query.saga[0] : query.saga;
+  const sagaTimeline = requestedTimeline ?? "goku-db";
+  const sagaVariants = isSummaryVersion
+    ? []
+    : isGokuMainCharacter && !showcasePreview
+      ? filterGokuVariantsByTimeline(variants, sagaTimeline)
+      : variants;
   const activeVariant =
     sagaVariants.find((variant) => variant.slug === requestedSaga) ?? sagaVariants[0] ?? null;
   const activeVariantStaffCredits = variantStaffCredits.filter(
@@ -540,7 +580,7 @@ export default async function CharacterPage({
     ? query.demoAppearances[0]
     : query.demoAppearances;
   if (
-    preview &&
+    showcasePreview &&
     process.env.NODE_ENV === "development" &&
     demoAppearances === "1" &&
     activeVariant
@@ -579,10 +619,7 @@ export default async function CharacterPage({
     .filter((use) => use.variantId === activeVariant?.id)
     .sort((left, right) => left.sortOrder - right.sortOrder || left.id - right.id);
   const currentTechniqueUses =
-    preview &&
-    process.env.NODE_ENV === "development" &&
-    activeVariant &&
-    savedCurrentTechniqueUses.length === 0
+    showcasePreview && activeVariant && savedCurrentTechniqueUses.length === 0
       ? (activeVariant.techniqueIds ?? []).slice(0, 3).map((techniqueId, index) => ({
           id: -9200 - index,
           variantId: activeVariant.id,
@@ -627,44 +664,50 @@ export default async function CharacterPage({
       earlierTechniqueIds.has(technique.id) && !currentTechniqueIds.has(technique.id),
   );
   const summaryTimelines =
-    isSummaryVersion && !preview
-      ? await Promise.all(
-          continuities.map(async (continuity) => ({
+    isSummaryVersion && !showcasePreview
+      ? await Promise.all([
+          ...getGokuSeriesTimelineChoices((key) => versionT(key)).map((timeline) => ({
+            ...timeline,
+            description: null,
+            sagas: filterGokuVariantsByTimeline(loadedVariants, timeline.seriesGroup!),
+          })),
+          ...liveTimelineChoices.map(async (continuity) => ({
             ...continuity,
             sagas: await getShenronCharacterVariants(continuity.id),
           })),
-        )
+        ])
       : [];
   const summaryArticle = isSummaryVersion
-    ? preview
+    ? showcasePreview
       ? getGokuPreviewSummaryArticle(versionT)
       : [
           `## ${versionT("sagaHistoryHeading")}`,
           versionT("summaryIntro"),
           ...summaryTimelines.map((timeline) => {
             const heading = `### ${timeline.label || timeline.name}`;
-            const description = timeline.description?.trim() ?? "";
             const sagaRows = timeline.sagas.map((saga) => {
-              const url = `/wiki/characters/${timeline.slug}?saga=${encodeURIComponent(saga.slug)}`;
-              const title = `${saga.sagaSeries ? `${saga.sagaSeries} · ` : ""}${saga.sagaName}`;
+              const url = timeline.seriesGroup
+                ? `/wiki/characters/${character.slug}?timeline=${encodeURIComponent(timeline.seriesGroup)}&saga=${encodeURIComponent(saga.slug)}`
+                : `/wiki/characters/${timeline.slug}?saga=${encodeURIComponent(saga.slug)}`;
+              const title = `${saga.sagaSeries && !timeline.seriesGroup ? `${saga.sagaSeries} · ` : ""}${saga.sagaName}`;
               return `- [${title}](${url})${saga.summary ? ` — ${saga.summary.replace(/\s+/g, " ").trim()}` : ""}`;
             });
-            return [heading, description, `#### ${versionT("summarySagasHeading")}`, ...sagaRows]
+            return [heading, `#### ${versionT("summarySagasHeading")}`, ...sagaRows]
               .filter(Boolean)
               .join("\n\n");
           }),
         ].join("\n\n")
     : null;
   const variantBattles =
-    isSummaryVersion && preview
+    isSummaryVersion && showcasePreview
       ? getGokuPreviewBattles("goku-summary")
       : activeVariant
-        ? preview
+        ? showcasePreview
           ? getGokuPreviewBattles(activeVariant.slug)
           : await getShenronCharacterVariantBattles(activeVariant.id)
         : (character.battles ?? []);
   const activeSagaVariants = activeVariant ? [activeVariant] : [];
-  const relationRows = preview
+  const relationRows = showcasePreview
     ? []
     : await getShenronCharacterRelations(character.id, activeVariant?.id);
   const relations =
@@ -674,7 +717,7 @@ export default async function CharacterPage({
   // Use a saga portrait only when its editorial evidence explicitly covers the
   // image field; otherwise keep the character's approved portrait as fallback.
   const sagaImage = activeVariant
-    ? preview
+    ? showcasePreview
       ? activeVariant.image
       : verifiedCharacterVariantImage(activeVariant.image, activeVariant.evidence)
     : null;
@@ -875,7 +918,7 @@ export default async function CharacterPage({
   const previewRelations = previewRelationSlugs
     ? GOKU_RELATION_PREVIEW.filter((item) => previewRelationSlugs.includes(item.slug))
     : GOKU_RELATION_PREVIEW;
-  const relationItems: CharacterRelationItem[] = preview
+  const relationItems: CharacterRelationItem[] = showcasePreview
     ? previewRelations.map((item, index) => {
         const card = relationCardBySlug.get(item.slug);
         return {
@@ -924,7 +967,7 @@ export default async function CharacterPage({
     .map((panel) => {
       const key = panel.key.toLowerCase();
       if (
-        preview &&
+        showcasePreview &&
         activeVariant?.slug === "goku-preview-main-majin-buu" &&
         key.includes("histoire")
       ) {
@@ -999,7 +1042,11 @@ export default async function CharacterPage({
           ),
         };
       }
-      if (preview && activeVariant?.slug === "goku-preview-main-majin-buu" && key === "anecdotes") {
+      if (
+        showcasePreview &&
+        activeVariant?.slug === "goku-preview-main-majin-buu" &&
+        key === "anecdotes"
+      ) {
         return {
           ...panel,
           group: versionT("anecdotes"),
@@ -1200,7 +1247,7 @@ export default async function CharacterPage({
           relations={relationItems}
           characterName={pageCharacterName}
           access={preview ? null : access}
-          familyContent={preview ? undefined : familyContent}
+          familyContent={showcasePreview ? undefined : familyContent}
           labels={{
             title: versionT("relationsTitle", { name: "{name}" }),
             intro: versionT("relationsIntro"),
@@ -1571,7 +1618,7 @@ export default async function CharacterPage({
           <ul className="grid gap-3 sm:grid-cols-2">
             {pageVoiceActors.map((actor) => (
               <li key={actor.id} className="dbz-panel relative isolate min-h-32 overflow-hidden">
-                {preview && actor.image && (
+                {showcasePreview && actor.image && (
                   <div
                     className="absolute inset-y-0 left-0 w-[46%] overflow-hidden"
                     style={{
@@ -1597,7 +1644,7 @@ export default async function CharacterPage({
                         : versionT("voiceLabel", { nationality: actor.nationality.toUpperCase() })}
                   </p>
                   <div className="mt-1 font-semibold text-dbz-orange">
-                    {preview ? (
+                    {showcasePreview ? (
                       <Link href={`/wiki/contributors/${actor.slug}`} className="hover:underline">
                         {actor.name}
                       </Link>
@@ -1624,7 +1671,7 @@ export default async function CharacterPage({
     });
   }
 
-  const isDemoBuuCredits = preview && activeVariant?.slug === "goku-preview-main-majin-buu";
+  const isDemoBuuCredits = showcasePreview && activeVariant?.slug === "goku-preview-main-majin-buu";
   const demoAnimationCredits: CharacterVariantStaffCredit[] = isDemoBuuCredits
     ? [
         {
@@ -1868,7 +1915,7 @@ export default async function CharacterPage({
   // Panneau Combats Légendaires issus de bot.db_battles
   if (
     variantBattles.length > 0 &&
-    !(preview && activeVariant?.slug === "goku-preview-main-majin-buu")
+    !(showcasePreview && activeVariant?.slug === "goku-preview-main-majin-buu")
   ) {
     panels.push({
       key: "combats",
@@ -1955,10 +2002,15 @@ export default async function CharacterPage({
         previewChoices={previewChoices}
         variants={sagaVariants}
         selectedTimelineSlug={
-          isSummaryVersion ? "goku-summary" : preview ? previewTimeline : character.slug
+          isSummaryVersion
+            ? "goku-summary"
+            : showcasePreview
+              ? previewTimeline
+              : (requestedTimeline ?? "goku-summary")
         }
         selectedSagaSlug={activeVariant?.slug ?? null}
         preview={preview}
+        showcaseChoices={showcasePreview && !preview}
         labels={{
           version: versionT("versionLabel"),
           saga: versionT("sagaLabel"),

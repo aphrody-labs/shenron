@@ -4,6 +4,7 @@ import {
   getGokuPreviewRelationSlugs,
   getGokuPreviewTimelines,
   resolveGokuPreviewTimeline,
+  shouldUseGokuShowcasePreview,
 } from "../src/lib/goku-character-preview";
 
 const translate = (key: string, values?: Record<string, string | number>) =>
@@ -34,9 +35,10 @@ function variantsFor(
     | "goku-dbz"
     | "goku-dbs"
     | "goku-gt"
+    | "goku-daima"
     | "goku-xeno"
     | "goku-cc"
-    | "goku-4d"
+    | "goku-fusion"
     | "goku-jumpforce",
 ) {
   return createGokuPreviewVariants(
@@ -56,9 +58,10 @@ describe("Goku visual preview", () => {
       "gokuDbz",
       "gokuDbs",
       "gokuGt",
+      "gokuDaima",
       "xenoGoku",
       "gokuCc",
-      "goku4d",
+      "gokuFusion",
       "gokuJumpForce",
       "gokuSummary",
     ]);
@@ -67,13 +70,22 @@ describe("Goku visual preview", () => {
       "goku-dbz",
       "goku-dbs",
       "goku-gt",
+      "goku-daima",
       "goku-xeno",
       "goku-cc",
-      "goku-4d",
+      "goku-fusion",
       "goku-jumpforce",
       "goku-summary",
     ]);
-    expect(resolveGokuPreviewTimeline("unknown")).toBe("goku-db");
+    expect(resolveGokuPreviewTimeline("unknown")).toBe("goku-summary");
+  });
+
+  test("uses showcase timelines only until DBZ editorial data is configured", () => {
+    expect(shouldUseGokuShowcasePreview(false, true, ["goku-main", "future"])).toBe(true);
+    expect(shouldUseGokuShowcasePreview(false, true, ["goku-dbz"])).toBe(false);
+    expect(shouldUseGokuShowcasePreview(false, false, [])).toBe(false);
+    expect(shouldUseGokuShowcasePreview(false, true, [], true)).toBe(false);
+    expect(shouldUseGokuShowcasePreview(true, false, [])).toBe(true);
   });
 
   test("scopes each saga menu to its selected series or game version", () => {
@@ -81,8 +93,10 @@ describe("Goku visual preview", () => {
     const dbz = variantsFor("goku-dbz");
     const dbs = variantsFor("goku-dbs");
     const gt = variantsFor("goku-gt");
+    const daima = variantsFor("goku-daima");
     const xeno = variantsFor("goku-xeno");
     const cc = variantsFor("goku-cc");
+    const fusion = variantsFor("goku-fusion");
 
     expect(db.map(({ sagaSlug }) => sagaSlug)).toEqual(["pilaf", "piccolo-junior"]);
     expect(dbz.map(({ sagaSlug }) => sagaSlug)).toContain("majin-buu");
@@ -90,8 +104,10 @@ describe("Goku visual preview", () => {
     expect(dbs.map(({ sagaSlug }) => sagaSlug)).toContain("tournament-of-power");
     expect(dbs.map(({ sagaSlug }) => sagaSlug)).not.toContain("majin-buu");
     expect(gt.map(({ sagaSlug }) => sagaSlug)).toEqual(["baby", "shadow-dragons"]);
+    expect(daima.map(({ sagaSlug }) => sagaSlug)).toEqual(["daima"]);
     expect(xeno.map(({ sagaSlug }) => sagaSlug)).toEqual(["xeno-arc-one", "xeno-arc-two"]);
     expect(cc.map(({ sagaSlug }) => sagaSlug)).toEqual(["cc-arc-one", "cc-arc-two"]);
+    expect(fusion.map(({ sagaSlug }) => sagaSlug)).toEqual(["fusion-arc-one", "fusion-arc-two"]);
   });
 
   test("changes story, portrait, relationships, and saga-available abilities", () => {

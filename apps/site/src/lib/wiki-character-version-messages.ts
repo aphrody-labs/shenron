@@ -13,9 +13,10 @@ export interface CharacterVersionMessages {
   gokuDbz?: string;
   gokuDbs?: string;
   gokuGt?: string;
+  gokuDaima?: string;
   xenoGoku?: string;
   gokuCc?: string;
-  goku4d?: string;
+  gokuFusion?: string;
   gokuJumpForce?: string;
   gokuSummary: string;
   chooseSaga: string;
@@ -30,6 +31,7 @@ export interface CharacterVersionMessages {
   previewTournamentOfPower?: string;
   previewBaby?: string;
   previewShadowDragons?: string;
+  previewDaima?: string;
   previewTimelineArcOne?: string;
   previewTimelineArcTwo?: string;
   previewHistoryHeading?: string;
@@ -78,6 +80,7 @@ export interface CharacterVersionMessages {
   previewTournamentOfPowerStory?: string;
   previewBabyStory?: string;
   previewShadowDragonsStory?: string;
+  previewDaimaStory?: string;
   previewGameArcOneStory?: string;
   previewGameArcTwoStory?: string;
   relationsTitle: string;

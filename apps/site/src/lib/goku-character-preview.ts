@@ -2,18 +2,59 @@ import type { CharacterBattle, CharacterVariant } from "@/lib/shenron";
 import type { CharacterVersionMessages } from "@/lib/wiki-character-version-messages";
 
 export const GOKU_PREVIEW_TIMELINES = [
-  { slug: "goku-db", message: "gokuDb", isMain: true },
-  { slug: "goku-dbz", message: "gokuDbz", isMain: false },
-  { slug: "goku-dbs", message: "gokuDbs", isMain: false },
-  { slug: "goku-gt", message: "gokuGt", isMain: false },
+  { slug: "goku-db", message: "gokuDb", isMain: true, series: ["DB"] },
+  { slug: "goku-dbz", message: "gokuDbz", isMain: false, series: ["DBZ"] },
+  {
+    slug: "goku-dbs",
+    message: "gokuDbs",
+    isMain: false,
+    series: ["DBS", "DBS_MANGA", "DBS_MOVIE"],
+  },
+  { slug: "goku-gt", message: "gokuGt", isMain: false, series: ["DBGT"] },
+  { slug: "goku-daima", message: "gokuDaima", isMain: false, series: ["DB_DAIMA"] },
   { slug: "goku-xeno", message: "xenoGoku", isMain: false },
   { slug: "goku-cc", message: "gokuCc", isMain: false },
-  { slug: "goku-4d", message: "goku4d", isMain: false },
+  { slug: "goku-fusion", message: "gokuFusion", isMain: false },
   { slug: "goku-jumpforce", message: "gokuJumpForce", isMain: false },
   { slug: "goku-summary", message: "gokuSummary", isMain: false },
 ] as const;
 
 type TimelineSlug = (typeof GOKU_PREVIEW_TIMELINES)[number]["slug"];
+
+/** Use clearly marked showcase data until the main Goku timeline has DBZ editorial data. */
+export function shouldUseGokuShowcasePreview(
+  preview: boolean,
+  isMainCharacter: boolean,
+  continuitySlugs: readonly string[],
+  hasSagaData = continuitySlugs.some((slug) => slug === "goku-dbz" || slug === "dragon-ball-z"),
+): boolean {
+  return preview || (isMainCharacter && !hasSagaData);
+}
+
+export function getGokuSeriesTimelineChoices(
+  translate: (key: keyof CharacterVersionMessages) => string,
+) {
+  return GOKU_PREVIEW_TIMELINES.filter((timeline) => "series" in timeline).map(
+    (timeline, index) => ({
+      id: -9100 - index,
+      name: translate(timeline.message),
+      label: translate(timeline.message),
+      slug: timeline.slug,
+      seriesGroup: timeline.slug,
+    }),
+  );
+}
+
+export function filterGokuVariantsByTimeline(
+  variants: CharacterVariant[],
+  timeline: string,
+): CharacterVariant[] {
+  const selectedTimeline = GOKU_PREVIEW_TIMELINES.find((choice) => choice.slug === timeline);
+  if (timeline === "goku-summary") return [];
+  if (!selectedTimeline || !("series" in selectedTimeline)) return variants;
+  const series: readonly string[] = selectedTimeline.series;
+  return variants.filter((variant) => series.includes(variant.sagaSeries ?? ""));
+}
 
 type PreviewSaga = {
   timeline: TimelineSlug;
@@ -189,6 +230,21 @@ const PREVIEW_SAGAS: PreviewSaga[] = [
     storyKey: "previewShadowDragonsStory",
     relations: ["chichi", "son-gohan", "son-goten", "pan", "vegeta", "uub"],
   },
+  {
+    timeline: "goku-daima",
+    slug: "goku-preview-main-daima",
+    sagaSlug: "daima",
+    sagaNameKey: "previewDaima",
+    series: "DB_DAIMA",
+    image: "/dbz/characters/goku.webp",
+    form: "Base · forme miniaturisée",
+    age: 46,
+    affiliation: "Guerriers Z",
+    transformations: ["Super Saiyan", "Super Saiyan 2", "Super Saiyan 3"],
+    techniques: ["Kamehameha", "Kaioken", "Transmission instantanée"],
+    storyKey: "previewDaimaStory",
+    relations: ["chichi", "son-gohan", "vegeta", "piccolo", "bulma"],
+  },
   ...(
     [
       [
@@ -228,8 +284,8 @@ const PREVIEW_SAGAS: PreviewSaga[] = [
         5,
       ],
       [
-        "goku-4d",
-        "4d-arc-one",
+        "goku-fusion",
+        "fusion-arc-one",
         "previewTimelineArcOne",
         "/dbz/transformations/goku-ssj.webp",
         "Super Saiyan 2",
@@ -237,8 +293,8 @@ const PREVIEW_SAGAS: PreviewSaga[] = [
         3,
       ],
       [
-        "goku-4d",
-        "4d-arc-two",
+        "goku-fusion",
+        "fusion-arc-two",
         "previewTimelineArcTwo",
         "/dbz/transformations/goku-ssj.webp",
         "Super Saiyan",
@@ -303,7 +359,7 @@ export function getGokuPreviewTimelines(
 
 export function resolveGokuPreviewTimeline(value: string | null | undefined): TimelineSlug {
   if (value === "goku-main") return "goku-db";
-  return GOKU_PREVIEW_TIMELINES.find((timeline) => timeline.slug === value)?.slug ?? "goku-db";
+  return GOKU_PREVIEW_TIMELINES.find((timeline) => timeline.slug === value)?.slug ?? "goku-summary";
 }
 
 function normalizeAbilityName(value: string): string {
@@ -572,11 +628,11 @@ const PREVIEW_BATTLES: Record<string, CharacterBattle[]> = {
       location: "Faille temporelle",
     },
   ],
-  "goku-preview-4d-arc-one": [
+  "goku-preview-fusion-arc-one": [
     {
       id: -117,
-      slug: "goku-4d-vs-enemy-one",
-      title: "Goku 4D contre son premier adversaire",
+      slug: "goku-fusion-vs-enemy-one",
+      title: "Goku Fusion contre son premier adversaire",
       titleJa: null,
       series: "Jeu vidéo",
       winnerName: "Goku",
@@ -584,11 +640,11 @@ const PREVIEW_BATTLES: Record<string, CharacterBattle[]> = {
       location: "Aventure",
     },
   ],
-  "goku-preview-4d-arc-two": [
+  "goku-preview-fusion-arc-two": [
     {
       id: -118,
-      slug: "goku-4d-vs-enemy-two",
-      title: "Goku 4D contre son adversaire final",
+      slug: "goku-fusion-vs-enemy-two",
+      title: "Goku Fusion contre son adversaire final",
       titleJa: null,
       series: "Jeu vidéo",
       winnerName: "Goku",
