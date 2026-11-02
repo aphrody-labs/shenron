@@ -1,7 +1,7 @@
 {
   "journal": {
-    "entries": 32,
-    "files": 44,
+    "entries": 34,
+    "files": 46,
     "journaled": [
       "0000_dark_johnny_blaze",
       "0001_natural_switch",
@@ -34,7 +34,9 @@
       "0041_ad_campaign_placements",
       "0042_site_email_outbox",
       "0043_site_subscription_checkout_reservations",
-      "0044_site_donation_refund_state"
+      "0044_site_donation_refund_state",
+      "0045_card_catalog_bilingual_names",
+      "0046_card_catalog_image_dimensions"
     ],
     "unjournaled": [
       "0007_post_cms",
@@ -243,6 +245,18 @@
         "tag": "0044_site_donation_refund_state",
         "when": 1793495707000,
         "breakpoints": true
+      },
+      {
+        "idx": 32,
+        "tag": "0045_card_catalog_bilingual_names",
+        "when": 1793577600000,
+        "breakpoints": true
+      },
+      {
+        "idx": 33,
+        "tag": "0046_card_catalog_image_dimensions",
+        "when": 1793577660000,
+        "breakpoints": true
       }
     ]
   },
@@ -342,6 +356,8 @@
     "0041_ad_campaign_placements": "6f239a2ebdfee0b6bb6d2d89a0168463c15d043d817215c0609363310eb14489",
     "0042_site_email_outbox": "3e164d8432c5eada403c552227a38f851019cf9811b6b65006f50d840fb70a62",
     "0043_site_subscription_checkout_reservations": "9225bfb997dab629f43a026f7d77a05c514da2ec92983ca3ce042064fce1aee4",
-    "0044_site_donation_refund_state": "cd11b308f77f9c37d2bf2c9f459ce701a120bcd88487e09b2bc2d4525375137b"
+    "0044_site_donation_refund_state": "cd11b308f77f9c37d2bf2c9f459ce701a120bcd88487e09b2bc2d4525375137b",
+    "0045_card_catalog_bilingual_names": "8a35776656f510f449e332fcc1341dbf9ff671bd1f561f44fcaf64b1d853ba15",
+    "0046_card_catalog_image_dimensions": "1921b3ae2347b8084046089f9504903c843c6705f978f76a0ae99977bad45f23"
   }
 }

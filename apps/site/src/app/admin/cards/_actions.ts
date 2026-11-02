@@ -56,6 +56,14 @@ function amount(input: string) {
   if (!/^\d{1,12}(?:[.,]\d{1,4})?$/.test(input)) throw new Error("Invalid amount");
   return input.replace(",", ".");
 }
+function imageDimension(form: FormData, key: string) {
+  const input = optional(form, key);
+  if (!input) return null;
+  if (!/^\d{1,5}$/.test(input)) throw new Error(`Invalid ${key}`);
+  const value = Number(input);
+  if (!Number.isInteger(value) || value < 1 || value > 10000) throw new Error(`Invalid ${key}`);
+  return value;
+}
 
 export async function saveCardCatalogEntry(form: FormData) {
   await requireAdmin();
@@ -217,8 +225,15 @@ export async function saveCardCatalogEntry(form: FormData) {
         )
           throw new Error("Publish series and set first");
         const frontImageUrl = url(optional(form, "frontImageUrl"), true);
+        const frontImageWidth = imageDimension(form, "frontImageWidth");
+        const frontImageHeight = imageDimension(form, "frontImageHeight");
         const frontImageSourceUrl = url(optional(form, "frontImageSourceUrl"), true);
         const frontImageRights = optional(form, "frontImageRights");
+        if (
+          Boolean(frontImageWidth) !== Boolean(frontImageHeight) ||
+          (!frontImageUrl && (frontImageWidth || frontImageHeight))
+        )
+          throw new Error("Front image dimensions must match the image");
         const backImageUrl = url(optional(form, "backImageUrl"), true);
         const backImageSourceUrl = url(optional(form, "backImageSourceUrl"), true);
         const backImageRights = optional(form, "backImageRights");
@@ -236,17 +251,22 @@ export async function saveCardCatalogEntry(form: FormData) {
           throw new Error("Back image provenance required");
         const cardNumber = required(form, "cardNumber");
         const name = required(form, "name");
+        const language = required(form, "language");
         const fields = {
           setId,
           slug: slug(form, `${cardNumber}-${name}`, id, before?.slug),
           name,
+          nameJa: optional(form, "nameJa"),
+          nameFr: optional(form, "nameFr"),
           cardNumber,
-          language: required(form, "language"),
+          language,
           region: required(form, "region"),
           rarity: optional(form, "rarity"),
           releaseDate: date(optional(form, "releaseDate"), true),
           description: optional(form, "description"),
           frontImageUrl,
+          frontImageWidth,
+          frontImageHeight,
           frontImageSourceUrl,
           frontImageRights,
           backImageUrl,

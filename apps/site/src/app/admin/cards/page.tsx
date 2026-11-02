@@ -541,6 +541,8 @@ function EntryForm({
           <div className="grid gap-3 sm:grid-cols-2">
             <Input name="cardNumber" label={t("cardNumber")} value={cardRow?.cardNumber} required />
             <Input name="name" label={t("name")} value={cardRow?.name} required />
+            <Input name="nameJa" label={t("nameJa")} value={cardRow?.nameJa} />
+            <Input name="nameFr" label={t("nameFr")} value={cardRow?.nameFr} />
             <Input name="slug" label={t("slug")} value={cardRow?.slug} />
             <Input name="language" label={t("language")} value={cardRow?.language} required />
             <Input name="region" label={t("region")} value={cardRow?.region} required />
@@ -558,6 +560,10 @@ function EntryForm({
               name="frontImageUrl"
               label={t("frontImageUrl")}
               value={cardRow?.frontImageUrl}
+              widthName="frontImageWidth"
+              heightName="frontImageHeight"
+              width={cardRow?.frontImageWidth}
+              height={cardRow?.frontImageHeight}
             />
             <Input
               name="frontImageSourceUrl"
