@@ -1,5 +1,5 @@
 import { betterAuth, type BetterAuthOptions } from "better-auth";
-import { bearer } from "better-auth/plugins";
+import { bearer } from "better-auth/plugins/bearer";
 import { APIError } from "better-auth/api";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "./db";

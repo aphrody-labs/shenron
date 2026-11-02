@@ -40,6 +40,16 @@ function getConfig(): PayPalConfig {
   };
 }
 
+/** True when every PayPal setting needed for a checkout and its webhook is present. */
+export function isPayPalConfigured(): boolean {
+  try {
+    getConfig();
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /** Validate credentials before reserving a checkout; only a token request is made. */
 export async function ensurePayPalReady(): Promise<void> {
   const config = getConfig();

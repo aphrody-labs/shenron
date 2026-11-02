@@ -1,17 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { checkoutIntegrationIdentifier, getStripe } from "@/lib/stripe";
+import { checkoutIntegrationIdentifier, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { DONATION_TIERS } from "@/lib/billing-catalog";
 import { db } from "@/lib/db";
 import { siteDonations } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/session";
 import { SITE_URL } from "@/lib/config";
-import { isSameOriginPaymentRequest } from "@/lib/payment-request";
+import { isSameOriginPaymentRequest, paymentProviderUnavailable } from "@/lib/payment-request";
+
+export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   if (!isSameOriginPaymentRequest(req)) {
     return NextResponse.json({ error: "Requête de paiement invalide" }, { status: 403 });
   }
+  // No key, no pending row: the visitor gets an explicit 503 before anything is written.
+  if (!isStripeConfigured()) return paymentProviderUnavailable("stripe");
   let donationId: string | null = null;
   try {
     const user = await getCurrentUser();
@@ -119,19 +123,33 @@ export async function POST(req: NextRequest) {
       code: typeof err?.code === "string" ? err.code : "unclassified",
     });
     return NextResponse.json(
-      { error: "Impossible de démarrer le paiement du don." },
-      { status: 500 },
+      { error: "Impossible de démarrer le paiement du don.", code: "payment_checkout_failed" },
+      { status: 503, headers: { "Cache-Control": "private, no-store" } },
     );
   }
 }
 
+/**
+ * Public wall of supporters. Only the columns the wall shows are read, so a column
+ * added later by a pending migration never breaks it; a database outage answers an
+ * explicit empty 503 instead of a bare 500.
+ */
 export async function GET() {
   try {
-    const recentDonations = await db.query.siteDonations.findMany({
-      where: eq(siteDonations.status, "succeeded"),
-      orderBy: (donations, { desc }) => [desc(donations.createdAt)],
-      limit: 20,
-    });
+    const recentDonations = await db
+      .select({
+        id: siteDonations.id,
+        donorName: siteDonations.donorName,
+        isAnonymous: siteDonations.isAnonymous,
+        amount: siteDonations.amount,
+        message: siteDonations.message,
+        tier: siteDonations.tier,
+        createdAt: siteDonations.createdAt,
+      })
+      .from(siteDonations)
+      .where(eq(siteDonations.status, "succeeded"))
+      .orderBy(desc(siteDonations.createdAt))
+      .limit(20);
 
     const publicList = recentDonations.map((d) => ({
       id: d.id,
@@ -142,9 +160,17 @@ export async function GET() {
       createdAt: d.createdAt,
     }));
 
-    return NextResponse.json({ donations: publicList });
+    return NextResponse.json(
+      { donations: publicList },
+      { headers: { "Cache-Control": "public, max-age=60, s-maxage=60" } },
+    );
   } catch (err: any) {
-    console.error("Erreur lecture donations:", err);
-    return NextResponse.json({ error: "Impossible de récupérer les dons" }, { status: 500 });
+    console.error("Donation wall read failed", {
+      code: typeof err?.code === "string" ? err.code : "unclassified",
+    });
+    return NextResponse.json(
+      { donations: [], error: "Impossible de récupérer les dons", code: "donations_unavailable" },
+      { status: 503, headers: { "Cache-Control": "private, no-store" } },
+    );
   }
 }

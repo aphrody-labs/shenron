@@ -7,7 +7,12 @@ import {
   resolveSiteUrl,
 } from "@aphrody/shenron-config/public-urls";
 import { sitePublicRedirects } from "@aphrody/shenron-images/resolve";
-import { PUBLIC_ROUTE_RENAMES, nextApiRewrites, nextRedirectsOf } from "./src/lib/legacy-routes";
+import {
+  AUTH_ROUTE_ALIASES,
+  PUBLIC_ROUTE_RENAMES,
+  nextApiRewrites,
+  nextRedirectsOf,
+} from "./src/lib/legacy-routes";
 
 const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL?.trim().replace(/\/+$/, "");
 
@@ -253,6 +258,9 @@ const nextConfig: NextConfig = {
       // conservés ; les rubriques retirées (combats, tournois, voix, romans, dragons,
       // cosmologie) convergent vers leur hub. Table unique : `src/lib/legacy-routes.ts`.
       ...nextRedirectsOf(PUBLIC_ROUTE_RENAMES),
+      // Adresses de compte usuelles (`/login`, `/register`, `/account`…) vers la page
+      // de connexion unique ou l'espace compte ; correspondance exacte, requête gardée.
+      ...nextRedirectsOf(AUTH_ROUTE_ALIASES),
       // Ancienne vue série épisodes par query (`?series=X`) → route dédiée
       // STATIQUE `/wiki/episodes/series/X` (la landing est passée statique pour
       // débloquer l'interception @modal + le cache CDN). Capture la valeur du

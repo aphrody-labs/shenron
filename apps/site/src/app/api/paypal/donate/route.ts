@@ -5,9 +5,11 @@ import { siteDonations } from "@/db/schema";
 import { DONATION_TIERS } from "@/lib/billing-catalog";
 import { getCurrentUser } from "@/lib/session";
 import { SITE_URL } from "@/lib/config";
-import { paypalRequest } from "@/lib/paypal";
+import { isPayPalConfigured, paypalRequest } from "@/lib/paypal";
 import { env } from "@/lib/env";
-import { isSameOriginPaymentRequest } from "@/lib/payment-request";
+import { isSameOriginPaymentRequest, paymentProviderUnavailable } from "@/lib/payment-request";
+
+export const dynamic = "force-dynamic";
 
 type PayPalOrder = {
   id: string;
@@ -27,6 +29,8 @@ export async function POST(request: NextRequest) {
   if (!isSameOriginPaymentRequest(request)) {
     return NextResponse.json({ error: "Requête de paiement invalide" }, { status: 403 });
   }
+  // No credentials, no pending row: an explicit 503 before anything is written.
+  if (!isPayPalConfigured()) return paymentProviderUnavailable("paypal");
   const body = await request.json().catch(() => null);
   if (!body || typeof body !== "object") {
     return NextResponse.json({ error: "Données du don invalides" }, { status: 400 });
@@ -113,8 +117,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ orderId: order.id, url: approvalUrl });
   } catch {
     return NextResponse.json(
-      { error: "Création du paiement PayPal indisponible" },
-      { status: 503 },
+      { error: "Création du paiement PayPal indisponible", code: "payment_checkout_failed" },
+      { status: 503, headers: { "Cache-Control": "private, no-store" } },
     );
   }
 }

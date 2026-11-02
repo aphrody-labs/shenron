@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { checkoutIntegrationIdentifier, getStripe, stripePriceId } from "@/lib/stripe";
+import {
+  checkoutIntegrationIdentifier,
+  getStripe,
+  isStripeConfigured,
+  stripePriceId,
+} from "@/lib/stripe";
 import { STRIPE_PLANS } from "@/lib/billing-catalog";
 import { hostAuthUrl, hostGetSession } from "@/lib/host-auth";
 import { db } from "@/lib/db";
@@ -10,12 +15,13 @@ import {
   releaseSubscriptionCheckout,
   reserveSubscriptionCheckout,
 } from "@/lib/subscription-reservation";
-import { isSameOriginPaymentRequest } from "@/lib/payment-request";
+import { isSameOriginPaymentRequest, paymentProviderUnavailable } from "@/lib/payment-request";
 
 export async function POST(req: NextRequest) {
   if (!isSameOriginPaymentRequest(req)) {
     return NextResponse.json({ error: "Requête de paiement invalide" }, { status: 403 });
   }
+  if (!isStripeConfigured()) return paymentProviderUnavailable("stripe");
   let reservationId: string | undefined;
   let userId: string | undefined;
   try {
@@ -106,8 +112,11 @@ export async function POST(req: NextRequest) {
       code: typeof err?.code === "string" ? err.code : "unclassified",
     });
     return NextResponse.json(
-      { error: "Impossible de démarrer le paiement de l'abonnement." },
-      { status: 500 },
+      {
+        error: "Impossible de démarrer le paiement de l'abonnement.",
+        code: "payment_checkout_failed",
+      },
+      { status: 503, headers: { "Cache-Control": "private, no-store" } },
     );
   }
 }

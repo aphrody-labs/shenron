@@ -5,6 +5,11 @@ import { STRIPE_PLANS } from "@/lib/billing-catalog";
 
 export { STRIPE_PLANS, DONATION_TIERS } from "@/lib/billing-catalog";
 
+/** True when a Stripe secret key is configured (checkout can be attempted). */
+export function isStripeConfigured(): boolean {
+  return Boolean(env.STRIPE_SECRET_KEY);
+}
+
 export function getStripe() {
   if (!env.STRIPE_SECRET_KEY) throw new Error("STRIPE_SECRET_KEY is not configured.");
   return new StripeClient(env.STRIPE_SECRET_KEY, {
