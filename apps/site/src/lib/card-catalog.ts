@@ -43,6 +43,8 @@ export async function getPublicCardCatalog(
     conditions.push(
       or(
         ilike(schema.cardCatalogCards.name, pattern),
+        ilike(schema.cardCatalogCards.nameJa, pattern),
+        ilike(schema.cardCatalogCards.nameFr, pattern),
         ilike(schema.cardCatalogCards.cardNumber, pattern),
         ilike(schema.cardCatalogSets.name, pattern),
         ilike(schema.cardCatalogSeries.name, pattern),
@@ -69,6 +71,7 @@ export async function getPublicCardCatalog(
       .where(and(...conditions))
       .orderBy(
         asc(schema.cardCatalogSeries.name),
+        asc(sql`substring(${schema.cardCatalogSets.name} from '[0-9]{1,6}')::integer`),
         asc(schema.cardCatalogSets.name),
         asc(schema.cardCatalogSets.language),
         asc(schema.cardCatalogSets.region),
@@ -197,6 +200,8 @@ export async function getCardCatalogAdminData(filters: { search?: string; after?
     cardFilterConditions.push(
       or(
         ilike(schema.cardCatalogCards.name, pattern),
+        ilike(schema.cardCatalogCards.nameJa, pattern),
+        ilike(schema.cardCatalogCards.nameFr, pattern),
         ilike(schema.cardCatalogCards.cardNumber, pattern),
         ilike(schema.cardCatalogSets.name, pattern),
         ilike(schema.cardCatalogSeries.name, pattern),
