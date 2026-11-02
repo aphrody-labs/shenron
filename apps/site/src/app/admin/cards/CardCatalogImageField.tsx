@@ -2,13 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { ImageField } from "@/components/admin/ImageField";
-import { ASSET_BASE } from "@/lib/config";
+import { API_URL, ASSET_BASE } from "@/lib/config";
 
 function cardImageUrl(value: string | null | undefined) {
   const path = value?.trim();
   if (!path) return "";
   if (/^https?:\/\//i.test(path)) return path;
   const assetPath = path.replace(/^\.\//, "").replace(/^\/+/, "");
+  // The admin upload endpoint writes to the bot's wiki asset store. A custom
+  // public ASSET_BASE may point at a CDN or the site origin before that object
+  // is mirrored, so keep uploaded card paths on the API host that serves them.
+  if (assetPath.startsWith("assets/wiki/cards/")) {
+    return `${API_URL.replace(/\/+$/, "")}/${assetPath}`;
+  }
   return `${ASSET_BASE.replace(/\/+$/, "")}/${assetPath}`;
 }
 
