@@ -10,14 +10,13 @@ flowchart LR
   Prod["Prod — Shenron actif<br/>Site · API · Bot · PostgreSQL · Redis · chat temps réel · origine CDN"]
   DBFR["DBFR — disque de secours Shenron<br/>réception rsync restreinte · auto-minio · auto-extraction-ia"]
   VPS["VPS — autres projets préservés<br/>services et résidus dédiés Shenron purgés"]
-  Archive["Archive privée sur Prod<br/>DBFR retiré · instantanés Prod · VPS archivé"]
+  Archive["Archives Prod<br/>historique DBFR · snapshots Prod"]
   Operateur -->|SSH prod + tmux| Prod
   Prod -->|snapshot vérifié quotidien| DBFR
   DBFR -->|données DBFR archivées| Archive
-  VPS -->|export SSH épinglé avant purge| Archive
 ~~~
 
-Prod porte l’application Shenron et son stockage de production. DBFR ne sert plus Shenron en direct : il reçoit une copie de secours quotidienne et conserve ses deux workloads indépendants. Le VPS héberge Bun OS et d’autres projets indépendants ; aucun service Shenron n’y tourne. Les dépôts, caches, données et unités Shenron dédiés ont été archivés sur Prod puis purgés du VPS.
+Prod porte l’application Shenron et son stockage de production. DBFR ne sert plus Shenron en direct : il reçoit une copie de secours quotidienne et conserve ses deux workloads indépendants. Le VPS héberge Bun OS et d’autres projets indépendants ; aucun service Shenron n’y tourne. Les dépôts, caches, données et unités Shenron dédiés ont été purgés du VPS sans conserver d’archive de ces résidus. L’archive historique DBFR reste séparée.
 
 ## Procédure d’exploitation
 
@@ -43,8 +42,6 @@ L’archive Prod `/srv/shenron/archive/retired-dbfr-20261102` conserve les dumps
 
 Le snapshot Prod `20261102T030452729859Z` est reçu dans `/srv/backups/prod-shenron/current` (PostgreSQL, Redis, SQLite bot et serveur, manifeste). La lecture de retour avec la clé restreinte et `rsync --checksum --dry-run` ne rapporte aucun delta par rapport au snapshot vérifié sur Prod. Le dernier lancement manuel du service de copie s’est terminé avec le code 0. La clé de lecture est volontairement limitée à rsync ; la capacité disque libre de DBFR n’a donc pas été mesurée dans cet audit.
 
-## VPS — résidus Shenron purgés
+## VPS — résidus Shenron supprimés
 
-Le timer utilisateur shenron-web-engine-publish.timer a été désactivé avant le nettoyage. Les dépôts, anciennes releases, workspaces privés, modèle, configs, caches, unités utilisateur, outils et artefacts Shenron dédiés ont été archivés dans /srv/shenron/archive/retired-vps-shenron-20261102, puis retirés. Le tar fait 105324800000 octets (99 Go), son listing s’est lu complètement, le manifeste couvre 65/65 entrées et le SHA-256 a été vérifié : df789333e2abbc10afa8b974e16c732d5da2eb7c74b06631fc2662c07d9b28dd. La cible apps/shenron-cdn n’existait pas ; les symlinks vers elle ont été archivés puis retirés. La bibliothèque libshenron_ffi.so découverte ensuite a été vérifiée et conservée séparément dans supplemental-dbfr-shenron-lib.tar avant sa suppression.
-
-L’audit final ne trouve plus de chemins dédiés parmi les 65 entrées, ni unité système/utilisateur, timer, processus, conteneur ou session tmux Shenron. L’espace libre observé après purge est de 79 Go sur / et 128 Go sur /home. Bun OS, ses sessions et les autres workloads ont été préservés. Les sources d’intégration Shenron qui appartiennent au dépôt distinct Bun Video restent dans ce dépôt ; elles ne constituent pas un déploiement ou un service Shenron.
+Les unités et le timer utilisateur Shenron ont été désactivés, puis les dépôts, releases, workspaces privés, modèle, configurations, caches, outils et artefacts dédiés ont été supprimés du VPS. Les chemins dédiés ont été vérifiés absents ; aucun service, timer, processus, conteneur ou session tmux Shenron ne reste. Aucune archive des résidus VPS n’est conservée sur Prod : l’archive temporaire de 99 Go et son supplément ont été supprimés à la demande du propriétaire. Bun OS et les autres workloads ont été préservés. Les sources et références d’intégration Shenron ont aussi été supprimées du dépôt Bun Video sur le VPS.
