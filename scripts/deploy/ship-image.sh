@@ -49,6 +49,15 @@ case "$TARGET" in
     phase "transfer to $host"
     tar=/tmp/shenron-$SHA.tar
     "$ENGINE" save "$IMAGE:$SHA" | zstd -q -T0 -1 | "${SSH[@]}" "$host" "zstd -q -d -o $tar"
+    # Pending site migrations go first, after a dump, in one transaction each; a failure aborts the
+    # release before it is activated. The script and the SQL come from the shipped revision itself.
+    if [ "${SHENRON_REMOTE_MIGRATE:-1}" = 1 ] && git -C "$W" cat-file -e "$SHA:deploy/prod/apply-migrations.py" 2>/dev/null; then
+      phase "migrate on $host"
+      mig=/tmp/shenron-migrations-$SHA
+      git -C "$W" archive "$SHA" apps/site/src/db/migrations deploy/prod/apply-migrations.py \
+        | "${SSH[@]}" "$host" "rm -rf $mig && mkdir -p $mig && tar -x -C $mig \
+          && python3 $mig/deploy/prod/apply-migrations.py $mig/apps/site/src/db/migrations; rc=\$?; rm -rf $mig; exit \$rc"
+    fi
     phase "activate on $host"
     "${SSH[@]}" "$host" "${SHENRON_DEPLOY_COMMAND:-bash ~/deploy-shenron-image.sh} $SHA $tar"
     # Keep the newest SHENRON_REMOTE_KEEP_IMAGES revisions (rollback targets); an image in use

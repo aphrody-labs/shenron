@@ -32,3 +32,12 @@ prend 87 s (transfert zstd, `docker load`, activation).
   seulement en cas de contention, aucune limite dure).
 - Les caches Docker (≈ 28 Go récupérables) et les images inutilisées se nettoient par
   l'Infra, jamais les volumes.
+
+## Migrations automatiques à la livraison
+
+`ship-image.sh` (cible `ssh:`) envoie le SQL et `deploy/prod/apply-migrations.py` de la révision livrée,
+puis les exécute sur la cible avant `deploy-shenron-image.sh` : `pg_dump` dans `/root/backups-auth`,
+une transaction par migration, journal drizzle mis à jour. Un échec interrompt la livraison avant
+l'activation (la release précédente continue de servir). Les migrations restent additives, car l'ancienne
+release sert jusqu'à l'activation. Contrôle sans écriture : `python3 apply-migrations.py <dossier> --dry-run`.
+`SHENRON_REMOTE_MIGRATE=0` désactive l'étape.
