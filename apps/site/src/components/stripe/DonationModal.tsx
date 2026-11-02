@@ -1,250 +1,346 @@
 "use client";
 
-import { useId, useState } from "react";
-import { useTranslations } from "next-intl";
+import { FormEvent, useEffect, useId, useRef, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
+import { Croix } from "@aphrody/shenron-ui/icones";
 import { DONATION_TIERS } from "@/lib/billing-catalog";
+import Link from "next/link";
+import {
+  PROVIDER_LABEL_KEY,
+  readPaymentFailure,
+  signInHref,
+  type PaymentFailure,
+} from "@/components/stripe/payment-errors";
 
-export function DonationModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [selectedTier, setSelectedTier] = useState<string>("dragon_ball");
-  const [customAmount, setCustomAmount] = useState<string>("");
-  const [donorName, setDonorName] = useState<string>("");
-  const [message, setMessage] = useState<string>("");
-  const [isAnonymous, setIsAnonymous] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [provider, setProvider] = useState<"stripe" | "paypal">("stripe");
+export type DonationTierId = (typeof DONATION_TIERS)[number]["id"] | "custom";
+type Provider = "stripe" | "paypal";
+
+const MIN_CENTS = 100;
+const MAX_CENTS = 500_000;
+
+const FIELD =
+  "min-h-12 w-full rounded-xl border border-dbz-border bg-dbz-bg px-4 text-base text-white placeholder:text-white/50 transition-colors focus:border-dbz-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange disabled:opacity-50";
+const CHOICE =
+  "flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border border-dbz-border bg-dbz-bg px-4 py-2 text-[0.9375rem] text-white transition-colors hover:border-dbz-yellow has-[:checked]:border-dbz-orange has-[:checked]:bg-dbz-orange/10 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-dbz-orange has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50";
+const RADIO = "h-5 w-5 shrink-0 accent-[var(--color-dbz-orange)]";
+
+/**
+ * Donation form in a native modal `<dialog>`: focus is trapped and restored by the
+ * browser, Escape closes it, the backdrop is the top layer. `@base-ui/react` is not
+ * a dependency of the site (isolated linker), and the native element covers the need.
+ */
+export function DonationModal({
+  isOpen,
+  initialTier,
+  onClose,
+}: {
+  isOpen: boolean;
+  initialTier: DonationTierId;
+  onClose: () => void;
+}) {
+  const t = useTranslations("billing.donations");
+  const td = useTranslations("billing.donations.dialog");
   const tBilling = useTranslations("billing");
-  const fieldId = useId();
+  const locale = useLocale();
+  const id = useId();
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const amountRef = useRef<HTMLInputElement>(null);
+  const [tier, setTier] = useState<DonationTierId>(initialTier);
+  const [customAmount, setCustomAmount] = useState("");
+  const [donorName, setDonorName] = useState("");
+  const [message, setMessage] = useState("");
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [provider, setProvider] = useState<Provider>("stripe");
+  const [loading, setLoading] = useState(false);
+  const [amountError, setAmountError] = useState(false);
+  const [error, setError] = useState<PaymentFailure | null>(null);
+  const [unavailable, setUnavailable] = useState<Record<Provider, boolean>>({
+    stripe: false,
+    paypal: false,
+  });
 
-  if (!isOpen) return null;
+  const formatEuros = (cents: number) =>
+    new Intl.NumberFormat(locale, { style: "currency", currency: "EUR" }).format(cents / 100);
 
-  const currentTier = DONATION_TIERS.find((t) => t.id === selectedTier);
-  const finalAmount =
-    selectedTier === "custom" ? Math.round(Number(customAmount) * 100) : currentTier?.amount || 500;
-
-  const handleDonate = async () => {
-    try {
-      setLoading(true);
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (isOpen && !dialog.open) {
+      setTier(initialTier);
       setError(null);
+      setAmountError(false);
+      dialog.showModal();
+    } else if (!isOpen && dialog.open) dialog.close();
+  }, [isOpen, initialTier]);
 
-      if (!Number.isSafeInteger(finalAmount) || finalAmount < 100 || finalAmount > 500_000) {
-        setError("Le montant minimum est de 1,00 €.");
-        setLoading(false);
-        return;
-      }
+  const preset = DONATION_TIERS.find((item) => item.id === tier);
+  const amount = tier === "custom" ? Math.round(Number(customAmount) * 100) : (preset?.amount ?? 0);
+  const amountValid = Number.isSafeInteger(amount) && amount >= MIN_CENTS && amount <= MAX_CENTS;
 
-      const res = await fetch(`/api/${provider}/donate`, {
+  async function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    if (!amountValid) {
+      setAmountError(true);
+      amountRef.current?.focus();
+      return;
+    }
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/${provider}/donate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          tierId: selectedTier === "custom" ? undefined : selectedTier,
-          amount: finalAmount,
-          donorName: isAnonymous ? "Guerrier Z Anonyme" : donorName,
-          message,
+          tierId: tier === "custom" ? undefined : tier,
+          amount,
+          donorName: isAnonymous ? "" : donorName.trim(),
+          message: message.trim(),
           isAnonymous,
         }),
       });
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Erreur lors de la création du don");
+      if (!response.ok) {
+        const failure = await readPaymentFailure(response);
+        if (failure.providerUnavailable) {
+          const next = { ...unavailable, [provider]: true };
+          setUnavailable(next);
+          const other = provider === "stripe" ? "paypal" : "stripe";
+          if (!next[other]) setProvider(other);
+        }
+        setError(failure);
+        setLoading(false);
+        return;
       }
-
-      if (data.url) {
-        window.location.href = data.url;
-      }
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
+      const data = (await response.json().catch(() => null)) as { url?: unknown } | null;
+      if (typeof data?.url !== "string") throw new Error("donate");
+      window.location.assign(data.url);
+    } catch {
+      setError({ key: "errors.default", providerUnavailable: false, signInRequired: false });
       setLoading(false);
     }
-  };
+  }
+
+  const amountHintId = `${id}-amount-hint`;
+  const amountErrorId = `${id}-amount-error`;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-b from-neutral-900 via-neutral-900 to-black p-6 shadow-2xl shadow-amber-500/10">
-        {/* Glow effect Toriyama Gold */}
-        <div className="absolute -top-24 -left-24 h-48 w-48 rounded-full bg-amber-500/20 blur-3xl" />
-        <div className="absolute -bottom-24 -right-24 h-48 w-48 rounded-full bg-orange-600/20 blur-3xl" />
-
-        <div className="relative flex items-center justify-between pb-4 border-b border-neutral-800">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl">🐉</span>
-            <div>
-              <h3 className="font-extrabold text-lg tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-yellow-200">
-                SOUTENIR DRAGON BALL FR
-              </h3>
-              <p className="text-xs text-neutral-400">
-                Contribuez à préserver et numériser l'archive ultime
-              </p>
-            </div>
-          </div>
+    <dialog
+      ref={dialogRef}
+      aria-labelledby={`${id}-title`}
+      onClose={onClose}
+      className="m-auto w-[min(100%-1.5rem,32rem)] max-h-[calc(100dvh-1.5rem)] overflow-y-auto rounded-xl border border-dbz-border bg-dbz-card p-0 text-white backdrop:bg-black/75"
+    >
+      <form onSubmit={(event) => void submit(event)} aria-busy={loading} className="p-5 sm:p-6">
+        <div className="flex items-start justify-between gap-4">
+          <h2 id={`${id}-title`} className="font-display text-2xl font-bold text-white">
+            {t("title")}
+          </h2>
           <button
-            onClick={onClose}
-            className="rounded-lg p-1.5 text-neutral-400 hover:bg-neutral-800 hover:text-white transition-colors"
+            type="button"
+            onClick={() => dialogRef.current?.close()}
+            aria-label={td("close")}
+            className="-mr-2 -mt-1 grid h-11 w-11 shrink-0 place-items-center rounded-xl text-white/80 hover:bg-white/10 hover:text-white"
           >
-            ✕
+            <Croix size={20} />
           </button>
         </div>
 
         {error && (
-          <div className="mt-4 rounded-lg border border-red-500/30 bg-red-950/40 p-3 text-xs text-red-300">
-            {error}
+          <div
+            role="alert"
+            className="mt-4 rounded-xl border border-dbz-red bg-dbz-red/15 p-3 text-sm leading-relaxed text-white"
+          >
+            <p>{tBilling(error.key)}</p>
+            {error.signInRequired && (
+              <Link
+                href={signInHref()}
+                className="mt-2 inline-flex min-h-11 items-center font-semibold underline underline-offset-4 hover:text-dbz-yellow"
+              >
+                {tBilling("errors.signIn")}
+              </Link>
+            )}
           </div>
         )}
 
-        {/* Tiers de soutien */}
-        <div className="mt-4 grid grid-cols-2 gap-2.5">
-          {DONATION_TIERS.map((tier) => {
-            const isSelected = selectedTier === tier.id;
-            return (
-              <button
-                key={tier.id}
-                type="button"
-                onClick={() => setSelectedTier(tier.id)}
-                className={`relative flex flex-col items-start rounded-xl border p-3 text-left transition-all ${
-                  isSelected
-                    ? "border-amber-500 bg-amber-500/10 shadow-lg shadow-amber-500/10 ring-1 ring-amber-500"
-                    : "border-neutral-800 bg-neutral-900/60 hover:border-neutral-700 hover:bg-neutral-800/40"
-                }`}
-              >
-                <div className="flex w-full items-center justify-between">
-                  <span className="text-xl">{tier.badge}</span>
-                  <span className="font-bold text-amber-400 text-sm">
-                    {(tier.amount / 100).toFixed(2)} €
-                  </span>
-                </div>
-                <span className="mt-1 font-semibold text-xs text-neutral-200">{tier.name}</span>
-                <span className="text-[11px] text-neutral-400 line-clamp-1 mt-0.5">
-                  {tier.description}
-                </span>
-              </button>
-            );
-          })}
-
-          <button
-            type="button"
-            onClick={() => setSelectedTier("custom")}
-            className={`col-span-2 relative flex items-center justify-between rounded-xl border p-3 text-left transition-all ${
-              selectedTier === "custom"
-                ? "border-amber-500 bg-amber-500/10 ring-1 ring-amber-500"
-                : "border-neutral-800 bg-neutral-900/60 hover:border-neutral-700"
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-xl">✨</span>
-              <span id={`${fieldId}-amount`} className="font-semibold text-xs text-neutral-200">
-                Montant personnalisé
-              </span>
-            </div>
-            {selectedTier === "custom" && (
-              <div className="flex items-center gap-1.5">
+        <fieldset className="mt-5">
+          <legend className="mb-2 text-sm font-semibold text-white">{td("amountLegend")}</legend>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {DONATION_TIERS.map((item) => (
+              <label key={item.id} className={CHOICE}>
                 <input
-                  type="number"
-                  aria-labelledby={`${fieldId}-amount`}
-                  min="1"
-                  step="1"
-                  placeholder="ex: 20"
-                  value={customAmount}
-                  onChange={(e) => setCustomAmount(e.target.value)}
-                  className="w-24 rounded-lg border border-amber-500/40 bg-black/60 px-2 py-1 text-right text-xs text-amber-300 focus:outline-none focus:ring-1 focus:ring-amber-400"
-                  autoFocus
+                  type="radio"
+                  name={`${id}-tier`}
+                  value={item.id}
+                  aria-label={`${t(`tiers.${item.id}`)}, ${formatEuros(item.amount)}`}
+                  checked={tier === item.id}
+                  onChange={() => {
+                    setTier(item.id);
+                    setAmountError(false);
+                  }}
+                  className={RADIO}
                 />
-                <span className="text-xs font-bold text-amber-400">€</span>
-              </div>
-            )}
-          </button>
-        </div>
-
-        {/* Détails du donateur */}
-        <div className="mt-4 space-y-3">
-          <div>
-            <label
-              htmlFor={`${fieldId}-name`}
-              className="block text-[11px] font-medium text-neutral-400 uppercase tracking-wider mb-1"
-            >
-              Votre Nom ou Pseudo
+                <span className="flex min-w-0 flex-1 flex-wrap items-baseline justify-between gap-x-2">
+                  <span>{t(`tiers.${item.id}`)}</span>
+                  <span className="font-semibold tabular-nums text-dbz-yellow">
+                    {formatEuros(item.amount)}
+                  </span>
+                </span>
+              </label>
+            ))}
+            <label className={`${CHOICE} sm:col-span-2`}>
+              <input
+                type="radio"
+                name={`${id}-tier`}
+                value="custom"
+                checked={tier === "custom"}
+                onChange={() => {
+                  setTier("custom");
+                  requestAnimationFrame(() => amountRef.current?.focus());
+                }}
+                className={RADIO}
+              />
+              {td("custom")}
             </label>
-            <input
-              id={`${fieldId}-name`}
-              type="text"
-              disabled={isAnonymous}
-              placeholder={isAnonymous ? "Anonyme" : "ex: Son Goku, Krilin..."}
-              value={donorName}
-              onChange={(e) => setDonorName(e.target.value)}
-              className="w-full rounded-lg border border-neutral-800 bg-neutral-900/80 px-3 py-2 text-xs text-white placeholder-neutral-500 focus:border-amber-500/50 focus:outline-none focus:ring-1 focus:ring-amber-500/50 disabled:opacity-50"
-            />
           </div>
-
-          <div>
-            <label
-              htmlFor={`${fieldId}-message`}
-              className="block text-[11px] font-medium text-neutral-400 uppercase tracking-wider mb-1"
-            >
-              Message d'encouragement (Optionnel)
-            </label>
-            <input
-              id={`${fieldId}-message`}
-              type="text"
-              maxLength={150}
-              placeholder="Un mot pour le staff et la commu..."
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              className="w-full rounded-lg border border-neutral-800 bg-neutral-900/80 px-3 py-2 text-xs text-white placeholder-neutral-500 focus:border-amber-500/50 focus:outline-none focus:ring-1 focus:ring-amber-500/50"
-            />
-          </div>
-
-          <label className="flex items-center gap-2 cursor-pointer pt-1">
-            <input
-              type="checkbox"
-              checked={isAnonymous}
-              onChange={(e) => setIsAnonymous(e.target.checked)}
-              className="rounded border-neutral-700 bg-neutral-900 text-amber-500 focus:ring-amber-400"
-            />
-            <span className="text-xs text-neutral-400">Faire ce don de manière anonyme</span>
-          </label>
-        </div>
-
-        {/* Bouton d'action */}
-        <div className="mt-6 flex items-center justify-between gap-3 pt-3 border-t border-neutral-800">
-          <div className="text-xs text-neutral-400">
-            Total :{" "}
-            <span className="font-bold text-amber-400 text-sm">
-              {(finalAmount / 100).toFixed(2)} €
-            </span>
-          </div>
-        </div>
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <button
-            type="button"
-            aria-pressed={provider === "stripe"}
-            onClick={() => setProvider("stripe")}
-            className={`rounded-lg border px-3 py-2 text-xs font-semibold ${provider === "stripe" ? "border-amber-400 bg-amber-400/10 text-amber-200" : "border-neutral-800 text-neutral-400"}`}
-          >
-            {tBilling("cardPayment")}
-          </button>
-          <button
-            type="button"
-            aria-pressed={provider === "paypal"}
-            onClick={() => setProvider("paypal")}
-            className={`rounded-lg border px-3 py-2 text-xs font-semibold ${provider === "paypal" ? "border-amber-400 bg-amber-400/10 text-amber-200" : "border-neutral-800 text-neutral-400"}`}
-          >
-            PayPal
-          </button>
-        </div>
-        <button
-          type="button"
-          disabled={loading}
-          onClick={handleDonate}
-          className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 px-5 py-2.5 text-xs font-bold text-black shadow-lg shadow-amber-500/25 transition-all hover:brightness-110 active:scale-98 disabled:opacity-50"
-        >
-          {loading ? (
-            <span className="inline-block h-3.5 w-3.5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-          ) : (
-            <span>⚡ Envoyer mon Énergie</span>
+          {tier === "custom" && (
+            <div className="mt-3 grid gap-1.5">
+              <label htmlFor={`${id}-amount`} className="text-sm font-medium text-white">
+                {td("customLabel")}
+              </label>
+              <input
+                ref={amountRef}
+                id={`${id}-amount`}
+                type="number"
+                inputMode="decimal"
+                min={1}
+                max={5000}
+                step="0.01"
+                required
+                value={customAmount}
+                aria-invalid={amountError || undefined}
+                aria-describedby={amountError ? `${amountHintId} ${amountErrorId}` : amountHintId}
+                onChange={(event) => {
+                  setCustomAmount(event.target.value);
+                  setAmountError(false);
+                }}
+                className={FIELD}
+              />
+              <p id={amountHintId} className="text-[0.8125rem] text-white/70">
+                {td("customHint")}
+              </p>
+              {amountError && (
+                <p id={amountErrorId} className="text-sm font-medium text-dbz-red">
+                  {td("amountError")}
+                </p>
+              )}
+            </div>
           )}
-        </button>
-      </div>
-    </div>
+        </fieldset>
+
+        <div className="mt-5 grid gap-1.5">
+          <label htmlFor={`${id}-name`} className="text-sm font-medium text-white">
+            {td("nameLabel")}
+          </label>
+          <input
+            id={`${id}-name`}
+            type="text"
+            autoComplete="name"
+            maxLength={120}
+            disabled={isAnonymous}
+            value={donorName}
+            aria-describedby={`${id}-name-hint`}
+            onChange={(event) => setDonorName(event.target.value)}
+            className={FIELD}
+          />
+          <p id={`${id}-name-hint`} className="text-[0.8125rem] text-white/70">
+            {td("nameHint")}
+          </p>
+        </div>
+
+        <label className="mt-3 flex min-h-11 cursor-pointer items-center gap-3 text-[0.9375rem] text-white">
+          <input
+            type="checkbox"
+            checked={isAnonymous}
+            onChange={(event) => setIsAnonymous(event.target.checked)}
+            className="h-5 w-5 shrink-0 accent-[var(--color-dbz-orange)]"
+          />
+          {td("anonymousLabel")}
+        </label>
+
+        <div className="mt-3 grid gap-1.5">
+          <label htmlFor={`${id}-message`} className="text-sm font-medium text-white">
+            {td("messageLabel")}
+          </label>
+          <textarea
+            id={`${id}-message`}
+            maxLength={150}
+            rows={2}
+            value={message}
+            aria-describedby={`${id}-message-hint`}
+            onChange={(event) => setMessage(event.target.value)}
+            className={`${FIELD} py-3`}
+          />
+          <p id={`${id}-message-hint`} className="text-[0.8125rem] text-white/70">
+            {td("messageHint", { max: 150 })}
+          </p>
+        </div>
+
+        <fieldset className="mt-5">
+          <legend className="mb-2 text-sm font-semibold text-white">{td("providerLegend")}</legend>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {(["stripe", "paypal"] as const).map((value) => (
+              <label key={value} className={CHOICE}>
+                <input
+                  type="radio"
+                  name={`${id}-provider`}
+                  value={value}
+                  checked={provider === value}
+                  disabled={unavailable[value]}
+                  aria-describedby={unavailable[value] ? `${id}-${value}-off` : undefined}
+                  onChange={() => setProvider(value)}
+                  className={RADIO}
+                />
+                {tBilling(PROVIDER_LABEL_KEY[value])}
+              </label>
+            ))}
+          </div>
+          {(["stripe", "paypal"] as const).map(
+            (value) =>
+              unavailable[value] && (
+                <p
+                  key={value}
+                  id={`${id}-${value}-off`}
+                  className="mt-2 text-[0.8125rem] text-white/75"
+                >
+                  {tBilling("errors.providerDisabled", {
+                    provider: tBilling(PROVIDER_LABEL_KEY[value]),
+                  })}
+                </p>
+              ),
+          )}
+        </fieldset>
+
+        <div className="mt-6 flex flex-col-reverse gap-3 border-t border-dbz-border pt-5 sm:flex-row sm:justify-end">
+          <button
+            type="button"
+            onClick={() => dialogRef.current?.close()}
+            className="toriyama-btn-secondary normal-case tracking-normal"
+          >
+            {td("cancel")}
+          </button>
+          <button
+            type="submit"
+            disabled={loading || unavailable[provider]}
+            aria-busy={loading}
+            className="toriyama-btn min-h-12 normal-case tracking-normal text-[0.9375rem]"
+          >
+            {loading
+              ? td("redirecting")
+              : amountValid
+                ? td("submit", { amount: formatEuros(amount) })
+                : t("title")}
+          </button>
+        </div>
+      </form>
+    </dialog>
   );
 }

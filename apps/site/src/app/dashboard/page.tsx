@@ -3,7 +3,6 @@ import type { ReactNode } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-  ArrowUpRight,
   CreditCard,
   Crown,
   FilePenLine,
@@ -38,8 +37,6 @@ import { getLaunchConfig } from "@/lib/wiki-launch-config";
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Mon espace", robots: { index: false, follow: false } };
 const fmt = (value: number | null | undefined) => (value ?? 0).toLocaleString("fr-FR");
-/** Repli quand ni le bot ni la session ne donnent de pseudo. */
-const DEFAULT_NAME = "Guerrier";
 
 export default async function DashboardPage() {
   const me = await requireUser("/dashboard");
@@ -63,7 +60,7 @@ export default async function DashboardPage() {
     profileResult.status !== "ok" ? "dashboard.warningBot" : null,
     resumeIndisponible ? "dashboard.warningSummary" : null,
   ].filter((cle): cle is string => cle !== null);
-  const username = profile?.username ?? me.user?.username ?? DEFAULT_NAME;
+  const username = profile?.username ?? me.user?.username ?? null;
   const progress = xpProgressPercent(profile?.xpProgress);
   return (
     <PageShell width="wide" rhythm="tight">
@@ -71,8 +68,8 @@ export default async function DashboardPage() {
         <UserNav />
         <MemberHero username={username} catalog={catalog} />
         <ContinueRail
-          titleKey="history.resumeWith"
-          titleValues={{ name: username }}
+          titleKey={username ? "history.resumeWith" : "history.resume"}
+          titleValues={username ? { name: username } : undefined}
           className="mt-9 lg:mt-12"
         />
         {catalog && (
@@ -82,26 +79,26 @@ export default async function DashboardPage() {
         )}
         <section
           aria-labelledby="progression-title"
-          className="mt-8 rounded-3xl border border-dbz-orange/20 bg-[#181510] p-5 md:p-8"
+          className="mt-8 rounded-xl border border-dbz-border bg-dbz-card p-5 md:p-8"
         >
           <div className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <h2 id="progression-title" className="font-saiyan text-3xl text-dbz-orange">
                 <T k="dashboard.progressTitle" />
               </h2>
-              <p className="mt-1 text-sm text-white/45">
+              <p className="mt-1 text-sm text-white/75">
                 <T k="dashboard.progressLead" />
               </p>
             </div>
             <div className="flex items-end gap-4">
-              <p className="font-saiyan text-4xl">
+              <p className="font-saiyan text-3xl">
                 <T k="dashboard.level" values={{ level: profile?.level ?? 0 }} />
               </p>
               <Link
                 href="/profile/me"
-                className="hidden min-h-11 items-center gap-2 rounded-full border border-white/15 px-4 text-sm font-semibold text-white/70 hover:border-dbz-orange hover:text-white sm:inline-flex"
+                className="toriyama-btn-secondary hidden normal-case tracking-normal sm:inline-flex"
               >
-                <T k="dashboard.profile" /> <ArrowUpRight className="h-4 w-4" />
+                <T k="dashboard.profile" />
               </Link>
             </div>
           </div>
@@ -111,19 +108,16 @@ export default async function DashboardPage() {
             <T k="dashboard.progressBar" />
           </span>
           <div
-            className="mt-6 h-3 overflow-hidden rounded-full bg-black/60"
+            className="mt-6 h-3 overflow-hidden rounded-full border border-dbz-border bg-dbz-bg"
             role="progressbar"
             aria-labelledby="progression-barre-label"
             aria-valuenow={Math.round(progress)}
             aria-valuemin={0}
             aria-valuemax={100}
           >
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-dbz-orange via-yellow-300 to-dbz-blue-light"
-              style={{ width: `${progress}%` }}
-            />
+            <div className="h-full rounded-full bg-dbz-orange" style={{ width: `${progress}%` }} />
           </div>
-          <div className="mt-3 flex justify-between text-xs text-white/40">
+          <div className="mt-3 flex justify-between gap-4 text-[0.8125rem] text-white/75">
             <span>
               <T k="dashboard.xp" values={{ value: fmt(profile?.xpProgress?.current) }} />
             </span>
@@ -145,20 +139,20 @@ export default async function DashboardPage() {
           </dl>
           <Link
             href="/profile/me"
-            className="mt-5 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-dbz-orange hover:text-yellow-200 sm:hidden"
+            className="mt-5 inline-flex min-h-11 items-center text-sm font-semibold text-dbz-orange underline underline-offset-4 hover:text-dbz-yellow sm:hidden"
           >
-            <T k="dashboard.seeProfile" /> <ArrowUpRight className="h-4 w-4" />
+            <T k="dashboard.seeProfile" />
           </Link>
         </section>
         <section
           aria-labelledby="community-title"
           className="mt-8 grid gap-5 lg:grid-cols-[.8fr_1.2fr]"
         >
-          <div className="rounded-3xl border border-white/10 bg-[#151412] p-5 md:p-7">
+          <div className="rounded-xl border border-dbz-border bg-dbz-card p-5 md:p-7">
             <h2 id="community-title" className="text-lg font-semibold">
               <T k="dashboard.footprintTitle" />
             </h2>
-            <p className="mt-1 text-sm text-white/40">
+            <p className="mt-1 text-sm text-white/75">
               <T k="dashboard.footprintLead" />
             </p>
             <dl className="mt-5 grid grid-cols-2 gap-x-5 gap-y-4">
@@ -180,11 +174,11 @@ export default async function DashboardPage() {
               />
             </dl>
           </div>
-          <div className="rounded-3xl border border-white/10 bg-[#151412] p-5 md:p-7">
+          <div className="rounded-xl border border-dbz-border bg-dbz-card p-5 md:p-7">
             <h2 className="text-lg font-semibold">
               <T k="dashboard.recentTitle" />
             </h2>
-            <p className="mt-1 text-sm text-white/40">
+            <p className="mt-1 text-sm text-white/75">
               <T k="dashboard.recentLead" />
             </p>
             <RecentActivity summary={accountSummary} />
@@ -195,7 +189,7 @@ export default async function DashboardPage() {
             <h2 id="actions-title" className="text-lg font-semibold">
               <T k="dashboard.continueTitle" />
             </h2>
-            <p className="mt-1 text-sm text-white/40">
+            <p className="mt-1 text-sm text-white/75">
               <T k="dashboard.continueLead" />
             </p>
           </div>
@@ -259,7 +253,7 @@ export default async function DashboardPage() {
         {avertissements.length > 0 && (
           <p
             role="status"
-            className="mt-6 rounded-xl border border-yellow-300/20 bg-yellow-300/5 p-4 text-sm text-yellow-100/75"
+            className="mt-6 rounded-xl border border-dbz-yellow/60 bg-dbz-yellow/10 p-4 text-sm text-white"
           >
             {avertissements.map((cle) => (
               <T key={cle} k={cle} />
@@ -272,14 +266,20 @@ export default async function DashboardPage() {
   );
 }
 
-function MemberHero({ username, catalog }: { username: string; catalog: MediaCatalog | null }) {
+function MemberHero({
+  username,
+  catalog,
+}: {
+  username: string | null;
+  catalog: MediaCatalog | null;
+}) {
   const featured = catalog?.episodes.find((episode) => episode.image) ?? catalog?.episodes[0];
   const languages = languageBadges(featured?.players ?? null);
   const series = featured ? seriesLabel(featured.series) : null;
   const canWatch = languages.hasVf || languages.hasVostfr;
 
   return (
-    <header className="relative isolate flex min-h-[430px] overflow-hidden rounded-[2rem] border border-white/10 bg-[#171512] shadow-[0_24px_80px_rgba(0,0,0,.35)] md:min-h-[500px]">
+    <header className="relative isolate flex min-h-[430px] overflow-hidden rounded-xl border border-dbz-border bg-dbz-card md:min-h-[500px]">
       {featured?.image && (
         <Image
           src={assetUrl(featured.image)}
@@ -298,23 +298,38 @@ function MemberHero({ username, catalog }: { username: string; catalog: MediaCat
       />
       <div className="flex max-w-2xl flex-col justify-end p-6 sm:p-9 md:p-12">
         <p className="text-sm font-semibold text-dbz-orange">
-          <T k="dashboard.heroSelection" values={{ name: username }} />
+          {username ? (
+            <T k="dashboard.heroSelection" values={{ name: username }} />
+          ) : (
+            <T k="dashboard.heroSelectionNoName" />
+          )}
         </p>
         <h1 className="mt-3 text-balance font-saiyan text-4xl leading-[.95] text-white sm:text-6xl md:text-7xl">
           {featured?.title || <T k="dashboard.heroFallbackTitle" />}
         </h1>
         {featured ? (
-          <p className="mt-4 text-sm font-medium text-white/70">
-            {series}
-            {featured.number != null ? (
-              <T k="dashboard.heroEpisode" values={{ number: featured.number }} />
-            ) : (
-              ""
+          <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm font-medium text-white/85">
+            <p>
+              {series}
+              {featured.number != null && (
+                <>
+                  {series ? ", " : ""}
+                  <T k="dashboard.heroEpisode" values={{ number: featured.number }} />
+                </>
+              )}
+              {yearOf(featured.airDate) ? ` (${yearOf(featured.airDate)})` : ""}
+            </p>
+            {(languages.hasVf || languages.hasVostfr) && (
+              <ul className="flex gap-2">
+                {languages.hasVf && (
+                  <li className="rounded-md border border-white/30 px-2 py-0.5 text-xs">VF</li>
+                )}
+                {languages.hasVostfr && (
+                  <li className="rounded-md border border-white/30 px-2 py-0.5 text-xs">VOSTFR</li>
+                )}
+              </ul>
             )}
-            {yearOf(featured.airDate) ? ` · ${yearOf(featured.airDate)}` : ""}
-            {languages.hasVf ? " · VF" : ""}
-            {languages.hasVostfr ? " · VOSTFR" : ""}
-          </p>
+          </div>
         ) : (
           <p className="mt-4 max-w-xl text-pretty text-white/60">
             <T k="dashboard.heroFallbackLead" />
@@ -323,13 +338,13 @@ function MemberHero({ username, catalog }: { username: string; catalog: MediaCat
         <div className="mt-7 flex flex-col gap-3 sm:flex-row">
           <Link
             href={featured ? `/wiki/episodes/${featured.id}` : "/wiki/episodes"}
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-dbz-orange px-6 text-sm font-bold text-black hover:bg-yellow-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
+            className="toriyama-btn min-h-12 normal-case tracking-normal text-[0.9375rem]"
           >
             <T k={canWatch ? "dashboard.watch" : "dashboard.discover"} />
           </Link>
           <Link
             href="/favorites"
-            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/20 bg-black/30 px-6 text-sm font-semibold text-white hover:border-white/45 hover:bg-black/45 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            className="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-white/30 bg-black/40 px-6 text-sm font-semibold text-white hover:border-dbz-yellow"
           >
             <Heart className="h-4 w-4" aria-hidden /> <T k="dashboard.myList" />
           </Link>
@@ -342,8 +357,8 @@ function MemberHero({ username, catalog }: { username: string; catalog: MediaCat
 function SmallMetric({ label, value }: { label: ReactNode; value: number | undefined }) {
   return (
     <div>
-      <dt className="text-xs text-white/40">{label}</dt>
-      <dd className="mt-1 text-2xl font-semibold text-white">{fmt(value)}</dd>
+      <dt className="text-[0.8125rem] text-white/75">{label}</dt>
+      <dd className="mt-1 text-xl font-semibold tabular-nums text-white">{fmt(value)}</dd>
     </div>
   );
 }
@@ -390,9 +405,17 @@ function RecentActivity({ summary }: { summary: Summary | null }) {
 
   if (!items.length) {
     return (
-      <p className="mt-5 rounded-2xl border border-dashed border-white/10 p-5 text-sm text-white/35">
-        <T k="dashboard.recentEmpty" />
-      </p>
+      <div className="mt-5 rounded-xl border border-dashed border-dbz-border p-5 text-sm text-white/80">
+        <p>
+          <T k="dashboard.recentEmpty" />
+        </p>
+        <Link
+          href="/wiki/contribute"
+          className="mt-2 inline-flex min-h-11 items-center font-semibold text-dbz-orange underline underline-offset-4 hover:text-dbz-yellow"
+        >
+          <T k="dashboard.actionContributeText" />
+        </Link>
+      </div>
     );
   }
 
@@ -400,7 +423,7 @@ function RecentActivity({ summary }: { summary: Summary | null }) {
     <ul className="mt-5 divide-y divide-white/10">
       {items.map(({ id, icon: Icon, label, detail, href, at }) => (
         <li key={id} className="flex items-center gap-3 py-3 first:pt-0 last:pb-0">
-          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-dbz-orange/10 text-dbz-orange">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-dbz-border text-dbz-orange">
             <Icon className="h-4 w-4" aria-hidden />
           </span>
           <div className="min-w-0 flex-1">
@@ -414,8 +437,9 @@ function RecentActivity({ summary }: { summary: Summary | null }) {
             ) : (
               <p className="truncate text-sm font-semibold">{label}</p>
             )}
-            <p className="mt-0.5 text-xs text-white/35">
-              {detail} · {at.toLocaleDateString("fr-FR")}
+            <p className="mt-0.5 flex flex-wrap gap-x-3 text-[0.8125rem] text-white/75">
+              <span>{detail}</span>
+              <time dateTime={at.toISOString()}>{at.toLocaleDateString("fr-FR")}</time>
             </p>
           </div>
         </li>
@@ -456,9 +480,9 @@ function targetHref(type: string, id: string): string | null {
 
 function Metric({ label, value }: { label: ReactNode; value: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-black/25 p-4">
-      <dt className="text-xs text-white/40">{label}</dt>
-      <dd className="mt-1 font-saiyan text-3xl text-white">{value}</dd>
+    <div className="rounded-xl border border-dbz-border bg-dbz-bg p-4">
+      <dt className="text-[0.8125rem] text-white/75">{label}</dt>
+      <dd className="mt-1 text-xl font-semibold tabular-nums text-white">{value}</dd>
     </div>
   );
 }
@@ -476,11 +500,11 @@ function Action({
   return (
     <Link
       href={href}
-      className="group rounded-2xl border border-white/10 bg-[#151412] p-5 transition-colors hover:border-dbz-orange/50 hover:bg-dbz-orange/[.06]"
+      className="rounded-xl border border-dbz-border bg-dbz-card p-5 transition-colors hover:border-dbz-yellow"
     >
       <Icon className="h-5 w-5 text-dbz-orange" aria-hidden />
       <h3 className="mt-4 font-semibold text-white">{title}</h3>
-      <p className="mt-1 text-sm leading-snug text-white/40">{text}</p>
+      <p className="mt-1 text-sm leading-snug text-white/75">{text}</p>
     </Link>
   );
 }

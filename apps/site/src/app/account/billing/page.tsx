@@ -1,7 +1,9 @@
 import { eq } from "drizzle-orm";
 import Link from "next/link";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { redirect } from "next/navigation";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { UserNav } from "@/components/user/UserNav";
 import { db } from "@/lib/db";
 import { baSubscription, sitePaypalSubscriptions, siteDonations } from "@/db/schema";
@@ -9,13 +11,22 @@ import { getCurrentUser } from "@/lib/session";
 import { BillingActions } from "./BillingActions";
 
 export const dynamic = "force-dynamic";
+// Personal page, like /dashboard and /settings: never indexed.
+export const metadata = {
+  title: "Abonnement et paiements",
+  robots: { index: false, follow: false },
+};
+
+const DONATION_STATUSES = ["succeeded", "pending", "failed", "disputed"] as const;
+const LINK =
+  "inline-flex min-h-11 items-center text-sm text-white/80 underline underline-offset-4 hover:text-dbz-yellow";
 
 export default async function BillingPage() {
   const user = await getCurrentUser();
   if (!user?.sessionUserId || user.sessionUserId === "token-admin") {
     redirect("/signin?callbackURL=%2Faccount%2Fbilling");
   }
-  const t = await getTranslations("billing");
+  const [t, locale] = await Promise.all([getTranslations("billing"), getLocale()]);
   const [stripeSubscriptions, paypalSubscriptions, donations] = await Promise.all([
     db
       .select({
@@ -47,63 +58,94 @@ export default async function BillingPage() {
       .from(siteDonations)
       .where(eq(siteDonations.userId, user.sessionUserId)),
   ]);
+  const dateFormat = new Intl.DateTimeFormat(locale, { dateStyle: "medium" });
+  const money = (amount: number, currency: string) =>
+    new Intl.NumberFormat(locale, { style: "currency", currency: currency.toUpperCase() }).format(
+      amount / 100,
+    );
+  const donationStatus = (status: string) =>
+    (DONATION_STATUSES as readonly string[]).includes(status)
+      ? t(`donationStatus.${status as (typeof DONATION_STATUSES)[number]}`)
+      : t("donationStatus.other");
+
   return (
-    <main className="mx-auto min-h-[70vh] w-full max-w-4xl px-4 py-12 text-white">
+    <PageShell rhythm="tight">
       <UserNav />
-      <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">{t("accountTitle")}</h1>
-          <p className="mt-2 text-sm text-white/65">{t("accountDescription")}</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3 text-xs font-semibold">
-          <Link
-            href="/vip"
-            className="rounded-xl border border-amber-400/40 bg-amber-400/10 px-3.5 py-2 text-amber-300 transition-colors hover:bg-amber-400/20"
-          >
-            {t("vipLink")}
-          </Link>
-          <Link
-            href="/donations"
-            className="rounded-xl border border-white/15 bg-white/5 px-3.5 py-2 text-white/80 transition-colors hover:border-white/30 hover:text-white"
-          >
-            {t("donationsLink")}
-          </Link>
-        </div>
-      </header>
-      <BillingActions
-        stripeSubscriptions={stripeSubscriptions}
-        paypalSubscriptions={paypalSubscriptions}
-        labels={{
-          manageStripe: t("manageStripe"),
-          cancelPaypal: t("cancelPaypal"),
-          cancellationDone: t("cancellationDone"),
-          actionError: t("actionError"),
-          statusActive: t("statusActive"),
-          statusTrialing: t("statusTrialing"),
-          statusPastDue: t("statusPastDue"),
-          statusCancelled: t("statusCancelled"),
-          statusPending: t("statusPending"),
-          statusOther: t("statusOther"),
-        }}
-      />
-      <section className="mt-10 rounded-2xl border border-white/10 bg-white/[0.03] p-5">
-        <h2 className="text-lg font-semibold">{t("donationHistory")}</h2>
+      <PageHeader title={t("accountTitle")} subtitle={t("accountDescription")} className="mb-8" />
+
+      <section aria-labelledby="billing-subscriptions">
+        <h2 id="billing-subscriptions" className="mb-4 font-display text-xl font-bold text-white">
+          {t("subscriptionsTitle")}
+        </h2>
+        <BillingActions
+          stripeSubscriptions={stripeSubscriptions}
+          paypalSubscriptions={paypalSubscriptions}
+        />
+      </section>
+
+      <section aria-labelledby="billing-donations" className="mt-10">
+        <h2 id="billing-donations" className="mb-4 font-display text-xl font-bold text-white">
+          {t("donationHistory")}
+        </h2>
         {donations.length === 0 ? (
-          <p className="mt-3 text-sm text-white/55">{t("noDonations")}</p>
+          <div className="rounded-xl border border-dashed border-dbz-border p-5">
+            <p className="text-[0.9375rem] text-white/80">{t("noDonations")}</p>
+            <Link
+              href="/donations"
+              className="mt-3 inline-flex min-h-11 items-center font-semibold text-dbz-orange underline underline-offset-4 hover:text-dbz-yellow"
+            >
+              {t("donationsLink")}
+            </Link>
+          </div>
         ) : (
-          <ul className="mt-4 divide-y divide-white/10">
-            {donations.map((donation) => (
-              <li key={donation.id} className="flex justify-between gap-4 py-3 text-sm">
-                <span>{donation.createdAt.toLocaleDateString()}</span>
-                <span>
-                  {(donation.amount / 100).toFixed(2)} {donation.currency.toUpperCase()}
-                </span>
-                <span>{donation.status}</span>
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-hidden rounded-xl border border-dbz-border bg-dbz-card">
+            <table className="w-full text-left text-sm">
+              <thead className="border-b border-dbz-border text-white/75">
+                <tr>
+                  <th scope="col" className="px-4 py-3 font-medium">
+                    {t("donationDate")}
+                  </th>
+                  <th scope="col" className="px-4 py-3 text-right font-medium">
+                    {t("donationAmount")}
+                  </th>
+                  <th scope="col" className="px-4 py-3 font-medium">
+                    {t("donationState")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-dbz-border text-white">
+                {donations
+                  .toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+                  .map((donation) => (
+                    <tr key={donation.id}>
+                      <td className="px-4 py-3">
+                        <time dateTime={donation.createdAt.toISOString()}>
+                          {dateFormat.format(donation.createdAt)}
+                        </time>
+                      </td>
+                      <td className="px-4 py-3 text-right tabular-nums">
+                        {money(donation.amount, donation.currency)}
+                      </td>
+                      <td className="px-4 py-3">{donationStatus(donation.status)}</td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </section>
-    </main>
+
+      <nav aria-labelledby="billing-more" className="mt-8 flex flex-wrap gap-x-6">
+        <span id="billing-more" className="sr-only">
+          {t("accountTitle")}
+        </span>
+        <Link href="/vip" className={LINK}>
+          {t("vipLink")}
+        </Link>
+        <Link href="/donations" className={LINK}>
+          {t("donationsLink")}
+        </Link>
+      </nav>
+    </PageShell>
   );
 }
