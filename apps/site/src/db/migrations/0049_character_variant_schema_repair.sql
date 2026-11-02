@@ -149,9 +149,18 @@ BEGIN
       'db_character_variant_voice_actors'
     ] LOOP
       EXECUTE format('GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE bot.%I TO shenron', table_name);
-      id_sequence := pg_get_serial_sequence(format('bot.%I', table_name), 'id')::regclass;
-      IF id_sequence IS NOT NULL THEN
-        EXECUTE format('GRANT USAGE, SELECT ON SEQUENCE %s TO shenron', id_sequence);
+      IF EXISTS (
+        SELECT 1
+        FROM pg_attribute
+        WHERE attrelid = format('bot.%I', table_name)::regclass
+          AND attname = 'id'
+          AND attnum > 0
+          AND NOT attisdropped
+      ) THEN
+        id_sequence := pg_get_serial_sequence(format('bot.%I', table_name), 'id')::regclass;
+        IF id_sequence IS NOT NULL THEN
+          EXECUTE format('GRANT USAGE, SELECT ON SEQUENCE %s TO shenron', id_sequence);
+        END IF;
       END IF;
     END LOOP;
   END IF;
