@@ -15,6 +15,19 @@ export const GOKU_PREVIEW_TIMELINES = [
 
 type TimelineSlug = (typeof GOKU_PREVIEW_TIMELINES)[number]["slug"];
 
+/** Use clearly marked showcase data until the main Goku timeline has DBZ editorial data. */
+export function shouldUseGokuShowcasePreview(
+  preview: boolean,
+  isMainCharacter: boolean,
+  continuitySlugs: readonly string[],
+): boolean {
+  return (
+    preview ||
+    (isMainCharacter &&
+      !continuitySlugs.some((slug) => slug === "goku-dbz" || slug === "dragon-ball-z"))
+  );
+}
+
 type PreviewSaga = {
   timeline: TimelineSlug;
   slug: string;
