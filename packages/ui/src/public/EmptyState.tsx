@@ -16,6 +16,7 @@
 import type { ReactNode } from "react";
 import type { UiLinkComponent } from "../navigation/link";
 import { VieArt, type VieArtKind } from "../vie/VieArt";
+import { SenzuBean } from "../toriyama/SenzuBean";
 
 export interface EmptyAction {
   href: string;
@@ -50,6 +51,11 @@ export function EmptyState({
           kind={illustration}
           className="absolute bottom-3 right-3 scale-90 opacity-70 max-sm:invisible md:right-10 md:scale-100"
         />
+      )}
+      {illustration && (
+        <div aria-hidden className="mb-4 flex justify-center sm:hidden">
+          <SenzuBean size={96} decorative />
+        </div>
       )}
       <h2 className="relative font-display text-[1.25rem] font-bold tracking-[-0.01em] text-white sm:text-[1.5rem]">
         {title}

@@ -20,6 +20,7 @@ import { T } from "@/components/T";
 import { getPublicCorpusStats } from "@/lib/public-corpus-stats";
 import { getPublishedCardCount } from "@/lib/card-catalog";
 import { getLocale, getTranslations } from "next-intl/server";
+import { SectionDivider } from "@aphrody/shenron-ui/vie/SectionDivider";
 import { getWikiPortalMessages, type WikiLocale } from "@/lib/wiki-character-version-messages";
 
 export const revalidate = 3600;
@@ -255,7 +256,7 @@ async function WikiIndexContent() {
             <GatedWrap
               key={item.href}
               href={item.href}
-              className="group relative flex items-start justify-between gap-3 overflow-hidden rounded-xl border border-white/[0.09] bg-gradient-to-b from-white/[0.05] to-white/[0.015] p-4 transition-all duration-150 hover:-translate-y-0.5 hover:border-dbz-orange/60 hover:bg-white/[0.06] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
+              className="vie-glow group relative flex items-start justify-between gap-3 overflow-hidden rounded-xl border border-white/[0.09] bg-gradient-to-b from-white/[0.05] to-white/[0.015] p-4 transition-all duration-150 hover:-translate-y-0.5 hover:border-dbz-orange/60 hover:bg-white/[0.06] active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
             >
               <div className="min-w-0 space-y-1">
                 <div className="flex items-center gap-2">
@@ -283,7 +284,9 @@ async function WikiIndexContent() {
 				    s'était arrêté. L'îlot ne rend rien s'il n'a rien à proposer. */}
       <RepriseLecture />
       <Rubriques titre={p("sectionUniverse")} items={encyclopedie} entriesUnit={p("entriesUnit")} />
+      <SectionDivider className="my-0" />
       <Rubriques titre={p("sectionMedia")} items={supports} entriesUnit={p("entriesUnit")} />
+      <SectionDivider className="my-0" />
 
       {/* Dossiers & Piliers Éditoriaux */}
       <section aria-labelledby="wiki-pillars-heading" className="space-y-4">
@@ -301,7 +304,7 @@ async function WikiIndexContent() {
             <GatedWrap
               key={pillar.href}
               href={pillar.href}
-              className="group relative flex h-full flex-col justify-between overflow-hidden rounded-xl border border-white/[0.09] bg-dbz-card/85 p-5 transition-all duration-150 hover:-translate-y-0.5 hover:border-dbz-orange/60 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
+              className="vie-glow group relative flex h-full flex-col justify-between overflow-hidden rounded-xl border border-white/[0.09] bg-dbz-card/85 p-5 transition-all duration-150 hover:-translate-y-0.5 hover:border-dbz-orange/60 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
             >
               <div
                 aria-hidden
@@ -686,7 +689,7 @@ function Rubriques({
           <GatedWrap
             key={r.key}
             href={r.href}
-            className="group flex h-full flex-col rounded-xl border border-white/[0.08] bg-dbz-card/80 p-4 transition-transform duration-150 hover:-translate-y-0.5 hover:border-dbz-orange hover:focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
+            className="vie-glow group flex h-full flex-col rounded-xl border border-white/[0.08] bg-dbz-card/80 p-4 transition-transform duration-150 hover:-translate-y-0.5 hover:border-dbz-orange hover:focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
           >
             <span className="flex items-baseline justify-between gap-3">
               <span className="font-display text-[15px] font-bold text-white transition-colors group-hover:text-dbz-orange">

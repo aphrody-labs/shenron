@@ -58,22 +58,22 @@
   animation-delay: -2.8s;
 }
 
-/* Lueur dorée au survol d'une carte (opacity seule, sur un pseudo-élément). */
+/* Lueur dorée au survol d'une carte : filet et halo INTÉRIEURS (les cartes ont
+   souvent `overflow-hidden`), opacity seule sur un pseudo-élément. */
 .vie-glow {
   position: relative;
-  isolation: isolate;
 }
 .vie-glow::after {
   content: "";
   position: absolute;
-  inset: -1px;
-  z-index: -1;
+  inset: 0;
+  z-index: 1;
   border-radius: inherit;
   pointer-events: none;
   opacity: 0;
   box-shadow:
-    0 0 0 1px rgb(245 191 65 / 0.55),
-    0 6px 26px rgb(245 191 65 / 0.18);
+    inset 0 0 0 1px rgb(245 191 65 / 0.55),
+    inset 0 -28px 36px -26px rgb(245 191 65 / 0.3);
   transition: opacity 220ms ease-out;
 }
 .vie-glow:hover::after,

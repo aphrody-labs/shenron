@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { VieArt, type VieArtKind } from "../vie/VieArt";
+import { Reveal } from "../vie/Reveal";
 import { HeroTitles } from "./HeroTitles";
 
 /**
@@ -32,8 +33,10 @@ export function PageHeader({
   art?: VieArtKind;
   className?: string;
 }) {
+  const Shell = art ? Reveal : "header";
   return (
-    <header
+    <Shell
+      {...(art ? { as: "header" } : {})}
       className={`border-b border-white/[0.08] pb-6 ${art ? "vie-speed relative overflow-hidden" : ""} ${className}`}
     >
       {art && (
@@ -55,6 +58,6 @@ export function PageHeader({
           <div className="relative z-10 flex shrink-0 flex-wrap items-center gap-2">{actions}</div>
         )}
       </div>
-    </header>
+    </Shell>
   );
 }

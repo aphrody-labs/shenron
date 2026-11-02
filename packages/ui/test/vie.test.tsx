@@ -50,3 +50,26 @@ test("vie.css only animates transform-like properties and honours reduced motion
   expect(css).not.toMatch(/animation[^;]*(width|height|top|left|margin)/);
   expect(css).toContain('[data-vie-live="true"]');
 });
+
+test("empty states keep a reduced scene on mobile and never hide art with display:none", () => {
+  const html = renderToStaticMarkup(
+    <EmptyState title="Vide" illustration="spheres" actions={[{ href: "/wiki", label: "Wiki" }]} />,
+  );
+  expect(html).toContain('width="96"');
+  expect(html).toContain("sm:hidden");
+  const art = renderToStaticMarkup(<PageHeader title="T" art="spheres" />);
+  expect(art).toContain("max-lg:invisible");
+  expect(art).not.toMatch(/class="[^"]*\bhidden\b[^"]*vie-art/);
+});
+
+test("PageHeader with art opens with the single orchestrated reveal", () => {
+  expect(renderToStaticMarkup(<PageHeader title="T" art="ki" />)).toMatch(
+    /<header class="vie-reveal[^"]*vie-speed/,
+  );
+});
+
+test("card glow is drawn inside the card so overflow-hidden cards keep it", () => {
+  const css = readFileSync(new URL("../src/vie.css", import.meta.url), "utf8");
+  expect(css).toMatch(/\.vie-glow::after[^}]*inset: 0/);
+  expect(css).toContain("inset 0 0 0 1px");
+});

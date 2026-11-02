@@ -42,7 +42,7 @@ export function GamesHub({ access = null }: { access?: AccessSnapshot | null } =
   const t = dictionaries[locale];
   return (
     <PageShell rhythm="tight" className={styles.hub}>
-      <header className={styles.hero}>
+      <header className={`${styles.hero} vie-speed`}>
         <div>
           <p className={styles.eyebrow}>
             <Gamepad2 size={18} aria-hidden="true" />
@@ -97,7 +97,7 @@ export function GamesHub({ access = null }: { access?: AccessSnapshot | null } =
         <ul className={styles.grid}>
           {games.map(({ id, href, icon: Icon, account }) => (
             <li key={id}>
-              <article className={styles.card}>
+              <article className={`${styles.card} vie-glow`}>
                 <div className={styles.cardArt} aria-hidden="true">
                   {id === "merge" ? (
                     <div className={styles.miniTiles}>

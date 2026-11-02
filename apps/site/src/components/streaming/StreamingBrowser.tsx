@@ -88,7 +88,7 @@ function CatalogueCard({
 }) {
   const t = useStreamingText();
   return (
-    <article className={styles.card}>
+    <article className={`${styles.card} vie-glow`}>
       <Link href={`/wiki/episodes/${episode.id}`} prefetch={false} className={styles.cardLink}>
         <div className={styles.artwork}>
           {episode.image && (

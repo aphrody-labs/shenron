@@ -584,7 +584,7 @@ export function ShopGrid({ items, economy }: { items: ShopItem[]; economy: ShopE
               return (
                 <article
                   key={it.key}
-                  className={`group flex flex-col overflow-hidden rounded-xl border bg-[#151412] transition-colors hover:border-dbz-yellow ${
+                  className={`vie-glow group flex flex-col overflow-hidden rounded-xl border bg-[#151412] transition-colors hover:border-dbz-yellow ${
                     selected?.key === it.key ? "border-dbz-yellow/70" : "border-white/10"
                   }`}
                 >

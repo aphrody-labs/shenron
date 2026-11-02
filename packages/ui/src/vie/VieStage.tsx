@@ -17,7 +17,7 @@ export function VieStage({
   className?: string;
 }) {
   return (
-    <div className={`vie-speed relative overflow-hidden ${className}`}>
+    <div className={`vie-speed relative overflow-hidden lg:min-h-40 ${className}`}>
       <VieArt
         kind={art}
         className="absolute bottom-0 right-2 origin-bottom-right scale-[.8] opacity-60 max-lg:invisible xl:right-10"
