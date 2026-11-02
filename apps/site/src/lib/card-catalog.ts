@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, count, desc, eq, gt, ilike, inArray, or } from "drizzle-orm";
+import { and, asc, count, desc, eq, gt, ilike, inArray, or, sql } from "drizzle-orm";
 import { cache } from "react";
 import { db, schema } from "@/lib/db";
 
@@ -67,7 +67,19 @@ export async function getPublicCardCatalog(
         eq(schema.cardCatalogSets.seriesId, schema.cardCatalogSeries.id),
       )
       .where(and(...conditions))
-      .orderBy(asc(schema.cardCatalogCards.slug)),
+      .orderBy(
+        asc(schema.cardCatalogSeries.name),
+        asc(schema.cardCatalogSets.name),
+        asc(schema.cardCatalogSets.language),
+        asc(schema.cardCatalogSets.region),
+        asc(schema.cardCatalogCards.language),
+        asc(schema.cardCatalogCards.region),
+        asc(sql`CASE WHEN ${schema.cardCatalogCards.cardNumber} ~ '^[0-9]+$' THEN 0 ELSE 1 END`),
+        asc(
+          sql`CASE WHEN ${schema.cardCatalogCards.cardNumber} ~ '^[0-9]+$' THEN lpad(${schema.cardCatalogCards.cardNumber}, 12, '0') ELSE ${schema.cardCatalogCards.cardNumber} END`,
+        ),
+        asc(schema.cardCatalogCards.slug),
+      ),
     db
       .select({ value: count() })
       .from(schema.cardCatalogCards)
