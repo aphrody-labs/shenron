@@ -231,7 +231,7 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
                           height={card.frontImageHeight ?? undefined}
                           loading={index < 20 ? "eager" : "lazy"}
                           decoding="async"
-                          className="absolute inset-0 h-full w-full object-contain transition-transform duration-300 group-hover:scale-[1.02] motion-reduce:transform-none motion-reduce:transition-none"
+                          className="absolute inset-0 h-full w-full object-contain"
                         />
                       </div>
                     ) : (
