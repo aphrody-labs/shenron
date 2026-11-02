@@ -53,6 +53,10 @@ export function revalidateWikiEntity(table: string, row?: Record<string, unknown
     // must also expire when a parent label, fallback image or visibility changes.
     if (table === "db_character_variants" || table === "db_characters" || table === "db_sagas") {
       revalidatePath("/api/wiki/variants");
+      // Character records are edited by numeric ID, but their public pages use
+      // canonical slugs (for example /wiki/characters/son-goku). Invalidating
+      // only /wiki/characters/:id leaves the slug page stale until its ISR TTL.
+      if (table === "db_characters") revalidatePath("/wiki/characters/[slug]", "page");
       if (table !== "db_characters") {
         revalidatePath("/wiki/characters");
         revalidatePath("/wiki/characters/[slug]", "page");
