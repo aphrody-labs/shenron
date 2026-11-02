@@ -41,3 +41,10 @@ une transaction par migration, journal drizzle mis à jour. Un échec interrompt
 l'activation (la release précédente continue de servir). Les migrations restent additives, car l'ancienne
 release sert jusqu'à l'activation. Contrôle sans écriture : `python3 apply-migrations.py <dossier> --dry-run`.
 `SHENRON_REMOTE_MIGRATE=0` désactive l'étape.
+
+## IP réelle des visiteurs (limitation de débit de l'auth)
+
+Le trafic arrive à nginx depuis Cloudflare. Le `location /` de `/srv/shenron/config/nginx/default.conf`
+pose `X-Real-IP` depuis `CF-Connecting-IP` (Better Auth lit `x-real-ip` avant `x-forwarded-for`) ; sans cela
+un client pouvait forger `X-Real-IP` pour contourner les 5 connexions par minute. La config est copiée
+dans chaque release à l'activation : le changement prend effet au prochain déploiement.
