@@ -28,6 +28,7 @@ Prod est le seul hôte Shenron. DBFR et VPS restent disponibles pour leurs servi
 ## État observé le 2026-11-02
 
 Le checkout Prod est sur `6b24de0f` (`origin/main`), qui intègre le correctif `aac017cec3887c7f445284fcfd22fb22dbdf0bae`. Le build officiel canary a réussi et l’image `localhost/shenron:aac017cec3887c7f445284fcfd22fb22dbdf0bae` est active pour `shenron-site` et `shenron-bot` ; les deux conteneurs sont sains. `/api/health` répond 200. `/api/local/health` rapporte `chat.available=true`. La route `/api/v1/chat/ws` est montée et protégée : sans session, elle répond 401. Une connexion WebSocket authentifiée n’a pas été exercée.
+Le pointeur historique /srv/shenron/current référence encore une ancienne release Docker scellée ; les conteneurs Compose actifs utilisent l’image ci-dessus. Ce pointeur n’a pas été modifié.
 
 Les migrations 0049 et 0050 ont été appliquées après sauvegardes Prod vérifiées. Le backup pré-déploiement fait 645287642 octets (955 entrées pg_restore) ; le backup pré-0049 fait 645287891 octets en mode 600.
 
