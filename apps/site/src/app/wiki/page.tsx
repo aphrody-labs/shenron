@@ -686,7 +686,7 @@ function Rubriques({
           <GatedWrap
             key={r.key}
             href={r.href}
-            className="group flex h-full flex-col border border-white/[0.08] bg-dbz-card/80 p-4 transition-transform duration-150 hover:-translate-y-0.5 hover:border-dbz-orange hover:focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
+            className="group flex h-full flex-col rounded-xl border border-white/[0.08] bg-dbz-card/80 p-4 transition-transform duration-150 hover:-translate-y-0.5 hover:border-dbz-orange hover:focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
           >
             <span className="flex items-baseline justify-between gap-3">
               <span className="font-display text-[15px] font-bold text-white transition-colors group-hover:text-dbz-orange">

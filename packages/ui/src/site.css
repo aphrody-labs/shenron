@@ -314,8 +314,9 @@ main:focus {
 
   /** Secondary tactical button */
   .toriyama-btn-secondary {
-    @apply font-sans font-bold uppercase tracking-wider min-h-11 px-5 py-2.5 inline-flex items-center justify-center gap-2 border border-dbz-border rounded-xl bg-dbz-card text-foreground transition-colors cursor-pointer select-none;
+    @apply font-sans font-bold uppercase tracking-wider min-h-11 px-5 py-2.5 inline-flex items-center justify-center gap-2 border border-dbz-border bg-dbz-card text-foreground transition-colors cursor-pointer select-none;
     box-shadow: none;
+    border-radius: var(--btn-radius-control, 0.75rem);
   }
   .toriyama-btn-secondary:hover {
     border-color: var(--color-dbz-orange);
@@ -469,7 +470,7 @@ main:focus {
     background: var(--gradient-galactic);
     background-size: 200% 200%;
     background-position: 0% 50%;
-    border-radius: 0.5rem;
+    border-radius: var(--btn-radius-cta, 9999px);
     box-shadow:
       0 4px 16px color-mix(in srgb, var(--color-dbz-ember) 35%, transparent),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
@@ -494,7 +495,8 @@ main:focus {
     background: color-mix(in srgb, var(--color-dbz-ember) 6%, transparent);
     color: var(--color-dbz-amber);
     border-color: color-mix(in srgb, var(--color-dbz-ember) 30%, transparent);
-    border-radius: 0.5rem;
+    border-radius: var(--btn-radius-control, 0.75rem);
+    min-height: 2.75rem;
   }
   .dbz-button-ghost:hover {
     background: color-mix(in srgb, var(--color-dbz-ember) 18%, transparent);
