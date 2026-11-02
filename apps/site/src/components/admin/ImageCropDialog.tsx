@@ -38,6 +38,17 @@ export function ImageCropDialog({
   const [pan, setPan] = useState({ x: 0, y: 0 });
   const [error, setError] = useState("");
 
+  const measureViewport = useCallback(() => {
+    const element = viewportRef.current;
+    if (!element) return { width: 0, height: 0 };
+    const { width, height } = element.getBoundingClientRect();
+    if (Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0) {
+      setSize({ width, height });
+      return { width, height };
+    }
+    return { width: 0, height: 0 };
+  }, []);
+
   const aspect = useMemo(() => {
     const preset = PRESETS.find(({ key }) => key === aspectKey);
     if (!preset || preset.ratio)
@@ -60,27 +71,24 @@ export function ImageCropDialog({
     const element = viewportRef.current;
     if (!element) return;
 
-    const measure = () => {
-      const { width, height } = element.getBoundingClientRect();
-      if (width > 0 && height > 0) setSize({ width, height });
-    };
-
     // Seed the crop dimensions immediately. ResizeObserver's first callback can
     // be deferred while a native dialog enters the top layer, leaving finish()
     // with a zero-sized viewport even though the preview is visible.
-    measure();
+    measureViewport();
     const observer = new ResizeObserver(([entry]) => {
       const { width, height } = entry.contentRect;
-      if (width > 0 && height > 0) setSize({ width, height });
+      if (Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0) {
+        setSize({ width, height });
+      }
     });
     observer.observe(element);
 
-    const frame = requestAnimationFrame(measure);
+    const frame = requestAnimationFrame(measureViewport);
     return () => {
       cancelAnimationFrame(frame);
       observer.disconnect();
     };
-  }, [aspect]);
+  }, [aspect, measureViewport]);
 
   const baseScale = Math.max(
     size.width / Math.max(natural.width, 1),
@@ -105,17 +113,27 @@ export function ImageCropDialog({
   const finish = useCallback(() => {
     const image = imageRef.current;
     const canvas = document.createElement("canvas");
-    if (!image || !natural.width || !natural.height || !size.width || !size.height) {
+    const measuredSize = size.width > 0 && size.height > 0 ? size : measureViewport();
+    if (
+      !image ||
+      !natural.width ||
+      !natural.height ||
+      !Number.isFinite(measuredSize.width) ||
+      !Number.isFinite(measuredSize.height) ||
+      measuredSize.width <= 0 ||
+      measuredSize.height <= 0
+    ) {
       setError(t("cropFailed"));
       return;
     }
-    const scale = Math.max(size.width / natural.width, size.height / natural.height) * zoom;
-    const left = (size.width - natural.width * scale) / 2 + pan.x;
-    const top = (size.height - natural.height * scale) / 2 + pan.y;
+    const scale =
+      Math.max(measuredSize.width / natural.width, measuredSize.height / natural.height) * zoom;
+    const left = (measuredSize.width - natural.width * scale) / 2 + pan.x;
+    const top = (measuredSize.height - natural.height * scale) / 2 + pan.y;
     const sx = Math.max(0, Math.min(natural.width, -left / scale));
     const sy = Math.max(0, Math.min(natural.height, -top / scale));
-    const sw = Math.min(natural.width - sx, size.width / scale);
-    const sh = Math.min(natural.height - sy, size.height / scale);
+    const sw = Math.min(natural.width - sx, measuredSize.width / scale);
+    const sh = Math.min(natural.height - sy, measuredSize.height / scale);
     const outputScale = Math.min(1, 1800 / Math.max(sw, sh));
     canvas.width = Math.max(1, Math.round(sw * outputScale));
     canvas.height = Math.max(1, Math.round(sh * outputScale));
@@ -137,7 +155,7 @@ export function ImageCropDialog({
       "image/webp",
       0.92,
     );
-  }, [file, natural, onConfirm, pan, size, t, zoom]);
+  }, [file, measureViewport, natural, onConfirm, pan, size, t, zoom]);
 
   return (
     <dialog
@@ -225,12 +243,13 @@ export function ImageCropDialog({
                 src={src}
                 alt={t("cropPreview")}
                 draggable={false}
-                onLoad={(event) =>
+                onLoad={(event) => {
                   setNatural({
                     width: event.currentTarget.naturalWidth,
                     height: event.currentTarget.naturalHeight,
-                  })
-                }
+                  });
+                  requestAnimationFrame(measureViewport);
+                }}
                 className="pointer-events-none absolute max-w-none select-none"
                 style={{
                   width: imageWidth,
