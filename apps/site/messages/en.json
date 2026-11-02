@@ -17,6 +17,8 @@
     "number": "Number",
     "nameJa": "Original Japanese name",
     "nameFr": "French name",
+    "japaneseEdition": "Japanese edition",
+    "frenchEdition": "French edition",
     "set": "Release",
     "publisher": "Publisher",
     "format": "Format",

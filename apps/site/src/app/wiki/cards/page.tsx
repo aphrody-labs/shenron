@@ -199,6 +199,12 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
               const valuation = data.latestValuations.get(card.id);
               const frenchName = card.nameFr ?? (card.language === "fr" ? card.name : null);
               const japaneseName = card.nameJa ?? (card.language === "ja" ? card.name : null);
+              const editionLabel =
+                card.language === "ja" && card.region === "JP"
+                  ? t("japaneseEdition")
+                  : card.language === "fr" && card.region === "FR"
+                    ? t("frenchEdition")
+                    : `${card.language} · ${card.region}`;
               const displayName =
                 locale === "ja"
                   ? (japaneseName ?? frenchName ?? card.name)
@@ -263,7 +269,7 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
                         {card.rarity ? ` · ${card.rarity}` : ""}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {card.language} · {card.region}
+                        {editionLabel}
                         {releaseDate ? ` · ${releaseDate}` : ""}
                       </p>
                       {valuation && (
