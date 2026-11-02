@@ -4,6 +4,7 @@ import {
   getGokuPreviewRelationSlugs,
   getGokuPreviewTimelines,
   resolveGokuPreviewTimeline,
+  shouldUseGokuShowcasePreview,
 } from "../src/lib/goku-character-preview";
 
 const translate = (key: string, values?: Record<string, string | number>) =>
@@ -74,6 +75,13 @@ describe("Goku visual preview", () => {
       "goku-summary",
     ]);
     expect(resolveGokuPreviewTimeline("unknown")).toBe("goku-db");
+  });
+
+  test("uses showcase timelines only until DBZ editorial data is configured", () => {
+    expect(shouldUseGokuShowcasePreview(false, true, ["goku-main", "future"])).toBe(true);
+    expect(shouldUseGokuShowcasePreview(false, true, ["goku-dbz"])).toBe(false);
+    expect(shouldUseGokuShowcasePreview(false, false, [])).toBe(false);
+    expect(shouldUseGokuShowcasePreview(true, false, [])).toBe(true);
   });
 
   test("scopes each saga menu to its selected series or game version", () => {
