@@ -1937,35 +1937,50 @@ export default async function CharacterPage({
               <GatedWrap
                 key={b.id}
                 href="/wiki/events"
-                className="dbz-panel p-5 hover:border-dbz-red/50 transition-all group flex flex-col justify-between"
+                className={`dbz-panel group relative overflow-hidden transition-all hover:border-dbz-red/50 ${b.image ? "min-h-44" : "flex flex-col justify-between p-5"}`}
               >
-                <div>
-                  <div className="flex items-center justify-between text-[10px] uppercase font-bold tracking-wider text-dbz-red mb-2">
-                    <span>⚔️ {b.series}</span>
-                    {b.location && <span className="text-white/40">{b.location}</span>}
+                {b.image && (
+                  <div className="pointer-events-none absolute inset-y-0 left-0 w-[46%] sm:w-[42%]">
+                    <WikiImg
+                      src={b.image}
+                      alt={b.imageAlt || b.title}
+                      className="h-full w-full object-cover object-left opacity-75"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#0b0b0b]/45 to-[#0b0b0b]" />
                   </div>
-                  <h3 className="text-lg font-bold text-white group-hover:text-dbz-red transition-colors">
-                    {b.title}
-                  </h3>
-                  {b.titleJa && (
-                    <p lang="ja" className="font-jp text-xs text-white/40 mt-1">
-                      {b.titleJa}
-                    </p>
-                  )}
-                  {b.climaxSummary && (
-                    <p className="text-xs text-gray-400 mt-3 leading-relaxed line-clamp-3">
-                      {b.climaxSummary}
-                    </p>
-                  )}
-                </div>
-                <div className="mt-4 pt-3 border-t border-white/5 flex items-center justify-between text-[11px]">
-                  <span className="text-white/50">
-                    Vainqueur :{" "}
-                    <strong className="text-white">{b.winnerName || "Indéterminé"}</strong>
-                  </span>
-                  <span className="text-dbz-red font-bold group-hover:translate-x-1 transition-transform">
-                    Détails →
-                  </span>
+                )}
+                <div
+                  className={`relative z-10 flex h-full flex-col justify-between ${b.image ? "min-h-44 py-4 pl-[38%] pr-4 sm:py-5 sm:pl-[34%] sm:pr-6" : ""}`}
+                >
+                  <div>
+                    <div className="mb-2 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-dbz-red">
+                      <span>⚔️ {b.series}</span>
+                      {b.location && <span className="text-white/40">{b.location}</span>}
+                    </div>
+                    <h3 className="text-lg font-bold text-white transition-colors group-hover:text-dbz-red">
+                      {b.title}
+                    </h3>
+                    {b.titleJa && (
+                      <p lang="ja" className="font-jp text-xs text-white/40 mt-1">
+                        {b.titleJa}
+                      </p>
+                    )}
+                    {b.climaxSummary && (
+                      <p className="mt-3 line-clamp-3 text-xs leading-relaxed text-gray-300">
+                        {b.climaxSummary}
+                      </p>
+                    )}
+                  </div>
+                  <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3 text-[11px]">
+                    <span className="text-white/50">
+                      Vainqueur :{" "}
+                      <strong className="text-white">{b.winnerName || "Indéterminé"}</strong>
+                    </span>
+                    <span className="text-dbz-red font-bold group-hover:translate-x-1 transition-transform">
+                      Détails →
+                    </span>
+                  </div>
                 </div>
               </GatedWrap>
             ))}

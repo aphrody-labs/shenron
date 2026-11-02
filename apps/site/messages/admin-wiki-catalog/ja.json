@@ -20,7 +20,8 @@
     "db_character_variant_technique_uses": "サーガ内で確認できる技の使用ごとに1行追加します。正確な出典と順序はキャラクターページに表示されます。",
     "db_character_variant_appearances": "追加写真ごとに1行追加します。選択したバージョンとサーガのポートレートに正方形のプレビューが表示されます。変身との関連付けは任意です。写真、代替テキスト、出典、順序をここで編集できます。",
     "db_character_variant_staff_credits": "話数ごとにカードを登録します。紹介する場面、作画監督、原画スタッフ、イラスト、出典を編集できます。",
-    "db_character_variant_voice_actors": "このサーガの出演者を登録します。写真、名前、プロフィールは声優カタログで編集します。"
+    "db_character_variant_voice_actors": "このサーガの出演者を登録します。写真、名前、プロフィールは声優カタログで編集します。",
+    "db_battles": "DBFR内の戦闘画像と代替テキストを登録します。関連するキャラクターページで左側からフェード表示されます。"
   },
   "sourceTypes": {
     "manga": "漫画",
@@ -49,7 +50,9 @@
     "supervisorSlug": "DBFRプロフィールのslug",
     "keyAnimators": "原画スタッフ・スタジオ",
     "episodeUrl": "エピソードページ",
-    "episodeImage": "エピソードの画像"
+    "episodeImage": "エピソードの画像",
+    "battleImage": "戦闘の画像",
+    "battleImageAlt": "画像の説明"
   },
   "characterEditor": {
     "eyebrow": "Wiki編集ガイド",

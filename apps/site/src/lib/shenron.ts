@@ -355,6 +355,8 @@ export interface CharacterBattle {
   slug: string;
   title: string;
   titleJa: string | null;
+  image?: string | null;
+  imageAlt?: string | null;
   series: string;
   winnerName: string | null;
   climaxSummary: string | null;
@@ -394,6 +396,8 @@ export async function getShenronCharacterVariantBattles(
       slug: battle.slug,
       title: battle.title,
       titleJa: battle.titleJa,
+      image: battle.image,
+      imageAlt: battle.imageAlt,
       series: battle.series,
       winnerName: battle.winnerName,
       climaxSummary: battle.climaxSummary,

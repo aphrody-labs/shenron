@@ -450,6 +450,8 @@ export const WIKI_TABLE_SPECS: Record<string, WikiTableSpec> = {
       "slug",
       "title",
       "titleJa",
+      "image",
+      "imageAlt",
       "sagaId",
       "arcId",
       "series",

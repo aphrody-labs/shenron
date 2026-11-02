@@ -20,7 +20,8 @@
     "db_character_variant_technique_uses": "Ajoutez une ligne par utilisation attestée d'une technique dans une saga. La source précise et sa chronologie alimentent la fiche personnage.",
     "db_character_variant_appearances": "Ajoutez une ligne par photo supplémentaire. Elle crée un bouton aperçu carré sur le portrait de la version et de la saga choisies. La transformation est facultative; chaque image, son texte alternatif, sa source et son ordre restent modifiables ici.",
     "db_character_variant_staff_credits": "Une carte par épisode : scène mise en avant, supervision, animateurs crédités, illustration et sources.",
-    "db_character_variant_voice_actors": "Associez les interprètes à cette saga. Les portraits, noms et fiches se modifient dans le catalogue du casting vocal."
+    "db_character_variant_voice_actors": "Associez les interprètes à cette saga. Les portraits, noms et fiches se modifient dans le catalogue du casting vocal.",
+    "db_battles": "Ajoutez l’illustration DBFR du combat et son texte alternatif. Elle apparaîtra en fondu à gauche du combat sur les fiches de personnages qui y sont associés."
   },
   "sourceTypes": {
     "manga": "Manga",
@@ -49,7 +50,9 @@
     "supervisorSlug": "Slug de sa fiche DBFR",
     "keyAnimators": "Animateurs et studios crédités",
     "episodeUrl": "Fiche de l’épisode",
-    "episodeImage": "Illustration de l’épisode"
+    "episodeImage": "Illustration de l’épisode",
+    "battleImage": "Illustration du combat",
+    "battleImageAlt": "Description de l’illustration"
   },
   "characterEditor": {
     "eyebrow": "Assistant d’édition du wiki",

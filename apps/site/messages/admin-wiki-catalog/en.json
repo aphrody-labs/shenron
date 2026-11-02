@@ -20,7 +20,8 @@
     "db_character_variant_technique_uses": "Add one row for each cited use of a technique in a saga. The precise source and chronology appear on the character page.",
     "db_character_variant_appearances": "Add one row per supplementary photo. Each row creates a square preview button on the portrait for the selected version and saga. A transformation link is optional; the photo, alternative text, source and order remain editable here.",
     "db_character_variant_staff_credits": "One card per episode: featured scene, animation supervisor, credited animators, illustration, and sources.",
-    "db_character_variant_voice_actors": "Link performers to this saga. Portraits, names, and profiles are edited in the voice cast catalog."
+    "db_character_variant_voice_actors": "Link performers to this saga. Portraits, names, and profiles are edited in the voice cast catalog.",
+    "db_battles": "Add a DBFR battle image and its alternative text. It appears with a left-side fade on associated character pages."
   },
   "sourceTypes": {
     "manga": "Manga",
@@ -49,7 +50,9 @@
     "supervisorSlug": "DBFR profile slug",
     "keyAnimators": "Credited animators and studios",
     "episodeUrl": "Episode page",
-    "episodeImage": "Episode illustration"
+    "episodeImage": "Episode illustration",
+    "battleImage": "Battle illustration",
+    "battleImageAlt": "Illustration description"
   },
   "characterEditor": {
     "eyebrow": "Wiki editing guide",

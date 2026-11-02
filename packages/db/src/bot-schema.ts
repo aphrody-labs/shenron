@@ -1040,6 +1040,8 @@ export const botBattles = bot.table("db_battles", {
   slug: text("slug").notNull(),
   title: text("title").notNull(),
   titleJa: text("title_ja"),
+  image: text("image"),
+  imageAlt: text("image_alt").notNull().default(""),
   sagaId: int("saga_id"),
   arcId: int("arc_id"),
   series: text("series").notNull(),

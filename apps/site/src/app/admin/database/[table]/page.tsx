@@ -90,12 +90,16 @@ export default function TablePage() {
   const fieldLabel = (column: string) =>
     table === "db_character_variant_staff_credits" && column === "image"
       ? adminCatalogText("fields.episodeImage")
-      : table === "db_character_variant_technique_uses" ||
-          table === "db_character_variant_appearances" ||
-          table === "db_character_variant_staff_credits" ||
-          table === "db_character_variant_voice_actors"
-        ? adminCatalogText(`fields.${column}` as AdminWikiFieldKey)
-        : colLabel(column);
+      : table === "db_battles" && column === "image"
+        ? adminCatalogText("fields.battleImage")
+        : table === "db_battles" && column === "imageAlt"
+          ? adminCatalogText("fields.battleImageAlt")
+          : table === "db_character_variant_technique_uses" ||
+              table === "db_character_variant_appearances" ||
+              table === "db_character_variant_staff_credits" ||
+              table === "db_character_variant_voice_actors"
+            ? adminCatalogText(`fields.${column}` as AdminWikiFieldKey)
+            : colLabel(column);
   const offset = page * limit;
   const listQuery = normalizeWikiListQuery({ limit, offset, q: debouncedSearch });
   const collectionQuery = parentFilter
@@ -588,6 +592,8 @@ type AdminWikiFieldKey =
   | "fields.altText"
   | "fields.sortOrder"
   | "fields.visible"
+  | "fields.battleImage"
+  | "fields.battleImageAlt"
   | "fields.voiceActorId"
   | "fields.roleNotes"
   | "fields.episodeNumber"
