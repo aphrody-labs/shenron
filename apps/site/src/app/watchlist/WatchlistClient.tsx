@@ -1,71 +1,83 @@
 "use client";
 
 // SPDX-License-Identifier: Apache-2.0
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Bookmark, Play, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { ContinueWatchingRail } from "@/components/continue-watching/ContinueWatchingRail";
 import { EmptyState } from "@/components/kit/EmptyState";
 import { assetUrl } from "@/lib/assets";
-import { FAVORITES_EVENT, readFavorites, syncFavorites, toggleFavorite } from "@/lib/favorites";
-import type { Favorite } from "@/lib/favorites";
+import {
+  FAVORITES_EVENT,
+  isFavorited,
+  readFavorites,
+  syncFavorites,
+  toggleFavorite,
+} from "@/lib/favorites";
 import {
   PLAYBACK_PROGRESS_EVENT,
+  playbackTimeLabel,
   readPlaybackProgress,
-  type PlaybackProgress,
 } from "@/lib/playback-progress";
 import { useMe } from "@/lib/use-me";
+import {
+  applyView,
+  filterFromQuery,
+  readWatchlistPayload,
+  rowKey,
+  rowsFromLocal,
+  rowsFromRemote,
+  type WatchlistFilter,
+  type WatchlistRow,
+  type WatchlistSort,
+} from "@/lib/watchlist-rows";
+import type { WatchlistItem } from "@/lib/watchlist-view";
 
-type Filter = "all" | "resume" | "todo" | "done";
-type Sort = "recent" | "title";
-type Status = "todo" | "resume" | "done";
-
-interface Row {
-  favorite: Favorite;
-  percent: number;
-  status: Status;
-}
-
-const FILTERS: readonly Filter[] = ["all", "resume", "todo", "done"];
+const FILTERS: readonly WatchlistFilter[] = ["all", "watching", "planned", "completed"];
 const FILTER_KEY = {
   all: "filterAll",
-  resume: "filterResume",
-  todo: "filterTodo",
-  done: "filterDone",
+  watching: "filterResume",
+  planned: "filterTodo",
+  completed: "filterDone",
 } as const;
 
 const CHIP =
   "inline-flex min-h-11 items-center rounded-full px-4 text-xs font-bold uppercase tracking-wider transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange";
 
-function toRow(favorite: Favorite, progress: PlaybackProgress[]): Row {
-  const entry = progress.find((p) => p.kind === favorite.kind && p.id === favorite.id);
-  if (!entry) return { favorite, percent: 0, status: "todo" };
-  const percent = Math.min(100, Math.round((entry.seconds / entry.duration) * 100));
-  if (entry.completed) return { favorite, percent: 100, status: "done" };
-  return { favorite, percent, status: percent > 0 ? "resume" : "todo" };
-}
-
 /**
- * Watchlist : les épisodes et films mis de côté (favoris, locaux d'abord et
- * synchronisés pour un compte connecté) croisés avec la progression de lecture
- * réellement enregistrée sur cet appareil.
+ * Watchlist : pour un compte connecté, la liste vient de `/api/watchlist` (favoris du compte
+ * joints à la progression synchronisée, statut dérivé) ; hors connexion, ou si le compte est
+ * injoignable, elle vient de l’appareil (favoris et progression locaux). Le filtre suit
+ * `?status=planned|watching|completed`.
  */
 export function WatchlistClient() {
   const t = useTranslations("watchlistPage");
+  const tr = useTranslations();
   const me = useMe();
-  const [rows, setRows] = useState<Row[] | null>(null);
-  const [filter, setFilter] = useState<Filter>("all");
-  const [sort, setSort] = useState<Sort>("recent");
+  const authenticated = me?.authenticated === true;
+  const [local, setLocal] = useState<WatchlistRow[] | null>(null);
+  const [remote, setRemote] = useState<WatchlistItem[] | null>(null);
+  const [remoteFailed, setRemoteFailed] = useState(false);
+  const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
+  const [filter, setFilter] = useState<WatchlistFilter>("all");
+  const [sort, setSort] = useState<WatchlistSort>("recent");
+  const requested = useRef(false);
 
   useEffect(() => {
-    const refresh = () => {
-      const progress = readPlaybackProgress();
-      setRows(
-        readFavorites()
-          .filter((f) => f.kind === "episode" || f.kind === "movie")
-          .map((f) => toRow(f, progress)),
-      );
-    };
+    setFilter(filterFromQuery(new URLSearchParams(window.location.search).get("status")));
+  }, []);
+
+  const chooseFilter = (next: WatchlistFilter) => {
+    setFilter(next);
+    const url = new URL(window.location.href);
+    if (next === "all") url.searchParams.delete("status");
+    else url.searchParams.set("status", next);
+    window.history.replaceState(window.history.state, "", url);
+  };
+
+  useEffect(() => {
+    const refresh = () => setLocal(rowsFromLocal(readFavorites(), readPlaybackProgress()));
     refresh();
     window.addEventListener(FAVORITES_EVENT, refresh);
     window.addEventListener(PLAYBACK_PROGRESS_EVENT, refresh);
@@ -77,24 +89,64 @@ export function WatchlistClient() {
     };
   }, []);
 
-  useEffect(() => {
-    if (me?.authenticated) void syncFavorites();
-  }, [me?.authenticated]);
+  const loadRemote = useCallback(async () => {
+    try {
+      const response = await fetch("/api/watchlist", {
+        credentials: "include",
+        cache: "no-store",
+        signal: AbortSignal.timeout(10_000),
+      });
+      const items = response.ok ? readWatchlistPayload(await response.json()) : null;
+      if (items) {
+        setRemote(items);
+        setRemoteFailed(false);
+      } else setRemoteFailed(true);
+    } catch {
+      setRemoteFailed(true);
+    }
+  }, []);
 
-  const visible = useMemo(() => {
-    const kept = (rows ?? []).filter((r) => filter === "all" || r.status === filter);
-    return sort === "title"
-      ? kept.toSorted((a, b) => a.favorite.title.localeCompare(b.favorite.title))
-      : kept;
-  }, [rows, filter, sort]);
+  useEffect(() => {
+    if (!authenticated) return;
+    void syncFavorites();
+    if (!requested.current) {
+      requested.current = true;
+      void loadRemote();
+    }
+    // Playback elsewhere on the page moves statuses: reload the account view.
+    const onPlayback = () => void loadRemote();
+    window.addEventListener(PLAYBACK_PROGRESS_EVENT, onPlayback);
+    return () => window.removeEventListener(PLAYBACK_PROGRESS_EVENT, onPlayback);
+  }, [authenticated, loadRemote]);
+
+  const accountView = authenticated && remote !== null && !remoteFailed;
+  const pending = me === undefined || (authenticated && remote === null && !remoteFailed);
+  const rows = useMemo(() => {
+    if (pending) return null;
+    if (accountView) return rowsFromRemote(remote, hidden);
+    return local;
+  }, [pending, accountView, remote, hidden, local]);
+
+  const visible = useMemo(() => applyView(rows ?? [], filter, sort), [rows, filter, sort]);
+
+  const remove = (row: WatchlistRow) => {
+    setHidden((current) => new Set(current).add(rowKey(row)));
+    // The account view can list items this device has not merged yet: never toggle blindly.
+    void syncFavorites().then(() => {
+      if (isFavorited(row.favorite.kind, row.favorite.id)) toggleFavorite(row.favorite);
+    });
+  };
 
   if (rows === null) {
     return (
       <div role="status" aria-label={t("loading")} className="flex flex-col gap-6">
-        <div className="h-11 animate-pulse rounded-full bg-dbz-card" />
+        <div className="h-11 animate-pulse motion-reduce:animate-none rounded-full bg-dbz-card" />
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="aspect-[16/11] animate-pulse rounded-xl bg-dbz-card" />
+            <div
+              key={i}
+              className="aspect-[16/11] animate-pulse motion-reduce:animate-none rounded-xl bg-dbz-card"
+            />
           ))}
         </div>
       </div>
@@ -103,24 +155,30 @@ export function WatchlistClient() {
 
   if (rows.length === 0) {
     return (
-      <EmptyState
-        illustration="senzu"
-        title={t("emptyTitle")}
-        description={t("emptyDescription")}
-        actions={[
-          { href: "/wiki/episodes", label: t("browseEpisodes") },
-          { href: "/wiki/movies", label: t("browseMovies") },
-        ]}
-      />
+      <div className="flex flex-col gap-6">
+        <ContinueWatchingRail />
+        <EmptyState
+          illustration="senzu"
+          title={t("emptyTitle")}
+          description={t("emptyDescription")}
+          actions={[
+            { href: "/wiki/episodes", label: t("browseEpisodes") },
+            { href: "/wiki/movies", label: t("browseMovies") },
+          ]}
+        />
+      </div>
     );
   }
 
   return (
     <div className="flex flex-col gap-6">
+      <ContinueWatchingRail />
       <div className="flex min-h-11 flex-wrap items-center justify-between gap-x-4 gap-y-2 text-sm text-white/75">
         <p>
-          {me === undefined ? null : me.authenticated ? (
+          {me === undefined ? null : accountView ? (
             t("statusSynced")
+          ) : authenticated ? (
+            t("statusUnavailable")
           ) : (
             <>
               {t("statusDevice")}{" "}
@@ -143,7 +201,7 @@ export function WatchlistClient() {
               key={id}
               type="button"
               aria-pressed={filter === id}
-              onClick={() => setFilter(id)}
+              onClick={() => chooseFilter(id)}
               className={`${CHIP} ${
                 filter === id
                   ? "bg-dbz-orange text-black"
@@ -175,11 +233,13 @@ export function WatchlistClient() {
         />
       ) : (
         <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {visible.map(({ favorite: f, percent, status }) => {
-            const cta = status === "resume" ? "resume" : status === "done" ? "rewatch" : "watch";
+          {visible.map((row) => {
+            const { favorite: f, percent, status, seconds } = row;
+            const cta =
+              status === "watching" ? "resume" : status === "completed" ? "rewatch" : "watch";
             return (
               <li
-                key={`${f.kind}:${f.id}`}
+                key={rowKey(row)}
                 className="group relative flex min-w-0 flex-col overflow-hidden rounded-xl border border-white/[0.12] bg-dbz-card transition-colors hover:border-dbz-gold focus-within:border-dbz-gold"
               >
                 <div className="relative aspect-video w-full overflow-hidden bg-black/40">
@@ -189,7 +249,7 @@ export function WatchlistClient() {
                       alt=""
                       loading="lazy"
                       decoding="async"
-                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                     />
                   ) : (
                     <div className="grid h-full w-full place-items-center text-white/50">
@@ -218,11 +278,23 @@ export function WatchlistClient() {
                     {f.title}
                   </h2>
                   {f.caption && <p className="line-clamp-1 text-sm text-white/75">{f.caption}</p>}
-                  {status !== "todo" && (
-                    <p className="font-mono text-xs tabular-nums text-white/75">
-                      {status === "done" ? t("done") : t("progress", { percent })}
-                    </p>
-                  )}
+                  <p className="font-mono text-xs tabular-nums text-white/75">
+                    <span className="font-bold uppercase tracking-wider text-dbz-gold">
+                      {tr(`stream.status.${status}`)}
+                    </span>
+                    {status === "watching" && (
+                      <>
+                        {" · "}
+                        {t("progress", { percent })}
+                        {seconds > 0 && (
+                          <>
+                            {" · "}
+                            {tr("stream.watchlist.resumeAt", { time: playbackTimeLabel(seconds) })}
+                          </>
+                        )}
+                      </>
+                    )}
+                  </p>
                   <Link
                     href={f.href}
                     aria-label={`${t(cta)} · ${f.title}`}
@@ -236,7 +308,7 @@ export function WatchlistClient() {
                 <button
                   type="button"
                   aria-label={t("remove", { title: f.title })}
-                  onClick={() => toggleFavorite(f)}
+                  onClick={() => remove(row)}
                   className="absolute right-2 top-2 z-10 grid h-11 w-11 place-items-center rounded-full bg-black/60 text-white/85 transition-colors hover:bg-black/85 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
                 >
                   <X aria-hidden className="h-4 w-4" />

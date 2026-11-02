@@ -9,6 +9,11 @@ import { isShenronEpisodeVideoURL } from "@/lib/episode-video-source";
 import { nextPlayerIndex, resolvePlayerIndex } from "@/lib/video-selection-state";
 import { useTranslations } from "next-intl";
 import { useVideoUIText } from "@/lib/video-ui-text";
+import {
+  preferredSelection,
+  readVideoLanguagePreference,
+  writeVideoLanguagePreference,
+} from "@/lib/video-language-preference";
 import { officialCrunchyrollWatchURL } from "@aphrody/shenron-config/video-providers";
 import { normalizeVideoPlayers } from "@aphrody/shenron-media/episode-playback";
 import {
@@ -156,6 +161,20 @@ export function VideoLecteurs({
   const networkFailure = useRef<string | null>(null);
   const [probeAttempt, setProbeAttempt] = useState(0);
 
+  // Remembered version: applied once after hydration (the server render keeps the default so
+  // cached HTML never diverges), and only when this item really offers it.
+  const preferenceApplied = useRef(false);
+  useEffect(() => {
+    if (preferenceApplied.current || langs.length === 0) return;
+    preferenceApplied.current = true;
+    const preferred = preferredSelection(langs, readVideoLanguagePreference());
+    if (preferred && preferred !== lang) {
+      setLang(preferred);
+      setActive(0);
+      setStatus("probing");
+    }
+  }, [langs, lang]);
+
   // Derived selection prevents an empty render while the state catches up.
   useEffect(() => {
     if (lang !== selectedLang) {
@@ -281,6 +300,8 @@ export function VideoLecteurs({
     setModeVo(false);
     setLang(c);
     setActive(0);
+    const version = normalizeVideoLanguage(c);
+    if (version) writeVideoLanguagePreference(version);
   };
   const estChoisi = (c: string) => (c === "vo" ? enVo : !enVo && selectedLang === c);
   const retry = () => {

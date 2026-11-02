@@ -6,8 +6,8 @@
  * signed-in account (`lib/watch-sync`). Renders nothing until there is real playback to resume,
  * and renders `null` on the server and on first client paint so cached HTML never diverges.
  *
- * Wiring (owner of the screen): `<ContinueWatchingRail />` above the catalogue grids, on the
- * home page and on `/watchlist`; see docs/products/streaming-replica-etat.md.
+ * Mounted on `/watchlist` and above the episode browser of `/wiki/episodes`; see
+ * docs/products/streaming-replica-etat.md.
  */
 import { useEffect, useState } from "react";
 import { Croix } from "@aphrody/shenron-ui/icones";
@@ -19,19 +19,29 @@ import { forgetWatchProgress, PLAYBACK_PROGRESS_EVENT, syncWatchProgress } from 
 
 export function ContinueWatchingRail({
   limit = 12,
+  kinds,
   className = "",
 }: {
   limit?: number;
+  /** Restrict to some kinds (the episode catalogue only lists episodes). */
+  kinds?: readonly WatchEntry["kind"][];
   className?: string;
 }) {
   const t = useT();
+  const kindsKey = kinds?.join(",") ?? "";
   const [items, setItems] = useState<WatchEntry[] | null>(null);
 
   useEffect(() => {
     let alive = true;
+    const allowed = kindsKey ? kindsKey.split(",") : null;
     const load = async () => {
       const all = await syncWatchProgress();
-      if (alive) setItems(resumable(all).slice(0, limit));
+      if (alive)
+        setItems(
+          resumable(all)
+            .filter((e) => !allowed || allowed.includes(e.kind))
+            .slice(0, limit),
+        );
     };
     const onChange = () => void load();
     void load();
@@ -41,7 +51,7 @@ export function ContinueWatchingRail({
       alive = false;
       window.removeEventListener(PLAYBACK_PROGRESS_EVENT, onChange);
     };
-  }, [limit]);
+  }, [limit, kindsKey]);
 
   if (!items || items.length === 0) return null;
   const title = t("stream.continue.title");
@@ -77,7 +87,7 @@ export function ContinueWatchingRail({
               <div className="p-2.5">
                 <p className="truncate text-[13px] font-semibold text-white">{e.title}</p>
                 {e.caption && (
-                  <p className="mt-0.5 truncate text-[11px] text-white/55">{e.caption}</p>
+                  <p className="mt-0.5 truncate text-[11px] text-white/70">{e.caption}</p>
                 )}
                 <p className="mt-1 text-xs tabular-nums text-white/80">
                   {playbackTimeLabel(e.seconds)} / {playbackTimeLabel(e.duration)}

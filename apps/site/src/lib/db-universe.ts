@@ -1498,14 +1498,27 @@ export const dbUniverse = {
       return e?.url ? { url: e.url, headers: e.headers ?? {} } : null;
     }),
 
-  episodes: (series?: string, limit = 50, offset = 0, query?: string, mediaLang?: VideoLanguage) =>
+  episodes: (
+    series?: string,
+    limit = 50,
+    offset = 0,
+    query?: string,
+    mediaLang?: VideoLanguage,
+    sort: "catalogue" | "recent" | "title" = "catalogue",
+  ) =>
     safe(async () => {
       const predicate = episodeQueryPredicate(series, query, mediaLang);
       const rows = await db
         .select()
         .from(botEpisodes)
         .where(predicate)
-        .orderBy(asc(botEpisodes.series), asc(botEpisodes.numberInSeries), asc(botEpisodes.id))
+        .orderBy(
+          ...(sort === "recent"
+            ? [sql`${botEpisodes.airDate} desc nulls last`, desc(botEpisodes.id)]
+            : sort === "title"
+              ? [asc(botEpisodes.title), asc(botEpisodes.id)]
+              : [asc(botEpisodes.series), asc(botEpisodes.numberInSeries), asc(botEpisodes.id)]),
+        )
         .limit(limit)
         .offset(offset);
       const [{ n }] = await db

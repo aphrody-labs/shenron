@@ -32,5 +32,11 @@
   "partialCatalogue": "一部のシリーズを読み込めませんでした。後でもう一度お試しください。",
   "navigation": "動画ライブラリー",
   "episodes": "エピソード",
-  "films": "映画"
+  "films": "映画",
+  "languageLabel": "バージョン",
+  "allLanguages": "すべてのバージョン",
+  "sortLabel": "並べ替え",
+  "sortCatalogue": "カタログ順",
+  "sortRecent": "新しい順",
+  "sortTitle": "タイトル順"
 }
