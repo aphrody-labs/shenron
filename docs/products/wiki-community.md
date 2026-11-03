@@ -97,6 +97,27 @@ d’une colorisation française ne devient pas une édition officielle. L’asso
 fiche doit rester justifiée par la source ; une image absente ne se remplace pas par une
 illustration inventée présentée comme officielle.
 
+### Publication des images de cartes
+
+`POST /api/admin/cards/images` complète le propriétaire d’import des cartes par un
+chemin limité aux images. Les identités utilisent le jeu de cartes, le numéro, la langue
+et la région ; une ressemblance de nom ne prouve pas une association. Les miniatures
+officielles restent décrites comme des miniatures, sans inventer une finition ou une
+variante absente du modèle et des sources.
+
+Un aperçu prépare les valeurs avant/après et les empreintes de précondition. La validation
+du lot conserve ces identités et ce plan ; les images publiées sont relues et décodées,
+avec comparaison de leurs dimensions et de leur empreinte. Les lignes sont verrouillées
+dans un ordre déterministe. La mise à jour des seuls champs d’image et son journal strict
+partagent la transaction ; un échec annule le lot entier. L’import ne change ni le statut,
+ni la rareté, ni les autres métadonnées des cartes.
+
+La restauration utilise la révision persistée et une nouvelle précondition sur la ligne
+actuelle. Un ancien état sans image doit pouvoir retrouver ses valeurs nulles. L’historique
+d’une ancienne image ne doit pas être assimilé à une nouvelle publication : sa restauration
+doit conserver les valeurs enregistrées, avec les contrôles d’accès et d’intégrité applicables.
+Une révision seule ne prouve pas qu’un retour arrière fonctionne ; qualifier le chemin réel.
+
 Les preuves datées, captures et matrices de routes se conservent dans
 `var/reports/wiki-redesign-20261103/`, hors documentation de référence. Vérifier les
 exclusions, les changements de langue, les images réellement chargées, le clavier,

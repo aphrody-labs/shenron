@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db, schema } from "@/lib/db";
 import { getCurrentUser, requireAdmin, revisionActorOf } from "@/lib/session";
+import { validateCardImageEvidence } from "@/lib/card-image-contract";
 import { recordRevisionStrict } from "@/lib/wiki-revisions";
 import {
   CARD_IMPORT_MAX_BYTES as MAX_IMPORT_BYTES,
@@ -37,45 +38,7 @@ const cardImportRow = z
     status: z.enum(["draft", "published"]).optional(),
   })
   .strict()
-  .superRefine((row, context) => {
-    if (
-      (row.frontImageWidth === undefined) !== (row.frontImageHeight === undefined) ||
-      ((row.frontImageWidth !== undefined || row.frontImageHeight !== undefined) &&
-        !row.frontImageUrl)
-    ) {
-      context.addIssue({
-        code: "custom",
-        message: "Front image dimensions must be supplied together with the image",
-        path: ["frontImageWidth"],
-      });
-    }
-    const imageFields = [row.frontImageUrl, row.frontImageSourceUrl, row.frontImageRights];
-    if (imageFields.some(Boolean) && !imageFields.every(Boolean)) {
-      context.addIssue({
-        code: "custom",
-        message: "Image URL, source and rights must be provided together",
-        path: ["frontImageUrl"],
-      });
-      return;
-    }
-    if (row.frontImageUrl) {
-      const imageUrl = new URL(row.frontImageUrl);
-      const sourceUrl = new URL(row.frontImageSourceUrl!);
-      if (
-        imageUrl.protocol !== "https:" ||
-        imageUrl.hostname !== "cdn.dragonballfr.com" ||
-        !/^\/publications\/[a-z0-9-]+\/objects\/[a-f0-9]{64}\.[a-z0-9]+$/.test(imageUrl.pathname) ||
-        sourceUrl.protocol !== "https:"
-      ) {
-        context.addIssue({
-          code: "custom",
-          message:
-            "Imported card images must use a content-addressed DBFR CDN URL and HTTPS source",
-          path: ["frontImageUrl"],
-        });
-      }
-    }
-  });
+  .superRefine(validateCardImageEvidence);
 
 type ImportIssueCode =
   | "invalid-json"
