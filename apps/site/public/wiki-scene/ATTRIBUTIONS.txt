@@ -1,0 +1,20 @@
+Portail wiki Dragon Ball France — sources des illustrations
+
+Goku (PNG raster) : Toei Animation, Dragon Ball Kai.
+https://www.toei-anim.co.jp/tv/dragon_kai/character/
+
+Kid Buu (PNG raster) : Bandai Namco, Dragon Ball FighterZ.
+https://dba.bn-ent.net/character/majinboo.html
+
+Shenron (PNG raster) : XenoFrance, Maxiuchiha22, Dokkan Battle.
+https://www.xenofrance.fr/shenron
+Ces provenances ne constituent pas une licence ouverte de redistribution.
+
+Les photogrammes de fond proviennent des mêmes sources que l'accueil DBFR :
+https://dragonballfr.com/wiki/episodes/875
+https://dragonballfr.com/wiki/episodes/876
+Le registre HOME_HERO_FRAMES conserve les URL CDN, dimensions et repères temporels
+des extractions existantes. Le portail n'utilise pas le photogramme 240 s de
+l'épisode de catalogue 876, qui contient un sous-titre.
+
+Dragon Ball et ses personnages : © Bird Studio / Shueisha / Toei Animation.
