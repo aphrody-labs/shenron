@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "skills": [
+    {
+      "name": "ui-ux-pro-max",
+      "repository": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill.git",
+      "commit": "713eef51b04efc98d6fa565323b495f7c9c89fd4",
+      "parts": {
+        ".claude/skills/ui-ux-pro-max/SKILL.md": "SKILL.md",
+        ".claude/skills/ui-ux-pro-max/references": "references",
+        "src/ui-ux-pro-max/data": "data",
+        "src/ui-ux-pro-max/scripts": "scripts",
+        "src/ui-ux-pro-max/templates": "templates",
+        "LICENSE": "LICENSE"
+      }
+    },
+    {
+      "name": "3dviz-pro-max",
+      "repository": "https://github.com/viettranx/3dviz-pro-max.git",
+      "commit": "d077e0e68915c25be8e71d74684d3144fd1c2aca",
+      "parts": {
+        "skills/3dviz-pro-max": ".",
+        "LICENSE": "LICENSE"
+      }
+    }
+  ]
+}

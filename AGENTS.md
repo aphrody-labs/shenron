@@ -329,6 +329,17 @@ défaut `ssh:prod`), `SHENRON_DEPLOY_COMMAND`, `SHENRON_ACTIVE_COMMAND`, `SHENRO
 
 ## Portes et invariants
 
+### Direction artistique et UI UX du monorepo
+
+- Les outils visuels globaux UI/UX Pro Max et 3dviz Pro Max sont épinglés dans `.agents/visual-skills.lock.json` ; installation reproductible par `bun scripts/ops/install-visual-skills.ts`, vérification par `--check`. Lire le skill 3dviz global pour les scènes 3D, sa composition et ses contrats Blender/glTF ; ses exemples WebGL ne sont pas compatibles avec la contrainte WebGPU du propriétaire.
+
+- Lire `.agents/skills/ui-ux-pro-max/SKILL.md` pour les interfaces, puis les références utiles. `UPSTREAM.json` conserve la provenance. Confronter les recommandations au produit ; ne pas appliquer automatiquement un thème généré.
+- La direction propriétaire du 3 novembre 2026 demande un wiki illustré immersif, avec Goku, Kid Buu et Shenron, toutes les rubriques également accessibles et peu de défilement inutile. Les héros génériques et les grilles répétitives ne sont pas la cible.
+- Les nouvelles scènes utilisent WebGPU explicitement, jamais WebGL ni un repli automatique WebGL. Les contenus et liens restent disponibles en HTML/SVG sans GPU. Le CSS original et React consomment les rôles sémantiques partagés ; ne pas créer de palette parallèle.
+- Contrôler clavier, focus, contrastes, lisibilité, mouvement réduit, pause et destruction des ressources. Un canvas ne doit jamais être le seul accès à une rubrique.
+- Les interfaces Rust et desktop partagent ces contrats visuels et préférences. Respecter leurs propriétaires ; ne pas transformer un travail UI en réécriture du backend.
+- Les builds, serveurs de compilation automatique et déploiements restent arrêtés sur instruction du propriétaire jusqu’à nouvelle instruction. Une modification source ne prouve ni qualification en exécution ni publication.
+
 - `bun install --frozen-lockfile`, `bun run typecheck`, `bun run test`, `bun run lint` ; Rust :
   `bun run clippy:rust`, `bun run test:rust`. La CI GitHub : `ci.yml` pour Bun, `rust.yml` pour
   Rust (actif avec le secret `APHRODY_GIT_TOKEN`).

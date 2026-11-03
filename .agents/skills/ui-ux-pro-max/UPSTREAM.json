@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill",
+  "commit": "713eef51b04efc98d6fa565323b495f7c9c89fd4",
+  "installer": "ui-ux-pro-max-cli@2.15.0",
+  "installedAt": "2026-11-03T21:53:19.979Z",
+  "canonicalFilesVerified": 98,
+  "scope": "repository Codex skill, complete canonical data/scripts/templates and reference documentation",
+  "backup": "var/backups/ui-ux-pro-max-before-full-install"
+}
