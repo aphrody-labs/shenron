@@ -1876,7 +1876,12 @@ export default async function CharacterPage({
     });
   }
 
-  const supplementalPanels = panels.filter((panel) => panel.group === versionT("anecdotes"));
+  const supplementalPanelKeys = new Set(["voix", "equipe-animation"]);
+  const supplementalPanels = panels.filter(
+    (panel) =>
+      panel.group === versionT("anecdotes") ||
+      supplementalPanelKeys.has(panel.key.toLocaleLowerCase()),
+  );
   const characterSources = internalWikiSources(character.articleSources);
   const hasInlineSourceReferences = contentPanels.some((panel) =>
     /source|référence|reference/i.test(`${panel.key} ${panel.label}`),
