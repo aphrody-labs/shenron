@@ -7,12 +7,14 @@ volets selon l'architecture à trois couches ; en cas d'écart, le code fait foi
 
 ## Direction immersive du wiki
 
-La demande propriétaire du 3 novembre 2026 fait évoluer le portail vers une scène
-illustrée navigable, avec Goku, Kid Buu et Shenron, et une visibilité équivalente pour
-les rubriques du wiki. Les composants ne doivent pas reconduire automatiquement les
-grandes introductions vides, les portraits de remplissage ou les grilles répétitives.
-Le nouveau rendu utilise WebGPU explicitement, sans création de contexte WebGL.
-La recherche, les liens et la navigation restent utilisables dans le DOM et en SVG.
+La correction propriétaire du 4 novembre 2026 exige la continuité avec l’accueil
+réel de DBFR. La piste d’atlas illustré est rejetée : ses îlots schématiques, ses
+libellés plaqués et ses fenêtres composent un autre produit. La direction courante
+est décrite dans [wiki-art-direction.md](wiki-art-direction.md) : images authentiques,
+composition cinématographique, typographie commune, navigation éditoriale compacte
+et visibilité équivalente des rubriques. Goku, Kid Buu et Shenron restent les mascottes.
+Les grandes introductions vides, les portraits de remplissage et les grilles
+répétitives ne sont pas la cible. Les liens restent natifs et utilisables sans GPU.
 
 Le skill complet UI/UX Pro Max est installé dans `.agents/skills/ui-ux-pro-max/` :
 catalogues, scripts, modèles et références. `UPSTREAM.json` épingle sa provenance.
@@ -21,8 +23,8 @@ page FAQ ou de palette générique ne définit pas la direction artistique du wi
 
 La palette, la typographie, les niveaux de profondeur, les espacements et les rôles
 du mouvement restent des contrats partagés. React porte la structure sémantique et
-la navigation ; le moteur de scène porte le dessin. Les interfaces Rust concernées
-doivent consommer les mêmes décisions plutôt que maintenir une seconde palette.
+la navigation ; le traitement visuel sert les contenus et la découverte. Les interfaces
+Rust concernées doivent consommer les mêmes décisions plutôt que maintenir une seconde palette.
 Les tokens générés ne se modifient pas à la main. La présence du skill ne prouve pas
 que les anciens composants ont déjà été migrés ou que le rendu a été qualifié.
 
@@ -57,9 +59,10 @@ une application déjà ouverte.
 
 3dviz guide la composition, les silhouettes, la lumière, le transfert Blender/glTF
 et l'inspection. Ses modèles Three.js ne sont pas copiés aveuglément : leur repli
-WebGL est incompatible avec ce projet. Pixi porte la scène illustrée en WebGPU ;
-Three sert les objets 3D pertinents, à chargement différé et avec un backend
-WebGPU explicite. `shenron-gpu` reste propriétaire des capacités wgpu Rust.
+WebGL est incompatible avec ce projet. Les adaptateurs Pixi et Three restent des
+capacités disponibles ; leur présence ne justifie pas leur montage sur le portail.
+Un rendu GPU pertinent utilise exclusivement WebGPU, à chargement différé.
+`shenron-gpu` reste propriétaire des capacités wgpu Rust.
 Les captures d'épisodes et planches couleur alimentent des découpes traçables :
 un recadrage raster n'est ni un SVG vectoriel ni un personnage détouré.
 
