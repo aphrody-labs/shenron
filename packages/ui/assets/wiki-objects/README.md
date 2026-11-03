@@ -2,7 +2,8 @@
 
 `dragon-ball-one-star.svg` et `senzu-icon.svg` sont des illustrations mesurées,
 distinctes des images officielles. Le héros commun du wiki emploie ces petits
-décors de 32 px selon son thème, avec `alt=""` et `aria-hidden="true"`. Les images
+décors de 32 px uniquement sur les catalogues d’objets (senzu) et de sagas (sphère),
+avec `alt=""` et `aria-hidden="true"`. Les images
 du catalogue restent présentes. Ce lot ne prétend pas que les nouveaux fichiers
 sont déjà servis en production.
 Les SVG ne contiennent que des primitives vectorielles, un dégradé et un découpage

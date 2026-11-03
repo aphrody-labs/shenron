@@ -6,7 +6,7 @@ import styles from "./wiki-measured-artwork.module.css";
 /** A small measured illustration supplements a label without describing official artwork. */
 export function WikiMeasuredArtwork({ subject }: { subject: "sphere" | "senzu" }) {
   // Next emits static image metadata; Bun's source-level SSR tests return a file URL.
-  const artwork = (subject === "sphere" ? sphere : senzu) as string | { src: string };
+  const artwork = subject === "sphere" ? sphere : senzu;
   const src = typeof artwork === "string" ? artwork : artwork.src;
   return (
     <img

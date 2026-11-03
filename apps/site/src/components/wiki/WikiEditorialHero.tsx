@@ -24,12 +24,7 @@ export function WikiEditorialHero({
   category?: string;
 }) {
   const topic = wikiVisualTopic(category);
-  const measuredSubject =
-    topic === "namek" || topic === "community"
-      ? "senzu"
-      : topic === "adventure" || topic === "energy"
-        ? "sphere"
-        : null;
+  const measuredSubject = category === "items" ? "senzu" : category === "sagas" ? "sphere" : null;
   return (
     <header className={styles.hero} data-wiki-topic={topic}>
       <div className={styles.heroInner}>

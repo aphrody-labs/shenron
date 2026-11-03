@@ -22,18 +22,22 @@ test("measured decoration leaves the label as the accessible content and reserve
 test("hero uses measured theme decoration while preserving the catalogue image and heading", () => {
   const html = renderToStaticMarkup(
     <WikiEditorialHero
-      category="races"
-      eyebrow="Races"
-      title="The peoples"
+      category="items"
+      eyebrow="Items"
+      title="Objects"
       image="/catalogue-source.svg"
       imageAlt="Catalogue source"
     />,
   );
   expect(html).toContain("senzu-icon.svg");
-  expect(html).toContain('data-wiki-topic="namek"');
+  expect(html).toContain('data-wiki-topic="capsule"');
   expect(html).toContain('src="/catalogue-source.svg"');
   expect(html).toContain('alt="Catalogue source"');
   expect(html.match(/<h1\b/g)).toHaveLength(1);
+  const sagas = renderToStaticMarkup(
+    <WikiEditorialHero category="sagas" eyebrow="Sagas" title="Dragon Ball" />,
+  );
+  expect(sagas).toContain("dragon-ball-one-star.svg");
   const portal = renderToStaticMarkup(<WikiEditorialHero eyebrow="Wiki" title="Dragon Ball" />);
-  expect(portal).toContain("dragon-ball-one-star.svg");
+  expect(portal).not.toContain("data-measured-illustration");
 });
