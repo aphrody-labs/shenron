@@ -101,7 +101,7 @@
   gap: 2rem;
   max-width: var(--wiki-shell-max, 1440px);
   margin-inline: auto;
-  padding: clamp(2.25rem, 6vw, 5rem) var(--wiki-shell-pad, clamp(1rem, 3.5vw, 3rem));
+  padding: clamp(1rem, 2.5vw, 2rem) var(--wiki-shell-pad, clamp(1rem, 3.5vw, 3rem));
 }
 
 .heroCopy {
@@ -125,7 +125,7 @@
 .heroTitle {
   color: var(--wiki-paper);
   font-family: var(--font-display), sans-serif;
-  font-size: clamp(2.3rem, 1.3rem + 3.8vw, 5rem);
+  font-size: clamp(1.8rem, 1.1rem + 2.4vw, 3rem);
   font-weight: 850;
   line-height: 1.04;
   letter-spacing: -0.055em;
@@ -143,6 +143,7 @@
 }
 
 .heroArtwork {
+  max-block-size: var(--wiki-header-artwork-max, 14rem);
   position: relative;
   min-width: 0;
   aspect-ratio: 16 / 10;
