@@ -52,7 +52,22 @@
     "episodeUrl": "Fiche de l’épisode",
     "episodeImage": "Illustration de l’épisode",
     "battleImage": "Illustration du combat",
-    "battleImageAlt": "Description de l’illustration"
+    "battleImageAlt": "Description de l’illustration",
+    "combatants": "Participants",
+    "combatantsHelp": "Ajoutez chaque participant et répartissez-les entre les deux camps. Un combat doit avoir au moins deux participants et deux camps.",
+    "combatantName": "Nom affiché",
+    "combatantCharacterId": "Personnage du wiki (facultatif)",
+    "combatantRole": "Rôle (facultatif)",
+    "combatantSide": "Camp",
+    "sideA": "Camp A",
+    "sideB": "Camp B",
+    "sideNeutral": "Neutre",
+    "addCombatant": "Ajouter un participant",
+    "removeCombatant": "Retirer",
+    "techniquesUsed": "Techniques utilisées",
+    "techniquesUsedHelp": "Ajoutez les techniques marquantes du combat, si elles sont connues.",
+    "addTechnique": "Ajouter une technique",
+    "removeTechnique": "Retirer"
   },
   "characterEditor": {
     "eyebrow": "Assistant d’édition du wiki",

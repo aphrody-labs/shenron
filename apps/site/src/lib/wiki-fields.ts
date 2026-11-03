@@ -164,6 +164,71 @@ export function buildSubmitBody(
   const body: Record<string, unknown> = {};
   for (const c of cols) {
     const o = original?.[c];
+    if (opts.table === "db_battles" && (c === "combatants" || c === "techniquesUsed")) {
+      try {
+        const parsed: unknown = JSON.parse(draft[c] || "[]");
+        if (!Array.isArray(parsed)) continue;
+        if (c === "combatants") {
+          const combatants: Array<{
+            characterId?: number;
+            name: string;
+            role?: string;
+            side: "a" | "b" | "neutral";
+          }> = parsed
+            .filter(
+              (item): item is Record<string, unknown> =>
+                item !== null && typeof item === "object" && !Array.isArray(item),
+            )
+            .map((item) => {
+              const combatant: {
+                characterId?: number;
+                name: string;
+                role?: string;
+                side: "a" | "b" | "neutral";
+              } = {
+                name: typeof item.name === "string" ? item.name.trim() : "",
+                side: item.side === "b" ? "b" : item.side === "neutral" ? "neutral" : "a",
+              };
+              const characterId = Number(item.characterId);
+              if (Number.isSafeInteger(characterId) && characterId > 0) {
+                combatant.characterId = characterId;
+              }
+              if (typeof item.role === "string" && item.role.trim()) {
+                combatant.role = item.role.trim();
+              }
+              return combatant;
+            });
+          if (
+            combatants.length >= 2 &&
+            combatants.every((item) => item.name.length > 0) &&
+            combatants.some((item) => item.side === "a") &&
+            combatants.some((item) => item.side === "b")
+          ) {
+            body[c] = combatants;
+          }
+        } else {
+          body[c] = parsed
+            .flatMap((item) => {
+              if (typeof item === "string") return [item];
+              if (
+                item !== null &&
+                typeof item === "object" &&
+                !Array.isArray(item) &&
+                typeof item.value === "string"
+              ) {
+                return [item.value];
+              }
+              return [];
+            })
+            .map((item) => item.trim())
+            .filter(Boolean);
+        }
+      } catch {
+        // Keep invalid JSON out of the request; the battle editor prevents save
+        // until its structured fields contain a valid value.
+      }
+      continue;
+    }
     if (
       opts.table === "db_character_variants" &&
       (c === "transformationIds" || c === "techniqueIds")

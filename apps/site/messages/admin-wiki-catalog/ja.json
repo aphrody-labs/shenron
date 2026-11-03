@@ -52,7 +52,22 @@
     "episodeUrl": "エピソードページ",
     "episodeImage": "エピソードの画像",
     "battleImage": "戦闘の画像",
-    "battleImageAlt": "画像の説明"
+    "battleImageAlt": "画像の説明",
+    "combatants": "参加者",
+    "combatantsHelp": "参加者を追加し、2つの陣営に分けます。戦闘には2名以上、2つの陣営が必要です。",
+    "combatantName": "表示名",
+    "combatantCharacterId": "Wikiのキャラクター（任意）",
+    "combatantRole": "役割（任意）",
+    "combatantSide": "陣営",
+    "sideA": "陣営A",
+    "sideB": "陣営B",
+    "sideNeutral": "中立",
+    "addCombatant": "参加者を追加",
+    "removeCombatant": "削除",
+    "techniquesUsed": "使用技",
+    "techniquesUsedHelp": "判明している場合、戦闘中の主な技を追加します。",
+    "addTechnique": "技を追加",
+    "removeTechnique": "削除"
   },
   "characterEditor": {
     "eyebrow": "Wiki編集ガイド",

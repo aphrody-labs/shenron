@@ -52,7 +52,22 @@
     "episodeUrl": "Episode page",
     "episodeImage": "Episode illustration",
     "battleImage": "Battle illustration",
-    "battleImageAlt": "Illustration description"
+    "battleImageAlt": "Illustration description",
+    "combatants": "Combatants",
+    "combatantsHelp": "Add each participant and assign them to one of the two sides. A battle needs at least two participants across two sides.",
+    "combatantName": "Display name",
+    "combatantCharacterId": "Wiki character (optional)",
+    "combatantRole": "Role (optional)",
+    "combatantSide": "Side",
+    "sideA": "Side A",
+    "sideB": "Side B",
+    "sideNeutral": "Neutral",
+    "addCombatant": "Add combatant",
+    "removeCombatant": "Remove",
+    "techniquesUsed": "Techniques used",
+    "techniquesUsedHelp": "Add notable techniques from the battle, when known.",
+    "addTechnique": "Add technique",
+    "removeTechnique": "Remove"
   },
   "characterEditor": {
     "eyebrow": "Wiki editing guide",

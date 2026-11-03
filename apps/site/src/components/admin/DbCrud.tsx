@@ -49,7 +49,22 @@ type AdminWikiFieldKey =
   | "fields.supervisorSlug"
   | "fields.keyAnimators"
   | "fields.episodeUrl"
-  | "fields.episodeImage";
+  | "fields.episodeImage"
+  | "fields.combatants"
+  | "fields.combatantsHelp"
+  | "fields.combatantName"
+  | "fields.combatantCharacterId"
+  | "fields.combatantRole"
+  | "fields.combatantSide"
+  | "fields.sideA"
+  | "fields.sideB"
+  | "fields.sideNeutral"
+  | "fields.addCombatant"
+  | "fields.removeCombatant"
+  | "fields.techniquesUsed"
+  | "fields.techniquesUsedHelp"
+  | "fields.addTechnique"
+  | "fields.removeTechnique";
 
 /**
  * Client + chemin CRUD pour une table :
@@ -334,13 +349,29 @@ function FieldModal({
 }) {
   const adminCatalogText = useAdminCatalogText();
   const [draft, setDraft] = useState<Record<string, string>>({});
+  const battleCombatants = table === "db_battles" ? parseCombatants(draft.combatants ?? "[]") : [];
+  const battleIsValid =
+    table !== "db_battles" ||
+    (battleCombatants.length >= 2 &&
+      battleCombatants.every((item) => item.name.trim().length > 0) &&
+      battleCombatants.some((item) => item.side === "a") &&
+      battleCombatants.some((item) => item.side === "b"));
 
   // Réhydrate quand la ligne canonique arrive (édition).
   useEffect(() => {
     setDraft(
-      Object.fromEntries(columns.map((c) => [c, initial[c] != null ? String(initial[c]) : ""])),
+      Object.fromEntries(
+        columns.map((c) => [
+          c,
+          table === "db_battles" && (c === "combatants" || c === "techniquesUsed")
+            ? JSON.stringify(Array.isArray(initial[c]) ? initial[c] : [])
+            : initial[c] != null
+              ? String(initial[c])
+              : "",
+        ]),
+      ),
     );
-  }, [columns, initial]);
+  }, [columns, initial, table]);
 
   const submit = () => {
     onSave(buildSubmitBody(draft, initial, columns, { mode, table }));
@@ -373,23 +404,37 @@ function FieldModal({
             {columns.map((c) => (
               <div key={c}>
                 <label className="mb-1 block text-xs font-semibold uppercase tracking-wider text-dbz-blue-light">
-                  {table === "db_character_variant_staff_credits" && c === "image"
-                    ? adminCatalogText("fields.episodeImage")
-                    : table === "db_character_variant_technique_uses" ||
-                        table === "db_character_variant_appearances" ||
-                        table === "db_character_variant_staff_credits" ||
-                        table === "db_character_variant_voice_actors"
-                      ? adminCatalogText(`fields.${c}` as AdminWikiFieldKey)
-                      : colLabel(c)}
+                  {table === "db_battles" && (c === "combatants" || c === "techniquesUsed")
+                    ? adminCatalogText(`fields.${c}` as AdminWikiFieldKey)
+                    : table === "db_character_variant_staff_credits" && c === "image"
+                      ? adminCatalogText("fields.episodeImage")
+                      : table === "db_character_variant_technique_uses" ||
+                          table === "db_character_variant_appearances" ||
+                          table === "db_character_variant_staff_credits" ||
+                          table === "db_character_variant_voice_actors"
+                        ? adminCatalogText(`fields.${c}` as AdminWikiFieldKey)
+                        : colLabel(c)}
                   <span className="ml-2 font-mono text-white/25 normal-case font-normal">{c}</span>
                 </label>
-                <SmartField
-                  table={table}
-                  col={c}
-                  value={draft[c] ?? ""}
-                  original={initial[c]}
-                  onChange={(v) => setDraft((d) => ({ ...d, [c]: v }))}
-                />
+                {table === "db_battles" && c === "combatants" ? (
+                  <BattleCombatantsField
+                    value={draft[c] ?? "[]"}
+                    onChange={(v) => setDraft((d) => ({ ...d, [c]: v }))}
+                  />
+                ) : table === "db_battles" && c === "techniquesUsed" ? (
+                  <BattleTechniquesField
+                    value={draft[c] ?? "[]"}
+                    onChange={(v) => setDraft((d) => ({ ...d, [c]: v }))}
+                  />
+                ) : (
+                  <SmartField
+                    table={table}
+                    col={c}
+                    value={draft[c] ?? ""}
+                    original={initial[c]}
+                    onChange={(v) => setDraft((d) => ({ ...d, [c]: v }))}
+                  />
+                )}
               </div>
             ))}
           </div>
@@ -402,7 +447,7 @@ function FieldModal({
           <button
             type="button"
             onClick={submit}
-            disabled={saving || loading}
+            disabled={saving || loading || !battleIsValid}
             className="btn btn-primary"
           >
             <Enregistrer className="h-3 w-3" />
@@ -410,6 +455,229 @@ function FieldModal({
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+type BattleSide = "a" | "b" | "neutral";
+type BattleCombatant = {
+  characterId?: number;
+  editorKey: string;
+  name: string;
+  role?: string;
+  side: BattleSide;
+};
+
+function parseCombatants(value: string): BattleCombatant[] {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter(
+        (item): item is Record<string, unknown> =>
+          item !== null && typeof item === "object" && !Array.isArray(item),
+      )
+      .map((item, index) => {
+        const combatant: BattleCombatant = {
+          editorKey:
+            typeof item.editorKey === "string"
+              ? item.editorKey
+              : `${index}-${String(item.characterId ?? item.name ?? "new")}`,
+          name: typeof item.name === "string" ? item.name : "",
+          side: item.side === "b" || item.side === "neutral" ? item.side : "a",
+        };
+        const characterId = Number(item.characterId);
+        if (Number.isSafeInteger(characterId) && characterId > 0) {
+          combatant.characterId = characterId;
+        }
+        if (typeof item.role === "string") combatant.role = item.role;
+        return combatant;
+      });
+  } catch {
+    return [];
+  }
+}
+
+function parseStringList(value: string): Array<{ editorKey: string; value: string }> {
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.flatMap((item, index) => {
+      if (typeof item === "string") return [{ editorKey: `${index}-${item}`, value: item }];
+      if (item !== null && typeof item === "object" && typeof item.value === "string") {
+        return [
+          {
+            editorKey:
+              typeof item.editorKey === "string" ? item.editorKey : `${index}-${item.value}`,
+            value: item.value,
+          },
+        ];
+      }
+      return [];
+    });
+  } catch {
+    return [];
+  }
+}
+
+function BattleCombatantsField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const t = useAdminCatalogText();
+  const combatants = parseCombatants(value);
+  const update = (next: BattleCombatant[]) => onChange(JSON.stringify(next));
+  const sideLabels: Record<BattleSide, string> = {
+    a: t("fields.sideA"),
+    b: t("fields.sideB"),
+    neutral: t("fields.sideNeutral"),
+  };
+
+  return (
+    <div className="space-y-3">
+      <p className="text-xs text-white/55">{t("fields.combatantsHelp")}</p>
+      {combatants.map((combatant, index) => (
+        <fieldset
+          key={combatant.editorKey}
+          className="grid min-w-0 gap-2 rounded-lg border border-dbz-border/50 p-3 sm:grid-cols-2"
+        >
+          <legend className="px-1 text-[10px] uppercase tracking-wider text-dbz-blue-light">
+            {t("fields.combatants")} {index + 1}
+          </legend>
+          <input
+            className="input min-w-0 text-sm"
+            aria-label={t("fields.combatantName")}
+            placeholder={t("fields.combatantName")}
+            value={combatant.name}
+            onChange={(event) => {
+              const next = [...combatants];
+              next[index] = { ...combatant, name: event.target.value };
+              update(next);
+            }}
+          />
+          <label className="min-w-0">
+            <span className="mb-1 block text-xs text-white/55">
+              {t("fields.combatantCharacterId")}
+            </span>
+            <SmartField
+              table="db_character_relations"
+              col="relatedCharacterId"
+              value={combatant.characterId ? String(combatant.characterId) : ""}
+              original={combatant.characterId}
+              onChange={(nextValue) => {
+                const next = [...combatants];
+                const characterId = Number(nextValue);
+                next[index] = {
+                  ...combatant,
+                  ...(Number.isSafeInteger(characterId) && characterId > 0 ? { characterId } : {}),
+                };
+                if (!(Number.isSafeInteger(characterId) && characterId > 0)) {
+                  delete next[index].characterId;
+                }
+                update(next);
+              }}
+            />
+          </label>
+          <input
+            className="input min-w-0 text-sm"
+            aria-label={t("fields.combatantRole")}
+            placeholder={t("fields.combatantRole")}
+            value={combatant.role ?? ""}
+            onChange={(event) => {
+              const next = [...combatants];
+              next[index] = { ...combatant, role: event.target.value };
+              update(next);
+            }}
+          />
+          <label className="flex min-w-0 items-center gap-2 text-xs text-white/65">
+            <span className="shrink-0">{t("fields.combatantSide")}</span>
+            <select
+              className="input min-w-0 text-sm"
+              aria-label={t("fields.combatantSide")}
+              value={combatant.side}
+              onChange={(event) => {
+                const next = [...combatants];
+                next[index] = { ...combatant, side: event.target.value as BattleSide };
+                update(next);
+              }}
+            >
+              {(["a", "b", "neutral"] as const).map((side) => (
+                <option key={side} value={side}>
+                  {sideLabels[side]}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button
+            type="button"
+            className="btn btn-ghost justify-self-start text-xs"
+            aria-label={`${t("fields.removeCombatant")} ${index + 1}`}
+            onClick={() => update(combatants.filter((_, itemIndex) => itemIndex !== index))}
+          >
+            {t("fields.removeCombatant")}
+          </button>
+        </fieldset>
+      ))}
+      <button
+        type="button"
+        className="btn btn-ghost text-xs"
+        onClick={() =>
+          update([...combatants, { editorKey: crypto.randomUUID(), name: "", side: "a" }])
+        }
+      >
+        {t("fields.addCombatant")}
+      </button>
+    </div>
+  );
+}
+
+function BattleTechniquesField({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  const t = useAdminCatalogText();
+  const techniques = parseStringList(value);
+  const update = (next: Array<{ editorKey: string; value: string }>) =>
+    onChange(JSON.stringify(next));
+
+  return (
+    <div className="space-y-2">
+      <p className="text-xs text-white/55">{t("fields.techniquesUsedHelp")}</p>
+      {techniques.map((technique, index) => (
+        <div key={technique.editorKey} className="flex min-w-0 items-center gap-2">
+          <input
+            className="input min-w-0 flex-1 text-sm"
+            aria-label={`${t("fields.techniquesUsed")} ${index + 1}`}
+            value={technique.value}
+            onChange={(event) => {
+              const next = [...techniques];
+              next[index] = { ...technique, value: event.target.value };
+              update(next);
+            }}
+          />
+          <button
+            type="button"
+            className="btn btn-ghost text-xs"
+            aria-label={`${t("fields.removeTechnique")} ${index + 1}`}
+            onClick={() => update(techniques.filter((_, itemIndex) => itemIndex !== index))}
+          >
+            {t("fields.removeTechnique")}
+          </button>
+        </div>
+      ))}
+      <button
+        type="button"
+        className="btn btn-ghost text-xs"
+        onClick={() => update([...techniques, { editorKey: crypto.randomUUID(), value: "" }])}
+      >
+        {t("fields.addTechnique")}
+      </button>
     </div>
   );
 }
