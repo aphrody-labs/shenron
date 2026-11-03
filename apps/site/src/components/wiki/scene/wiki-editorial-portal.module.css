@@ -53,6 +53,12 @@
 .cinema > div {
   /* Release the frames wrapper's z0 context: the image stack stays below z1 text, while its z4 controls remain clickable above it. */
   z-index: auto;
+  /* The home component becomes a relative 16:9 block on mobile; this portal needs the control anchor to span the complete directory instead. */
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
 }
 /* HomeHeroFrames owns motion. Its pressed-state control identifies the group without hashed module names; the directory reserves its own trailing control row. */
 .cinema div:has(> button[aria-pressed]) {
@@ -419,14 +425,40 @@
     flex-wrap: wrap;
   }
 }
+@media (max-width: 767px) {
+  /* Only the image stack is height-limited. The sibling controls remain anchored to the full opening, in the directory's reserved final row. */
+  .cinema > div > div:first-child {
+    bottom: auto;
+    height: min(26rem, 100%);
+  }
+  .cinema > div > div:first-child::after {
+    background:
+      linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--background) 88%, transparent) 0%,
+        color-mix(in srgb, var(--background) 82%, transparent) 48%,
+        color-mix(in srgb, var(--background) 58%, transparent) 78%,
+        color-mix(in srgb, var(--background) 30%, transparent) 100%
+      ),
+      linear-gradient(
+        0deg,
+        var(--background) 0%,
+        color-mix(in srgb, var(--background) 92%, transparent) 24%,
+        transparent 72%
+      );
+  }
+}
 @media (max-width: 700px) {
   .intro {
     min-height: 242px;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 90px;
+    gap: 14px;
+    align-items: start;
     padding-block: 23px 20px;
   }
   .heading {
-    max-width: 78%;
+    max-width: none;
   }
   .heading h1 {
     font-size: 36px;
@@ -449,28 +481,30 @@
     margin-inline-start: 0;
   }
   .signature {
-    width: 140px;
+    position: relative;
+    width: 90px;
     height: 190px;
-    top: 33px;
-    right: 0;
-    opacity: 0.62;
+    top: auto;
+    right: auto;
+    margin-top: 20px;
+    opacity: 0.8;
   }
   .mascot[data-mascot="shenron"] {
-    width: 175px;
-    height: 123px;
-    top: -22px;
-    right: -15px;
-    opacity: 0.45;
+    width: 115px;
+    height: 81px;
+    top: 0;
+    right: -4px;
+    opacity: 0.22;
   }
   .mascot[data-mascot="goku"] {
-    width: 79px;
-    height: 143px;
+    width: 62px;
+    height: 112px;
     left: 0;
   }
   .mascot[data-mascot="kid-buu"] {
-    width: 64px;
-    height: 117px;
-    left: 64px;
+    width: 50px;
+    height: 92px;
+    left: 40px;
   }
   .directoryTitle {
     margin-bottom: 15px;

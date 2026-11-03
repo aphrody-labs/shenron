@@ -67,6 +67,7 @@ Puis vérifier clavier, focus, zoom, pause, mouvement réduit, ressources et abs
 de défilement horizontal. Un rendu HTML isolé reste une étude, pas une validation
 du produit. Les tests et les hashes prouvent leurs contrats, pas la qualité artistique.
 
-Les builds, serveurs de compilation et déploiements restent arrêtés sur instruction
-du propriétaire. Aucune modification source ne doit être présentée comme visible en
-production ou qualifiée dans l’application tant que ces portes ne sont pas exécutées.
+Le propriétaire a demandé le 4 novembre 2026 de reprendre le build et le déploiement
+du portail et de vérifier le vrai rendu dans Chrome desktop/mobile. Cette demande
+lève l’arrêt précédent pour cette livraison. Aucune modification source ne doit être
+présentée comme visible en production ou qualifiée avant l’exécution des portes.

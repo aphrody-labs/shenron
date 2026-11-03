@@ -34,9 +34,10 @@ Exemple de recherche locale, avec Bun et un Python déjà disponible :
 bun uv run --no-project --no-python-downloads .agents/skills/ui-ux-pro-max/scripts/search.py "keyboard focus navigation" --domain ux
 ```
 
-Les constructions et déploiements sont suspendus sur instruction du propriétaire.
-Conserver les contrôles de rendu, de clavier, de contraste et de ressources comme
-portes de livraison à exécuter lors de leur reprise ; ne pas les déclarer réussis.
+Le propriétaire a demandé le 4 novembre 2026 de reprendre la construction et le
+déploiement du portail, puis de contrôler le vrai rendu dans Chrome desktop/mobile.
+Les contrôles de rendu, de clavier, de contraste et de ressources sont des portes
+de livraison effectives ; un test DOM ne remplace pas la vérification en navigateur.
 
 ### Outils visuels épinglés et installation globale
 

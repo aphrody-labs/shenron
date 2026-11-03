@@ -339,7 +339,7 @@ défaut `ssh:prod`), `SHENRON_DEPLOY_COMMAND`, `SHENRON_ACTIVE_COMMAND`, `SHENRO
 - Les nouvelles scènes utilisent WebGPU explicitement, jamais WebGL ni un repli automatique WebGL. Les contenus et liens restent disponibles en HTML/SVG sans GPU. Le CSS original et React consomment les rôles sémantiques partagés ; ne pas créer de palette parallèle.
 - Contrôler clavier, focus, contrastes, lisibilité, mouvement réduit, pause et destruction des ressources. Un canvas ne doit jamais être le seul accès à une rubrique.
 - Les interfaces Rust et desktop partagent ces contrats visuels et préférences. Respecter leurs propriétaires ; ne pas transformer un travail UI en réécriture du backend.
-- Les builds, serveurs de compilation automatique et déploiements restent arrêtés sur instruction du propriétaire jusqu’à nouvelle instruction. Une modification source ne prouve ni qualification en exécution ni publication.
+- Le propriétaire a levé l’arrêt le 4 novembre 2026 pour construire, déployer et qualifier le portail wiki dans Chrome desktop/mobile. Sérialiser les livraisons par leur propriétaire technique et vérifier le rendu réellement publié ; une modification source seule ne prouve ni qualification ni publication. Ne pas lancer de build concurrent à la release suivie.
 
 - `bun install --frozen-lockfile`, `bun run typecheck`, `bun run test`, `bun run lint` ; Rust :
   `bun run clippy:rust`, `bun run test:rust`. La CI GitHub : `ci.yml` pour Bun, `rust.yml` pour
