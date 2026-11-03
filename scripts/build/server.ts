@@ -49,7 +49,7 @@ import {
 } from "node:fs";
 import { join, resolve } from "node:path";
 import { nextCommand } from "@aphrody/next-bun/run";
-import { flattenStandalone } from "@aphrody/next-bun/standalone";
+import { flattenStandaloneExternals } from "./standalone-externals";
 import { getHlsPublicAssets } from "@aphrody/bun-video/hls";
 import { stageVideoPublic } from "./video-assets";
 
@@ -178,7 +178,9 @@ rmSync(OUT, { recursive: true, force: true });
 const siteOut = join(OUT, "site");
 cpSync(standalone, siteOut, { recursive: true, verbatimSymlinks: true });
 // Bun's isolated store and its symlinks: the payload must not depend on symlinks (Windows).
-console.error(JSON.stringify({ label: "flatten-node-modules", ...flattenStandalone(siteOut) }));
+console.error(
+  JSON.stringify({ label: "flatten-node-modules", ...flattenStandaloneExternals(siteOut) }),
+);
 cpSync(join(SITE, "public"), join(siteOut, "apps/site/public"), {
   recursive: true,
   dereference: true,

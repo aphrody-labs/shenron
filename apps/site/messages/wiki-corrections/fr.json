@@ -1,0 +1,9 @@
+{
+  "back": "Revenir",
+  "title": "Proposer une correction",
+  "eyebrow": "Contribuer",
+  "invalid": "Ce lien ne désigne aucun contenu modifiable. Reviens à la fiche et utilise son lien de correction.",
+  "process": "Appuie ta correction sur une source précise. Un relecteur vérifiera ta proposition avant publication ; ta contribution sera créditée si elle est retenue.",
+  "sourcesIntro": "Le wiki se rédige sur le manga et les databooks.",
+  "sourcesLink": "Choisir une bonne source"
+}
