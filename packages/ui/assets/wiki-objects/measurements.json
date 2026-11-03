@@ -1,0 +1,91 @@
+{
+  "inspectedAt": "2026-11-03",
+  "classification": "measured-vector-illustration",
+  "officialImage": false,
+  "geometryOwners": [
+    "packages/ui/src/toriyama-svg/sphere.ts",
+    "packages/ui/src/toriyama-svg/senzu.ts"
+  ],
+  "sources": [
+    {
+      "subject": "one-star-sphere",
+      "url": "https://cdn.dragonballfr.com/assets/ext/db_manga_volumes/82.jpg",
+      "width": 1000,
+      "height": 1500,
+      "bytes": 231985,
+      "sha256": "a451fa785d144e647993cbf953db8a9fad0e2c17f507d1277d59797fe5fb63c6",
+      "inspectionCrop": [394, 114, 102, 104],
+      "role": "Cover illustration: sphere silhouette, single star and gradient. Inherited measurements, visually checked again."
+    },
+    {
+      "subject": "senzu-shape-palette",
+      "url": "https://dragonballfr.com/assets/manga/DBFC/ch150/012.jpg",
+      "width": 1662,
+      "height": 2560,
+      "bytes": 395287,
+      "sha256": "63ccd61808bfd6a4ba0ae7f25fb2cc060e52d1d44626365a88a2d4b03d8f350a",
+      "inspectionCrop": [1154, 1642, 35, 27],
+      "role": "French colourisation DBFC, not official colour attribution to Toriyama. Source B of the maintained measurements."
+    },
+    {
+      "subject": "senzu-angle",
+      "url": "https://dragonballfr.com/assets/manga/DBFC/ch88/012.jpg",
+      "width": 1662,
+      "height": 2560,
+      "bytes": 338760,
+      "sha256": "c022c17f659a41cdaf91e06f35ae0f9014f94f4108cce15c2619f1baa601a2f2",
+      "inspectionCrop": [318, 601, 38, 35],
+      "role": "Source A: icon inclination. Hilum orientation contradicts B; maintained B/D perpendicular construction retained."
+    },
+    {
+      "subject": "senzu-desaturated-control",
+      "url": "https://dragonballfr.com/assets/manga/DB/regular/vol13/059.webp",
+      "width": 1280,
+      "height": 1972,
+      "bytes": 156532,
+      "sha256": "da283ceb3e9f73b88705a7a2016b774e92d0f31fbed4a2d02dcab2e3bcd83a41",
+      "role": "Same page inspected; appears desaturated from colour. Does not establish original black-and-white ink or palette."
+    }
+  ],
+  "sphere": {
+    "viewBox": [0, 0, 512, 512],
+    "outerRadius": 256,
+    "innerRadius": 233,
+    "adaptedOutlineWidth": 23,
+    "gradientFocusInInnerRadii": [-0.3, -0.39],
+    "starOuterRadiusInInnerRadii": 0.412,
+    "starInnerOuterRatio": 0.45,
+    "starFill": "#e81f23",
+    "gradientEndpoints": ["#fdffea", "#ef9a2b"],
+    "sourceDocument": "docs/reference/couverture-analyse-visuelle.md",
+    "limitations": "Black outline is the maintained DBS-logo adaptation, absent from volume 1. Only the single star is measured; no multi-star layout is delivered."
+  },
+  "senzu": {
+    "lengthWidthRatio": 1.435,
+    "outlineLengthRatio": 0.09448818897637795,
+    "hilumPositionLengthRatio": 0.28,
+    "hilumExtentWidthRatio": 0.5,
+    "hilumOutlineThicknessRatio": 0.6666666666666666,
+    "iconAngleDegrees": -31.6,
+    "iconOccupation": 0.88,
+    "palette": { "light": "#bed37e", "cap": "#a8b26c", "ink": "#180c00" },
+    "sourceDocument": "docs/reference/senzu-analyse-visuelle.md",
+    "newControl": {
+      "method": "maintained mesurer.ts --sombre --seuil-sombre 0.35; mask and crop opened",
+      "inkBoundingBox": [1158, 1646, 27, 19],
+      "axisAlignedRatio": 1.421,
+      "medianInkThicknessPx": 3,
+      "darkTone": "#150c00"
+    },
+    "limitations": "Inherited median across small 22–34 px subjects; expected uncertainty about 3–5%. No original black-and-white close-up available."
+  },
+  "renderReview": {
+    "renderer": "ImageMagick, forced TORIYAMA_RASTER=magick; no browser automation",
+    "nativeSizes": [512, 128, 64, 32, 16],
+    "backgrounds": ["#ffffff", "#0a0a0a"],
+    "opened": true,
+    "rasterWorkingDirectory": "var/reports/wiki-redesign-20261103/svg-objects",
+    "sphereFinding": "Clear sphere and single star at 32 px and above. At 16 px the red centre remains but star points merge; do not use to encode exact star count at this size.",
+    "senzuFinding": "Oval, cap and short hilum visible at 32 px and above. At 16 px hilum merges into the darker end; silhouette remains distinct. Outline loses contrast on dark background; green fill carries shape."
+  }
+}

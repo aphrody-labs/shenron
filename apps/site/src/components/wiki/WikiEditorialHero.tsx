@@ -2,6 +2,7 @@
 import type { ReactNode } from "react";
 import { Orbit } from "lucide-react";
 import { WikiImg } from "@/components/wiki/WikiImg";
+import { WikiMeasuredArtwork } from "@/components/wiki/WikiMeasuredArtwork";
 import { wikiVisualTopic } from "@/lib/wiki-visual-theme";
 import { assetUrl } from "@/lib/assets";
 import styles from "./wiki-editorial.module.css";
@@ -22,12 +23,23 @@ export function WikiEditorialHero({
   imageAlt?: string;
   category?: string;
 }) {
+  const topic = wikiVisualTopic(category);
+  const measuredSubject =
+    topic === "namek" || topic === "community"
+      ? "senzu"
+      : topic === "adventure" || topic === "energy"
+        ? "sphere"
+        : null;
   return (
-    <header className={styles.hero} data-wiki-topic={wikiVisualTopic(category)}>
+    <header className={styles.hero} data-wiki-topic={topic}>
       <div className={styles.heroInner}>
         <div className={styles.heroCopy}>
           <p className={styles.eyebrow}>
-            <Orbit aria-hidden="true" size={18} strokeWidth={1.5} />
+            {measuredSubject ? (
+              <WikiMeasuredArtwork subject={measuredSubject} />
+            ) : (
+              <Orbit aria-hidden="true" size={18} strokeWidth={1.5} />
+            )}
             {eyebrow}
           </p>
           <h1 className={styles.heroTitle}>{title}</h1>

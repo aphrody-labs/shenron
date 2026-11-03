@@ -1,0 +1,15 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+.artwork {
+  display: block;
+  inline-size: var(--wiki-measured-artwork-size, 2rem);
+  block-size: var(--wiki-measured-artwork-size, 2rem);
+  flex: none;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+@media (forced-colors: active) {
+  .artwork {
+    display: none;
+  }
+}

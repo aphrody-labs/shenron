@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="db-sphere-1-t">
+<title id="db-sphere-1-t">Dragon Ball à 1 étoile</title><desc>Illustration vectorielle mesurée, distincte de l’image officielle. Géométrie de la couverture du tome 1 ; cerne adapté depuis le logo DBS.</desc>
+<defs><radialGradient id="db-sphere-1" gradientUnits="userSpaceOnUse" cx="256" cy="256" r="233" fx="186.10000000000002" fy="165.13"><stop offset="0" stop-color="#fdffea"/><stop offset="0.1" stop-color="#fdfcca"/><stop offset="0.2" stop-color="#fef6bb"/><stop offset="0.3" stop-color="#fce7a6"/><stop offset="0.4" stop-color="#fcdc93"/><stop offset="0.5" stop-color="#fdcd7f"/><stop offset="0.6" stop-color="#fcc06a"/><stop offset="0.7" stop-color="#fcb455"/><stop offset="0.8" stop-color="#fba740"/><stop offset="0.9" stop-color="#f29d32"/><stop offset="1" stop-color="#ef9a2b"/></radialGradient></defs>
+<circle cx="256" cy="256" r="256" fill="#000000"/>
+<circle cx="256" cy="256" r="233" fill="url(#db-sphere-1)"/>
+<polygon points="256,160 281.4,221.1 347.3,226.3 297.1,269.3 312.4,333.7 256,299.2 199.6,333.7 214.9,269.3 164.7,226.3 230.6,221.1" fill="#e81f23"/>
+</svg>
