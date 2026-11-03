@@ -24,7 +24,7 @@ import { WikiImg } from "@/components/wiki/WikiImg";
 import type { CharacterVariant } from "@/lib/shenron";
 import type { CharacterSagaMessages } from "@/lib/wiki-character-version-messages";
 import { verifiedCharacterVariantImage } from "@/lib/wiki-image-evidence";
-import { Gauge, Sparkles, Zap } from "lucide-react";
+import { Sparkles, Zap } from "lucide-react";
 
 const WIKI_ARTWORK_HOSTS = new Set([
   "cdn.dragonballfr.com",
@@ -75,7 +75,6 @@ export function CharacterSagaVariantsTabs({
   variants,
   overviewNode,
   characterName,
-  powerScalingNodes,
   transformationNodes,
   techniqueNodes,
   messages,
@@ -237,7 +236,7 @@ export function CharacterSagaVariantsTabs({
                   </section>
                 )}
 
-                <div className="mt-6 grid items-start gap-4 border-t border-white/10 pt-5 lg:grid-cols-[minmax(0,1.45fr)_minmax(15rem,0.75fr)] lg:gap-5">
+                <div className="mt-6 border-t border-white/10 pt-5">
                   <section
                     aria-label={messages.techniquesAria
                       .replace("{name}", characterName)
@@ -257,56 +256,6 @@ export function CharacterSagaVariantsTabs({
                       </p>
                     )}
                   </section>
-
-                  <aside
-                    aria-label={messages.powerHeading.replace("{version}", v.label)}
-                    className="min-w-0 rounded-2xl border border-dbz-yellow/15 bg-black/20 p-4"
-                  >
-                    <div className="mb-3 flex items-center gap-2">
-                      <Gauge className="size-4 text-dbz-yellow" aria-hidden="true" />
-                      <h4 className="text-xs font-bold uppercase tracking-[0.14em] text-white/80">
-                        {messages.powerHeading.replace("{version}", v.label)}
-                      </h4>
-                    </div>
-                    <div className="grid gap-2 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-                      {v.powerLevel ? (
-                        <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
-                          <p className="text-[10px] font-semibold uppercase tracking-wider text-white/45">
-                            {messages.powerLevel}
-                          </p>
-                          <p className="mt-1 break-words font-mono text-sm font-bold text-dbz-yellow">
-                            {v.powerLevel}
-                          </p>
-                        </div>
-                      ) : null}
-                      {v.ki && (
-                        <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
-                          <p className="text-[10px] font-semibold uppercase tracking-wider text-white/45">
-                            {messages.ki}
-                          </p>
-                          <p className="mt-1 break-words font-mono text-sm font-bold text-dbz-yellow">
-                            {v.ki}
-                          </p>
-                        </div>
-                      )}
-                      {v.maxKi && (
-                        <div className="rounded-xl border border-white/10 bg-white/[0.035] p-3">
-                          <p className="text-[10px] font-semibold uppercase tracking-wider text-white/45">
-                            {messages.maxKi}
-                          </p>
-                          <p className="mt-1 break-words font-mono text-sm font-bold text-dbz-yellow">
-                            {v.maxKi}
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                    {powerScalingNodes[variantIndex] ??
-                      (!v.powerLevel && !v.ki && !v.maxKi ? (
-                        <p className="mt-3 text-sm leading-relaxed text-white/50">
-                          {messages.noPower}
-                        </p>
-                      ) : null)}
-                  </aside>
                 </div>
               </section>
 

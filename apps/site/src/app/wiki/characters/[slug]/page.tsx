@@ -13,7 +13,7 @@ import { CharacterPortraitWithTransformations } from "@/components/wiki/Characte
 import { DEFAULT_POWER_SCALING_CONFIG } from "@/lib/canon-engine";
 import { ChevronDown, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { buildWikiContentPanels } from "@/lib/wiki-panels";
+import { buildWikiContentPanels, normalizeCharacterProfileBody } from "@/lib/wiki-panels";
 import { TECH_SECTION_KEYS, TRANSFO_SECTION_KEYS } from "@/lib/wiki-article-sections";
 import {
   getShenronCharacter,
@@ -1186,7 +1186,7 @@ export default async function CharacterPage({
 
         {activeVariant.summary?.trim() ? (
           <div className="prose-invert max-w-none text-sm">
-            <WikiMarkdown body={activeVariant.summary} />
+            <WikiMarkdown body={normalizeCharacterProfileBody(activeVariant.summary)} />
           </div>
         ) : (
           <p className="text-sm leading-relaxed text-white/55">{versionT("noSummary")}</p>

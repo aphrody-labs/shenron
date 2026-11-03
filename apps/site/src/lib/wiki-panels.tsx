@@ -48,7 +48,7 @@ export interface ContentPanel extends ReaderPanel {
 const PROFILE_ONLY_HEADINGS =
   /^(?:combats? chronologiques?|rep[eè]res de puissance(?:\b|\s)|power scaling)$/i;
 
-function normalizeCharacterProfileBody(body: string): string {
+export function normalizeCharacterProfileBody(body: string): string {
   const lines = body.replace(/\r\n?/g, "\n").split("\n");
   const output: string[] = [];
   let omittedHeadingLevel: number | null = null;
@@ -63,7 +63,7 @@ function normalizeCharacterProfileBody(body: string): string {
     const level = heading[1].length;
     const label = heading[2].trim();
     if (omittedHeadingLevel != null) {
-      if (level >= omittedHeadingLevel) continue;
+      if (level > omittedHeadingLevel) continue;
       omittedHeadingLevel = null;
     }
 
