@@ -377,14 +377,28 @@ export async function listWikiByParent(
   return { rows, total: rows.length };
 }
 
-export async function getWikiRow(table: string, id: string): Promise<Row | null> {
+export async function getWikiRow(
+  table: string,
+  id: string,
+  options: { transaction?: CatalogTransaction; lock?: boolean } = {},
+): Promise<Row | null> {
   const spec = getSpec(table);
   if (!spec) throw new Error(`Table inconnue: ${table}`);
-  const rows = (await db.select().from(spec.table).where(pkCondition(spec, id)).limit(1)) as Row[];
+  const client = options.transaction ?? db;
+  if (options.lock && !options.transaction) throw new Error("Wiki row locks require a transaction");
+  if (options.lock) {
+    if (isMediaCatalogTable(table)) await lockMediaCatalog(options.transaction!, table);
+    // Match the writer's lock order: advisory key first, then the physical row.
+    await client.execute(
+      sql`SELECT pg_advisory_xact_lock(hashtext(${`shenron:wiki:${table}:${id}`}))`,
+    );
+  }
+  const query = client.select().from(spec.table).where(pkCondition(spec, id)).limit(1);
+  const rows = (await (options.lock ? query.for("update") : query)) as Row[];
   const row = rows[0] ?? null;
   if (row && table === "media_editions") {
     // Preserve the historical row and requested ID for admin and revision readers.
-    return { ...row, canonicalId: await resolveMediaEditionId(db, Number(id)) };
+    return { ...row, canonicalId: await resolveMediaEditionId(client, Number(id)) };
   }
   return row;
 }
@@ -594,10 +608,12 @@ export async function updateWiki(
   id: string,
   data: Row,
   options: {
+    transaction?: CatalogTransaction;
     expected?: Row;
     expectedSha256?: string;
     actor?: RevisionActor;
     revisionAction?: "update" | "revert";
+    onRevision?: (revisionId: string) => void;
   } = {},
 ): Promise<Row> {
   const spec = getSpec(table);
@@ -608,6 +624,9 @@ export async function updateWiki(
     throw new Error("Aucune colonne mutable fournie.");
   }
   const cond = pkCondition(spec, id);
+  const client = options.transaction ?? db;
+  const transaction = <T>(work: (tx: CatalogTransaction) => Promise<T>): Promise<T> =>
+    options.transaction ? work(options.transaction) : db.transaction(work);
   const variantEvidenceWrite =
     table === "db_character_variants" && Object.hasOwn(values, "evidence");
   const variantImageWrite = table === "db_character_variants" && Object.hasOwn(values, "image");
@@ -633,7 +652,7 @@ export async function updateWiki(
     ) {
       throw new WikiUpdateRequestError("Complete wiki snapshot and SHA256 required");
     }
-    return db.transaction(async (tx) => {
+    return transaction(async (tx) => {
       await tx.execute(
         sql`SELECT pg_advisory_xact_lock(hashtext(${`shenron:wiki:${table}:${id}`}))`,
       );
@@ -652,8 +671,8 @@ export async function updateWiki(
       if (variantEvidenceWrite || variantImageWrite) assertVariantEvidenceUpdate(before, values);
       const [updated] = (await tx.update(spec.table).set(values).where(cond).returning()) as Row[];
       if (!updated) throw new Error(`Ligne introuvable: ${table}#${id}`);
-      if (variantJournal)
-        await variantJournal(
+      if (variantJournal) {
+        const revisionId = await variantJournal(
           {
             table,
             id,
@@ -664,11 +683,13 @@ export async function updateWiki(
           },
           tx,
         );
+        options.onRevision?.(revisionId);
+      }
       return updated;
     });
   }
   if (isMediaCatalogTable(table)) {
-    return db.transaction(async (tx) => {
+    return transaction(async (tx) => {
       await lockMediaCatalog(tx, table);
       if (table === "media_editions") {
         const canonicalId = await resolveMediaEditionId(tx, Number(id));
@@ -700,7 +721,7 @@ export async function updateWiki(
       return updated;
     });
   }
-  const updated = (await db.update(spec.table).set(values).where(cond).returning()) as Row[];
+  const updated = (await client.update(spec.table).set(values).where(cond).returning()) as Row[];
   // 0 ligne matchée = pk introuvable → ne JAMAIS renvoyer un faux succès
   // (l'admin croirait avoir sauvegardé). Le route handler mappe ça en 404.
   if (updated.length === 0) {

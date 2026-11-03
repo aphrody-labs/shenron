@@ -10,15 +10,12 @@
  * Un seul filtre actif à la fois + tri date + recherche.
  */
 import { useEffect, useMemo, useState } from "react";
+import { useLocale } from "next-intl";
+import { WikiCatalogueToolbar } from "@/components/wiki/WikiCatalogueToolbar";
+import { wikiMediaCatalogueMessages } from "@/lib/wiki-media-catalogue-messages";
+import mediaStyles from "@/components/wiki/wiki-media-catalogue.module.css";
 import { Pagination } from "@/components/kit/Pagination";
-import {
-  Bibliotheque,
-  DragonRadar,
-  Livre,
-  Micro,
-  Palette,
-  Tendance,
-} from "@aphrody/shenron-ui/icones";
+import { Bibliotheque, Livre, Micro, Palette, Tendance } from "@aphrody/shenron-ui/icones";
 import { ViewTransition } from "@aphrody/shenron-ui/layout/ViewTransition";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import {
@@ -98,11 +95,11 @@ function matchesCategory(d: DatabookItem, cat: DatabookCategory): boolean {
   return false;
 }
 
-function formatDate(v: number | null): string {
+function formatDate(v: number | null, locale: string): string {
   if (!v) return "—";
   const ms = toMillis(v);
   try {
-    return new Date(ms).toLocaleDateString("fr-FR", { year: "numeric", month: "long" });
+    return new Date(ms).toLocaleDateString(locale, { year: "numeric", month: "long" });
   } catch {
     return "—";
   }
@@ -121,8 +118,8 @@ const tabBtn =
   // la cible tactile recommandée. `shrink-0` + `snap-start` servent au rail
   // défilant qui remplace le retour à la ligne sur petit écran.
   "inline-flex min-h-11 shrink-0 snap-start items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors";
-const tabActive = "border-dbz-orange bg-dbz-orange/10 text-white";
-const tabIdle = "border-dbz-border text-white/60 hover:border-dbz-orange/40 hover:text-white";
+const tabActive = "border-dbz-orange bg-dbz-orange/10 text-os";
+const tabIdle = "border-dbz-border text-os/80 hover:border-dbz-yellow hover:text-dbz-yellow";
 
 export function DatabookGrid({
   items,
@@ -132,6 +129,8 @@ export function DatabookGrid({
   /** Instantané de la configuration de lancement, résolu côté serveur. */
   access?: AccessSnapshot | null;
 }) {
+  const locale = useLocale();
+  const text = wikiMediaCatalogueMessages(locale);
   const [filter, setFilter] = useState<string>("all");
   const [q, setQ] = useState("");
   const [order, setOrder] = useState<"desc" | "asc">("desc");
@@ -200,95 +199,60 @@ export function DatabookGrid({
 
   return (
     <div className="space-y-6">
-      {/* Une seule rangée de filtres, tous au même plan (même taille / style). */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-        {/* Rail défilant sur mobile : les 11 catégories occupaient 4 lignes
-				    (≈ 160 px) avant même la première couverture. Elles tiennent
-				    maintenant sur une ligne que l'on fait glisser, et reprennent le
-				    retour à la ligne dès `sm`. */}
-        <div
-          className="-mx-[var(--shell-pad,1.5rem)] flex snap-x snap-mandatory gap-2 overflow-x-auto px-[var(--shell-pad,1.5rem)] pb-1 scrollbar-thin sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0"
-          role="group"
-          aria-label="Filtrer par catégorie"
-        >
-          {FILTER_TABS.map((t) => {
-            const Icon = t.icon;
-            const active = filter === t.key;
-            return (
+      <WikiCatalogueToolbar
+        query={q}
+        onQueryChange={setQ}
+        value={filter}
+        onValueChange={setFilter}
+        options={FILTER_TABS.map((tab) => ({
+          value: tab.key,
+          label:
+            tab.key === "all"
+              ? text("allBooks")
+              : tab.key === "Autre"
+                ? text("otherCategory")
+                : tab.label,
+        }))}
+        searchLabel={text("searchBooks")}
+        filterLabel={text("bookCategories")}
+        count={filtered.length}
+      />
+      <div className={mediaStyles.bookToolbar}>
+        <fieldset>
+          <legend>{text("contentFilter")}</legend>
+          <div>
+            {(["all", "available", "incomplete"] as const).map((value) => (
               <button
-                key={t.key}
+                key={value}
                 type="button"
-                onClick={() => setFilter(t.key)}
-                aria-pressed={active}
-                className={`${tabBtn} ${active ? tabActive : tabIdle}`}
+                onClick={() => changeContentFilter(value)}
+                aria-pressed={contentFilter === value}
+                className={`${tabBtn} ${contentFilter === value ? tabActive : tabIdle}`}
               >
-                {Icon && <Icon className="h-3.5 w-3.5" aria-hidden />}
-                {t.label}
+                {text(
+                  value === "all"
+                    ? "allBooks"
+                    : value === "available"
+                      ? "contentAvailable"
+                      : "contentMissing",
+                )}
               </button>
-            );
-          })}
-        </div>
-        <div
-          className="flex flex-wrap items-center gap-2 border-t border-white/[0.08] pt-3 sm:border-t-0 sm:pt-0"
-          role="group"
-          aria-label="Filtrer par état du contenu"
-        >
-          <span className="mr-1 font-scouter text-[10px] uppercase tracking-wider text-white/40">
-            Contenu
-          </span>
-          {(
-            [
-              ["all", "Tout"],
-              ["available", "Présent"],
-              ["incomplete", "À compléter"],
-            ] as const
-          ).map(([value, label]) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => changeContentFilter(value)}
-              aria-pressed={contentFilter === value}
-              className={`${tabBtn} ${contentFilter === value ? tabActive : tabIdle}`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-        <div className="flex items-center gap-2 sm:contents">
-          <button
-            type="button"
-            onClick={() => setOrder((o) => (o === "desc" ? "asc" : "desc"))}
-            className={`${tabBtn} ${tabIdle}`}
-            title="Inverser le tri par date"
-          >
-            <Tendance size={14} className="shrink-0" />
-            {order === "desc" ? "Plus récent" : "Plus ancien"}
-          </button>
-          <div className="relative min-w-0 flex-1 sm:ml-auto sm:w-72 sm:flex-none">
-            <DragonRadar className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/50" />
-            <input
-              type="search"
-              enterKeyHint="search"
-              className="min-h-11 w-full rounded-lg border border-dbz-border bg-dbz-bg px-3 py-2 pl-8 text-base text-white focus:border-dbz-orange focus:outline-none sm:text-sm"
-              placeholder="Rechercher un guide…"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              aria-label="Rechercher un databook ou une interview"
-            />
+            ))}
           </div>
-        </div>
-        <p
-          aria-live="polite"
-          className="shrink-0 text-[11px] tabular-nums uppercase tracking-wider text-dbz-orange/80 sm:ml-1"
+        </fieldset>
+        <button
+          type="button"
+          onClick={() => setOrder((previous) => (previous === "desc" ? "asc" : "desc"))}
+          className={`${tabBtn} ${tabIdle}`}
+          title={text("reverseBookSort")}
         >
-          {filtered.length} / {items.length}
-        </p>
+          <Tendance size={14} aria-hidden="true" />
+          {text(order === "desc" ? "newestBook" : "oldestBook")}
+        </button>
       </div>
 
       {filtered.length === 0 ? (
-        <p className="py-12 text-center text-sm italic text-white/50">
-          {q.trim() ? `Aucun résultat pour « ${q.trim()} ».` : "Aucun résultat pour ce filtre."}
-        </p>
+        <p className="py-12 text-center text-sm text-os/80">{text("emptyBooks")}</p>
       ) : (
         <div className="reveal-grid grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4 xl:grid-cols-5">
           {visibles.map((d) => {
@@ -300,8 +264,8 @@ export function DatabookGrid({
                 key={d.id}
                 href={`/wiki/databooks/${d.id}`}
                 transitionTypes={["nav-forward"]}
-                aria-label={`${cat} : ${d.title}`}
-                className="group block cursor-pointer rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange focus-visible:ring-offset-2 focus-visible:ring-offset-dbz-bg"
+                aria-label={`${cat === "Autre" ? text("otherCategory") : cat} : ${d.title}`}
+                className={mediaStyles.bookCard}
               >
                 {/* Légende SOUS la couverture, comme les affiches de films et
 								    les tomes du manga (`components/stream/PosterCard`). Le
@@ -309,14 +273,14 @@ export function DatabookGrid({
 								    noircir la moitié basse de chaque jaquette pour rester
 								    lisible : la grille entière paraissait éteinte alors que les
 								    couvertures de V-Jump sont très colorées. */}
-                <div className="ki-card relative aspect-[2/3] overflow-hidden rounded-lg bg-dbz-card shadow-lg ring-1 ring-white/[0.06] transition-all duration-300 group-hover:ring-dbz-orange/60 group-hover:shadow-dbz-orange/20">
+                <div className={mediaStyles.bookArtwork}>
                   {d.cover ? (
                     <ViewTransition name={`databook-img-${d.id}`} share="morph">
                       <WikiImg
                         src={d.cover}
                         alt={d.title}
                         sizes="(min-width: 1024px) 240px, (min-width: 640px) 30vw, 45vw"
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        className="absolute inset-0 h-full w-full object-cover"
                         loading="lazy"
                       />
                     </ViewTransition>
@@ -324,49 +288,35 @@ export function DatabookGrid({
                     // Un ouvrage sans scan affichait une icône `text-white/20`
                     // sur fond noir : indiscernable d'une tuile cassée. On
                     // nomme l'absence au lieu de la laisser deviner.
-                    <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-gradient-to-br from-dbz-card to-black text-white/35">
+                    <div className={mediaStyles.bookPlaceholder}>
                       <div aria-hidden className="absolute inset-0 halftone opacity-[0.08]" />
-                      <Icon className="relative h-9 w-9" />
+                      <Icon className="relative h-9 w-9" aria-hidden="true" />
                       <span className="relative px-2 text-center text-[10px] font-bold uppercase tracking-widest">
-                        Sans couverture
+                        {text("missingBookCover")}
                       </span>
                     </div>
                   )}
-                  <span aria-hidden className="ki-card__glow" />
                   {/* Un seul badge : la catégorie unifiée */}
-                  <span className="absolute left-1.5 top-1.5 z-30 max-w-[85%] truncate rounded bg-black/75 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-dbz-orange backdrop-blur">
-                    {cat}
+                  <span className={mediaStyles.bookBadge}>
+                    {cat === "Autre" ? text("otherCategory") : cat}
                   </span>
-                  <span
-                    className={`absolute bottom-1.5 left-1.5 z-30 rounded px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider backdrop-blur ${
-                      d.pageCount > 0
-                        ? "bg-emerald-400/85 text-black"
-                        : d.hasDescription
-                          ? "bg-dbz-orange/85 text-black"
-                          : "bg-black/80 text-white/80"
-                    }`}
-                  >
+                  <span className={mediaStyles.bookStatus}>
                     {d.pageCount > 0
-                      ? `${d.pageCount} page${d.pageCount > 1 ? "s" : ""}`
+                      ? text("bookPages", { count: d.pageCount })
                       : d.hasDescription
-                        ? "Fiche"
-                        : "À compléter"}
+                        ? text("bookProfile")
+                        : text("contentMissing")}
                   </span>
                 </div>
                 <div className="mt-2 px-0.5">
-                  <p className="line-clamp-2 font-display text-[13px] font-semibold leading-snug text-white/90 transition-colors group-hover:text-dbz-orange">
-                    {d.title}
-                  </p>
+                  <p className={mediaStyles.bookTitle}>{d.title}</p>
                   {d.titleJa && (
-                    <p
-                      lang="ja"
-                      className="mt-0.5 truncate font-jp text-[11px] tracking-wider text-dbz-yellow/70"
-                    >
+                    <p lang="ja" className="mt-1 truncate font-jp text-xs text-dbz-yellow">
                       {d.titleJa}
                     </p>
                   )}
-                  <p className="mt-0.5 truncate text-[11px] text-white/55">
-                    {formatDate(d.publishedAt)}
+                  <p className="mt-1 text-xs leading-relaxed text-os/80">
+                    {formatDate(d.publishedAt, locale)}
                     {d.author ? ` · ${d.author}` : ""}
                   </p>
                 </div>
@@ -381,7 +331,7 @@ export function DatabookGrid({
         parPage={PAR_PAGE}
         total={filtered.length}
         onPageChange={setPage}
-        unite="ouvrages"
+        unite={text("booksUnit")}
         className="pt-6"
       />
     </div>

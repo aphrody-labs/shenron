@@ -1,0 +1,644 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+/* One overridable palette for the wiki. Component files contain no color values. */
+.surface,
+.hero,
+.topicCard,
+.detail {
+  --wiki-adventure: var(--wiki-theme-adventure, oklch(78% 0.16 65));
+  --wiki-namek: var(--wiki-theme-namek, oklch(80% 0.14 160));
+  --wiki-capsule: var(--wiki-theme-capsule, oklch(79% 0.12 220));
+  --wiki-energy: var(--wiki-theme-energy, oklch(84% 0.16 95));
+  --wiki-cosmos: var(--wiki-theme-cosmos, oklch(79% 0.13 300));
+  --wiki-cinema: var(--wiki-theme-cinema, oklch(78% 0.13 35));
+  --wiki-archive: var(--wiki-theme-archive, oklch(84% 0.1 80));
+  --wiki-community: var(--wiki-theme-community, oklch(81% 0.12 335));
+  --wiki-accent: var(--wiki-adventure);
+  --wiki-paper: var(--color-os);
+  --wiki-ink: var(--color-encre);
+  --wiki-muted: var(--frame-on-surface-variant, var(--color-os));
+  --wiki-border: var(--color-dbz-border);
+  --wiki-card: var(--color-dbz-card);
+  --wiki-radius: 0.75rem;
+}
+
+/* The existing Goku theme is light: its text accents need darker tonal roles. */
+@media (forced-colors: none) {
+  :global(html[data-episode-theme="goku"]) :is(.surface, .hero, .topicCard, .detail) {
+    --wiki-adventure: var(--wiki-theme-adventure-light, oklch(45% 0.12 65));
+    --wiki-namek: var(--wiki-theme-namek-light, oklch(42% 0.1 160));
+    --wiki-capsule: var(--wiki-theme-capsule-light, oklch(42% 0.1 220));
+    --wiki-energy: var(--wiki-theme-energy-light, oklch(43% 0.09 95));
+    --wiki-cosmos: var(--wiki-theme-cosmos-light, oklch(44% 0.14 300));
+    --wiki-cinema: var(--wiki-theme-cinema-light, oklch(44% 0.13 35));
+    --wiki-archive: var(--wiki-theme-archive-light, oklch(43% 0.08 80));
+    --wiki-community: var(--wiki-theme-community-light, oklch(44% 0.12 335));
+  }
+}
+
+:is(.surface, .hero, .topicCard, .detail)[data-wiki-topic="namek"] {
+  --wiki-accent: var(--wiki-namek);
+}
+:is(.surface, .hero, .topicCard, .detail)[data-wiki-topic="capsule"] {
+  --wiki-accent: var(--wiki-capsule);
+}
+:is(.surface, .hero, .topicCard, .detail)[data-wiki-topic="energy"] {
+  --wiki-accent: var(--wiki-energy);
+}
+:is(.surface, .hero, .topicCard, .detail)[data-wiki-topic="cosmos"] {
+  --wiki-accent: var(--wiki-cosmos);
+}
+:is(.surface, .hero, .topicCard, .detail)[data-wiki-topic="cinema"] {
+  --wiki-accent: var(--wiki-cinema);
+}
+:is(.surface, .hero, .topicCard, .detail)[data-wiki-topic="archive"] {
+  --wiki-accent: var(--wiki-archive);
+}
+:is(.surface, .hero, .topicCard, .detail)[data-wiki-topic="community"] {
+  --wiki-accent: var(--wiki-community);
+}
+
+.surface {
+  background:
+    radial-gradient(
+      ellipse at 95% 0%,
+      color-mix(in srgb, var(--wiki-accent) 10%, transparent),
+      transparent 45rem
+    ),
+    var(--color-dbz-bg);
+  min-width: 0;
+}
+
+.hero {
+  position: relative;
+  overflow: clip;
+  border-block-end: 1px solid var(--wiki-border);
+  background:
+    radial-gradient(
+      ellipse at 90% 25%,
+      color-mix(in srgb, var(--wiki-accent) 14%, transparent),
+      transparent 60%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--wiki-accent) 4%, var(--wiki-card)),
+      var(--color-dbz-bg)
+    );
+}
+
+.hero::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: 2px;
+  background: linear-gradient(90deg, var(--wiki-accent), transparent 80%);
+}
+
+.heroInner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: 2rem;
+  max-width: var(--wiki-shell-max, 1440px);
+  margin-inline: auto;
+  padding: clamp(2.25rem, 6vw, 5rem) var(--wiki-shell-pad, clamp(1rem, 3.5vw, 3rem));
+}
+
+.heroCopy {
+  min-width: 0;
+  max-width: 52rem;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  color: var(--wiki-accent);
+  font-family: var(--font-scouter), monospace;
+  font-size: 0.75rem;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-block-end: 1.2rem;
+}
+
+.heroTitle {
+  color: var(--wiki-paper);
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(2.3rem, 1.3rem + 3.8vw, 5rem);
+  font-weight: 850;
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+  max-width: 16ch;
+}
+
+.heroLead {
+  max-width: 62ch;
+  color: var(--wiki-muted);
+  font-size: clamp(1rem, 0.95rem + 0.2vw, 1.12rem);
+  line-height: 1.7;
+  margin-block-start: 1.5rem;
+}
+
+.heroArtwork {
+  position: relative;
+  min-width: 0;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--wiki-accent) 35%, var(--wiki-border));
+  border-radius: var(--wiki-radius);
+  background: color-mix(in srgb, var(--wiki-accent) 5%, var(--wiki-card));
+}
+
+.heroImage {
+  object-fit: cover;
+}
+
+.note {
+  border: 1px solid color-mix(in srgb, var(--wiki-accent) 35%, var(--wiki-border));
+  border-radius: var(--wiki-radius);
+  background: color-mix(in srgb, var(--wiki-accent) 6%, var(--wiki-card));
+  color: var(--wiki-muted);
+  padding: 1.1rem 1.25rem;
+  font-size: 0.875rem;
+  line-height: 1.7;
+}
+
+.detailHeader {
+  position: relative;
+  border: 1px solid color-mix(in srgb, var(--wiki-accent) 30%, var(--wiki-border));
+  border-radius: var(--wiki-radius);
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--wiki-accent) 9%, var(--wiki-card)),
+    var(--wiki-card)
+  );
+}
+
+.detailHeaderCopy > header {
+  margin-block-end: 0;
+}
+
+.detailHeaderIllustrated {
+  display: grid;
+  align-items: start;
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.5rem, 3vw, 2.5rem);
+}
+
+.detailHeaderCopy,
+.detailFigure {
+  min-width: 0;
+}
+
+.detailArtwork {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  background: color-mix(in srgb, var(--wiki-accent) 5%, var(--wiki-card));
+}
+
+.detailArtworkImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.detailHeader h1 {
+  color: var(--wiki-paper);
+  font-size: clamp(2.5rem, 1.5rem + 3.5vw, 4.8rem);
+  line-height: 1.06;
+  text-shadow: none !important;
+}
+
+.topicGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1rem;
+}
+
+.quickNav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.quickLink {
+  display: inline-flex;
+  min-block-size: 2.75rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  background: var(--wiki-card);
+  color: var(--wiki-paper);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  transition:
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.quickLink:hover {
+  border-color: var(--wiki-energy);
+  color: var(--wiki-energy);
+}
+
+.topicCard {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  background: linear-gradient(
+    150deg,
+    color-mix(in srgb, var(--wiki-accent) 8%, var(--wiki-card)),
+    var(--wiki-card)
+  );
+  color: var(--wiki-paper);
+  transition:
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.topicCard:hover {
+  border-color: var(--wiki-energy);
+}
+
+.topicCard:focus-visible {
+  outline: 3px solid var(--wiki-energy);
+  outline-offset: 4px;
+}
+
+.topicMedia {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-block-end: 1px solid var(--wiki-border);
+  background: color-mix(in srgb, var(--wiki-accent) 10%, var(--wiki-card));
+}
+
+.topicMedia img {
+  object-fit: cover;
+}
+
+.topicContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1.35rem;
+  flex: 1;
+}
+
+.topicHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  font-weight: 750;
+  font-size: 1.1rem;
+  line-height: 1.4;
+}
+
+.topicCount {
+  flex-shrink: 0;
+  color: var(--wiki-accent);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.topicBlurb {
+  color: var(--wiki-muted);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+.topicArrow {
+  align-self: flex-end;
+  color: var(--wiki-accent);
+  margin-block-start: auto;
+}
+
+.discoveryCard {
+  inline-size: clamp(15rem, 75vw, 19rem);
+  flex-shrink: 0;
+  scroll-snap-align: start;
+}
+
+.discoveryArticle {
+  display: flex;
+  flex-direction: column;
+  block-size: 100%;
+}
+
+.discoveryMeta {
+  color: var(--wiki-accent);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.discoverySubtitle {
+  color: var(--wiki-muted);
+  font-size: 0.8rem;
+}
+
+.discoveryDescription {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--wiki-muted);
+  font-size: 0.875rem;
+  line-height: 1.65;
+}
+
+.discoveryFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-block-start: auto;
+  padding-block-start: 1rem;
+  border-block-start: 1px solid var(--wiki-border);
+  color: var(--wiki-accent);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.catalogueToolbar {
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  background: var(--wiki-card);
+}
+
+.catalogueSearch,
+.catalogueFilters {
+  min-width: 0;
+}
+
+.catalogueSearch > label,
+.catalogueFilters > legend {
+  display: block;
+  margin-block-end: 0.6rem;
+  color: var(--wiki-paper);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.catalogueSearchField {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  padding-inline: 0.85rem;
+  color: var(--wiki-muted);
+}
+
+.catalogueSearchField input {
+  min-width: 0;
+  min-block-size: 2.75rem;
+  flex: 1;
+  background: transparent;
+  color: var(--wiki-paper);
+}
+
+.catalogueSearchField button,
+.catalogueFilters button {
+  min-block-size: 2.75rem;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  padding: 0.6rem 0.85rem;
+  color: var(--wiki-muted);
+  font-size: 0.8125rem;
+  cursor: pointer;
+}
+
+.catalogueFilters > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.catalogueFilters button[aria-pressed="true"] {
+  border-color: var(--wiki-accent);
+  background: color-mix(in srgb, var(--wiki-accent) 12%, var(--wiki-card));
+  color: var(--wiki-paper);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.catalogueCount {
+  color: var(--wiki-muted);
+  font-size: 0.875rem;
+}
+
+.catalogueEmpty {
+  padding: 2rem;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  color: var(--wiki-muted);
+  text-align: center;
+}
+
+.raceImage {
+  object-fit: contain;
+  object-position: center 20%;
+}
+
+.raceMembers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block-start: auto;
+  padding-block-start: 1rem;
+  border-block-start: 1px solid var(--wiki-border);
+  color: var(--wiki-muted);
+  font-size: 0.75rem;
+}
+
+.raceAvatar {
+  position: relative;
+  inline-size: 2rem;
+  block-size: 2rem;
+  overflow: hidden;
+  border: 1px solid var(--wiki-border);
+  border-radius: 50%;
+  background: var(--wiki-card);
+}
+
+.sectionTitle {
+  color: var(--wiki-paper);
+  font-size: clamp(1.4rem, 1.1rem + 0.6vw, 1.9rem);
+  font-weight: 750;
+  line-height: 1.3;
+}
+
+.eventFilters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.8rem;
+}
+
+.eventFilters label {
+  display: flex;
+  flex: 1 1 11rem;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: var(--wiki-muted);
+  font-size: 0.8125rem;
+}
+
+.eventFilters select {
+  min-width: 0;
+  min-block-size: 2.75rem;
+  padding: 0.65rem;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  background: var(--wiki-card);
+  color: var(--wiki-paper);
+}
+
+.eventCard {
+  min-width: 0;
+  overflow: hidden;
+  scroll-margin-block-start: 7rem;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  background: var(--wiki-card);
+}
+
+.artworkCaption {
+  padding: 0.6rem 1.35rem;
+  color: var(--wiki-muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.tableScroll {
+  max-inline-size: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  background: var(--wiki-card);
+}
+
+.narrativeTable {
+  inline-size: 100%;
+  min-inline-size: 40rem;
+  text-align: start;
+  color: var(--wiki-paper);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.narrativeTable caption {
+  padding: 1rem;
+  text-align: start;
+  font-weight: 650;
+}
+
+.narrativeTable th,
+.narrativeTable td {
+  padding: 1rem;
+  border-block-start: 1px solid var(--wiki-border);
+  vertical-align: top;
+}
+
+.lineageNodes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  gap: 1rem;
+  list-style-position: inside;
+}
+
+.sagaIntro {
+  display: block;
+  min-width: 0;
+}
+
+.sagaIntro:hover .topicHeading {
+  color: var(--wiki-energy);
+}
+
+.arcDisclosure {
+  border-block-start: 1px solid var(--wiki-border);
+  color: var(--wiki-paper);
+  font-size: 0.875rem;
+}
+
+.arcDisclosure summary {
+  min-block-size: 2.75rem;
+  padding: 0.9rem 1.35rem;
+  color: var(--wiki-accent);
+  cursor: pointer;
+}
+
+.arcLink {
+  display: flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  gap: 0.8rem;
+  border-block-start: 1px solid var(--wiki-border);
+  padding: 0.9rem 1.35rem;
+  line-height: 1.6;
+}
+
+.arcLink:hover {
+  color: var(--wiki-energy);
+}
+
+.narrativeTable td {
+  color: var(--wiki-muted);
+}
+
+@media (min-width: 800px) {
+  .detailHeaderIllustrated {
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+  }
+  .heroInner:has(.heroArtwork) {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  }
+  .heroArtwork {
+    aspect-ratio: 4 / 3;
+    rotate: -2deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .topicCard,
+  .quickLink {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .surface,
+  .hero,
+  .topicCard,
+  .detail {
+    --wiki-accent: Highlight;
+    --wiki-paper: CanvasText;
+    --wiki-muted: CanvasText;
+    --wiki-card: Canvas;
+    --wiki-border: CanvasText;
+  }
+}

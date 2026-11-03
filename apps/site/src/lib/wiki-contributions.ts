@@ -11,7 +11,7 @@
  * Deux principes non négociables :
  *
  *  1. **Un seul chemin d'écriture.** L'acceptation passe par `updateWiki` +
- *     `recordRevision`, exactement comme une édition admin. Une contribution
+ *     `recordRevisionStrict` in the same transaction. Une contribution
  *     n'est donc jamais un contournement des gardes existantes, et elle est
  *     annulable par le même « revert » que tout le reste.
  *  2. **Le crédit est réel.** La révision est enregistrée au nom du
@@ -29,7 +29,7 @@ import { and, count, desc, eq, sql as raw } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { wikiContributions, type ContributionStatus, type WikiContribution } from "@/db/schema";
 import { getWikiRow, updateWiki } from "@/lib/wiki-admin";
-import { recordRevision, type RevisionActor } from "@/lib/wiki-revisions";
+import { recordRevisionStrict, type RevisionActor } from "@/lib/wiki-revisions";
 import { revalidateWikiEntity, revalidateSectionParent } from "@/lib/wiki-revalidate";
 import { isContributableColumn, CONTRIBUTION_MAX } from "@/lib/contributions-shared";
 import {
@@ -40,6 +40,10 @@ import {
 } from "@/lib/databook-pages";
 import { estCibleStats, formatStats, fusionnerStats, parseStats } from "@/lib/stats-personnage";
 import { WIKI_TABLE_SPECS } from "@/lib/wiki-tables";
+import {
+  WikiUpdatePreconditionError,
+  wikiUpdateSnapshotHash,
+} from "@/lib/wiki-update-precondition";
 
 export interface ContributionView {
   id: string;
@@ -105,10 +109,17 @@ export function targetIsValid(table: string, column: string): boolean {
 }
 
 /** Valeur courante d'une colonne, normalisée en chaîne (ou null). */
-async function currentValue(table: string, rowId: string, column: string): Promise<string | null> {
+type WikiTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+async function currentValue(
+  table: string,
+  rowId: string,
+  column: string,
+  transaction?: WikiTransaction,
+): Promise<string | null> {
   const planche = estCiblePlanche(table, column) ? numeroDePlanche(column) : null;
-  if (planche !== null) return await lireTranscription(rowId, planche);
-  const row = await getWikiRow(table, rowId);
+  if (planche !== null) return await lireTranscription(rowId, planche, transaction);
+  const row = await getWikiRow(table, rowId, { transaction });
   // Les statistiques voyagent en texte dans les deux sens : c'est ce que le
   // contributeur écrit, et ce que le relecteur compare en diff.
   if (row && estCibleStats(table, column)) {
@@ -249,102 +260,128 @@ export async function acceptContribution(
   reviewer: RevisionActor,
   note?: string | null,
 ): Promise<ContributionView> {
-  const [row] = await db
-    .select()
-    .from(wikiContributions)
-    .where(eq(wikiContributions.id, id))
-    .limit(1);
-  if (!row) throw new ContributionError("Proposition introuvable.", "not_found", 404);
-  if (row.status !== "pending") {
-    throw new ContributionError("Proposition déjà traitée.", "already_reviewed", 409);
-  }
-  if (!targetIsValid(row.tableName, row.columnName)) {
-    throw new ContributionError("Cible devenue non modifiable.", "bad_target");
-  }
-
-  const before = await getWikiRow(row.tableName, row.rowId);
-  if (!before) throw new ContributionError("Fiche supprimée depuis.", "not_found", 404);
-
-  // Valeur en base AU MOMENT D'APPLIQUER. Passe par `currentValue` et non par
-  // la ligne lue plus haut : une cible `pages#42` n'est pas une clé de la
-  // ligne, `before["pages#42"]` vaudrait toujours `undefined` — et toute
-  // contribution sur une planche serait classée « obsolète » sans avoir jamais
-  // été comparée à quoi que ce soit.
-  const actuelStr = await currentValue(row.tableName, row.rowId, row.columnName);
-  if (!sameText(actuelStr, row.valueBefore)) {
-    await db
-      .update(wikiContributions)
-      .set({
-        status: "superseded",
+  let outcome;
+  try {
+    outcome = await db.transaction(async (tx) => {
+      // Serialize decisions on one proposal, then lock its target in the writer's order.
+      const [row] = await tx
+        .select()
+        .from(wikiContributions)
+        .where(eq(wikiContributions.id, id))
+        .limit(1)
+        .for("update");
+      if (!row) throw new ContributionError("Proposition introuvable.", "not_found", 404);
+      if (row.status !== "pending") {
+        throw new ContributionError("Proposition déjà traitée.", "already_reviewed", 409);
+      }
+      if (!targetIsValid(row.tableName, row.columnName)) {
+        throw new ContributionError("Cible devenue non modifiable.", "bad_target");
+      }
+      const before = await getWikiRow(row.tableName, row.rowId, { transaction: tx, lock: true });
+      if (!before) throw new ContributionError("Fiche supprimée depuis.", "not_found", 404);
+      const current = await currentValue(row.tableName, row.rowId, row.columnName, tx);
+      const review = {
         reviewerId: reviewer?.id ?? null,
         reviewerName: reviewer?.name ?? null,
-        reviewNote: "La valeur en base a changé depuis le dépôt de la proposition.",
         reviewedAt: new Date(),
         updatedAt: new Date(),
-      })
-      .where(eq(wikiContributions.id, id));
+      };
+      if (!sameText(current, row.valueBefore)) {
+        await tx
+          .update(wikiContributions)
+          .set({
+            ...review,
+            status: "superseded",
+            reviewNote: "La valeur en base a changé depuis le dépôt de la proposition.",
+          })
+          .where(eq(wikiContributions.id, id));
+        // Commit the stale status; throw the HTTP conflict only after the transaction.
+        return null;
+      }
+      const planche = estCiblePlanche(row.tableName, row.columnName)
+        ? numeroDePlanche(row.columnName)
+        : null;
+      let after: Record<string, unknown>;
+      let writerRevisionId: string | null = null;
+      const options = {
+        transaction: tx,
+        expected: before,
+        expectedSha256: wikiUpdateSnapshotHash(before),
+        actor: { id: row.authorId, name: row.authorName },
+        onRevision: (revisionId: string) => {
+          writerRevisionId = revisionId;
+        },
+      };
+      if (estCibleStats(row.tableName, row.columnName)) {
+        const stats = fusionnerStats(parseStats(row.valueAfter), before.stats);
+        after = await updateWiki(row.tableName, row.rowId, { stats }, options);
+      } else if (planche !== null) {
+        const ok = await ecrireTranscription(row.rowId, planche, row.valueAfter, tx);
+        if (!ok)
+          throw new ContributionError("Planche introuvable dans cet ouvrage.", "not_found", 404);
+        after = (await getWikiRow(row.tableName, row.rowId, { transaction: tx }))!;
+      } else {
+        after = await updateWiki(
+          row.tableName,
+          row.rowId,
+          { [row.columnName]: row.valueAfter },
+          options,
+        );
+      }
+      // Data, attribution, reversible snapshot and moderation status commit together.
+      const revisionId =
+        writerRevisionId ??
+        (await recordRevisionStrict(
+          {
+            table: row.tableName,
+            id: row.rowId,
+            action: "update",
+            before,
+            after,
+            actor: { id: row.authorId, name: row.authorName },
+          },
+          tx,
+        ));
+      const [updated] = await tx
+        .update(wikiContributions)
+        .set({
+          ...review,
+          status: "accepted",
+          reviewNote: note?.trim() || null,
+          revisionId,
+        })
+        .where(and(eq(wikiContributions.id, id), eq(wikiContributions.status, "pending")))
+        .returning();
+      if (!updated)
+        throw new ContributionError("Proposition déjà traitée.", "already_reviewed", 409);
+      return { updated, after };
+    });
+  } catch (error) {
+    if (error instanceof WikiUpdatePreconditionError) {
+      throw new ContributionError(
+        "La fiche a changé pendant la validation de cette proposition.",
+        "superseded",
+        409,
+      );
+    }
+    throw error;
+  }
+
+  if (!outcome) {
     throw new ContributionError(
       "La fiche a changé depuis cette proposition — elle est marquée obsolète.",
       "superseded",
       409,
     );
   }
-
-  // Écriture. Une planche de databook passe par `jsonb_set` ciblé (le tableau
-  // `pages` n'est PAS réécrit en entier — deux corrections sur le même ouvrage
-  // ne peuvent donc pas s'écraser l'une l'autre) ; tout le reste passe par le
-  // chemin d'écriture normal du wiki.
-  const planche = estCiblePlanche(row.tableName, row.columnName)
-    ? numeroDePlanche(row.columnName)
-    : null;
-  let after: Record<string, unknown>;
-  if (estCibleStats(row.tableName, row.columnName)) {
-    // Retour au jsonb, en conservant les accents de couleur déjà posés : le
-    // contributeur corrige une mesure, il ne repeint pas la fiche.
-    const stats = fusionnerStats(
-      parseStats(row.valueAfter),
-      (before as Record<string, unknown>).stats,
-    );
-    after = await updateWiki(row.tableName, row.rowId, { stats });
-  } else if (planche !== null) {
-    const ok = await ecrireTranscription(row.rowId, planche, row.valueAfter);
-    if (!ok) throw new ContributionError("Planche introuvable dans cet ouvrage.", "not_found", 404);
-    after = { [row.columnName]: row.valueAfter };
-  } else {
-    after = await updateWiki(row.tableName, row.rowId, { [row.columnName]: row.valueAfter });
+  try {
+    revalidateWikiEntity(outcome.updated.tableName, outcome.after);
+    if (outcome.updated.tableName === "db_wiki_sections")
+      await revalidateSectionParent(outcome.after);
+  } catch (error) {
+    console.error("[contributions] committed revision cache refresh failed", error);
   }
-
-  // Le crédit va au contributeur : c'est lui qui a écrit le texte. Le
-  // modérateur reste identifié sur la contribution (`reviewerName`).
-  const revisionId = await recordRevision({
-    table: row.tableName,
-    id: row.rowId,
-    action: "update",
-    before,
-    after,
-    actor: { id: row.authorId, name: row.authorName },
-  });
-
-  revalidateWikiEntity(row.tableName, after);
-  if (row.tableName === "db_wiki_sections") {
-    await revalidateSectionParent(after as Record<string, unknown>);
-  }
-
-  const [updated] = await db
-    .update(wikiContributions)
-    .set({
-      status: "accepted",
-      reviewerId: reviewer?.id ?? null,
-      reviewerName: reviewer?.name ?? null,
-      reviewNote: note?.trim() || null,
-      reviewedAt: new Date(),
-      updatedAt: new Date(),
-      revisionId,
-    })
-    .where(eq(wikiContributions.id, id))
-    .returning();
-
-  return toView(updated!);
+  return toView(outcome.updated);
 }
 
 /** Refuse une proposition. La note est ce que verra le contributeur — la remplir. */

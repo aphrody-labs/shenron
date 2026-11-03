@@ -106,6 +106,10 @@ export async function listeChantiers(exemplesParRubrique = 6): Promise<Chantier[
     }),
   );
 
+  if (resultats.every((result) => result === null)) {
+    throw new Error("Wiki workshops are unavailable");
+  }
+
   return resultats
     .filter((r): r is Chantier => r !== null && r.vides > 0)
     .toSorted((a, b) => b.vides - a.vides);

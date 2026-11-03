@@ -1,0 +1,163 @@
+{
+  "rights": {
+    "loading": "Loading permissions…",
+    "loadFailed": "Contribution permissions could not be loaded. Settings cannot be saved until they have been read successfully.",
+    "retry": "Reload permissions",
+    "save": "Save permissions",
+    "saved": "Permissions saved.",
+    "saveFailed": "Permissions could not be saved. Your choices are preserved.",
+    "scopes": {
+      "wiki": {
+        "label": "Wiki",
+        "hint": "Entries, stories, works and documents in the encyclopedia."
+      },
+      "databooks": {
+        "label": "Databooks",
+        "hint": "Book entries and transcriptions of Japanese scans."
+      }
+    },
+    "modes": {
+      "members": {
+        "label": "All signed-in members",
+        "hint": "Any linked Discord account can suggest a correction."
+      },
+      "restricted": {
+        "label": "Selected roles or accounts",
+        "hint": "An allowed role or a named account is enough to contribute."
+      },
+      "admin": {
+        "label": "Editorial team only",
+        "hint": "The button is hidden from the public. Staff can still edit directly."
+      }
+    },
+    "roles": "Allowed roles",
+    "noRoles": "No roles selected.",
+    "removeRole": "Remove this role",
+    "addRole": "Add role",
+    "selectRole": "Select a role",
+    "members": "Individually allowed members",
+    "noMembers": "No members selected.",
+    "removeMember": "Remove this member",
+    "addMember": "Add member",
+    "selectMember": "Find a member by name or identifier",
+    "emptyRestricted": "No roles or members selected: only staff can contribute to this scope."
+  },
+  "queue": {
+    "eyebrow": "Community workshop",
+    "title": "Review, correct, publish",
+    "intro": "Compare each proposal with the published text, check its sources and reply to its author. Every publication remains credited and reversible in revision history.",
+    "history": "Revision history",
+    "rights": "Who can contribute?",
+    "rightsHint": "Allowed roles and members, by scope",
+    "filters": "Filter proposals",
+    "all": "All",
+    "withdrawn": "Withdrawn",
+    "loading": "Loading proposals…",
+    "loadFailed": "Proposals could not be loaded. Your work is saved.",
+    "retry": "Try again",
+    "emptyPending": "The review queue is up to date.",
+    "empty": "No proposals match this filter.",
+    "count": "{count} proposals",
+    "range": "{from}–{to} of {total}",
+    "pagination": "Proposal pages",
+    "previous": "Previous",
+    "next": "Next",
+    "anonymous": "Member",
+    "reviewer": "Reviewed by {name}",
+    "open": "Open entry",
+    "sources": "Sources to check",
+    "missingSources": "No source provided: consult the original work before publishing.",
+    "before": "Published text",
+    "after": "Proposal",
+    "unchanged": "The proposed text matches the saved text.",
+    "expand": "Show the remaining {count} lines",
+    "note": "Reply to the contributor",
+    "noteHint": "Explain your decision. A reply is required to reject a proposal.",
+    "accept": "Accept and publish",
+    "reject": "Reject with a reply",
+    "working": "Saving…",
+    "failed": "The decision could not be saved. Try again.",
+    "conflict": "The proposal or entry has changed. Refresh the queue before deciding.",
+    "response": "Reviewer’s reply"
+  },
+  "status": {
+    "pending": "Pending",
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "superseded": "Superseded",
+    "withdrawn": "Withdrawn"
+  },
+  "field": {
+    "article": "Article",
+    "description": "Description",
+    "synopsis": "Synopsis",
+    "body": "Content",
+    "summary": "Summary",
+    "note": "Note",
+    "biography": "Biography",
+    "rulesSummary": "Rules",
+    "climaxSummary": "Outcome",
+    "rules": "Rules",
+    "nameJa": "Japanese name",
+    "nameRomaji": "Romanized name",
+    "titleJa": "Japanese title",
+    "titleRomaji": "Romanized title"
+  },
+  "assistant": {
+    "title": "Assisted writing, visible sources",
+    "intro": "Find reference passages or request an AI draft grounded in those sources. Review its claims and citations before creating a section.",
+    "query": "Topic and writing instruction",
+    "queryHint": "Specify the topic, original work and passage to explain.",
+    "search": "Find sources",
+    "draft": "Write an AI draft",
+    "working": "Preparing…",
+    "failed": "The assistant is unavailable. Your draft is saved; you can try again.",
+    "empty": "No usable source for this search. Refine the topic or original work.",
+    "sources": "{count} reference passages",
+    "source": "Source",
+    "openSource": "Open source: {title}",
+    "generated": "AI-written draft · review required",
+    "extracts": "Assembled excerpts · review required",
+    "candidate": "A new draft is available",
+    "candidateHint": "Your current text is preserved. Review the proposal before replacing it.",
+    "useCandidate": "Use this draft",
+    "markdown": "Draft to review and edit",
+    "label": "Section title",
+    "insert": "Create reviewed section",
+    "created": "Section created. It is available in the entry’s sections.",
+    "insertFailed": "The section could not be created. Your text is saved.",
+    "review": "I checked the sources and reviewed the text to publish.",
+    "history": "History",
+    "context": "Context",
+    "sourcesPreset": "Sources and references",
+    "historyQuery": "{name} history primary sources",
+    "contextQuery": "{name} manga databook context",
+    "sourcesQuery": "{name} sources references"
+  },
+  "mine": {
+    "signin": "Sign in to view my proposals",
+    "signinHint": "Sign in to track your corrections and read the editorial team’s replies.",
+    "title": "My proposals",
+    "intro": "Find your corrections and the editorial team’s replies.",
+    "loading": "Loading your proposals…",
+    "failed": "Your proposals could not be loaded. They are saved.",
+    "empty": "Open an entry and choose ‘Suggest a correction’ to contribute.",
+    "entry": "Entry",
+    "response": "Reviewer’s reply",
+    "next": "See more",
+    "previous": "Back",
+    "page": "Page {page}"
+  },
+  "workflow": {
+    "label": "Editorial workflow",
+    "intro": "One workflow from missing content to a verifiable publication.",
+    "write": "Complete an entry",
+    "writeText": "Find text and illustrations to enrich, then open the studio and its sourced assistant.",
+    "review": "Review community proposals",
+    "reviewText": "Compare corrections, consult references and reply to contributors.",
+    "publish": "Check the publication",
+    "publishText": "Check public access and find the author of each change in revision history.",
+    "public": "Open the public wiki",
+    "history": "Open history"
+  }
+}

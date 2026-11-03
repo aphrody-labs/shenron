@@ -7,6 +7,9 @@ import { DomainBar } from "@/components/kit/DomainBar";
 import { ContributeRail } from "@/components/kit/ContributeRail";
 import { WikiEditBar } from "@/components/wiki/WikiEditBar";
 import { FICHE_ASIDE, FICHE_GRID, FICHE_MAIN } from "@/components/wiki/fiche-layout";
+import { wikiSourceSection, wikiVisualTopic } from "@/lib/wiki-visual-theme";
+import { WikiImg } from "@/components/wiki/WikiImg";
+import styles from "./wiki-editorial.module.css";
 
 const FICHE_GRID_ASIDE_LEFT =
   "grid items-start gap-8 lg:grid-cols-[minmax(16rem,18rem)_minmax(0,1fr)] lg:gap-10";
@@ -39,6 +42,9 @@ export function WikiDetailPage({
   edit,
   lead,
   header,
+  image,
+  imageAlt,
+  imageCaption,
   aside,
   asidePosition = "right",
   contributeKey,
@@ -57,6 +63,10 @@ export function WikiDetailPage({
   lead?: ReactNode;
   /** Entity header: use `WikiEntityHeader`. */
   header: ReactNode;
+  /** The entity's own artwork; contextual artwork must have an explicit caption. */
+  image?: string | null;
+  imageAlt?: string;
+  imageCaption?: ReactNode;
   /** Infobox column; omit for a single column. */
   aside?: ReactNode;
   /** Desktop position of the infobox; it stays first on mobile. */
@@ -67,12 +77,14 @@ export function WikiDetailPage({
   tracker?: ReactNode;
   children: ReactNode;
 }) {
+  const editorial = source !== "db_characters" && source !== "db_techniques";
   return (
     <article
       data-entity={entity}
       data-source-id={source}
       data-lang="fr"
-      className="wiki-container reveal-up"
+      data-wiki-topic={editorial ? wikiVisualTopic(wikiSourceSection(source)) : undefined}
+      className={`wiki-container reveal-up${editorial ? ` ${styles.detail}` : ""}`}
     >
       {jsonLd && <JsonLd data={jsonLd} />}
       {tracker}
@@ -88,7 +100,31 @@ export function WikiDetailPage({
         />
       )}
       {lead}
-      {header}
+      {editorial ? (
+        <div
+          className={`${styles.detailHeader}${image ? ` ${styles.detailHeaderIllustrated}` : ""}`}
+        >
+          <div className={styles.detailHeaderCopy}>{header}</div>
+          {image && (
+            <figure className={styles.detailFigure}>
+              <div className={styles.detailArtwork}>
+                <WikiImg
+                  src={image}
+                  alt={imageAlt ?? entity}
+                  className={styles.detailArtworkImage}
+                  loading="eager"
+                  fetchPriority="high"
+                />
+              </div>
+              {imageCaption && (
+                <figcaption className={styles.artworkCaption}>{imageCaption}</figcaption>
+              )}
+            </figure>
+          )}
+        </div>
+      ) : (
+        header
+      )}
       {aside ? (
         <div className={asidePosition === "left" ? FICHE_GRID_ASIDE_LEFT : FICHE_GRID}>
           <aside className={asidePosition === "left" ? FICHE_ASIDE_LEFT : FICHE_ASIDE}>

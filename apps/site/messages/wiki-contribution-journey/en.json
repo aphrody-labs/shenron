@@ -1,0 +1,33 @@
+{
+  "label": "The encyclopedia workshop",
+  "title": "Every source can help the wiki grow.",
+  "description": "A detail, a documented image, a story to expand: choose where to start, then follow your proposal through review.",
+  "explore": "Find an entry to improve",
+  "track": "Follow my proposals",
+  "sources": "Explore the sources",
+  "steps": [
+    { "title": "Explore", "body": "Find a saga, place, item or work and open its entry." },
+    {
+      "title": "Document",
+      "body": "Identify the volume, chapter, page or official publication supporting your correction."
+    },
+    {
+      "title": "Propose",
+      "body": "The entry’s correction button saves your text as a proposal for review."
+    },
+    {
+      "title": "Keep it alive",
+      "body": "Find the decision and reviewer’s note in your proposals. Accepted corrections are credited."
+    }
+  ],
+  "workshopsUnavailable": "Workshops are temporarily unavailable. You can still suggest a correction from an entry.",
+  "contributorsUnavailable": "The contributor ranking is temporarily unavailable.",
+  "workshops": {
+    "db_characters": "Characters",
+    "db_techniques": "Techniques",
+    "db_planets": "Cosmology",
+    "db_races": "Races",
+    "db_sagas": "Sagas",
+    "db_arcs": "Arcs"
+  }
+}

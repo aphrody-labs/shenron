@@ -9,7 +9,7 @@
  * /admin/wiki/history comme n'importe quelle édition.
  */
 import { NextResponse, type NextRequest } from "next/server";
-import { getCurrentUser, isCurrentUserAdmin } from "@/lib/session";
+import { getCurrentUser, isCurrentUserAdmin, revisionActorOf } from "@/lib/session";
 import type { RevisionActor } from "@/lib/wiki-revisions";
 import {
   acceptContribution,
@@ -18,62 +18,76 @@ import {
   listContributions,
   rejectContribution,
 } from "@/lib/wiki-contributions";
+import {
+  parseContributionListQuery,
+  reviewContributionSchema,
+} from "@/lib/wiki-editorial-contracts";
+import { DatabooksFrozenError } from "@/lib/databooks-freeze";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const forbidden = () => NextResponse.json({ error: "Forbidden" }, { status: 403 });
+function privateJson(body: unknown, init: ResponseInit = {}): NextResponse {
+  const headers = new Headers(init.headers);
+  headers.set("Cache-Control", "private, no-store");
+  return NextResponse.json(body, { ...init, headers });
+}
+
+function unavailable(error: string): NextResponse {
+  return privateJson({ error }, { status: 503, headers: { "Retry-After": "30" } });
+}
+
+async function requireAdmin(): Promise<NextResponse | null> {
+  try {
+    return (await isCurrentUserAdmin())
+      ? null
+      : privateJson({ error: "Forbidden" }, { status: 403 });
+  } catch (error) {
+    console.error("[contributions] moderator authentication failed", error);
+    return unavailable("auth_unavailable");
+  }
+}
 
 async function currentActor(): Promise<RevisionActor> {
-  try {
-    const me = await getCurrentUser();
-    if (!me?.user) return null;
-    return { id: me.user.id ?? null, name: me.user.username ?? null };
-  } catch {
-    return null;
-  }
+  return revisionActorOf(await getCurrentUser());
 }
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  if (!(await isCurrentUserAdmin())) return forbidden();
-  const sp = req.nextUrl.searchParams;
-  const [result, counts] = await Promise.all([
-    listContributions({
-      status: sp.get("status") ?? undefined,
-      table: sp.get("table") ?? undefined,
-      limit: Number(sp.get("limit")) || 50,
-      offset: Number(sp.get("offset")) || 0,
-    }),
-    countByStatus(),
-  ]);
-  return NextResponse.json({ ...result, counts });
+  const authError = await requireAdmin();
+  if (authError) return authError;
+  const parsed = parseContributionListQuery(req.nextUrl.searchParams);
+  if (!parsed.success) return privateJson({ error: "bad_request" }, { status: 400 });
+  try {
+    const [result, counts] = await Promise.all([listContributions(parsed.data), countByStatus()]);
+    return privateJson({ ...result, counts });
+  } catch (error) {
+    console.error("[contributions] moderation queue failed", error);
+    return unavailable("list_unavailable");
+  }
 }
 
 export async function POST(req: NextRequest): Promise<NextResponse> {
-  if (!(await isCurrentUserAdmin())) return forbidden();
+  const authError = await requireAdmin();
+  if (authError) return authError;
+  const parsed = reviewContributionSchema.safeParse(await req.json().catch(() => null));
+  if (!parsed.success) return privateJson({ error: "bad_request" }, { status: 400 });
+  const body = parsed.data;
 
-  let body: { id?: string; action?: string; note?: string };
   try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "bad_request" }, { status: 400 });
-  }
-  if (!body.id || (body.action !== "accept" && body.action !== "reject")) {
-    return NextResponse.json({ error: "bad_request" }, { status: 400 });
-  }
-
-  const actor = await currentActor();
-  try {
+    const actor = await currentActor();
     const contribution =
       body.action === "accept"
         ? await acceptContribution(body.id, actor, body.note ?? null)
         : await rejectContribution(body.id, actor, body.note ?? null);
-    return NextResponse.json({ ok: true, contribution });
+    return privateJson({ ok: true, contribution });
   } catch (err) {
     if (err instanceof ContributionError) {
-      return NextResponse.json({ error: err.code, message: err.message }, { status: err.status });
+      return privateJson({ error: err.code, message: err.message }, { status: err.status });
+    }
+    if (err instanceof DatabooksFrozenError) {
+      return privateJson({ error: "DATABOOKS_FROZEN" }, { status: 423 });
     }
     console.error("[contributions] moderation failed", err);
-    return NextResponse.json({ error: "failed" }, { status: 500 });
+    return privateJson({ error: "moderation_unavailable" }, { status: 503 });
   }
 }

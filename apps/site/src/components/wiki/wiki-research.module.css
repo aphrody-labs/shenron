@@ -1,0 +1,151 @@
+.page {
+  color: var(--wiki-paper, var(--foreground));
+  padding-block: clamp(1.5rem, 4vw, 3rem);
+}
+.search {
+  max-inline-size: 64rem;
+  margin-block: 1rem 2.5rem;
+}
+.search label {
+  display: block;
+  margin-block-end: 0.65rem;
+  font-weight: 650;
+}
+.inputRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.inputRow input {
+  flex: 1 1 16rem;
+  min-inline-size: 0;
+  min-block-size: 3.25rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--wiki-border);
+  border-radius: 0.75rem;
+  background: var(--wiki-card);
+  color: var(--wiki-paper);
+  font-size: 1rem;
+}
+.inputRow button {
+  min-block-size: 3.25rem;
+  padding: 0.75rem 1.5rem;
+  border: 1px solid var(--wiki-accent);
+  border-radius: 0.75rem;
+  color: var(--wiki-paper);
+  font-weight: 700;
+  background: color-mix(in srgb, var(--wiki-accent) 14%, var(--wiki-card));
+  cursor: pointer;
+}
+.inputRow :focus-visible,
+.jumpLinks a:focus-visible {
+  outline: 2px solid var(--wiki-accent);
+  outline-offset: 4px;
+}
+.inputRow button:hover,
+.jumpLinks a:hover {
+  border-color: var(--wiki-theme-gold, var(--color-dbz-gold));
+}
+.jumpLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-block: 1.5rem 2.5rem;
+}
+.jumpLinks a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-block-size: 2.75rem;
+  padding: 0.5rem 0.85rem;
+  border: 1px solid var(--wiki-border);
+  border-radius: 0.75rem;
+  color: var(--wiki-paper);
+  background: var(--wiki-card);
+  font-size: 0.875rem;
+}
+.jumpLinks span {
+  font-variant-numeric: tabular-nums;
+  color: var(--wiki-accent);
+}
+.group {
+  margin-block: 3rem;
+  scroll-margin-block-start: 6rem;
+}
+.group > h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  margin-block-end: 1.25rem;
+  color: var(--wiki-paper);
+  font-size: clamp(1.35rem, 3vw, 1.8rem);
+  font-weight: 750;
+}
+.count {
+  color: var(--wiki-accent);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr));
+  gap: 1.25rem;
+}
+.note {
+  margin-block: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--wiki-border);
+  border-radius: 0.75rem;
+  background: var(--wiki-card);
+  color: var(--wiki-muted);
+  line-height: 1.7;
+}
+.note h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--wiki-paper);
+  margin-block-end: 0.75rem;
+}
+.note p {
+  max-inline-size: 76ch;
+}
+.sourceList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block-start: 1rem;
+}
+.sourceList a {
+  color: var(--wiki-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  overflow-wrap: anywhere;
+}
+.archive :is(h1, h2, h3) {
+  color: var(--wiki-paper, var(--foreground));
+  text-shadow: none;
+}
+.archive :is(a, button, input, select):focus-visible {
+  outline: 2px solid var(--wiki-accent);
+  outline-offset: 4px;
+}
+.archive a {
+  transition:
+    color 160ms ease,
+    border-color 160ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .archive a {
+    transition: none;
+  }
+}
+@media (forced-colors: active) {
+  .note,
+  .inputRow input,
+  .inputRow button,
+  .jumpLinks a {
+    background: Canvas;
+    color: CanvasText;
+    border-color: CanvasText;
+  }
+}

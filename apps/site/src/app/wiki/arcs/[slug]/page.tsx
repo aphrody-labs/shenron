@@ -13,6 +13,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { ogMeta } from "@/lib/og";
 import { hasEditorialDatabase } from "@/lib/prerender";
+import { WikiNarrativeText } from "@/components/wiki/WikiNarrativeText";
 
 export const revalidate = 3600;
 
@@ -69,6 +70,11 @@ export default async function ArcPage({ params }: { params: Promise<{ slug: stri
     <WikiDetailPage
       entity={arc.name}
       source="db_arcs"
+      image={saga?.image}
+      imageAlt={saga?.name}
+      imageCaption={
+        saga?.image && <WikiNarrativeText name="sagaArtwork" values={{ name: saga.name }} />
+      }
       crumbs={[
         { label: "Sagas & arcs", href: "/wiki/sagas" },
         { label: "Arcs", href: "/wiki/arcs" },

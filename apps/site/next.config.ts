@@ -2,6 +2,7 @@ import { withBun } from "@aphrody/next-bun";
 import type { NextConfig } from "next";
 import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 import {
+  DEFAULT_PUBLIC_ORIGINS,
   ownImageRemotePatterns,
   resolveApiUrl,
   resolveSiteUrl,
@@ -167,7 +168,7 @@ const nextConfig: NextConfig = {
     formats: ["image/avif", "image/webp"],
     // Requis depuis Next 16 : sans liste blanche, n'importe qui peut faire
     // recalculer l'image à toutes les qualités. Une seule valeur suffit ici.
-    qualities: [70],
+    qualities: [70, 75],
     // Plancher du cache disque (`.next/cache/images`). Le TTL réel est le
     // MAXIMUM de cette valeur (4 h, défaut Next 16) et du `max-age` de la source : 1 jour pour
     // `/assets/**`, un an pour `/db/**` (immuable). `aphrody-infra` conserve
@@ -185,7 +186,19 @@ const nextConfig: NextConfig = {
       // Origines propres (CDN, API/assets du bot, site, Discord) : dérivées des
       // mêmes variables que `@/lib/config` via `@aphrody/shenron-config/public-urls`.
       ...ownImageRemotePatterns(process.env),
+      // Catalogue mirrors have a stable image owner, independent of the JS chunk CDN.
+      {
+        protocol: "https",
+        hostname: new URL(DEFAULT_PUBLIC_ORIGINS.cdn).hostname,
+        pathname: "/assets/**",
+      },
+      {
+        protocol: "https",
+        hostname: new URL(DEFAULT_PUBLIC_ORIGINS.cdn).hostname,
+        pathname: "/media/**",
+      },
       // Posters films (MyAnimeList), news officielles (DB Official).
+      { protocol: "https", hostname: "img.youtube.com", pathname: "/vi/**" },
       { protocol: "https", hostname: "myanimelist.net", pathname: "/**" },
       {
         protocol: "https",
@@ -517,5 +530,13 @@ const resolveConfig = withBun(nextConfig, {
 export default async function resolveNextConfig(...args: Parameters<typeof resolveConfig>) {
   const resolved = await resolveConfig(...args);
   // Development chunks only exist in the local compilation, never on the public CDN.
-  return args[0] === PHASE_DEVELOPMENT_SERVER ? { ...resolved, assetPrefix: undefined } : resolved;
+  if (args[0] !== PHASE_DEVELOPMENT_SERVER) return resolved;
+  const headers = resolved.headers;
+  return {
+    ...resolved,
+    assetPrefix: undefined,
+    // HMR CSS keeps stable URLs: production immutable caching would retain obsolete styles.
+    headers: async () =>
+      ((await headers?.()) ?? []).filter((route) => !route.source.startsWith("/_next/")),
+  };
 }

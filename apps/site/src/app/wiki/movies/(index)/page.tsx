@@ -1,6 +1,17 @@
 // Keep the index loader scoped to the catalogue, not streamed detail routes.
-import { ContributeRail } from "@/components/kit";
-import { WikiPageShell } from "@/components/wiki/WikiPageShell";
+import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
+import {
+  WikiMediaJumpLinks,
+  WikiMediaMetrics,
+  WikiMediaSpotlight,
+} from "@/components/wiki/WikiMediaCatalogue";
+import { WikiMediaText } from "@/components/wiki/WikiMediaText";
+import {
+  wikiMediaCatalogueMessages,
+  type WikiMediaMessage,
+} from "@/lib/wiki-media-catalogue-messages";
+import { getLocale } from "next-intl/server";
+import { ArrowRight, Milestone } from "lucide-react";
 import { SectionUnavailable } from "@/components/wiki/SectionUnavailable";
 import { dbUniverse } from "@/lib/db-universe";
 import Link from "next/link";
@@ -9,7 +20,6 @@ import { ContinueRail } from "@/components/history/ContinueRail";
 import type { Metadata } from "next";
 import { pageHero } from "@/lib/banner-config";
 import { eraOf, ERA_ACCENT } from "@aphrody/shenron-config/chronology";
-import { Billboard } from "@/components/stream/Billboard";
 import { StreamRow } from "@/components/stream/StreamRow";
 import { PosterCard } from "@/components/stream/PosterCard";
 import { stripSourceTags, langBadges } from "@/lib/media";
@@ -50,14 +60,14 @@ const SERIES_ORDER = [
   "DBGT_SPECIAL",
   "DBZ_OVA",
 ];
-const SERIES_LABELS: Record<string, string> = {
-  DB_MOVIE: "Films Dragon Ball",
-  DBZ_MOVIE: "Films Dragon Ball Z",
-  DBS_MOVIE: "Films Dragon Ball Super",
-  DB_DAIMA_MOVIE: "Films Daima",
-  DBZ_OVA: "OVA Dragon Ball Z",
-  DBZ_SPECIAL: "Téléfilms Dragon Ball Z",
-  DBGT_SPECIAL: "Téléfilms Dragon Ball GT",
+const SERIES_LABELS: Record<string, WikiMediaMessage> = {
+  DB_MOVIE: "seriesDb",
+  DBZ_MOVIE: "seriesDbz",
+  DBS_MOVIE: "seriesDbs",
+  DB_DAIMA_MOVIE: "seriesDaima",
+  DBZ_OVA: "seriesOva",
+  DBZ_SPECIAL: "seriesSpecialZ",
+  DBGT_SPECIAL: "seriesSpecialGt",
 };
 
 /**
@@ -68,12 +78,11 @@ const SERIES_LABELS: Record<string, string> = {
  * téléfilm n'est pas sorti en salle, et c'est précisément ce que le lecteur
  * vient vérifier sur une page de catalogue.
  */
-const SERIES_BADGES: Record<string, string> = {
-  DBZ_OVA: "OVA",
-  DBZ_SPECIAL: "Téléfilm",
-  DBGT_SPECIAL: "Téléfilm",
+const SERIES_BADGES: Record<string, WikiMediaMessage> = {
+  DBZ_OVA: "ova",
+  DBZ_SPECIAL: "special",
+  DBGT_SPECIAL: "special",
 };
-const badgeFor = (series: string | null) => SERIES_BADGES[series ?? ""] ?? "Film";
 
 /** Ce qui est sorti au cinéma — le reste est un téléfilm ou une OVA. */
 const estFilm = (series: string | null) => !SERIES_BADGES[series ?? ""];
@@ -81,7 +90,14 @@ const estFilm = (series: string | null) => !SERIES_BADGES[series ?? ""];
 const yearOf = (sec: number | null) => (sec ? new Date(sec * 1000).getFullYear() : null);
 
 export default async function FilmsPage() {
-  const data = await dbUniverse.movies();
+  const [data, locale] = await Promise.all([dbUniverse.movies(), getLocale()]);
+  const text = wikiMediaCatalogueMessages(locale);
+  const number = new Intl.NumberFormat(locale);
+  const minutes = new Intl.NumberFormat(locale, {
+    style: "unit",
+    unit: "minute",
+    unitDisplay: "short",
+  });
   if (!data || data.movies.length === 0)
     return <SectionUnavailable title={<T k="wiki.films.unavailable" />} />;
   const movies = data.movies.map((m) =>
@@ -106,7 +122,7 @@ export default async function FilmsPage() {
   const groups = orderedSeries
     .map((s) => ({
       key: s,
-      label: SERIES_LABELS[s] ?? s.replace(/_/g, " "),
+      label: SERIES_LABELS[s] ? text(SERIES_LABELS[s]) : s.replace(/_/g, " "),
       movies: movies
         .filter((m) => m.series === s)
         .toSorted((a, b) => (a.release_date ?? 0) - (b.release_date ?? 0)),
@@ -114,118 +130,118 @@ export default async function FilmsPage() {
     .filter((g) => g.movies.length > 0);
 
   return (
-    <>
-      <Billboard
-        backdrop={await pageHero("films")}
-        poster={featured.poster}
-        eyebrow={<T k="wiki.films.eyebrow" />}
-        title={featured.title}
-        titleJa={featured.title_ja}
-        meta={[
-          fYear ? String(fYear) : null,
-          featured.duration_min ? `${featured.duration_min} min` : null,
-          <T key="cat" k="wiki.films.metaProductions" values={{ count: movies.length }} />,
+    <WikiIndexPage
+      category="movies"
+      eyebrow={<T k="wiki.films.eyebrow" />}
+      title={<WikiMediaText name="moviesTitle" />}
+      lead={<WikiMediaText name="moviesLead" />}
+      image={await pageHero("films")}
+      crumbs={[{ label: "Films", display: <T k="categories.films.label" /> }]}
+      contributeKey="kit.contribute.what.movie"
+    >
+      <WikiMediaMetrics
+        label={<WikiMediaText name="coverage" />}
+        items={[
+          {
+            key: "productions",
+            label: <WikiMediaText name="productions" />,
+            value: number.format(movies.length),
+          },
+          {
+            key: "dubbed",
+            label: <WikiMediaText name="dubbed" />,
+            value: number.format(movies.filter((movie) => langBadges(movie.players).hasVf).length),
+          },
+          {
+            key: "subtitled",
+            label: <WikiMediaText name="subtitled" />,
+            value: number.format(
+              movies.filter((movie) => langBadges(movie.players).hasVostfr).length,
+            ),
+          },
+          {
+            key: "artwork",
+            label: <WikiMediaText name="artwork" />,
+            value: number.format(movies.filter((movie) => movie.poster).length),
+          },
         ]}
-        synopsis={featured.synopsis}
-        hasVf={langBadges(featured.players).hasVf}
-        hasVostfr={langBadges(featured.players).hasVostfr}
-        hasVost={langBadges(featured.players).hasVost}
-        primaryHref={`/wiki/movies/${featured.slug}`}
-        primaryHardNav
-        primaryLabel={<T k="wiki.films.watch" />}
-        secondaryHref="/wiki/timeline"
-        secondaryLabel={<T k="categories.chronologie.label" />}
       />
+      <WikiMediaSpotlight
+        eyebrow={<WikiMediaText name="featuredMovie" />}
+        title={featured.title}
+        subtitle={featured.title_ja}
+        artwork={featured.poster}
+        description={featured.synopsis}
+        meta={[
+          ...(fYear ? [{ key: "year", label: String(fYear) }] : []),
+          ...(featured.duration_min
+            ? [{ key: "duration", label: minutes.format(featured.duration_min) }]
+            : []),
+          { key: "kind", label: text(SERIES_BADGES[featured.series ?? ""] ?? "film") },
+          ...(langBadges(featured.players).hasVf ? [{ key: "vf", label: text("dubbed") }] : []),
+          ...(langBadges(featured.players).hasVostfr
+            ? [{ key: "vostfr", label: text("subtitled") }]
+            : []),
+        ]}
+        primary={{
+          href: `/wiki/movies/${featured.slug}`,
+          label: <T k="wiki.films.watch" />,
+          hardNav: true,
+        }}
+        secondary={{ href: "/wiki/timeline", label: <T k="categories.chronologie.label" /> }}
+      />
+      <WikiMediaJumpLinks
+        label={text("movieNavigation")}
+        items={groups.map((group) => ({
+          key: group.key,
+          href: `#films-${group.key}`,
+          label: group.label,
+          count: group.movies.length,
+        }))}
+      />
+      <ContinueRail kinds={["movie"]} titleKey="history.resumeWatching" />
+      {groups.map((g) => (
+        <StreamRow
+          key={g.key}
+          id={`films-${g.key}`}
+          title={g.label}
+          count={g.movies.length}
+          accent={ERA_ACCENT[eraOf(g.key)]}
+        >
+          {g.movies.map((m) => (
+            <PosterCard
+              key={m.id}
+              href={`/wiki/movies/${m.slug}`}
+              title={m.title}
+              titleJa={m.title_ja}
+              poster={m.poster}
+              year={yearOf(m.release_date)}
+              meta={m.duration_min ? minutes.format(m.duration_min) : null}
+              playerCount={m.players?.length ?? 0}
+              hasVf={langBadges(m.players).hasVf}
+              hasVostfr={langBadges(m.players).hasVostfr}
+              hasVost={langBadges(m.players).hasVost}
+              badge={text(SERIES_BADGES[m.series ?? ""] ?? "film")}
+            />
+          ))}
+        </StreamRow>
+      ))}
 
-      <WikiPageShell
-        adminBar
-        crumbs={[{ label: "Films", display: <T k="categories.films.label" /> }]}
+      <Link
+        href="/wiki/timeline"
+        className="group mt-4 flex items-center gap-4 rounded-xl border border-dbz-orange/25 bg-gradient-to-r from-dbz-orange/[0.08] to-transparent px-5 py-4 transition-colors hover:border-dbz-orange/60"
       >
-        <div
-          className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4"
-          aria-label="Couverture du catalogue vidéo"
-        >
-          {[
-            ["Productions", movies.length],
-            ["VF", movies.filter((movie) => langBadges(movie.players).hasVf).length],
-            ["VOSTFR", movies.filter((movie) => langBadges(movie.players).hasVostfr).length],
-            ["Avec affiche", movies.filter((movie) => movie.poster).length],
-          ].map(([label, value]) => (
-            <div
-              key={label}
-              className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3"
-            >
-              <div className="text-xl font-black tabular-nums text-white sm:text-2xl">{value}</div>
-              <div className="text-[10px] uppercase tracking-wide text-white/45">{label}</div>
-            </div>
-          ))}
-        </div>
-        <nav
-          aria-label="Catégories du catalogue films"
-          className="mb-8 flex gap-2 overflow-x-auto pb-1"
-        >
-          {groups.map((group) => (
-            <a
-              key={group.key}
-              href={`#films-${group.key}`}
-              className="inline-flex min-h-11 shrink-0 items-center rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm font-semibold text-white/75 transition hover:border-dbz-orange/50 hover:text-dbz-orange focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"
-            >
-              {group.label} <span className="ml-1 text-white/40">{group.movies.length}</span>
-            </a>
-          ))}
-        </nav>
-        <ContinueRail kinds={["movie"]} titleKey="history.resumeWatching" />
-        {groups.map((g) => (
-          <StreamRow
-            key={g.key}
-            id={`films-${g.key}`}
-            title={g.label}
-            count={g.movies.length}
-            accent={ERA_ACCENT[eraOf(g.key)]}
-          >
-            {g.movies.map((m) => (
-              <PosterCard
-                key={m.id}
-                href={`/wiki/movies/${m.slug}`}
-                title={m.title}
-                titleJa={m.title_ja}
-                poster={m.poster}
-                year={yearOf(m.release_date)}
-                meta={m.duration_min ? `${m.duration_min} min` : null}
-                playerCount={m.players?.length ?? 0}
-                hasVf={langBadges(m.players).hasVf}
-                hasVostfr={langBadges(m.players).hasVostfr}
-                hasVost={langBadges(m.players).hasVost}
-                badge={badgeFor(m.series)}
-              />
-            ))}
-          </StreamRow>
-        ))}
-
-        <Link
-          href="/wiki/timeline"
-          className="group mt-4 flex items-center gap-4 rounded-xl border border-dbz-orange/25 bg-gradient-to-r from-dbz-orange/[0.08] to-transparent px-5 py-4 transition-colors hover:border-dbz-orange/60"
-        >
-          <span aria-hidden className="font-saiyan text-3xl leading-none text-dbz-orange">
-            ≡
+        <Milestone aria-hidden="true" size={28} className="shrink-0 text-dbz-orange" />
+        <span className="flex-1">
+          <span className="block font-display font-bold text-white transition-colors group-hover:text-dbz-orange">
+            <WikiMediaText name="chronologyTitle" />
           </span>
-          <span className="flex-1">
-            <span className="block font-display font-bold text-white transition-colors group-hover:text-dbz-orange">
-              Chronologie universelle — films, épisodes &amp; manga
-            </span>
-            <span className="block text-[13px] text-white/50">
-              Tout Dragon Ball (DB, Z, GT, Super, Daima) sur une seule frise officielle.
-            </span>
+          <span className="block text-[13px] text-white/50">
+            <WikiMediaText name="chronologyLead" />
           </span>
-          <span
-            aria-hidden
-            className="text-lg text-dbz-orange transition-transform group-hover:translate-x-1"
-          >
-            →
-          </span>
-        </Link>
-        <ContributeRail quoiKey="kit.contribute.what.movie" />
-      </WikiPageShell>
-    </>
+        </span>
+        <ArrowRight aria-hidden="true" size={20} className="shrink-0 text-dbz-orange" />
+      </Link>
+    </WikiIndexPage>
   );
 }

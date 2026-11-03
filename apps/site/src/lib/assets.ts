@@ -7,30 +7,49 @@
  * `postgres`/`drizzle` dans le bundle client.
  */
 import {
+  DEFAULT_PUBLIC_ORIGINS,
   canonicalDbzAssetUrl,
   canonicalLegacyCdnAssetUrl,
 } from "@aphrody/shenron-config/public-urls";
 import { API_URL, ASSET_BASE, SITE_URL } from "@/lib/config";
 
+const CDN_ORIGIN = DEFAULT_PUBLIC_ORIGINS.cdn;
+
+/** Catalogued artwork has one public owner; preserve foreign URLs and local reader paths. */
+function wikiArtworkUrl(value: string): string | null {
+  const relative = value.replace(/^\.\//, "/").replace(/^assets\//, "/assets/");
+  let parsed: URL;
+  try {
+    parsed = new URL(relative, SITE_URL);
+    const ownedOrigins = [
+      SITE_URL,
+      ASSET_BASE,
+      API_URL,
+      CDN_ORIGIN,
+      DEFAULT_PUBLIC_ORIGINS.site,
+      DEFAULT_PUBLIC_ORIGINS.api,
+    ].map((base) => new URL(base).origin);
+    if (!ownedOrigins.includes(parsed.origin) || parsed.username || parsed.password) return null;
+  } catch {
+    return null;
+  }
+  if (!/^\/assets\/(?:wiki|ext)\//.test(parsed.pathname)) return null;
+  const uploaded =
+    /^\/assets\/wiki\/[a-z0-9-]{1,32}\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.(?:png|jpg|webp|gif)$/.test(
+      parsed.pathname,
+    );
+  return `${uploaded ? SITE_URL : CDN_ORIGIN}${parsed.pathname}${parsed.search}${parsed.hash}`;
+}
+
 /**
  * Normalise un chemin d'asset DB (`./assets/...` ou `assets/...`) en URL
- * absolue servie par le bot. Les URL http(s) déjà absolues sont renvoyées
- * telles quelles.
+ * absolue servie par son propriétaire public. Les URL étrangères restent inchangées.
  */
 export function assetUrl(path: string | null | undefined): string {
   const value = path?.trim();
   if (!value) return "";
-  // Runtime wiki uploads are served by the site origin (gateway CDN → origin → server
-  // fallback for `/assets/*`). The bot host answers 404 for them (measured 2026-10-30:
-  // 352/352 on the site origin, 0/352 on the bot host).
-  const uploaded = value.replace(/^\.\//, "/").replace(/^assets\//, "/assets/");
-  if (
-    /^\/assets\/wiki\/[a-z0-9-]{1,32}\/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}\.(?:png|jpg|webp|gif)$/.test(
-      uploaded,
-    )
-  ) {
-    return `${SITE_URL}${uploaded}`;
-  }
+  const artwork = wikiArtworkUrl(value);
+  if (artwork) return artwork;
   const legacyCdn = canonicalLegacyCdnAssetUrl(value);
   if (legacyCdn) return legacyCdn;
   const dbz = canonicalDbzAssetUrl(value, ASSET_BASE, API_URL, SITE_URL);
@@ -47,12 +66,7 @@ export function assetUrl(path: string | null | undefined): string {
   // schéma `bot` ne contient de valeur commençant par « / ».
   if (value.startsWith("/")) return value;
   const clean = value.replace(/^\.?\/*/, "");
-  // Tous les assets — y compris `assets/wiki/*` uploadés à l'admin — sont servis
-  // par le bot. NE PAS réécrire `assets/wiki/` → `/wiki/` (même origine) : le
-  // dossier `public/` de Next est indexé au build, donc une image uploadée au
-  // runtime y est masquée par la route catch-all `/wiki/[...slug]` (→ HTML, d'où
-  // la vignette cassée). Le bot sert le même fichier (`../site/public/wiki/...`)
-  // via `/assets/wiki/...` sans collision de route.
+  // Remaining bot-owned namespaces keep their configured origin.
   return `${ASSET_BASE}/${clean}`;
 }
 

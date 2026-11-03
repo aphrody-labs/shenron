@@ -1,4 +1,3 @@
-/* oxlint-disable jsx-a11y/label-has-associated-control -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
 /**
@@ -14,11 +13,10 @@ import { useEffect, useState } from "react";
 import { Chargement, Croix, Enregistrer, Plus } from "@aphrody/shenron-ui/icones";
 import { RoleSelect, RoleBadge } from "@/components/admin/RoleSelect";
 import { UserSelect } from "@/components/admin/UserSelect";
+import { useWikiEditorialText } from "@/lib/wiki-editorial-text";
 import {
   CONTRIBUTION_SCOPES,
   DEFAULT_CONTRIBUTION_RIGHTS,
-  MODE_LABELS,
-  SCOPE_LABELS,
   type ContributionMode,
   type ContributionRights,
   type ContributionScope,
@@ -28,30 +26,50 @@ import {
 const MODES: ContributionMode[] = ["members", "restricted", "admin"];
 
 export function ContributionRightsPanel() {
+  const t = useWikiEditorialText();
   const [rights, setRights] = useState<ContributionRights>(DEFAULT_CONTRIBUTION_RIGHTS);
-  const [chargement, setChargement] = useState(true);
+  const [loadState, setLoadState] = useState<"loading" | "ready" | "error">("loading");
+  const [loadAttempt, setLoadAttempt] = useState(0);
   const [envoi, setEnvoi] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let vivant = true;
-    fetch("/api/admin/contribution-rights")
-      .then((r) => r.json())
+    const controller = new AbortController();
+    const headers = new Headers();
+    if (loadAttempt > 0) headers.set("Cache-Control", "no-cache");
+    fetch("/api/admin/contribution-rights", {
+      credentials: "same-origin",
+      signal: controller.signal,
+      cache: "no-store",
+      headers,
+    })
+      .then((r) => {
+        if (!r.ok) throw new Error("rights_unavailable");
+        return r.json();
+      })
       .then((d) => {
-        if (vivant && d?.ok && d.rights) setRights(d.rights as ContributionRights);
+        if (!d?.ok || !d.rights) throw new Error("rights_unavailable");
+        if (vivant) {
+          setRights(d.rights as ContributionRights);
+          setLoadState("ready");
+        }
         return undefined;
       })
-      .catch(() => {})
-      .finally(() => vivant && setChargement(false));
+      .catch(() => {
+        if (vivant) setLoadState("error");
+      });
     return () => {
       vivant = false;
+      controller.abort();
     };
-  }, []);
+  }, [loadAttempt]);
 
   const majScope = (scope: ContributionScope, patch: Partial<ScopeRule>) =>
     setRights((r) => ({ ...r, [scope]: { ...r[scope], ...patch } }));
 
   const enregistrer = async () => {
+    if (loadState !== "ready" || envoi) return;
     setEnvoi(true);
     setMessage(null);
     try {
@@ -63,21 +81,41 @@ export function ContributionRightsPanel() {
       const d = await res.json();
       if (!res.ok || !d?.ok) throw new Error("échec");
       setRights(d.rights as ContributionRights);
-      setMessage("Droits enregistrés.");
+      setMessage("rights.saved");
     } catch {
-      setMessage("Échec de l'enregistrement.");
+      setMessage("rights.saveFailed");
     } finally {
       setEnvoi(false);
     }
   };
 
-  if (chargement) {
+  if (loadState === "loading") {
     return (
-      <div className="flex items-center gap-2 text-sm text-white/50">
-        <Chargement className="h-4 w-4 animate-spin" /> Chargement des droits…
-      </div>
+      <output className="flex items-center gap-2 text-sm text-os/75">
+        <Chargement aria-hidden className="h-4 w-4 animate-spin motion-reduce:animate-none" />{" "}
+        {t("rights.loading")}
+      </output>
     );
   }
+  if (loadState === "error")
+    return (
+      <div
+        role="alert"
+        className="space-y-3 rounded-xl border border-dbz-red/40 bg-dbz-card p-4 text-sm text-os"
+      >
+        <p>{t("rights.loadFailed")}</p>
+        <button
+          type="button"
+          className="btn btn-ghost min-h-11"
+          onClick={() => {
+            setLoadState("loading");
+            setLoadAttempt((attempt) => attempt + 1);
+          }}
+        >
+          {t("rights.retry")}
+        </button>
+      </div>
+    );
 
   return (
     <div className="space-y-6">
@@ -96,17 +134,17 @@ export function ContributionRightsPanel() {
         <button
           type="button"
           onClick={enregistrer}
-          disabled={envoi}
-          className="inline-flex h-10 items-center gap-2 rounded-lg bg-dbz-orange px-4 font-display text-sm font-semibold text-black transition-colors hover:bg-white disabled:opacity-60"
+          disabled={envoi || loadState !== "ready"}
+          className="btn btn-primary inline-flex min-h-12 items-center gap-2 disabled:opacity-60"
         >
           {envoi ? (
-            <Chargement className="h-4 w-4 animate-spin" />
+            <Chargement aria-hidden className="h-4 w-4 animate-spin motion-reduce:animate-none" />
           ) : (
-            <Enregistrer className="h-4 w-4" />
+            <Enregistrer aria-hidden className="h-4 w-4" />
           )}
-          Enregistrer
+          {t("rights.save")}
         </button>
-        {message && <span className="text-sm text-white/60">{message}</span>}
+        {message && <output className="text-sm text-os/75">{t(message)}</output>}
       </div>
     </div>
   );
@@ -121,6 +159,7 @@ function BlocScope({
   rule: ScopeRule;
   onChange: (patch: Partial<ScopeRule>) => void;
 }) {
+  const t = useWikiEditorialText();
   const [roleEnCours, setRoleEnCours] = useState("");
   const [membreEnCours, setMembreEnCours] = useState("");
   const restreint = rule.mode === "restricted";
@@ -137,19 +176,22 @@ function BlocScope({
   };
 
   return (
-    <section className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-5">
-      <h3 className="font-display text-[15px] font-semibold text-white">
-        {SCOPE_LABELS[scope].label}
+    <section className="rounded-xl border border-dbz-border bg-dbz-card p-5">
+      <h3 className="font-display text-[15px] font-semibold text-os">
+        {t(`rights.scopes.${scope}.label`)}
       </h3>
-      <p className="mt-1 text-[12px] leading-relaxed text-white/45">{SCOPE_LABELS[scope].hint}</p>
+      <p className="mt-1 text-sm leading-relaxed text-os/75">{t(`rights.scopes.${scope}.hint`)}</p>
 
       <div className="mt-4 space-y-2">
         {MODES.map((m) => (
           <label
             key={m}
+            htmlFor={`mode-${scope}-${m}`}
+            aria-label={t(`rights.modes.${m}.label`)}
             className="flex cursor-pointer items-start gap-2.5 rounded-lg px-2 py-1.5 transition-colors hover:bg-white/[0.04]"
           >
             <input
+              id={`mode-${scope}-${m}`}
               type="radio"
               name={`mode-${scope}`}
               checked={rule.mode === m}
@@ -157,24 +199,24 @@ function BlocScope({
               className="mt-1 accent-dbz-orange"
             />
             <span>
-              <span className="block text-[14px] font-medium text-white/90">
-                {MODE_LABELS[m].label}
+              <span className="block text-[14px] font-medium text-os">
+                {t(`rights.modes.${m}.label`)}
               </span>
-              <span className="block text-[12px] text-white/45">{MODE_LABELS[m].hint}</span>
+              <span className="block text-sm text-os/75">{t(`rights.modes.${m}.hint`)}</span>
             </span>
           </label>
         ))}
       </div>
 
       {restreint && (
-        <div className="mt-5 space-y-5 border-t border-white/[0.08] pt-5">
+        <div className="mt-5 space-y-5 border-t border-dbz-border pt-5">
           <div>
-            <p className="mb-2 font-scouter text-[11px] uppercase tracking-[0.14em] text-white/45">
-              Rôles autorisés
+            <p className="mb-2 font-scouter text-[11px] uppercase tracking-[0.14em] text-os/75">
+              {t("rights.roles")}
             </p>
             <div className="mb-2 flex flex-wrap gap-1.5">
               {rule.roleIds.length === 0 && (
-                <span className="text-[12px] text-white/35">Aucun rôle.</span>
+                <span className="text-sm text-os/75">{t("rights.noRoles")}</span>
               )}
               {rule.roleIds.map((id) => (
                 <span
@@ -185,8 +227,8 @@ function BlocScope({
                   <button
                     type="button"
                     onClick={() => onChange({ roleIds: rule.roleIds.filter((r) => r !== id) })}
-                    aria-label="Retirer ce rôle"
-                    className="grid h-5 w-5 place-items-center rounded-full text-white/50 hover:bg-white/10 hover:text-white"
+                    aria-label={t("rights.removeRole")}
+                    className="grid min-h-11 min-w-11 place-items-center rounded-full text-os/75 hover:bg-white/10 hover:text-os"
                   >
                     <Croix className="h-3 w-3" />
                   </button>
@@ -194,13 +236,18 @@ function BlocScope({
               ))}
             </div>
             <div className="flex items-center gap-2">
-              <RoleSelect value={roleEnCours} onChange={setRoleEnCours} className="flex-1" />
+              <RoleSelect
+                value={roleEnCours}
+                onChange={setRoleEnCours}
+                className="flex-1"
+                placeholder={t("rights.selectRole")}
+              />
               <button
                 type="button"
                 onClick={() => ajouterRole(roleEnCours)}
                 disabled={!roleEnCours}
-                aria-label="Ajouter le rôle"
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-white/[0.12] text-white/70 transition-colors hover:border-dbz-orange/60 hover:text-white disabled:opacity-40"
+                aria-label={t("rights.addRole")}
+                className="grid min-h-11 min-w-11 shrink-0 place-items-center rounded-lg border border-dbz-border text-os/85 transition-colors hover:border-dbz-orange/60 hover:text-os disabled:opacity-40"
               >
                 <Plus className="h-4 w-4" />
               </button>
@@ -208,17 +255,17 @@ function BlocScope({
           </div>
 
           <div>
-            <p className="mb-2 font-scouter text-[11px] uppercase tracking-[0.14em] text-white/45">
-              Membres autorisés nommément
+            <p className="mb-2 font-scouter text-[11px] uppercase tracking-[0.14em] text-os/75">
+              {t("rights.members")}
             </p>
             <div className="mb-2 flex flex-wrap gap-1.5">
               {rule.discordIds.length === 0 && (
-                <span className="text-[12px] text-white/35">Aucun membre.</span>
+                <span className="text-sm text-os/75">{t("rights.noMembers")}</span>
               )}
               {rule.discordIds.map((id) => (
                 <span
                   key={id}
-                  className="inline-flex items-center gap-1 rounded-full bg-white/[0.06] px-2 py-0.5 font-mono text-[11px] text-white/70"
+                  className="inline-flex items-center gap-1 rounded-full bg-white/[0.06] px-2 py-0.5 font-mono text-[11px] text-os/85"
                 >
                   {id}
                   <button
@@ -226,8 +273,8 @@ function BlocScope({
                     onClick={() =>
                       onChange({ discordIds: rule.discordIds.filter((d) => d !== id) })
                     }
-                    aria-label="Retirer ce membre"
-                    className="grid h-5 w-5 place-items-center rounded-full text-white/50 hover:bg-white/10 hover:text-white"
+                    aria-label={t("rights.removeMember")}
+                    className="grid min-h-11 min-w-11 place-items-center rounded-full text-os/75 hover:bg-white/10 hover:text-os"
                   >
                     <Croix className="h-3 w-3" />
                   </button>
@@ -235,13 +282,18 @@ function BlocScope({
               ))}
             </div>
             <div className="flex items-center gap-2">
-              <UserSelect value={membreEnCours} onChange={setMembreEnCours} className="flex-1" />
+              <UserSelect
+                value={membreEnCours}
+                onChange={setMembreEnCours}
+                className="flex-1"
+                placeholder={t("rights.selectMember")}
+              />
               <button
                 type="button"
                 onClick={() => ajouterMembre(membreEnCours)}
                 disabled={!membreEnCours}
-                aria-label="Ajouter le membre"
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-white/[0.12] text-white/70 transition-colors hover:border-dbz-orange/60 hover:text-white disabled:opacity-40"
+                aria-label={t("rights.addMember")}
+                className="grid min-h-11 min-w-11 shrink-0 place-items-center rounded-lg border border-dbz-border text-os/85 transition-colors hover:border-dbz-orange/60 hover:text-os disabled:opacity-40"
               >
                 <Plus className="h-4 w-4" />
               </button>
@@ -249,8 +301,8 @@ function BlocScope({
           </div>
 
           {rule.roleIds.length === 0 && rule.discordIds.length === 0 && (
-            <p className="rounded-lg border border-dbz-red/30 bg-dbz-red/[0.06] px-3 py-2 text-[12px] text-white/70">
-              Aucun rôle ni membre listé : ce périmètre est fermé à tout le monde sauf au staff.
+            <p className="rounded-lg border border-dbz-red/30 bg-dbz-red/[0.06] px-3 py-2 text-[12px] text-os/85">
+              {t("rights.emptyRestricted")}
             </p>
           )}
         </div>

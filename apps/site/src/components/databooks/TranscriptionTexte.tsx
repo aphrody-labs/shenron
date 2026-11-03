@@ -20,6 +20,7 @@ import ReactMarkdown from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { classerDefaut, type Defaut } from "@/lib/databooks-defauts";
+import { WikiResearchText } from "@/components/wiki/WikiResearchText";
 
 /** Hiragana, katakana, idéogrammes CJK, ponctuation japonaise. */
 const CJK = /[　-〿぀-ゟ゠-ヿ㐀-䶿一-鿿＀-ﾟ]/;
@@ -96,8 +97,7 @@ export function TranscriptionTexte({
     <div>
       {douteux && (
         <p className="mb-3 rounded border border-dbz-orange/30 bg-dbz-orange/10 px-3 py-2 text-xs text-dbz-orange/90">
-          Transcription automatique en cours de relecture : cette planche contient des passages mal
-          lus.
+          <WikiResearchText name="transcriptionWarning" />
           {lienCorrection && (
             <>
               {" "}
@@ -105,7 +105,7 @@ export function TranscriptionTexte({
                 href={lienCorrection}
                 className="font-semibold underline decoration-dbz-orange/40 underline-offset-2 hover:decoration-current"
               >
-                Corriger cette planche
+                <WikiResearchText name="transcriptionCorrect" />
               </a>
               .
             </>
@@ -116,14 +116,23 @@ export function TranscriptionTexte({
         className="prose-transcription text-sm leading-relaxed text-white/85"
         lang={langue(texte)}
       >
-        <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>{texte}</ReactMarkdown>
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm, remarkBreaks]}
+          components={{
+            // Scan headings sit below the book title and the reader section heading.
+            h1: ({ node: _node, ...props }) => <h3 {...props} />,
+            h2: ({ node: _node, ...props }) => <h4 {...props} />,
+          }}
+        >
+          {texte}
+        </ReactMarkdown>
       </div>
       {/* Sur une planche saine, l'invitation reste discrète : elle ne doit pas
 			    donner à croire que le texte est douteux alors qu'il ne l'est pas. */}
       {lienCorrection && !douteux && (
         <p className="mt-3 text-[11px] text-white/30">
           <a href={lienCorrection} className="hover:text-white/60 hover:underline">
-            Une erreur dans cette transcription ?
+            <WikiResearchText name="transcriptionQuestion" />
           </a>
         </p>
       )}

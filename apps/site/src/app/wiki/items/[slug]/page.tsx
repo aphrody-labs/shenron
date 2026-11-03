@@ -51,6 +51,8 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
     <WikiDetailPage
       entity={item.name}
       source="db_items"
+      image={item.image}
+      imageAlt={item.name}
       crumbs={[{ label: "Objets & Technologies", href: "/wiki/items" }, { label: item.name }]}
       edit={{ table: "db_items", id: item.id, indexHref: "/wiki/items", label: item.name }}
       header={

@@ -3,7 +3,6 @@ import { dbUniverse } from "@/lib/db-universe";
 import { LocationsGrid } from "@/components/wiki/LocationsGrid";
 import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
 import { ogMeta } from "@/lib/og";
-import { pageHero } from "@/lib/banner-config";
 
 export const revalidate = 3600;
 
@@ -22,14 +21,15 @@ export const metadata: Metadata = {
 
 export default async function LocationsIndexPage() {
   const locations = (await dbUniverse.locations()) ?? [];
+  const artwork = locations.find((location) => location.image);
 
   return (
     <WikiIndexPage
       eyebrow="Encyclopédie"
       title="Lieux & Sanctuaires Mythiques"
       lead="De la modeste Kame House perdue sur l'océan aux dimensions divines du Palais de Zeno, découvrez la géographie et les sanctuaires spirituels du multivers Dragon Ball."
-      image={await pageHero("lieux")}
-      imageAlt="Son Goku enfant et Shenron"
+      image={artwork?.image ?? undefined}
+      imageAlt={artwork?.name}
       crumbs={[{ label: "Lieux & Sanctuaires" }]}
       category="locations"
       contributeKey="kit.contribute.what.place"

@@ -45,8 +45,14 @@ describe("bannières configurées dans l'administration", () => {
         expect(source).not.toContain("<PageHero");
         continue;
       }
+      if (["races", "objets", "lieux", "dragons", "transformations"].includes(key)) {
+        // These catalogues now illustrate their own records rather than a generic frame.
+        expect(source).toContain("image={artwork?.image ?? undefined}");
+        expect(source).toContain("imageAlt={artwork?.name}");
+        continue;
+      }
       expect(source).toContain('from "@/lib/banner-config"');
-      expect(source).toContain(`pageHero("${key}")`);
+      expect(source).toContain(`pageHero("${key === "combats" ? "sagas" : key}")`);
     }
   });
 

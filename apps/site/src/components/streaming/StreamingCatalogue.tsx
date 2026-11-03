@@ -1,9 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import Link from "next/link";
 import { T } from "@/components/T";
-import { WikiPageShell } from "@/components/wiki/WikiPageShell";
+import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
+import { WikiMediaMetrics } from "@/components/wiki/WikiMediaCatalogue";
+import { WikiMediaText } from "@/components/wiki/WikiMediaText";
+import { getLocale } from "next-intl/server";
 import { SectionUnavailable } from "@/components/wiki/SectionUnavailable";
-import { ContributeRail } from "@/components/kit";
 import { ContinueWatchingRail } from "@/components/continue-watching/ContinueWatchingRail";
 import { dbUniverse } from "@/lib/db-universe";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
@@ -17,7 +19,6 @@ import {
 import { streamingEpisode, streamingFeature, type StreamingGroup } from "@/lib/streaming-catalogue";
 import { StreamingHero, StreamingNotice, StreamingNavigation } from "./StreamingHero";
 import { StreamingBrowser } from "./StreamingBrowser";
-import { VieStage } from "@aphrody/shenron-ui/vie/VieStage";
 import { SectionDivider } from "@aphrody/shenron-ui/vie/SectionDivider";
 import { StreamingSavedRail } from "./StreamingSavedRail";
 
@@ -46,22 +47,45 @@ export default async function StreamingCatalogue() {
   const groups = loaded.filter((group): group is StreamingGroup => group !== null);
   if (!groups.length) return <SectionUnavailable title={<T k="wiki.episodes.unavailable" />} />;
   const featured = streamingFeature(groups);
+  const number = new Intl.NumberFormat(await getLocale());
   return (
-    <WikiPageShell width="wide" className="min-w-0">
+    <WikiIndexPage
+      width="wide"
+      category="episodes"
+      eyebrow={<WikiMediaText name="episodesEyebrow" />}
+      title={<WikiMediaText name="episodesTitle" />}
+      lead={<WikiMediaText name="episodesLead" />}
+      crumbs={[{ label: "Episodes", display: <T k="wiki.episodes.title" /> }]}
+      contributeKey="kit.contribute.what.episode"
+    >
       <StreamingNavigation />
-      {!featured && (
-        <VieStage art="kinto" className="pb-4">
-          <h1>
-            <T k="wiki.episodes.title" />
-          </h1>
-        </VieStage>
-      )}
       {featured && (
         <StreamingHero
           episode={featured}
           seriesLabel={SERIES_LABELS[featured.series] ?? featured.series}
+          headingLevel={2}
         />
       )}
+      <WikiMediaMetrics
+        label={<WikiMediaText name="coverage" />}
+        items={[
+          {
+            key: "episodes",
+            label: <WikiMediaText name="episodeCount" />,
+            value: number.format(groups.reduce((total, group) => total + group.total, 0)),
+          },
+          {
+            key: "series",
+            label: <WikiMediaText name="seriesCount" />,
+            value: number.format(groups.length),
+          },
+          {
+            key: "sagas",
+            label: <WikiMediaText name="sagaCount" />,
+            value: number.format(groups.reduce((total, group) => total + group.sagas.length, 0)),
+          },
+        ]}
+      />
       <ContinueWatchingRail kinds={["episode"]} />
       <StreamingSavedRail />
       {(loaded.length !== groups.length || !sagaData) && <StreamingNotice />}
@@ -76,7 +100,6 @@ export default async function StreamingCatalogue() {
       >
         <T k="catalog.categories.sources" />
       </Link>
-      <ContributeRail quoiKey="kit.contribute.what.episode" />
-    </WikiPageShell>
+    </WikiIndexPage>
   );
 }

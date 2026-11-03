@@ -27,6 +27,7 @@ import {
 import { canContribute, scopeOf } from "@/lib/contribution-rights";
 import { sanitizeInternalPath } from "@aphrody/shenron-config/favorites";
 import { createMemoryRateLimiter } from "@/lib/memory-rate-limit";
+import { parseContributionListQuery } from "@/lib/wiki-editorial-contracts";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -151,13 +152,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   if (!session?.user?.id) {
     return privateJson({ ok: false, error: "auth_required" }, { status: 401 });
   }
-  const sp = req.nextUrl.searchParams;
+  const parsed = parseContributionListQuery(req.nextUrl.searchParams, 20);
+  if (!parsed.success) return privateJson({ ok: false, error: "bad_request" }, { status: 400 });
   try {
     const result = await listContributions({
+      ...parsed.data,
       authorId: session.user.id,
-      table: sp.get("table") ?? undefined,
-      rowId: sp.get("rowId") ?? undefined,
-      limit: Number(sp.get("limit")) || 20,
     });
     return privateJson({ ok: true, ...result });
   } catch (err) {

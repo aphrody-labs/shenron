@@ -35,6 +35,8 @@ import { GatedLink } from "@/components/GatedLink";
 import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 import { ogMeta } from "@/lib/og";
 import { T } from "@/components/T";
+import { WikiResearchText } from "@/components/wiki/WikiResearchText";
+import researchStyles from "@/components/wiki/wiki-research.module.css";
 import { assetUrl } from "@/lib/assets";
 import { ToriyamaEmblem, KintoUnCloud, DragonBallSphere } from "@aphrody/shenron-ui/toriyama";
 
@@ -193,7 +195,7 @@ export default async function ToriyamaPage() {
   };
 
   return (
-    <PageShell rhythm="loose">
+    <PageShell rhythm="loose" className={researchStyles.archive}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(personLd) }}
@@ -204,15 +206,15 @@ export default async function ToriyamaPage() {
           { label: "Akira Toriyama", display: <T k="wiki.toriyama.breadcrumb" /> },
         ]}
       />
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-400/20 bg-emerald-400/5 px-4 py-3 text-sm text-white/70">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-emerald-400/20 bg-emerald-400/5 px-4 py-3 text-sm text-[var(--wiki-muted)]">
         <span>
-          Archives InLife, Caramel Mama et Wikipédia JA : provenance affichée, statut non canonique.
+          <WikiResearchText name="sourceNote" />
         </span>
         <Link
           href="/sources/dragon-ball"
           className="font-semibold text-emerald-200 hover:text-white"
         >
-          Voir le dossier des sources →
+          <WikiResearchText name="sourceDossier" />
         </Link>
       </div>
       <nav aria-label="Parcours éditorial" className="mb-8 flex flex-wrap gap-2 text-sm">
@@ -223,13 +225,13 @@ export default async function ToriyamaPage() {
           <T k="wiki.editorialNav.toriyama" />
         </Link>
         <Link
-          className="rounded-lg border border-white/10 px-3 py-2 text-white/70 hover:border-white/30 hover:text-white"
+          className="rounded-lg border border-white/10 px-3 py-2 text-[var(--wiki-muted)] hover:border-white/30 hover:text-white"
           href="/wiki/interviews"
         >
           <T k="wiki.editorialNav.interviews" />
         </Link>
         <GatedLink
-          className="rounded-lg border border-white/10 px-3 py-2 text-white/70 hover:border-white/30 hover:text-white"
+          className="rounded-lg border border-white/10 px-3 py-2 text-[var(--wiki-muted)] hover:border-white/30 hover:text-white"
           href="/wiki/databooks"
         >
           <T k="wiki.editorialNav.catalogue" />
@@ -237,17 +239,17 @@ export default async function ToriyamaPage() {
       </nav>
 
       {/* ——— Hero Section ——— */}
-      <div className="relative overflow-hidden rounded-2xl border border-white/[0.08] bg-gradient-to-br from-dbz-card via-dbz-card/90 to-dbz-card/50 p-6 sm:p-10">
+      <div className="relative overflow-hidden rounded-xl border border-white/[0.08] bg-gradient-to-br from-dbz-card via-dbz-card/90 to-dbz-card/50 p-6 sm:p-10">
         <div className="flex flex-col gap-8 md:flex-row md:items-center md:justify-between">
           <div className="flex-1 space-y-4">
             <div className="inline-flex items-center gap-2 rounded-full border border-dbz-orange/40 bg-dbz-orange/10 px-3.5 py-1 text-[0.8125rem] font-medium text-dbz-orange">
-              <span className="inline-block h-2 w-2 rounded-full bg-dbz-orange animate-pulse" />
+              <span className="inline-block h-2 w-2 rounded-full bg-dbz-orange" />
               <span>鳥山明 · 1955-2024</span>
             </div>
 
             <h1 className="font-title text-3xl text-white sm:text-5xl">Akira Toriyama</h1>
 
-            <p className="max-w-2xl text-[1.0625rem] leading-relaxed text-white/75 sm:text-[1.125rem]">
+            <p className="max-w-2xl text-[1.0625rem] leading-relaxed text-[var(--wiki-muted)] sm:text-[1.125rem]">
               <T k="wiki.toriyama.standfirst" />
             </p>
 
@@ -257,7 +259,7 @@ export default async function ToriyamaPage() {
               </Link>
               <a
                 href="#oeuvres"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.04] px-3.5 py-2 text-[0.8125rem] font-medium text-white/85 transition-colors hover:border-dbz-gold/60 hover:text-white"
+                className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.04] px-3.5 py-2 text-[0.8125rem] font-medium text-[var(--wiki-muted)] transition-colors hover:border-dbz-gold/60 hover:text-white"
               >
                 <DragonBallSphere stars={4} size={18} className="shrink-0" />
                 <span>
@@ -266,7 +268,7 @@ export default async function ToriyamaPage() {
               </a>
               <a
                 href="#sujets"
-                className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.04] px-3.5 py-2 text-[0.8125rem] font-medium text-white/85 transition-colors hover:border-dbz-gold/60 hover:text-white"
+                className="inline-flex items-center gap-2 rounded-lg border border-white/[0.12] bg-white/[0.04] px-3.5 py-2 text-[0.8125rem] font-medium text-[var(--wiki-muted)] transition-colors hover:border-dbz-gold/60 hover:text-white"
               >
                 <ToriyamaEmblem name="go" size={18} className="shrink-0" />
                 <span>
@@ -278,16 +280,18 @@ export default async function ToriyamaPage() {
 
           {/* Author portrait card with historic photo */}
           <div className="relative shrink-0 self-center md:self-auto">
-            <div className="relative overflow-hidden rounded-xl border-2 border-dbz-gold/40 bg-black/40 p-1 shadow-2xl shadow-black/60 transition-transform duration-300 hover:scale-[1.02]">
+            <div className="relative overflow-hidden rounded-xl border border-dbz-border bg-dbz-card p-1">
               <img
                 src="https://upload.wikimedia.org/wikipedia/en/1/15/Akira_Toriyama_in_1982.jpg"
-                alt="Akira Toriyama à son atelier Bird Studio (1982)"
+                alt="Akira Toriyama (1982)"
                 loading="eager"
                 className="h-56 w-44 rounded-lg object-cover sm:h-64 sm:w-52"
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3 text-center">
-                <p className="text-[0.6875rem] font-medium text-white/90">Akira Toriyama (1982)</p>
-                <p className="text-[0.625rem] text-white/50">Bird Studio · © Shūeisha</p>
+                <p className="text-[0.6875rem] font-medium text-[var(--wiki-muted)]">
+                  Akira Toriyama (1982)
+                </p>
+                <p className="text-[0.625rem] text-[var(--wiki-muted)]">Bird Studio · © Shūeisha</p>
               </div>
             </div>
           </div>
@@ -381,7 +385,7 @@ export default async function ToriyamaPage() {
                         <span className="font-mono text-[0.8125rem] font-medium text-dbz-orange">
                           {o.years}
                         </span>
-                        <span className="rounded bg-white/[0.06] px-2 py-0.5 text-[0.6875rem] font-medium text-white/60">
+                        <span className="rounded bg-white/[0.06] px-2 py-0.5 text-[0.6875rem] font-medium text-[var(--wiki-muted)]">
                           {o.badge}
                         </span>
                       </div>
@@ -405,7 +409,7 @@ export default async function ToriyamaPage() {
                   </div>
                 </div>
 
-                <p className="mt-3 text-[0.875rem] leading-relaxed text-white/65">
+                <p className="mt-3 text-[0.875rem] leading-relaxed text-[var(--wiki-muted)]">
                   <T k={`wiki.toriyama.work.${o.key}Role`} />
                 </p>
 
@@ -444,7 +448,7 @@ export default async function ToriyamaPage() {
                   <div
                     key={theme.id}
                     id={`sujet-${theme.id}`}
-                    className="rounded-2xl border border-white/[0.06] bg-dbz-card/40 p-6"
+                    className="rounded-xl border border-white/[0.06] bg-dbz-card/40 p-6"
                   >
                     <div className="flex items-center gap-3">
                       <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-white/[0.12] bg-white/[0.04]">
@@ -524,7 +528,7 @@ export default async function ToriyamaPage() {
                 <section
                   key={group.documentKey}
                   aria-labelledby={`src-${slugifyAnchor(group.documentKey)}`}
-                  className="rounded-2xl border border-white/[0.08] bg-dbz-card/60 p-6"
+                  className="rounded-xl border border-white/[0.08] bg-dbz-card/60 p-6"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">
@@ -632,7 +636,7 @@ function WordCard({
               </div>
               <QuoteText
                 text={word.text}
-                className="mt-1.5 font-jp text-[1rem] leading-relaxed text-white/90"
+                className="mt-1.5 font-jp text-[1rem] leading-relaxed text-[var(--wiki-muted)]"
               />
             </div>
           )}
@@ -643,7 +647,7 @@ function WordCard({
               </div>
               <QuoteText
                 text={word.textFr}
-                className="mt-1 text-[0.9375rem] leading-relaxed text-white/80"
+                className="mt-1 text-[0.9375rem] leading-relaxed text-[var(--wiki-muted)]"
               />
             </div>
           )}
@@ -651,7 +655,7 @@ function WordCard({
       ) : (
         <QuoteText
           text={word.textFr ?? word.text}
-          className="mt-3 text-[0.9375rem] leading-relaxed text-white/85"
+          className="mt-3 text-[0.9375rem] leading-relaxed text-[var(--wiki-muted)]"
         />
       )}
 

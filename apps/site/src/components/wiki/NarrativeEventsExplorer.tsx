@@ -2,22 +2,15 @@
 /* oxlint-disable jsx-a11y/control-has-associated-label, react/no-array-index-key, react/no-object-type-as-default-prop -- reviewed: legacy patterns, behavior preserved */
 
 import { useMemo, useState, useEffect, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useLangue } from "@/lib/i18n/client";
+import { wikiNarrativeMessages } from "@/lib/wiki-narrative-messages";
+import { WikiCatalogueToolbar } from "./WikiCatalogueToolbar";
+import { WikiImg } from "./WikiImg";
+import styles from "./wiki-editorial.module.css";
 import Link from "next/link";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import { useSearchParams, usePathname } from "next/navigation";
 import type { Battle } from "@/lib/db-universe";
-import {
-  Trophy,
-  History,
-  Sparkles,
-  Filter,
-  Search,
-  X,
-  ShieldAlert,
-  GitBranch,
-  LayoutGrid,
-} from "lucide-react";
 
 export interface TournamentItem {
   id: number;
@@ -126,11 +119,12 @@ export function NarrativeEventsExplorer({
   battles: Battle[];
   tournaments?: TournamentItem[];
   timelineEvents?: TimelineEventItem[];
-  sagas?: Array<{ id: number; slug: string; name: string }>;
+  sagas?: Array<{ id: number; slug: string; name: string; image?: string | null }>;
   arcs?: Array<{ id: number; slug: string; name: string }>;
   fallbackImage?: string;
 }) {
-  const listUi = useTranslations("wikiExplorer.list");
+  const { locale } = useLangue();
+  const translate = useMemo(() => wikiNarrativeMessages(locale), [locale]);
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
@@ -189,12 +183,12 @@ export function NarrativeEventsExplorer({
             : "anime-toei";
 
       const timelineLabel = isMangaCanon
-        ? "Canon Manga (Toriyama)"
+        ? translate("manga")
         : isMovies
-          ? "Films DBZ (Hors-Série)"
+          ? translate("movies")
           : isXv
-            ? "⚡ Xenoverse / Multivers"
-            : "Toei Animation (DB/DBZ/GT)";
+            ? translate("xenoverse")
+            : translate("anime");
 
       const saga = b.saga_id ? sagasMap.get(b.saga_id) : undefined;
       const arc = b.arc_id ? arcsMap.get(b.arc_id) : undefined;
@@ -231,10 +225,10 @@ export function NarrativeEventsExplorer({
       const isXv = t.tournament_type?.toLowerCase().includes("xeno") || t.slug.includes("xeno");
       const timeline = isXv ? "xenoverse" : t.canon ? "manga-canon" : "anime-toei";
       const timelineLabel = isXv
-        ? "⚡ Xenoverse / Multivers"
+        ? translate("xenoverse")
         : t.canon
-          ? "Canon Manga (Toriyama)"
-          : "Toei Animation";
+          ? translate("manga")
+          : translate("anime");
 
       let sagaSlug: string | undefined;
       let sagaName: string | undefined;
@@ -277,7 +271,7 @@ export function NarrativeEventsExplorer({
         );
       if (isClash) {
         const timeline = tl.canon ? "manga-canon" : "anime-toei";
-        const timelineLabel = tl.canon ? "Daizenshuu 7 / Canon" : "Anime / Dérivé";
+        const timelineLabel = tl.canon ? translate("manga") : translate("anime");
         items.push({
           kind: "timeline",
           id: tl.id,
@@ -299,7 +293,7 @@ export function NarrativeEventsExplorer({
     }
 
     return items;
-  }, [arcsMap, battles, sagas, sagasMap, tournaments, timelineEvents]);
+  }, [arcsMap, battles, sagas, sagasMap, tournaments, timelineEvents, translate]);
 
   // Filtrage multi-critères
   const filteredEvents = useMemo(() => {
@@ -356,601 +350,275 @@ export function NarrativeEventsExplorer({
     });
   }, [allEvents, selectedType, selectedCanon, selectedSaga, selectedTimeline, query]);
 
+  const timelines = [
+    { value: "all", label: translate("all") },
+    { value: "manga-canon", label: translate("manga") },
+    { value: "anime-toei", label: translate("anime") },
+    { value: "movies-dbz", label: translate("movies") },
+    { value: "xenoverse", label: translate("xenoverse") },
+  ];
+  const types = [
+    { value: "all", label: translate("all") },
+    { value: "battles", label: translate("battles") },
+    { value: "tournaments", label: translate("tournaments") },
+    { value: "wars", label: translate("wars") },
+  ];
+  const canonOptions = [
+    { value: "all", label: translate("all") },
+    { value: "canon_manga", label: translate("manga") },
+    { value: "canon_supervised", label: translate("supervised") },
+    { value: "anime_filler", label: translate("filler") },
+  ];
+  const seriesOptions = [
+    { value: "all", label: translate("all") },
+    ...[...new Set(allEvents.map((event) => event.series))].map((value) => ({
+      value,
+      label: value,
+    })),
+  ];
+  const sagaArtwork = new Map(sagas.map((saga) => [saga.slug, saga]));
+  const resetFilters = () => {
+    setQuery("");
+    setSelectedType("all");
+    setSelectedCanon("all");
+    setSelectedSaga("all");
+    setSelectedTimeline("all");
+  };
   return (
     <div className="space-y-6">
-      {/* Cartouches statistiques de l'univers narratif */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-white/40">
-            Total Événements
-          </div>
-          <div className="mt-1 font-saiyan text-2xl text-orange-400">{allEvents.length}</div>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-white/40">
-            Combats Légendaires
-          </div>
-          <div className="mt-1 font-saiyan text-2xl text-white">{battles.length}</div>
-        </div>
-        <div className="rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-white/40">
-            Tournois Martiaux
-          </div>
-          <div className="mt-1 font-saiyan text-2xl text-amber-400">{tournaments.length}</div>
-        </div>
-        <output
-          className="block rounded-xl border border-white/10 bg-black/40 p-3.5 backdrop-blur-md"
-          aria-live="polite"
-          aria-atomic="true"
-        >
-          <span className="block text-[10px] font-bold uppercase tracking-wider text-white/40">
-            Événements Filtrés
-          </span>
-          <span className="mt-1 block font-saiyan text-2xl text-green-400">
-            {filteredEvents.length}
-          </span>
-        </output>
-      </div>
-
-      {/* Panneau de Contrôle & Facettes Combinables */}
-      <div className="rounded-2xl border border-white/10 bg-black/60 p-5 backdrop-blur-xl shadow-2xl space-y-4">
-        {/* Ligne 1 : Barre de recherche + Switcher Mode de vue */}
-        <div className="flex flex-col sm:flex-row items-center gap-3">
-          <div className="relative flex-1 w-full">
-            <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
-            <input
-              type="search"
-              aria-label="Rechercher un événement narratif"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Rechercher un combat, un tournoi, un participant, une technique (ex: Goku, Genkidama, Tenkaichi, Majin Buu)..."
-              className="w-full rounded-xl border border-white/10 bg-white/5 pl-10 pr-10 py-2.5 text-xs text-white placeholder-white/40 focus:border-orange-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
-            />
-            {query && (
-              <button
-                type="button"
-                onClick={() => setQuery("")}
-                aria-label={listUi("clear")}
-                className="absolute right-1 top-1/2 inline-flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-lg text-white/60 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-orange-400"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-
-          {/* Sélecteur de mode de vue */}
-          <div className="flex rounded-xl bg-white/5 p-1 border border-white/10 shrink-0 self-stretch sm:self-auto justify-center">
-            <button
-              type="button"
-              aria-pressed={viewMode === "grid"}
-              onClick={() => setViewMode("grid")}
-              className={`inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-xs font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 ${
-                viewMode === "grid"
-                  ? "bg-orange-600 text-white shadow-md shadow-orange-950/40"
-                  : "text-white/60 hover:text-white"
-              }`}
-            >
-              <LayoutGrid className="h-3.5 w-3.5" />
-              <span>Cartes</span>
-            </button>
-            <button
-              type="button"
-              aria-pressed={viewMode === "continuity"}
-              onClick={() => setViewMode("continuity")}
-              className={`inline-flex min-h-11 items-center gap-1.5 rounded-lg px-3 text-xs font-bold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400 ${
-                viewMode === "continuity"
-                  ? "bg-orange-600 text-white shadow-md shadow-orange-950/40"
-                  : "text-white/60 hover:text-white"
-              }`}
-            >
-              <GitBranch className="h-3.5 w-3.5" />
-              <span>Graphe & Filiations</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Ligne 2 : Facette [Continuités & Timelines] */}
-        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-white/10 text-xs">
-          <span className="font-bold text-[10px] uppercase tracking-wider text-white/40 mr-1 flex items-center gap-1">
-            <GitBranch className="h-3 w-3 text-cyan-400" /> Continuité :
-          </span>
-          {[
-            { id: "all", label: "Toutes continuités" },
-            { id: "manga-canon", label: "📖 Canon Manga (Toriyama)" },
-            { id: "anime-toei", label: "📺 Toei Animation" },
-            { id: "movies-dbz", label: "🎬 Films DBZ" },
-            { id: "xenoverse", label: "⚡ Time Patrol & Xenoverse (Multivers)" },
-          ].map((tl) => (
-            <button
-              key={tl.id}
-              type="button"
-              aria-pressed={selectedTimeline === tl.id}
-              onClick={() => setSelectedTimeline(tl.id)}
-              className={`min-h-11 rounded-lg px-3 py-2 font-semibold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-300 ${
-                selectedTimeline === tl.id
-                  ? "bg-cyan-600 text-white shadow-sm"
-                  : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              {tl.label}
-            </button>
-          ))}
-        </div>
-
-        {/* Ligne 3 : Facettes [Type] & [Canonicité] */}
-        <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-white/10 text-xs">
-          {/* Type d'événement */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            <span className="font-bold text-[10px] uppercase tracking-wider text-white/40 mr-1 flex items-center gap-1">
-              <Filter className="h-3 w-3 text-orange-400" /> Type :
-            </span>
-            {[
-              { id: "all", label: "Tous" },
-              { id: "battles", label: "⚔️ Combats" },
-              { id: "tournaments", label: "🥋 Tournois" },
-              { id: "wars", label: "💥 Guerres & Conflits" },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                aria-pressed={selectedType === tab.id}
-                onClick={() => setSelectedType(tab.id)}
-                className={`min-h-11 rounded-lg px-3 py-2 font-semibold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 ${
-                  selectedType === tab.id
-                    ? "bg-orange-600 text-white shadow-sm"
-                    : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Canonicité */}
-          <div className="flex flex-wrap items-center gap-1.5 ml-auto">
-            <span className="font-bold text-[10px] uppercase tracking-wider text-white/40 mr-1 flex items-center gap-1">
-              <ShieldAlert className="h-3 w-3 text-amber-400" /> Canon :
-            </span>
-            {[
-              { id: "all", label: "Toutes continuités" },
-              { id: "canon_manga", label: "🌟 Manga 42 tomes" },
-              { id: "canon_supervised", label: "⚡ Super (Canon)" },
-              { id: "anime_filler", label: "📺 Anime / Fillers" },
-            ].map((c) => (
-              <button
-                key={c.id}
-                type="button"
-                aria-pressed={selectedCanon === c.id}
-                onClick={() => setSelectedCanon(c.id)}
-                className={`min-h-11 rounded-lg px-3 py-2 font-semibold transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-300 ${
-                  selectedCanon === c.id
-                    ? "bg-amber-600 text-white shadow-sm"
-                    : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                {c.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Bannière d'isolation de la Patrouille du Temps (Xenoverse) */}
-      {selectedTimeline === "xenoverse" && (
-        <div className="rounded-2xl border-2 border-purple-500/40 bg-gradient-to-r from-purple-950/60 via-black/80 to-purple-950/40 p-5 text-purple-200 backdrop-blur-xl shadow-2xl">
-          <div className="flex items-center gap-2 font-saiyan text-lg text-purple-300">
-            <Sparkles className="h-5 w-5 text-purple-400" />
-            <span>ESPACE ISOLÉ : LIGNES TEMPORELLES DÉRIVÉES &amp; PATROUILLE DU TEMPS</span>
-          </div>
-          <p className="mt-2 text-xs leading-relaxed text-purple-200/90">
-            Les événements, tournois et altérations temporelles répertoriés ici (Xenoverse, Dragon
-            Ball Heroes, Briseurs de Temps) sont{" "}
-            <strong>
-              strictement dissociés de la continuité officielle du manga d&apos;Akira Toriyama
-            </strong>
-            . Ils constituent des variations multiverselles supervisées pour l&apos;univers
-            vidéoludique.
-          </p>
-        </div>
-      )}
-
-      {/* Vue 1 : Grille des Événements Narratifs */}
-      {filteredEvents.length === 0 ? (
-        <div className="rounded-2xl border border-white/10 bg-black/40 p-12 text-center backdrop-blur-md">
-          <p className="text-sm font-semibold text-white/70">
-            Aucun événement ne correspond à vos critères.
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              setSelectedType("all");
-              setSelectedCanon("all");
-              setSelectedSaga("all");
-              setSelectedTimeline("all");
-              setQuery("");
-            }}
-            className="mt-4 inline-flex min-h-11 items-center gap-2 rounded-xl bg-white/10 px-4 text-sm font-semibold text-white hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+      <WikiCatalogueToolbar
+        query={query}
+        onQueryChange={setQuery}
+        value={selectedType}
+        onValueChange={setSelectedType}
+        options={types}
+        searchLabel={translate("eventsSearch")}
+        filterLabel={translate("type")}
+        count={filteredEvents.length}
+      />
+      <div className={styles.eventFilters}>
+        {[
+          {
+            label: translate("continuity"),
+            value: selectedTimeline,
+            set: setSelectedTimeline,
+            options: timelines,
+          },
+          {
+            label: translate("canon"),
+            value: selectedCanon,
+            set: setSelectedCanon,
+            options: canonOptions,
+          },
+          {
+            label: translate("series"),
+            value: selectedSaga,
+            set: setSelectedSaga,
+            options: seriesOptions,
+          },
+        ].map((filter) => (
+          <label key={filter.label}>
+            {filter.label}
+            <select value={filter.value} onChange={(event) => filter.set(event.target.value)}>
+              {filter.options.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        ))}
+        <label>
+          {translate("view")}
+          <select
+            value={viewMode}
+            onChange={(event) => setViewMode(event.target.value as "grid" | "continuity")}
           >
-            Réinitialiser tous les filtres
-          </button>
-        </div>
+            <option value="grid">{translate("cards")}</option>
+            <option value="continuity">{translate("matrix")}</option>
+          </select>
+        </label>
+        <button type="button" className={styles.quickLink} onClick={resetFilters}>
+          {translate("reset")}
+        </button>
+      </div>
+      {selectedTimeline === "xenoverse" && <p className={styles.note}>{translate("isolation")}</p>}
+      <h2 className={styles.sectionTitle}>{translate("eventsList")}</h2>
+      {filteredEvents.length === 0 ? (
+        <p className={styles.catalogueEmpty}>{translate("empty")}</p>
       ) : viewMode === "grid" ? (
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {filteredEvents.map((ev) => {
-            const timelineBadgeClass =
-              ev.timeline === "manga-canon"
-                ? "border-amber-500/40 bg-amber-950/60 text-amber-300"
-                : ev.timeline === "movies-dbz"
-                  ? "border-rose-500/40 bg-rose-950/60 text-rose-300"
-                  : ev.timeline === "xenoverse"
-                    ? "border-purple-500/60 bg-purple-950/80 text-purple-300 ring-1 ring-purple-500/40"
-                    : "border-blue-500/40 bg-blue-950/60 text-blue-300";
-
-            const isXv = ev.timeline === "xenoverse";
-
-            if (ev.kind === "battle") {
-              return (
-                <article
-                  key={`battle-${ev.id}`}
-                  id={ev.href.slice(1)}
-                  className={`scroll-mt-24 group flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all duration-300 hover:shadow-xl ${
-                    isXv
-                      ? "border-purple-500/40 bg-gradient-to-b from-purple-950/30 to-black/60 hover:border-purple-500/70 hover:shadow-purple-950/30 ring-1 ring-purple-500/20"
-                      : "border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.01] hover:border-orange-500/40 hover:shadow-orange-950/20"
-                  }`}
-                >
-                  <div>
-                    <div className="flex flex-wrap items-center justify-between gap-1.5 text-[10px]">
-                      <span
-                        className={`rounded-md border px-2 py-0.5 font-bold uppercase ${
-                          isXv
-                            ? "border-purple-500/40 bg-purple-950/60 text-purple-300"
-                            : "border-orange-500/30 bg-orange-950/60 text-orange-400"
-                        }`}
-                      >
-                        {isXv ? "Altération Temporelle" : `Combat · ${ev.series}`}
-                      </span>
-                      <span
-                        className={`rounded-md border px-2 py-0.5 font-bold ${timelineBadgeClass}`}
-                      >
-                        {ev.timelineLabel}
-                      </span>
-                    </div>
-
-                    <h3 className="mt-3 text-base font-bold text-white group-hover:text-orange-400 transition-colors">
-                      <Link href={ev.href}>{ev.title}</Link>
-                    </h3>
-                    {ev.title_ja && (
-                      <p className="mt-0.5 text-xs text-white/40 font-jp">{ev.title_ja}</p>
-                    )}
-
-                    {/* Rapprochement Saga & Arc narratif */}
-                    {(ev.sagaSlug || ev.arcSlug) && (
-                      <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px]">
-                        {ev.sagaSlug && (
-                          <ClientGatedWrap
-                            access={undefined}
-                            href={`/wiki/sagas/${ev.sagaSlug}`}
-                            className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-950/40 px-2 py-0.5 font-semibold text-amber-300 hover:border-amber-400 hover:text-white transition-colors"
-                          >
-                            <span>📖</span>
-                            <span>Saga {ev.sagaName || ev.sagaSlug}</span>
-                          </ClientGatedWrap>
-                        )}
-                        {ev.arcSlug && (
-                          <ClientGatedWrap
-                            access={undefined}
-                            href={`/wiki/arcs/${ev.arcSlug}`}
-                            className="inline-flex items-center gap-1 rounded-md border border-orange-500/20 bg-orange-950/30 px-2 py-0.5 text-orange-300/90 hover:border-orange-400 hover:text-white transition-colors"
-                          >
-                            <span>⚔️</span>
-                            <span>Arc {ev.arcName || ev.arcSlug}</span>
-                          </ClientGatedWrap>
-                        )}
-                      </div>
-                    )}
-
-                    {/* Combattants */}
-                    <div className="mt-4 space-y-1.5">
-                      <div className="text-[10px] uppercase tracking-wider text-white/40">
-                        Participants
-                      </div>
-                      <div className="flex flex-wrap gap-1.5">
-                        {ev.combatants.map((c, i) => (
-                          <span
-                            key={i}
-                            className="rounded-md bg-white/5 px-2 py-0.5 text-xs text-white/80"
-                          >
-                            {c.name}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-
-                    {/* Filiation d'adaptation manga ↔ anime */}
-                    {ev.manga_volume_start && ev.episode_start && (
-                      <div className="mt-3 rounded-lg border border-orange-500/20 bg-orange-950/30 px-2.5 py-1.5 text-[11px] text-orange-200/90 flex items-center justify-between">
-                        <span className="font-mono">
-                          Tome {ev.manga_volume_start} ↔ Épisode {ev.episode_start}
-                        </span>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-orange-400">
-                          Adaptation Toei
-                        </span>
-                      </div>
-                    )}
-
-                    {/* Vainqueur & Lieu */}
-                    <div className="mt-3 flex flex-wrap gap-3 text-xs text-white/60">
-                      {ev.winner_name && (
-                        <span>
-                          🏆 Vainqueur : <strong className="text-white">{ev.winner_name}</strong>
-                        </span>
-                      )}
-                      {ev.location && <span>📍 {ev.location}</span>}
-                    </div>
-
-                    {/* Techniques */}
-                    {ev.techniques_used && ev.techniques_used.length > 0 && (
-                      <div className="mt-3 flex flex-wrap gap-1 text-[10px] text-orange-300">
-                        {ev.techniques_used.slice(0, 3).map((t, idx) => (
-                          <span key={idx} className="rounded bg-orange-500/10 px-1.5 py-0.5">
-                            ⚡ {t}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="mt-5 border-t border-white/10 pt-3 flex items-center justify-between text-xs text-white/50">
-                    {ev.manga_volume_start && <span>Tome {ev.manga_volume_start}</span>}
-                    <Link
-                      href={ev.href}
-                      className="ml-auto inline-flex min-h-11 shrink-0 items-center justify-center gap-1 rounded-lg border border-orange-400/20 bg-orange-400/10 px-3 py-2 font-semibold text-orange-300 transition-colors hover:border-orange-300/50 hover:bg-orange-400/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-                    >
-                      <span>Fiche tactique</span>
-                      <span>→</span>
-                    </Link>
-                  </div>
-                </article>
-              );
-            }
-
-            if (ev.kind === "tournament") {
-              const isTournXv = ev.timeline === "xenoverse";
-              return (
-                <article
-                  key={`tourn-${ev.id}`}
-                  id={ev.href.slice(1)}
-                  className={`scroll-mt-24 group flex flex-col justify-between rounded-2xl border p-5 backdrop-blur-md transition-all duration-300 hover:shadow-xl ${
-                    isTournXv
-                      ? "border-purple-500/40 bg-gradient-to-b from-purple-950/30 to-black/60 hover:border-purple-500/70 hover:shadow-purple-950/30 ring-1 ring-purple-500/20"
-                      : "border-amber-500/20 bg-gradient-to-b from-amber-950/20 to-black/40 hover:border-amber-500/50 hover:shadow-amber-950/30"
-                  }`}
-                >
-                  <div>
-                    <div className="flex flex-wrap items-center justify-between gap-1.5 text-[10px]">
-                      <span
-                        className={`rounded-md border px-2 py-0.5 font-bold uppercase flex items-center gap-1 ${
-                          isTournXv
-                            ? "border-purple-500/40 bg-purple-950/60 text-purple-300"
-                            : "border-amber-500/30 bg-amber-950/60 text-amber-300"
-                        }`}
-                      >
-                        <Trophy className="h-3 w-3" />{" "}
-                        {isTournXv ? "Tournoi Multivers" : "Tournoi Martial"}
-                      </span>
-                      <span
-                        className={`rounded-md border px-2 py-0.5 font-bold ${timelineBadgeClass}`}
-                      >
-                        {ev.timelineLabel}
-                      </span>
-                    </div>
-
-                    <h3 className="mt-3 text-base font-bold text-white group-hover:text-amber-400 transition-colors">
-                      <Link href={ev.href}>{ev.title}</Link>
-                    </h3>
-                    {ev.title_ja && (
-                      <p className="mt-0.5 text-xs text-white/40 font-jp">{ev.title_ja}</p>
-                    )}
-
-                    {/* Rapprochement Saga */}
-                    {ev.sagaSlug && (
-                      <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[11px]">
-                        <ClientGatedWrap
-                          access={undefined}
-                          href={`/wiki/sagas/${ev.sagaSlug}`}
-                          className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-950/40 px-2 py-0.5 font-semibold text-amber-300 hover:border-amber-400 hover:text-white transition-colors"
-                        >
-                          <span>📖</span>
-                          <span>Saga {ev.sagaName || ev.sagaSlug}</span>
-                        </ClientGatedWrap>
-                      </div>
-                    )}
-
-                    <div className="mt-4 space-y-1.5 text-xs text-white/70">
-                      {ev.winner_name && (
-                        <div>
-                          🥇 Champion : <strong className="text-white">{ev.winner_name}</strong>
-                        </div>
-                      )}
-                      {ev.runner_up_name && (
-                        <div>
-                          🥈 Finaliste : <span className="text-white/80">{ev.runner_up_name}</span>
-                        </div>
-                      )}
-                      {ev.location && <div>📍 Lieu : {ev.location}</div>}
-                    </div>
-
-                    {ev.rules_summary && (
-                      <p className="mt-3 text-[11px] leading-relaxed text-white/60 line-clamp-2">
-                        {ev.rules_summary}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="mt-5 border-t border-white/10 pt-3 flex items-center justify-between text-xs text-white/50">
-                    {ev.participants_count && <span>{ev.participants_count} compétiteurs</span>}
-                    <Link
-                      href={ev.href}
-                      className="ml-auto inline-flex min-h-11 shrink-0 items-center justify-center gap-1 rounded-lg border border-amber-400/20 bg-amber-400/10 px-3 py-2 font-semibold text-amber-300 transition-colors hover:border-amber-300/50 hover:bg-amber-400/15 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2 focus-visible:ring-offset-black"
-                    >
-                      <span>Tableau & Matchs</span>
-                      <span>→</span>
-                    </Link>
-                  </div>
-                </article>
-              );
-            }
-
-            // Événement historique / Chronologie
+        <div className={styles.topicGrid}>
+          {filteredEvents.map((event) => {
+            const artwork = event.sagaSlug ? sagaArtwork.get(event.sagaSlug) : undefined;
+            const id =
+              event.kind === "timeline" ? "event-timeline-" + event.id : event.href.slice(1);
             return (
-              <article
-                key={`timeline-${ev.id}`}
-                className="group flex flex-col justify-between rounded-2xl border border-blue-500/20 bg-gradient-to-b from-blue-950/20 to-black/40 p-5 backdrop-blur-md transition-all duration-300 hover:border-blue-500/50 hover:shadow-xl hover:shadow-blue-950/30"
-              >
-                <div>
-                  <div className="flex flex-wrap items-center justify-between gap-1.5 text-[10px]">
-                    <span className="rounded-md border border-blue-500/30 bg-blue-950/60 px-2 py-0.5 font-bold uppercase text-blue-300 flex items-center gap-1">
-                      <History className="h-3 w-3" /> Conflit Historique
-                    </span>
-                    <span className="font-mono text-blue-300 font-bold">Age {ev.age_year}</span>
-                  </div>
-
-                  <h3 className="mt-3 text-base font-bold text-white group-hover:text-blue-400 transition-colors">
-                    <Link href={ev.href}>{ev.title}</Link>
-                  </h3>
-                  {ev.title_ja && (
-                    <p className="mt-0.5 text-xs text-white/40 font-jp">{ev.title_ja}</p>
-                  )}
-
-                  <p className="mt-3 text-xs leading-relaxed text-white/70 line-clamp-3">
-                    {ev.description}
-                  </p>
-
-                  {ev.characters_involved && ev.characters_involved.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-1">
-                      {ev.characters_involved.map((ch, i) => (
-                        <span
-                          key={i}
-                          className="rounded bg-white/5 px-2 py-0.5 text-[10px] text-white/70"
-                        >
-                          {ch}
-                        </span>
-                      ))}
+              <article key={event.kind + event.id} id={id} className={styles.eventCard}>
+                {artwork?.image && (
+                  <figure>
+                    <div className={styles.topicMedia}>
+                      <WikiImg
+                        src={artwork.image}
+                        alt={artwork.name}
+                        sizes="(min-width:1024px) 420px, (min-width:640px) 50vw, 100vw"
+                      />
                     </div>
+                    <figcaption className={styles.artworkCaption}>
+                      {translate("sagaArtwork", { name: artwork.name })}
+                    </figcaption>
+                  </figure>
+                )}
+                <div className={styles.topicContent}>
+                  <p className={styles.discoveryMeta}>
+                    {event.timelineLabel} · {event.series}
+                  </p>
+                  <h3 className={styles.topicHeading}>{event.title}</h3>
+                  {event.title_ja && (
+                    <p className={styles.discoverySubtitle} lang="ja">
+                      {event.title_ja}
+                    </p>
                   )}
-                </div>
-
-                <div className="mt-5 border-t border-white/10 pt-3 flex items-center justify-between text-xs text-white/50">
-                  {ev.source_ref && <span className="truncate max-w-[150px]">{ev.source_ref}</span>}
-                  <Link
-                    href={ev.href}
-                    className="font-semibold text-blue-400 hover:text-white transition-colors ml-auto inline-flex items-center gap-1"
-                  >
-                    <span>Frise chronologique</span>
-                    <span>→</span>
-                  </Link>
+                  {event.kind === "timeline" && (
+                    <>
+                      <p className={styles.discoveryMeta}>
+                        {translate("age", { count: event.age_year })}
+                      </p>
+                      <p className={styles.topicBlurb}>{event.description}</p>
+                      {event.characters_involved?.length ? (
+                        <p className={styles.topicBlurb}>{event.characters_involved.join(" · ")}</p>
+                      ) : null}
+                      {event.source_ref && (
+                        <p className={styles.discoveryMeta}>
+                          {translate("source")} · {event.source_ref}
+                        </p>
+                      )}
+                      <Link href="/wiki/timeline" className={styles.quickLink}>
+                        {translate("timeline")}
+                      </Link>
+                    </>
+                  )}
+                  {event.kind !== "timeline" && (
+                    <>
+                      {event.kind === "battle" && (
+                        <>
+                          <p className={styles.topicBlurb}>
+                            {translate("participants")} ·{" "}
+                            {event.combatants.map((combatant) => combatant.name).join(" · ")}
+                          </p>
+                          {event.techniques_used?.length ? (
+                            <p className={styles.topicBlurb}>
+                              {translate("techniques")} · {event.techniques_used.join(" · ")}
+                            </p>
+                          ) : null}
+                        </>
+                      )}
+                      {event.kind === "tournament" && (
+                        <>
+                          <p className={styles.topicBlurb}>{event.rules_summary}</p>
+                          {event.participants_count ? (
+                            <p className={styles.discoveryMeta}>
+                              {translate("participants")} · {event.participants_count}
+                            </p>
+                          ) : null}
+                          {event.runner_up_name && (
+                            <p className={styles.topicBlurb}>
+                              {translate("runnerUp")} · {event.runner_up_name}
+                            </p>
+                          )}
+                        </>
+                      )}
+                      {event.winner_name && (
+                        <p className={styles.topicBlurb}>
+                          {translate("winner")} · {event.winner_name}
+                        </p>
+                      )}
+                      {event.location && (
+                        <p className={styles.discoveryMeta}>
+                          {translate("location")} · {event.location}
+                        </p>
+                      )}
+                      {event.kind === "battle" && (
+                        <p className={styles.discoveryMeta}>
+                          {[
+                            event.manga_volume_start
+                              ? translate("volume", { count: event.manga_volume_start })
+                              : "",
+                            event.manga_chapter_start
+                              ? translate("chapter", { count: event.manga_chapter_start })
+                              : "",
+                            event.episode_start
+                              ? translate("episode", { count: event.episode_start })
+                              : "",
+                          ]
+                            .filter(Boolean)
+                            .join(" · ")}
+                        </p>
+                      )}
+                      {(event.sagaSlug || event.arcSlug) && (
+                        <div className={styles.quickNav}>
+                          {event.sagaSlug && (
+                            <ClientGatedWrap
+                              access={undefined}
+                              href={"/wiki/sagas/" + event.sagaSlug}
+                              className={styles.quickLink}
+                            >
+                              {translate("saga")} · {event.sagaName}
+                            </ClientGatedWrap>
+                          )}
+                          {event.arcSlug && (
+                            <ClientGatedWrap
+                              access={undefined}
+                              href={"/wiki/arcs/" + event.arcSlug}
+                              className={styles.quickLink}
+                            >
+                              {translate("arc")} · {event.arcName}
+                            </ClientGatedWrap>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               </article>
             );
           })}
         </div>
       ) : (
-        /* Vue 2 : Matrice de Filiation & Continuités Multi-Timelines */
-        <div className="space-y-4">
-          <div className="rounded-xl border border-cyan-500/20 bg-cyan-950/20 p-4 text-xs text-cyan-200/90 leading-relaxed">
-            <span className="font-bold text-cyan-300">Matrice de filiation & adaptations :</span>{" "}
-            cette vue met en parallèle le tronc canonique du manga original de Toriyama et ses
-            ramifications (adaptations télévisées Toei Animation, films hors-série et variantes de
-            jeux vidéo).
-          </div>
-
-          <div className="overflow-x-auto rounded-2xl border border-white/10 bg-black/40 backdrop-blur-md">
-            <table className="w-full text-left text-xs text-white/80">
-              <thead className="bg-white/5 text-[10px] uppercase tracking-wider text-white/50 border-b border-white/10">
-                <tr>
-                  <th className="p-3.5">Événement & Titre</th>
-                  <th className="p-3.5">Continuité / Timeline</th>
-                  <th className="p-3.5">Ancrage Manga (Canon)</th>
-                  <th className="p-3.5">Adaptation Anime / Variante</th>
-                  <th className="p-3.5 text-right">Lien</th>
+        <div className={styles.tableScroll}>
+          <table className={styles.narrativeTable}>
+            <caption>{translate("matrix")}</caption>
+            <thead>
+              <tr>
+                <th scope="col">{translate("event")}</th>
+                <th scope="col">{translate("continuity")}</th>
+                <th scope="col">{translate("mangaContext")}</th>
+                <th scope="col">{translate("animeContext")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredEvents.map((event) => (
+                <tr key={event.kind + event.id}>
+                  <th scope="row">{event.title}</th>
+                  <td>{event.timelineLabel}</td>
+                  <td>
+                    {event.kind === "battle" && event.manga_volume_start
+                      ? translate("volume", { count: event.manga_volume_start })
+                      : event.kind === "timeline"
+                        ? translate("age", { count: event.age_year })
+                        : "—"}
+                  </td>
+                  <td>
+                    {event.kind === "battle" && event.episode_start
+                      ? translate("episode", { count: event.episode_start }) +
+                        (event.episode_end && event.episode_end !== event.episode_start
+                          ? "–" + event.episode_end
+                          : "")
+                      : event.timelineLabel}
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {filteredEvents.map((ev) => {
-                  return (
-                    <tr
-                      key={`matrix-${ev.kind}-${ev.id}`}
-                      className="hover:bg-white/[0.03] transition-colors"
-                    >
-                      <td className="p-3.5">
-                        <div className="font-bold text-white">
-                          <Link href={ev.href} className="hover:text-orange-400 transition-colors">
-                            {ev.title}
-                          </Link>
-                        </div>
-                        {ev.title_ja && (
-                          <div className="text-[10px] text-white/40 font-jp">{ev.title_ja}</div>
-                        )}
-                      </td>
-                      <td className="p-3.5">
-                        <span
-                          className={`inline-block rounded-md border px-2 py-0.5 text-[10px] font-bold ${
-                            ev.timeline === "manga-canon"
-                              ? "border-amber-500/40 bg-amber-950/60 text-amber-300"
-                              : ev.timeline === "movies-dbz"
-                                ? "border-rose-500/40 bg-rose-950/60 text-rose-300"
-                                : ev.timeline === "xenoverse"
-                                  ? "border-cyan-500/40 bg-cyan-950/60 text-cyan-300"
-                                  : "border-purple-500/40 bg-purple-950/60 text-purple-300"
-                          }`}
-                        >
-                          {ev.timelineLabel}
-                        </span>
-                      </td>
-                      <td className="p-3.5 font-mono text-[11px]">
-                        {ev.kind === "battle" && ev.manga_volume_start ? (
-                          <span className="text-amber-300">
-                            Tome {ev.manga_volume_start}
-                            {ev.manga_chapter_start ? ` (ch. ${ev.manga_chapter_start})` : ""}
-                          </span>
-                        ) : ev.kind === "timeline" ? (
-                          <span className="text-blue-300">Age {ev.age_year}</span>
-                        ) : (
-                          <span className="text-white/30">—</span>
-                        )}
-                      </td>
-                      <td className="p-3.5 font-mono text-[11px]">
-                        {ev.kind === "battle" && ev.episode_start ? (
-                          <span className="text-purple-300">
-                            Épisode {ev.episode_start}
-                            {ev.episode_end && ev.episode_end !== ev.episode_start
-                              ? `-${ev.episode_end}`
-                              : ""}
-                          </span>
-                        ) : ev.timeline === "movies-dbz" ? (
-                          <span className="text-rose-300">Film d&apos;animation</span>
-                        ) : ev.timeline === "xenoverse" ? (
-                          <span className="text-cyan-300">Variante Time Patrol</span>
-                        ) : (
-                          <span className="text-white/30">—</span>
-                        )}
-                      </td>
-                      <td className="p-3.5 text-right">
-                        <Link
-                          href={ev.href}
-                          className="inline-flex items-center gap-1 font-semibold text-orange-400 hover:text-white transition-colors"
-                        >
-                          <span>Explorer</span>
-                          <span>↗</span>
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

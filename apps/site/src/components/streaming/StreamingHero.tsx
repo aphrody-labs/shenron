@@ -35,14 +35,17 @@ export function StreamingNavigation() {
 export function StreamingHero({
   episode,
   seriesLabel,
+  headingLevel = 1,
 }: {
   episode: StreamingEpisode;
   seriesLabel: string;
+  headingLevel?: 1 | 2;
 }) {
   const t = useStreamingText();
   const locale = useLocale();
   const frame = HOME_HERO_FRAMES.find((item) => item.episodeId === episode.id);
   const image = frame?.src ?? (episode.image ? assetUrl(episode.image) : null);
+  const Heading = headingLevel === 2 ? "h2" : "h1";
   return (
     <section className={styles.hero} aria-labelledby="streaming-title">
       {image && (
@@ -61,7 +64,7 @@ export function StreamingHero({
       <div className={styles.copy}>
         <p className={styles.eyebrow}>{t("featured")}</p>
         <div className={styles.feature}>
-          <h1 id="streaming-title" className={styles.title}>
+          <Heading id="streaming-title" className={styles.title}>
             {episode.series === "DBS_BEERUS" ? (
               <img
                 className={styles.logo}
@@ -73,7 +76,7 @@ export function StreamingHero({
             ) : (
               seriesLabel
             )}
-          </h1>
+          </Heading>
           <div className={styles.meta}>
             {episode.year && <span>{episode.year}</span>}
             <span>

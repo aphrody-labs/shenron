@@ -61,7 +61,7 @@ mock.module("@aphrody/shenron-pipeline/bxc/server", () => ({
             atMs: 125000,
             similarity: 0.95,
             preview: {
-              image: "https://bot.dragonballfr.com/assets/ext/db_episodes/dbs-50.jpg",
+              image: "https://cdn.dragonballfr.com/assets/ext/db_episodes/dbs-50.jpg",
               video: "/preview/dbs-50.mp4",
             },
             source: "local",
@@ -302,7 +302,7 @@ describe("API /api/frames/search — Recherche et enrichissement des résultats"
     expect(topMatch.siteEpisode?.series).toBe("DBS");
     expect(topMatch.siteEpisode?.href).toMatch(new RegExp(`^/wiki/episodes/50\\?t=\\d+$`));
     expect(topMatch.siteEpisode?.image).toContain(
-      "https://bot.dragonballfr.com/assets/ext/db_episodes/dbs-50.jpg",
+      "https://cdn.dragonballfr.com/assets/ext/db_episodes/dbs-50.jpg",
     );
 
     // Vérifie le fallback du preview.image vers siteEpisode.image

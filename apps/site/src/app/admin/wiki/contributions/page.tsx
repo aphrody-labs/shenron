@@ -1,30 +1,14 @@
-/* oxlint-disable react/no-array-index-key -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
-
-/**
- * /admin/wiki/contributions — relecture des propositions de la communauté.
- *
- * Un écran, une décision : le diff mot à mot entre le texte en ligne et celui
- * que propose le contributeur, ses sources, puis accepter ou refuser. Accepter
- * applique la valeur par le chemin d'écriture normal et journalise la révision
- * **au nom du contributeur** — donc annulable depuis /admin/wiki/history comme
- * n'importe quelle édition.
- *
- * Refuser sans note est possible mais découragé : la note est la seule réponse
- * que recevra la personne qui a pris le temps de lire une planche.
- */
-import { LoadingText } from "@/components/LoadingText";
+// SPDX-License-Identifier: Apache-2.0
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Chargement, Coche, Croix, LienExterne } from "@aphrody/shenron-ui/icones";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { PlainField } from "@/components/editor/PlainField";
 import { ContributionRightsPanel } from "@/components/admin/ContributionRightsPanel";
-import {
-  CONTRIBUTABLE_COLUMNS,
-  CONTRIBUTION_STATUS_LABELS,
-  type ContributionStatusKey,
-} from "@/lib/contributions-shared";
+import { CONTRIBUTABLE_COLUMNS, type ContributionStatusKey } from "@/lib/contributions-shared";
+import { useWikiEditorialText } from "@/lib/wiki-editorial-text";
+import { useLangue } from "@/lib/i18n/client";
 
 interface Row {
   id: string;
@@ -42,316 +26,363 @@ interface Row {
   status: ContributionStatusKey;
   reviewerName: string | null;
   reviewNote: string | null;
-  revisionId: string | null;
 }
+type QueueResponse = { rows: Row[]; total: number; counts: Record<string, number> };
+const PAGE_SIZE = 20;
+const FILTERS = ["pending", "accepted", "rejected", "superseded", "withdrawn", ""] as const;
 
-type Reponse = { rows: Row[]; total: number; counts: Record<string, number> };
-
-const ONGLETS: { key: string; label: string }[] = [
-  { key: "pending", label: "En attente" },
-  { key: "accepted", label: "Acceptées" },
-  { key: "rejected", label: "Refusées" },
-  { key: "superseded", label: "Obsolètes" },
-  { key: "", label: "Toutes" },
-];
-
-function fmtDate(iso: string): string {
-  try {
-    return new Date(iso).toLocaleString("fr-FR", {
-      day: "2-digit",
-      month: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return iso;
-  }
-}
-
-/**
- * Diff par LIGNES, pas par caractères : une correction porte presque toujours
- * sur une phrase, et un diff caractère à caractère sur 20 Ko de markdown est
- * illisible. Algorithme volontairement naïf (préfixe/suffixe communs) — il
- * suffit à isoler le passage touché, ce qui est tout ce qu'on demande ici.
- */
-function diffLignes(avant: string, apres: string) {
-  const a = avant.split("\n");
-  const b = apres.split("\n");
-  let debut = 0;
-  while (debut < a.length && debut < b.length && a[debut] === b[debut]) debut++;
-  let fin = 0;
+/** Shared context is kept around changed lines; long texts expand on request. */
+function lineDiff(before: string, after: string) {
+  const oldLines = before.split("\n");
+  const newLines = after.split("\n");
+  let start = 0;
+  while (start < oldLines.length && start < newLines.length && oldLines[start] === newLines[start])
+    start++;
+  let end = 0;
   while (
-    fin < a.length - debut &&
-    fin < b.length - debut &&
-    a[a.length - 1 - fin] === b[b.length - 1 - fin]
+    end < oldLines.length - start &&
+    end < newLines.length - start &&
+    oldLines[oldLines.length - 1 - end] === newLines[newLines.length - 1 - end]
   )
-    fin++;
+    end++;
   return {
-    contexteAvant: a.slice(Math.max(0, debut - 2), debut),
-    retire: a.slice(debut, a.length - fin),
-    ajoute: b.slice(debut, b.length - fin),
-    contexteApres: a.slice(a.length - fin, a.length - fin + 2),
-    identique: debut === a.length && debut === b.length,
+    prefix: oldLines.slice(Math.max(0, start - 2), start),
+    removed: oldLines.slice(start, oldLines.length - end),
+    added: newLines.slice(start, newLines.length - end),
+    suffix: oldLines.slice(oldLines.length - end, oldLines.length - end + 2),
+    unchanged: start === oldLines.length && start === newLines.length,
   };
 }
 
 export default function PageContributions() {
-  const [statut, setStatut] = useState("pending");
-  const qc = useQueryClient();
-
-  const { data, isLoading } = useQuery<Reponse>({
-    queryKey: ["wiki-contributions", statut],
-    queryFn: async () => {
-      const url = `/api/admin/wiki-contributions?limit=100${statut ? `&status=${statut}` : ""}`;
-      const res = await fetch(url, { credentials: "same-origin" });
-      if (!res.ok) throw new Error(`contributions ${res.status}`);
-      return res.json() as Promise<Reponse>;
-    },
+  const t = useWikiEditorialText();
+  const { locale } = useLangue();
+  const [filter, setFilter] = useState<{ status: string; offset: number }>({
+    status: "pending",
+    offset: 0,
   });
-
-  const moderer = useMutation({
-    mutationFn: async (v: { id: string; action: "accept" | "reject"; note?: string }) => {
-      const res = await fetch("/api/admin/wiki-contributions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "same-origin",
-        body: JSON.stringify(v),
+  const queue = useQuery<QueueResponse>({
+    queryKey: ["wiki-contributions", filter.status, filter.offset],
+    queryFn: async ({ signal }) => {
+      const parameters = new URLSearchParams({
+        limit: String(PAGE_SIZE),
+        offset: String(filter.offset),
       });
-      const body = (await res.json().catch(() => ({}))) as { message?: string };
-      if (!res.ok) throw new Error(body.message ?? "Échec");
-      return body;
+      if (filter.status) parameters.set("status", filter.status);
+      const response = await fetch(`/api/admin/wiki-contributions?${parameters}`, {
+        credentials: "same-origin",
+        signal,
+      });
+      if (!response.ok) throw new Error(`contributions_${response.status}`);
+      return response.json() as Promise<QueueResponse>;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["wiki-contributions"] }),
   });
-
-  const counts = data?.counts ?? {};
+  const counts = queue.data?.counts ?? {};
+  const total = queue.data?.total ?? 0;
+  const range = {
+    from: total ? filter.offset + 1 : 0,
+    to: Math.min(filter.offset + PAGE_SIZE, total),
+    total,
+  };
 
   return (
-    <div className="space-y-6">
-      <header>
-        <h1 className="font-saiyan text-2xl text-white">Contributions de la communauté</h1>
-        <p className="mt-1 text-sm text-white/50">
-          Les corrections proposées depuis les fiches. Une acceptation applique le texte et crédite
-          son auteur dans{" "}
-          <Link
-            href="/admin/wiki/history"
-            className="text-dbz-orange underline-offset-2 hover:underline"
-          >
-            l&apos;historique
-          </Link>
-          .
+    <div className="mx-auto min-w-0 max-w-6xl space-y-6">
+      <header className="rounded-xl border border-dbz-border bg-dbz-card p-5 sm:p-7">
+        <p className="text-xs font-bold uppercase tracking-widest text-dbz-orange">
+          {t("queue.eyebrow")}
         </p>
+        <h1 className="mt-2 font-saiyan text-3xl text-os sm:text-4xl">{t("queue.title")}</h1>
+        <p className="mt-3 max-w-3xl text-base leading-relaxed text-os/75">{t("queue.intro")}</p>
+        <Link
+          href="/admin/wiki/history"
+          className="mt-4 inline-flex min-h-11 items-center text-sm font-semibold text-dbz-orange hover:text-dbz-yellow"
+        >
+          {t("queue.history")}
+        </Link>
       </header>
 
-      {/* Qui a le droit de proposer. Réglé ici, à côté de la file d'attente
-			    qu'il alimente : c'est en voyant passer les propositions qu'on décide
-			    de resserrer ou d'ouvrir. */}
-      <details className="rounded-xl border border-white/[0.08] bg-white/[0.02]">
-        <summary className="cursor-pointer list-none px-5 py-3.5 font-display text-[14px] font-semibold text-white/85 transition-colors hover:text-white">
-          Qui peut contribuer&nbsp;?
-          <span className="ml-2 text-[12px] font-normal text-white/40">
-            rôles et membres autorisés, par périmètre
-          </span>
+      <details className="rounded-xl border border-dbz-border bg-dbz-card">
+        <summary className="cursor-pointer px-5 py-4 text-sm font-semibold text-os">
+          {t("queue.rights")}{" "}
+          <span className="ml-2 font-normal text-os/75">{t("queue.rightsHint")}</span>
         </summary>
-        <div className="border-t border-white/[0.08] p-5">
+        <div className="border-t border-dbz-border p-5">
           <ContributionRightsPanel />
         </div>
       </details>
 
-      <nav className="flex flex-wrap gap-2">
-        {ONGLETS.map((o) => {
-          const n = o.key ? counts[o.key] : undefined;
-          const actif = statut === o.key;
-          return (
-            <button
-              key={o.key || "all"}
-              type="button"
-              onClick={() => setStatut(o.key)}
-              className={
-                actif
-                  ? "rounded-full bg-dbz-orange px-4 py-1.5 text-xs font-bold text-black"
-                  : "rounded-full border border-white/12 px-4 py-1.5 text-xs font-semibold text-white/60 transition-colors hover:border-white/30 hover:text-white"
-              }
-            >
-              {o.label}
-              {n ? <span className="ml-1.5 opacity-70">{n}</span> : null}
-            </button>
-          );
-        })}
+      <nav className="flex flex-wrap gap-2" aria-label={t("queue.filters")}>
+        {FILTERS.map((status) => (
+          <button
+            key={status || "all"}
+            type="button"
+            aria-pressed={filter.status === status}
+            onClick={() => setFilter({ status, offset: 0 })}
+            className={`inline-flex min-h-11 items-center gap-2 rounded-xl border px-4 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-yellow ${filter.status === status ? "border-dbz-orange bg-dbz-orange text-encre" : "border-dbz-border bg-dbz-card text-os/75 hover:border-dbz-yellow hover:text-os"}`}
+          >
+            {t(status ? `status.${status}` : "queue.all")}
+            {status && counts[status] !== undefined && (
+              <span className="tabular-nums">{counts[status]!.toLocaleString(locale)}</span>
+            )}
+          </button>
+        ))}
       </nav>
 
-      {isLoading ? (
-        <p className="flex items-center gap-2 text-sm text-white/40">
-          <Chargement className="h-4 w-4 animate-spin" /> <LoadingText />
-        </p>
-      ) : !data?.rows.length ? (
-        <p className="rounded-xl border border-white/8 bg-white/[0.02] px-5 py-10 text-center text-sm text-white/40">
-          {statut === "pending"
-            ? "Aucune proposition en attente."
-            : "Rien à afficher pour ce filtre."}
-        </p>
+      {queue.isPending ? (
+        <output className="flex items-center gap-2 py-8 text-sm text-os/75">
+          <Chargement aria-hidden className="h-4 w-4 animate-spin motion-reduce:animate-none" />
+          {t("queue.loading")}
+        </output>
+      ) : queue.isError ? (
+        <div role="alert" className="rounded-xl border border-dbz-red/40 bg-dbz-card p-5 text-os">
+          <p>{t("queue.loadFailed")}</p>
+          <button
+            type="button"
+            onClick={() => void queue.refetch()}
+            className="btn btn-ghost mt-3 min-h-11"
+          >
+            {t("queue.retry")}
+          </button>
+        </div>
       ) : (
-        <ul className="space-y-4">
-          {data.rows.map((r) => (
-            <CarteContribution
-              key={r.id}
-              row={r}
-              onModerer={(action, note) => moderer.mutate({ id: r.id, action, note })}
-              enCours={moderer.isPending}
-              erreur={moderer.isError ? (moderer.error as Error).message : null}
-            />
-          ))}
-        </ul>
+        <>
+          <output className="text-sm text-os/75">{t("queue.count", { count: total })}</output>
+          {queue.data.rows.length === 0 ? (
+            <p className="rounded-xl border border-dbz-border bg-dbz-card p-8 text-center text-os/75">
+              {t(filter.status === "pending" ? "queue.emptyPending" : "queue.empty")}
+            </p>
+          ) : (
+            <ul className="space-y-5">
+              {queue.data.rows.map((row) => (
+                <ContributionCard key={row.id} row={row} />
+              ))}
+            </ul>
+          )}
+          {(filter.offset > 0 || total > PAGE_SIZE) && (
+            <nav
+              className="flex flex-wrap items-center justify-between gap-3"
+              aria-label={t("queue.pagination")}
+            >
+              <button
+                type="button"
+                disabled={filter.offset === 0}
+                className="btn btn-ghost min-h-11"
+                onClick={() =>
+                  setFilter((current) => ({
+                    ...current,
+                    offset: Math.max(0, current.offset - PAGE_SIZE),
+                  }))
+                }
+              >
+                {t("queue.previous")}
+              </button>
+              <span className="text-sm tabular-nums text-os/75">{t("queue.range", range)}</span>
+              <button
+                type="button"
+                disabled={filter.offset + PAGE_SIZE >= total}
+                className="btn btn-ghost min-h-11"
+                onClick={() =>
+                  setFilter((current) => ({ ...current, offset: current.offset + PAGE_SIZE }))
+                }
+              >
+                {t("queue.next")}
+              </button>
+            </nav>
+          )}
+        </>
       )}
     </div>
   );
 }
 
-function CarteContribution({
-  row,
-  onModerer,
-  enCours,
-  erreur,
-}: {
-  row: Row;
-  onModerer: (action: "accept" | "reject", note?: string) => void;
-  enCours: boolean;
-  erreur: string | null;
-}) {
+function ContributionCard({ row }: { row: Row }) {
+  const t = useWikiEditorialText();
+  const { locale } = useLangue();
+  const qc = useQueryClient();
   const [note, setNote] = useState("");
-  const [deplie, setDeplie] = useState(false);
-  const champ = CONTRIBUTABLE_COLUMNS[row.columnName];
+  const [expanded, setExpanded] = useState(false);
   const diff = useMemo(
-    () => diffLignes(row.valueBefore ?? "", row.valueAfter),
+    () => lineDiff(row.valueBefore ?? "", row.valueAfter),
     [row.valueBefore, row.valueAfter],
   );
-
+  const moderation = useMutation({
+    mutationFn: async (action: "accept" | "reject") => {
+      const response = await fetch("/api/admin/wiki-contributions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ id: row.id, action, note }),
+      });
+      if (!response.ok) throw new Error(response.status === 409 ? "conflict" : "failed");
+      return response.json();
+    },
+    onSuccess: () => {
+      void qc.invalidateQueries({ queryKey: ["wiki-contributions"] });
+    },
+  });
+  const date = new Date(row.createdAt);
+  const remaining = Math.max(diff.removed.length, diff.added.length) - 12;
+  const field = Object.hasOwn(CONTRIBUTABLE_COLUMNS, row.columnName)
+    ? t(`field.${row.columnName}`)
+    : row.columnName;
   return (
-    <li className="rounded-xl border border-white/10 bg-white/[0.02] p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <li className="min-w-0 rounded-xl border border-dbz-border bg-dbz-card p-4 sm:p-5">
+      <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <h2 className="text-sm font-bold text-white">
+          <h2 className="break-words font-display text-lg font-bold text-os">
             {row.entityLabel ?? `${row.tableName} #${row.rowId}`}
-            <span className="ml-2 rounded border border-white/12 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/45">
-              {champ?.label ?? row.columnName}
-            </span>
           </h2>
-          <p className="mt-1 text-xs text-white/45">
-            {row.authorName ?? "Anonyme"} · {fmtDate(row.createdAt)}
-            {row.status !== "pending" ? (
-              <>
-                {" · "}
-                <span className="text-white/60">{CONTRIBUTION_STATUS_LABELS[row.status]}</span>
-                {row.reviewerName ? ` par ${row.reviewerName}` : ""}
-              </>
-            ) : null}
+          <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-os/75">
+            <span className="rounded border border-dbz-border px-2 py-1 text-xs">{field}</span>
+            <span>{row.authorName ?? t("queue.anonymous")}</span>
+            <time dateTime={row.createdAt}>
+              {Number.isFinite(date.getTime())
+                ? date.toLocaleString(locale, { dateStyle: "short", timeStyle: "short" })
+                : row.createdAt}
+            </time>
+            <span className="font-semibold text-dbz-orange">{t(`status.${row.status}`)}</span>
           </p>
+          {row.reviewerName && (
+            <p className="mt-1 text-sm text-os/75">
+              {t("queue.reviewer", { name: row.reviewerName })}
+            </p>
+          )}
         </div>
-        {row.entityPath ? (
+        {row.entityPath && (
           <a
             href={row.entityPath}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center gap-1 text-xs text-white/45 transition-colors hover:text-dbz-orange"
+            className="inline-flex min-h-11 items-center gap-2 text-sm text-dbz-orange hover:text-dbz-yellow"
           >
-            <LienExterne className="h-3 w-3" /> Voir la fiche
+            <LienExterne aria-hidden className="h-4 w-4" />
+            {t("queue.open")}
           </a>
-        ) : null}
-      </div>
-
-      {row.sources ? (
-        <p className="mt-3 rounded-lg border border-emerald-400/20 bg-emerald-400/[0.06] px-3 py-2 text-xs leading-relaxed text-emerald-200/80">
-          <strong className="font-semibold">Sources :</strong> {row.sources}
+        )}
+      </header>
+      <div className="mt-4 rounded-xl border border-dbz-border bg-dbz-bg p-3 text-sm leading-relaxed text-os/85">
+        <h3 className="font-semibold text-dbz-yellow">{t("queue.sources")}</h3>
+        <p className="mt-1 whitespace-pre-wrap break-words">
+          {row.sources || t("queue.missingSources")}
         </p>
-      ) : (
-        <p className="mt-3 rounded-lg border border-amber-400/20 bg-amber-400/[0.06] px-3 py-2 text-xs text-amber-200/75">
-          Aucune source indiquée — à vérifier avant d&apos;accepter.
+      </div>
+      {row.comment && (
+        <p className="mt-3 whitespace-pre-wrap break-words text-sm italic leading-relaxed text-os/75">
+          {row.comment}
         </p>
       )}
-
-      {row.comment ? (
-        <p className="mt-2 text-xs italic leading-relaxed text-white/55">« {row.comment} »</p>
-      ) : null}
-
-      <div className="mt-3 overflow-hidden rounded-lg border border-white/8 bg-black/40 font-mono text-[11px] leading-relaxed">
-        {diff.contexteAvant.map((l, i) => (
-          <pre key={`c-${i}`} className="whitespace-pre-wrap px-3 py-0.5 text-white/30">
-            {l || " "}
-          </pre>
-        ))}
-        {diff.retire.slice(0, deplie ? undefined : 12).map((l, i) => (
-          <pre
-            key={`r-${i}`}
-            className="whitespace-pre-wrap bg-dbz-red/10 px-3 py-0.5 text-dbz-red/90"
-          >
-            − {l}
-          </pre>
-        ))}
-        {diff.ajoute.slice(0, deplie ? undefined : 12).map((l, i) => (
-          <pre
-            key={`a-${i}`}
-            className="whitespace-pre-wrap bg-emerald-500/10 px-3 py-0.5 text-emerald-300/90"
-          >
-            + {l}
-          </pre>
-        ))}
-        {diff.contexteApres.map((l, i) => (
-          <pre key={`d-${i}`} className="whitespace-pre-wrap px-3 py-0.5 text-white/30">
-            {l || " "}
-          </pre>
-        ))}
-        {!deplie && (diff.retire.length > 12 || diff.ajoute.length > 12) ? (
-          <button
-            type="button"
-            onClick={() => setDeplie(true)}
-            className="w-full bg-white/[0.03] px-3 py-1.5 text-center text-[11px] font-semibold text-white/50 hover:text-white"
-          >
-            Afficher les {Math.max(diff.retire.length, diff.ajoute.length) - 12} lignes restantes
-          </button>
-        ) : null}
+      <div className="mt-4 overflow-hidden rounded-xl border border-dbz-border bg-dbz-bg text-sm leading-relaxed">
+        {diff.unchanged ? (
+          <p className="p-3 text-os/75">{t("queue.unchanged")}</p>
+        ) : (
+          <>
+            <DiffLines lines={diff.prefix} tone="context" />
+            <h3 className="border-y border-dbz-border px-3 py-2 font-semibold text-dbz-red">
+              {t("queue.before")}
+            </h3>
+            <DiffLines lines={diff.removed.slice(0, expanded ? undefined : 12)} tone="removed" />
+            <h3 className="border-y border-dbz-border px-3 py-2 font-semibold text-dbz-cyan">
+              {t("queue.after")}
+            </h3>
+            <DiffLines lines={diff.added.slice(0, expanded ? undefined : 12)} tone="added" />
+            <DiffLines lines={diff.suffix} tone="context" />
+            {!expanded && remaining > 0 && (
+              <button
+                type="button"
+                onClick={() => setExpanded(true)}
+                aria-expanded={false}
+                className="min-h-11 w-full border-t border-dbz-border p-3 font-semibold text-dbz-orange hover:text-dbz-yellow"
+              >
+                {t("queue.expand", { count: remaining })}
+              </button>
+            )}
+          </>
+        )}
       </div>
-
       {row.status === "pending" ? (
-        <div className="mt-3 space-y-2">
+        <div className="mt-4 space-y-3">
           <PlainField
             name={`note-${row.id}`}
-            label="Réponse au contributeur"
-            hideLabel
+            label={t("queue.note")}
+            hint={t("queue.noteHint")}
             value={note}
-            onChange={setNote}
-            minRows={1}
-            maxRows={4}
+            onChange={(value) => {
+              setNote(value);
+              moderation.reset();
+            }}
+            disabled={moderation.isPending}
+            minRows={2}
+            maxRows={5}
             maxLength={1000}
-            placeholder="Un mot au contributeur (obligatoire si tu refuses)…"
           />
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              disabled={enCours}
-              onClick={() => onModerer("accept", note)}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-4 py-2 text-xs font-bold text-black transition-opacity hover:opacity-90 disabled:opacity-40"
+              disabled={moderation.isPending}
+              onClick={() => moderation.mutate("accept")}
+              className="btn btn-primary min-h-12"
             >
-              <Coche className="h-3.5 w-3.5" /> Accepter et publier
+              <Coche aria-hidden className="h-4 w-4" />
+              {t("queue.accept")}
             </button>
             <button
               type="button"
-              disabled={enCours || !note.trim()}
-              title={
-                note.trim()
-                  ? undefined
-                  : "Explique le refus : c'est la seule réponse qu'aura le contributeur."
-              }
-              onClick={() => onModerer("reject", note)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 px-4 py-2 text-xs font-semibold text-white/70 transition-colors hover:border-dbz-red/50 hover:text-dbz-red disabled:opacity-40"
+              disabled={moderation.isPending || !note.trim()}
+              onClick={() => moderation.mutate("reject")}
+              className="btn btn-ghost min-h-12"
             >
-              <Croix className="h-3.5 w-3.5" /> Refuser
+              <Croix aria-hidden className="h-4 w-4" />
+              {t("queue.reject")}
             </button>
-            {erreur ? <span className="text-xs text-dbz-red">{erreur}</span> : null}
           </div>
+          {moderation.isPending && (
+            <output className="text-sm text-os/75">{t("queue.working")}</output>
+          )}
+          {moderation.isError && (
+            <div role="alert" className="text-sm text-dbz-red">
+              <p>
+                {t(moderation.error.message === "conflict" ? "queue.conflict" : "queue.failed")}
+              </p>
+              {moderation.error.message === "conflict" && (
+                <button
+                  type="button"
+                  className="btn btn-ghost mt-2 min-h-11"
+                  onClick={() => void qc.invalidateQueries({ queryKey: ["wiki-contributions"] })}
+                >
+                  {t("queue.retry")}
+                </button>
+              )}
+            </div>
+          )}
         </div>
       ) : row.reviewNote ? (
-        <p className="mt-3 text-xs text-white/45">Réponse : {row.reviewNote}</p>
+        <p className="mt-4 whitespace-pre-wrap break-words text-sm text-os/75">
+          <strong>{t("queue.response")} : </strong>
+          {row.reviewNote}
+        </p>
       ) : null}
     </li>
   );
+}
+
+function DiffLines({ lines, tone }: { lines: string[]; tone: "context" | "added" | "removed" }) {
+  const classes = {
+    context: "text-os/65",
+    added: "bg-dbz-cyan/5 text-os",
+    removed: "bg-dbz-red/5 text-os",
+  };
+  const occurrences = new Map<string, number>();
+  return lines.map((line) => {
+    const occurrence = (occurrences.get(line) ?? 0) + 1;
+    occurrences.set(line, occurrence);
+    return (
+      <pre
+        key={`${line}:${occurrence}`}
+        className={`whitespace-pre-wrap break-words px-3 py-1 font-mono ${classes[tone]}`}
+      >
+        {tone === "added" ? "+ " : tone === "removed" ? "− " : ""}
+        {line || " "}
+      </pre>
+    );
+  });
 }

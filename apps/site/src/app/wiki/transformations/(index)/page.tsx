@@ -1,12 +1,9 @@
 // Keep the index loader scoped to the catalogue, not streamed detail routes.
 // SPDX-License-Identifier: Apache-2.0
 
-import Link from "next/link";
 import { getShenronCharacterCards } from "@/lib/shenron";
 import { dbUniverse } from "@/lib/db-universe";
 import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
-import { pageHero } from "@/lib/banner-config";
-import { WikiImg } from "@/components/wiki/WikiImg";
 import { formatTransformationSlug } from "@/lib/wiki-slugs";
 import { ogMeta } from "@/lib/og";
 import type { Metadata } from "next";
@@ -51,6 +48,10 @@ type Group = {
 };
 
 import { TransformationTreesView } from "@/components/wiki/TransformationTreesView";
+import { TransformationsCatalogue } from "@/components/wiki/TransformationsCatalogue";
+import { WikiNarrativeText } from "@/components/wiki/WikiNarrativeText";
+import { T } from "@/components/T";
+import messages from "../../../../../messages/wiki-narrative/fr.json";
 
 export default async function TransformationsPage() {
   const [data, characters] = await Promise.all([
@@ -88,119 +89,20 @@ export default async function TransformationsPage() {
     (a, b) => b.members.length - a.members.length || a.name.localeCompare(b.name),
   );
 
+  const artwork = list.find((group) => group.image);
   return (
     <WikiIndexPage
-      eyebrow="Encyclopédie"
-      title="Transformations"
-      lead={`${list.length} transformations répertoriées — Super Saiyan, formes divines, Ultra Instinct… et les guerriers qui les maîtrisent.`}
-      image={await pageHero("transformations")}
-      imageAlt="Transformations Dragon Ball"
-      crumbs={[{ label: "Transformations" }]}
+      eyebrow={<T k="wikiExplorer.home" />}
+      title={<WikiNarrativeText name="formsTitle" />}
+      lead={<WikiNarrativeText name="formsLead" values={{ count: list.length }} />}
+      image={artwork?.image ?? undefined}
+      imageAlt={artwork?.name}
+      crumbs={[{ label: messages.formsTitle, display: <WikiNarrativeText name="formsTitle" /> }]}
       category="transformations"
       contributeKey="kit.contribute.what.transformation"
     >
-      {/* Vue Arbres Évolutifs & Lignées */}
-      <div>
-        <TransformationTreesView />
-      </div>
-
-      <div className="border-t border-white/10 pt-8 mb-6">
-        <h3 className="font-saiyan text-2xl text-white">
-          TOUTES LES FORMES &amp; TYPES DE TRANSFORMATIONS
-        </h3>
-        <p className="text-xs text-white/60 mt-1">
-          Revue complète des {list.length} fiches de transformations cataloguées et de leurs
-          guerriers associés.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-        {list.map((g, idx) => {
-          // Image de la transformation, et RIEN d'autre.
-          //
-          // Ce repli allait chercher le portrait du premier personnage
-          // concerné. Tant que les 81 formes portaient une image il ne se
-          // déclenchait jamais ; le retrait des sept fan-arts l'a réveillé,
-          // et il aurait affiché Gogeta en forme de base sous le titre
-          // « Gogeta SSJ ». Une illustration qui montre la mauvaise forme a
-          // l'air juste — c'est exactement ce qui la rend pire qu'une case
-          // vide. La vignette de repli (l'éclair) dit qu'il manque une
-          // illustration ; elle ne prétend rien.
-          const img = g.image ?? null;
-          const href = g.ficheSlug
-            ? `/wiki/transformations/${g.ficheSlug}`
-            : g.ficheId
-              ? `/wiki/transformations/${g.ficheId}`
-              : g.members[0]
-                ? `/wiki/characters/${g.members[0].slug}`
-                : `/wiki/search?q=${encodeURIComponent(g.name)}`;
-          const avatars = g.members.filter((m) => m.image).slice(0, 4);
-          return (
-            <Link
-              key={g.name}
-              href={href}
-              className="group relative overflow-hidden rounded-xl border border-amber-500/20 bg-zinc-950/40 transition-all duration-500 hover:scale-[1.02] hover:border-dbz-orange/70 hover:shadow-[0_0_30px_rgba(255,178,0,0.12)] flex flex-col reveal-up"
-              style={{ animationDelay: `${0.05 + idx * 0.03}s` }}
-            >
-              <div className="relative aspect-[4/3] bg-dbz-bg overflow-hidden">
-                <div className="absolute inset-0 halftone opacity-10 z-10 pointer-events-none" />
-                <WikiImg
-                  src={img}
-                  alt={g.name}
-                  loading="lazy"
-                  className="absolute inset-0 w-full h-full object-cover object-top opacity-100 group-hover:scale-110 transition-all duration-700"
-                  placeholderClassName="flex h-full w-full items-center justify-center bg-zinc-900 text-zinc-700 font-saiyan text-3xl"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent z-20 pointer-events-none" />
-                {g.ki && (
-                  <span className="absolute top-2 right-2 z-30 scouter-text text-[9px] text-dbz-orange bg-black/60 px-1.5 py-0.5 rounded">
-                    KI {g.ki}
-                  </span>
-                )}
-              </div>
-
-              <div className="relative z-10 p-4 flex flex-col gap-3 flex-1">
-                <h2 className="font-saiyan text-lg text-white uppercase tracking-wider leading-tight group-hover:text-dbz-orange transition-colors">
-                  {g.name}
-                </h2>
-                <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/5">
-                  {avatars.length > 0 ? (
-                    <div className="flex items-center gap-2.5">
-                      <div className="flex -space-x-3">
-                        {avatars.map((m) => (
-                          <div
-                            key={m.id}
-                            className="relative w-7 h-7 rounded-full border border-zinc-900 overflow-hidden bg-zinc-800"
-                            title={m.name}
-                          >
-                            <WikiImg
-                              src={m.image}
-                              alt={m.name}
-                              loading="lazy"
-                              className="w-full h-full object-cover object-top"
-                              placeholderClassName="w-full h-full bg-zinc-800"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                      <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest">
-                        {g.members.length} guerrier{g.members.length > 1 ? "s" : ""}
-                      </span>
-                    </div>
-                  ) : (
-                    <span className="text-[10px] font-bold text-white/50 uppercase tracking-widest">
-                      {g.members.length} guerrier{g.members.length > 1 ? "s" : ""}
-                    </span>
-                  )}
-                  <span className="text-dbz-orange opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all">
-                    →
-                  </span>
-                </div>
-              </div>
-            </Link>
-          );
-        })}
-      </div>
+      <TransformationTreesView />
+      <TransformationsCatalogue groups={list} />
     </WikiIndexPage>
   );
 }

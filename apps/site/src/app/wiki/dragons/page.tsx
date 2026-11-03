@@ -3,7 +3,6 @@ import { WishesLedger } from "@/components/wiki/WishesLedger";
 import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
 import { ogMeta } from "@/lib/og";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { pageHero } from "@/lib/banner-config";
 import type { Metadata } from "next";
 
 export const revalidate = 3600;
@@ -28,16 +27,17 @@ export default async function DragonsPage() {
     getLaunchConfig().catch(() => null),
   ]);
   const access = launch ? { openKeys: launch.openKeys, access: launch.access } : null;
-  const heroImage = await pageHero("dragons");
+  const artwork = dragons?.find((dragon) => dragon.image);
 
   return (
     <WikiIndexPage
       eyebrow="Encyclopédie"
       title="Dragons Sacrés & Registre des Vœux"
       lead={`Les 5 dragons divins du multivers et l'inventaire historique de ${wishes?.length ?? 0} vœux canoniques exaucés — règles, formules sacrées en dialecte divin et répercussions universelles.`}
-      image={heroImage}
-      imageAlt="Son Goku enfant et Shenron"
+      image={artwork?.image ?? undefined}
+      imageAlt={artwork?.name}
       crumbs={[{ label: "Dragons & Vœux" }]}
+      category="dragons"
       contributeKey="kit.contribute.what.dragon"
     >
       <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-200/80">
@@ -47,12 +47,7 @@ export default async function DragonsPage() {
         de son propre créateur.
       </div>
 
-      <WishesLedger
-        dragons={dragons ?? []}
-        wishes={wishes ?? []}
-        access={access}
-        fallbackImage={heroImage}
-      />
+      <WishesLedger dragons={dragons ?? []} wishes={wishes ?? []} access={access} />
     </WikiIndexPage>
   );
 }

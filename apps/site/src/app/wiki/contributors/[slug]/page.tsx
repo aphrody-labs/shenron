@@ -165,6 +165,10 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
     <WikiDetailPage
       entity={contributor.name}
       source="db_contributors"
+      image={
+        contributor.image && !contributor.image.includes(".svg") ? contributor.image : undefined
+      }
+      imageAlt={contributor.name}
       jsonLd={jsonLd as never}
       crumbs={[{ label: "Staff & Créateurs", href: "/wiki/staff" }, { label: contributor.name }]}
       contributeKey="kit.contribute.what.character"

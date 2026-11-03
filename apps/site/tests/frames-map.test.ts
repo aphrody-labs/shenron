@@ -243,7 +243,7 @@ describe("frames-map — mapping des séries et des films", () => {
 describe("frames-map — normalisation des vignettes et posters (assetUrl)", () => {
   test("normalise les chemins relatifs ./assets/... en URLs absolues", () => {
     const u = assetUrl("./assets/ext/db_episodes/5.jpg");
-    expect(u).toMatch(/^https:\/\/bot\.dragonballfr\.com\/assets\/ext\/db_episodes\/5\.jpg$/);
+    expect(u).toMatch(/^https:\/\/cdn\.dragonballfr\.com\/assets\/ext\/db_episodes\/5\.jpg$/);
   });
 
   test("normalise les chemins sans point assets/... en URLs absolues", () => {

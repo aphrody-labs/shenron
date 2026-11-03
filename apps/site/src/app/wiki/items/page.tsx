@@ -2,7 +2,6 @@ import { dbUniverse } from "@/lib/db-universe";
 import { ItemsGrid } from "@/components/wiki/ItemsGrid";
 import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
 import { ogMeta } from "@/lib/og";
-import { pageHero } from "@/lib/banner-config";
 import type { Metadata } from "next";
 
 export const revalidate = 3600;
@@ -22,16 +21,17 @@ export const metadata: Metadata = {
 
 export default async function ObjetsPage() {
   const items = (await dbUniverse.items()) ?? [];
-  const heroImage = await pageHero("objets");
+  const artwork = items.find((item) => item.image);
 
   return (
     <WikiIndexPage
       eyebrow="Encyclopédie & Archives"
       title="Objets & Technologies"
       lead={`${items.length} créations, reliques magiques et technologies répertoriées — des capsules révolutionnaires de Capsule Corp aux artefacts divins des Kaïōshins.`}
-      image={heroImage}
-      imageAlt="Son Goku enfant et Shenron"
+      image={artwork?.image ?? undefined}
+      imageAlt={artwork?.name}
       crumbs={[{ label: "Objets & Technologies" }]}
+      category="items"
       note={
         <>
           <strong>Note d'archive Capsule Corp :</strong> Chaque invention, vaisseau spatial ou
@@ -42,7 +42,7 @@ export default async function ObjetsPage() {
       }
       contributeKey="kit.contribute.what.object"
     >
-      <ItemsGrid items={items} fallbackImage={heroImage} />
+      <ItemsGrid items={items} />
     </WikiIndexPage>
   );
 }

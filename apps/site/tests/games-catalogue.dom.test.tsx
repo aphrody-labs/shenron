@@ -186,8 +186,8 @@ test("failed cover and hero images fall back while Xbox Series X|S remains one c
   );
 });
 
-test("retries missing bot-hosted editable covers from the public CDN before showing the fallback icon", async () => {
-  // Editable legacy file (not a runtime upload): served by the bot host, mirrored on the CDN.
+test("retries canonical CDN catalogue covers on their legacy mirror before showing the fallback icon", async () => {
+  // Legacy catalogue artwork now starts at its canonical CDN owner.
   const cover = "./assets/wiki/games/budokai-tenkaichi-3.webp";
   await withImageState(false, async () =>
     mounted(
@@ -195,9 +195,9 @@ test("retries missing bot-hosted editable covers from the public CDN before show
       async (container) => {
         const article = container.querySelector("article")!;
         const image = article.querySelector("img")!;
-        expect(new URL(image.src).hostname).toBe("bot.dragonballfr.com");
+        expect(new URL(image.src).hostname).toBe("cdn.dragonballfr.com");
         await act(async () => image.dispatchEvent(new Event("error")));
-        expect(new URL(article.querySelector("img")!.src).hostname).toBe("cdn.dragonballfr.com");
+        expect(new URL(article.querySelector("img")!.src).hostname).toBe("bot.dragonballfr.com");
         await act(async () => article.querySelector("img")!.dispatchEvent(new Event("error")));
         expect(article.querySelector("img")).toBeNull();
         expect(article.querySelector("svg")).not.toBeNull();

@@ -1,14 +1,15 @@
 /**
- * /api/wiki-ai — assistant wiki **RAG-only** (pas de génération LLM, gate admin).
+ * /api/wiki-ai — source search and optional grounded editorial draft, admin only.
  *
- * L'admin donne une requête/instruction (ex. « powerscaling de Goku ») ; on
- * interroge le pipeline RAG du bot (`dbUniverse.rag`, hybride + rerank, sourcé) et
- * on renvoie les passages + un brouillon markdown STITCHÉ (extraits réels + liens
- * de sources). Déterministe, cité, gratuit — l'admin relit et insère lui-même.
+ * Search returns retrieved passages and an extract draft. Explicit action=draft
+ * uses the configured inference provider and the shared citation verifier.
+ * Both paths return an unpublished draft for editorial review and insertion.
  */
 import { isCurrentUserAdmin } from "@/lib/session";
 import { dbUniverse } from "@/lib/db-universe";
 import { NextRequest, NextResponse } from "next/server";
+import { wikiAiRequestSchema } from "@/lib/wiki-editorial-contracts";
+import { buildWikiExtractDraft, wikiSourceUrl } from "@/lib/wiki-ai-draft";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -39,49 +40,49 @@ export async function POST(req: NextRequest) {
   if (!isAdmin) {
     return privateJson({ error: "Forbidden" }, { status: 403 });
   }
-  const body = (await req.json().catch(() => null)) as {
-    query?: string;
-    limit?: number;
-    entity?: string;
-  } | null;
-  const query = body?.query?.trim();
-  if (!query) return privateJson({ error: "query requise" }, { status: 400 });
-  const limit = Math.min(12, Math.max(1, Number(body?.limit) || 8));
+  const parsed = wikiAiRequestSchema.safeParse(await req.json().catch(() => null));
+  if (!parsed.success) return privateJson({ error: "bad_request" }, { status: 400 });
+  const { query, limit, entity, action, lang } = parsed.data;
 
   let rag: Awaited<ReturnType<typeof dbUniverse.rag>>;
   try {
-    rag = await dbUniverse.rag(query, limit, body?.entity ? { entity: body.entity } : undefined);
+    rag = await dbUniverse.rag(query, limit, entity ? { entity } : undefined);
   } catch (error) {
     console.error("[wiki-ai] RAG lookup failed", error);
     return unavailable("rag_unavailable");
   }
   if (rag === null) return unavailable("rag_unavailable");
 
-  const results = rag.results.map((r) => ({
-    title: r.title,
-    url: r.url,
-    snippet: clean(r.snippet),
-    score: r.score ?? null,
-    kind: r.kind,
-  }));
+  const results = rag.results.slice(0, limit).flatMap((r) => {
+    const url = wikiSourceUrl(r.url);
+    return url
+      ? [
+          {
+            title: r.title,
+            url,
+            snippet: clean(r.snippet).slice(0, 4000),
+            score: r.score ?? null,
+            kind: r.kind,
+          },
+        ]
+      : [];
+  });
 
-  // Brouillon markdown : extraits sourcés (dédupliqués), puis bloc « Sources ».
-  const seen = new Set<string>();
-  const paras: string[] = [];
-  const sources: { title: string; url: string }[] = [];
-  for (const r of results) {
-    const key = r.snippet.slice(0, 60).toLowerCase();
-    if (r.snippet.length > 20 && !seen.has(key)) {
-      seen.add(key);
-      paras.push(r.snippet);
+  const sources = results.filter((source) => source.url && source.snippet.length > 20);
+  let markdown = buildWikiExtractDraft(sources);
+  let draftKind: "extracts" | "generated" = "extracts";
+  if (action === "draft" && sources.length > 0) {
+    try {
+      const { generateWikiDraft } = await import("@/lib/wiki-ai-generation");
+      const generated = await generateWikiDraft({ query, sources, lang, signal: req.signal });
+      if (generated) {
+        markdown = generated;
+        draftKind = "generated";
+      }
+    } catch (error) {
+      console.error("[wiki-ai] draft generation failed", error);
+      return unavailable("generation_unavailable");
     }
-    if (r.url && !sources.some((s) => s.url === r.url)) {
-      sources.push({ title: r.title || r.url, url: r.url });
-    }
-  }
-  let markdown = paras.join("\n\n");
-  if (sources.length > 0) {
-    markdown += `\n\n**Sources :** ${sources.map((s) => `[${s.title}](${s.url})`).join(" · ")}`;
   }
 
   return privateJson({
@@ -89,5 +90,7 @@ export async function POST(req: NextRequest) {
     mode: rag?.mode ?? null,
     results,
     markdown: markdown.trim(),
+    draftKind,
+    reviewRequired: true,
   });
 }

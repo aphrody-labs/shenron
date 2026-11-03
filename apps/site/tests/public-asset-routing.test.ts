@@ -1,6 +1,36 @@
 import { describe, expect, test } from "bun:test";
 import { assetUrl } from "../src/lib/assets";
 import { ownImageRemotePatterns } from "@aphrody/shenron-config/public-urls";
+import { CDN_ORIGIN, SITE_URL } from "../src/lib/config";
+
+describe("wiki catalogue artwork routing", () => {
+  test("legacy wiki and external catalogue mirrors use the CDN in every owned spelling", () => {
+    for (const path of ["wiki/characters/c926.png", "ext/episodes/154.jpg"]) {
+      for (const prefix of [
+        "assets/",
+        "./assets/",
+        "/assets/",
+        "https://bot.dragonballfr.com/assets/",
+        "https://dragonballfr.com/assets/",
+      ]) {
+        expect(assetUrl(`${prefix}${path}?v=2#art`)).toBe(`${CDN_ORIGIN}/assets/${path}?v=2#art`);
+      }
+    }
+  });
+  test("runtime uploads retain their site owner and query parameters", () => {
+    const path = "/assets/wiki/items/55b2d3a4-5c67-4890-8abc-df0123456789.webp?width=800#art";
+    expect(assetUrl(path)).toBe(`${SITE_URL}${path}`);
+    expect(assetUrl(`https://bot.dragonballfr.com${path}`)).toBe(`${SITE_URL}${path}`);
+  });
+  test("foreign providers and local manga scans keep their original URLs", () => {
+    for (const path of [
+      "https://foreign.test/assets/ext/a.jpg?signature=opaque#art",
+      "/assets/manga/volume-1/page-1.jpg?v=2#page",
+    ]) {
+      expect(assetUrl(path)).toBe(path);
+    }
+  });
+});
 
 describe("canonical public DBZ artwork", () => {
   test("verified legacy worker ADN media resolves through the same public asset owner", () => {

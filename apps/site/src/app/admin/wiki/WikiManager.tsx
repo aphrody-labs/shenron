@@ -25,6 +25,7 @@ import {
   Presse,
 } from "@aphrody/shenron-ui/icones";
 import { isStudioTable } from "@/lib/wiki-fields";
+import { WikiEditorialWorkflow } from "@/components/admin/WikiEditorialWorkflow";
 
 type PageNode = { id: string; title: string; slug: string };
 type CategoryNode = {
@@ -314,6 +315,8 @@ export function WikiManager({
           </Link>
         </div>
       </div>
+
+      <WikiEditorialWorkflow />
 
       <div className="dbz-panel mb-6 flex flex-wrap items-center gap-3 p-3">
         <label htmlFor="wiki-manager-search" className="text-sm font-semibold text-dbz-blue-light">

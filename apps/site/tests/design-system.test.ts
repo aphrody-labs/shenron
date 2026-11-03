@@ -176,7 +176,9 @@ describe("système de design — un seul vocabulaire", () => {
   test("toutes les routes wiki héritent de la surface commune", () => {
     const layout = readFileSync(join(APP_DIR, "wiki", "layout.tsx"), "utf8");
     const css = readFileSync(join(APP_DIR, "globals.css"), "utf8");
-    expect(layout).toContain("data-wiki-surface");
+    // Route exclusions and navigation are exercised by wiki-visual-theme.test.tsx.
+    // The layout delegates the single shared root to that tested route-aware frame.
+    expect(layout).toContain("<WikiVisualFrame>");
     if (css.includes("@aphrody/shenron-ui/site.css")) {
       const uiCss = readFileSync(join(REPO_ROOT, "packages", "ui", "src", "site.css"), "utf8");
       expect(uiCss).toContain("[data-wiki-surface]");

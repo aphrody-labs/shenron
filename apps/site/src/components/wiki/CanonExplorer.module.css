@@ -1,5 +1,5 @@
 .explorer {
-  color: var(--dbz-os, #ececec);
+  color: var(--dbz-os);
   min-width: 0;
 }
 .heading {
@@ -9,7 +9,7 @@
   font-size: 0.65rem;
   letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--frame-on-surface-variant, #a3a3a3);
+  color: var(--frame-on-surface-variant);
 }
 .heading h1 {
   margin: 0.6rem 0;
@@ -19,27 +19,27 @@
   letter-spacing: -0.055em;
 }
 .heading > p:last-child {
-  color: var(--frame-on-surface-variant, #a3a3a3);
+  color: var(--frame-on-surface-variant);
   font-size: 1rem;
 }
 .search {
   display: flex;
   align-items: center;
   gap: 0.65rem;
-  border: 1px solid var(--dbz-border, #383838);
-  background: var(--dbz-card, #171717);
-  border-radius: 1rem;
+  border: 1px solid var(--dbz-border);
+  background: var(--dbz-card);
+  border-radius: 0.75rem;
   padding: 0.65rem;
   min-width: 0;
 }
 .search:focus-within {
-  outline: 2px solid var(--dbz-orange, #c2c2c2);
+  outline: 2px solid var(--dbz-orange);
   outline-offset: 3px;
 }
 .searchIcon {
   font-size: 1.9rem;
   margin-left: 0.4rem;
-  color: var(--frame-on-surface-variant, #a3a3a3);
+  color: var(--frame-on-surface-variant);
 }
 .search input {
   flex: 1;
@@ -51,8 +51,8 @@
   color: inherit;
 }
 .search button {
-  background: var(--dbz-orange, #d4d4d4);
-  color: var(--frame-on-primary, #111);
+  background: var(--dbz-orange);
+  color: var(--frame-on-primary);
   font-size: 0.8rem;
   font-weight: 650;
   border-radius: 0.65rem;
@@ -74,15 +74,15 @@
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  color: var(--frame-on-surface-variant, #a3a3a3);
+  color: var(--frame-on-surface-variant);
   font-size: 0.73rem;
 }
 .filters select {
-  border: 1px solid var(--dbz-border, #383838);
-  background: var(--dbz-card, #171717);
+  border: 1px solid var(--dbz-border);
+  background: var(--dbz-card);
   border-radius: 0.5rem;
   padding: 0.45rem 0.6rem;
-  color: var(--dbz-os, #ececec);
+  color: var(--dbz-os);
   max-width: 100%;
 }
 .rail {
@@ -93,26 +93,26 @@
 }
 .example {
   min-width: 0;
-  border: 1px solid var(--dbz-border, #383838);
+  border: 1px solid var(--dbz-border);
   border-radius: 0.85rem;
   overflow: hidden;
-  background: var(--dbz-card, #171717);
+  background: var(--dbz-card);
   padding-bottom: 0.85rem;
   transition: border-color 0.15s ease;
 }
 .example:hover,
 .example[aria-current="page"] {
-  border-color: var(--dbz-orange, #d4d4d4);
+  border-color: var(--dbz-orange);
 }
 .example:focus-visible {
-  outline: 2px solid var(--dbz-orange, #d4d4d4);
+  outline: 2px solid var(--dbz-orange);
   outline-offset: 3px;
 }
 .image {
   display: block;
   position: relative;
   height: 120px;
-  background: linear-gradient(145deg, var(--dbz-card, #191919), var(--dbz-bg, #101010));
+  background: linear-gradient(145deg, var(--dbz-card), var(--dbz-bg));
   overflow: hidden;
 }
 .image img {
@@ -133,18 +133,18 @@
   font-weight: 600;
 }
 .exampleLabel > span {
-  color: var(--frame-on-surface-variant, #a3a3a3);
+  color: var(--frame-on-surface-variant);
 }
 .workLabel {
   display: block;
   padding: 0 0.8rem;
   font-size: 0.65rem;
-  color: var(--frame-on-surface-variant, #a3a3a3);
+  color: var(--frame-on-surface-variant);
 }
 .hint {
   display: block;
   font-size: 0.73rem;
-  color: var(--frame-on-surface-variant, #a3a3a3);
+  color: var(--frame-on-surface-variant);
   margin-top: 1rem;
 }
 @media (max-width: 640px) {
@@ -194,4 +194,22 @@
   object-fit: cover;
   object-position: center 12%;
   padding: 0;
+}
+
+.heading {
+  padding: clamp(1.25rem, 4vw, 3rem);
+  border: 1px solid var(--wiki-border);
+  border-radius: 0.75rem;
+  background: linear-gradient(
+    125deg,
+    color-mix(in srgb, var(--wiki-accent) 12%, var(--wiki-card)),
+    var(--wiki-card)
+  );
+}
+.search button,
+.filters select {
+  min-block-size: 2.75rem;
+}
+.search:focus-within {
+  outline-color: var(--wiki-accent);
 }

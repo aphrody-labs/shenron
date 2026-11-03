@@ -4,6 +4,9 @@ import type { Thing, WithContext } from "schema-dts";
 import { ContributeRail } from "@/components/kit/ContributeRail";
 import { JsonLd } from "@/components/JsonLd";
 import { PageHero } from "@/components/PageHero";
+import { WikiEditorialHero } from "@/components/wiki/WikiEditorialHero";
+import styles from "./wiki-editorial.module.css";
+import { wikiContributionSection } from "@/lib/wiki-visual-theme";
 import type { Crumb } from "@/components/Breadcrumbs";
 import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import type { ShellWidth } from "@aphrody/shenron-ui/layout/PageShell";
@@ -59,10 +62,27 @@ export function WikiIndexPage({
   return (
     <div>
       {jsonLd && <JsonLd data={jsonLd} />}
-      <PageHero eyebrow={eyebrow} title={title} lead={lead} image={image} imageAlt={imageAlt} />
+      {category === "characters" || category === "techniques" ? (
+        <PageHero eyebrow={eyebrow} title={title} lead={lead} image={image} imageAlt={imageAlt} />
+      ) : (
+        <WikiEditorialHero
+          eyebrow={eyebrow}
+          title={title}
+          lead={lead}
+          image={image}
+          imageAlt={imageAlt}
+          category={category ?? wikiContributionSection(contributeKey)}
+        />
+      )}
       <WikiPageShell adminBar crumbs={crumbs} category={category} actions={actions} width={width}>
         {note && (
-          <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-200/80">
+          <div
+            className={
+              category === "characters" || category === "techniques"
+                ? "rounded-lg border border-amber-500/20 bg-amber-500/5 p-4 text-xs leading-relaxed text-amber-200/80"
+                : styles.note
+            }
+          >
             {note}
           </div>
         )}

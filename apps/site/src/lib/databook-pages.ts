@@ -38,8 +38,14 @@ export { estCiblePlanche, numeroDePlanche } from "@/lib/databook-pages-shared";
  * `number` sur toutes leurs planches, et sans lui la correction serait
  * impossible précisément là où les transcriptions sont les plus abîmées.
  */
-async function indexDePlanche(bookId: string, numero: number): Promise<number> {
-  const [r] = (await db.execute(sql`
+type DatabookClient = Pick<typeof db, "execute">;
+
+async function indexDePlanche(
+  bookId: string,
+  numero: number,
+  client: DatabookClient = db,
+): Promise<number> {
+  const [r] = (await client.execute(sql`
 		select coalesce(
 			(
 				select (ord - 1)::int
@@ -60,8 +66,12 @@ async function indexDePlanche(bookId: string, numero: number): Promise<number> {
 }
 
 /** Transcription courante d'une planche (`null` si la planche n'existe pas). */
-export async function lireTranscription(bookId: string, numero: number): Promise<string | null> {
-  const idx = await indexDePlanche(bookId, numero);
+export async function lireTranscription(
+  bookId: string,
+  numero: number,
+  client: DatabookClient = db,
+): Promise<string | null> {
+  const idx = await indexDePlanche(bookId, numero, client);
   if (idx < 0) return null;
   // `::int` OBLIGATOIRE sur l'index. Sans lui, le paramètre est lié en TEXTE
   // et `pages->$1` devient l'opérateur « clé d'objet », pas « élément de
@@ -69,7 +79,7 @@ export async function lireTranscription(bookId: string, numero: number): Promise
   // renvoyait donc systématiquement `null` pour une planche pourtant
   // transcrite — le formulaire de correction publique s'ouvrait vide, et la
   // comparaison anti-conflit de l'acceptation ne comparait rien.
-  const [r] = (await db.execute(sql`
+  const [r] = (await client.execute(sql`
 		select pages->${idx}::int->>'text' as texte
 		from bot.db_databooks
 		where id = ${bookId}::bigint
@@ -85,11 +95,12 @@ export async function ecrireTranscription(
   bookId: string,
   numero: number,
   texte: string,
+  client: DatabookClient = db,
 ): Promise<boolean> {
   assertDatabooksWritable();
-  const idx = await indexDePlanche(bookId, numero);
+  const idx = await indexDePlanche(bookId, numero, client);
   if (idx < 0) return false;
-  const res = (await db.execute(sql`
+  const res = (await client.execute(sql`
 		update bot.db_databooks
 		set pages = jsonb_set(pages, ${`{${idx},text}`}::text[], to_jsonb(${texte}::text), true)
 		where id = ${bookId}::bigint

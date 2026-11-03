@@ -1,13 +1,12 @@
 import { mangaData } from "@/lib/manga-data";
-import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { JAPANESE_FULL_COLOR_CATALOGUE } from "@aphrody/shenron-config/manga-catalogue";
-import { MangaLibraryHeader, MangaLibraryStats } from "@/components/manga/MangaLibraryHeader";
+import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
+import { WikiMediaMetrics } from "@/components/wiki/WikiMediaCatalogue";
+import { WikiMediaText } from "@/components/wiki/WikiMediaText";
+import { getLocale } from "next-intl/server";
 import { MangaUIText } from "@/lib/manga-ui-text";
 import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 import { T } from "@/components/T";
-import { ContributeRail } from "@/components/kit";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { PageBanner } from "@/components/media/PageBanner";
 import { ContinueRail } from "@/components/history/ContinueRail";
 import { dbUniverse } from "@/lib/db-universe";
 import { pageHero } from "@/lib/banner-config";
@@ -176,14 +175,54 @@ async function MangaIndexContent({ searchParams }: { searchParams: Promise<Manga
     readableVolumeIds.has(volume.id),
   ).length;
   const coveredVolumes = completeCatalog.filter((volume) => Boolean(volume.cover?.trim())).length;
+  const number = new Intl.NumberFormat(await getLocale());
 
   return (
-    <PageShell rhythm="tight">
-      <Breadcrumbs className="mb-4" items={[{ label: "Manga" }]} />
-      <MangaLibraryHeader
-        readable={readableVolumeCount}
-        chapters={allChapters.length}
-        total={completeCatalog.length}
+    <WikiIndexPage
+      category="manga"
+      eyebrow={<WikiMediaText name="mangaEyebrow" />}
+      title={<WikiMediaText name="mangaTitle" />}
+      lead={
+        <WikiMediaText
+          name="mangaLead"
+          values={{
+            readable: number.format(readableVolumeCount),
+            chapters: number.format(allChapters.length),
+            total: number.format(completeCatalog.length),
+          }}
+        />
+      }
+      image={heroImage}
+      crumbs={[{ label: "Manga" }]}
+      contributeKey="kit.contribute.what.volume"
+    >
+      <WikiMediaMetrics
+        label={<WikiMediaText name="coverage" />}
+        items={[
+          {
+            key: "catalogued",
+            label: <WikiMediaText name="cataloguedVolumes" />,
+            value: number.format(completeCatalog.length),
+            hint: (
+              <WikiMediaText name="coverCount" values={{ count: number.format(coveredVolumes) }} />
+            ),
+          },
+          {
+            key: "readable",
+            label: <WikiMediaText name="readableVolumes" />,
+            value: number.format(readableVolumeCount),
+          },
+          {
+            key: "chapters",
+            label: <WikiMediaText name="chapters" />,
+            value: number.format(allChapters.length),
+          },
+          {
+            key: "colour",
+            label: <WikiMediaText name="colourChapters" />,
+            value: number.format(colorChapters.length),
+          },
+        ]}
       />
       <LibraryNav />
       <ContinueRail kinds={["chapter"]} titleKey="history.resumeReading" />
@@ -216,14 +255,6 @@ async function MangaIndexContent({ searchParams }: { searchParams: Promise<Manga
         <summary className="flex min-h-11 cursor-pointer select-none items-center font-semibold text-foreground transition-colors hover:text-dbz-orange focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange focus-visible:ring-offset-2 focus-visible:ring-offset-background rounded-lg">
           <MangaUIText name="details" />
         </summary>
-        <PageBanner src={heroImage} alt="" position="top" className="mt-3" priority={false} />
-        <MangaLibraryStats
-          total={completeCatalog.length}
-          readable={readableVolumeCount}
-          covered={coveredVolumes}
-          chapters={allChapters.length}
-          color={colorChapters.length}
-        />
         <p className="text-sm text-[var(--muted-foreground)]">
           <MangaUIText name="sourceLead" />
           {" : "}
@@ -306,7 +337,6 @@ async function MangaIndexContent({ searchParams }: { searchParams: Promise<Manga
 
         <MangaInfoSection />
       </details>
-      <ContributeRail className="mt-14" quoiKey="kit.contribute.what.volume" />
-    </PageShell>
+    </WikiIndexPage>
   );
 }

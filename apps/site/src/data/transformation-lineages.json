@@ -1,0 +1,212 @@
+[
+  {
+    "id": "saiyan_golden",
+    "title": "1. Lignée Saiyan Canonique — Voie Dorée",
+    "lineage": "Akira Toriyama (Manga Tomes 1 à 42)",
+    "nodes": [
+      {
+        "name": "Ōzaru (Singe Géant)",
+        "stage": "Forme Primordiale",
+        "description": "Métamorphose sous les rayons Blutz de la pleine lune via la queue de Saiyan. Multiplie la force par 10.",
+        "users": ["Goku", "Gohan", "Vegeta"],
+        "canonRank": "canon"
+      },
+      {
+        "name": "Super Saiyan (SSJ1)",
+        "stage": "Éveil de la Colère",
+        "description": "Le guerrier de légende aux cheveux d'or éveillé par une rage extrême. Multiplie la puissance de base par 50.",
+        "users": ["Goku", "Vegeta", "Gohan", "Trunks", "Goten"],
+        "canonRank": "canon"
+      },
+      {
+        "name": "SSJ Dai Ni & San Dankai",
+        "stage": "Stades Intermédiaires",
+        "description": "Gonflement musculaire extrême développé dans la Salle de l'Esprit et du Temps. Augmente la force brute mais pénalise la vélocité.",
+        "users": ["Vegeta", "Trunks", "Goku"],
+        "canonRank": "canon"
+      },
+      {
+        "name": "Super Saiyan Pleine Puissance",
+        "stage": "Maîtrise Parfaite (Grade 4)",
+        "description": "Élimination totale de l'agressivité et de la déperdition d'énergie. Maintien continu du Super Saiyan à l'état de repos.",
+        "users": ["Goku", "Gohan"],
+        "canonRank": "canon"
+      },
+      {
+        "name": "Super Saiyan 2",
+        "stage": "Dépassement du Mur",
+        "description": "Éveil des étincelles bio-électriques. Vitesse et puissance doublées par rapport au Super Saiyan (Gohan vs Cell).",
+        "users": ["Gohan", "Goku", "Vegeta"],
+        "canonRank": "canon"
+      },
+      {
+        "name": "Super Saiyan 3",
+        "stage": "Extraction Totale du Potentiel",
+        "description": "Longue crinière et disparition des sourcils. Consommation d'énergie titanesque limitant son usage sur Terre.",
+        "users": ["Goku", "Gotenks"],
+        "canonRank": "canon"
+      }
+    ]
+  },
+  {
+    "id": "saiyan_divine",
+    "title": "2. Lignée Saiyan Divine — Ki des Dieux",
+    "lineage": "Supervision Akira Toriyama (Battle of Gods & DBS)",
+    "nodes": [
+      {
+        "name": "Super Saiyan God",
+        "stage": "Rituel des 6 Cœurs Purs",
+        "description": "Chevelure et aura rouge rubis. Accès au Ki Divin, indétectable pour les mortels, conférant agilité et régénération.",
+        "users": ["Goku", "Vegeta"],
+        "canonRank": "supervised"
+      },
+      {
+        "name": "Super Saiyan Blue (SSGSS)",
+        "stage": "Dieu Super Saiyan",
+        "description": "Le stade Super Saiyan appliqué par-dessus le Ki divin du Super Saiyan God. Aura azur et puissance stellaire.",
+        "users": ["Goku", "Vegeta"],
+        "canonRank": "supervised"
+      },
+      {
+        "name": "SSJ Blue Évolution (SSJBE)",
+        "stage": "Dépassement Princier",
+        "description": "Forme exclusive à Vegeta au Tournoi du Pouvoir, brisant ses propres limites par sa fierté royale pour égaler les Dieux.",
+        "users": ["Vegeta"],
+        "canonRank": "supervised"
+      }
+    ]
+  },
+  {
+    "id": "divine_supreme",
+    "title": "3. Domaine Suprême — Anges & Destructeurs",
+    "lineage": "Toriyama & Toyotarō (DBS Manga & Film)",
+    "nodes": [
+      {
+        "name": "Ultra Instinct (Signes / Kizashi)",
+        "stage": "Réflexe Inconscient",
+        "description": "Le corps esquive et attaque sans passer par la commande cérébrale. Chevelure noire aux reflets argentés.",
+        "users": ["Goku"],
+        "canonRank": "supervised"
+      },
+      {
+        "name": "Ultra Instinct Maîtrisé",
+        "stage": "Sérénité Angélique Absolue",
+        "description": "Cheveux et yeux argentés. Harmonie totale de l'esprit et du corps atteignant l'état naturel des Anges.",
+        "users": ["Goku"],
+        "canonRank": "supervised"
+      },
+      {
+        "name": "Ultra Ego (Wagamama no Gokui)",
+        "stage": "Puissance de la Destruction (Hakai)",
+        "description": "Cheveux pourpres sans sourcils. La puissance augmente proportionnellement aux dégâts encaissés et à la soif de bataille.",
+        "users": ["Vegeta"],
+        "canonRank": "supervised"
+      }
+    ]
+  },
+  {
+    "id": "hybrids_earthlings",
+    "title": "4. Lignée Hybrides & Éveils Terrestres",
+    "lineage": "Gohan & Piccolo (DBS: Super Hero)",
+    "nodes": [
+      {
+        "name": "Potentiel Éveillé (Gohan Ultime)",
+        "stage": "Rituel du Doyen Kaio Shin",
+        "description": "Libération totale du potentiel sans avoir besoin de se transformer en Super Saiyan. Regard perçant et mèches noires.",
+        "users": ["Gohan"],
+        "canonRank": "canon"
+      },
+      {
+        "name": "Gohan Beast",
+        "stage": "Éveil Primordial Furieux",
+        "description": "Chevelure argentée dressée et yeux rouges. Éveil de la bête intérieure surpassant les combattants divins.",
+        "users": ["Gohan"],
+        "canonRank": "supervised"
+      },
+      {
+        "name": "Orange Piccolo",
+        "stage": "Bénédiction de Shenron",
+        "description": "Forme massive et peau orangée offerte par le dragon Shenron comme bonus au-delà de son potentiel débloqué.",
+        "users": ["Piccolo"],
+        "canonRank": "supervised"
+      }
+    ]
+  },
+  {
+    "id": "freezer_evolution",
+    "title": "5. Lignée des Métamorphoses de Freezer",
+    "lineage": "Clan Cold & Armée de Freezer",
+    "nodes": [
+      {
+        "name": "1re, 2e, 3e Formes",
+        "stage": "Formes de Réduction",
+        "description": "Enveloppes corporelles créées pour contenir et contrôler une puissance naturelle trop dévastatrice.",
+        "users": ["Freezer"],
+        "canonRank": "canon"
+      },
+      {
+        "name": "Forme Finale (Originale)",
+        "stage": "Véritable Apparence",
+        "description": "Corps épuré, blanc et violet. La véritable anatomie de naissance de Freezer révélée sur Namek.",
+        "users": ["Freezer"],
+        "canonRank": "canon"
+      },
+      {
+        "name": "Golden Freezer",
+        "stage": "Entraînement de 4 Mois",
+        "description": "Peau dorée forgée pour humilier les Super Saiyans. Puissance rivalisant avec le Super Saiyan Blue.",
+        "users": ["Freezer"],
+        "canonRank": "supervised"
+      },
+      {
+        "name": "Black Freezer",
+        "stage": "10 Ans dans la Salle du Temps",
+        "description": "Forme ténébreuse invincible capable de terrasser Goku UI et Vegeta Ultra Ego en un coup unique.",
+        "users": ["Freezer"],
+        "canonRank": "supervised"
+      }
+    ]
+  },
+  {
+    "id": "gt_alternative",
+    "title": "6. Lignée Alternative GT — Voie Primordiale (Non-Canon)",
+    "lineage": "Toei Animation & Katsuyoshi Nakatsuru (DBGT)",
+    "nodes": [
+      {
+        "name": "Ōzaru Doré (Golden Great Ape)",
+        "stage": "Singe Géant Super Saiyan",
+        "description": "Transformation en singe géant doré sous l'influence des ondes Terrestres. Perte totale de contrôle conscient.",
+        "users": ["Goku", "Vegeta", "Baby Vegeta"],
+        "canonRank": "non_canon"
+      },
+      {
+        "name": "Super Saiyan 4 (GT)",
+        "stage": "Maîtrise de la Bête",
+        "description": "Design iconique de Katsuyoshi Nakatsuru avec fourrure écarlate et chevelure noire. Fusion de l'humain et du singe légendaire.",
+        "users": ["Goku", "Vegeta", "Gogeta"],
+        "canonRank": "non_canon"
+      }
+    ]
+  },
+  {
+    "id": "daima_canon",
+    "title": "7. Ère DAIMA — Métamorphoses Mini & Canoniques",
+    "lineage": "Akira Toriyama (Dragon Ball DAIMA, 2024)",
+    "nodes": [
+      {
+        "name": "Goku (Mini) — Super Saiyan",
+        "stage": "Rétrécissement du Royaume des Démons",
+        "description": "Sous le sortilège de rajeunissement du Roi Gomah, Goku conserve sa capacité à canaliser la colère du Super Saiyan tout en s'adaptant à sa petite taille et au Nyoibo.",
+        "users": ["Goku (Mini)", "Vegeta (Mini)"],
+        "canonRank": "supervised"
+      },
+      {
+        "name": "Super Saiyan 2 & 3 (Mini)",
+        "stage": "Puissance Brute Condensée",
+        "description": "Déploiement des éclairs du SSJ2 et de la longue crinière du SSJ3 face aux créatures du Troisième Monde Démoniaque.",
+        "users": ["Goku (Mini)"],
+        "canonRank": "supervised"
+      }
+    ]
+  }
+]

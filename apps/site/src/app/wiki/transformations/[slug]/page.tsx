@@ -64,6 +64,8 @@ export default async function TransformationPage({
     <WikiDetailPage
       entity={t.name}
       source="db_transformations"
+      image={t.image}
+      imageAlt={t.name}
       tracker={
         <TrackView
           entityType="transformation"

@@ -1,8 +1,9 @@
 // Keep the index loader scoped to the catalogue, not streamed detail routes.
 import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
-import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import { GatedLink } from "@/components/GatedLink";
-import { PageBanner } from "@/components/media/PageBanner";
+import { WikiEditorialHero } from "@/components/wiki/WikiEditorialHero";
+import { WikiMediaMetrics, WikiMediaSpotlight } from "@/components/wiki/WikiMediaCatalogue";
+import { WikiMediaText } from "@/components/wiki/WikiMediaText";
 import { EditorialTabs } from "@/components/databooks/EditorialTabs";
 import { T } from "@/components/T";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -13,7 +14,8 @@ import { DatabookGrid } from "@/components/databooks/DatabookGrid";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { ContinueRail } from "@/components/history/ContinueRail";
 import { progressionTranscription } from "@/lib/databooks-transcription";
-import { DomainBar, StatTiles, ContributeRail } from "@/components/kit";
+import { DomainBar, ContributeRail } from "@/components/kit";
+import { getLocale } from "next-intl/server";
 
 import { ogMeta } from "@/lib/og";
 import { LibraryNav } from "@/components/library/LibraryNav";
@@ -80,99 +82,134 @@ export default async function DatabooksIndexPage() {
   // jaquette portrait étirée sur 1920 px de large sortait floue, et le hero
   // changeait de visage à chaque nouveau V-Jump ingéré.
   const heroImage = await pageHero("databooks");
+  const number = new Intl.NumberFormat(await getLocale());
+  const featuredCard = items.find((item) => item.cover && item.pageCount > 0);
+  const featuredBook = data?.items.find((item) => item.id === featuredCard?.id);
 
   return (
-    <PageShell rhythm="tight">
-      {/* Pont staff → pilotage des campagnes de traduction, sans repasser par la sidebar
-          d’administration. Invisible pour les visiteurs. */}
-      <DomainBar
-        domain="databooks"
-        className="mb-6"
-        actions={[
-          { href: "/workshop/transcription", label: "Transcription & arbitrage" },
-          { href: "/workshop/translation", label: "Traduction & campagnes" },
-        ]}
-      />
-      <Breadcrumbs
-        className="mb-4"
-        items={[{ label: "Databooks", display: <T k="wiki.databooks.breadcrumb" /> }]}
-      />
-      <PageHeader
-        art="ki"
-        className="mb-6"
+    <>
+      <WikiEditorialHero
+        category="databooks"
         eyebrow={<T k="wiki.databooks.eyebrow" />}
         title={<T k="wiki.databooks.title" />}
-        subtitle={
-          // Un nombre vérifiable plutôt qu’une promesse d’ambiance (règle 18) ;
-          // catalogue vide, le compteur disparaît au lieu d’afficher un zéro.
+        lead={
           items.length > 0 ? (
-            <T
-              k="wiki.databooks.leadCount"
-              values={{ count: items.length.toLocaleString("fr-FR") }}
-            />
+            <T k="wiki.databooks.leadCount" values={{ count: number.format(items.length) }} />
           ) : (
             <T k="wiki.databooks.lead" />
           )
         }
+        image={heroImage}
       />
-      <LibraryNav className="mb-3" />
-      <EditorialTabs active="/wiki/databooks" className="mb-6" />
-      <PageBanner src={heroImage} alt="Databooks Dragon Ball" />
-
-      {/* Couverture réelle de la transcription : elle dit au lecteur ce qu’il peut espérer
-          trouver — et ce qui reste à faire. Mesurée, jamais arrondie à la hausse. */}
-      {progression && (
-        <StatTiles
+      <PageShell rhythm="tight">
+        {/* Pont staff → pilotage des campagnes de traduction, sans repasser par la sidebar
+          d’administration. Invisible pour les visiteurs. */}
+        <DomainBar
+          domain="databooks"
           className="mb-6"
-          items={[
-            { label: <T k="wiki.databooks.statWorks" />, value: progression.total.fiches },
-            {
-              label: <T k="wiki.databooks.statPlates" />,
-              value: progression.total.planches,
-              hint: <T k="wiki.databooks.statPlatesHint" />,
-            },
-            {
-              label: <T k="wiki.databooks.statTranscribed" />,
-              value: progression.total.transcrites,
-              hint: (
-                <T
-                  k="wiki.databooks.statTranscribedHint"
-                  values={{
-                    percent: pourcentage(progression.total.transcrites, progression.total.planches),
-                  }}
-                />
-              ),
-            },
-            {
-              label: <T k="wiki.databooks.statTranslated" />,
-              value: progression.total.traduites,
-              hint: (
-                <T
-                  k="wiki.databooks.statTranslatedHint"
-                  values={{
-                    percent: pourcentage(progression.total.traduites, progression.total.planches),
-                  }}
-                />
-              ),
-            },
+          actions={[
+            { href: "/workshop/transcription", label: "Transcription & arbitrage" },
+            { href: "/workshop/translation", label: "Traduction & campagnes" },
           ]}
         />
-      )}
+        <Breadcrumbs
+          className="mb-4"
+          items={[{ label: "Databooks", display: <T k="wiki.databooks.breadcrumb" /> }]}
+        />
+        <LibraryNav className="mb-3" />
+        <EditorialTabs active="/wiki/databooks" className="mb-6" />
 
-      {/* Les ouvrages restent séparés des interviews et de la page auteur. */}
-      <p className="mb-8 text-[14px] text-white/60">
-        <GatedLink
-          href="/wiki/interviews"
-          className="inline-flex min-h-11 items-center text-dbz-orange underline-offset-4 hover:underline"
-        >
-          <T k="wiki.databooks.toriyamaLink" />
-        </GatedLink>{" "}
-        <T k="wiki.databooks.toriyamaAfter" />
-      </p>
+        {/* Couverture réelle de la transcription : elle dit au lecteur ce qu’il peut espérer
+          trouver — et ce qui reste à faire. Mesurée, jamais arrondie à la hausse. */}
+        {progression && (
+          <WikiMediaMetrics
+            label={<WikiMediaText name="coverage" />}
+            items={[
+              {
+                key: "works",
+                label: <T k="wiki.databooks.statWorks" />,
+                value: number.format(progression.total.fiches),
+              },
+              {
+                key: "plates",
+                label: <T k="wiki.databooks.statPlates" />,
+                value: number.format(progression.total.planches),
+                hint: <T k="wiki.databooks.statPlatesHint" />,
+              },
+              {
+                key: "transcribed",
+                label: <T k="wiki.databooks.statTranscribed" />,
+                value: number.format(progression.total.transcrites),
+                hint: (
+                  <T
+                    k="wiki.databooks.statTranscribedHint"
+                    values={{
+                      percent: pourcentage(
+                        progression.total.transcrites,
+                        progression.total.planches,
+                      ),
+                    }}
+                  />
+                ),
+              },
+              {
+                key: "translated",
+                label: <T k="wiki.databooks.statTranslated" />,
+                value: number.format(progression.total.traduites),
+                hint: (
+                  <T
+                    k="wiki.databooks.statTranslatedHint"
+                    values={{
+                      percent: pourcentage(progression.total.traduites, progression.total.planches),
+                    }}
+                  />
+                ),
+              },
+            ]}
+          />
+        )}
+        {featuredBook && featuredCard && (
+          <WikiMediaSpotlight
+            eyebrow={<WikiMediaText name="featuredBook" />}
+            title={featuredBook.title}
+            subtitle={featuredBook.title_ja}
+            artwork={featuredCard.cover}
+            description={featuredBook.description}
+            meta={[
+              ...(featuredBook.author ? [{ key: "author", label: featuredBook.author }] : []),
+              {
+                key: "pages",
+                label: (
+                  <WikiMediaText
+                    name="contentPages"
+                    values={{ count: number.format(featuredCard.pageCount) }}
+                  />
+                ),
+              },
+            ]}
+            primary={{
+              href: `/wiki/databooks/${featuredBook.id}`,
+              label: <WikiMediaText name="openBook" />,
+            }}
+            secondary={{ href: "/workshop", label: <WikiMediaText name="editorialWorkshop" /> }}
+          />
+        )}
 
-      <ContinueRail kinds={["databook"]} titleKey="history.resumeBook" />
-      <DatabookGrid items={items} access={access} />
-      <ContributeRail className="mt-14" quoiKey="kit.contribute.what.databookPlate" />
-    </PageShell>
+        {/* Les ouvrages restent séparés des interviews et de la page auteur. */}
+        <p className="mb-8 text-[14px] text-white/60">
+          <GatedLink
+            href="/wiki/interviews"
+            className="inline-flex min-h-11 items-center text-dbz-orange underline-offset-4 hover:underline"
+          >
+            <T k="wiki.databooks.toriyamaLink" />
+          </GatedLink>{" "}
+          <T k="wiki.databooks.toriyamaAfter" />
+        </p>
+
+        <ContinueRail kinds={["databook"]} titleKey="history.resumeBook" />
+        <DatabookGrid items={items} access={access} />
+        <ContributeRail className="mt-14" quoiKey="kit.contribute.what.databookPlate" />
+      </PageShell>
+    </>
   );
 }

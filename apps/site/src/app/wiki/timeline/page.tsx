@@ -1,3 +1,4 @@
+import { T } from "@/components/T";
 import { DomainBar, PageShell } from "@/components/kit";
 import { WikiPageShell } from "@/components/wiki/WikiPageShell";
 import Link from "next/link";
@@ -15,6 +16,7 @@ import { ChronologieTabs } from "@/components/wiki/ChronologieTabs";
 import { ChronologyAtlas } from "@/components/wiki/ChronologyAtlas";
 import { ogMeta } from "@/lib/og";
 import { JsonLd } from "@/components/JsonLd";
+import { WikiResearchText } from "@/components/wiki/WikiResearchText";
 import { SITE_URL } from "@/lib/config";
 import type { ItemList, WithContext } from "schema-dts";
 
@@ -85,20 +87,26 @@ export default async function ChronologiePage() {
       <JsonLd data={jsonLd} />
       <Billboard
         backdrop={await pageHero("chronologie")}
-        eyebrow="Frise universelle"
-        title="Chronologie complète"
+        eyebrow={<WikiResearchText name="timelineEyebrow" />}
+        title={<WikiResearchText name="timelineTitle" />}
         meta={[
-          `${items.length} entrées`,
-          `${episodes} épisodes`,
-          `${movies} films`,
-          manga > 0 ? `${manga} tomes` : null,
-          `${ageEvents?.length ?? 0} repères d'âges`,
+          null,
+          <WikiResearchText key="episodes" name="episodesCount" values={{ count: episodes }} />,
+          <WikiResearchText key="movies" name="moviesCount" values={{ count: movies }} />,
+          manga > 0 ? (
+            <WikiResearchText key="manga" name="mangaCount" values={{ count: manga }} />
+          ) : null,
+          <WikiResearchText
+            key="ages"
+            name="agesCount"
+            values={{ count: ageEvents?.length ?? 0 }}
+          />,
         ]}
-        synopsis="Tous les épisodes, tous les films et les tomes du manga — de Dragon Ball à Daima — réunis sur une seule frise officielle, complétée par la chronologie diégétique officielle des Âges (Daizenshuu 7)."
+        synopsis={<WikiResearchText name="timelineLead" />}
         primaryHref={items[0]!.href}
-        primaryLabel="Commencer la frise"
+        primaryLabel={<WikiResearchText name="timelineStart" />}
         secondaryHref="/wiki/episodes"
-        secondaryLabel="Les épisodes"
+        secondaryLabel={<T k="wikiExplorer.categories.episodes" />}
       />
       <ChronologyAtlas
         episodes={episodes}
@@ -130,16 +138,18 @@ function ChronologieUnavailable() {
   return (
     <PageShell width="prose" rhythm="loose" className="text-center">
       <meta name="robots" content="noindex, follow" />
-      <h1 className="font-display text-3xl font-bold text-white">Chronologie universelle</h1>
+      <h1 className="font-display text-3xl font-bold text-white">
+        <WikiResearchText name="timelineTitle" />
+      </h1>
       <p className="mt-4 text-white/60">
-        La frise est momentanément indisponible. Elle revient d'elle-même d'ici quelques minutes.
+        <WikiResearchText name="timelineUnavailable" />
       </p>
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         <Link href="/wiki/episodes" className="dbz-button !text-xs">
-          Les épisodes
+          <T k="wikiExplorer.categories.episodes" />
         </Link>
         <Link href="/wiki/movies" className="dbz-button-ghost !text-xs">
-          Les films
+          <T k="wikiExplorer.categories.movies" />
         </Link>
       </div>
     </PageShell>

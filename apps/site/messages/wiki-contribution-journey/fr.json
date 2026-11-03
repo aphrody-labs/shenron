@@ -1,0 +1,36 @@
+{
+  "label": "L’atelier de l’encyclopédie",
+  "title": "Chaque source peut faire grandir le wiki.",
+  "description": "Une précision, une image documentée, un récit à compléter : choisissez votre porte d’entrée, puis suivez votre proposition jusqu’à sa relecture.",
+  "explore": "Trouver une fiche à enrichir",
+  "track": "Suivre mes propositions",
+  "sources": "Consulter les sources",
+  "steps": [
+    {
+      "title": "Explorer",
+      "body": "Retrouvez une saga, un lieu, un objet ou une œuvre et ouvrez sa fiche."
+    },
+    {
+      "title": "Documenter",
+      "body": "Précisez le tome, le chapitre, la planche ou la publication officielle qui étaye votre correction."
+    },
+    {
+      "title": "Proposer",
+      "body": "Le bouton de correction de la fiche conserve votre texte dans une proposition à relire."
+    },
+    {
+      "title": "Faire vivre",
+      "body": "Retrouvez la décision et la note de relecture dans vos propositions. Les corrections acceptées sont créditées."
+    }
+  ],
+  "workshopsUnavailable": "Les chantiers sont momentanément indisponibles. Vous pouvez toujours proposer une correction depuis une fiche.",
+  "contributorsUnavailable": "Le classement des contributions est momentanément indisponible.",
+  "workshops": {
+    "db_characters": "Personnages",
+    "db_techniques": "Techniques",
+    "db_planets": "Cosmologie",
+    "db_races": "Races",
+    "db_sagas": "Sagas",
+    "db_arcs": "Arcs"
+  }
+}

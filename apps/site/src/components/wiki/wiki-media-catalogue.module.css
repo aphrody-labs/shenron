@@ -1,0 +1,287 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+.metrics,
+.spotlight,
+.jumpLinks,
+.bookCard,
+.bookToolbar {
+  --media-accent: var(--wiki-accent, var(--color-dbz-orange));
+  --media-border: var(--wiki-border, var(--color-dbz-border));
+  --media-card: var(--wiki-card, var(--color-dbz-card));
+  --media-text: var(--wiki-paper, var(--color-os));
+  --media-muted: var(--wiki-muted, var(--color-os));
+  min-width: 0;
+}
+.metricsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr));
+  gap: 1rem;
+}
+.metrics {
+  margin-block: 1.5rem;
+}
+.spotlight {
+  margin-block: 2rem;
+}
+.metric {
+  border: 1px solid var(--media-border);
+  border-radius: 0.75rem;
+  padding: 1.1rem 1.25rem;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--media-accent) 7%, var(--media-card)),
+    var(--media-card)
+  );
+  min-width: 0;
+}
+.metric dt {
+  color: var(--media-muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.metric dd {
+  color: var(--media-text);
+  font-size: clamp(1.6rem, 1.2rem + 1vw, 2.2rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.3;
+  margin-block-start: 0.35rem;
+}
+.metric small {
+  display: block;
+  color: var(--media-muted);
+  font-size: 0.75rem;
+  font-weight: 400;
+  margin-block-start: 0.5rem;
+}
+.spotlight {
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid color-mix(in srgb, var(--media-accent) 35%, var(--media-border));
+  border-radius: 0.75rem;
+  padding: clamp(1.25rem, 3vw, 2.5rem);
+  background:
+    radial-gradient(
+      ellipse at 0% 0%,
+      color-mix(in srgb, var(--media-accent) 14%, transparent),
+      transparent 70%
+    ),
+    var(--media-card);
+}
+.artwork {
+  position: relative;
+  inline-size: min(100%, 10rem);
+  aspect-ratio: 2 / 3;
+  margin-inline: auto;
+}
+.cover {
+  object-fit: contain;
+}
+.spotlightContent {
+  min-width: 0;
+}
+.eyebrow {
+  color: var(--media-accent);
+  font-size: 0.75rem;
+  font-weight: 750;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-block-end: 0.8rem;
+}
+.title {
+  color: var(--media-text);
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(1.6rem, 1.1rem + 1.5vw, 2.7rem);
+  line-height: 1.12;
+  font-weight: 800;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.subtitle {
+  color: var(--media-muted);
+  font-size: 0.9rem;
+  margin-block-start: 0.7rem;
+}
+.metadata {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-block: 1rem;
+  padding: 0;
+  list-style: none;
+}
+.metadata li {
+  border: 1px solid var(--media-border);
+  border-radius: 0.75rem;
+  padding: 0.3rem 0.65rem;
+  color: var(--media-muted);
+  font-size: 0.8125rem;
+}
+.description {
+  max-width: 68ch;
+  color: var(--media-muted);
+  line-height: 1.7;
+  margin-block-start: 1rem;
+  white-space: pre-line;
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-block-start: 1.5rem;
+}
+.actions > a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  min-height: 44px;
+}
+.secondary {
+  color: var(--media-text);
+  font-size: 0.875rem;
+  font-weight: 650;
+}
+.secondary:hover {
+  color: var(--color-dbz-yellow);
+}
+.jumpLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+.jumpLinks a {
+  display: inline-flex;
+  gap: 0.75rem;
+  align-items: center;
+  min-height: 44px;
+  max-width: 100%;
+  border: 1px solid var(--media-border);
+  border-radius: 0.75rem;
+  background: var(--media-card);
+  color: var(--media-text);
+  padding: 0.6rem 0.9rem;
+  font-size: 0.875rem;
+  font-weight: 650;
+  transition:
+    border-color 180ms,
+    color 180ms;
+}
+.jumpLinks a span {
+  color: var(--media-accent);
+  font-variant-numeric: tabular-nums;
+}
+.jumpLinks a:hover {
+  color: var(--color-dbz-yellow);
+  border-color: var(--color-dbz-yellow);
+}
+.spotlight a:focus-visible,
+.jumpLinks a:focus-visible {
+  outline: 2px solid var(--color-dbz-yellow);
+  outline-offset: 4px;
+}
+@media (min-width: 700px) {
+  .spotlight[data-media-artwork="present"] {
+    grid-template-columns: minmax(10rem, 14rem) minmax(0, 1fr);
+  }
+  .artwork {
+    inline-size: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .jumpLinks a {
+    transition: none;
+  }
+}
+.bookToolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: end;
+  justify-content: space-between;
+}
+.bookToolbar fieldset {
+  min-width: 0;
+}
+.bookToolbar legend {
+  color: var(--media-muted);
+  font-size: 0.8125rem;
+  margin-block-end: 0.6rem;
+}
+.bookToolbar fieldset > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.bookCard {
+  display: block;
+  cursor: pointer;
+  border-radius: 0.75rem;
+  outline-offset: 4px;
+}
+.bookCard:focus-visible {
+  outline: 2px solid var(--color-dbz-yellow);
+}
+.bookArtwork {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border: 1px solid var(--media-border);
+  border-radius: 0.75rem;
+  background: var(--media-card);
+  transition: border-color 180ms;
+}
+.bookCard:hover .bookArtwork {
+  border-color: var(--color-dbz-yellow);
+}
+.bookPlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  color: var(--media-muted);
+  background: color-mix(in srgb, var(--media-accent) 8%, var(--media-card));
+}
+.bookBadge,
+.bookStatus {
+  position: absolute;
+  inset-inline-start: 0.5rem;
+  z-index: 2;
+  max-width: calc(100% - 1rem);
+  border: 1px solid var(--media-border);
+  border-radius: 0.75rem;
+  padding: 0.35rem 0.6rem;
+  background: var(--media-card);
+  color: var(--media-text);
+  font-size: 0.75rem;
+  font-weight: 650;
+  line-height: 1.3;
+}
+.bookBadge {
+  inset-block-start: 0.5rem;
+}
+.bookStatus {
+  inset-block-end: 0.5rem;
+}
+.bookTitle {
+  margin-block-start: 0.75rem;
+  color: var(--media-text);
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.bookCard:hover .bookTitle {
+  color: var(--color-dbz-yellow);
+}
+@media (prefers-reduced-motion: reduce) {
+  .bookArtwork {
+    transition: none;
+  }
+}

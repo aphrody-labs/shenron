@@ -31,7 +31,7 @@ export function ChronologyAtlas({
 
   return (
     <section className="wiki-container py-8 sm:py-10" aria-labelledby="chronology-atlas-title">
-      <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-[#101116] p-5 shadow-[8px_8px_0_rgba(0,0,0,0.32)] sm:p-8">
+      <div className="relative overflow-hidden rounded-xl border border-dbz-border bg-dbz-card p-5 sm:p-8">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 speed-lines opacity-[0.035]"
@@ -245,13 +245,13 @@ function Metric({
   const tones = {
     blue: "border-dbz-blue-light/25 text-dbz-blue-light",
     orange: "border-dbz-orange/25 text-dbz-orange",
-    violet: "border-violet-400/25 text-violet-300",
+    violet: "border-dbz-purple/25 text-dbz-purple",
     gold: "border-dbz-yellow/25 text-dbz-yellow",
   };
   return (
     <GatedLink
       href={target}
-      className={`group rounded-xl border bg-black/20 p-4 transition-transform hover:-translate-y-0.5 ${tones[tone]}`}
+      className={`group rounded-xl border bg-black/20 p-4 transition-colors hover:border-dbz-gold ${tones[tone]}`}
     >
       <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em]">
         {icon}

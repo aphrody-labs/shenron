@@ -1,0 +1,164 @@
+.page {
+  color: var(--foreground);
+  --contribution-accent: var(--wiki-accent, var(--color-dbz-gold));
+}
+
+.page h2,
+.page h3,
+.page strong {
+  color: var(--foreground);
+}
+
+.journey {
+  display: grid;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  padding-block: 1.5rem;
+  min-inline-size: 0;
+}
+
+.intro {
+  max-inline-size: 65ch;
+}
+
+.eyebrow,
+.stepHeading {
+  color: var(--contribution-accent);
+}
+
+.eyebrow {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.intro h2 {
+  margin-block: 0.75rem;
+  font-family: var(--font-display, inherit);
+  font-size: clamp(1.75rem, 4vw, 3rem);
+  font-weight: 800;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+.intro p,
+.steps p {
+  color: var(--frame-on-surface-variant, var(--foreground));
+  font-size: 1rem;
+  line-height: 1.65;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-block-start: 1.5rem;
+}
+
+.actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-block-size: 2.75rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid var(--wiki-border, var(--color-dbz-border));
+  border-radius: 0.75rem;
+  background: var(--color-dbz-card);
+  color: var(--foreground);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.actions a:hover {
+  border-color: var(--wiki-theme-gold, var(--color-dbz-gold));
+  color: var(--wiki-theme-gold, var(--color-dbz-gold));
+}
+
+.actions a:focus-visible {
+  outline: 2px solid var(--contribution-accent);
+  outline-offset: 4px;
+}
+
+.steps {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.steps li {
+  min-inline-size: 0;
+  padding: clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--wiki-border, var(--color-dbz-border));
+  border-radius: 0.75rem;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--contribution-accent) 8%, transparent),
+      transparent
+    ),
+    var(--color-dbz-card);
+}
+
+.stepHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stepHeading span {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.steps h3 {
+  margin-block: 1rem 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.status {
+  padding: 1rem;
+  margin-block-start: 1rem;
+  border-inline-start: 3px solid var(--contribution-accent);
+  color: var(--frame-on-surface-variant, var(--foreground));
+  line-height: 1.6;
+}
+
+@media (min-width: 64rem) {
+  .journey {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    align-items: start;
+  }
+}
+
+@media (max-width: 30rem) {
+  .steps {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actions a {
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .steps li,
+  .actions a {
+    border-color: CanvasText;
+    background: Canvas;
+    color: CanvasText;
+  }
+  .eyebrow,
+  .stepHeading {
+    color: CanvasText;
+  }
+}

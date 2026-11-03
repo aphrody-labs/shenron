@@ -49,6 +49,8 @@ export default async function LocationDetailPage({
     <WikiDetailPage
       entity={loc.name}
       source="db_locations"
+      image={loc.image}
+      imageAlt={loc.name}
       crumbs={[
         { label: "Encyclopédie", href: "/wiki" },
         { label: "Lieux & Sanctuaires", href: "/wiki/locations" },

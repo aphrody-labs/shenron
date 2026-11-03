@@ -16,7 +16,7 @@ import { PageShell } from "@/components/kit";
  */
 import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
 import Link from "next/link";
-import { BouclierCoche, Crayon, Etincelle, Livre } from "@aphrody/shenron-ui/icones";
+import { Etincelle } from "@aphrody/shenron-ui/icones";
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { MesContributions } from "@/components/wiki/MesContributions";
@@ -24,6 +24,11 @@ import { listeChantiers } from "@/lib/wiki-chantiers";
 import { topContributors } from "@/lib/wiki-contributions";
 import { ogMeta } from "@/lib/og";
 import { T } from "@/components/T";
+import {
+  ContributionJourneyText,
+  WikiContributionJourney,
+} from "@/components/wiki/WikiContributionJourney";
+import styles from "@/components/wiki/wiki-contribution-journey.module.css";
 
 export const revalidate = 600;
 
@@ -35,26 +40,23 @@ export const metadata: Metadata = ogMeta({
   type: "website",
 });
 
-const ETAPES = [
-  { icon: Crayon, cle: "edit" },
-  { icon: Livre, cle: "source" },
-  { icon: BouclierCoche, cle: "review" },
-];
-
 /** Les 42 tomes du manga : un nombre imprimé, pas un compteur — mais il ne
  *  s'écrit pas dans le dictionnaire, où il deviendrait intraduisible. */
 const TOMES_MANGA = 42;
 
 export default async function PageContribuer() {
-  const [chantiers, contributeurs] = await Promise.all([
-    listeChantiers().catch(() => []),
-    topContributors(20).catch(() => []),
+  const [workshopsResult, contributorsResult] = await Promise.allSettled([
+    listeChantiers(),
+    topContributors(20),
   ]);
+
+  const chantiers = workshopsResult.status === "fulfilled" ? workshopsResult.value : [];
+  const contributeurs = contributorsResult.status === "fulfilled" ? contributorsResult.value : [];
 
   const totalVides = chantiers.reduce((n, c) => n + c.vides, 0);
 
   return (
-    <PageShell width="narrow" rhythm="loose" wikiDecorative>
+    <PageShell width="wide" rhythm="loose" className={styles.page} wikiDecorative>
       <Breadcrumbs
         items={[{ label: "Contribuer", display: <T k="wiki.contribuer.breadcrumb" /> }]}
       />
@@ -73,37 +75,11 @@ export default async function PageContribuer() {
         subtitle={<T k="wiki.contribuer.subtitle" values={{ tomes: TOMES_MANGA }} />}
       />
 
-      {/* --- Comment ça marche --- */}
-      <section className="mt-14">
-        <h2 className="font-saiyan text-2xl uppercase text-white">
-          <T k="wiki.contribuer.howTitle" />
-        </h2>
-        <ol className="mt-6 grid gap-4 md:grid-cols-3">
-          {ETAPES.map((e, i) => (
-            <li
-              key={e.cle}
-              className="rounded-xl border border-white/10 bg-white/[0.02] p-5 transition-colors hover:border-dbz-orange/30"
-            >
-              <div className="flex items-center gap-2 text-dbz-orange">
-                <e.icon className="h-4 w-4" />
-                <span className="text-xs font-bold uppercase tracking-widest">
-                  <T k="wiki.contribuer.step" values={{ number: i + 1 }} />
-                </span>
-              </div>
-              <h3 className="mt-3 text-sm font-bold leading-snug text-white">
-                <T k={`wiki.contribuer.steps.${e.cle}Title`} />
-              </h3>
-              <p className="mt-2 text-xs leading-relaxed text-white/50">
-                <T k={`wiki.contribuer.steps.${e.cle}Text`} />
-              </p>
-            </li>
-          ))}
-        </ol>
-      </section>
+      <WikiContributionJourney />
 
-      {/* --- La règle des sources --- */}
-      <section className="mt-14 rounded-xl border border-white/10 bg-white/[0.02] p-6">
-        <h2 className="font-saiyan text-2xl uppercase text-white">
+      {/* Source policy */}
+      <section className="mt-14 rounded-xl border border-dbz-border bg-dbz-card p-6">
+        <h2 className="font-saiyan text-2xl uppercase text-[var(--foreground)]">
           <T k="wiki.contribuer.sourcesTitle" />
         </h2>
         <div className="mt-4 grid gap-6 md:grid-cols-2">
@@ -111,21 +87,21 @@ export default async function PageContribuer() {
             <p className="text-xs font-bold uppercase tracking-widest text-emerald-400">
               <T k="wiki.contribuer.accepted" />
             </p>
-            <ul className="mt-3 space-y-2 text-sm leading-relaxed text-white/60">
+            <ul className="mt-3 space-y-2 text-sm leading-relaxed text-[var(--frame-on-surface-variant)]">
               <li>
-                <strong className="text-white/80">
+                <strong className="text-[var(--foreground)]">
                   <T k="wiki.contribuer.acceptedMangaTerm" />
                 </strong>{" "}
                 <T k="wiki.contribuer.acceptedMangaText" />
               </li>
               <li>
-                <strong className="text-white/80">
+                <strong className="text-[var(--foreground)]">
                   <T k="wiki.contribuer.acceptedDatabooksTerm" />
                 </strong>{" "}
                 <T k="wiki.contribuer.acceptedDatabooksText" />
               </li>
               <li>
-                <strong className="text-white/80">
+                <strong className="text-[var(--foreground)]">
                   <T k="wiki.contribuer.acceptedAnimeTerm" />
                 </strong>
                 <T k="wiki.contribuer.acceptedAnimeText" />
@@ -136,21 +112,21 @@ export default async function PageContribuer() {
             <p className="text-xs font-bold uppercase tracking-widest text-dbz-red">
               <T k="wiki.contribuer.refused" />
             </p>
-            <ul className="mt-3 space-y-2 text-sm leading-relaxed text-white/60">
+            <ul className="mt-3 space-y-2 text-sm leading-relaxed text-[var(--frame-on-surface-variant)]">
               <li>
-                <strong className="text-white/80">
+                <strong className="text-[var(--foreground)]">
                   <T k="wiki.contribuer.refusedWikisTerm" />
                 </strong>
                 <T k="wiki.contribuer.refusedWikisText" />
               </li>
               <li>
-                <strong className="text-white/80">
+                <strong className="text-[var(--foreground)]">
                   <T k="wiki.contribuer.refusedGamesTerm" />
                 </strong>{" "}
                 <T k="wiki.contribuer.refusedGamesText" />
               </li>
               <li>
-                <strong className="text-white/80">
+                <strong className="text-[var(--foreground)]">
                   <T k="wiki.contribuer.refusedGuessTerm" />
                 </strong>{" "}
                 <T k="wiki.contribuer.refusedGuessText" />
@@ -162,16 +138,20 @@ export default async function PageContribuer() {
 
       {/* --- Où il manque quelque chose --- */}
       <section className="mt-14">
-        <h2 className="font-saiyan text-2xl uppercase text-white">
+        <h2 className="font-saiyan text-2xl uppercase text-[var(--foreground)]">
           <T k="wiki.contribuer.gapsTitle" />
         </h2>
-        {chantiers.length === 0 ? (
-          <p className="mt-4 text-sm text-white/50">
+        {workshopsResult.status === "rejected" ? (
+          <p className={styles.status}>
+            <ContributionJourneyText name="workshopsUnavailable" />
+          </p>
+        ) : chantiers.length === 0 ? (
+          <p className="mt-4 text-sm text-[var(--frame-on-surface-variant)]">
             <T k="wiki.contribuer.gapsNone" />
           </p>
         ) : (
           <>
-            <p className="mt-2 text-sm text-white/50">
+            <p className="mt-2 text-sm text-[var(--frame-on-surface-variant)]">
               <T
                 k="wiki.contribuer.gapsCount"
                 values={{ count: totalVides.toLocaleString("fr-FR") }}
@@ -179,13 +159,12 @@ export default async function PageContribuer() {
             </p>
             <div className="mt-6 space-y-4">
               {chantiers.map((c) => (
-                <div
-                  key={c.table}
-                  className="rounded-xl border border-white/10 bg-white/[0.02] p-5"
-                >
+                <div key={c.table} className="rounded-xl border border-dbz-border bg-dbz-card p-5">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">
-                    <h3 className="text-sm font-bold text-white">{c.rubrique}</h3>
-                    <p className="text-xs text-white/45">
+                    <h3 className="text-sm font-bold text-[var(--foreground)]">
+                      <ContributionJourneyText table={c.table} />
+                    </h3>
+                    <p className="text-xs text-[var(--frame-on-surface-variant)]">
                       <span className="font-bold text-dbz-orange">{c.vides}</span>{" "}
                       <T k="wiki.contribuer.gapsToWrite" /> {c.total}
                     </p>
@@ -204,7 +183,7 @@ export default async function PageContribuer() {
                         <li key={e.href}>
                           <Link
                             href={e.href}
-                            className="inline-block rounded-full border border-white/12 px-3 py-1 text-xs text-white/60 transition-colors hover:border-dbz-orange/50 hover:text-white"
+                            className="inline-flex min-h-11 items-center rounded-xl border border-dbz-border px-3 py-2 text-sm text-[var(--foreground)] transition-colors hover:border-dbz-gold"
                           >
                             {e.label}
                           </Link>
@@ -221,12 +200,16 @@ export default async function PageContribuer() {
 
       {/* --- Les contributeurs --- */}
       <section className="mt-14">
-        <h2 className="flex items-center gap-2 font-saiyan text-2xl uppercase text-white">
-          <Etincelle className="h-5 w-5 text-dbz-orange" />{" "}
+        <h2 className="flex items-center gap-2 font-saiyan text-2xl uppercase text-[var(--foreground)]">
+          <Etincelle aria-hidden="true" className="h-5 w-5 text-dbz-orange" />{" "}
           <T k="wiki.contribuer.contributorsTitle" />
         </h2>
-        {contributeurs.length === 0 ? (
-          <p className="mt-4 text-sm leading-relaxed text-white/50">
+        {contributorsResult.status === "rejected" ? (
+          <p className={styles.status}>
+            <ContributionJourneyText name="contributorsUnavailable" />
+          </p>
+        ) : contributeurs.length === 0 ? (
+          <p className="mt-4 text-sm leading-relaxed text-[var(--frame-on-surface-variant)]">
             <T k="wiki.contribuer.contributorsNone" />
           </p>
         ) : (
@@ -234,15 +217,15 @@ export default async function PageContribuer() {
             {contributeurs.map((c, i) => (
               <li
                 key={c.authorId}
-                className="flex items-center justify-between gap-3 rounded-lg border border-white/8 bg-white/[0.02] px-4 py-2.5"
+                className="flex items-center justify-between gap-3 rounded-lg border border-dbz-border bg-dbz-card px-4 py-2.5"
               >
                 <span className="flex min-w-0 items-center gap-3">
-                  <span className="w-5 shrink-0 text-right text-xs font-bold text-white/30">
+                  <span className="w-5 shrink-0 text-right text-xs font-bold text-[var(--frame-on-surface-variant)]">
                     {i + 1}
                   </span>
-                  <span className="truncate text-sm text-white/80">{c.authorName}</span>
+                  <span className="truncate text-sm text-[var(--foreground)]">{c.authorName}</span>
                 </span>
-                <span className="shrink-0 text-xs text-white/45">
+                <span className="shrink-0 text-xs text-[var(--frame-on-surface-variant)]">
                   <T
                     k={
                       c.accepted > 1
@@ -258,14 +241,16 @@ export default async function PageContribuer() {
         )}
       </section>
 
-      <MesContributions />
+      <div id="my-contributions" className="scroll-mt-24">
+        <MesContributions />
+      </div>
 
       {/* --- Les autres façons de participer ---
 			    La page ne présentait qu'un seul geste (corriger un champ), alors que
 			    deux autres existent désormais et n'avaient aucune porte d'entrée. */}
       <section className="mt-14">
-        <h2 className="flex items-center gap-2 font-saiyan text-2xl uppercase text-white">
-          <Etincelle className="h-5 w-5 text-dbz-orange" />{" "}
+        <h2 className="flex items-center gap-2 font-saiyan text-2xl uppercase text-[var(--foreground)]">
+          <Etincelle aria-hidden="true" className="h-5 w-5 text-dbz-orange" />{" "}
           <T k="wiki.contribuer.participateTitle" />
         </h2>
         <div className="mt-6 grid gap-4 sm:grid-cols-3">
@@ -277,12 +262,12 @@ export default async function PageContribuer() {
             <Link
               key={c.href}
               href={c.href}
-              className="group flex flex-col border border-white/[0.08] bg-dbz-card/80 p-4 transition-transform hover:-translate-y-0.5 hover:border-dbz-orange"
+              className="group flex flex-col border border-white/[0.08] bg-dbz-card/80 p-4 rounded-xl transition-colors hover:border-dbz-gold"
             >
-              <span className="font-display text-[15px] font-bold text-white group-hover:text-dbz-orange">
+              <span className="font-display text-[15px] font-bold text-[var(--foreground)] group-hover:text-dbz-orange">
                 <T k={`wiki.contribuer.${c.cle}Title`} />
               </span>
-              <span className="mt-1.5 text-[13px] leading-relaxed text-white/55">
+              <span className="mt-1.5 text-[13px] leading-relaxed text-[var(--frame-on-surface-variant)]">
                 <T k={`wiki.contribuer.${c.cle}Text`} />
               </span>
             </Link>
@@ -290,7 +275,7 @@ export default async function PageContribuer() {
         </div>
       </section>
 
-      <p className="mt-14 border-t border-white/8 pt-6 text-xs leading-relaxed text-white/40">
+      <p className="mt-14 border-t border-white/8 pt-6 text-xs leading-relaxed text-[var(--frame-on-surface-variant)]">
         <T k="wiki.contribuer.footnote" />
       </p>
     </PageShell>

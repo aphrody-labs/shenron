@@ -11,6 +11,7 @@ import { WikiDetailPage, WikiEntityHeader } from "@/components/wiki/WikiDetailPa
 import { GatedWrap } from "@/components/GatedLink";
 import type { Metadata } from "next";
 import { ogMeta } from "@/lib/og";
+import { WikiCatalogueText } from "@/components/wiki/WikiCatalogueText";
 
 export const revalidate = 3600;
 
@@ -161,11 +162,19 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ slu
   if (!race) notFound();
 
   const theme = colorThemes[slug] || defaultTheme;
+  const representative = race.characters.find((character) => character.image);
 
   return (
     <WikiDetailPage
       entity={race.name}
       source="db_races"
+      image={representative?.image}
+      imageAlt={representative?.name}
+      imageCaption={
+        representative && (
+          <WikiCatalogueText name="representativeArtwork" values={{ name: representative.name }} />
+        )
+      }
       crumbs={[{ label: "Races & peuples", href: "/wiki/races" }, { label: race.name }]}
       edit={{ table: "db_races", id: race.id, indexHref: "/wiki/races", label: race.name }}
       header={

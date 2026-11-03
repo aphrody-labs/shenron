@@ -35,6 +35,7 @@ const scenesEnCache = unstable_cache((q: string) => chercherScenes(q, 6), ["cano
 import { getCanonConfig } from "@/lib/canon-config";
 import type { CanonConfig, CanonReference } from "@/lib/canon-engine";
 import { T } from "@/components/T";
+import researchStyles from "@/components/wiki/wiki-research.module.css";
 import { PublicCorpusStats } from "@/components/wiki/PublicCorpusStats";
 import { getPublicCorpusStats } from "@/lib/public-corpus-stats";
 
@@ -86,7 +87,7 @@ export default async function CanonPage({
   const [config, corpusCounts] = await Promise.all([getCanonConfig(), getPublicCorpusStats()]);
 
   return (
-    <PageShell width="default" rhythm="tight" wikiDecorative>
+    <PageShell width="default" rhythm="tight" className={researchStyles.archive} wikiDecorative>
       <Breadcrumbs
         items={[
           { label: "Wiki", display: <T k="wiki.breadcrumb" />, href: "/wiki" },
@@ -111,11 +112,11 @@ export default async function CanonPage({
           </Suspense>
         </>
       ) : (
-        <div className="mt-8 rounded-2xl border border-white/15 bg-white/[0.025] p-6 sm:p-8">
+        <div className="mt-8 rounded-xl border border-dbz-border bg-dbz-card p-6 sm:p-8">
           <h2 className="text-xl font-semibold">
             <T k="canonExplorer.emptyTitle" />
           </h2>
-          <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/65">
+          <p className="mt-2 max-w-xl text-sm leading-relaxed text-[var(--wiki-muted)]">
             <T k="canonExplorer.emptyText" />
           </p>
         </div>
@@ -130,15 +131,15 @@ export default async function CanonPage({
         <summary className="cursor-pointer text-sm font-semibold">
           <T k="canonExplorer.method" />
         </summary>
-        <p className="mt-5 text-sm leading-relaxed text-white/70">{config.intro}</p>
+        <p className="mt-5 text-sm leading-relaxed text-[var(--wiki-muted)]">{config.intro}</p>
         <PublicCorpusStats counts={corpusCounts} compact />
         <div className="mt-6 space-y-3">
           {config.entries.map((entry) => (
             <details key={entry.id} className="border-t border-white/10 pt-3">
               <summary className="cursor-pointer text-sm">{entry.title}</summary>
               <p className="mt-3 text-sm">{entry.verdict}</p>
-              <p className="mt-2 text-sm text-white/65">{entry.explanation}</p>
-              <ul className="mt-2 text-xs text-white/60">
+              <p className="mt-2 text-sm text-[var(--wiki-muted)]">{entry.explanation}</p>
+              <ul className="mt-2 text-xs text-[var(--wiki-muted)]">
                 {entry.sources.map((source) => (
                   <li key={source}>{source}</li>
                 ))}
@@ -216,17 +217,19 @@ function Doctrine({ config }: { config: CanonConfig }) {
                 >
                   {rang.court}
                 </span>
-                <span className="font-scouter text-xs tabular-nums text-white/70">
+                <span className="font-scouter text-xs tabular-nums text-[var(--wiki-muted)]">
                   {rang.score} / 100
                 </span>
               </dt>
-              <dd className="mt-1.5 text-sm leading-relaxed text-white/80">{rang.definition}</dd>
+              <dd className="mt-1.5 text-sm leading-relaxed text-[var(--wiki-muted)]">
+                {rang.definition}
+              </dd>
               {rang.inclut.length > 0 && (
                 <dd className="mt-2.5 flex flex-wrap gap-1.5">
                   {rang.inclut.map((oeuvre) => (
                     <span
                       key={oeuvre}
-                      className="rounded-full border border-white/15 bg-white/[0.04] px-2.5 py-0.5 text-xs text-white/80"
+                      className="rounded-full border border-white/15 bg-white/[0.04] px-2.5 py-0.5 text-xs text-[var(--wiki-muted)]"
                     >
                       {oeuvre}
                     </span>
@@ -247,9 +250,9 @@ function Doctrine({ config }: { config: CanonConfig }) {
             {config.doctrine.map((regle, i) => (
               <li
                 key={regle}
-                className="flex gap-3 text-sm sm:text-base leading-relaxed text-white/85"
+                className="flex gap-3 text-sm sm:text-base leading-relaxed text-[var(--wiki-muted)]"
               >
-                <span className="font-scouter shrink-0 tabular-nums text-white/60 font-bold">
+                <span className="font-scouter shrink-0 tabular-nums text-[var(--wiki-muted)] font-bold">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <span>{regle}</span>
@@ -285,14 +288,14 @@ function Doctrine({ config }: { config: CanonConfig }) {
                     <span className="font-display text-sm font-semibold text-white">{m.form}</span>
                     <span className="font-mono text-lg font-bold text-white">×{m.multiplier}</span>
                   </div>
-                  <p className="mt-1 text-xs text-white/70">
+                  <p className="mt-1 text-xs text-[var(--wiki-muted)]">
                     <T
                       k="wiki.canon.multiplierBase"
                       values={{ base: m.baseForm, source: m.source }}
                     />
                   </p>
                   {m.notes && (
-                    <p className="mt-2 text-xs sm:text-sm leading-relaxed text-white/80">
+                    <p className="mt-2 text-xs sm:text-sm leading-relaxed text-[var(--wiki-muted)]">
                       {m.notes}
                     </p>
                   )}
@@ -309,7 +312,7 @@ function Doctrine({ config }: { config: CanonConfig }) {
             })}
           </ul>
           {config.powerScaling.kiriToBpRate > 0 && (
-            <p className="mt-4 text-xs sm:text-sm text-white/75">
+            <p className="mt-4 text-xs sm:text-sm text-[var(--wiki-muted)]">
               <T
                 k="wiki.canon.kiriScale"
                 values={{
@@ -324,26 +327,26 @@ function Doctrine({ config }: { config: CanonConfig }) {
 
       <section className="grid gap-8 sm:grid-cols-2">
         <div>
-          <h2 className="font-display text-[12px] font-bold uppercase tracking-[0.16em] text-white/90">
+          <h2 className="font-display text-[12px] font-bold uppercase tracking-[0.16em] text-[var(--wiki-muted)]">
             <T k="wiki.canon.sourcesAllowed" />
           </h2>
           <ul className="mt-4 space-y-1.5">
             {config.sourcesAdmises.map((s) => (
-              <li key={s} className="text-xs sm:text-sm leading-relaxed text-white/80">
+              <li key={s} className="text-xs sm:text-sm leading-relaxed text-[var(--wiki-muted)]">
                 {s}
               </li>
             ))}
           </ul>
         </div>
         <div>
-          <h2 className="font-display text-[12px] font-bold uppercase tracking-[0.16em] text-white/90">
+          <h2 className="font-display text-[12px] font-bold uppercase tracking-[0.16em] text-[var(--wiki-muted)]">
             <T k="wiki.canon.sourcesRefused" />
           </h2>
           <ul className="mt-4 space-y-1.5">
             {config.sourcesInterdites.map((s) => (
               <li
                 key={s}
-                className="text-xs sm:text-sm leading-relaxed text-white/65 line-through decoration-white/50"
+                className="text-xs sm:text-sm leading-relaxed text-[var(--wiki-muted)] line-through decoration-white/50"
               >
                 {s}
               </li>
@@ -412,7 +415,7 @@ async function Resultat({ question }: { question: string }) {
           {illustration ? <T k={`canonExplorer.${illustration.label}`} /> : question}
         </h2>
         {illustration && (
-          <p className="mt-1 text-xs text-white/60">
+          <p className="mt-1 text-xs text-[var(--wiki-muted)]">
             <T k={`canonExplorer.work${illustration.work}`} />
           </p>
         )}
@@ -430,19 +433,21 @@ async function Resultat({ question }: { question: string }) {
         )}
         <div className="clear-both" />
         <details className="mt-5 border-t border-white/10 pt-4">
-          <summary className="cursor-pointer text-xs text-white/65">
+          <summary className="cursor-pointer text-xs text-[var(--wiki-muted)]">
             <T k="canonExplorer.details" />
           </summary>
           <p className="mt-4 text-xs font-medium" style={{ color: couleur }}>
             {verdict.tierLabel}
             {note ? ` · ${verdict.score} / 100` : ""}
           </p>
-          <p className="mt-3 text-sm leading-relaxed text-white/75">{verdict.explanation}</p>
+          <p className="mt-3 text-sm leading-relaxed text-[var(--wiki-muted)]">
+            {verdict.explanation}
+          </p>
 
           {/* Ruled topics next to the question */}
           {suggestions.length > 0 && (
             <div className="mt-5 flex flex-wrap items-center gap-2">
-              <span className="text-xs uppercase tracking-[0.12em] text-white/70 font-semibold">
+              <span className="text-xs uppercase tracking-[0.12em] text-[var(--wiki-muted)] font-semibold">
                 <T
                   k={
                     verdict.nature === "verdict" ? "wiki.canon.seeAlso" : "wiki.canon.nearbyTopics"
@@ -453,7 +458,7 @@ async function Resultat({ question }: { question: string }) {
                 <Link
                   key={s.href}
                   href={s.href}
-                  className="rounded-full border border-white/20 bg-white/[0.05] px-3.5 py-1 text-xs text-white/85 transition-colors hover:border-dbz-gold hover:text-white"
+                  className="rounded-full border border-white/20 bg-white/[0.05] px-3.5 py-1 text-xs text-[var(--wiki-muted)] transition-colors hover:border-dbz-gold hover:text-white"
                 >
                   {s.titre}
                 </Link>
@@ -478,7 +483,7 @@ async function Resultat({ question }: { question: string }) {
               {verdict.sources.map((s) => (
                 <li
                   key={s}
-                  className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1 text-xs text-white/80"
+                  className="rounded-full border border-white/15 bg-white/[0.04] px-3 py-1 text-xs text-[var(--wiki-muted)]"
                 >
                   {s}
                 </li>
@@ -489,7 +494,7 @@ async function Resultat({ question }: { question: string }) {
           {/* Sur quoi le verdict se base */}
           {(verdict.tierDefinition || (verdict.doctrineRules?.length ?? 0) > 0) && (
             <details className="group mt-6 border-t border-white/10 pt-4">
-              <summary className="cursor-pointer list-none text-xs uppercase tracking-[0.12em] text-white/70 transition-colors hover:text-white font-semibold">
+              <summary className="cursor-pointer list-none text-xs uppercase tracking-[0.12em] text-[var(--wiki-muted)] transition-colors hover:text-white font-semibold">
                 <T k="wiki.canon.basis" />
                 <span
                   aria-hidden="true"
@@ -499,7 +504,7 @@ async function Resultat({ question }: { question: string }) {
                 </span>
               </summary>
               {verdict.tierDefinition && (
-                <p className="mt-4 text-sm sm:text-base leading-relaxed text-white/85">
+                <p className="mt-4 text-sm sm:text-base leading-relaxed text-[var(--wiki-muted)]">
                   <span className="font-semibold" style={{ color: couleur }}>
                     {verdict.tierLabel}
                   </span>{" "}
@@ -511,7 +516,7 @@ async function Resultat({ question }: { question: string }) {
                   {verdict.doctrineRules.map((r) => (
                     <li
                       key={r}
-                      className="flex gap-2.5 text-xs sm:text-sm leading-relaxed text-white/80"
+                      className="flex gap-2.5 text-xs sm:text-sm leading-relaxed text-[var(--wiki-muted)]"
                     >
                       <span aria-hidden className="text-dbz-orange font-bold">
                         •
@@ -606,7 +611,7 @@ async function Resultat({ question }: { question: string }) {
                         />
                       )}
                       <span className={`min-w-0 py-3 pr-4${src ? "" : " pl-4"}`}>
-                        <span className="font-scouter block text-[10px] uppercase tracking-[0.1em] text-white/50">
+                        <span className="font-scouter block text-[10px] uppercase tracking-[0.1em] text-[var(--wiki-muted)]">
                           {f.kind}
                         </span>
                         <span className="mt-0.5 block text-[15px] font-semibold text-white transition-colors group-hover:text-dbz-orange">
@@ -614,13 +619,13 @@ async function Resultat({ question }: { question: string }) {
                           {f.nameJa && (
                             <span
                               lang="ja"
-                              className="ml-2 font-jp text-[12px] font-normal text-white/50"
+                              className="ml-2 font-jp text-[12px] font-normal text-[var(--wiki-muted)]"
                             >
                               {f.nameJa}
                             </span>
                           )}
                         </span>
-                        <span className="mt-1 block line-clamp-3 text-[13px] leading-relaxed text-white/60">
+                        <span className="mt-1 block line-clamp-3 text-[13px] leading-relaxed text-[var(--wiki-muted)]">
                           {f.extrait}
                         </span>
                       </span>
@@ -633,7 +638,7 @@ async function Resultat({ question }: { question: string }) {
         )}
 
         {planches.length === 0 && fiches.length === 0 && verdict.nature !== "troll" && (
-          <p className="text-[14px] text-white/60">
+          <p className="text-[14px] text-[var(--wiki-muted)]">
             <T k="wiki.canon.noEvidence" />
           </p>
         )}
@@ -680,7 +685,7 @@ function Citation({
     <blockquote className="border-l-2 border-white/25 pl-5">
       <div className="flex flex-wrap items-center gap-2">
         {sujet && (
-          <p className="font-scouter text-xs uppercase tracking-[0.12em] text-white/70 font-semibold">
+          <p className="font-scouter text-xs uppercase tracking-[0.12em] text-[var(--wiki-muted)] font-semibold">
             {sujet}
           </p>
         )}
@@ -710,12 +715,12 @@ function Citation({
       {texteFr && (
         <p
           lang={lang}
-          className="mt-2.5 whitespace-pre-line border-l border-white/15 pl-3 text-xs sm:text-sm leading-relaxed text-white/70"
+          className="mt-2.5 whitespace-pre-line border-l border-white/15 pl-3 text-xs sm:text-sm leading-relaxed text-[var(--wiki-muted)]"
         >
           {texte}
         </p>
       )}
-      <footer className="mt-3 text-xs sm:text-sm text-white/75">
+      <footer className="mt-3 text-xs sm:text-sm text-[var(--wiki-muted)]">
         {auteur ? `${auteur} — ` : ""}
         {href ? (
           <Link href={href} className="text-dbz-orange hover:underline">
@@ -726,7 +731,7 @@ function Citation({
         )}
         {annee ? `, ${annee}` : ""}
         {lang !== "fr" && (
-          <span className="ml-2 text-white/60">
+          <span className="ml-2 text-[var(--wiki-muted)]">
             <T k={texteFr ? "wiki.canon.translatedFromOriginal" : "wiki.canon.originalLanguage"} />
           </span>
         )}
@@ -762,19 +767,19 @@ function Planche({ planche: p }: { planche: PlanchePreuve }) {
         >
           {p.databookTitre}
         </Link>
-        <p className="mt-1 text-xs sm:text-sm text-white/70">
+        <p className="mt-1 text-xs sm:text-sm text-[var(--wiki-muted)]">
           <T k="wiki.canon.plateNumber" values={{ number: p.numero }} />
           {p.verifiee && <T k="wiki.canon.plateProofread" />}
         </p>
         {p.texteFr && (
-          <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-white/85 line-clamp-[8]">
+          <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-[var(--wiki-muted)] line-clamp-[8]">
             {p.texteFr}
           </p>
         )}
         {p.texte && (
           <p
             lang="ja"
-            className="mt-3 whitespace-pre-line border-t border-white/10 pt-3 text-xs sm:text-sm leading-relaxed text-white/70 line-clamp-4"
+            className="mt-3 whitespace-pre-line border-t border-white/10 pt-3 text-xs sm:text-sm leading-relaxed text-[var(--wiki-muted)] line-clamp-4"
           >
             {p.texte}
           </p>
@@ -812,7 +817,7 @@ async function MangaEtScenes({ question }: { question: string }) {
           <h2 className="font-display text-[12px] font-bold uppercase tracking-[0.16em] text-dbz-orange">
             <T k="wiki.canon.inManga" />
           </h2>
-          <p className="mt-1 text-xs sm:text-sm text-white/70">
+          <p className="mt-1 text-xs sm:text-sm text-[var(--wiki-muted)]">
             <T k="wiki.canon.inMangaLead" />
           </p>
           <ul className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -830,7 +835,7 @@ async function MangaEtScenes({ question }: { question: string }) {
           <h2 className="font-display text-[12px] font-bold uppercase tracking-[0.16em] text-dbz-orange">
             <T k="wiki.canon.inScenes" />
           </h2>
-          <p className="mt-1 text-xs sm:text-sm text-white/70">
+          <p className="mt-1 text-xs sm:text-sm text-[var(--wiki-muted)]">
             <T k="wiki.canon.inScenesLead" />
           </p>
           <ul className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -853,13 +858,13 @@ async function MangaEtScenes({ question }: { question: string }) {
                       />
                     )}
                     <span className={`min-w-0 py-3 pr-4${src ? "" : " pl-4"}`}>
-                      <span className="font-scouter block text-[10px] uppercase tracking-[0.1em] text-white/70 font-semibold">
+                      <span className="font-scouter block text-[10px] uppercase tracking-[0.1em] text-[var(--wiki-muted)] font-semibold">
                         {sc.series.replace(/_/g, " ")} · {sc.numberInSeries ?? sc.id}
                       </span>
                       <span className="mt-0.5 block text-sm sm:text-base font-semibold text-white transition-colors group-hover:text-dbz-orange">
                         {sc.title ?? `#${sc.id}`}
                       </span>
-                      <span className="mt-1 block line-clamp-3 text-xs sm:text-sm leading-relaxed text-white/80">
+                      <span className="mt-1 block line-clamp-3 text-xs sm:text-sm leading-relaxed text-[var(--wiki-muted)]">
                         {sc.extrait}
                       </span>
                     </span>
@@ -890,12 +895,12 @@ function PlancheManga({ planche: p }: { planche: ResultatPlanche }) {
         />
       )}
       <span className={`min-w-0 py-3 pr-4${p.image ? "" : " pl-4"}`}>
-        <span className="font-scouter block text-[10px] uppercase tracking-[0.1em] text-white/70 font-semibold">
+        <span className="font-scouter block text-[10px] uppercase tracking-[0.1em] text-[var(--wiki-muted)] font-semibold">
           <T k="wiki.canon.mangaPlate" values={{ series: p.series, number: p.index ?? p.page }} />
           {" · "}
           <T k="wiki.canon.relevance" values={{ score: Math.round(p.score) }} />
         </span>
-        <span className="mt-1 block line-clamp-4 text-xs sm:text-sm leading-relaxed text-white/85">
+        <span className="mt-1 block line-clamp-4 text-xs sm:text-sm leading-relaxed text-[var(--wiki-muted)]">
           {p.excerpt}
         </span>
       </span>
