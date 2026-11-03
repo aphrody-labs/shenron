@@ -90,6 +90,7 @@
     "next": "catalog:",
     "next-intl": "catalog:",
     "next-themes": "catalog:",
+    "pixi.js": "catalog:",
     "postgres": "catalog:",
     "prosemirror-transform": "catalog:",
     "react": "catalog:",

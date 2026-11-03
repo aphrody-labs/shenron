@@ -63,6 +63,20 @@ WebGPU explicite. `shenron-gpu` reste propriétaire des capacités wgpu Rust.
 Les captures d'épisodes et planches couleur alimentent des découpes traçables :
 un recadrage raster n'est ni un SVG vectoriel ni un personnage détouré.
 
+Les exports depuis les frames et planches existantes passent par
+[`scripts/media/wiki-scene-assets`](../../scripts/media/wiki-scene-assets/README.md) :
+sources vérifiées, rectangles explicites, PNG, atlas Pixi standard et receipt
+déterministe. Le CLI possède ses reprises et ses limites de mémoire ; il ne possède
+ni l'extraction vidéo amont ni la publication CDN. L'adaptateur
+[`@aphrody/shenron-ui/scene3d`](../../packages/ui/src/scene3d/README.md) possède le
+chargement GLB vérifié et le renderer Three strict WebGPU. Ses contrôles statiques
+ne remplacent pas la qualification des matériaux et du périphérique réel.
+
+Pour installer les dépendances de cette chaîne sous Windows sans les jonctions
+incomplètes du store global Bun, utiliser `$env:BUN_INSTALL_GLOBAL_STORE='0'` avant
+`bun install --frozen-lockfile --ignore-scripts`. Cette installation n'exécute ni
+scripts de paquet, ni build, ni serveur.
+
 ## Trois couches
 
 | Couche     | Rôle                                                       | Où                                  | Exemple                                            |

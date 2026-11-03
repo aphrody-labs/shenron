@@ -145,7 +145,10 @@
       "@aphrody/next-bun": "0.2.0",
       "@aphrody/bun-runtime": "1.4.3-aphrody.2",
       "@aphrody/bun-plugin-tailwind": "0.1.0",
-      "@aphrody/typesafe-sdk": "0.6.2"
+      "@aphrody/typesafe-sdk": "0.6.2",
+      "pixi.js": "8.22.0",
+      "three": "0.187.0",
+      "@types/three": "0.187.0"
     }
   },
   "type": "module",

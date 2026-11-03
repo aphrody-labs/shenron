@@ -75,7 +75,8 @@
     "./dbxv2": "./src/dbxv2/index.ts",
     "./dbxv2.css": "./src/dbxv2/dbxv2.css",
     "./*": "./src/components/*.tsx",
-    "./video/ShenronComposition": "./src/video/ShenronComposition.tsx"
+    "./video/ShenronComposition": "./src/video/ShenronComposition.tsx",
+    "./scene3d": "./src/scene3d/index.ts"
   },
   "publishConfig": {
     "access": "public",
@@ -120,6 +121,7 @@
     "remark-gfm": "catalog:",
     "swiper": "catalog:",
     "tailwind-merge": "catalog:",
+    "three": "catalog:",
     "zustand": "catalog:"
   },
   "devDependencies": {
@@ -131,6 +133,7 @@
     "@types/bun": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
+    "@types/three": "catalog:",
     "postcss": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
@@ -200,7 +203,8 @@
       "./dbxv2": "react",
       "./dbxv2.css": "css",
       "./*": "react",
-      "./video/ShenronComposition": "pure"
+      "./video/ShenronComposition": "pure",
+      "./scene3d": "pure"
     }
   }
 }
