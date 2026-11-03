@@ -3,6 +3,7 @@
 import { mkdir, open, readdir, rename, rm } from "node:fs/promises";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { encoderPng } from "../../../plugin/skills/toriyama-svg/scripts/png";
+import { extractNativeFrame, nativeVideo, validateVideoTime, type VideoMetadata } from "./video";
 
 type Provenance = {
   kind: "official" | "fan-colorization" | "authored-decoration" | "catalogue-unverified";
@@ -24,6 +25,7 @@ export type SceneManifest = {
     width: number;
     height: number;
     provenance: Provenance;
+    video?: { requestedTimeSec: number };
   }[];
   crops: {
     id: string;
@@ -79,7 +81,7 @@ function parseManifest(input: unknown): SceneManifest {
   return {
     schema: m.schema,
     sources: array(m.sources, 1, 32).map((value) => {
-      const s = object(value, ["id", "path", "sha256", "width", "height", "provenance"]);
+      const s = object(value, ["id", "path", "sha256", "width", "height", "provenance", "video"]);
       const p = object(s.provenance, [
         "kind",
         "referenceUrl",
@@ -114,7 +116,18 @@ function parseManifest(input: unknown): SceneManifest {
         ]);
       const sha256 = text(s.sha256);
       if (!/^[a-f0-9]{64}$/.test(sha256)) throw new Error("Invalid source SHA");
-      return {
+      let video: { requestedTimeSec: number } | undefined;
+      if (s.video !== undefined) {
+        const v = object(s.video, ["requestedTimeSec"]);
+        video = { requestedTimeSec: number(v.requestedTimeSec, 0, 86400, false) };
+        if (
+          provenance.requestedTimeSec !== undefined ||
+          provenance.reportedTimeSec !== undefined ||
+          provenance.timeBasis !== undefined
+        )
+          throw new Error("Video time evidence must come from the native decoder");
+      }
+      const source: SceneManifest["sources"][number] = {
         id: identifier(s.id),
         path: text(s.path),
         sha256,
@@ -122,6 +135,8 @@ function parseManifest(input: unknown): SceneManifest {
         height: number(s.height, 1, 16384),
         provenance,
       };
+      if (video) source.video = video;
+      return source;
     }),
     crops: array(m.crops, 1, 128).map((value) => {
       const c = object(value, ["id", "sourceId", "rect", "usage"]);
@@ -160,6 +175,18 @@ type Receipt = {
   sources: SceneManifest["sources"];
   crops: SceneManifest["crops"];
   outputs: Output[];
+  videoFrames?: {
+    sourceId: string;
+    sourceSha256: string;
+    sourceBytes: number;
+    requestedTimeSec: number;
+    reportedTimeSec: number;
+    timeBasis: "decoder-reported";
+    metadata: VideoMetadata;
+    path: string;
+    sha256: string;
+    bytes: number;
+  }[];
 };
 function unique(values: string[], label: string) {
   if (new Set(values).size !== values.length) throw new Error(`Duplicate ${label}`);
@@ -176,6 +203,7 @@ export function validateManifest(input: unknown): SceneManifest {
       throw new Error(`Source pixel limit: ${source.id}`);
     if (
       source.provenance.episodeId &&
+      !source.video &&
       (source.provenance.requestedTimeSec === undefined || !source.provenance.timeBasis)
     )
       throw new Error(`Missing episode time provenance: ${source.id}`);
@@ -207,7 +235,11 @@ export function validateManifest(input: unknown): SceneManifest {
     if (sheet.items.some((name) => !manifest.crops.some((c) => c.id === name)))
       throw new Error(`Unknown sheet crop: ${sheet.id}`);
   }
-  let preparedPixels = manifest.crops.reduce((sum, c) => sum + c.rect.width * c.rect.height, 0);
+  let preparedPixels =
+    manifest.crops.reduce((sum, c) => sum + c.rect.width * c.rect.height, 0) +
+    manifest.sources.filter((s) => s.video).reduce((sum, s) => sum + s.width * s.height, 0);
+  if (manifest.sources.filter((s) => s.video).length > 8)
+    throw new Error("Video frame count limit");
   for (const sheet of manifest.sheets) {
     const cells = sheet.items.map((name) => manifest.crops.find((c) => c.id === name)!);
     const columns = Math.min(sheet.columns, cells.length);
@@ -230,6 +262,11 @@ type NativeImage = Bun.Image & {
   extract(rect: { left: number; top: number; width: number; height: number }): NativeImage;
   rgba(): Promise<{ width: number; height: number; channels: number; data: Uint8Array }>;
 };
+type VerifiedVideo = {
+  decoder: ReturnType<typeof nativeVideo>;
+  metadata: VideoMetadata;
+  sourceBytes: number;
+};
 export async function run(manifestPath: string, outputPath: string, check = false) {
   const manifestAbsolute = resolve(manifestPath);
   const manifestFile = Bun.file(manifestAbsolute);
@@ -238,11 +275,38 @@ export async function run(manifestPath: string, outputPath: string, check = fals
   const manifest = validateManifest(JSON.parse(new TextDecoder().decode(manifestBytes)));
   const out = resolve(outputPath);
   const sourceData = new Map<string, Uint8Array>();
+  const videoSources = new Map<string, VerifiedVideo>();
+  const verifiedVideos = new Map<string, { sha256: string; value: VerifiedVideo }>();
   let sourceBytes = 0;
+  let videoBytes = 0;
   for (const source of manifest.sources) {
     const path = resolve(dirname(manifestAbsolute), source.path);
     if (inside(out, path)) throw new Error(`Source inside output: ${source.id}`);
     const file = Bun.file(path);
+    if (source.video) {
+      if (file.size < 1 || file.size > 1024 ** 3)
+        throw new Error(`Video source byte limit: ${source.id}`);
+      let verified = verifiedVideos.get(path);
+      if (!verified) {
+        videoBytes += file.size;
+        if (videoBytes > 2 * 1024 ** 3) throw new Error("Aggregate video byte limit");
+        const hasher = new Bun.CryptoHasher("sha256");
+        for await (const chunk of file.stream()) hasher.update(chunk);
+        const digest = hasher.digest("hex");
+        if (digest !== source.sha256) throw new Error(`Source SHA mismatch: ${source.id}`);
+        const decoder = nativeVideo(path);
+        const metadata = await decoder.metadata();
+        verified = { sha256: digest, value: { decoder, metadata, sourceBytes: file.size } };
+        verifiedVideos.set(path, verified);
+      }
+      if (verified.sha256 !== source.sha256) throw new Error(`Source SHA mismatch: ${source.id}`);
+      const { metadata } = verified.value;
+      if (metadata.width !== source.width || metadata.height !== source.height)
+        throw new Error(`Source dimensions mismatch: ${source.id}`);
+      validateVideoTime(metadata, source.video.requestedTimeSec);
+      videoSources.set(source.id, verified.value);
+      continue;
+    }
     if (file.size < 1 || file.size > 64_000_000) throw new Error(`Source byte limit: ${source.id}`);
     sourceBytes += file.size;
     if (sourceBytes > 128_000_000) throw new Error("Manifest aggregate source byte limit");
@@ -260,7 +324,7 @@ export async function run(manifestPath: string, outputPath: string, check = fals
   const lockPath = join(out, ".export.lock");
   if (check) {
     if (await Bun.file(lockPath).exists()) throw new Error("Output directory is locked");
-    return exportAssets(manifest, sourceData, out, identity, true);
+    return exportAssets(manifest, sourceData, videoSources, out, identity, true);
   }
   await mkdir(out, { recursive: true });
   const lock = await open(lockPath, "wx").catch(() => {
@@ -270,7 +334,7 @@ export async function run(manifestPath: string, outputPath: string, check = fals
   });
   try {
     await lock.writeFile(JSON.stringify({ pid: process.pid, ...identity }) + "\n");
-    return await exportAssets(manifest, sourceData, out, identity, false);
+    return await exportAssets(manifest, sourceData, videoSources, out, identity, false);
   } finally {
     await lock.close();
     await rm(lockPath, { force: true });
@@ -279,6 +343,7 @@ export async function run(manifestPath: string, outputPath: string, check = fals
 async function exportAssets(
   manifest: SceneManifest,
   sourceData: Map<string, Uint8Array>,
+  videoSources: Map<string, VerifiedVideo>,
   out: string,
   identity: ReceiptIdentity,
   check: boolean,
@@ -286,6 +351,7 @@ async function exportAssets(
   const receiptPath = join(out, "receipt.json");
   const pendingPath = join(out, ".pending.json");
   const expected = [
+    ...manifest.sources.filter((s) => s.video).map((s) => `${s.id}.source.png`),
     ...manifest.crops.map((c) => `${c.id}.png`),
     ...manifest.sheets.flatMap((s) => [`${s.id}.png`, `${s.id}.json`]),
   ];
@@ -351,6 +417,31 @@ async function exportAssets(
   }
   // Prepare every byte before writing; failed source validation never creates outputs.
   const prepared = new Map<string, { bytes: Uint8Array; width?: number; height?: number }>();
+  const videoFrames: NonNullable<Receipt["videoFrames"]> = [];
+  for (const source of manifest.sources) {
+    if (!source.video) continue;
+    const verified = videoSources.get(source.id)!;
+    const frame = await extractNativeFrame(
+      verified.decoder,
+      verified.metadata,
+      source.video.requestedTimeSec,
+    );
+    const path = `${source.id}.source.png`;
+    sourceData.set(source.id, frame.bytes);
+    prepared.set(path, { bytes: frame.bytes, width: source.width, height: source.height });
+    videoFrames.push({
+      sourceId: source.id,
+      sourceSha256: source.sha256,
+      sourceBytes: verified.sourceBytes,
+      requestedTimeSec: source.video.requestedTimeSec,
+      reportedTimeSec: frame.time,
+      timeBasis: "decoder-reported",
+      metadata: verified.metadata,
+      path,
+      sha256: sha256(frame.bytes),
+      bytes: frame.bytes.length,
+    });
+  }
   const cropPixels = new Map<string, { width: number; height: number; data: Uint8Array }>();
   for (const crop of manifest.crops) {
     const bytes = sourceData.get(crop.sourceId)!;
@@ -431,6 +522,7 @@ async function exportAssets(
     crops: manifest.crops,
     outputs,
   };
+  if (videoFrames.length) receipt.videoFrames = videoFrames;
   await mkdir(out, { recursive: true });
   // Identity marker first, completed receipt last; the exclusive lock bounds writers.
   for (const [path, item] of [

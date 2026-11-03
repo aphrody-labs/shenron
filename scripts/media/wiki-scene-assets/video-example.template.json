@@ -1,0 +1,55 @@
+{
+  "schema": "shenron-wiki-scene-assets/v1",
+  "sources": [
+    {
+      "id": "dbs-875-120s",
+      "path": "episode875.mp4",
+      "sha256": "db6b365d58a933a18176ffd848b23d79513acb899acf7b4a07bd35203949508e",
+      "width": 1920,
+      "height": 1080,
+      "video": { "requestedTimeSec": 120 },
+      "provenance": {
+        "kind": "official",
+        "referenceUrl": "https://dragonballfr.com/wiki/episodes/875",
+        "episodeId": 875,
+        "note": "Source d'animation du catalogue propriétaire vérifiée par SHA ; aucune licence ouverte implicite. Le temps réellement décodé sera ajouté au receipt par Bun.Video.frames."
+      }
+    },
+    {
+      "id": "dbs-875-350s",
+      "path": "episode875.mp4",
+      "sha256": "db6b365d58a933a18176ffd848b23d79513acb899acf7b4a07bd35203949508e",
+      "width": 1920,
+      "height": 1080,
+      "video": { "requestedTimeSec": 350 },
+      "provenance": {
+        "kind": "official",
+        "referenceUrl": "https://dragonballfr.com/wiki/episodes/875",
+        "episodeId": 875,
+        "note": "Même source vidéo immuable ; SHA streamé une fois par chemin, frames décodées séquentiellement sans charger tout le MP4 en RAM."
+      }
+    }
+  ],
+  "crops": [
+    {
+      "id": "episode-875-120-background",
+      "sourceId": "dbs-875-120s",
+      "rect": { "left": 0, "top": 0, "width": 1920, "height": 1080 },
+      "usage": ["background", "wallpaper"]
+    },
+    {
+      "id": "episode-875-350-background",
+      "sourceId": "dbs-875-350s",
+      "rect": { "left": 0, "top": 0, "width": 1920, "height": 1080 },
+      "usage": ["background", "wallpaper"]
+    }
+  ],
+  "sheets": [
+    {
+      "id": "episode-875-atlas",
+      "items": ["episode-875-120-background", "episode-875-350-background"],
+      "columns": 2,
+      "padding": 2
+    }
+  ]
+}
