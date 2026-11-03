@@ -20,6 +20,7 @@ the root `AGENTS.md`.
 | RAG and LLM compute (compute host, databases, tunnels)           | [`operations/compute-rag.md`](operations/compute-rag.md)                                                                                            |
 | Pilotage admin natif (FFI, WASM, jobs et services Docker)        | [`operations/admin-native-pipeline.md`](operations/admin-native-pipeline.md)                                                                        |
 | SSH WireGuard (VPS, dbfr, Windows, compte Omar)                  | [`operations/ssh-wireguard.md`](operations/ssh-wireguard.md)                                                                                        |
+| Hôte unique Prod et consolidation | [operations/PROD-HOSTING.md](operations/PROD-HOSTING.md) |
 | Development workstation                                          | [`operations/DEV-LOCAL.md`](operations/DEV-LOCAL.md)                                                                                                |
 | dbxv2 migration parity and data boundaries                       | [`operations/dbxv2-rust-bun-parity-2026-10-07.md`](operations/dbxv2-rust-bun-parity-2026-10-07.md)                                                  |
 | Xenoverse 3 and Dragon Ball Super visual research (2026-10-07)   | [`operations/xenoverse3-visual-research-2026-10-07.md`](operations/xenoverse3-visual-research-2026-10-07.md)                                        |

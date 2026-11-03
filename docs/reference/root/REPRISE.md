@@ -1,5 +1,13 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
 
+## 2026-11-02 — Shenron sur Prod, DBFR en disque de secours
+
+- Documentation et graphe : docs/operations/PROD-HOSTING.md. Opérations via SSH prod + tmux, sans Aphrody Infra. Bun global upstream oven-sh /usr/local/bin/bun, canary 1.4.4-canary.1+a4c3a5eee ; modèles alignés.
+- Prod : site/bot sains sur image aac017cec3887c7f445284fcfd22fb22dbdf0bae ; gateway, Cloudflare, compute, embed, chat, PostgreSQL, Redis et origine CDN actifs. L’origine 127.0.0.1:9077 répond cdn ok. Le pointeur /srv/shenron/current reste une ancienne release scellée.
+- DBFR : Shenron retiré, historique DBFR conservé séparément sur Prod ; reçoit le snapshot Prod quotidien par rsync restreint. Le snapshot 20261102T030452729859Z a été relu depuis DBFR et rsync --checksum --dry-run ne trouve aucun delta.
+- WireGuard Prod↔VPS réparé avec endpoint IPv6 épinglé et port local fixe 52244 ; handshake, ping et SSH privé vérifiés. Timer autodeploy Prod désactivé.
+- VPS : timer Shenron désactivé ; 65 chemins dédiés supprimés. Aucune archive des résidus VPS n’est gardée : l’archive temporaire Prod a été supprimée après la correction du propriétaire. Unités, processus, conteneurs et sessions absents. Bun OS et autres workloads préservés. Les sources et références Shenron de Bun Video ont aussi été supprimées.
+
 ## 2026-10-30 — Doublons d'interface retirés (accueil et wiki)
 
 - Accueil : logo d'en-tête masqué sous le héros, recherche et lien éditorial du héros, épisode

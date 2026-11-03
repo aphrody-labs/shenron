@@ -10,7 +10,7 @@ Group=ubuntu
 UMask=0077
 WorkingDirectory=/home/ubuntu/.local/share/aphrody/cloudflare-cli/orchestration
 Environment=CLOUDFLARE_OPS_STATE=/home/ubuntu/.local/state/aphrody/cloudflare
-ExecStart=/home/ubuntu/.local/share/aphrody/cloudflare-cli/runtime/bun cloudflare-ops.ts reconcile --manifest /home/ubuntu/.config/aphrody/cloudflare/manifest.json
+ExecStart=/usr/local/bin/bun cloudflare-ops.ts reconcile --manifest /home/ubuntu/.config/aphrody/cloudflare/manifest.json
 TimeoutStartSec=240
 NoNewPrivileges=true
 PrivateTmp=true

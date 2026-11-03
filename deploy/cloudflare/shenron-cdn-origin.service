@@ -7,7 +7,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=root
-ExecStart=/home/ubuntu/.local/share/aphrody/cloudflare-cli/runtime/bun /etc/aphrody/cloudflare/cli/cdn-origin.mjs /etc/aphrody/cloudflare/origin-cdn.json
+ExecStart=/usr/local/bin/bun /etc/aphrody/cloudflare/cli/cdn-origin.mjs /etc/aphrody/cloudflare/origin-cdn.json
 Restart=on-failure
 RestartSec=3
 TimeoutStopSec=15
