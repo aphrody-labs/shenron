@@ -45,6 +45,43 @@ export interface ContentPanel extends ReaderPanel {
   origine: "db" | "article" | "description";
 }
 
+const PROFILE_ONLY_HEADINGS =
+  /^(?:combats? chronologiques?|rep[eè]res de puissance(?:\b|\s)|power scaling)$/i;
+
+function normalizeCharacterProfileBody(body: string): string {
+  const lines = body.replace(/\r\n?/g, "\n").split("\n");
+  const output: string[] = [];
+  let omittedHeadingLevel: number | null = null;
+
+  for (const line of lines) {
+    const heading = /^(#{1,6})[ \t]+(.+?)[ \t]*#*[ \t]*$/.exec(line);
+    if (!heading) {
+      if (omittedHeadingLevel == null) output.push(line);
+      continue;
+    }
+
+    const level = heading[1].length;
+    const label = heading[2].trim();
+    if (omittedHeadingLevel != null) {
+      if (level >= omittedHeadingLevel) continue;
+      omittedHeadingLevel = null;
+    }
+
+    if (/^sources internes$/i.test(label)) continue;
+    if (PROFILE_ONLY_HEADINGS.test(label)) {
+      omittedHeadingLevel = level;
+      continue;
+    }
+
+    output.push(line);
+  }
+
+  return output
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 interface RawSection {
   key: string;
   label: string;
@@ -130,9 +167,17 @@ export async function buildWikiContentPanels({
   // des sous-rubriques PWS vides : leurs informations éventuelles sont
   // regroupées avec « Pouvoirs et formes » par la page personnage.
   if (entityType === "character") {
-    raw = raw.filter(
-      (section) => section.body.trim() || !section.group?.toLowerCase().includes("pws"),
-    );
+    raw = raw
+      .filter(
+        (section) =>
+          !PROFILE_ONLY_HEADINGS.test(section.label.trim()) &&
+          (section.body.trim() || !section.group?.toLowerCase().includes("pws")),
+      )
+      .map((section) => ({
+        ...section,
+        body: normalizeCharacterProfileBody(section.body),
+      }))
+      .filter((section) => section.body.trim());
   }
 
   // Clés uniques (garde-fou : deux sections de même slug ne cassent pas React).
