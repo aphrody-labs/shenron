@@ -1878,7 +1878,13 @@ export default async function CharacterPage({
 
   const supplementalPanels = panels.filter((panel) => panel.group === versionT("anecdotes"));
   const characterSources = internalWikiSources(character.articleSources);
-  if (supplementalPanels.length > 0 || characterSources.length > 0) {
+  const hasInlineSourceReferences = contentPanels.some((panel) =>
+    /source|référence|reference/i.test(`${panel.key} ${panel.label}`),
+  );
+  if (
+    supplementalPanels.length > 0 ||
+    (!hasInlineSourceReferences && characterSources.length > 0)
+  ) {
     const supplementalKeys = new Set(supplementalPanels.map((panel) => panel.key));
     for (let index = panels.length - 1; index >= 0; index--) {
       if (supplementalKeys.has(panels[index]!.key)) panels.splice(index, 1);
@@ -1904,7 +1910,7 @@ export default async function CharacterPage({
             </div>
           </header>
           <div className="space-y-8">
-            <WikiSources sources={characterSources} />
+            {!hasInlineSourceReferences && <WikiSources sources={characterSources} />}
             {supplementalPanels.map((panel) => (
               <div key={panel.key} className="min-w-0">
                 {panel.node}

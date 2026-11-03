@@ -63,14 +63,16 @@ export function WikiArticle({
     <section className="reveal-up" style={{ animationDelay: "0.45s" }}>
       <div className="wiki-content-card">
         <div className={`absolute top-0 left-0 w-1.5 h-full ${style.bar}`} />
-        <div className="flex items-center gap-6 mb-8">
-          <h2
-            className={`${style.text} font-sans font-extrabold text-2xl sm:text-3xl md:text-4xl uppercase tracking-wider`}
-          >
-            {heading}
-          </h2>
-          <div className={`h-0.5 flex-1 bg-gradient-to-r ${style.line} to-transparent`} />
-        </div>
+        {heading.trim() && (
+          <div className="flex items-center gap-6 mb-8">
+            <h2
+              className={`${style.text} font-sans font-extrabold text-2xl sm:text-3xl md:text-4xl uppercase tracking-wider`}
+            >
+              {heading}
+            </h2>
+            <div className={`h-0.5 flex-1 bg-gradient-to-r ${style.line} to-transparent`} />
+          </div>
+        )}
 
         <div className="prose prose-invert max-w-none wiki-content wiki-lore text-gray-100 text-base md:text-[17px] leading-relaxed selection:bg-dbz-orange selection:text-black">
           <WikiMarkdown body={article} />

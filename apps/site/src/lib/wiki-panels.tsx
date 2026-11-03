@@ -171,7 +171,11 @@ export async function buildWikiContentPanels({
       ) : (
         <div className="space-y-2">
           {s.body.trim() ? (
-            <WikiArticle article={s.body} heading={s.label} accent={s.accent} />
+            <WikiArticle
+              article={s.body}
+              heading={/source|référence|reference/.test(`${s.key} ${s.label}`) ? "" : s.label}
+              accent={s.accent}
+            />
           ) : (
             <SectionAEcrire label={s.label} cible={cible} />
           )}
