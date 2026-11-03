@@ -45,6 +45,7 @@ import { kindFromCategory } from "@/lib/databook-categories";
 import {
   assertWikiUpdatePrecondition,
   WikiUpdateRequestError,
+  wikiUpdateSnapshotHash,
 } from "@/lib/wiki-update-precondition";
 import { validateCatalogEditorialBody } from "@/lib/catalog-editorial-contracts";
 import {
@@ -614,11 +615,54 @@ export async function updateWiki(
     actor?: RevisionActor;
     revisionAction?: "update" | "revert";
     onRevision?: (revisionId: string) => void;
+    /** Internal historical restore: identity is checked against the persisted revision. */
+    restoreEpisodeRevisionId?: string;
   } = {},
 ): Promise<Row> {
   const spec = getSpec(table);
   if (!spec) throw new Error(`Table inconnue: ${table}`);
-  const values = buildValues(spec, data, { forInsert: false });
+  let historicalFrames = false;
+  if (options.restoreEpisodeRevisionId !== undefined) {
+    if (
+      table !== "db_episodes" ||
+      options.revisionAction !== "revert" ||
+      !options.expected ||
+      !options.expectedSha256 ||
+      !Object.hasOwn(data, "frames")
+    )
+      throw new WikiUpdateRequestError("Invalid historical episode restore");
+    const [revision] = await db
+      .select()
+      .from(wikiRevisions)
+      .where(eq(wikiRevisions.id, options.restoreEpisodeRevisionId))
+      .limit(1);
+    const before = revision?.before as Row | null | undefined;
+    if (
+      revision?.tableName !== table ||
+      revision.rowId !== id ||
+      !before ||
+      !Object.hasOwn(before, "frames") ||
+      wikiUpdateSnapshotHash({ frames: data.frames }) !==
+        wikiUpdateSnapshotHash({ frames: before.frames })
+    )
+      throw new WikiUpdateRequestError(
+        "Historical episode frames differ from the recorded revision",
+      );
+    historicalFrames = true;
+  }
+  // A trusted historical array still passes the entire base frame schema; only
+  // the newer native provenance constraint is inapplicable to its old producer IDs.
+  const validationData =
+    historicalFrames && Array.isArray(data.frames)
+      ? {
+          ...data,
+          frames: data.frames.map((frame: Row) =>
+            frame.source === "bun-video" ? { ...frame, source: "ffmpeg" } : frame,
+          ),
+        }
+      : data;
+  const values = buildValues(spec, validationData, { forInsert: false });
+  if (historicalFrames) values.frames = data.frames;
   applyDatabookKind(table, values, { forInsert: false });
   if (Object.keys(values).length === 0) {
     throw new Error("Aucune colonne mutable fournie.");

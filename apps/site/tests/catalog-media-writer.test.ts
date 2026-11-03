@@ -346,7 +346,7 @@ describe("catalogue identities and editorial revisions", () => {
     expect(inserts).toHaveLength(0);
   });
 
-  test("records the actual subtitle change while keeping large unrelated blobs out", async () => {
+  test("records subtitle changes and preserves explicit historical episode frames", async () => {
     const before = [{ lang: "ja", label: "Japanese", src: "/assets/subtitles/ja.vtt" }];
     const after = [{ lang: "fr", label: "French", src: "/assets/subtitles/fr.vtt" }];
     await recordRevision({
@@ -356,7 +356,7 @@ describe("catalogue identities and editorial revisions", () => {
       before: { subtitles: before, frames: [{ private: true }] },
       after: { subtitles: after },
     });
-    expect(inserts[0].before).toEqual({ subtitles: before });
+    expect(inserts[0].before).toEqual({ subtitles: before, frames: [{ private: true }] });
     expect(inserts[0].after).toEqual({ subtitles: after });
   });
 });

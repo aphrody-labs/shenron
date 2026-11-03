@@ -3,7 +3,7 @@
 import { ExternalLink } from "@aphrody/shenron-ui/external";
 import Link from "next/link";
 import Image from "next/image";
-import { assetUrl } from "@/lib/assets";
+import { mangaLibraryImageUrl } from "@/lib/manga-library-image";
 import { CadreCase, PastilleTome } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
 import { useMangaUIText } from "@/lib/manga-ui-text";
 import { useState } from "react";
@@ -71,7 +71,7 @@ export function VignetteTome({
             )}
             {volume.cover && volume.cover !== brokenCover ? (
               <Image
-                src={assetUrl(volume.cover)}
+                src={mangaLibraryImageUrl(volume.cover)}
                 alt={titre}
                 fill
                 sizes={compact ? "(max-width: 640px) 33vw, 16vw" : "(max-width: 768px) 50vw, 16vw"}

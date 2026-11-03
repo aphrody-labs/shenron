@@ -2,7 +2,7 @@
 import { useMemo, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { assetUrl } from "@/lib/assets";
+import { mangaLibraryImageUrl } from "@/lib/manga-library-image";
 import {
   readAvailability,
   writeAvailability,
@@ -90,7 +90,7 @@ function MangaChapterCard({ chapter }: { chapter: LibraryChapter }) {
   const warm = () =>
     chapter.pages?.slice(0, 3).forEach((page) => {
       const preview = new window.Image();
-      preview.src = assetUrl(page);
+      preview.src = mangaLibraryImageUrl(page);
     });
   return (
     <Link
@@ -102,7 +102,7 @@ function MangaChapterCard({ chapter }: { chapter: LibraryChapter }) {
       <div className="relative aspect-[2/3] overflow-hidden rounded bg-background">
         {image ? (
           <Image
-            src={assetUrl(image)}
+            src={mangaLibraryImageUrl(image)}
             alt={title}
             fill
             sizes="(max-width: 640px) 33vw, 16vw"

@@ -137,7 +137,12 @@ export class CatalogMediaConflictError extends Error {
   }
 }
 
-export const EPISODE_REVISION_JSON_FIELDS = new Set(["subtitles", "players", "availability"]);
+export const EPISODE_REVISION_JSON_FIELDS = new Set([
+  "subtitles",
+  "players",
+  "availability",
+  "frames",
+]);
 
 export function isCatalogRevisionJson(table: string, field: string): boolean {
   return (

@@ -32,7 +32,10 @@ import {
   isDatabookPageSnapshot,
   restoreDatabookPageRevision,
 } from "@/lib/databook-page-revisions";
-import { wikiUpdateSnapshotHash } from "@/lib/wiki-update-precondition";
+import {
+  wikiUpdateSnapshotHash,
+  WikiUpdatePreconditionError,
+} from "@/lib/wiki-update-precondition";
 import { variantRevisionRestore } from "@/lib/wiki-variant-evidence";
 import { WIKI_TABLE_SPECS } from "@/lib/wiki-tables";
 import {
@@ -71,7 +74,7 @@ function deriveLabel(row: Row | null | undefined): string | null {
 
 /**
  * Réduit une ligne aux colonnes mutables (surface éditable) et retire les blobs
- * jsonb objets (non édités ici, ex. `frames`) → snapshot léger et diffable.
+ * jsonb objects outside the explicit editorial JSON fields.
  *
  * ── Exception : les cibles de planche `pages#<n>` ──────────────────────────
  *
@@ -493,6 +496,7 @@ export async function revertRevision(
   let mode: "restore" | "reinsert" | "delete";
   let resultRow: Row | null = null;
   let restoredPageSnapshots = false;
+  let restoredFrameSnapshots = false;
   let variantRevisionRecorded = false;
 
   if (before == null) {
@@ -561,18 +565,40 @@ export async function revertRevision(
       }
       colonnes.pages = restoreDatabookPageRevision(current.pages, before, after);
     }
+    const afterSnapshot = (rev.after as Row | null) ?? {};
+    const hasFrameSnapshots =
+      table === "db_episodes" &&
+      Object.hasOwn(before, "frames") &&
+      Object.hasOwn(afterSnapshot, "frames");
+    if (hasFrameSnapshots) {
+      restoredFrameSnapshots = true;
+      // Restore only the recorded delta; unrelated later metadata edits survive.
+      for (const key of Object.keys(colonnes)) {
+        if (!Object.hasOwn(afterSnapshot, key)) {
+          delete colonnes[key];
+          continue;
+        }
+        const hash = (value: unknown) => wikiUpdateSnapshotHash({ value });
+        if (hash(before[key]) === hash(afterSnapshot[key])) delete colonnes[key];
+        else if (!Object.hasOwn(current, key) || hash(current[key]) !== hash(afterSnapshot[key]))
+          throw new WikiUpdatePreconditionError();
+      }
+    }
     resultRow =
       Object.keys(colonnes).length > 0
         ? await updateWiki(
             table,
             rowId,
             colonnes,
-            hasPageSnapshots || table === "db_character_variants"
+            hasPageSnapshots || hasFrameSnapshots || table === "db_character_variants"
               ? {
                   expected: current,
                   expectedSha256: wikiUpdateSnapshotHash(current),
                   ...(table === "db_character_variants"
                     ? { actor, revisionAction: "revert" as const }
+                    : {}),
+                  ...(hasFrameSnapshots && Object.hasOwn(colonnes, "frames")
+                    ? { restoreEpisodeRevisionId: id, revisionAction: "revert" as const }
                     : {}),
                 }
               : {},
@@ -608,7 +634,7 @@ export async function revertRevision(
       after:
         mode === "delete"
           ? null
-          : restoredPageSnapshots || table === "db_character_variants"
+          : restoredPageSnapshots || restoredFrameSnapshots || table === "db_character_variants"
             ? resultRow
             : before,
       actor,
