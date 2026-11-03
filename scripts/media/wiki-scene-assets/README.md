@@ -6,8 +6,8 @@ ne lance ni build ni serveur et ne modifie jamais les sources.
 
 ```powershell
 $sceneBun = 'C:/Users/aphro/.local/opt/bun-aphrody/bin/bun.exe'
-& $sceneBun scripts/media/wiki-scene-assets/index.ts scripts/media/wiki-scene-assets/example.json var/experiments/wiki-scene/research/pipeline-example
-& $sceneBun scripts/media/wiki-scene-assets/index.ts scripts/media/wiki-scene-assets/example.json var/experiments/wiki-scene/research/pipeline-example --check
+& $sceneBun scripts/media/wiki-scene-assets/index.ts scripts/media/wiki-scene-assets/archives-production.json var/exports/wiki-archives-v1
+& $sceneBun scripts/media/wiki-scene-assets/index.ts scripts/media/wiki-scene-assets/archives-production.json var/exports/wiki-archives-v1 --check
 ```
 
 Une deuxième exécution normale vérifie les sorties et renvoie `reused`, sans réencoder.
@@ -16,9 +16,17 @@ Une sortie manquante ou altérée se régénère lors de l'exécution normale. P
 la recette ou la version de Bun, choisir un nouveau dossier : une identité différente
 refuse toute écriture dans le dossier existant.
 
+La recette `archives-production.json` est un export d'archives portable : elle utilise
+uniquement deux photogrammes déjà suivis dans Git, sans dépendance envers les fichiers
+privés de la recette de démonstration. Son atlas contient ces deux images, sans les
+cellules d'essai supplémentaires. Il ne définit pas la composition du portail et ne
+prouve pas son intégration dans une page publiée.
+
 ## Contrat du manifeste
 
-`example.json` est la recette réelle de référence. Les chemins des sources sont relatifs
+`archives-production.json` est la recette portable ; `example.json` ajoute une copie
+locale de la planche DBFC explicitement référencée et vérifiée, absente d'un checkout
+neuf. Les chemins des sources sont relatifs
 au manifeste, ceux des sorties au dossier de destination. Les identifiants sont des
 slugs anglais uniques ; les champs inconnus sont refusés.
 

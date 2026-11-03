@@ -1,0 +1,67 @@
+{
+  "schema": "shenron-wiki-scene-assets/v1",
+  "sources": [
+    {
+      "id": "dbs-876-120s",
+      "path": "../../../apps/site/public/generated/frames/dbs-876/kaioshin-warning-120s.png",
+      "sha256": "985a138e60dcaaf2bf9040b2b44e2d7306ab332109611be9bb3158369e3ba3f0",
+      "width": 480,
+      "height": 270,
+      "provenance": {
+        "kind": "official",
+        "referenceUrl": "https://dragonballfr.com/wiki/episodes/876",
+        "episodeId": 876,
+        "requestedTimeSec": 120,
+        "timeBasis": "existing-extraction-label",
+        "note": "Frame PNG préexistante du catalogue. Temps demandé repris du nom de fichier ; PTS de décodage absent, non inventé. Origine animation, pas une licence de redistribution ouverte."
+      }
+    },
+    {
+      "id": "dbs-876-350s",
+      "path": "../../../apps/site/public/generated/frames/dbs-876/beerus-awakening-350s.png",
+      "sha256": "b715b3b3a8d185837a29cc297af72755f3e8d1dc1b13fcf8de4f279683abeb2e",
+      "width": 480,
+      "height": 270,
+      "provenance": {
+        "kind": "official",
+        "referenceUrl": "https://dragonballfr.com/wiki/episodes/876",
+        "episodeId": 876,
+        "requestedTimeSec": 350,
+        "timeBasis": "existing-extraction-label",
+        "note": "Frame PNG préexistante du catalogue. Temps demandé repris du nom de fichier ; PTS de décodage absent, non inventé. Origine animation, pas une licence de redistribution ouverte."
+      }
+    }
+  ],
+  "crops": [
+    {
+      "id": "kaioshin-background",
+      "sourceId": "dbs-876-120s",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 480,
+        "height": 270
+      },
+      "usage": ["background", "wallpaper"]
+    },
+    {
+      "id": "beerus-background",
+      "sourceId": "dbs-876-350s",
+      "rect": {
+        "left": 0,
+        "top": 0,
+        "width": 480,
+        "height": 270
+      },
+      "usage": ["background", "wallpaper"]
+    }
+  ],
+  "sheets": [
+    {
+      "id": "archive-atlas",
+      "items": ["kaioshin-background", "beerus-background"],
+      "columns": 2,
+      "padding": 2
+    }
+  ]
+}
