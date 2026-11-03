@@ -1,7 +1,7 @@
 import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { TrackView } from "@/components/TrackView";
-import { WikiArticle, WikiSources } from "@/components/wiki/WikiArticle";
+import { WikiSources } from "@/components/wiki/WikiArticle";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { CategorizedAffiliates } from "@/components/wiki/CategorizedAffiliates";
 import { getShenronCharacterRelations, type CharacterRelationItem } from "@/lib/shenron";
@@ -10,9 +10,8 @@ import { CharacterPageSelectors } from "@/components/wiki/CharacterPageSelectors
 import { WikiSectionsReader, type ReaderPanel } from "@/components/wiki/WikiSectionsReader";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import { CharacterPortraitWithTransformations } from "@/components/wiki/CharacterPortraitWithTransformations";
-import { CharacterPowerScaling } from "@/components/wiki/CharacterPowerScaling";
 import { DEFAULT_POWER_SCALING_CONFIG } from "@/lib/canon-engine";
-import { ChevronDown, Sparkles, Zap } from "lucide-react";
+import { ChevronDown, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { buildWikiContentPanels } from "@/lib/wiki-panels";
 import { TECH_SECTION_KEYS, TRANSFO_SECTION_KEYS } from "@/lib/wiki-article-sections";
@@ -30,6 +29,7 @@ import {
   type CharacterWithRelations,
   type CharacterBattle,
   type CharacterVariantStaffCredit,
+  type WikiSource,
 } from "@/lib/shenron";
 import { assetUrl } from "@/lib/db-universe";
 import type { Metadata } from "next";
@@ -108,10 +108,28 @@ function techniqueSourceHref(value: string | null): string | null {
   if (value.startsWith("/") && !value.startsWith("//") && !value.includes("\\")) return value;
   try {
     const url = new URL(value);
-    return url.protocol === "https:" && !url.username && !url.password ? url.href : null;
+    return url.protocol === "https:" &&
+      url.hostname === "dragonballfr.com" &&
+      !url.username &&
+      !url.password
+      ? `${url.pathname}${url.search}${url.hash}`
+      : null;
   } catch {
     return null;
   }
+}
+
+function internalWikiSources(sources: WikiSource[] | null): WikiSource[] {
+  return (sources ?? []).flatMap((source) => {
+    if (!source.url) return [source];
+    try {
+      const url = new URL(source.url, "https://dragonballfr.com");
+      if (url.hostname !== "dragonballfr.com") return [];
+      return [{ ...source, url: `${url.pathname}${url.search}${url.hash}` }];
+    } catch {
+      return [];
+    }
+  });
 }
 
 const GOKU_RELATION_PREVIEW: Array<
@@ -955,10 +973,17 @@ export default async function CharacterPage({
 
   const panels: ReaderPanel[] = contentPanels
     .filter((panel) => {
-      if (relationItems.length > 0 && panel.key === "famille") return false;
+      const panelIdentity = `${panel.key} ${panel.label}`.toLocaleLowerCase();
+      if (
+        relationItems.length > 0 &&
+        /relation|famille|family|ennemi|enemy|ami|friend/.test(panelIdentity)
+      )
+        return false;
       if (
         sagaVariants.length > 0 &&
-        (TRANSFO_SECTION_KEYS.has(panel.key) || TECH_SECTION_KEYS.has(panel.key))
+        (TRANSFO_SECTION_KEYS.has(panel.key) ||
+          TECH_SECTION_KEYS.has(panel.key) ||
+          /pouvoir|power|forme|form|technique|transformation|absorption/.test(panelIdentity))
       )
         return false;
       return true;
@@ -1069,16 +1094,6 @@ export default async function CharacterPage({
                     <p className="font-saiyan text-sm tracking-[0.2em] text-dbz-orange">{number}</p>
                     <h3 className="mt-2 text-lg font-bold text-white">{title}</h3>
                     <p className="mt-3 text-sm leading-7 text-white/70">{body}</p>
-                    {number === "04" && (
-                      <a
-                        href="https://en.dragon-ball-official.com/news/01_93.html"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="mt-4 inline-flex text-xs font-semibold text-dbz-orange underline underline-offset-4"
-                      >
-                        {versionT("previewNameOriginSource")}
-                      </a>
-                    )}
                   </article>
                 ))}
               </div>
@@ -1862,7 +1877,8 @@ export default async function CharacterPage({
   }
 
   const supplementalPanels = panels.filter((panel) => panel.group === versionT("anecdotes"));
-  if (supplementalPanels.length > 0) {
+  const characterSources = internalWikiSources(character.articleSources);
+  if (supplementalPanels.length > 0 || characterSources.length > 0) {
     const supplementalKeys = new Set(supplementalPanels.map((panel) => panel.key));
     for (let index = panels.length - 1; index >= 0; index--) {
       if (supplementalKeys.has(panels[index]!.key)) panels.splice(index, 1);
@@ -1888,6 +1904,7 @@ export default async function CharacterPage({
             </div>
           </header>
           <div className="space-y-8">
+            <WikiSources sources={characterSources} />
             {supplementalPanels.map((panel) => (
               <div key={panel.key} className="min-w-0">
                 {panel.node}
@@ -1899,96 +1916,115 @@ export default async function CharacterPage({
     });
   }
 
-  // Saga-specific power readings are already rendered with the selected variant.
-  // Keep the cross-saga panel only when there is no saga record to scope it to.
-  if (!activeVariant) {
-    panels.push({
-      key: "power-scaling",
-      label: "Power Scaling (BP & Kiri)",
-      group: versionT("powersAndForms"),
-      accent: "orange",
-      node: <CharacterPowerScaling characterName={pageCharacterName} characterId={character.id} />,
-    });
-  }
-
-  // Panneau Combats Légendaires issus de bot.db_battles
+  // Cartes de combats : elles seront intégrées au panneau Histoire ci-dessous.
   if (
     variantBattles.length > 0 &&
     !(showcasePreview && activeVariant?.slug === "goku-preview-main-majin-buu")
   ) {
     panels.push({
-      key: "combats",
-      label: `Combats (${variantBattles.length})`,
+      key: "history-battles",
+      label: versionT("sagaHistoryHeading"),
       accent: "red",
       node: (
-        <section className="space-y-8">
-          <div className="flex items-center gap-6">
-            <h2 className="font-saiyan text-2xl sm:text-4xl md:text-5xl text-dbz-red uppercase tracking-widest">
-              COMBATS LÉGENDAIRES
-            </h2>
-            <div className="h-px flex-1 bg-gradient-to-r from-dbz-red/50 to-transparent" />
-          </div>
-          <p className="text-sm text-white/50 max-w-3xl">
-            Duels majeurs et confrontations épiques de {character.name} relatés dans le manga et
-            l&apos;histoire canonique.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {variantBattles.map((b) => (
-              <GatedWrap
-                key={b.id}
-                href="/wiki/events"
-                className={`dbz-panel group relative overflow-hidden transition-all hover:border-dbz-red/50 ${b.image ? "min-h-44" : "flex flex-col justify-between p-5"}`}
-              >
-                {b.image && (
-                  <div className="pointer-events-none absolute inset-y-0 left-0 w-[46%] sm:w-[42%]">
-                    <WikiImg
-                      src={b.image}
-                      alt={b.imageAlt || b.title}
-                      className="h-full w-full object-cover object-left opacity-75"
-                      loading="lazy"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#0b0b0b]/45 to-[#0b0b0b]" />
-                  </div>
-                )}
-                <div
-                  className={`relative z-10 flex h-full flex-col justify-between ${b.image ? "min-h-44 py-4 pl-[38%] pr-4 sm:py-5 sm:pl-[34%] sm:pr-6" : ""}`}
-                >
-                  <div>
-                    <div className="mb-2 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-dbz-red">
-                      <span>⚔️ {b.series}</span>
-                      {b.location && <span className="text-white/40">{b.location}</span>}
-                    </div>
-                    <h3 className="text-lg font-bold text-white transition-colors group-hover:text-dbz-red">
-                      {b.title}
-                    </h3>
-                    {b.titleJa && (
-                      <p lang="ja" className="font-jp text-xs text-white/40 mt-1">
-                        {b.titleJa}
-                      </p>
-                    )}
-                    {b.climaxSummary && (
-                      <p className="mt-3 line-clamp-3 text-xs leading-relaxed text-gray-300">
-                        {b.climaxSummary}
-                      </p>
-                    )}
-                  </div>
-                  <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3 text-[11px]">
-                    <span className="text-white/50">
-                      Vainqueur :{" "}
-                      <strong className="text-white">{b.winnerName || "Indéterminé"}</strong>
-                    </span>
-                    <span className="text-dbz-red font-bold group-hover:translate-x-1 transition-transform">
-                      Détails →
-                    </span>
-                  </div>
+        <div className="grid grid-cols-1 gap-4">
+          {variantBattles.map((b) => (
+            <GatedWrap
+              key={b.id}
+              href="/wiki/events"
+              className={`dbz-panel group relative overflow-hidden transition-all hover:border-dbz-red/50 ${b.image ? "min-h-44" : "flex flex-col justify-between p-5"}`}
+            >
+              {b.image && (
+                <div className="pointer-events-none absolute inset-y-0 left-0 w-[46%] sm:w-[42%]">
+                  <WikiImg
+                    src={b.image}
+                    alt={b.imageAlt || b.title}
+                    className="h-full w-full object-cover object-left opacity-75"
+                    loading="lazy"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#0b0b0b]/45 to-[#0b0b0b]" />
                 </div>
-              </GatedWrap>
-            ))}
-          </div>
-        </section>
+              )}
+              <div
+                className={`relative z-10 flex h-full flex-col justify-between ${b.image ? "min-h-44 py-4 pl-[38%] pr-4 sm:py-5 sm:pl-[34%] sm:pr-6" : ""}`}
+              >
+                <div>
+                  <div className="mb-2 flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-dbz-red">
+                    <span>⚔️ {b.series}</span>
+                    {b.location && <span className="text-white/40">{b.location}</span>}
+                  </div>
+                  <h3 className="text-lg font-bold text-white transition-colors group-hover:text-dbz-red">
+                    {b.title}
+                  </h3>
+                  {b.titleJa && (
+                    <p lang="ja" className="font-jp text-xs text-white/40 mt-1">
+                      {b.titleJa}
+                    </p>
+                  )}
+                  {b.climaxSummary && (
+                    <p className="mt-3 line-clamp-3 text-xs leading-relaxed text-gray-300">
+                      {b.climaxSummary}
+                    </p>
+                  )}
+                </div>
+                <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3 text-[11px]">
+                  <span className="text-white/50">
+                    Vainqueur :{" "}
+                    <strong className="text-white">{b.winnerName || "Indéterminé"}</strong>
+                  </span>
+                  <span className="text-dbz-red font-bold group-hover:translate-x-1 transition-transform">
+                    Détails →
+                  </span>
+                </div>
+              </div>
+            </GatedWrap>
+          ))}
+        </div>
       ),
     });
   }
+
+  // Modèle public unique : les articles, relations, pouvoirs et combats restent
+  // éditables dans leurs sources, mais ne créent que les quatre rubriques
+  // validées. Les combats sont chronologiques dans le fil Histoire.
+  const profileBuckets: Record<"history" | "relations" | "powers" | "additional", ReactNode[]> = {
+    history: [],
+    relations: [],
+    powers: [],
+    additional: [],
+  };
+  for (const panel of panels) {
+    const key = `${panel.key} ${panel.label}`.toLocaleLowerCase();
+    const group = panel.group?.toLocaleLowerCase() ?? "";
+    let bucket: keyof typeof profileBuckets;
+    if (/histoire|history|chronolog|combat|fight/.test(key)) bucket = "history";
+    else if (/relation|famille|family|ennemi|enemy|ami|friend/.test(key)) bucket = "relations";
+    else if (
+      /pouvoir|power|forme|form|technique|transformation|absorption|\bpws\b/.test(`${key} ${group}`)
+    )
+      bucket = "powers";
+    else bucket = "additional";
+    profileBuckets[bucket].push(
+      <div key={panel.key} className="min-w-0">
+        {panel.node}
+      </div>,
+    );
+  }
+  const profileSections = [
+    { key: "history", label: versionT("sagaHistoryHeading"), accent: "orange" },
+    {
+      key: "relations",
+      label: versionT("relationsTitle", { name: pageCharacterName }),
+      accent: "cyan",
+    },
+    { key: "powers", label: versionT("powersAndForms"), accent: "purple" },
+    { key: "additional", label: versionT("additionalInformation"), accent: "gold" },
+  ] as const;
+  const profilePanels: ReaderPanel[] = profileSections.flatMap(({ key, label, accent }) => {
+    const content = profileBuckets[key];
+    return content.length
+      ? [{ key, label, accent, node: <div className="space-y-8">{content}</div> }]
+      : [];
+  });
 
   const infobox = (
     <div className="wiki-infobox">
@@ -2163,8 +2199,7 @@ export default async function CharacterPage({
       asidePosition="left"
     >
       <div className="space-y-10">
-        <WikiSectionsReader panels={panels} />
-        <WikiSources sources={character.articleSources} />
+        <WikiSectionsReader panels={profilePanels} />
         <EntityParticipation
           kind="wiki"
           table="db_characters"

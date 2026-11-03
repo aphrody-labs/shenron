@@ -139,7 +139,8 @@ export function WikiSectionsReader({
         }
         return;
       }
-      const matched = items.find((p) => p.key === hash);
+      const normalizedHash = hash === "combats" ? "history" : hash;
+      const matched = items.find((p) => p.key === normalizedHash);
       if (!matched) return;
       if (matched.group) {
         setActive(`g:${matched.group}`);
