@@ -1,17 +1,9 @@
 /* oxlint-disable jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions, jsx-a11y/prefer-tag-over-role -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
-import { LoadingText } from "@/components/LoadingText";
-import { FolderOpen, ImageOff, Loader2, Search, Upload, X } from "lucide-react";
-import {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  type ClipboardEvent,
-  type DragEvent,
-} from "react";
-import { api } from "@/lib/admin-api";
+import { FolderOpen, ImageOff, Loader2, Upload, X } from "lucide-react";
+import { useCallback, useRef, useState, type ClipboardEvent, type DragEvent } from "react";
+import { AdminMediaPicker } from "@/components/admin/AdminMediaPicker";
 import { assetUrl } from "@/lib/assets";
 import { ADMIN_IMAGE_ACCEPT, adminImageUploadError } from "@/lib/admin-image-upload";
 import { useAdminImageText } from "@/lib/admin-image-text";
@@ -27,12 +19,6 @@ interface Props {
   column?: string;
   onUploadStateChange?: (uploading: boolean) => void;
   cropAspect?: "square" | "portrait" | "landscape" | "wide";
-}
-
-interface GalleryFile {
-  path: string;
-  url: string;
-  name: string;
 }
 
 /**
@@ -84,7 +70,9 @@ export function ImageField({
         });
         const data = (await res.json().catch(() => ({}))) as { path?: string; error?: string };
         if (!res.ok || !data.path) {
-          throw new Error(data.error ?? t("failed"));
+          throw new Error(
+            t(res.status === 413 ? "tooLarge" : res.status === 415 ? "invalid" : "failed"),
+          );
         }
         onChange(data.path);
       } catch (e) {
@@ -293,7 +281,7 @@ export function ImageField({
       )}
 
       {galleryOpen && (
-        <GalleryPicker
+        <AdminMediaPicker
           onClose={() => setGalleryOpen(false)}
           onPick={(path) => {
             onChange(path);
@@ -315,114 +303,5 @@ export function ImageField({
         />
       )}
     </div>
-  );
-}
-
-/** Galerie des images déjà uploadées (wiki) — `GET /api/assets/list?dir=wiki`. */
-function GalleryPicker({
-  onClose,
-  onPick,
-}: {
-  onClose: () => void;
-  onPick: (path: string) => void;
-}) {
-  const t = useAdminImageText();
-  const dialog = useRef<HTMLDialogElement>(null);
-  const [files, setFiles] = useState<GalleryFile[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [filter, setFilter] = useState("");
-
-  useEffect(() => {
-    dialog.current?.showModal();
-  }, []);
-
-  useEffect(() => {
-    let alive = true;
-    api
-      .get<{ files: GalleryFile[] }>("/assets/list?dir=wiki")
-      .then((data) => {
-        if (alive) setFiles(data.files ?? []);
-        return undefined;
-      })
-      .catch((e: Error) => {
-        if (alive) setError(e.message || t("galleryFailed"));
-      });
-    return () => {
-      alive = false;
-    };
-  }, [t]);
-
-  const shown = (files ?? [])
-    .filter((f) => (filter ? f.name.toLowerCase().includes(filter.toLowerCase()) : true))
-    .slice(0, 240);
-
-  return (
-    <dialog
-      ref={dialog}
-      aria-label={t("galleryTitle")}
-      className="dbz-panel fixed inset-0 z-[60] m-auto flex max-h-[85vh] min-w-0 w-[calc(100%-2rem)] max-w-4xl flex-col p-5 text-white backdrop:bg-black/70 backdrop:backdrop-blur"
-      onCancel={onClose}
-    >
-      <div className="mb-3 flex items-center gap-3">
-        <h3 className="font-saiyan text-lg uppercase text-dbz-orange">{t("galleryTitle")}</h3>
-        <div className="relative ml-auto min-w-0 flex-1">
-          <Search className="pointer-events-none absolute left-2.5 top-1/2 h-3 w-3 -translate-y-1/2 text-white/50" />
-          <input
-            className="input h-8 w-full pl-7 text-xs"
-            placeholder={t("filter")}
-            aria-label={t("filter")}
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          />
-        </div>
-        <button
-          type="button"
-          onClick={onClose}
-          className="btn btn-ghost px-2"
-          aria-label={t("close")}
-        >
-          <X className="h-4 w-4" />
-        </button>
-      </div>
-
-      {error ? (
-        <p className="py-12 text-center text-sm text-red-400">{error}</p>
-      ) : files === null ? (
-        <div className="flex items-center justify-center gap-2 py-12 text-sm text-white/50">
-          <Loader2 className="h-4 w-4 animate-spin" /> <LoadingText />
-        </div>
-      ) : shown.length === 0 ? (
-        <p className="py-12 text-center text-sm text-white/50">{t("none")}</p>
-      ) : (
-        <div className="grid flex-1 grid-cols-3 gap-2 overflow-y-auto pr-1 sm:grid-cols-4 md:grid-cols-6">
-          {shown.map((f) => (
-            <button
-              key={f.path}
-              type="button"
-              title={f.name}
-              onClick={() => onPick(f.path)}
-              className="group overflow-hidden rounded border border-dbz-border bg-black/30 transition-colors hover:border-dbz-orange"
-            >
-              <span className="block aspect-square">
-                <img
-                  src={assetUrl(f.path)}
-                  alt={f.name}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition-transform group-hover:scale-105"
-                />
-              </span>
-              <span className="block truncate px-1 py-0.5 text-[9px] text-white/50">{f.name}</span>
-            </button>
-          ))}
-        </div>
-      )}
-      <p className="mt-2 shrink-0 text-[10px] text-white/50">
-        {files && shown.length < files.length
-          ? t("filteredCount", { shown: shown.length, total: files.length })
-          : files
-            ? t("count", { count: files.length })
-            : ""}
-      </p>
-    </dialog>
   );
 }

@@ -53,6 +53,20 @@ test("missing CDN assets fall through to the Shenron VFS without exposing its da
   expect(config).not.toContain("/var/lib/shenron/data");
 });
 
+test("new persistent wiki uploads remain readable after CDN and VFS misses without credentials", () => {
+  const vfs = config.match(/location @vfs_asset \{([^}]+)\}/)?.[1] ?? "";
+  expect(vfs).toContain("error_page 404 = @persistent_wiki_upload;");
+  const upload = config.slice(
+    config.indexOf("location @persistent_wiki_upload"),
+    config.indexOf("location @cdn_worker {"),
+  );
+  expect(upload).toContain("proxy_pass http://upstream_bot;");
+  expect(upload).toContain("proxy_pass_request_headers off;");
+  expect(upload).toContain("proxy_hide_header Set-Cookie;");
+  expect(upload).not.toContain("$http_cookie");
+  expect(upload).not.toContain("$http_authorization");
+});
+
 test("CDN chunks prefer the sealed rolling tree and use the active site on a miss", async () => {
   const source = await Bun.file(new URL("./cdn-dragonballfr-ssl.conf", import.meta.url)).text();
   expect(source).toContain("try_files $uri @release_static;");

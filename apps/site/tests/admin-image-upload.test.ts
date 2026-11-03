@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterAll, expect, mock, test } from "bun:test";
+import sharp from "sharp";
 import {
   adminImageUploadError,
   sniffAdminImage,
@@ -10,7 +11,14 @@ import { enumOptionsFor } from "../src/lib/wiki-fields";
 import { prepareStudioSubmission } from "../src/lib/wiki-studio-draft";
 
 let admin = true;
-mock.module("@/lib/session", () => ({ isCurrentUserAdmin: async () => admin }));
+let authUnavailable = false;
+mock.module("server-only", () => ({}));
+mock.module("@/lib/session", () => ({
+  isCurrentUserAdmin: async () => {
+    if (authUnavailable) throw new Error("offline");
+    return admin;
+  },
+}));
 mock.module("@/lib/config", () => ({ API_URL: "https://bot.example.test" }));
 const { POST } = await import("../src/app/api/admin/upload/route");
 const previousFetch = globalThis.fetch;
@@ -21,7 +29,11 @@ afterAll(() => {
   if (previousToken === undefined) delete process.env.SHENRON_ADMIN_TOKEN;
   else process.env.SHENRON_ADMIN_TOKEN = previousToken;
 });
-const png = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
+const png = new Uint8Array(
+  await sharp({ create: { width: 2, height: 3, channels: 3, background: "white" } })
+    .png()
+    .toBuffer(),
+);
 function request(file: File) {
   const body = new FormData();
   body.append("file", file);
@@ -73,7 +85,9 @@ test("admin upload forwards unchanged binary bytes with corrected MIME and bound
       expect(new Uint8Array(await file.arrayBuffer())).toEqual(png);
       expect(form.get("subdir")).toBe("techniques");
       forwarded = true;
-      return Response.json({ path: "./assets/wiki/techniques/scan.png" });
+      return Response.json({
+        path: "./assets/wiki/techniques/9ef95580-4a8e-45ed-a3ab-113e191b2dcc.png",
+      });
     },
     { preconnect: previousFetch.preconnect },
   ) as typeof fetch;
@@ -81,6 +95,13 @@ test("admin upload forwards unchanged binary bytes with corrected MIME and bound
     request(new File([png], "scan.bin", { type: "application/octet-stream" })),
   );
   expect(response.status).toBe(201);
+  expect(response.headers.get("cache-control")).toBe("private, no-store");
+  expect(await response.json()).toMatchObject({
+    width: 2,
+    height: 3,
+    bytes: png.length,
+    mime: "image/png",
+  });
   expect(forwarded).toBe(true);
 });
 
@@ -100,4 +121,33 @@ test("admin upload refuses anonymous access and invalid files before contacting 
     415,
   );
   expect(calls).toBe(0);
+});
+
+test("headers without decodable pixels and unexpected storage URLs never succeed", async () => {
+  admin = true;
+  const truncated = new File([png.slice(0, 33)], "truncated.png");
+  expect((await POST(request(truncated))).status).toBe(415);
+  globalThis.fetch = Object.assign(
+    async () => Response.json({ path: "https://foreign.example/image.png" }),
+    { preconnect: previousFetch.preconnect },
+  ) as typeof fetch;
+  expect((await POST(request(new File([png], "valid.png")))).status).toBe(502);
+});
+
+test("authentication outages and excessive announced bodies have private bounded responses", async () => {
+  authUnavailable = true;
+  const offline = await POST(request(new File([png], "valid.png")));
+  expect(offline.status).toBe(503);
+  expect(offline.headers.get("cache-control")).toBe("private, no-store");
+  authUnavailable = false;
+  expect(
+    (
+      await POST(
+        new Request("http://localhost/api/admin/upload", {
+          method: "POST",
+          headers: { "content-length": String(MAX_ADMIN_IMAGE_BYTES + 65_537) },
+        }),
+      )
+    ).status,
+  ).toBe(413);
 });

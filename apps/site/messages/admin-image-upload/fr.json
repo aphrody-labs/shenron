@@ -38,5 +38,21 @@
     "landscape": "Paysage · 4:3",
     "wide": "Bandeau · 16:9",
     "original": "Original"
-  }
+  },
+  "librarySource": "Source de la bibliothèque",
+  "uploadedImages": "Images déposées",
+  "cdnArchive": "Archives CDN",
+  "cdnDirectory": "Dossier des archives",
+  "openDirectory": "Ouvrir ce dossier",
+  "cdnRoot": "Racine des archives",
+  "parentDirectory": "Dossier parent",
+  "filterPage": "Filtrer les images de cette page",
+  "uploadListLimit": "Le service affiche au maximum 1 000 dépôts. Les archives CDN restent parcourables par dossier et par page.",
+  "libraryLoading": "Chargement de la bibliothèque…",
+  "retryLibrary": "Réessayer",
+  "previewUnavailable": "Aperçu indisponible",
+  "libraryPage": "Page {page} sur {pages} · {count} images affichées",
+  "libraryPagination": "Pages de la bibliothèque",
+  "libraryPrevious": "Précédent",
+  "libraryNext": "Suivant"
 }

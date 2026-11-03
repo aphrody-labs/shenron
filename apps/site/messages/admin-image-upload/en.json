@@ -38,5 +38,21 @@
     "landscape": "Landscape · 4:3",
     "wide": "Banner · 16:9",
     "original": "Original"
-  }
+  },
+  "librarySource": "Library source",
+  "uploadedImages": "Uploaded images",
+  "cdnArchive": "CDN archive",
+  "cdnDirectory": "Archive folder",
+  "openDirectory": "Open folder",
+  "cdnRoot": "Archive root",
+  "parentDirectory": "Parent folder",
+  "filterPage": "Filter images on this page",
+  "uploadListLimit": "The upload service returns at most 1,000 images. The CDN archive remains browsable by folder and page.",
+  "libraryLoading": "Loading the library…",
+  "retryLibrary": "Retry",
+  "previewUnavailable": "Preview unavailable",
+  "libraryPage": "Page {page} of {pages} · {count} images shown",
+  "libraryPagination": "Library pages",
+  "libraryPrevious": "Previous",
+  "libraryNext": "Next"
 }

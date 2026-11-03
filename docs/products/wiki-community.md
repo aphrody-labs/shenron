@@ -74,6 +74,29 @@ L’insertion demande une relecture et suit l’API éditoriale existante.
 
 ## Qualification et livraison
 
+### Médiathèque et provenance
+
+Le sélecteur d’images de l’administration partage les uploads persistants et l’archive
+CDN existante. `/api/admin/media-library` est réservé aux administrateurs, ne se met pas
+en cache partagé et parcourt la projection publique paginée par révision. Le catalogue
+conserve ses contrôles d’intégrité ; aucun second inventaire de fichiers n’est créé.
+Le filtre porte sur la page affichée. La liste historique des uploads garde sa limite
+serveur, signalée dans l’interface ; l’archive CDN permet de parcourir ses autres médias.
+
+Les anciennes illustrations et les nouveaux uploads ne partagent pas nécessairement le
+même stockage. Le résolveur d’assets garde leurs adresses publiques canoniques et le
+gateway peut relayer un upload UUID manquant vers le stockage persistant de son écrivain.
+Ce repli est limité aux images publiques, sans transmission de cookie ou d’autorisation.
+Sa source de configuration mutable est activée avec une nouvelle release ; une release
+déjà scellée ne se modifie pas pour corriger un chemin.
+
+Une extraction doit conserver son média source, son empreinte, sa page ou son horodatage,
+ses dimensions et l’outil utilisé. Une planche bitmap encapsulée dans un SVG reste une
+image matricielle : elle ne constitue pas une vectorisation du dessin. Une image issue
+d’une colorisation française ne devient pas une édition officielle. L’association à une
+fiche doit rester justifiée par la source ; une image absente ne se remplace pas par une
+illustration inventée présentée comme officielle.
+
 Les preuves datées, captures et matrices de routes se conservent dans
 `var/reports/wiki-redesign-20261103/`, hors documentation de référence. Vérifier les
 exclusions, les changements de langue, les images réellement chargées, le clavier,

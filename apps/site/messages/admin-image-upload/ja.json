@@ -38,5 +38,21 @@
     "landscape": "横 · 4:3",
     "wide": "バナー · 16:9",
     "original": "元の比率"
-  }
+  },
+  "librarySource": "ライブラリーの参照先",
+  "uploadedImages": "アップロード済み画像",
+  "cdnArchive": "CDNアーカイブ",
+  "cdnDirectory": "アーカイブのフォルダー",
+  "openDirectory": "フォルダーを開く",
+  "cdnRoot": "アーカイブのルート",
+  "parentDirectory": "親フォルダー",
+  "filterPage": "このページの画像を絞り込む",
+  "uploadListLimit": "アップロード一覧は最大1,000件です。CDNアーカイブはフォルダーとページで引き続き参照できます。",
+  "libraryLoading": "ライブラリーを読み込み中…",
+  "retryLibrary": "再試行",
+  "previewUnavailable": "プレビューを表示できません",
+  "libraryPage": "{pages}ページ中{page}ページ · {count}件の画像",
+  "libraryPagination": "ライブラリーのページ",
+  "libraryPrevious": "前へ",
+  "libraryNext": "次へ"
 }

@@ -1,0 +1,184 @@
+/* SPDX-License-Identifier: Apache-2.0 */
+.dialog {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(calc(100% - 2rem), 72rem);
+  max-height: 88dvh;
+  min-width: 0;
+  padding: 1.25rem;
+  border: 1px solid var(--color-dbz-border);
+  border-radius: 0.75rem;
+  background: var(--color-dbz-card);
+  color: var(--color-os);
+}
+.dialog[open] {
+  display: flex;
+  flex-direction: column;
+}
+.dialog::backdrop {
+  background: color-mix(in srgb, var(--color-encre) 85%, transparent);
+}
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.header h2 {
+  font-size: 1.25rem;
+  font-weight: 750;
+}
+.dialog button {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--color-dbz-border);
+  border-radius: 0.75rem;
+  cursor: pointer;
+}
+.dialog button:hover {
+  border-color: var(--color-dbz-yellow);
+  color: var(--color-dbz-yellow);
+}
+.dialog button:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.dialog :is(button, input):focus-visible {
+  outline: 2px solid var(--color-dbz-yellow);
+  outline-offset: 3px;
+}
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-block: 1rem;
+}
+.tabs [aria-pressed="true"] {
+  border-color: var(--color-dbz-orange);
+  background: color-mix(in srgb, var(--color-dbz-orange) 12%, var(--color-dbz-card));
+}
+.pathForm {
+  min-width: 0;
+  margin-block-end: 0.75rem;
+}
+.pathForm label,
+.filterLabel {
+  display: block;
+  font-size: 0.875rem;
+  margin-block-end: 0.35rem;
+}
+.pathForm > div,
+.pathActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.pathForm input {
+  flex: 1 1 16rem;
+  min-width: 0;
+}
+.pathActions {
+  margin-block-start: 0.5rem;
+}
+.pathActions button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8125rem;
+}
+.dialog input {
+  border: 1px solid var(--color-dbz-border);
+  border-radius: 0.75rem;
+  min-height: 44px;
+  padding: 0.6rem 0.75rem;
+  background: var(--color-dbz-bg);
+  color: var(--color-os);
+}
+.filter {
+  flex-shrink: 0;
+  width: 100%;
+}
+.content {
+  min-height: 10rem;
+  min-width: 0;
+  overflow: auto;
+  margin-block-start: 1rem;
+  padding: 0.25rem;
+}
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 2rem 0.75rem;
+}
+.folders {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 11rem), 1fr));
+  gap: 0.6rem;
+  margin-block-end: 1rem;
+}
+.folders button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 9rem), 1fr));
+  gap: 0.75rem;
+}
+.dialog .imageCard {
+  padding: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-align: start;
+}
+.preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 4 / 3;
+  background: var(--color-dbz-bg);
+}
+.preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.preview > span {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+.filename {
+  display: block;
+  padding: 0.6rem;
+  font-size: 0.75rem;
+  overflow-wrap: anywhere;
+}
+.footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+  margin-block-start: 0.75rem;
+}
+.footer output,
+.hint {
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+.footer nav {
+  display: flex;
+  gap: 0.5rem;
+}
