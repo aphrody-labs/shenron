@@ -1,6 +1,3 @@
-[submodule "packages/config"]
-	path = packages/config
-	url = https://github.com/aphrody-labs/shenron-config.git
 [submodule "crates/filmcraft"]
 	path = crates/filmcraft
 	url = https://github.com/aphrody-labs/filmcraft
