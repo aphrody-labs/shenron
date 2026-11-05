@@ -64,8 +64,27 @@ const BINDGEN_FLAGS = [
   "--remove-name-section",
   "--remove-producers-section",
 ] as const;
+/**
+ * Passe binaryen après wasm-bindgen : `wasm-opt -O3` relit le module émis (les types lus dans
+ * `target_features`) et le réécrit plus petit et plus rapide. Sans `wasm-opt` (poste de
+ * développement sans binaryen) la passe est sautée avec un avertissement ; `WASM_OPT` nomme le
+ * binaire, `SHENRON_WASM_OPT=off` la désactive.
+ */
+export const WASM_OPT_FLAGS = ["-O3"] as const;
 /** Toute modification de la recette périme le tampon. */
-export const RECIPE = JSON.stringify({ schema: SCHEMA, target: TARGET, PROFILE, BINDGEN_FLAGS });
+export const RECIPE = JSON.stringify({
+  schema: SCHEMA,
+  target: TARGET,
+  PROFILE,
+  BINDGEN_FLAGS,
+  WASM_OPT_FLAGS,
+});
+
+function findWasmOpt(): string | null {
+  if (process.env.SHENRON_WASM_OPT === "off") return null;
+  const candidate = process.env.WASM_OPT || Bun.which("wasm-opt");
+  return candidate && existsSync(candidate) ? candidate : null;
+}
 
 /** Sources dont dépend le WASM, relatives à la racine du dépôt. */
 export const INPUT_ROOTS = ["crates/koharu-canvas", "crates/koharu-rasterizer"] as const;
@@ -390,6 +409,16 @@ async function bindgenInto(
   await rm(staging, { recursive: true, force: true });
   console.log(`▶ wasm-bindgen ${toolchain.wasmBindgen} --target web`);
   run([bindgen, module, "--out-dir", staging, ...BINDGEN_FLAGS]);
+  const wasmOpt = findWasmOpt();
+  if (wasmOpt) {
+    const bg = join(staging, WASM_FILE);
+    const before = Bun.file(bg).size;
+    console.log(`▶ wasm-opt ${WASM_OPT_FLAGS.join(" ")}`);
+    run([wasmOpt, ...WASM_OPT_FLAGS, bg, "-o", bg]);
+    console.log(`  ${formatBytes(before)} → ${formatBytes(Bun.file(bg).size)}`);
+  } else {
+    console.warn("⚠ wasm-opt introuvable : module non optimisé par binaryen (WASM_OPT=<chemin>)");
+  }
   const stamp = await writeStamp(staging, toolchain, inputs);
   await mkdir(join(OUT_DIR, ".."), { recursive: true });
   await rm(OUT_DIR, { recursive: true, force: true });

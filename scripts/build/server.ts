@@ -211,7 +211,9 @@ if (leaks.length)
 
 // 3. Native library of the target (optional; the local RAG API reports its absence).
 const libCandidate = [
+  join(ROOT, "target", spec.rust, "production", spec.lib),
   join(ROOT, "target", spec.rust, "release", spec.lib),
+  join(ROOT, "target/production", spec.lib),
   join(ROOT, "target/release", spec.lib),
 ].find((path) => existsSync(path) && (target === "linux-x64" || path.includes(spec.rust)));
 const nativeOut = join(OUT, "native");

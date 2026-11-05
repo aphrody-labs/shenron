@@ -41,6 +41,19 @@ mkdir -p "$OUT"
 OUT="$(cd "$OUT" && pwd -P)"
 cp -R "$SRC/src" "$WORK/src"
 cp "$SRC/Cargo.toml" "$WORK/Cargo.toml"
+# The copy is its own workspace root, so it carries the shipping profile of the repository root:
+# fat LTO, one codegen unit, stripped, panic abort (a CLI with no threads and no panic catcher).
+# SHENRON_VIDEO_PROFILE=release is the quick lane.
+PROFILE="${SHENRON_VIDEO_PROFILE:-production}"
+cat >> "$WORK/Cargo.toml" <<'TOML'
+
+[profile.production]
+inherits = "release"
+lto = "fat"
+codegen-units = 1
+strip = "symbols"
+panic = "abort"
+TOML
 if [ -f "$SRC/Cargo.lock" ]; then cp "$SRC/Cargo.lock" "$WORK/Cargo.lock"; fi
 OWNER_REV=''
 MODE='pinned-git'
@@ -73,8 +86,8 @@ LOCKED=()
 if [ -f "$WORK/Cargo.lock" ]; then LOCKED=(--locked); fi
 cargo test --release --manifest-path "$WORK/Cargo.toml" "${LOCKED[@]}" > "$OUT/test.log" 2>&1
 cargo clippy --release --manifest-path "$WORK/Cargo.toml" --locked -- -D warnings > "$OUT/clippy.log" 2>&1
-cargo build --release --manifest-path "$WORK/Cargo.toml" --locked > "$OUT/build.log" 2>&1
-cp "$CARGO_TARGET_DIR/release/shenron-video" "$OUT/shenron-video"
+cargo build --profile "$PROFILE" --manifest-path "$WORK/Cargo.toml" --locked > "$OUT/build.log" 2>&1
+cp "$CARGO_TARGET_DIR/$PROFILE/shenron-video" "$OUT/shenron-video"
 chmod 0755 "$OUT/shenron-video"
 cp "$WORK/Cargo.toml" "$WORK/Cargo.lock" "$OUT/"
 bun - "$WORK" "$OUT" "$SOURCE_REV" "$MODE" "$OWNER_REV" <<'JS'

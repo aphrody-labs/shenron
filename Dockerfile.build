@@ -99,20 +99,23 @@ RUN --mount=type=cache,target=/home/builder/.bun/install/cache,uid=10001,id=shen
 
 # ---------------------------------------------------------------- Rust, Linux (what the factory builds + the CLI)
 FROM src AS rust-linux-x64
+# production: fat LTO, one codegen unit, stripped. --build-arg CARGO_PROFILE=release is the fast lane.
+ARG CARGO_PROFILE=production
 RUN --mount=type=secret,id=gitconfig,target=/run/secrets/gitconfig,uid=10001 \
     --mount=type=cache,target=/home/builder/.cargo/registry,uid=10001,id=shenron-cargo-registry \
     --mount=type=cache,target=/home/builder/.cargo/git,uid=10001,id=shenron-cargo-git \
     --mount=type=cache,target=/home/builder/.cache/sccache,uid=10001,id=shenron-sccache \
     --mount=type=cache,target=/work/target,uid=10001,id=shenron-target-linux \
     set -eux; export GIT_CONFIG_GLOBAL=/run/secrets/gitconfig; \
-    cargo build --release --locked -p shenron-cli --bin shenron -p shenron-mcp --bin shenron-mcp \
+    cargo build --profile "$CARGO_PROFILE" --locked -p shenron-cli --bin shenron -p shenron-mcp --bin shenron-mcp \
       -p shenron-ffi --lib; \
     mkdir -p /out; \
-    install -m0755 target/release/shenron target/release/shenron-mcp target/release/libshenron_ffi.so /out/; \
+    d=target/"$CARGO_PROFILE"; install -m0755 $d/shenron $d/shenron-mcp $d/libshenron_ffi.so /out/; \
     sccache --show-stats || true
 
 # ---------------------------------------------------------------- Rust, Windows (MSVC through cargo-xwin)
 FROM src AS rust-windows-x64
+ARG CARGO_PROFILE=production
 RUN --mount=type=secret,id=gitconfig,target=/run/secrets/gitconfig,uid=10001 \
     --mount=type=cache,target=/home/builder/.cargo/registry,uid=10001,id=shenron-cargo-registry \
     --mount=type=cache,target=/home/builder/.cargo/git,uid=10001,id=shenron-cargo-git \
@@ -120,10 +123,10 @@ RUN --mount=type=secret,id=gitconfig,target=/run/secrets/gitconfig,uid=10001 \
     --mount=type=cache,target=/home/builder/.cache/xwin,uid=10001,id=shenron-xwin \
     --mount=type=cache,target=/work/target,uid=10001,id=shenron-target-windows \
     set -eux; export GIT_CONFIG_GLOBAL=/run/secrets/gitconfig; \
-    cargo xwin build --release --locked --target x86_64-pc-windows-msvc \
+    cargo xwin build --profile "$CARGO_PROFILE" --locked --target x86_64-pc-windows-msvc \
       -p shenron-cli --bin shenron -p shenron-mcp --bin shenron-mcp -p shenron-ffi --lib \
       --config 'env.CFLAGS.value="-msse4.1"' --config env.CFLAGS.force=true; \
-    d=target/x86_64-pc-windows-msvc/release; mkdir -p /out; \
+    d=target/x86_64-pc-windows-msvc/"$CARGO_PROFILE"; mkdir -p /out; \
     install -m0755 $d/shenron.exe $d/shenron-mcp.exe $d/shenron_ffi.dll /out/; \
     sccache --show-stats || true
 
