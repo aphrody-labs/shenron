@@ -221,7 +221,7 @@ export function planRound(
     byFile.set(f.file, [...(byFile.get(f.file) ?? []), f]);
   }
   const agent = [...byFile.entries()]
-    .sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]))
+    .toSorted((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]))
     .slice(0, Math.max(0, opts.budget))
     .map(([file, fs]) => ({ file, findings: fs }));
   return {
