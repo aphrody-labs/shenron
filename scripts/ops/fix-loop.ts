@@ -661,7 +661,8 @@ export async function worktreeSnapshot(root: string): Promise<Map<string, string
   for (const cmd of ["diff --name-only", "ls-files -o --exclude-standard"])
     for (const n of (await git(root, cmd)).out.split("\n")) if (n) names.add(toPosix(n));
   const snap = new Map<string, string>();
-  for (const n of names) if (existsSync(join(root, n))) snap.set(n, readFileSync(join(root, n), "utf8"));
+  for (const n of names)
+    if (existsSync(join(root, n))) snap.set(n, readFileSync(join(root, n), "utf8"));
   return snap;
 }
 
@@ -761,7 +762,8 @@ export async function main(argv: string[]): Promise<number> {
   const sha0 = (await git(root, "rev-parse HEAD")).out.trim();
 
   say(`fix-loop root=${root} HEAD=${sha0} tools=${o.tools.join(",")} reportOnly=${o.reportOnly}`);
-  if (flag("install")) say(`install: exit ${(await sh("bun install --frozen-lockfile", root)).code}`);
+  if (flag("install"))
+    say(`install: exit ${(await sh("bun install --frozen-lockfile", root)).code}`);
   const baseline = await runChecks(root, o.tools, members);
   say(`baseline: ${JSON.stringify(countByTool(baseline))} total=${baseline.length}`);
 
@@ -876,7 +878,11 @@ export async function main(argv: string[]): Promise<number> {
           snap.get(batch.file) ?? source,
           existsSync(join(root, batch.file)) ? readFileSync(join(root, batch.file), "utf8") : "",
         );
-        const audit = auditEdit([batch.file], changed, added.map((l) => "+" + l).join(String.fromCharCode(10)));
+        const audit = auditEdit(
+          [batch.file],
+          changed,
+          added.map((l) => "+" + l).join(String.fromCharCode(10)),
+        );
         let verdict = "";
         if (audit.outOfScope.length) verdict = `out-of-scope edits: ${audit.outOfScope.join(", ")}`;
         else if (audit.suppressions.length) verdict = `added suppression: ${audit.suppressions[0]}`;
