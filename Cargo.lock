@@ -7677,7 +7677,6 @@ dependencies = [
  "parking_lot",
  "rars",
  "rayon",
- "reqwest",
  "rfd",
  "schemars 1.2.2",
  "serde",
@@ -7735,13 +7734,10 @@ dependencies = [
  "aphrody-ml-config",
  "arc-swap",
  "async-trait",
- "clap",
  "futures",
  "image",
  "imageproc",
  "koharu-ml",
- "koharu-rasterizer",
- "koharu-renderer",
  "koharu-scene",
  "koharu-translator",
  "nvml-wrapper",
@@ -12123,7 +12119,6 @@ name = "shenron-cli"
 version = "1.4.5"
 dependencies = [
  "aphrody-agent-home",
- "aphrody-config",
  "aphrody-models",
  "aphrody-ocr",
  "aphrody-rag",
@@ -12170,12 +12165,10 @@ name = "shenron-engine"
 version = "1.4.5"
 dependencies = [
  "bytemuck",
- "bytes",
  "dragon-pixel",
  "glam 0.30.10",
  "image",
  "js-sys",
- "log",
  "memmap2",
  "naga 30.0.1",
  "parking_lot",
@@ -12188,7 +12181,6 @@ dependencies = [
  "shenron-panels",
  "shenron-re",
  "thiserror 2.0.21",
- "vello",
  "wasm-bindgen",
  "wasm-bindgen-futures",
  "web-sys",
@@ -12313,7 +12305,6 @@ dependencies = [
 name = "shenron-re"
 version = "1.4.5"
 dependencies = [
- "bytes",
  "js-sys",
  "memmap2",
  "serde",
@@ -12336,7 +12327,6 @@ dependencies = [
  "serde_json",
  "shenron-cli",
  "shenron-rag",
- "tokio",
 ]
 
 [[package]]

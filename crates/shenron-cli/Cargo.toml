@@ -29,7 +29,6 @@ koharu = ["shenron-manga/koharu"]
 
 [dependencies]
 aphrody-agent-home = { workspace = true }
-aphrody-config = { workspace = true }
 aphrody-models = { workspace = true }
 aphrody-rag = { workspace = true }
 aphrody-ocr = { workspace = true, optional = true, features = ["sqlite"] }
