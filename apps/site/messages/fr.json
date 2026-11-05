@@ -193,7 +193,7 @@
     "voUnavailable": "Ce flux est indisponible pour le moment. Les autres lecteurs restent accessibles ci-dessus.",
     "playersUnavailable": "Aucun des {count} lecteurs ne répond pour le moment.",
     "retry": "Réessayer automatiquement",
-    "voTracks": "Pistes : {tracks} — à choisir dans le menu du lecteur.",
+    "voTracks": "Pistes : {tracks}. À choisir dans le menu du lecteur.",
     "probing": "{version}Vérification du lecteur « {name} »…",
     "selected": "{version}Lecteur externe « {name} » sélectionné.",
     "watchLegally": "Regarder légalement",
@@ -335,7 +335,7 @@
     "settings": "Paramètres"
   },
   "footer": {
-    "tagline": "Le plus grand serveur Dragon Ball francophone — épisodes, films, manga, actualités et une communauté Discord active. Site fan, non affilié aux ayants droit.",
+    "tagline": "Le plus grand serveur Dragon Ball francophone : épisodes, films, manga, actualités et une communauté Discord active. Site fan, non affilié aux ayants droit.",
     "columns": {
       "explore": "Explorer",
       "community": "Communauté",
@@ -420,7 +420,7 @@
       "index": {
         "kicker": "Dragon Ball France",
         "title": "Actualités",
-        "standfirst": "Sorties anime, chapitres du manga, films, événements et analyses — suivis et racontés par la communauté francophone.",
+        "standfirst": "Sorties anime, chapitres du manga, films, événements et analyses, suivis et racontés par la communauté francophone.",
         "viewFeed": "Voir tout le fil",
         "rss": "Flux RSS"
       }
@@ -742,7 +742,7 @@
     "communityMissingMessage": "Votre compte est connecté. Aucun profil communautaire Shenron n’est encore associé à ce compte Discord. Votre bibliothèque personnelle reste disponible.",
     "accountLink": "Ouvrir mon espace",
     "unavailableTitle": "Profil temporairement indisponible",
-    "unavailableMessage": "Le service des profils ne répond pas. Réessaie dans un instant — rien n'est perdu.",
+    "unavailableMessage": "Le service des profils ne répond pas. Réessaie dans un instant. Rien n'est perdu.",
     "leaderboardLink": "Le classement",
     "homeLink": "Accueil",
     "eyebrow": "Fiche de guerrier",
@@ -858,7 +858,7 @@
     "steamTitle": "Compte Steam"
   },
   "error": {
-    "lead": "L'affichage a échoué. C'est souvent passager — réessayer suffit en général.",
+    "lead": "L'affichage a échoué. C'est souvent passager, et réessayer suffit en général.",
     "retry": "Réessayer",
     "digest": "digest : {digest}"
   },
@@ -935,7 +935,7 @@
     "databooks": {
       "eyebrow": "Databooks",
       "title": "Guides & ouvrages de référence",
-      "leadCount": "{count} ouvrages catalogués — databooks, artbooks, daizenshuu et guides, classés par date.",
+      "leadCount": "{count} ouvrages catalogués (databooks, artbooks, daizenshuu et guides), classés par date.",
       "lead": "Databooks, artbooks, daizenshuu et guides, classés par date.",
       "breadcrumb": "Databooks",
       "statWorks": "Ouvrages",
@@ -951,7 +951,7 @@
     "sagas": {
       "eyebrow": "Univers Dragon Ball",
       "title": "Sagas & arcs",
-      "lead": "De la quête des Dragon Balls jusqu'au Monde des Démons de Daima — {sagas} sagas et {arcs} arcs narratifs, en un seul index.",
+      "lead": "De la quête des Dragon Balls jusqu'au Monde des Démons de Daima : {sagas} sagas et {arcs} arcs narratifs, en un seul index.",
       "countOne": "{count} saga",
       "countMany": "{count} sagas"
     },
@@ -962,7 +962,7 @@
       "metaEpisodes": "{count} épisodes",
       "metaSeries": "{count} séries",
       "metaLangs": "VF · VOSTFR",
-      "synopsis": "De Dragon Ball à Dragon Ball Daima — l'intégrale de l'anime, épisode par épisode, en VF et VOSTFR. Choisis ta série et lance la lecture.",
+      "synopsis": "De Dragon Ball à Dragon Ball Daima : l'intégrale de l'anime, épisode par épisode, en VF et VOSTFR. Choisis ta série et lance la lecture.",
       "start": "Commencer l'aventure",
       "empty": "Aucun épisode à afficher."
     },
@@ -1153,7 +1153,7 @@
       "eyebrow": "Contribuer",
       "titleBefore": "Écrire le wiki",
       "titleAccent": "à plusieurs",
-      "subtitle": "Ce wiki est écrit sur deux sources tenues en propre : les {tomes} tomes du manga et les planches transcrites des databooks. Il est loin d'être fini — et il n'a aucune raison de l'être par une seule personne.",
+      "subtitle": "Ce wiki est écrit sur deux sources tenues en propre : les {tomes} tomes du manga et les planches transcrites des databooks. Il est loin d'être fini, et il n'a aucune raison de l'être par une seule personne.",
       "howTitle": "Comment ça marche",
       "step": "Étape {number}",
       "steps": {
@@ -1161,7 +1161,7 @@
         "editText": "Le bouton est sous le titre de chaque fiche, et sous chaque section. Le texte actuel s'ouvre dans une zone d'édition : tu modifies ce qui cloche, rien d'autre.",
         "sourceTitle": "Indique d'où vient l'information",
         "sourceText": "Un tome et une planche, un databook et une page. Une correction sourcée est relue en quelques minutes ; sans source, il faut la vérifier avant, ce qui prend des jours.",
-        "reviewTitle": "Un relecteur publie — sous ton nom",
+        "reviewTitle": "Un relecteur publie sous ton nom",
         "reviewText": "Rien n'est modifié tant qu'une proposition n'est pas acceptée. Une fois publiée, la modification apparaît dans l'historique du wiki avec ton pseudo, et reste annulable."
       },
       "sourcesTitle": "Ce qui fait une bonne source",
@@ -1184,7 +1184,7 @@
       "gapsCount": "{count} fiches visibles n'ont ni article ni description. Compté à l'instant, directement en base.",
       "gapsToWrite": "à écrire sur",
       "contributorsTitle": "Celles et ceux qui écrivent",
-      "contributorsNone": "Personne n'a encore de contribution publiée. La première correction acceptée apparaîtra ici — et dans l'historique de la fiche concernée.",
+      "contributorsNone": "Personne n'a encore de contribution publiée. La première correction acceptée apparaîtra ici, et dans l'historique de la fiche concernée.",
       "contributionOne": "{count} contribution",
       "contributionMany": "{count} contributions",
       "participateTitle": "Comment participer",

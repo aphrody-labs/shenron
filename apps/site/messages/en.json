@@ -193,7 +193,7 @@
     "voUnavailable": "This stream is currently unavailable. Other players remain accessible above.",
     "playersUnavailable": "None of the {count} players is responding at the moment.",
     "retry": "Retry automatically",
-    "voTracks": "Tracks: {tracks} — choose one in the player menu.",
+    "voTracks": "Tracks: {tracks}. Choose one in the player menu.",
     "probing": "{version}Checking player “{name}”…",
     "selected": "{version}External player “{name}” selected.",
     "watchLegally": "Watch legally",
@@ -335,7 +335,7 @@
     "settings": "Settings"
   },
   "footer": {
-    "tagline": "The largest French-speaking Dragon Ball server — episodes, films, manga, news and an active Discord community. Fan site, not affiliated with the rights holders.",
+    "tagline": "The largest French-speaking Dragon Ball server: episodes, films, manga, news and an active Discord community. Fan site, not affiliated with the rights holders.",
     "columns": {
       "explore": "Explore",
       "community": "Community",
@@ -420,7 +420,7 @@
       "index": {
         "kicker": "Dragon Ball France",
         "title": "News",
-        "standfirst": "Anime releases, manga chapters, films, events, and analysis — followed and told by the French-speaking community.",
+        "standfirst": "Anime releases, manga chapters, films, events, and analysis, followed and told by the French-speaking community.",
         "viewFeed": "View full feed",
         "rss": "RSS feed"
       }
@@ -742,7 +742,7 @@
     "communityMissingMessage": "Your account is signed in. No Shenron community profile is associated with this Discord account yet. Your personal library remains available.",
     "accountLink": "Open my account",
     "unavailableTitle": "Profile temporarily unavailable",
-    "unavailableMessage": "The profiles service is not responding. Try again in a moment — nothing is lost.",
+    "unavailableMessage": "The profiles service is not responding. Try again in a moment. Nothing is lost.",
     "leaderboardLink": "The ranking",
     "homeLink": "Welcome",
     "eyebrow": "Warrior sheet",
@@ -858,7 +858,7 @@
     "steamTitle": "Steam account"
   },
   "error": {
-    "lead": "Display failed. It's often temporary — trying again is usually enough.",
+    "lead": "Display failed. It's often temporary, and trying again is usually enough.",
     "retry": "Try again",
     "digest": "digest: {digest}"
   },
@@ -935,7 +935,7 @@
     "databooks": {
       "eyebrow": "Databooks",
       "title": "Guides & reference books",
-      "leadCount": "{count} cataloged works — databooks, artbooks, daizenshuu and guides, ordered by date.",
+      "leadCount": "{count} cataloged works (databooks, artbooks, daizenshuu and guides), ordered by date.",
       "lead": "Databooks, artbooks, daizenshuu and guides, ordered by date.",
       "breadcrumb": "Databooks",
       "statWorks": "Works",
@@ -951,7 +951,7 @@
     "sagas": {
       "eyebrow": "Universe Dragon Ball",
       "title": "Sagas & arcs",
-      "lead": "From the quest for the Dragon Balls to the Demon World of Daima — {sagas} sagas and {arcs} story arcs, in one index.",
+      "lead": "From the quest for the Dragon Balls to the Demon World of Daima: {sagas} sagas and {arcs} story arcs, in one index.",
       "countOne": "{count} saga",
       "countMany": "{count} sagas"
     },
@@ -962,7 +962,7 @@
       "metaEpisodes": "{count} episodes",
       "metaSeries": "{count} series",
       "metaLangs": "VF · VOSTFR",
-      "synopsis": "From Dragon Ball to Dragon Ball Daima — the complete anime, episode by episode, in VF and VOSTFR. Choose your series and start playing.",
+      "synopsis": "From Dragon Ball to Dragon Ball Daima: the complete anime, episode by episode, in VF and VOSTFR. Choose your series and start playing.",
       "start": "Start the adventure",
       "empty": "No episodes to display."
     },
@@ -1153,7 +1153,7 @@
       "eyebrow": "Contribute",
       "titleBefore": "Write the wiki",
       "titleAccent": "to several",
-      "subtitle": "This wiki is written on two sources held in its own right: the {tomes} volumes of the manga and the transcribed plates from the databooks. It is far from finished — and it has no reason to be finished by one person.",
+      "subtitle": "This wiki is written on two sources held in its own right: the {tomes} volumes of the manga and the transcribed plates from the databooks. It is far from finished, and it has no reason to be finished by one person.",
       "howTitle": "How it works",
       "step": "Step {number}",
       "steps": {
@@ -1161,7 +1161,7 @@
         "editText": "The button is under the title of each sheet, and under each section. The current text opens in an editing area: you modify what is wrong, nothing else.",
         "sourceTitle": "Indicates where the information comes from",
         "sourceText": "A volume and a plate, a databook and a page. A sourced correction is proofread in a few minutes; without a source, you have to check it first, which takes days.",
-        "reviewTitle": "A reviewer publishes — under your name",
+        "reviewTitle": "A reviewer publishes under your name",
         "reviewText": "Nothing is changed until a proposal is accepted. Once published, the modification appears in the wiki history with your nickname, and remains undoable."
       },
       "sourcesTitle": "What makes a good source",
@@ -1184,7 +1184,7 @@
       "gapsCount": "{count} visible records have neither article nor description. Counted at the moment, directly in base.",
       "gapsToWrite": "to write about",
       "contributorsTitle": "Those who write",
-      "contributorsNone": "No one has a published contribution yet. The first accepted correction will appear here — and in the history of the record concerned.",
+      "contributorsNone": "No one has a published contribution yet. The first accepted correction will appear here, and in the history of the record concerned.",
       "contributionOne": "{count} contribution",
       "contributionMany": "{count} contributions",
       "participateTitle": "How to participate",
