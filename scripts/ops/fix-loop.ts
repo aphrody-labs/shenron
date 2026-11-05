@@ -110,7 +110,7 @@ export function parseRustfmt(text: string, root = ""): Finding[] {
   const out: Finding[] = [];
   const re = /^Diff in (.+?)(?::(\d+):| at line (\d+):)\s*$/;
   for (const raw of text.split(/\r?\n/)) {
-    const m = re.exec(raw.replace(/\u001b\[[0-9;]*m/g, ""));
+    const m = re.exec(raw);
     if (!m) continue;
     let file = toPosix(m[1]!);
     const base = toPosix(root).replace(/\/$/, "");
@@ -155,10 +155,11 @@ export function parseClippyJson(text: string, root = ""): Finding[] {
       code: String(msg.code?.code ?? msg.level),
       message: String(msg.message),
       severity: msg.level === "error" ? "error" : "warning",
-      help: (msg.children ?? [])
-        .filter((c: any) => c.level === "help")
-        .map((c: any) => c.message)
-        .join("; ") || undefined,
+      help:
+        (msg.children ?? [])
+          .filter((c: any) => c.level === "help")
+          .map((c: any) => c.message)
+          .join("; ") || undefined,
     });
   }
   return out;
@@ -312,10 +313,7 @@ export async function checkLint(root: string, files?: string[]): Promise<Finding
   const dirs = files ?? existing(root, ["apps", "packages", "scripts", "src"]);
   if (!dirs.length) return [];
   const cfg = existsSync(join(root, ".oxlintrc.json")) ? "-c .oxlintrc.json" : "";
-  const r = await sh(
-    `bun lint --no-script ${cfg} --format json ${dirs.map(q).join(" ")}`,
-    root,
-  );
+  const r = await sh(`bun lint --no-script ${cfg} --format json ${dirs.map(q).join(" ")}`, root);
   return parseOxlintJson(r.out);
 }
 
@@ -474,13 +472,30 @@ function claudeSdkBackend(sdkDir: string, model?: string): Backend {
           settingSources: [],
           permissionMode: "default",
           pathToClaudeCodeExecutable: claudeBin || undefined,
-          disallowedTools: ["Bash", "Write", "NotebookEdit", "WebFetch", "WebSearch", "Task", "Agent", "Glob", "Grep"],
+          disallowedTools: [
+            "Bash",
+            "Write",
+            "NotebookEdit",
+            "WebFetch",
+            "WebSearch",
+            "Task",
+            "Agent",
+            "Glob",
+            "Grep",
+          ],
           // Only Read/Edit of the one target file is ever approved; everything else is denied.
           canUseTool: async (name: string, input: Record<string, unknown>) => {
             const path = String(input.file_path ?? input.path ?? "");
-            if (target && (name === "Read" || name === "Edit") && resolve(cwd, path) === resolve(cwd, target))
+            if (
+              target &&
+              (name === "Read" || name === "Edit") &&
+              resolve(cwd, path) === resolve(cwd, target)
+            )
               return { behavior: "allow", updatedInput: input };
-            return { behavior: "deny", message: `only Read/Edit of ${target ?? "nothing"} is allowed` };
+            return {
+              behavior: "deny",
+              message: `only Read/Edit of ${target ?? "nothing"} is allowed`,
+            };
           },
         },
       })) {
@@ -499,7 +514,9 @@ function claudeSdkBackend(sdkDir: string, model?: string): Backend {
     async probe() {
       try {
         const r = await run(tmpDir(), "Reply with the single word OK.", null, 1);
-        return r.isError ? { ok: false, reason: `SDK call failed: ${r.final.slice(0, 200)}` } : { ok: true, reason: "authenticated" };
+        return r.isError
+          ? { ok: false, reason: `SDK call failed: ${r.final.slice(0, 200)}` }
+          : { ok: true, reason: "authenticated" };
       } catch (e) {
         return { ok: false, reason: `SDK unavailable: ${(e as Error).message.slice(0, 200)}` };
       }
@@ -527,13 +544,24 @@ function opencodeBackend(): Backend {
     async probe() {
       const w = await sh("command -v opencode", tmpDir());
       if (w.code !== 0) return { ok: false, reason: "opencode is not installed on this host" };
-      const r = await sh("timeout 90 opencode run 'Reply with the single word OK.'", tmpDir(), 100_000);
+      const r = await sh(
+        "timeout 90 opencode run 'Reply with the single word OK.'",
+        tmpDir(),
+        100_000,
+      );
       return r.code === 0 && /OK/.test(r.out)
         ? { ok: true, reason: "authenticated" }
-        : { ok: false, reason: `opencode probe failed (exit ${r.code}): ${(r.err || r.out).slice(0, 200)}` };
+        : {
+            ok: false,
+            reason: `opencode probe failed (exit ${r.code}): ${(r.err || r.out).slice(0, 200)}`,
+          };
     },
     async fix(root, batch, prompt) {
-      const r = await sh(`timeout ${TIMEOUT_MS / 1000} opencode run ${q(prompt)}`, root, TIMEOUT_MS + 10_000);
+      const r = await sh(
+        `timeout ${TIMEOUT_MS / 1000} opencode run ${q(prompt)}`,
+        root,
+        TIMEOUT_MS + 10_000,
+      );
       return { ok: r.code === 0, reason: (r.out || r.err).slice(-200) };
     },
   };
@@ -544,10 +572,21 @@ function yoloAiBackend(dir: string): Backend {
   return {
     name: "yolo-ai",
     async probe() {
-      if (!existsSync(script)) return { ok: false, reason: `yolo-ai not found at ${dir} (clone aphrody-labs/yolo-ai there)` };
-      if (!process.env.ANTHROPIC_API_KEY) return { ok: false, reason: "yolo-ai scripts/claude.ts needs ANTHROPIC_API_KEY (unset)" };
-      const r = await sh(`cd ${q(dir)} && bun scripts/claude.ts 'Reply with the single word OK.'`, dir, 90_000);
-      return r.code === 0 && /OK/.test(r.out) ? { ok: true, reason: "authenticated" } : { ok: false, reason: (r.err || r.out).slice(0, 200) };
+      if (!existsSync(script))
+        return {
+          ok: false,
+          reason: `yolo-ai not found at ${dir} (clone aphrody-labs/yolo-ai there)`,
+        };
+      if (!process.env.ANTHROPIC_API_KEY)
+        return { ok: false, reason: "yolo-ai scripts/claude.ts needs ANTHROPIC_API_KEY (unset)" };
+      const r = await sh(
+        `cd ${q(dir)} && bun scripts/claude.ts 'Reply with the single word OK.'`,
+        dir,
+        90_000,
+      );
+      return r.code === 0 && /OK/.test(r.out)
+        ? { ok: true, reason: "authenticated" }
+        : { ok: false, reason: (r.err || r.out).slice(0, 200) };
     },
     // yolo-ai has no edit tool: ask for the full file in one fenced block and write the target file ourselves.
     async fix(root, batch, prompt) {
@@ -568,7 +607,11 @@ export async function chooseBackend(
   const order = ["claude-agent-sdk", "opencode", "yolo-ai"];
   const list = want === "auto" ? order : [want, ...order.filter((x) => x !== want)];
   const make = (n: string): Backend =>
-    n === "claude-agent-sdk" ? claudeSdkBackend(opts.sdkDir, opts.model) : n === "opencode" ? opencodeBackend() : yoloAiBackend(opts.yoloAiDir);
+    n === "claude-agent-sdk"
+      ? claudeSdkBackend(opts.sdkDir, opts.model)
+      : n === "opencode"
+        ? opencodeBackend()
+        : yoloAiBackend(opts.yoloAiDir);
   const probes: Record<string, FixResult> = {};
   for (const n of list) {
     const b = make(n);
@@ -618,7 +661,13 @@ export async function main(argv: string[]): Promise<number> {
   const remote = arg("remote");
   if (remote) {
     const dir = arg("remote-dir", "shenron-fix");
-    const rest = argv.filter((a, i) => a !== "--remote" && argv[i - 1] !== "--remote" && a !== "--remote-dir" && argv[i - 1] !== "--remote-dir");
+    const rest = argv.filter(
+      (a, i) =>
+        a !== "--remote" &&
+        argv[i - 1] !== "--remote" &&
+        a !== "--remote-dir" &&
+        argv[i - 1] !== "--remote-dir",
+    );
     const script = `${PATH_PREFIX} cd "$HOME/${dir}" && git pull -q --rebase origin main && bun scripts/ops/fix-loop.ts ${rest.map(q).join(" ")}`;
     const child = Bun.spawn(["ssh", "-o", "BatchMode=yes", remote, "bash", "-s"], {
       stdin: new Blob([script]),
@@ -649,7 +698,9 @@ export async function main(argv: string[]): Promise<number> {
     log.push(s);
     console.log(s);
   };
-  const members = o.tools.some((t) => t === "rustfmt" || t === "clippy") ? await rustMembers(root) : [];
+  const members = o.tools.some((t) => t === "rustfmt" || t === "clippy")
+    ? await rustMembers(root)
+    : [];
   const sha0 = (await git(root, "rev-parse HEAD")).out.trim();
 
   say(`fix-loop root=${root} HEAD=${sha0} tools=${o.tools.join(",")} reportOnly=${o.reportOnly}`);
@@ -677,28 +728,77 @@ export async function main(argv: string[]): Promise<number> {
       const after = await runChecks(root, [tool], members);
       mechanical[label] = { before, after: after.length };
       current = [...current.filter((f) => f.tool !== tool), ...after];
-      const fresh = diffFindings(baseline.filter((f) => f.tool === tool), after).added;
+      const fresh = diffFindings(
+        baseline.filter((f) => f.tool === tool),
+        after,
+      ).added;
       if (fresh.length) say(`  warning: ${fresh.length} new ${tool} findings after ${label}`);
       if (o.commit && after.length < before && !fresh.length) {
-        const sha = await commitGroup(o, label, `${message} (${tool}: ${before} -> ${after.length} findings)`, log);
+        const sha = await commitGroup(
+          o,
+          label,
+          `${message} (${tool}: ${before} -> ${after.length} findings)`,
+          log,
+        );
         if (sha) commits.push(sha);
       }
     };
-    await step("oxfmt-write", "oxfmt", plan.mechanical.oxfmt.length ? `bun scripts/testing/native-quality.ts fmt ${plan.mechanical.oxfmt.map(q).join(" ")}` : null, "style: oxfmt write on unformatted files");
-    await step("oxlint-fix", "oxlint", plan.mechanical.oxlintFix.length ? `bun lint --no-script --fix ${existsSync(join(root, ".oxlintrc.json")) ? "-c .oxlintrc.json" : ""} ${plan.mechanical.oxlintFix.map(q).join(" ")}` : null, "fix(lint): apply oxlint autofixes");
-    await step("cargo-fmt", "rustfmt", members.length && plan.mechanical.rustfmt.length ? members.map((m) => `cargo fmt --manifest-path ${q(m.manifest)}`).join(" ; ") : null, "style(rust): cargo fmt per member");
-    await step("clippy-fix", "clippy", plan.mechanical.clippyFix ? "cargo clippy --fix --allow-dirty --allow-staged --workspace --all-targets" : null, "fix(rust): cargo clippy --fix machine-applicable suggestions");
+    await step(
+      "oxfmt-write",
+      "oxfmt",
+      plan.mechanical.oxfmt.length
+        ? `bun scripts/testing/native-quality.ts fmt ${plan.mechanical.oxfmt.map(q).join(" ")}`
+        : null,
+      "style: oxfmt write on unformatted files",
+    );
+    await step(
+      "oxlint-fix",
+      "oxlint",
+      plan.mechanical.oxlintFix.length
+        ? `bun lint --no-script --fix ${existsSync(join(root, ".oxlintrc.json")) ? "-c .oxlintrc.json" : ""} ${plan.mechanical.oxlintFix.map(q).join(" ")}`
+        : null,
+      "fix(lint): apply oxlint autofixes",
+    );
+    await step(
+      "cargo-fmt",
+      "rustfmt",
+      members.length && plan.mechanical.rustfmt.length
+        ? members.map((m) => `cargo fmt --manifest-path ${q(m.manifest)}`).join(" ; ")
+        : null,
+      "style(rust): cargo fmt per member",
+    );
+    await step(
+      "clippy-fix",
+      "clippy",
+      plan.mechanical.clippyFix
+        ? "cargo clippy --fix --allow-dirty --allow-staged --workspace --all-targets"
+        : null,
+      "fix(rust): cargo clippy --fix machine-applicable suggestions",
+    );
 
     // ---- agent
-    for (let round = 1; round <= o.rounds && current.length && agentCalls < o.budget && o.agent !== "none"; round++) {
-      const p = planRound(current, { unresolved: new Set(unresolved.keys()), budget: o.budget - agentCalls, skip: (f) => GENERATED.test(f) });
+    for (
+      let round = 1;
+      round <= o.rounds && current.length && agentCalls < o.budget && o.agent !== "none";
+      round++
+    ) {
+      const p = planRound(current, {
+        unresolved: new Set(unresolved.keys()),
+        budget: o.budget - agentCalls,
+        skip: (f) => GENERATED.test(f),
+      });
       if (!p.agent.length) break;
       if (backendName === "none") {
-        const chosen = await chooseBackend(o.agent, { sdkDir: o.sdkDir, yoloAiDir: o.yoloAiDir, model: o.model });
+        const chosen = await chooseBackend(o.agent, {
+          sdkDir: o.sdkDir,
+          yoloAiDir: o.yoloAiDir,
+          model: o.model,
+        });
         probes = chosen.probes;
         if (!chosen.backend) {
           say(`no agent backend usable: ${JSON.stringify(probes)}`);
-          for (const b of p.agent) unresolved.set(b.file, { reason: "no agent backend available", findings: b.findings });
+          for (const b of p.agent)
+            unresolved.set(b.file, { reason: "no agent backend available", findings: b.findings });
           break;
         }
         backendName = chosen.backend.name;
@@ -723,9 +823,20 @@ export async function main(argv: string[]): Promise<number> {
           const after = await recheck(root, tool, batch.file, members);
           const beforeFile = current.filter((f) => f.tool === tool && f.file === batch.file);
           const afterFile = after.filter((f) => f.file === batch.file);
-          if (acceptFix(beforeFile, afterFile) || (afterFile.length < beforeFile.length && diffFindings(beforeFile, afterFile).added.length === 0)) {
-            agentFixed.push({ file: batch.file, backend: backendName, fixed: beforeFile.length - afterFile.length });
-            current = [...current.filter((f) => !(f.tool === tool && f.file === batch.file)), ...afterFile];
+          if (
+            acceptFix(beforeFile, afterFile) ||
+            (afterFile.length < beforeFile.length &&
+              diffFindings(beforeFile, afterFile).added.length === 0)
+          ) {
+            agentFixed.push({
+              file: batch.file,
+              backend: backendName,
+              fixed: beforeFile.length - afterFile.length,
+            });
+            current = [
+              ...current.filter((f) => !(f.tool === tool && f.file === batch.file)),
+              ...afterFile,
+            ];
             say(`  kept ${batch.file}: ${beforeFile.length} -> ${afterFile.length}`);
             continue;
           }
@@ -738,7 +849,12 @@ export async function main(argv: string[]): Promise<number> {
       }
       if (o.commit) {
         const n = agentFixed.length;
-        const sha = await commitGroup(o, `agent-r${round}`, `fix: ${n} file(s) fixed by ${backendName} (lint/typecheck/clippy findings ${baseline.length} -> ${current.length})`, log);
+        const sha = await commitGroup(
+          o,
+          `agent-r${round}`,
+          `fix: ${n} file(s) fixed by ${backendName} (lint/typecheck/clippy findings ${baseline.length} -> ${current.length})`,
+          log,
+        );
         if (sha) commits.push(sha);
       }
     }
@@ -747,7 +863,10 @@ export async function main(argv: string[]): Promise<number> {
       const bad = diffFindings(baseline, current).added;
       if (bad.length) say(`push skipped: ${bad.length} findings were introduced`);
       else {
-        const r = await sh("git pull -q --rebase origin main && git push -q origin HEAD:main && git rev-parse HEAD", root);
+        const r = await sh(
+          "git pull -q --rebase origin main && git push -q origin HEAD:main && git rev-parse HEAD",
+          root,
+        );
         say(`push: exit ${r.code} ${r.code === 0 ? r.out.trim() : r.err.trim().slice(-200)}`);
       }
     }
@@ -765,7 +884,11 @@ export async function main(argv: string[]): Promise<number> {
     after: { total: current.length, byTool: countByTool(current) },
     mechanical,
     agent: { requested: o.agent, used: backendName, probes, calls: agentCalls, fixed: agentFixed },
-    unresolved: [...unresolved.entries()].map(([file, v]) => ({ file, reason: v.reason, findings: v.findings.length })),
+    unresolved: [...unresolved.entries()].map(([file, v]) => ({
+      file,
+      reason: v.reason,
+      findings: v.findings.length,
+    })),
     remaining: current,
     commits,
     log,

@@ -32,11 +32,19 @@ const f = (over: Partial<Finding>): Finding => ({
 
 describe("parsers", () => {
   test("oxlint json", () => {
-    const text = `{ "diagnostics": [{"message": "Use toSorted","code": "unicorn(no-array-sort)","severity": "warning","help": "mutates","filename": "scripts\\a.ts","labels": [{"span": {"offset": 5,"length": 4,"line": 7,"column": 76}}]},
+    const text = `{ "diagnostics": [{"message": "Use toSorted","code": "unicorn(no-array-sort)","severity": "warning","help": "mutates","filename": "scripts/a.ts","labels": [{"span": {"offset": 5,"length": 4,"line": 7,"column": 76}}]},
 {"message": "shadow","code": "eslint(no-shadow)","severity": "error","filename": "b.ts","labels": []}] }`;
     const out = parseOxlintJson(text);
     expect(out).toHaveLength(2);
-    expect(out[0]).toMatchObject({ tool: "oxlint", file: "scripts/a.ts", line: 7, col: 76, code: "unicorn/no-array-sort", severity: "warning", help: "mutates" });
+    expect(out[0]).toMatchObject({
+      tool: "oxlint",
+      file: "scripts/a.ts",
+      line: 7,
+      col: 76,
+      code: "unicorn/no-array-sort",
+      severity: "warning",
+      help: "mutates",
+    });
     expect(out[1]).toMatchObject({ code: "eslint/no-shadow", severity: "error", line: 0 });
     expect(parseOxlintJson("garbage")).toEqual([]);
   });
@@ -55,14 +63,23 @@ describe("parsers", () => {
   });
 
   test("oxfmt list ignores summary lines", () => {
-    const text = "Checking formatting...\n\nscripts/dev/i18n-parity-check.ts (0ms)\napps/x/y.tsx (12ms)\n\nFormat issues found in above 2 files.\nFinished in 196ms on 4031 files using 12 threads.";
-    expect(parseOxfmtList(text).map((x) => x.file)).toEqual(["scripts/dev/i18n-parity-check.ts", "apps/x/y.tsx"]);
+    const text =
+      "Checking formatting...\n\nscripts/dev/i18n-parity-check.ts (0ms)\napps/x/y.tsx (12ms)\n\nFormat issues found in above 2 files.\nFinished in 196ms on 4031 files using 12 threads.";
+    expect(parseOxfmtList(text).map((x) => x.file)).toEqual([
+      "scripts/dev/i18n-parity-check.ts",
+      "apps/x/y.tsx",
+    ]);
   });
 
   test("rustfmt diff, relative to root", () => {
-    const text = "Diff in /repo/crates/a/src/lib.rs:12:\n fn x() {}\nDiff in /repo/crates/a/src/lib.rs:40:\n-a\n+b\nDiff in src/old.rs at line 3:";
+    const text =
+      "Diff in /repo/crates/a/src/lib.rs:12:\n fn x() {}\nDiff in /repo/crates/a/src/lib.rs:40:\n-a\n+b\nDiff in src/old.rs at line 3:";
     const out = parseRustfmt(text, "/repo");
-    expect(out.map((x) => [x.file, x.line])).toEqual([["crates/a/src/lib.rs", 12], ["crates/a/src/lib.rs", 40], ["src/old.rs", 3]]);
+    expect(out.map((x) => [x.file, x.line])).toEqual([
+      ["crates/a/src/lib.rs", 12],
+      ["crates/a/src/lib.rs", 40],
+      ["src/old.rs", 3],
+    ]);
   });
 
   test("clippy json keeps primary spans and drops summaries", () => {
@@ -70,14 +87,41 @@ describe("parsers", () => {
       JSON.stringify({ reason: "compiler-artifact" }),
       JSON.stringify({
         reason: "compiler-message",
-        message: { level: "error", message: "needless borrow", code: { code: "clippy::needless_borrow" }, spans: [{ file_name: "/repo/crates/a/src/lib.rs", line_start: 9, column_start: 5, is_primary: true }], children: [{ level: "help", message: "remove &" }] },
+        message: {
+          level: "error",
+          message: "needless borrow",
+          code: { code: "clippy::needless_borrow" },
+          spans: [
+            {
+              file_name: "/repo/crates/a/src/lib.rs",
+              line_start: 9,
+              column_start: 5,
+              is_primary: true,
+            },
+          ],
+          children: [{ level: "help", message: "remove &" }],
+        },
       }),
-      JSON.stringify({ reason: "compiler-message", message: { level: "error", message: "aborting due to 1 previous error", code: null, spans: [] } }),
+      JSON.stringify({
+        reason: "compiler-message",
+        message: {
+          level: "error",
+          message: "aborting due to 1 previous error",
+          code: null,
+          spans: [],
+        },
+      }),
       "not json",
     ].join("\n");
     const out = parseClippyJson(lines, "/repo");
     expect(out).toHaveLength(1);
-    expect(out[0]).toMatchObject({ tool: "clippy", file: "crates/a/src/lib.rs", line: 9, code: "clippy::needless_borrow", help: "remove &" });
+    expect(out[0]).toMatchObject({
+      tool: "clippy",
+      file: "crates/a/src/lib.rs",
+      line: 9,
+      code: "clippy::needless_borrow",
+      help: "remove &",
+    });
   });
 });
 
@@ -102,7 +146,11 @@ describe("planner", () => {
   });
 
   test("budget, unresolved and skip are honored", () => {
-    const p = planRound(findings, { unresolved: new Set(["a.ts"]), budget: 2, skip: (x) => x === "c.ts" });
+    const p = planRound(findings, {
+      unresolved: new Set(["a.ts"]),
+      budget: 2,
+      skip: (x) => x === "c.ts",
+    });
     expect(p.agent.map((b) => b.file)).toEqual(["b.ts", "e.rs"]);
     expect(planRound(findings, { unresolved: new Set(), budget: 0 }).agent).toEqual([]);
   });
@@ -111,7 +159,9 @@ describe("planner", () => {
     const before = [f({ code: "r1" }), f({ code: "r2" })];
     expect(acceptFix(before, [f({ code: "r2", line: 99 })])).toBe(true);
     expect(acceptFix(before, before)).toBe(false);
-    expect(acceptFix(before, [f({ code: "r2" }), f({ code: "NEW" })].slice(0, 1).concat([]))).toBe(true);
+    expect(acceptFix(before, [f({ code: "r2" }), f({ code: "NEW" })].slice(0, 1).concat([]))).toBe(
+      true,
+    );
     expect(acceptFix(before, [f({ code: "NEW" })])).toBe(false);
   });
 
@@ -125,7 +175,8 @@ describe("planner", () => {
 
 describe("edit audit", () => {
   test("flags other files and added suppressions", () => {
-    const diff = "--- a/a.ts\n+++ b/a.ts\n@@ -1 +1,2 @@\n-let x\n+// oxlint-disable-next-line no-shadow\n+let y";
+    const diff =
+      "--- a/a.ts\n+++ b/a.ts\n@@ -1 +1,2 @@\n-let x\n+// oxlint-disable-next-line no-shadow\n+let y";
     const r = auditEdit(["a.ts"], ["a.ts", "package.json"], diff);
     expect(r.outOfScope).toEqual(["package.json"]);
     expect(r.suppressions).toEqual(["// oxlint-disable-next-line no-shadow"]);
@@ -149,7 +200,10 @@ describe("edit audit", () => {
   });
 
   test("prompt carries findings, rule text and the source", () => {
-    const p = agentPrompt({ file: "a.ts", findings: [f({ line: 3, col: 2, help: "use toSorted" })] }, "const x = 1;");
+    const p = agentPrompt(
+      { file: "a.ts", findings: [f({ line: 3, col: 2, help: "use toSorted" })] },
+      "const x = 1;",
+    );
     expect(p).toContain("line 3:2 [oxlint x/y] m (rule text: use toSorted)");
     expect(p).toContain("const x = 1;");
     expect(p).toContain("never add suppression comments");
