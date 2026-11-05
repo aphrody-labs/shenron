@@ -1,7 +1,7 @@
 "use client";
 
 // SPDX-License-Identifier: Apache-2.0
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { Bookmark, Play, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -42,6 +42,10 @@ const FILTER_KEY = {
   completed: "filterDone",
 } as const;
 
+const noSubscription = () => () => undefined;
+const locationSearch = () => window.location.search;
+const serverSearch = () => null;
+
 const CHIP =
   "inline-flex min-h-11 items-center rounded-full px-4 text-xs font-bold uppercase tracking-wider transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange";
 
@@ -60,13 +64,14 @@ export function WatchlistClient() {
   const [remote, setRemote] = useState<WatchlistItem[] | null>(null);
   const [remoteFailed, setRemoteFailed] = useState(false);
   const [hidden, setHidden] = useState<ReadonlySet<string>>(new Set());
-  const [filter, setFilter] = useState<WatchlistFilter>("all");
+  // `?status=` is read after hydration; an explicit choice then takes precedence.
+  const search = useSyncExternalStore(noSubscription, locationSearch, serverSearch);
+  const [chosenFilter, setFilter] = useState<WatchlistFilter | null>(null);
+  const filter =
+    chosenFilter ??
+    (search === null ? "all" : filterFromQuery(new URLSearchParams(search).get("status")));
   const [sort, setSort] = useState<WatchlistSort>("recent");
   const requested = useRef(false);
-
-  useEffect(() => {
-    setFilter(filterFromQuery(new URLSearchParams(window.location.search).get("status")));
-  }, []);
 
   const chooseFilter = (next: WatchlistFilter) => {
     setFilter(next);
@@ -132,14 +137,15 @@ export function WatchlistClient() {
   const remove = (row: WatchlistRow) => {
     setHidden((current) => new Set(current).add(rowKey(row)));
     // The account view can list items this device has not merged yet: never toggle blindly.
-    void syncFavorites().then(() => {
+    void (async () => {
+      await syncFavorites();
       if (isFavorited(row.favorite.kind, row.favorite.id)) toggleFavorite(row.favorite);
-    });
+    })();
   };
 
   if (rows === null) {
     return (
-      <div role="status" aria-label={t("loading")} className="flex flex-col gap-6">
+      <output aria-label={t("loading")} className="flex flex-col gap-6">
         <div className="h-11 animate-pulse motion-reduce:animate-none rounded-full bg-dbz-card" />
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {[0, 1, 2].map((i) => (
@@ -149,7 +155,7 @@ export function WatchlistClient() {
             />
           ))}
         </div>
-      </div>
+      </output>
     );
   }
 
@@ -195,7 +201,7 @@ export function WatchlistClient() {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div role="group" aria-label={t("filterLabel")} className="flex flex-wrap gap-2">
+        <fieldset aria-label={t("filterLabel")} className="flex min-w-0 flex-wrap gap-2">
           {FILTERS.map((id) => (
             <button
               key={id}
@@ -211,7 +217,7 @@ export function WatchlistClient() {
               {t(FILTER_KEY[id])}
             </button>
           ))}
-        </div>
+        </fieldset>
         <label className="flex items-center gap-2 text-sm text-white/75">
           <span>{t("sortLabel")}</span>
           <select
@@ -260,16 +266,12 @@ export function WatchlistClient() {
                     {f.kind === "movie" ? t("kindMovie") : t("kindEpisode")}
                   </span>
                   {percent > 0 && (
-                    <div
-                      role="progressbar"
+                    <progress
                       aria-label={t("progress", { percent })}
-                      aria-valuemin={0}
-                      aria-valuemax={100}
-                      aria-valuenow={percent}
-                      className="absolute inset-x-0 bottom-0 h-1.5 bg-black/70"
-                    >
-                      <div className="h-full bg-dbz-orange" style={{ width: `${percent}%` }} />
-                    </div>
+                      max={100}
+                      value={percent}
+                      className="absolute inset-x-0 bottom-0 block h-1.5 w-full appearance-none bg-black/70 [&::-moz-progress-bar]:bg-dbz-orange [&::-webkit-progress-bar]:bg-transparent [&::-webkit-progress-value]:bg-dbz-orange"
+                    />
                   )}
                 </div>
 

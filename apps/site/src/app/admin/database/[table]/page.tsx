@@ -65,10 +65,13 @@ export default function TablePage() {
           table === "db_character_variant_technique_uses"
         ? "variantId"
         : null;
-  const parentFilter =
-    workflow && parentColumn && /^\d+$/.test(parentId)
-      ? { column: parentColumn, id: parentId }
-      : null;
+  const parentFilter = useMemo(
+    () =>
+      workflow && parentColumn && /^\d+$/.test(parentId)
+        ? { column: parentColumn, id: parentId }
+        : null,
+    [workflow, parentColumn, parentId],
+  );
   const wiki = isWikiTable(table);
   const studio = isStudioTable(table);
   const client = wiki ? apiAt(crudBase(table)) : api;
@@ -80,7 +83,7 @@ export default function TablePage() {
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState<Record<string, unknown> | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Record<string, unknown> | null>(null);
-  const autoEditHandled = useRef<string | null>(null);
+  const [autoEditHandled, setAutoEditHandled] = useState<string | null>(null);
   const autoCreateHandled = useRef(false);
   const [toast, setToast] = useState<{
     type: "success" | "error";
@@ -178,14 +181,14 @@ export default function TablePage() {
 
   const editId = workflow ? searchParams.get("editId") : null;
   const createRequested = workflow && searchParams.get("create") === "1";
-  useEffect(() => {
-    if (!editId || !rows.data || autoEditHandled.current === editId) return;
+  // Open the requested row once it is loaded, adjusting state during render.
+  if (editId && rows.data && autoEditHandled !== editId) {
     const target = rows.data.rows.find((row) => rowId(row) === editId);
     if (target) {
-      autoEditHandled.current = editId;
+      setAutoEditHandled(editId);
       setEditing(target);
     }
-  }, [editId, rows.data]);
+  }
   useEffect(() => {
     if (createRequested && !autoCreateHandled.current) {
       autoCreateHandled.current = true;

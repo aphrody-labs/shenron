@@ -92,7 +92,7 @@ test("server render: watchlist is a loading shell, rail renders nothing without 
       <ContinueWatchingRail />
     </NextIntlClientProvider>,
   );
-  expect(html).toContain('role="status"');
+  expect(html).toContain("<output");
   expect(html).toContain("Chargement de ta liste");
   expect(html).not.toContain("Continuer à regarder");
   expect(html).not.toMatch(/crunchyroll/i);
