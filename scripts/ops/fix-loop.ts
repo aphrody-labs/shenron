@@ -655,6 +655,50 @@ type Options = {
 
 const git = (root: string, args: string) => sh(`git ${args}`, root);
 
+/** Dirty files (modified or untracked) with their current content, so an agent batch can be undone without losing earlier mechanical fixes. */
+export async function worktreeSnapshot(root: string): Promise<Map<string, string>> {
+  const names = new Set<string>();
+  for (const cmd of ["diff --name-only", "ls-files -o --exclude-standard"])
+    for (const n of (await git(root, cmd)).out.split("
+")) if (n) names.add(toPosix(n));
+  const snap = new Map<string, string>();
+  for (const n of names) if (existsSync(join(root, n))) snap.set(n, readFileSync(join(root, n), "utf8"));
+  return snap;
+}
+
+export async function changedSince(root: string, snap: Map<string, string>): Promise<string[]> {
+  const now = await worktreeSnapshot(root);
+  const out: string[] = [];
+  for (const [n, c] of now) if (snap.get(n) !== c) out.push(n);
+  for (const n of snap.keys()) if (!now.has(n)) out.push(n);
+  return out;
+}
+
+export async function restoreSnapshot(root: string, snap: Map<string, string>, files: string[]) {
+  for (const f of files) {
+    const before = snap.get(f);
+    if (before !== undefined) writeFileSync(join(root, f), before);
+    else if ((await git(root, `ls-files --error-unmatch -- ${q(f)}`)).code === 0)
+      await git(root, `checkout -- ${q(f)}`);
+    else await sh(`rm -f ${q(f)}`, root);
+  }
+}
+
+/** Lines of `next` that are not in `prev` (multiset), for the suppression audit. */
+export function addedLines(prev: string, next: string): string[] {
+  const pool = new Map<string, number>();
+  for (const l of prev.split("
+")) pool.set(l, (pool.get(l) ?? 0) + 1);
+  const out: string[] = [];
+  for (const l of next.split("
+")) {
+    const n = pool.get(l) ?? 0;
+    if (n > 0) pool.set(l, n - 1);
+    else out.push(l);
+  }
+  return out;
+}
+
 const GENERATED = /(^|\/)(node_modules|vendor|target|dist|wasm|generated|examples)\//;
 
 async function commitGroup(o: Options, label: string, message: string, log: string[]) {
@@ -828,14 +872,18 @@ export async function main(argv: string[]): Promise<number> {
         agentCalls++;
         const tool = batch.findings[0]!.tool;
         const source = readFileSync(join(root, batch.file), "utf8");
+        const snap = await worktreeSnapshot(root);
         const res = await backend.fix(root, batch, agentPrompt(batch, source));
-        const changed = (await git(root, "diff --name-only")).out.split("\n").filter(Boolean);
-        const diff = (await git(root, `diff -U0 -- ${q(batch.file)}`)).out;
-        const audit = auditEdit([batch.file], changed, diff);
+        const changed = await changedSince(root, snap);
+        const added = addedLines(
+          snap.get(batch.file) ?? source,
+          existsSync(join(root, batch.file)) ? readFileSync(join(root, batch.file), "utf8") : "",
+        );
+        const audit = auditEdit([batch.file], changed, added.map((l) => "+" + l).join(String.fromCharCode(10)));
         let verdict = "";
         if (audit.outOfScope.length) verdict = `out-of-scope edits: ${audit.outOfScope.join(", ")}`;
         else if (audit.suppressions.length) verdict = `added suppression: ${audit.suppressions[0]}`;
-        else if (!res.ok && !diff) verdict = `agent made no change: ${res.reason}`;
+        else if (!changed.includes(batch.file)) verdict = `agent made no change: ${res.reason}`;
         if (!verdict) {
           const after = await recheck(root, tool, batch.file, members);
           const beforeFile = current.filter((f) => f.tool === tool && f.file === batch.file);
@@ -860,7 +908,7 @@ export async function main(argv: string[]): Promise<number> {
           verdict = `no improvement (${beforeFile.length} -> ${afterFile.length}) or new findings`;
         }
         // revert everything the agent touched
-        await git(root, `checkout -- ${changed.length ? changed.map(q).join(" ") : q(batch.file)}`);
+        await restoreSnapshot(root, snap, changed.length ? changed : [batch.file]);
         unresolved.set(batch.file, { reason: verdict, findings: batch.findings });
         say(`  reverted ${batch.file}: ${verdict}`);
       }

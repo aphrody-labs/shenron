@@ -1,10 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import { mkdtempSync, writeFileSync } from "node:fs";
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
   acceptFix,
+  addedLines,
+  changedSince,
+  restoreSnapshot,
+  worktreeSnapshot,
   agentPrompt,
   auditEdit,
   countByTool,
@@ -215,5 +219,29 @@ describe("dedupe", () => {
   test("drops the same finding reported by several workspaces", () => {
     const a = f({ tool: "tsc", file: "apps/site/x.ts", line: 4, col: 2, code: "TS1" });
     expect(dedupe([a, { ...a }, { ...a, line: 5 }])).toHaveLength(2);
+  });
+});
+
+describe("snapshot and added lines", () => {
+  test("addedLines is a multiset difference", () => {
+    expect(addedLines("a\nb\nb", "a\nb\nc\nb\nb")).toEqual(["c", "b"]);
+  });
+
+  test("restore keeps earlier uncommitted work and reverts only agent edits", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "fix-loop-snap-"));
+    writeFileSync(join(dir, "a.ts"), "let a = 1;\n");
+    writeFileSync(join(dir, "b.ts"), "let b = 1;\n");
+    await sh("git init -q && git add -A && git -c user.email=t@t -c user.name=t commit -qm i", dir);
+    writeFileSync(join(dir, "a.ts"), "let a = 2; // mechanical\n");
+    const snap = await worktreeSnapshot(dir);
+    expect([...snap.keys()]).toEqual(["a.ts"]);
+    writeFileSync(join(dir, "a.ts"), "let a = 3;\n");
+    writeFileSync(join(dir, "b.ts"), "let b = 9;\n");
+    writeFileSync(join(dir, "new.ts"), "x\n");
+    expect((await changedSince(dir, snap)).toSorted()).toEqual(["a.ts", "b.ts", "new.ts"]);
+    await restoreSnapshot(dir, snap, ["a.ts", "b.ts", "new.ts"]);
+    expect(readFileSync(join(dir, "a.ts"), "utf8")).toBe("let a = 2; // mechanical\n");
+    expect(readFileSync(join(dir, "b.ts"), "utf8")).toBe("let b = 1;\n");
+    expect(existsSync(join(dir, "new.ts"))).toBe(false);
   });
 });
