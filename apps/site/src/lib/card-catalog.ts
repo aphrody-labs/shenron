@@ -50,8 +50,12 @@ export const getPublishedCardArtwork = cache(async () => {
   return row;
 });
 
+/** Cartes par page : le catalogue entier rendait 13 Mio de HTML (TBT mobile 14,9 s). */
+export const CARD_CATALOG_PAGE_SIZE = 48;
+
 export async function getPublicCardCatalog(
   filters: {
+    page?: number;
     search?: string;
     seriesId?: string;
     language?: string;
@@ -77,8 +81,22 @@ export async function getPublicCardCatalog(
     );
   }
 
-  const [rows, totalRows] = await Promise.all([
-    db
+  const totalRows = await db
+      .select({ value: count() })
+      .from(schema.cardCatalogCards)
+      .innerJoin(
+        schema.cardCatalogSets,
+        eq(schema.cardCatalogCards.setId, schema.cardCatalogSets.id),
+      )
+      .innerJoin(
+        schema.cardCatalogSeries,
+        eq(schema.cardCatalogSets.seriesId, schema.cardCatalogSeries.id),
+      )
+      .where(and(...conditions));
+  const total = Number(totalRows[0]?.value ?? 0);
+  const pageCount = Math.max(1, Math.ceil(total / CARD_CATALOG_PAGE_SIZE));
+  const page = Math.min(Math.max(1, Math.trunc(filters.page ?? 1) || 1), pageCount);
+  const rows = await db
       .select({
         card: schema.cardCatalogCards,
         set: schema.cardCatalogSets,
@@ -107,20 +125,9 @@ export async function getPublicCardCatalog(
           sql`CASE WHEN ${schema.cardCatalogCards.cardNumber} ~ '^[0-9]+$' THEN lpad(${schema.cardCatalogCards.cardNumber}, 12, '0') ELSE ${schema.cardCatalogCards.cardNumber} END`,
         ),
         asc(schema.cardCatalogCards.slug),
-      ),
-    db
-      .select({ value: count() })
-      .from(schema.cardCatalogCards)
-      .innerJoin(
-        schema.cardCatalogSets,
-        eq(schema.cardCatalogCards.setId, schema.cardCatalogSets.id),
       )
-      .innerJoin(
-        schema.cardCatalogSeries,
-        eq(schema.cardCatalogSets.seriesId, schema.cardCatalogSeries.id),
-      )
-      .where(and(...conditions)),
-  ]);
+    .limit(CARD_CATALOG_PAGE_SIZE)
+    .offset((page - 1) * CARD_CATALOG_PAGE_SIZE);
 
   const visibleRows = rows;
   const [series, languages, regions] = await Promise.all([
@@ -183,7 +190,9 @@ export async function getPublicCardCatalog(
   return {
     rows: visibleRows,
     latestValuations: latest,
-    total: Number(totalRows[0]?.value ?? 0),
+    total,
+    page,
+    pageCount,
     series,
     languages: languages.map((row) => row.value),
     regions: regions.map((row) => row.value),

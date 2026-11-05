@@ -2,11 +2,15 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
-import { getPublicCardCatalog, getPublishedCardCount } from "@/lib/card-catalog";
+import {
+  getPublicCardCatalog,
+  getPublishedCardCount,
+} from "@/lib/card-catalog";
 
 export const revalidate = 3600;
 
 type Params = Promise<{
+  page?: string;
   search?: string;
   series?: string;
   language?: string;
@@ -24,14 +28,33 @@ export async function generateMetadata({
     searchParams,
   ]);
   const filtered = Boolean(params.search || params.series || params.language || params.region);
+  const page = pageNumber(params.page);
   const description = t("description");
   return {
     title: t("title"),
     description,
-    alternates: { canonical: "/wiki/cards" },
+    alternates: { canonical: page > 1 && !filtered ? `/wiki/cards?page=${page}` : "/wiki/cards" },
     robots:
-      count > 0 && !filtered ? { index: true, follow: true } : { index: false, follow: false },
+      count > 0 && !filtered
+        ? { index: page === 1, follow: true }
+        : { index: false, follow: false },
   };
+}
+
+function pageNumber(value: string | undefined): number {
+  const page = Number.parseInt(value ?? "1", 10);
+  return Number.isFinite(page) && page > 0 && page < 10_000 ? page : 1;
+}
+
+function pageHref(params: Awaited<Params>, page: number): string {
+  const query = new URLSearchParams();
+  for (const key of ["search", "series", "language", "region"] as const) {
+    const value = params[key];
+    if (value) query.set(key, value);
+  }
+  if (page > 1) query.set("page", String(page));
+  const text = query.toString();
+  return text ? `/wiki/cards?${text}` : "/wiki/cards";
 }
 
 function currency(value: string, code: string, locale: string) {
@@ -62,6 +85,7 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
     searchParams,
   ]);
   const data = await getPublicCardCatalog({
+    page: pageNumber(params.page),
     search: params.search,
     seriesId: params.series,
     language: params.language,
@@ -289,6 +313,34 @@ export default async function CardCatalogPage({ searchParams }: { searchParams: 
               );
             })}
           </div>
+          {data.pageCount > 1 && (
+            <nav
+              aria-label={t("pagination")}
+              className="mt-8 flex items-center justify-center gap-4 text-sm"
+            >
+              {data.page > 1 ? (
+                <Link
+                  rel="prev"
+                  href={pageHref(params, data.page - 1)}
+                  className="inline-flex min-h-11 items-center rounded-md border border-border px-4 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                  {t("pagePrevious")}
+                </Link>
+              ) : null}
+              <span className="text-muted-foreground">
+                {t("pageStatus", { page: data.page, count: data.pageCount })}
+              </span>
+              {data.page < data.pageCount ? (
+                <Link
+                  rel="next"
+                  href={pageHref(params, data.page + 1)}
+                  className="inline-flex min-h-11 items-center rounded-md border border-border px-4 transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                  {t("pageNext")}
+                </Link>
+              ) : null}
+            </nav>
+          )}
           {activeFilters && (
             <p className="mt-5 text-center text-xs text-muted-foreground">{t("filteredNotice")}</p>
           )}
