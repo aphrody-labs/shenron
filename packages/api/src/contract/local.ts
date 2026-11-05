@@ -61,6 +61,8 @@ export const LocalHealthResponse = z.object({
   ok: z.boolean(),
   service: z.literal("shenron-server"),
   version: z.string(),
+  /** Short (8 hex) id of the running release, from `SHENRON_RELEASE`/`SHENRON_REVISION`; absent otherwise. */
+  release: z.string().optional(),
   profile: z.enum(["production", "desktop", "public"]),
   home: z.string(),
   /** Native local search (`/api/local/rag/search`, shenron-ffi). */

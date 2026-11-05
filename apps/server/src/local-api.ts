@@ -32,7 +32,7 @@ import { SHENRON_FFI_FILE } from "@aphrody/shenron-native/shenron";
 import { shenronWorkerPool } from "@aphrody/shenron-native/worker";
 
 import { profileOf, type ServerPaths } from "./config";
-import { VERSION } from "./version";
+import { VERSION, releaseId } from "./version";
 import { openAiApi } from "./openai";
 
 /** The native calls of the local APIs (`@aphrody/shenron-native` by default; a fake in tests). */
@@ -248,10 +248,12 @@ export function localApi(
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
     if (url.pathname === "/api/local/health") {
       const localRag = load();
+      const release = releaseId(env);
       const body: LocalHealthResponse = {
         ok: ready,
         service: "shenron-server",
         version: VERSION,
+        ...(release ? { release } : {}),
         profile: profileOf(env),
         home: paths.home,
         localRag,

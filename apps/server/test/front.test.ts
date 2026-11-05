@@ -49,6 +49,11 @@ const next = Bun.serve({
         { headers: { "content-type": "text/event-stream" } },
       );
     }
+    if (url.pathname === "/page") {
+      return new Response("<!doctype html><title>x</title>", {
+        headers: { "content-type": "text/html; charset=utf-8" },
+      });
+    }
     return Response.json({ next: url.pathname });
   },
 });
@@ -129,6 +134,7 @@ describe("desktop profile: the front mounts the API host", () => {
     app = await start("desktop", {
       SHENRON_PROFILE: "desktop",
       SHENRON_CHAT_BACKENDS: "extractive",
+      SHENRON_RELEASE: "feb3158a9962e0f9fca7e66711f415b65a208e5c",
     });
   });
 
@@ -151,6 +157,25 @@ describe("desktop profile: the front mounts the API host", () => {
     expect(body.groups.mcp).toEqual({ available: false, reason: "serveur MCP non configuré" });
     // Reasons are short French texts, never an internal path.
     expect(JSON.stringify(body.groups)).not.toContain(root);
+  });
+
+  test("the release id is exposed in /api/local/health and on HTML responses only", async () => {
+    const previous = process.env.SHENRON_RELEASE;
+    process.env.SHENRON_RELEASE = "feb3158a9962e0f9fca7e66711f415b65a208e5c";
+    try {
+      const health = await fetch(`${app.base}/api/local/health`);
+      expect(LocalHealthResponse.parse(await health.json()).release).toBe("feb3158a");
+      const html = await fetch(`${app.base}/page`);
+      expect(html.headers.get("x-shenron-release")).toBe("feb3158a");
+      const data = await fetch(`${app.base}/data`);
+      expect(data.headers.get("x-shenron-release")).toBeNull();
+      process.env.SHENRON_RELEASE = "not-a-sha";
+      const hidden = await fetch(`${app.base}/page`);
+      expect(hidden.headers.get("x-shenron-release")).toBeNull();
+    } finally {
+      if (previous === undefined) delete process.env.SHENRON_RELEASE;
+      else process.env.SHENRON_RELEASE = previous;
+    }
   });
 
   test("/api/v1 and /api/public routes are answered from the embedded VFS", async () => {

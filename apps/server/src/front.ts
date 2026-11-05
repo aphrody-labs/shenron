@@ -28,6 +28,7 @@ import { join, normalize, sep } from "node:path";
 import type { ChatSocketData } from "@aphrody/shenron-api/server";
 
 import type { LocalApi } from "./local-api";
+import { releaseId } from "./version";
 import { connectNextDev, frontWebSockets, type FrontSocketData } from "./next-dev";
 
 /** Idle timeout of the front server, in seconds (Bun's maximum is 255). */
@@ -168,6 +169,10 @@ async function relay(
   });
   const responseHeaders = new Headers(upstream.headers);
   for (const name of HOP_BY_HOP) responseHeaders.delete(name);
+  const release = releaseId();
+  if (release && (responseHeaders.get("content-type") ?? "").startsWith("text/html")) {
+    responseHeaders.set("x-shenron-release", release);
+  }
   return new Response(upstream.body, {
     status: upstream.status,
     statusText: upstream.statusText,
