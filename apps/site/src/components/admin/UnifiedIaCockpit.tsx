@@ -206,7 +206,7 @@ const TABS: Array<{ key: IaCockpitTab; label: string; icon: LucideIcon }> = [
 
 const HEADER_SOURCES: Array<{ key: IaSourceKey; name: string }> = [
   { key: "aphrodyHealth", name: "Aphrody AI" },
-  { key: "aphrodyWeb", name: "Aphrody Web" },
+  { key: "yoloWeb", name: "YOLO WEB" },
   { key: "botRag", name: "Bot" },
   { key: "evalHistory", name: "PostgreSQL" },
 ];
@@ -895,13 +895,11 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
                   )}
                 </SourceRow>
 
-                <SourceRow report={sources.aphrodyWeb}>
+                <SourceRow report={sources.yoloWeb}>
                   {(web) => (
                     <div className="text-[11px] text-white/70">
-                      File : {fmtInt(web.queue.pending)} en attente · {fmtInt(web.queue.locked)} en
-                      cours · {fmtInt(web.queue.done)} traitées · {fmtInt(web.queue.failed)} en
-                      échec (total {fmtInt(web.queue.total)}) · {web.jobs} travail(aux),{" "}
-                      {web.runningJobs} actif(s)
+                      {web.server} · {fmtInt(web.tools)} outils MCP · CDP {web.cdpEndpoint} (
+                      {web.cdpBrowser})
                     </div>
                   )}
                 </SourceRow>

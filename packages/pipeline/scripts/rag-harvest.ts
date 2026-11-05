@@ -1,8 +1,7 @@
 #!/usr/bin/env bun
 /* oxlint-disable eslint/no-shadow, oxc/no-map-spread -- behavior-preserving legacy pattern, reviewed */
 /**
- * rag-harvest.ts — Orchestre la récolte RAG Dragon Ball through Aphrody Web.
- * Recursive site mirrors use the Aphrody Web Rust owner.
+ * rag-harvest.ts — Orchestre la récolte RAG Dragon Ball through YOLO WEB.
  * Extrait du markdown brut, normalise, et versionne dans data/rag/raw/.
  *
  * Usage : bun apps/bot/scripts/rag-harvest.ts <subcommand> [options]
@@ -10,14 +9,7 @@
 import { Database } from "bun:sqlite";
 import { mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
-import { homedir } from "node:os";
-import {
-  aphrodyWebCrawl,
-  aphrodyWebRecon,
-  aphrodyWebScrape,
-  aphrodyWebSearch,
-} from "@aphrody/shenron-pipeline/aphrody";
-import { aphrodyWebMirror } from "@aphrody/shenron-pipeline/aphrody/mirror";
+import { yoloWebScrape } from "@aphrody/shenron-pipeline/yolo-web";
 
 // Paths
 const DB_PATH = Bun.fileURLToPath(new URL("../data/bot.db", import.meta.url));
@@ -52,27 +44,11 @@ for (let i = 0; i < subArgs.length; i++) {
 }
 
 // Map configuration options
-const profile =
-  (options.profile as string) ||
-  process.env.APHRODY_WEB_PROFILE ||
-  process.env.BXC_PROFILE ||
-  "max";
-const proxy =
-  (options.proxy as string) ||
-  process.env.APHRODY_WEB_PROXY ||
-  process.env.BXC_PROXY ||
-  process.env.PROXY ||
-  undefined;
 const delayMs = parseInt((options.delay as string) || "1000", 10);
 const sourceIdOpt = (options["source-id"] as string) || undefined;
 const outputDir = (options["output-dir"] as string) || OUT_RAW;
 const selector = (options.selector as string) || undefined;
 const isJson = !!options.json;
-const isRecursive = !!options.recursive;
-const maxPages = parseInt((options["max-pages"] as string) || "10", 10);
-const maxDepth = parseInt((options["max-depth"] as string) || "3", 10);
-const allowedDomains = (options["allowed-domains"] as string) || undefined;
-const queueName = (options.queue as string) || "rag-harvest-queue";
 
 // Create output directory
 mkdirSync(outputDir, { recursive: true });
@@ -350,43 +326,23 @@ function saveHarvestedDoc(
 // Subcommands Handlers
 async function handleRecon(url: string, customSourceId?: string) {
   if (refuseSiFandom(url)) return null;
-  console.log(`[*] Harvesting Markdown through Aphrody Web: ${url}`);
+  console.log(`[*] Harvesting Markdown through YOLO WEB: ${url}`);
   let markdown: string;
   try {
-    markdown = await aphrodyWebScrape(url, {
-      profile: profile as "static" | "http" | "fast" | "stealth" | "max",
-    });
+    markdown = await yoloWebScrape(url, {});
   } catch (error) {
     console.error(
-      `[-] Aphrody Web scrape failed for ${url}: ${error instanceof Error ? error.message : String(error)}`,
+      `[-] YOLO WEB scrape failed for ${url}: ${error instanceof Error ? error.message : String(error)}`,
     );
     return null;
   }
   if (markdown.length < 50) {
-    console.error(`[-] Aphrody Web returned too little Markdown for ${url}`);
+    console.error(`[-] YOLO WEB returned too little Markdown for ${url}`);
     return null;
   }
 
   const savedPath = saveHarvestedDoc(url, markdown, customSourceId, "md");
   console.log(`[+] Successfully saved markdown: ${url} -> ${savedPath}`);
-
-  console.log(`[*] Running Aphrody Web reconnaissance: ${url}`);
-  try {
-    const report = await aphrodyWebRecon(url, {
-      profile: profile as "static" | "http" | "fast" | "stealth" | "max",
-    });
-    const savedReconPath = saveHarvestedDoc(
-      url,
-      JSON.stringify(report, null, 2),
-      customSourceId,
-      "recon.md",
-    );
-    console.log(`[+] Successfully saved recon report: ${url} -> ${savedReconPath}`);
-  } catch (error) {
-    console.warn(
-      `Aphrody Web recon failed; skipping report: ${error instanceof Error ? error.message : String(error)}`,
-    );
-  }
 
   return savedPath;
 }
@@ -394,17 +350,16 @@ async function handleRecon(url: string, customSourceId?: string) {
 async function handleScrape(url: string, selector?: string, customSourceId?: string) {
   if (refuseSiFandom(url)) return null;
   console.log(
-    `[*] Harvesting URL via Aphrody Web scrape: ${url} (selector: ${selector || "markdown"})`,
+    `[*] Harvesting URL via YOLO WEB scrape: ${url} (selector: ${selector || "markdown"})`,
   );
   let stdout: string;
   try {
-    stdout = await aphrodyWebScrape(url, {
-      profile: profile as "static" | "http" | "fast" | "stealth" | "max",
-      ...(selector ? { selector } : {}),
+    stdout = await yoloWebScrape(url, {
+      selector,
     });
   } catch (error) {
     console.error(
-      `[-] Aphrody Web scrape failed: ${error instanceof Error ? error.message : String(error)}`,
+      `[-] YOLO WEB scrape failed: ${error instanceof Error ? error.message : String(error)}`,
     );
     return null;
   }
@@ -413,120 +368,6 @@ async function handleScrape(url: string, selector?: string, customSourceId?: str
   const savedPath = saveHarvestedDoc(url, stdout, customSourceId, ext);
   console.log(`[+] Successfully scraped: ${url} -> ${savedPath}`);
   return savedPath;
-}
-
-async function handleMirror(url: string) {
-  if (refuseSiFandom(url)) return null;
-  const meta = lookupSourceMeta(url);
-  const sourceId = sourceIdOpt || meta.sourceId;
-  const outDir = `${outputDir}/${sourceId}/mirror`;
-  mkdirSync(outDir, { recursive: true });
-
-  console.log(`[*] Mirroring site through Aphrody Web: ${url} -> ${outDir}`);
-
-  const report = await aphrodyWebMirror(
-    {
-      url,
-      outputDir: outDir,
-      recursive: isRecursive,
-      maxPages,
-      maxAssets: parseInt((options["max-assets"] as string) || "1000", 10),
-      maxDepth,
-      maxConcurrency: 4,
-      delayMs,
-      ...(allowedDomains
-        ? {
-            allowedDomains: allowedDomains
-              .split(",")
-              .map((domain) => domain.trim())
-              .filter(Boolean),
-          }
-        : {}),
-      ...(proxy ? { proxy } : {}),
-    },
-    { bin: process.env.APHRODY_BIN, timeoutMs: 600_000 },
-  );
-  console.log(
-    `[+] Mirror report: ${report.pagesWritten} pages, ${report.assetsWritten} assets, ${report.failures.length} failures`,
-  );
-  for (const failure of report.failures)
-    console.warn(`  [mirror] ${failure.url}: ${failure.error}`);
-  if (report.failures.length > 0) return null;
-  return outDir;
-}
-
-async function handleSearch(query: string) {
-  console.log(`[*] Searching Web through Aphrody: "${query}"`);
-  let result: unknown;
-  try {
-    result = await aphrodyWebSearch(query, { language: "fr", region: "FR" });
-  } catch (error) {
-    console.error(
-      `[-] Aphrody Web search failed for "${query}": ${error instanceof Error ? error.message : String(error)}`,
-    );
-    return null;
-  }
-  const stdout = isJson ? JSON.stringify(result, null, 2) : searchMarkdown(result);
-
-  const querySlug = query.toLowerCase().replace(/[^a-z0-9]+/g, "-");
-  const ext = isJson ? "json" : "md";
-  const relativePath = `search/${querySlug}.${ext}`;
-  const absolutePath = `${outputDir}/${relativePath}`;
-
-  mkdirSync(`${outputDir}/search`, { recursive: true });
-  writeFileSync(absolutePath, stdout);
-
-  console.log(`[+] Search results saved to: ${absolutePath}`);
-
-  console.log("\n--- Search Results Preview ---");
-  console.log(stdout.substring(0, 1000));
-  if (stdout.length > 1000) console.log("... [truncated]");
-  console.log("------------------------------\n");
-
-  return absolutePath;
-}
-
-async function handleCrawlWorker(initialUrls: string[]) {
-  console.log(`[*] Running bounded Aphrody Web crawl (${queueName})...`);
-  if (!initialUrls.length) throw new Error("crawl-worker requires at least one URL");
-  const report = await aphrodyWebCrawl({
-    urls: initialUrls,
-    ...(allowedDomains
-      ? {
-          allowedDomains: allowedDomains
-            .split(",")
-            .map((domain) => domain.trim())
-            .filter(Boolean),
-        }
-      : {}),
-    maxDepth,
-    maxRequests: maxPages,
-    maxConcurrency: 2,
-    perHostDelayMs: delayMs,
-    sqlite: `${process.env.APHRODY_HOME || `${homedir()}/.aphrody`}/workspaces/dbfr/crawl/frontier/${queueName}.sqlite`,
-  });
-  console.log(
-    `[*] Aphrody Web crawl finished: ${report.pages.length} pages, ${report.attempts} requests, ${report.errors.length} errors`,
-  );
-}
-
-function searchMarkdown(value: unknown): string {
-  const result = value as {
-    content?: {
-      organic?: Array<{ position?: number; title?: string; url?: string; snippet?: string }>;
-      corrected_query?: string;
-    };
-  };
-  const organic = result.content?.organic ?? [];
-  return [
-    `# Search results${result.content?.corrected_query ? `: ${result.content.corrected_query}` : ""}`,
-    "",
-    ...organic.flatMap((hit) => [
-      `${hit.position ?? "-"}. [${hit.title ?? hit.url ?? "Result"}](${hit.url ?? ""})`,
-      ...(hit.snippet ? [`   ${hit.snippet}`] : []),
-      "",
-    ]),
-  ].join("\n");
 }
 
 async function handleRunSeeds() {
@@ -567,23 +408,17 @@ async function handleRunSeeds() {
 
 function printHelpAndExit() {
   console.log(`
-rag-harvest.ts — Dragon Ball RAG Data Harvester (Aphrody Web)
+rag-harvest.ts — Dragon Ball RAG Data Harvester (YOLO WEB)
 
 Usage:
   bun apps/bot/scripts/rag-harvest.ts <subcommand> [options]
 
 Subcommands:
-  recon <url>            Harvest Markdown and structural report through Aphrody Web
-  scrape <url>           Extract content using Aphrody Web (CSS selector or Markdown)
-  mirror <url>           Mirror HTML, CSS and linked assets through Aphrody Web
-  search <query>         Query Google Search through Aphrody Web
-  crawl-worker [urls]    Run a bounded persistent Aphrody Web crawl
+  recon <url>            Harvest Markdown through YOLO WEB
+  scrape <url>           Extract content using YOLO WEB (CSS selector or Markdown)
   run-seeds              Harvest all seeds from db_sources and pre-configured links
 
 Options:
-  --profile <name>       Stealth profile (static | fast | http | stealth | max) [default: max]
-  --proxy <url>          Use HTTP/Socks5 proxy for Aphrody Web mirror requests
-  --max-assets <N>       Maximum linked assets to mirror [default: 1000]
   --delay <ms>           Rate-limiting delay between requests in milliseconds [default: 1000]
   --source-id <id>       Override source ID (for folders and manifest) [default: derived from hostname]
   --output-dir <dir>     Output base directory [default: apps/bot/data/rag/raw/]
@@ -591,10 +426,6 @@ Options:
   --json                 Request JSON output where applicable (search/scrape)
   --markdown             Request Markdown output where applicable (scrape)
   --recursive            Enable recursive crawling (mirror)
-  --max-pages <N>        Maximum pages to crawl (mirror) [default: 10]
-  --max-depth <N>        Maximum crawl depth (mirror/crawl-worker) [default: 3]
-  --allowed-domains <d>  Comma-separated domains to restrict crawling (crawl-worker)
-  --queue <name>         Crawl worker queue name [default: rag-harvest-queue]
 
 Examples:
   bun apps/bot/scripts/rag-harvest.ts recon https://www.kanzenshuu.com/guides/
@@ -622,26 +453,6 @@ async function main() {
         printHelpAndExit();
       }
       await handleScrape(positional[0], selector, sourceIdOpt);
-      break;
-
-    case "mirror":
-      if (positional.length === 0) {
-        console.error("[-] Error: 'mirror' requires a target URL.");
-        printHelpAndExit();
-      }
-      await handleMirror(positional[0]);
-      break;
-
-    case "search":
-      if (positional.length === 0) {
-        console.error("[-] Error: 'search' requires a query string.");
-        printHelpAndExit();
-      }
-      await handleSearch(positional.join(" "));
-      break;
-
-    case "crawl-worker":
-      await handleCrawlWorker(positional);
       break;
 
     case "run-seeds":

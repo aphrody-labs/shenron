@@ -1160,7 +1160,7 @@ impl ShenronMcp {
 
     #[tool(
         name = "dragonball.sources_search",
-        description = "Searches the BXC index of external Dragon Ball sources (archives, interviews, press). Never a canon verdict: use canon_check for that. API: site /api/sources/search.",
+        description = "Searches the index of external Dragon Ball sources (archives, interviews, press). Never a canon verdict: use canon_check for that. API: site /api/sources/search.",
         annotations(
             title = "External source index search",
             read_only_hint = true,

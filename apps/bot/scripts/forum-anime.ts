@@ -4,7 +4,7 @@
  * avec les lecteurs voir-anime, les médias du site et la chronologie.
  *
  * La matière vient de la base du site (PostgreSQL local, schéma `bot`) : sagas,
- * épisodes, films, et les `players` scrapés par bxc. Rien n'est rédigé ici — le
+ * épisodes, films, et les `players` scrapés. Rien n'est rédigé ici — le
  * forum est une VUE de la base, régénérable, jamais une seconde source.
  *
  * Deux étapes séparées, parce qu'écrire dans un serveur communautaire ne se

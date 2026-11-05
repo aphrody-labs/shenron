@@ -161,7 +161,6 @@ const FORCER_ALIGNEMENT = flag("forcer-alignement");
 const APPLIQUER = flag("appliquer");
 const CORRESP_WIKI = flag("wikipedia");
 const RECALER = flag("recaler");
-const BXC_CLI = process.env.BXC_CLI ?? join(userHome(), "bxc/src/cli/index.ts");
 const BOT_LOCAL = process.env.SHENRON_BOT_URL ?? "http://127.0.0.1:5006";
 
 const MAX_OCTETS = 2 * 1024 * 1024; // même plafond que /api/assets/upload-subtitle
@@ -751,25 +750,36 @@ async function captureImage(episodeId: number, secondes: number, sortie: string)
  * faux positif ne produit pas.
  */
 async function instantJaponais(image: string, k: number): Promise<number | null> {
-  const proc = Bun.spawn(
-    ["bun", BXC_CLI, "frames", "search", image, "--remote", "--limit", "5", "--json"],
-    {
-      stdout: "pipe",
-      stderr: "ignore",
-    },
-  );
-  const minuteur = setTimeout(() => proc.kill(), 120_000);
-  const sortie = await new Response(proc.stdout).text();
-  await proc.exited;
-  clearTimeout(minuteur);
   try {
-    const data = JSON.parse(sortie) as {
-      matches?: { title?: string; episode?: number | null; atMs?: number }[];
+    const response = await fetch("https://api.trace.moe/search?anilistInfo&cutBorders", {
+      method: "POST",
+      headers: { "content-type": "application/octet-stream" },
+      body: Bun.file(image),
+      signal: AbortSignal.timeout(120_000),
+    });
+    if (!response.ok) return null;
+    const data = (await response.json()) as {
+      result?: {
+        anilist?: { title?: { romaji?: string; english?: string; native?: string } };
+        episode?: number | null;
+        from?: number;
+        to?: number;
+      }[];
     };
-    const vu = (data.matches ?? []).find(
-      (m) => /kai/i.test(m.title ?? "") && m.episode === k && typeof m.atMs === "number",
-    );
-    return vu?.atMs ?? null;
+    const vu = (data.result ?? [])
+      .slice(0, 5)
+      .find(
+        (m) =>
+          /kai/i.test(
+            [m.anilist?.title?.romaji, m.anilist?.title?.english, m.anilist?.title?.native].join(
+              " ",
+            ),
+          ) &&
+          m.episode === k &&
+          typeof m.from === "number" &&
+          typeof m.to === "number",
+      );
+    return vu ? Math.round(((vu.from! + vu.to!) / 2) * 1000) : null;
   } catch {
     return null;
   }

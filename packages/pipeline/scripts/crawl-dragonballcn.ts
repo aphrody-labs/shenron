@@ -16,7 +16,7 @@
  *
  * RÉCUPÉRATION
  * ------------
- * Toutes les pages passent par l’API HTML Aphrody Web; le cache et l’extraction
+ * Toutes les pages passent par l’API HTML YOLO WEB (MCP navigate + evaluate); le cache et l’extraction
  * éditoriale restent dans Shenron.
  *
  * Usage :
@@ -27,7 +27,7 @@
  *   bun apps/bot/scripts/crawl-dragonballcn.ts --force              # ignore le cache disque
  */
 
-import { scrapeWithAphrody } from "./lib/aphrody-web-scrape.ts";
+import { scrapeWithYoloWeb } from "./lib/yolo-web-scrape.ts";
 import { parseGalleryListing, parseGalleryTitle } from "../src/dragonballcn-gallery.ts";
 
 const RACINE = "https://comic.dragonballcn.com";
@@ -110,8 +110,8 @@ function cheminCache(url: string) {
 }
 
 async function fetchSourceHtml(url: string): Promise<string> {
-  const result = await scrapeWithAphrody(url, { profile: "render" });
-  if (estChallenge(result.content)) throw new Error(`Aphrody Web challenge pour ${url}`);
+  const result = await scrapeWithYoloWeb(url);
+  if (estChallenge(result.content)) throw new Error(`YOLO WEB challenge pour ${url}`);
   return result.content;
 }
 

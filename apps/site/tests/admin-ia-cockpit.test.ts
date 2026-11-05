@@ -122,10 +122,7 @@ function fakeFetchers(): IaCockpitFetchers {
     aphrodyHealth: notExercised("Aphrody AI — santé"),
     aphrodyRagStats: notExercised("Aphrody RAG — statistiques"),
     aphrodyRagProbe: notExercised("Aphrody RAG — sonde"),
-    aphrodyWeb: unconfigured(
-      "Aphrody Web — crawl",
-      "APHRODY_BXC_API_TOKEN absent de l'environnement du site",
-    ),
+    yoloWeb: unconfigured("YOLO WEB — crawl", "YOLO_WEB_CLI absent de l'environnement du site"),
     botRag: notExercised("Bot Shenron — index local"),
     evalHistory: ok("Historique", []),
     goldSet: ok("Jeu doré", { cases: 3, sample: [] }),
@@ -227,14 +224,14 @@ describe("Cockpit Admin IA — route /api/admin/ai", () => {
     for (const key of ["aphrodyHealth", "aphrodyRagStats", "aphrodyRagProbe", "botRag"]) {
       expect(json.sources[key]).toMatchObject({ status: "unconfigured", data: null });
     }
-    expect(json.sources.aphrodyWeb).toMatchObject({ status: "unconfigured", data: null });
+    expect(json.sources.yoloWeb).toMatchObject({ status: "unconfigured", data: null });
     expect(json.sources.goldSet).toMatchObject({ status: "ok", data: { cases: 3 } });
     expect(json.summary.status).toBe("degraded");
     expect(json.summary.failing.map((f: { key: string }) => f.key)).toEqual([
       "aphrodyHealth",
       "aphrodyRagStats",
       "aphrodyRagProbe",
-      "aphrodyWeb",
+      "yoloWeb",
       "botRag",
     ]);
     // No retrieval answered: counters are unknown, never zero.

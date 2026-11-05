@@ -4,7 +4,7 @@
  *
  * Le bot doit démarrer sans PostgreSQL (le SQLite `data/bot.db` reste son
  * runtime) : `PgService.get()` renvoie `null` quand aucune URL n'est trouvée,
- * et chaque consommateur dégrade (menus d'épisodes muets, synchronisation BXC
+ * et chaque consommateur dégrade (menus d'épisodes muets, synchronisation des sources
  * refusée). Quand une URL existe, UN appel `createBunDb` (Bun.SQL, max 2,
  * `application_name = shenron-bot`) fournit à la fois Drizzle et le client
  * brut : le driver `drizzle-orm/bun-sql` ne modifie pas le client Bun.SQL

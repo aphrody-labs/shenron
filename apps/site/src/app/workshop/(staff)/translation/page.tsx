@@ -45,9 +45,6 @@ export default async function WorkshopTranslationPage() {
             <Link href="/admin/db-universe/databooks" className="btn btn-ghost h-9 px-3 text-xs">
               <T k="library.workshop.staff.catalogue" />
             </Link>
-            <Link href="/admin/bxc-campaigns" className="btn btn-ghost h-9 px-3 text-xs">
-              <T k="library.workshop.staff.bxc" />
-            </Link>
           </div>
         }
       />

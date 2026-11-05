@@ -132,18 +132,13 @@ interface RagProbeData {
   hits: number;
 }
 
-interface WebCrawlQueue {
-  pending: number;
-  locked: number;
-  done: number;
-  failed: number;
-  total: number;
-}
-
 export interface WebCrawlData {
-  queue: WebCrawlQueue;
-  jobs: number;
-  runningJobs: number;
+  /** MCP server name and version announced by `web-cli mcp`. */
+  server: string;
+  tools: number;
+  /** CDP endpoint probed and the browser that answered on it. */
+  cdpEndpoint: string;
+  cdpBrowser: string;
 }
 
 export interface BotRagData {
@@ -300,33 +295,23 @@ export function parseBotIaStatus(json: unknown): BotRagData {
   };
 }
 
-/** Aphrody Web `GET <prefix>/crawl/stats` (no jobId): persistent queue + in-memory jobs. */
-export function parseCrawlStats(json: unknown): WebCrawlData {
-  if (!isRecord(json) || json.success !== true)
-    throw new Error("Aphrody Web n'a pas confirmé les statistiques de crawl");
-  const stats = json.stats;
-  if (
-    !isRecord(stats) ||
-    !isCount(stats.pending) ||
-    !isCount(stats.locked) ||
-    !isCount(stats.done) ||
-    !isCount(stats.failed) ||
-    !isCount(stats.total)
-  ) {
-    throw new Error("Statistiques de file de crawl invalides");
-  }
-  const jobs = json.jobs === undefined ? [] : json.jobs;
-  if (!Array.isArray(jobs)) throw new Error("Liste des travaux de crawl invalide");
+/**
+ * Maps the probe of the YOLO WEB stdio transport (`probeYoloWeb`) to the cockpit data.
+ * A server without the browser tools is a failure, never a degraded "ok".
+ */
+export function summarizeYoloWebProbe(probe: {
+  server: { name?: string; version?: string };
+  tools: number;
+  hasBrowserTools: boolean;
+  cdp: { endpoint: string; browser: string };
+}): WebCrawlData {
+  if (probe.tools < 1 || !probe.hasBrowserTools)
+    throw new Error("Le serveur MCP YOLO WEB n'expose pas les outils browser_*");
   return {
-    queue: {
-      pending: stats.pending,
-      locked: stats.locked,
-      done: stats.done,
-      failed: stats.failed,
-      total: stats.total,
-    },
-    jobs: jobs.length,
-    runningJobs: jobs.filter((job) => isRecord(job) && job.status === "running").length,
+    server: `${probe.server.name ?? "web-mcp"} ${probe.server.version ?? ""}`.trim(),
+    tools: probe.tools,
+    cdpEndpoint: probe.cdp.endpoint,
+    cdpBrowser: probe.cdp.browser,
   };
 }
 
@@ -509,67 +494,13 @@ export function computeRetrievalMetrics(
   };
 }
 
-// ── Aphrody Web crawl statistics ─────────────────────────────────────────────
-
-export type FetchLike = (input: string | URL, init?: RequestInit) => Promise<Response>;
-
-const LOOPBACK_HOSTS = new Set(["127.0.0.1", "[::1]", "localhost"]);
-
-/**
- * Aggregate crawl statistics of Aphrody Web. `AphrodyWebClient` only exposes
- * per-job status, so this mirrors its URL rules (HTTPS or loopback HTTP, no
- * credentials, `/api/v1` on the private loopback API and `/api/v1/web` behind
- * the public route) and its bearer `APHRODY_BXC_API_TOKEN`.
- */
-export async function fetchAphrodyWebCrawlStats(options: {
-  baseUrl?: string;
-  token?: string;
-  fetcher?: FetchLike;
-  timeoutMs?: number;
-}): Promise<WebCrawlData> {
-  const token = options.token?.trim();
-  if (!token)
-    throw new SourceNotConfiguredError("APHRODY_BXC_API_TOKEN absent de l'environnement du site");
-  let base: URL;
-  try {
-    base = new URL(options.baseUrl?.trim() || "https://aphrody.com");
-  } catch {
-    throw new SourceNotConfiguredError("APHRODY_WEB_API_URL n'est pas une URL valide");
-  }
-  const loopback = LOOPBACK_HOSTS.has(base.hostname);
-  if (
-    (base.protocol !== "https:" && !(base.protocol === "http:" && loopback)) ||
-    base.username ||
-    base.password
-  ) {
-    throw new SourceNotConfiguredError(
-      "APHRODY_WEB_API_URL doit utiliser HTTPS ou HTTP loopback, sans identifiants",
-    );
-  }
-  const prefix =
-    base.protocol === "http:" && loopback && base.port === "3007" ? "/api/v1" : "/api/v1/web";
-  const url = new URL(`${prefix}/crawl/stats`, base);
-  const response = await (options.fetcher ?? fetch)(url, {
-    headers: { accept: "application/json", authorization: `Bearer ${token}` },
-    cache: "no-store",
-    signal: AbortSignal.timeout(options.timeoutMs ?? 5_000),
-  });
-  if (!response.ok) {
-    const detail = (await response.text().catch(() => "")).trim().slice(0, 200);
-    throw new Error(
-      `Aphrody Web HTTP ${response.status} sur ${url.pathname}${detail ? ` : ${detail}` : ""}`,
-    );
-  }
-  return parseCrawlStats(await response.json());
-}
-
 // ── Aggregation ──────────────────────────────────────────────────────────────
 
 export interface IaCockpitFetchers {
   aphrodyHealth: SourceSpec<AphrodyHealthData>;
   aphrodyRagStats: SourceSpec<AphrodyRagStatsData>;
   aphrodyRagProbe: SourceSpec<RagProbeData>;
-  aphrodyWeb: SourceSpec<WebCrawlData>;
+  yoloWeb: SourceSpec<WebCrawlData>;
   botRag: SourceSpec<BotRagData>;
   evalHistory: SourceSpec<EvalSnapshot[]>;
   goldSet: SourceSpec<GoldSetData>;
@@ -621,7 +552,7 @@ const SOURCE_KEYS: IaSourceKey[] = [
   "aphrodyHealth",
   "aphrodyRagStats",
   "aphrodyRagProbe",
-  "aphrodyWeb",
+  "yoloWeb",
   "botRag",
   "evalHistory",
   "goldSet",

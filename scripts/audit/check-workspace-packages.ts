@@ -130,7 +130,6 @@ const EDGE_SUBPATHS: Readonly<Record<string, Readonly<Record<string, readonly st
     "@aphrody/shenron-pipeline": [
       "@aphrody/shenron-pipeline/ai/prompts",
       "@aphrody/shenron-pipeline/agent-home",
-      "@aphrody/shenron-pipeline/bxc/contracts",
     ],
   },
   "@aphrody/shenron-ui": {

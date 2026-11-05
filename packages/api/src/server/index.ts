@@ -237,8 +237,6 @@ export interface SiteThemePort {
 }
 
 export interface ShenronApiPorts {
-  /** Finite native Web capabilities supplied by the Bun host, never by the Next process. */
-  web?: WebPort | null;
   wikiLaunch?: WikiLaunchPort | null;
   chronology?: ChronologyPort | null;
   pageBanners?: PageBannersPort | null;
@@ -280,27 +278,6 @@ export interface ShenronApiPorts {
   isDirectLoopback(request: Request): boolean;
   /** Never receives headers or bodies. */
   log?(event: ShenronApiLogEvent): void;
-}
-
-export interface WebPort {
-  status(): Promise<z.infer<typeof endpoints.webStatus.response>>;
-  framesStats?(): Promise<z.infer<typeof endpoints.webFramesStats.response>>;
-  framesVector?(
-    input: z.infer<typeof endpoints.webFramesVector.body>,
-    signal: AbortSignal,
-  ): Promise<z.infer<typeof endpoints.webFramesVector.response>>;
-  framesSearch?(
-    input: z.infer<typeof endpoints.webFramesSearch.body>,
-    signal: AbortSignal,
-  ): Promise<z.infer<typeof endpoints.webFramesSearch.response>>;
-  mediaResolve?(
-    input: z.infer<typeof endpoints.webMediaResolve.body>,
-    signal: AbortSignal,
-  ): Promise<z.infer<typeof endpoints.webMediaResolve.response>>;
-  mediaSearch?(
-    input: z.infer<typeof endpoints.webMediaSearch.body>,
-    signal: AbortSignal,
-  ): Promise<z.infer<typeof endpoints.webMediaSearch.response>>;
 }
 
 export type ShenronApiService =
@@ -535,80 +512,6 @@ export function createShenronApi(
     if (!enabled) return;
     router.add(spec.path, spec.method === "post" ? "POST" : "GET", { spec, run });
   };
-
-  const webReply = async <S extends z.ZodType>(
-    schema: S,
-    operation: (() => Promise<unknown>) | undefined,
-  ): Promise<Response> => {
-    if (!operation)
-      return json({ error: "Native Web capability unavailable", code: "unavailable" }, 503, {
-        "Cache-Control": "no-store",
-      });
-    try {
-      return json(schema.parse(await operation()), 200, { "Cache-Control": "no-store" });
-    } catch {
-      return json({ error: "Native Web capability unavailable", code: "unavailable" }, 503, {
-        "Cache-Control": "no-store",
-      });
-    }
-  };
-  add(endpoints.webStatus, Boolean(ports.web), async () =>
-    webReply(endpoints.webStatus.response, () => ports.web!.status()),
-  );
-  add(endpoints.webFramesStats, Boolean(ports.web), async () =>
-    webReply(
-      endpoints.webFramesStats.response,
-      ports.web!.framesStats ? () => ports.web!.framesStats!() : undefined,
-    ),
-  );
-  add(endpoints.webFramesVector, Boolean(ports.web), async ({ body, request }) =>
-    webReply(
-      endpoints.webFramesVector.response,
-      ports.web!.framesVector
-        ? () =>
-            ports.web!.framesVector!(
-              body as z.infer<typeof endpoints.webFramesVector.body>,
-              request.signal,
-            )
-        : undefined,
-    ),
-  );
-  add(endpoints.webFramesSearch, Boolean(ports.web), async ({ body, request }) =>
-    webReply(
-      endpoints.webFramesSearch.response,
-      ports.web!.framesSearch
-        ? () =>
-            ports.web!.framesSearch!(
-              body as z.infer<typeof endpoints.webFramesSearch.body>,
-              request.signal,
-            )
-        : undefined,
-    ),
-  );
-  add(endpoints.webMediaResolve, Boolean(ports.web), async ({ body, request }) =>
-    webReply(
-      endpoints.webMediaResolve.response,
-      ports.web!.mediaResolve
-        ? () =>
-            ports.web!.mediaResolve!(
-              body as z.infer<typeof endpoints.webMediaResolve.body>,
-              request.signal,
-            )
-        : undefined,
-    ),
-  );
-  add(endpoints.webMediaSearch, Boolean(ports.web), async ({ body, request }) =>
-    webReply(
-      endpoints.webMediaSearch.response,
-      ports.web!.mediaSearch
-        ? () =>
-            ports.web!.mediaSearch!(
-              body as z.infer<typeof endpoints.webMediaSearch.body>,
-              request.signal,
-            )
-        : undefined,
-    ),
-  );
 
   // ── Reader identity: resolved exclusively by the Better Auth session port ──
   const favoritesEnabled = Boolean(ports.favorites && ports.betterAuth?.session);

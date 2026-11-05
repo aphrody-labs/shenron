@@ -9,12 +9,7 @@ const FORBIDDEN =
   /from\s+["'](?:bun:ffi|bun:sqlite|sharp|bun)["']|import\(\s*["'](?:bun:ffi|sharp)["']\s*\)|\bdlopen\b/;
 
 describe("portability", () => {
-  for (const file of [
-    "index.ts",
-    "aphrody/compute.ts",
-    "aphrody/shenron-embeddings.ts",
-    "aphrody/web.ts",
-  ]) {
+  for (const file of ["index.ts", "aphrody/compute.ts", "aphrody/shenron-embeddings.ts"]) {
     it(`${file} imports no Bun-native module`, () => {
       const text = readFileSync(join(SRC, file), "utf8");
       expect(FORBIDDEN.test(text)).toBe(false);

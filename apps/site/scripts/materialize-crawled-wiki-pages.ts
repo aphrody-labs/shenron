@@ -2,7 +2,7 @@
 /**
  * Matérialise les documents collectés dans des pages wiki structurées.
  *
- * Les collectes BXC restent des sources, jamais des assertions canoniques :
+ * Les collectes restent des sources, jamais des assertions canoniques :
  * chaque page ne publie que ses métadonnées, son URL et un extrait attribué.
  * La route `/wiki/[...slug]` rend ces fiches sans nouvelle route ad hoc.
  *

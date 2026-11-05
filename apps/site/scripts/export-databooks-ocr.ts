@@ -60,41 +60,16 @@ const DATABOOKS = (opt("databook") ?? "")
 const CATEGORIE = opt("categorie") ?? null;
 const CONCURRENCE = 6;
 
-/**
- * The referenced scan host rejects Bun's stock fetch in some deployments.
- * Keep the acquisition transport isolated to this opt-in path: BXC's
- * curl-impersonate client presents a browser TLS fingerprint while HTTP/1.1
- * avoids the upstream's flaky HTTP/2 responses.
- */
-type BxcClient = {
-  fetch(
-    url: string,
-    options: {
-      headers: Record<string, string>;
-      timeoutMs: number;
-      followRedirects: boolean;
-      httpVersion: "1.1";
-    },
-  ): Promise<Response>;
-  close(): void;
-};
-
-let bxcClient: BxcClient | null = null;
-
-async function getBxcClient(): Promise<BxcClient> {
-  if (bxcClient) return bxcClient;
-  const bxcRoot =
-    process.env.BXC_ROOT?.trim() ||
-    resolve(import.meta.dir, "..", "..", "..", "aphrody-web", "apps", "bxc");
-  const modulePath = join(bxcRoot, "src", "ffi", "curl-impersonate.ts");
-  const { ImpersonatedClient } = await import(modulePath);
-  bxcClient = new ImpersonatedClient({
-    profile: "chrome131",
-    httpVersion: "1.1",
-    followRedirects: false,
-    timeoutMs: 30_000,
-  }) as BxcClient;
-  return bxcClient;
+/** Scan acquisition transport: Bun fetch, redirects refused (a redirected URL is not an approved reference). */
+async function fetchReferencedScan(
+  url: string,
+  options: { headers: Record<string, string>; timeoutMs: number },
+): Promise<Response> {
+  return fetch(url, {
+    headers: options.headers,
+    redirect: "error",
+    signal: AbortSignal.timeout(options.timeoutMs),
+  });
 }
 
 /** Racine physique des planches (servies par nginx sous /wiki/databooks/). */
@@ -197,19 +172,13 @@ async function acquireReferencedScan(p: Planche, target: string): Promise<boolea
   if (!ACQUERIR_REFERENCES || existsSync(target)) return existsSync(target);
   const url = parseReferencedDatabookScan(p.imageReference);
   if (!url) return false;
-  const response = await (
-    await getBxcClient()
-  ).fetch(url.href, {
+  const response = await fetchReferencedScan(url.href, {
     headers: {
       Referer: `${url.origin}/`,
       Accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
       "Accept-Language": "zh-CN,zh;q=0.9,ja;q=0.8,en;q=0.7",
     },
     timeoutMs: 30_000,
-    // Match the former `redirect: "error"`: a redirected URL is not an
-    // approved scan reference and must not be persisted.
-    followRedirects: false,
-    httpVersion: "1.1",
   });
   if (!response.ok) throw new Error(`source HTTP ${response.status}`);
   const declaredLength = Number(response.headers.get("content-length") ?? 0);
@@ -358,8 +327,6 @@ console.log(
   `\n✓ ${ecrites} planche(s) exportée(s)${manquantes ? ` · ${manquantes} manquante(s)` : ""}`,
 );
 await sql.end();
-// TypeScript cannot observe the assignment performed inside `getBxcClient()`.
-(bxcClient as BxcClient | null)?.close();
 // Sortir 0 quoi qu'il arrive faisait avancer une automatisation « export → OCR
 // → dépôt » sur des lots vides, sans le moindre signal. Un export qui n'a rien
 // écrit alors qu'il avait du travail est un échec, et il doit le dire.

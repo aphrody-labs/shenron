@@ -26,7 +26,7 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
     let page: TestPage | undefined;
     try {
       engine = await startEngine({
-        binary: process.env.APHRODY_WEB_BIN ?? Bun.which("aphrody-web") ?? undefined,
+        binary: process.env.YOLO_WEB_BIN ?? Bun.which("yolo-browser") ?? undefined,
         allowPrivateNetwork: true,
       });
       page = await TestPage.create({ cdpUrl: engine.endpoint, baseURL: server.url.href });

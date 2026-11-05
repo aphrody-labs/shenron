@@ -26,59 +26,8 @@ export {
   type ShenronEmbeddingsOptions,
 } from "./shenron-embeddings";
 export {
-  aphrodyWebRecon,
-  aphrodyWebCrawl,
-  aphrodyWebSearch,
-  aphrodyWebScrape,
-  scrapeWithAphrody,
-  type AphrodyScrapeOptions,
-  type AphrodyScrapeProfile,
-  type AphrodyScrapeResult,
-  type AphrodyWebScrapeOptions,
-  type AphrodyWebCrawlRequest,
-  type AphrodyWebCrawlReport,
-  AphrodyWebClient,
-  type AphrodyCrawlJob,
-  type AphrodyCrawlOptions,
-  type AphrodyCrawlRequest,
-} from "./web";
-export {
   aphrodyInfraCheck,
   aphrodyInfraStatus,
   type AphrodyInfraCheck,
   type AphrodyInfraTargetCheck,
 } from "./infra";
-export {
-  AphrodyTranslateService,
-  TranslateOptionsSchema,
-  TranslationResultSchema,
-  type TranslateOptions,
-  type TranslationResult,
-} from "./translate";
-
-export {
-  AphrodyWikiSearchService,
-  AphrodyWikiService,
-  WikiPageDossierSchema,
-  WikiSectionSchema,
-  WikiSearchResultSchema,
-  resolveWikiApiUrl,
-  type AphrodyWikiOptions,
-  type WikiSearchResult,
-  type WikiPageDossier,
-  type WikiSection,
-} from "./wiki";
-export {
-  aphrodyWebMirror,
-  type AphrodyWebMirrorFailure,
-  type AphrodyWebMirrorReport,
-  type AphrodyWebMirrorRequest,
-} from "./mirror";
-export {
-  AphrodyFramesClient,
-  type AphrodyFrameVector,
-  type AphrodyFrameMatch,
-  type AphrodyFrameSearch,
-  type AphrodyFramesSearchOptions,
-  type AphrodyFramesStats,
-} from "./frames";

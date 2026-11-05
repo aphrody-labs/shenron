@@ -6,16 +6,12 @@ import { NextIntlClientProvider } from "next-intl";
 import fr from "../messages/fr.json";
 import en from "../messages/en.json";
 import ja from "../messages/ja.json";
-import videoFr from "../messages/video-ui/fr.json";
-import videoEn from "../messages/video-ui/en.json";
-import videoJa from "../messages/video-ui/ja.json";
 import { normalizeAvailability } from "../src/lib/video-languages";
 
 let locale: "fr" | "en" | "ja" = "fr";
 const dictionaries = { fr, en, ja };
 const { OffreLegale } = await import("../src/components/episodes/OffreLegale");
 const { VideoUnavailableCard } = await import("../src/components/episodes/VideoUnavailableCard");
-const { EpisodeScenes } = await import("../src/app/wiki/episodes/[id]/EpisodeScenes");
 
 const observed = {
   provider: "official",
@@ -113,25 +109,6 @@ test("unavailable playback keeps localized episode and film contribution routes"
       expect(html).toContain(`/wiki/contribute?type=${kind}`);
       if (locale !== "fr") expect(html).not.toContain("Proposer une source");
     }
-  }
-  locale = "fr";
-});
-
-test("scene upload and typed URL controls use the current locale on cached episode pages", () => {
-  const videoMessages = { fr: videoFr, en: videoEn, ja: videoJa };
-  for (locale of ["fr", "en", "ja"] as const) {
-    const html = renderToStaticMarkup(
-      createElement(NextIntlClientProvider, {
-        locale,
-        messages: dictionaries[locale],
-        timeZone: "UTC",
-        // oxlint-disable-next-line react/no-children-prop -- test fixture passes children explicitly
-        children: createElement(EpisodeScenes, { episodeNumber: 1, title: "Observed episode" }),
-      }),
-    );
-    expect(html).toContain(videoMessages[locale].sceneImageUrl);
-    expect(html).toContain(videoMessages[locale].sceneImageFile);
-    expect(html).toContain(videoMessages[locale].sceneImageUpload);
   }
   locale = "fr";
 });

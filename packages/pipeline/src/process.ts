@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Child processes for the Aphrody CLI and BXC wrappers, on `node:child_process` (runtime class
+ * Child processes for the Aphrody CLI wrappers, on `node:child_process` (runtime class
  * `server`): Bun scripts, the bot and the routes of the site's Next server all run them, and
  * no `Bun.*` global reaches a module the site bundles (docs/architecture/STACK.md §4.2).
  */

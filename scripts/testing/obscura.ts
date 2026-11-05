@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Runs a callback against a local Obscura CDP server (`aphrody-web launch`).
+ * Runs a callback against a local YOLO WEB CDP server (`yolo-browser serve --port N`).
  *
  * `startEngine` of @aphrody/agent-browser needs libaphrody_ffi.so, which is built on the VPS
- * factory only. The `aphrody-web` multicall link (`aphrody package install`) is enough for
+ * factory only. The `yolo-browser` binary (yolo-rs/yolo-web, apps/yolo-browser-cli) is enough for
  * rendered checks, so this helper spawns it directly on a free port and stops it afterwards.
- * `APHRODY_WEB_BIN` overrides the executable.
+ * `YOLO_WEB_BIN` overrides the executable.
  */
 import { TestPage } from "@aphrody/web-test";
 
@@ -35,7 +35,14 @@ export async function withCdpServer<T>(
           cdpUrl = ((await response.json()) as { webSocketDebuggerUrl: string })
             .webSocketDebuggerUrl;
       } catch {
-        // server not listening yet
+        // No /json/version (yolo-browser serves the browser endpoint only): accept an open port.
+        try {
+          const socket = await Bun.connect({ hostname: "127.0.0.1", port, socket: { data() {} } });
+          socket.end();
+          cdpUrl = `ws://127.0.0.1:${port}/devtools/browser`;
+        } catch {
+          // server not listening yet
+        }
       }
       if (!cdpUrl && Date.now() > deadline)
         throw new Error(`CDP server did not open port ${port} in 15s`);
@@ -52,9 +59,12 @@ export async function withCdpServer<T>(
 }
 
 export async function withObscura<T>(run: (session: ObscuraSession) => Promise<T>): Promise<T> {
-  const binary = process.env.APHRODY_WEB_BIN ?? Bun.which("aphrody-web");
-  if (!binary) throw new Error("aphrody-web not found; run `aphrody package install`");
-  return withCdpServer((port) => [binary, "launch", "--port", String(port)], run);
+  const binary = process.env.YOLO_WEB_BIN ?? Bun.which("yolo-browser");
+  if (!binary)
+    throw new Error(
+      "yolo-browser not found; build apps/yolo-browser-cli from yolo-rs/yolo-web or set YOLO_WEB_BIN",
+    );
+  return withCdpServer((port) => [binary, "serve", "--port", String(port)], run);
 }
 
 export const VIEWPORTS = [

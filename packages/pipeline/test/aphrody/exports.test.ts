@@ -9,28 +9,11 @@ describe("@aphrody/shenron-pipeline/aphrody exports", () => {
   it("root exposes the shared service clients and script adapters", () => {
     expect(Object.keys(root).toSorted()).toEqual([
       "AphrodyComputeClient",
-      "AphrodyFramesClient",
-      "AphrodyTranslateService",
-      "AphrodyWebClient",
-      "AphrodyWikiSearchService",
-      "AphrodyWikiService",
       "SHENRON_EMBED_DIMENSIONS",
       "SHENRON_EMBED_MODEL",
       "ShenronEmbeddingsClient",
-      "TranslateOptionsSchema",
-      "TranslationResultSchema",
-      "WikiPageDossierSchema",
-      "WikiSearchResultSchema",
-      "WikiSectionSchema",
       "aphrodyInfraCheck",
       "aphrodyInfraStatus",
-      "aphrodyWebCrawl",
-      "aphrodyWebMirror",
-      "aphrodyWebRecon",
-      "aphrodyWebScrape",
-      "aphrodyWebSearch",
-      "resolveWikiApiUrl",
-      "scrapeWithAphrody",
     ]);
   });
 

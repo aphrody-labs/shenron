@@ -61,7 +61,6 @@ export const ADMIN_PAGES = {
   movies: { family: "encyclopedie", route: "/admin/db-universe/movies" },
   games: { family: "encyclopedie", route: "/admin/db-universe/games" },
   dbDatabooks: { family: "encyclopedie", route: "/admin/db-universe/databooks" },
-  bxcCampaigns: { family: "encyclopedie", route: "/admin/bxc-campaigns" },
   timeline: { family: "encyclopedie", route: "/admin/timeline" },
   wiki: { family: "encyclopedie", route: "/admin/wiki" },
   wikiHistory: { family: "encyclopedie", route: "/admin/wiki/history" },

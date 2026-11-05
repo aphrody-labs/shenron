@@ -466,53 +466,6 @@ export class TrainCommands {
   }
 
   @Slash({
-    name: "inspect-frames",
-    description: "Diagnostic de recherche visuelle et timecode d'épisode via capture d'écran",
-  })
-  async inspectFrames(
-    @SlashOption({
-      name: "image_url",
-      description: "URL publique de l'image ou capture d'écran à analyser",
-      type: ApplicationCommandOptionType.String,
-      required: true,
-      maxLength: 1000,
-    })
-    imageUrl: string,
-    interaction: CommandInteraction,
-  ) {
-    const url = imageUrl.trim();
-    if (!isHttpUrl(url)) {
-      await interaction.reply({
-        embeds: [errorEmbed("URL invalide", "Fournis une URL publique `https://…` d'image.")],
-        flags: MessageFlags.Ephemeral,
-      });
-      return;
-    }
-    await this.diagnose(interaction, "Diagnostic visuel impossible", async () => {
-      const diag = await this.training.inspectFrames(url);
-
-      const matchesLines = diag.matches.map((m, i) => {
-        const link = m.href ? `\n🔗 [Voir la scène](${m.href})` : "";
-        return `**[${i + 1}] ${m.titre}** · Timecode: \`${m.timecode}\` (Similarité: ${m.similarity}%)${link}`;
-      });
-
-      return shenronEmbed({
-        header: "DIAGNOSTIC RECHERCHE VISUELLE · FRAMES",
-        title: `🖼️ Analyse d'image`,
-        color: SHENRON_THEME.beerusPurple,
-        description: [
-          `**Correspondances identifiées :** \`${diag.count}\``,
-          `**Parasites hors univers rejetés :** \`${diag.parasitesRejetes}\``,
-          `**Latence :** \`${diag.latencyMs} ms\``,
-          "",
-          SHENRON_SEPARATORS.solid,
-          matchesLines.join("\n\n") || "*Aucune scène Dragon Ball correspondante trouvée.*",
-        ].join("\n"),
-      }).setThumbnail(url);
-    });
-  }
-
-  @Slash({
     name: "feedback",
     description:
       "Enregistrer une évaluation ou un retour d'entraînement pour améliorer les résultats",

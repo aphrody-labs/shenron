@@ -17,19 +17,19 @@ import {
 } from "@/lib/external-source-catalog";
 import { ogMeta } from "@/lib/og";
 
-// La provenance est alimentée par les campagnes BXC en cours : cinq minutes
+// La provenance est alimentée par les campagnes de collecte en cours : cinq minutes
 // gardent le coût des lectures PG borné tout en évitant une page figée pendant
 // une longue collecte.
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Sources Dragon Ball — collecte BXC et Shenron",
+  title: "Sources Dragon Ball — collecte Shenron",
   description:
     "Moteur de recherche Dragon Ball attribué : pages web, publications, épisodes, statistiques, archives et médias.",
   ...ogMeta({
-    title: "Sources Dragon Ball — BXC × Shenron",
+    title: "Sources Dragon Ball — Shenron",
     description:
-      "Moteur de recherche attribué couvrant les sources Dragon Ball collectées par BXC.",
+      "Moteur de recherche attribué couvrant les sources Dragon Ball collectées par Shenron.",
     canonical: "/sources/dragon-ball",
     type: "website",
   }),
@@ -160,7 +160,7 @@ export default async function DragonBallSourcesPage({
     : "";
   const page = Math.max(1, Number(params.page) || 1);
   const pageSize = 18;
-  const [datasets, bxcCatalog] = await Promise.all([
+  const [datasets, sourceCatalog] = await Promise.all([
     Promise.all(SOURCES.map(async (source) => ({ source, data: await readDataset(source.file) }))),
     searchExternalSources({ q, kind, limit: pageSize, offset: (page - 1) * pageSize }),
   ]);
@@ -175,7 +175,7 @@ export default async function DragonBallSourcesPage({
     0,
   );
   const feed = await readDataset("shenron_feed_actu.json");
-  const pageCount = Math.max(1, Math.ceil(bxcCatalog.total / pageSize));
+  const pageCount = Math.max(1, Math.ceil(sourceCatalog.total / pageSize));
   // URL d’une page de résultats, filtres conservés (page 1 = URL sans `page`).
   const pageHref = (p: number) => {
     const qs = new URLSearchParams({
@@ -193,7 +193,7 @@ export default async function DragonBallSourcesPage({
   const ld = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Sources Dragon Ball — BXC × Shenron",
+    name: "Sources Dragon Ball — Shenron",
     url: `${SITE_URL}/sources/dragon-ball`,
     isPartOf: { "@type": "WebSite", name: "Dragon Ball FR" },
     about: SOURCES.map((source) => ({
@@ -208,25 +208,23 @@ export default async function DragonBallSourcesPage({
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld) }} />
       <Breadcrumbs
         className="mb-6"
-        items={[{ label: "Sources Dragon Ball", display: "Sources BXC × Shenron" }]}
+        items={[{ label: "Sources Dragon Ball", display: "Sources Shenron" }]}
       />
 
       <SectionHeading
         level={1}
-        kicker="Collecte attribuée · BXC"
+        kicker="Collecte attribuée"
         title="Les sources qui nourrissent Shenron"
-        standfirst="Toutes les sources BXC sont indexées et classifiées ici : publications, références, archives, encyclopédies, statistiques et médias. Les textes restent attribués à leur origine ; le canon est un jugement séparé, jamais un filtre de recherche."
+        standfirst="Toutes les sources sont indexées et classifiées ici : publications, références, archives, encyclopédies, statistiques et médias. Les textes restent attribués à leur origine ; le canon est un jugement séparé, jamais un filtre de recherche."
       />
       <ul className="mt-5 flex flex-wrap gap-2 text-xs text-white/55" aria-label="Volume collecté">
         <li className="rounded-full border border-white/10 px-3 py-1">
           {totalRows.toLocaleString("fr-FR")} entrées collectées
         </li>
-        <li className="rounded-full border border-white/10 px-3 py-1">
-          BXC · profil HTTP / statique
-        </li>
-        {bxcCatalog.total > 0 && (
+        <li className="rounded-full border border-white/10 px-3 py-1">profil HTTP / statique</li>
+        {sourceCatalog.total > 0 && (
           <li className="rounded-full border border-dbz-orange/30 bg-dbz-orange/10 px-3 py-1 text-dbz-orange">
-            {bxcCatalog.total.toLocaleString("fr-FR")} documents synchronisés
+            {sourceCatalog.total.toLocaleString("fr-FR")} documents synchronisés
           </li>
         )}
         {Array.isArray(feed) && (
@@ -264,7 +262,7 @@ export default async function DragonBallSourcesPage({
                     </span>
                   </div>
                   <p className="mt-3 text-sm text-white/65">
-                    {firstTitle(data) ?? "Données collectées et vérifiées par le pipeline BXC."}
+                    {firstTitle(data) ?? "Données collectées et vérifiées par le pipeline Shenron."}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-2 text-xs">
                     <Link
@@ -287,10 +285,10 @@ export default async function DragonBallSourcesPage({
           </div>
         </section>
 
-        <section aria-labelledby="bxc-live-title" className="min-w-0">
+        <section aria-labelledby="sources-live-title" className="min-w-0">
           <SectionHeading
-            id="bxc-live-title"
-            kicker="Moteur BXC"
+            id="sources-live-title"
+            kicker="Moteur de recherche"
             title="Rechercher dans toutes les collectes"
             standfirst="Chaque résultat garde sa classification et son lien d’origine. Aucune source n’est écartée du moteur."
           />
@@ -298,11 +296,11 @@ export default async function DragonBallSourcesPage({
             method="GET"
             className="mt-5 grid gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-4 sm:grid-cols-[1fr_12rem] lg:grid-cols-[1fr_12rem_auto]"
           >
-            <label className="sr-only" htmlFor="bxc-query">
-              Rechercher dans les sources BXC
+            <label className="sr-only" htmlFor="sources-query">
+              Rechercher dans les sources
             </label>
             <input
-              id="bxc-query"
+              id="sources-query"
               type="search"
               name="q"
               defaultValue={q}
@@ -329,9 +327,9 @@ export default async function DragonBallSourcesPage({
               Rechercher
             </button>
           </form>
-          {bxcCatalog.records.length > 0 ? (
+          {sourceCatalog.records.length > 0 ? (
             <ul className="mt-5 grid gap-3 md:grid-cols-2 2xl:grid-cols-3">
-              {bxcCatalog.records.map((record) => {
+              {sourceCatalog.records.map((record) => {
                 const original = safeExternalUrl(record.url);
                 const collecte = provenanceLabel(record.provenance);
                 return (
@@ -385,20 +383,20 @@ export default async function DragonBallSourcesPage({
             <p className="mt-5 rounded-xl border border-white/10 bg-white/[0.03] p-5 text-sm leading-6 text-white/60">
               {q || kind
                 ? "Aucune source ne correspond à ces filtres."
-                : "La synchronisation BXC est en cours. Les données apparaîtront ici dès leur ingestion."}
+                : "La synchronisation est en cours. Les données apparaîtront ici dès leur ingestion."}
             </p>
           )}
-          {bxcCatalog.total > pageSize && (
+          {sourceCatalog.total > pageSize && (
             <>
               <p className="mt-5 text-sm text-white/55">
-                {bxcCatalog.total.toLocaleString("fr-FR")} résultats
+                {sourceCatalog.total.toLocaleString("fr-FR")} résultats
               </p>
               <LinkPager
                 className="mt-3"
                 page={page}
                 pages={pageCount}
                 href={pageHref}
-                ariaLabel="Pagination des sources BXC"
+                ariaLabel="Pagination des sources"
               />
             </>
           )}

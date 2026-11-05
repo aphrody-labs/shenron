@@ -19,7 +19,6 @@ import {
 } from "@aphrody/shenron-config/public-urls";
 import { adminPipeline } from "./admin-pipeline";
 import { createActivityRoutes } from "./activity";
-import { describeSpawnError, episodeResolver } from "~/lib/episode-resolver";
 import { singleton, inject, container } from "tsyringe";
 import { Client } from "discordx";
 import { botFile } from "~/lib/asset-files";
@@ -649,7 +648,7 @@ async function resolveArchiveMp4(identifier: string): Promise<string | null> {
 
 /**
  * Résout la source **téléchargeable** d'un film (id de la forme `movie-<n>`).
- * Contrairement aux épisodes, aucun résolveur bxc « à la volée » n'existe.
+ * Aucun résolveur « à la volée » n'existe.
  * Priorité : `video_url` (MP4 stocké) → `stream_url` (HLS stocké) → scan des
  * lecteurs (`players`) pour une source réellement téléchargeable :
  *   - un `embedUrl` déjà direct (`.mp4`/`.m3u8`) → utilisé tel quel ;
@@ -733,7 +732,7 @@ async function resolveStreamOnDemand(id: string): Promise<HlsStream | null> {
   const languageMatch = /^(.*)-(vf|vostfr)$/.exec(id);
   const mediaId = languageMatch?.[1] ?? id;
   const language = languageMatch?.[2] as "vf" | "vostfr" | undefined;
-  // Films : `movie-<n>` → table db_movies (source stockée/players, pas de bxc).
+  // Films : `movie-<n>` → table db_movies (source stockée/players).
   if (mediaId.startsWith("movie-")) {
     return await resolveMovieStream(mediaId.slice("movie-".length), language);
   }
@@ -746,51 +745,12 @@ async function resolveStreamOnDemand(id: string): Promise<HlsStream | null> {
       console.error("[HLS] Episode introuvable en base SQLite.");
       return null;
     }
-    // No BXC checkout (production container): disabled once, with the reason logged.
-    const resolver = episodeResolver();
-    if (!resolver) return null;
-    console.log("[HLS] Résolution à la volée d'un épisode.");
-    const proc = Bun.spawn(
-      [process.execPath, resolver.script, row.series, String(row.number_in_series)],
-      { cwd: resolver.dir, stdout: "pipe", stderr: "ignore" },
-    );
-    const out = await new Response(proc.stdout).text();
-    const exitCode = await proc.exited;
-    if (exitCode !== 0) console.error(`[HLS] resolve-episode exited with code ${exitCode}.`);
-    // oxlint-disable-next-line unicorn/prefer-array-find -- getting the last non-empty line
-    const line = out.trim().split("\n").filter(Boolean).pop() ?? "";
-    const res = JSON.parse(line) as {
-      type?: string;
-      url?: string;
-      headers?: Record<string, string>;
-      provider?: string;
-      variants?: Partial<Record<"vf" | "vostfr", Omit<HlsStream, "at"> & { provider?: string }>>;
-      error?: string;
-    };
-    const selected = language ? res.variants?.[language] : res;
-    if (selected?.url && (selected.type === "hls" || selected.type === "mp4")) {
-      const entry: HlsStream = {
-        url: selected.url,
-        headers: selected.headers ?? {},
-        type: selected.type,
-        at: Date.now(),
-      };
-      resolvedStreams.set(id, entry);
-      for (const [variantLanguage, variant] of Object.entries(res.variants ?? {})) {
-        if (variant?.url)
-          resolvedStreams.set(`${mediaId}-${variantLanguage}`, { ...variant, at: Date.now() });
-      }
-      // Upstream URLs and headers can contain short-lived credentials. Keep them in memory.
-      console.log("[HLS] Résolution réussie pour un épisode.");
-      return entry;
-    } else {
-      console.error("[HLS] Résolution d'épisode indisponible.");
-      return null;
-    }
+    // No on-the-fly episode resolver exists anymore: only stored streams are served.
+    return null;
   } catch (err) {
-    // The cause (spawn failure, unparsable output) is what makes this diagnosable; the message
-    // is cut to one line and never carries upstream URLs or headers.
-    console.error(`[HLS] Erreur lors de la résolution d'un épisode : ${describeSpawnError(err)}`);
+    console.error(
+      `[HLS] Erreur lors de la lecture d'un épisode : ${err instanceof Error ? err.message.split("\n")[0]!.slice(0, 200) : "erreur inconnue"}`,
+    );
     return null;
   }
 }
@@ -2324,10 +2284,9 @@ export class ApiServer {
         // Proxy HLS : le site joue le flux dans son player via ces routes
         // (le bot fetch depuis l'IP du VPS = IP de résolution → CDN OK).
         [PLAYBACK_CAPABILITIES_PATH]: async () =>
-          Response.json(
-            declarePlaybackCapabilities(episodeResolver() !== null, await loadStreams()),
-            { headers: { "Cache-Control": "public, max-age=30" } },
-          ),
+          Response.json(declarePlaybackCapabilities(false, await loadStreams()), {
+            headers: { "Cache-Control": "public, max-age=30" },
+          }),
         "/api/hls/:id/master.m3u8": (req) => hlsMaster(req, req.params.id),
         "/api/hls/:id/seg": (req) => hlsSeg(req, req.params.id),
         "/api/hls/:id/download": () => hlsDownload(),
