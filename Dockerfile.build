@@ -7,15 +7,25 @@
 # Context filter: Dockerfile.build.dockerignore (allow-list, no private data), checked by
 # `bun scripts/build/local-guard.ts`. Runbook: docs/operations/build-local.md.
 #
+# Pins (Rust, Bun, base image, runtime packages and ENV) are declared once in deploy/environment.json;
+# `bun scripts/deploy/environment.ts --check` fails when this file drifts from it.
+#
+# Cache layout: a commit only re-executes the stages its inputs reach. JS dependencies depend on
+# the manifests alone (stage manifests), Rust on crates/ and the embedded lexicons alone (stage
+# rust-src), so a site or bot change never recompiles Rust and a source change never reinstalls.
+#
 # Secrets (never baked in a layer):
 #   gitconfig   git config rewriting https://github.com/ with a token (aphrody-labs/aphrody is private)
 #   tauri_key   optional Tauri updater private key (an ephemeral one is generated without it)
 #   sign_pfx    optional Windows code-signing certificate (unused here: see local-windows.ps1)
 
 ARG BASE_IMAGE=ubuntu:26.10
-ARG RUST_VERSION=1.98.1
+ARG RUST_VERSION=1.99.1
+ARG BUN_VERSION=1.4.6
+ARG BUN_LINUX_SHA256=247bd13f96cb10404a416291415a35690c4d76e3187f7bb9183c1c8784d314f6
+# Windows base of `bun build --compile --target windows-x64`: the fork publishes no Windows asset
+# for BUN_VERSION yet, so this stays on the newest published runtime.
 ARG BUN_RUNTIME_VERSION=1.4.3-aphrody.2
-ARG BUN_RUNTIME_LINUX_INTEGRITY=sha512-WM0w1Nmeb7BZugLaICD8mo0MkCTtF90AS7omf8/6gsBkfhzLySCS6oDSKeZkc7uQ6r0wLlaSlWgqxEM31VRjOA==
 ARG BUN_RUNTIME_WINDOWS_INTEGRITY=sha512-VKXaQ+8q63VkGFASjQT+j1yfKKJOL28pvBHtVJeBzsbY2nBF95j/bct405cZGbKhe2FWW9FEAQrdUjQXJ4y4Rg==
 ARG SCCACHE_VERSION=0.18.0
 ARG CARGO_XWIN_VERSION=0.23.1
@@ -44,8 +54,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 # ---------------------------------------------------------------- toolchain: rust, sccache, xwin, bun
 FROM base AS toolchain
 ARG RUST_VERSION
+ARG BUN_VERSION
+ARG BUN_LINUX_SHA256
 ARG BUN_RUNTIME_VERSION
-ARG BUN_RUNTIME_LINUX_INTEGRITY
 ARG BUN_RUNTIME_WINDOWS_INTEGRITY
 ARG SCCACHE_VERSION
 ARG CARGO_XWIN_VERSION
@@ -62,24 +73,26 @@ RUN set -eux; mkdir -p /opt/tools/bin; cd /tmp \
  && curl -fsSL "https://github.com/rust-cross/cargo-xwin/releases/download/v${CARGO_XWIN_VERSION}/cargo-xwin-v${CARGO_XWIN_VERSION}.x86_64-unknown-linux-musl.tar.gz" | tar xz \
  && install -m0755 cargo-xwin /opt/tools/bin/cargo-xwin \
  && rm -rf /tmp/*
-# Aphrody Bun runtime (Linux: the build runtime; Windows: base of `bun build --compile --target windows-x64`),
-# fetched from the public npm registry and checked against a pinned SRI digest.
+# Linux build runtime: the exact Bun of package.json#packageManager (the release setup-bun installs),
+# checked against its pinned SHA-256. Windows compile base: public npm registry, pinned SRI digest.
 RUN set -eux; cd /tmp; \
-  fetch() { \
-    url="https://registry.npmjs.org/@aphrody/bun-runtime-$1/-/bun-runtime-$1-${BUN_RUNTIME_VERSION}.tgz"; \
-    curl -fsSL -o "$1.tgz" "$url"; \
-    got="sha512-$(openssl dgst -sha512 -binary "$1.tgz" | base64 -w0)"; \
-    [ "$got" = "$2" ] || { echo "digest mismatch for $1: $got" >&2; exit 1; }; \
-  }; \
-  fetch linux-x64 "${BUN_RUNTIME_LINUX_INTEGRITY}"; fetch windows-x64 "${BUN_RUNTIME_WINDOWS_INTEGRITY}"; \
-  mkdir -p /opt/bun/bin /opt/bun/windows; \
-  tar xzf linux-x64.tgz && cp "$(find package -type f -name bun | head -1)" /opt/bun/bin/bun && chmod +x /opt/bun/bin/bun && rm -rf package; \
-  tar xzf windows-x64.tgz && cp "$(find package -type f -name 'bun*.exe' | head -1)" /opt/bun/windows/bun.exe && rm -rf package *.tgz; \
-  bun --version
+  curl -fsSL -o bun-linux.tar.gz "https://github.com/aphrody-labs/bun/releases/download/bun-v${BUN_VERSION}/bun-linux-x64.tar.gz"; \
+  echo "${BUN_LINUX_SHA256}  bun-linux.tar.gz" | sha256sum -c -; \
+  mkdir -p /opt/bun/bin /opt/bun/windows bun-linux; \
+  tar xzf bun-linux.tar.gz -C bun-linux; \
+  cp "$(find bun-linux -type f -name bun | head -1)" /opt/bun/bin/bun && chmod +x /opt/bun/bin/bun; \
+  url="https://registry.npmjs.org/@aphrody/bun-runtime-windows-x64/-/bun-runtime-windows-x64-${BUN_RUNTIME_VERSION}.tgz"; \
+  curl -fsSL -o windows-x64.tgz "$url"; \
+  got="sha512-$(openssl dgst -sha512 -binary windows-x64.tgz | base64 -w0)"; \
+  [ "$got" = "${BUN_RUNTIME_WINDOWS_INTEGRITY}" ] || { echo "digest mismatch for windows-x64: $got" >&2; exit 1; }; \
+  tar xzf windows-x64.tgz && cp "$(find package -type f -name 'bun*.exe' | head -1)" /opt/bun/windows/bun.exe; \
+  rm -rf package bun-linux bun-linux.tar.gz windows-x64.tgz; \
+  [ "$(bun --version)" = "${BUN_VERSION}" ]
 ENV SHENRON_COMPILE_BUN_WINDOWS=/opt/bun/windows/bun.exe \
     SHENRON_CARGO_REMOTE=off RUSTC_WRAPPER=sccache SCCACHE_DIR=/home/builder/.cache/sccache \
     SCCACHE_CACHE_SIZE=20G CARGO_INCREMENTAL=0 CARGO_TERM_COLOR=never \
     XWIN_ACCEPT_LICENSE=1 XWIN_CACHE_DIR=/home/builder/.cache/xwin \
+    BUN_INSTALL_CACHE_DIR=/home/builder/.bun/install/cache \
     NEXT_TELEMETRY_DISABLED=1 CI=1
 WORKDIR /work
 
@@ -91,14 +104,38 @@ RUN --mount=type=cache,target=/home/builder/.cargo/registry,uid=10001,id=shenron
     --mount=type=cache,target=/tmp/tauri-target,uid=10001,id=shenron-tauri-cli-target \
     CARGO_TARGET_DIR=/tmp/tauri-target cargo install tauri-cli --version "${TAURI_CLI_VERSION}" --locked --root /opt/tools
 
-# ---------------------------------------------------------------- sources + JS dependencies
-FROM toolchain AS src
-COPY --chown=10001:10001 . /work
+# ---------------------------------------------------------------- JS manifests (cheap filter of the context)
+# Re-executed on any context change, but its output only changes with a manifest, and the stage
+# below is keyed on that output: a source edit reuses the installed dependencies.
+FROM toolchain AS manifests
+RUN --mount=type=bind,target=/tree \
+    set -eu; mkdir -p /tmp/manifests; cd /tree; \
+    for path in package.json bun.lock bunfig.toml patches vendor apps/*/package.json packages/*/package.json; do \
+      [ ! -e "$path" ] || cp -a --parents "$path" /tmp/manifests/; \
+    done
+
+# ---------------------------------------------------------------- JS dependencies (one shared Bun cache)
+FROM toolchain AS bun-deps
+COPY --from=manifests --chown=10001:10001 /tmp/manifests/ /work/
 RUN --mount=type=cache,target=/home/builder/.bun/install/cache,uid=10001,id=shenron-bun \
     bun install --frozen-lockfile
 
+# ---------------------------------------------------------------- sources over the installed dependencies
+FROM bun-deps AS src
+COPY --chown=10001:10001 . /work
+
+# ---------------------------------------------------------------- Rust sources only
+# Everything the workspace compiles or embeds, and nothing else (keep in step with the rust lane
+# of deploy/environment.json).
+FROM toolchain AS rust-src
+COPY --chown=10001:10001 Cargo.toml Cargo.lock rust-toolchain.toml rustfmt.toml clippy.toml /work/
+COPY --chown=10001:10001 .cargo /work/.cargo
+COPY --chown=10001:10001 crates /work/crates
+COPY --chown=10001:10001 data/lexique-db-canonique.json /work/data/lexique-db-canonique.json
+COPY --chown=10001:10001 data/lexicon /work/data/lexicon
+
 # ---------------------------------------------------------------- Rust, Linux (what the factory builds + the CLI)
-FROM src AS rust-linux-x64
+FROM rust-src AS rust-linux-x64
 RUN --mount=type=secret,id=gitconfig,target=/run/secrets/gitconfig,uid=10001 \
     --mount=type=cache,target=/home/builder/.cargo/registry,uid=10001,id=shenron-cargo-registry \
     --mount=type=cache,target=/home/builder/.cargo/git,uid=10001,id=shenron-cargo-git \
@@ -107,12 +144,14 @@ RUN --mount=type=secret,id=gitconfig,target=/run/secrets/gitconfig,uid=10001 \
     set -eux; export GIT_CONFIG_GLOBAL=/run/secrets/gitconfig; \
     cargo build --release --locked -p shenron-cli --bin shenron -p shenron-mcp --bin shenron-mcp \
       -p shenron-ffi --lib; \
+    cargo build --release --locked -p koharu-library --bin koharu-sdk; \
     mkdir -p /out; \
-    install -m0755 target/release/shenron target/release/shenron-mcp target/release/libshenron_ffi.so /out/; \
+    install -m0755 target/release/shenron target/release/shenron-mcp target/release/libshenron_ffi.so \
+      target/release/koharu-sdk /out/; \
     sccache --show-stats || true
 
 # ---------------------------------------------------------------- Rust, Windows (MSVC through cargo-xwin)
-FROM src AS rust-windows-x64
+FROM rust-src AS rust-windows-x64
 RUN --mount=type=secret,id=gitconfig,target=/run/secrets/gitconfig,uid=10001 \
     --mount=type=cache,target=/home/builder/.cargo/registry,uid=10001,id=shenron-cargo-registry \
     --mount=type=cache,target=/home/builder/.cargo/git,uid=10001,id=shenron-cargo-git \
@@ -154,8 +193,10 @@ ARG FLAVOR=desktop
 ARG ALLOW_NO_VFS=
 COPY --from=rust-linux-x64 --chown=10001:10001 /out/libshenron_ffi.so /work/target/x86_64-unknown-linux-gnu/release/libshenron_ffi.so
 COPY --from=vfs --chown=10001:10001 / /work/dist/vfs/
-RUN --mount=type=cache,target=/work/apps/site/.next-cache,uid=10001,id=shenron-next \
-    set -eux; \
+# Turbopack persists under <distDir>/cache (scripts/build/server.ts keeps it when
+# SHENRON_NEXT_BUILD_CACHE=1), so that exact directory is the cache mount.
+RUN --mount=type=cache,target=/work/apps/site/.next-standalone/cache,uid=10001,id=shenron-next \
+    set -eux; export SHENRON_NEXT_BUILD_CACHE=1; \
     vfs=--no-vfs; [ -f dist/vfs/shenron-vfs.public.sqlite ] && vfs=; \
     if [ "$FLAVOR" = production ] && [ -n "$vfs" ] && [ -z "$ALLOW_NO_VFS" ]; then echo "production flavor needs --build-context vfs=<dir with shenron-vfs.public.sqlite>" >&2; exit 1; fi; \
     bun scripts/build/server.ts --flavor "$FLAVOR" --target linux-x64 $vfs \
@@ -197,34 +238,47 @@ RUN --mount=type=secret,id=gitconfig,target=/run/secrets/gitconfig,uid=10001 \
     mkdir -p /out && cp -r dist/desktop/windows-x64/. /out/ && cp /tmp/updater-key-kind /out/UPDATER_KEY_KIND 2>/dev/null || echo provided > /out/UPDATER_KEY_KIND
 
 # ---------------------------------------------------------------- release-linux: sealed runtime image
-# Same contents and ENV as deploy/docker/Dockerfile (the factory image), assembled from the stages above.
+# Same contents, ENV and layer order as deploy/docker/Dockerfile (the factory image), assembled from
+# the stages above; environment.ts --check holds the two to deploy/environment.json.
 FROM ${BASE_IMAGE} AS release-linux
-ARG SHENRON_REVISION=unknown
-LABEL org.opencontainers.image.title="Shenron" \
-      org.opencontainers.image.description="Shenron site/server and Discord bot runtime (local build)" \
-      org.opencontainers.image.revision="$SHENRON_REVISION" \
-      org.opencontainers.image.source="https://github.com/aphrody-labs/shenron"
-ENV SHENRON_HOME=/var/lib/shenron SHENRON_PROFILE=production PORT=5011 HOSTNAME=127.0.0.1 \
-    API_PORT=5006 API_HOST=127.0.0.1 DATABASE_PATH=/app/data/bot.db \
+ENV SHENRON_HOME=/var/lib/shenron \
+    SHENRON_PROFILE=production \
+    PORT=5011 \
+    HOSTNAME=127.0.0.1 \
+    API_PORT=5006 \
+    API_HOST=127.0.0.1 \
+    DATABASE_PATH=/app/data/bot.db \
     SHENRON_FFI_LIB=/usr/local/lib/libshenron_ffi.so \
-    NAPI_RS_NATIVE_LIBRARY_PATH=/usr/local/bin/skia.linux-x64-gnu.node NEXT_TELEMETRY_DISABLED=1
+    SHENRON_BOT_ASSETS_DIR=/usr/local/share/shenron-bot \
+    SHENRON_STUDIO_SDK_BIN=/usr/local/bin/koharu-sdk \
+    SHENRON_STUDIO_HOME=/var/lib/shenron/data/studio \
+    NAPI_RS_NATIVE_LIBRARY_PATH=/usr/local/bin/skia.linux-x64-gnu.node \
+    NEXT_TELEMETRY_DISABLED=1
 RUN apt-get update \
- && apt-get install -y --no-install-recommends ca-certificates curl jq libgcc-s1 libsqlite3-0 \
+ && apt-get install -y --no-install-recommends ca-certificates curl fonts-noto-color-emoji fonts-wqy-microhei jq libfontconfig1 libgcc-s1 libsqlite3-0 libvulkan1 mesa-vulkan-drivers \
  && rm -rf /var/lib/apt/lists/* \
  && (id ubuntu >/dev/null 2>&1 && userdel -r ubuntu || true) \
  && groupadd --gid 10001 shenron \
  && useradd --uid 10001 --gid 10001 --home-dir /var/lib/shenron --no-create-home --shell /usr/sbin/nologin shenron \
  && install -d -o 10001 -g 10001 /app/data /app/assets /var/lib/shenron /usr/local/lib/shenron \
  && install -d -o 10001 -g 10001 /var/lib/shenron/config /var/lib/shenron/cache /var/lib/shenron/data /var/lib/shenron/logs
-COPY --from=server-linux-x64 --chown=10001:10001 --chmod=755 /out/server/shenron-server /usr/local/bin/shenron-server
-COPY --from=server-linux-x64 --chown=10001:10001 --chmod=755 /out/server/native/libshenron_ffi.so /usr/local/lib/libshenron_ffi.so
-COPY --from=bot-linux-x64 --chown=10001:10001 --chmod=755 /out/shenron-bot /usr/local/bin/shenron-bot
-COPY --from=bot-linux-x64 --chown=10001:10001 --chmod=644 /out/pipeline.mjs /usr/local/lib/shenron/pipeline.mjs
-COPY --from=bot-linux-x64 --chown=10001:10001 --chmod=644 /out/pipeline-build-receipt.json /usr/local/lib/shenron/pipeline-build-receipt.json
+# Revision metadata after the system layer, so that layer stays identical across releases.
+ARG SHENRON_REVISION=unknown
+LABEL org.opencontainers.image.title="Shenron" \
+      org.opencontainers.image.description="Shenron site/server and Discord bot runtime (local build)" \
+      org.opencontainers.image.revision="$SHENRON_REVISION" \
+      org.opencontainers.image.source="https://github.com/aphrody-labs/shenron"
+# Stable layers first, the per-release binaries last: a delta ship only sends the changed tail.
 COPY --from=bot-linux-x64 --chown=10001:10001 --chmod=644 /out/skia.linux-x64-gnu.node /usr/local/bin/skia.linux-x64-gnu.node
+COPY --from=bot-linux-x64 --chown=10001:10001 --chmod=755 /out/share /usr/local/share/shenron-bot
 COPY --from=bot-linux-x64 --chown=10001:10001 --chmod=755 /out/src/db/migrations /app/src/db/migrations
+COPY --from=bot-linux-x64 --chown=10001:10001 --chmod=644 /out/pipeline-build-receipt.json /usr/local/lib/shenron/pipeline-build-receipt.json
+COPY --from=bot-linux-x64 --chown=10001:10001 --chmod=644 /out/pipeline.mjs /usr/local/lib/shenron/pipeline.mjs
+COPY --from=rust-linux-x64 --chown=10001:10001 --chmod=755 /out/koharu-sdk /usr/local/bin/koharu-sdk
+COPY --from=server-linux-x64 --chown=10001:10001 --chmod=755 /out/server/native/libshenron_ffi.so /usr/local/lib/libshenron_ffi.so
 COPY --from=rust-linux-x64 --chown=10001:10001 --chmod=755 /out/shenron-mcp /usr/local/bin/shenron-mcp
-COPY --from=rust-linux-x64 --chown=10001:10001 --chmod=755 /out/shenron /usr/local/bin/shenron
+COPY --from=bot-linux-x64 --chown=10001:10001 --chmod=755 /out/shenron-bot /usr/local/bin/shenron-bot
+COPY --from=server-linux-x64 --chown=10001:10001 --chmod=755 /out/server/shenron-server /usr/local/bin/shenron-server
 WORKDIR /app
 USER 10001:10001
 EXPOSE 5011 5006

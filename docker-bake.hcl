@@ -2,17 +2,20 @@
 # Targets of the local build (Dockerfile.build). Normally driven by `bun scripts/build/local.ts`,
 # which sets OUT_DIR, SHENRON_REVISION and the secrets; direct use:
 #   docker buildx bake -f docker-bake.hcl --set '*.secret=id=gitconfig,src=<file>' rust-windows-x64
-# Runbook: docs/operations/build-local.md.
+# Deploy runbook: docs/operations/AUTO-DEPLOY.md. Pins come from deploy/environment.json.
 
 variable "OUT_DIR" { default = "dist/local/raw" }
 variable "SHENRON_REVISION" { default = "unknown" }
 variable "BASE_IMAGE" { default = "ubuntu:26.10" }
 variable "FLAVOR" { default = "desktop" }
-variable "GITCONFIG_FILE" { default = "dist/local/.secrets/gitconfig" }
+# Empty by default so `bake --print` works on a clean checkout; scripts/build/local.ts always sets it.
+variable "GITCONFIG_FILE" { default = "" }
 variable "TAURI_KEY_FILE" { default = "" }
 variable "VFS_DIR" { default = "dist/local/.empty-vfs" }
 variable "ALLOW_NO_VFS" { default = "" }
 variable "DESKTOP_ARGS" { default = "--skip-chat-model" }
+# Directory of a local BuildKit cache export, for a builder whose state does not persist.
+variable "CACHE_DIR" { default = "" }
 
 group "default" { targets = ["all"] }
 group "all" {
@@ -21,13 +24,17 @@ group "all" {
 }
 # CLI + MCP + libshenron_ffi, per target
 group "cli-mcp" { targets = ["rust-linux-x64", "rust-windows-x64"] }
+# Linux lanes of one release, built independently (each reuses only its own inputs).
+group "lanes" { targets = ["rust-linux-x64", "bot-linux-x64", "server-linux-x64"] }
 
 target "_common" {
   context    = "."
   dockerfile = "Dockerfile.build"
   args       = { BASE_IMAGE = BASE_IMAGE }
-  secret     = concat(["id=gitconfig,src=${GITCONFIG_FILE}"], TAURI_KEY_FILE != "" ? ["id=tauri_key,src=${TAURI_KEY_FILE}"] : [])
+  secret     = concat(GITCONFIG_FILE != "" ? ["id=gitconfig,src=${GITCONFIG_FILE}"] : [], TAURI_KEY_FILE != "" ? ["id=tauri_key,src=${TAURI_KEY_FILE}"] : [])
   contexts   = { vfs = "${VFS_DIR}" }
+  cache-from = CACHE_DIR != "" ? ["type=local,src=${CACHE_DIR}"] : []
+  cache-to   = CACHE_DIR != "" ? ["type=local,dest=${CACHE_DIR},mode=max"] : []
 }
 
 target "rust-linux-x64" {
@@ -80,6 +87,12 @@ target "release-linux" {
   args     = { BASE_IMAGE = BASE_IMAGE, FLAVOR = "production", ALLOW_NO_VFS = ALLOW_NO_VFS, SHENRON_REVISION = SHENRON_REVISION }
   output   = ["type=docker,name=localhost/shenron:${SHENRON_REVISION}"]
   tags     = ["localhost/shenron:${SHENRON_REVISION}", "localhost/shenron:local"]
+}
+# JS dependency layer alone: measures the Bun cache without compiling anything.
+target "bun-deps" {
+  inherits = ["_common"]
+  target   = "bun-deps"
+  output   = ["type=cacheonly"]
 }
 # Context filter check (names only, nothing is built)
 target "context-dump" {

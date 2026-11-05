@@ -1,0 +1,340 @@
+# SPDX-License-Identifier: Apache-2.0
+# Production Compose stack of Shenron (/srv/shenron/compose.yaml on prod), as a template without
+# secrets. Owner: this repository; applied by Aphrody Infra only (docs/operations/AUTO-DEPLOY.md).
+#
+# Source: /srv/shenron/compose.yaml read on prod on 2026-11-05 (364 lines). Differences, all
+# deliberate, are marked `CHANGED`:
+#   1. site and bot each read their own tag (SHENRON_SITE_TAG, SHENRON_BOT_TAG) and fall back to
+#      SHENRON_IMAGE_TAG, so the current .env renders exactly the running containers and
+#      deploy/activation/activate.sh can switch one service without the other.
+#   2. site and bot need postgres and redis healthy, but compute and chat only optionally: both
+#      degrade explicitly without them (docs/operations/INFRA-DELEGATION.md, "Services consommés"),
+#      and a missing model must not block them (2026-11-04 outage: one model blocked `up`).
+# Secrets stay in the host files named below (env_file, mounted key files); none is inlined.
+# Two values were redacted while reading and are rewritten from the surrounding configuration:
+# the PostgreSQL key path and the cloudflared token mount. Infra checks both against the host
+# before installing (`docker compose config` diff against the live file).
+name: shenron
+
+services:
+  postgres:
+    image: aphrody/shenron-state:1c1d0f30b0df02ff3109e18422976299aeb42d8b
+    container_name: shenron-postgres
+    restart: unless-stopped
+    user: "105:111"
+    network_mode: host
+    shm_size: 1g
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /run/postgresql:rw,nosuid,uid=105,gid=111,size=16m
+      - /tmp:rw,nosuid,size=16m
+    volumes:
+      - /srv/shenron/config/postgres:/etc/postgresql:ro
+      - /srv/shenron/config/postgres/tls:/etc/postgresql/tls:ro
+      - /srv/shenron/data/postgres:/var/lib/postgresql/data
+    entrypoint:
+      - /usr/lib/postgresql/18/bin/postgres
+      - -D
+      - /var/lib/postgresql/data
+      - -c
+      - config_file=/etc/postgresql/postgresql.conf
+      - -c
+      - data_directory=/var/lib/postgresql/data
+      - -c
+      - hba_file=/etc/postgresql/pg_hba.conf
+      - -c
+      - ident_file=/etc/postgresql/pg_ident.conf
+      - -c
+      - external_pid_file=/run/postgresql/postgresql.pid
+      - -c
+      - unix_socket_directories=/run/postgresql
+      - -c
+      - listen_addresses=127.0.0.1
+      - -c
+      - logging_collector=off
+      - -c
+      - ssl_cert_file=/etc/postgresql/tls/server.crt
+      - -c
+      # Redacted while reading: a path, checked against the host by Infra.
+      - ssl_key_file=/etc/postgresql/tls/server.key
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 5432 -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  redis:
+    image: aphrody/shenron-state:1c1d0f30b0df02ff3109e18422976299aeb42d8b
+    container_name: shenron-redis
+    restart: unless-stopped
+    user: "104:110"
+    network_mode: host
+    shm_size: 64m
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /tmp:rw,nosuid,size=16m
+    volumes:
+      - /srv/shenron/data/redis:/data
+      - /srv/shenron/config/redis:/etc/redis:ro
+    entrypoint: [/usr/bin/redis-server, /etc/redis/redis.conf]
+    healthcheck:
+      test: ["CMD", "/usr/bin/redis-cli", "-h", "127.0.0.1", "-p", "6379", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+
+  embed:
+    image: aphrody:toolbox-f1346b77156f
+    container_name: shenron-embed
+    restart: unless-stopped
+    user: "1000:1000"
+    network_mode: host
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /tmp
+      - /home/ubuntu:uid=1000,gid=1000,mode=0700
+    environment:
+      HOME: /home/ubuntu
+    volumes:
+      - /srv/shenron/models/e5:/models/e5:ro
+    command: [aphrody-embed, serve, --host, 127.0.0.1, --port, "8085", --threads, "4", --model-dir, /models/e5]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8085/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  compute:
+    image: aphrody:toolbox-f1346b77156f
+    container_name: shenron-compute
+    restart: unless-stopped
+    user: "1000:1000"
+    network_mode: host
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /tmp
+      - /home/ubuntu:uid=1000,gid=1000,mode=0700
+    working_dir: /srv/shenron/data/workspace
+    env_file:
+      - /srv/shenron/config/compute.env
+    environment:
+      HOME: /home/ubuntu
+      APHRODY_HOME: /srv/shenron/data/workspace
+    volumes:
+      - /srv/shenron/data/workspace:/srv/shenron/data/workspace
+    command: [aphrody-mcp, http, --bind, 127.0.0.1:8789]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      embed:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-sS", "-o", "/dev/null", "http://127.0.0.1:8789/"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  chat:
+    image: aphrody:toolbox-f1346b77156f
+    container_name: shenron-chat
+    restart: unless-stopped
+    user: "1000:1000"
+    network_mode: host
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /tmp:uid=1000,gid=1000,mode=0700
+    environment:
+      HOME: /tmp
+      LD_LIBRARY_PATH: /llama
+    volumes:
+      - /srv/shenron/models/llama:/llama:ro
+      - /srv/shenron/models/qwen3/base.gguf:/models/base.gguf:ro
+      - /srv/shenron/models/adapter/shenron-chat-v2.gguf:/models/adapter.gguf:ro
+    command:
+      - /llama/llama-server
+      - --model
+      - /models/base.gguf
+      - --lora
+      - /models/adapter.gguf
+      - --alias
+      - shenron-chat-v2
+      - --host
+      - 127.0.0.1
+      - --port
+      - "8799"
+      - --ctx-size
+      - "8192"
+      - --parallel
+      - "1"
+      - --threads
+      - "4"
+      - --threads-batch
+      - "5"
+      - --n-gpu-layers
+      - "0"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8799/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  site:
+    # CHANGED (1): per-service tag, same image as today when only SHENRON_IMAGE_TAG is set.
+    image: localhost/shenron:${SHENRON_SITE_TAG:-${SHENRON_IMAGE_TAG:?SHENRON_IMAGE_TAG is required}}
+    container_name: shenron-site
+    restart: unless-stopped
+    user: "1000:1000"
+    network_mode: host
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /tmp:uid=1000,gid=1000,mode=1777
+    working_dir: /app
+    env_file:
+      - /srv/shenron/config/site.env
+      - /srv/shenron/config/compute-client.env
+    environment:
+      NODE_ENV: production
+      HOSTNAME: 127.0.0.1
+      PORT: "5011"
+      SHENRON_INTERNAL_HOST: 127.0.0.1
+      SHENRON_INTERNAL_PORT: "5012"
+      SHENRON_HOME: /var/lib/shenron
+      SHENRON_REVISION: ${SHENRON_SITE_TAG:-${SHENRON_IMAGE_TAG}}
+    volumes:
+      - /srv/shenron/data/server:/var/lib/shenron
+      - /srv/shenron/data/releases:/srv/shenron/shared/releases:ro
+    entrypoint: [/usr/local/bin/shenron-server, serve, --host, 127.0.0.1, --port, "5011"]
+    # CHANGED (2): compute and chat are optional dependencies.
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      compute:
+        condition: service_started
+        required: false
+      chat:
+        condition: service_started
+        required: false
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:5011/api/local/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 25s
+
+  bot:
+    # CHANGED (1)
+    image: localhost/shenron:${SHENRON_BOT_TAG:-${SHENRON_IMAGE_TAG:?SHENRON_IMAGE_TAG is required}}
+    container_name: shenron-bot
+    restart: unless-stopped
+    user: "1000:1000"
+    network_mode: host
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /tmp:uid=1000,gid=1000,mode=1777
+    working_dir: /app
+    env_file:
+      - /srv/shenron/config/bot.env
+      - /srv/shenron/config/compute-client.env
+    environment:
+      NODE_ENV: production
+      API_PORT: "5006"
+      SHENRON_REVISION: ${SHENRON_BOT_TAG:-${SHENRON_IMAGE_TAG}}
+    volumes:
+      - /srv/shenron/data/bot/data:/app/data
+      - /srv/shenron/data/bot/assets:/app/assets:ro
+    entrypoint: [/usr/local/bin/shenron-bot]
+    # CHANGED (2)
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      compute:
+        condition: service_started
+        required: false
+      chat:
+        condition: service_started
+        required: false
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:5006/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 25s
+
+  gateway:
+    image: localhost/shenron-gateway:1a27abb61760bd4c7be24f63be9742d0c645cd4e
+    container_name: shenron-gateway
+    restart: unless-stopped
+    user: "0:0"
+    network_mode: host
+    read_only: true
+    cap_drop: [ALL]
+    cap_add: [NET_BIND_SERVICE, SETUID, SETGID, CHOWN, DAC_OVERRIDE]
+    security_opt: ["no-new-privileges:true"]
+    tmpfs:
+      - /var/lib/nginx:uid=101,gid=101,mode=0755
+      - /var/cache/nginx:uid=101,gid=101,mode=0755
+      - /run:uid=101,gid=101,mode=0755
+      - /tmp:uid=101,gid=101,mode=1777
+    # current/ is resolved when the container is created: activate.sh recreates the gateway
+    # (--no-deps) after each switch of the symlink.
+    volumes:
+      - /srv/shenron/config/tls:/etc/letsencrypt:ro
+      - /srv/shenron/current/nginx:/etc/nginx/conf.d:ro
+      - /srv/shenron/data/site/creator:/srv/aphrody-creator:ro
+      - /srv/shenron/data/site/downloads:/srv/aphrody-downloads:ro
+      - /srv/shenron/data/bot/assets:/srv/shenron-cdn/assets:ro
+      - /srv/shenron/current/public/50x.html:/var/www/shenron/50x.html:ro
+      - /srv/shenron/current/public:/srv/shenron-cdn/site:ro
+      - /srv/shenron/data/site/public-extra:/srv/shenron-cdn/site-extra:ro
+      - /srv/shenron/data/site/wiki:/srv/shenron-cdn/wiki:ro
+      - /srv/shenron/data/site/letsencrypt:/var/www/letsencrypt:ro
+      - /srv/shenron/data/site/maintenance:/var/www/maintenance:ro
+      - /srv/shenron/current/cdn/_next:/srv/shenron-cdn/_next:ro
+    depends_on:
+      site:
+        condition: service_healthy
+      bot:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-kfsS", "-H", "Host: dragonballfr.com", "https://127.0.0.1/api/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+
+  cloudflared:
+    # `latest` as on the host; pinning a digest is an Infra decision (runbook, "Infra").
+    image: cloudflare/cloudflared:latest
+    container_name: shenron-cloudflared
+    restart: unless-stopped
+    user: "0:0"
+    network_mode: host
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    volumes:
+      # Redacted while reading: the mount of the token file (a path; the token stays on the host).
+      - /srv/shenron/config/cloudflare/tunnel-token:/etc/cloudflared/tunnel-token:ro
+    command: [tunnel, --no-autoupdate, --metrics, 127.0.0.1:20243, run, --token-file, /etc/cloudflared/tunnel-token]
+    depends_on:
+      gateway:
+        condition: service_healthy

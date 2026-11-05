@@ -57,45 +57,65 @@ if [ -e "$W/.git" ]; then
 else
   git -C "$SOURCE" worktree add -f --detach "$W" "$REVISION"
 fi
-git -C "$W" submodule update --init --recursive --force
+# No submodule is required (vendored trees come from npm); a revision that still declares some is
+# hydrated so older commits keep building.
+if [ -f "$W/.gitmodules" ]; then git -C "$W" submodule update --init --recursive --force; fi
 cd "$W"
 SHA=$(git rev-parse HEAD)
 STARTED=$SECONDS
 phase() { echo "== $1 (+$((SECONDS - STARTED))s)"; }
 echo "== commit $SHA"
 
+# One environment for every path (deploy/environment.json): cache locations, sccache, artifact
+# store. A toolchain that differs from the pins is reported; SHENRON_STRICT_TOOLCHAIN=1 refuses it.
+eval "$(bun scripts/deploy/environment.ts --emit shell)"
+if command -v sccache >/dev/null 2>&1; then export RUSTC_WRAPPER=${RUSTC_WRAPPER:-sccache}; fi
+if ! bun scripts/deploy/environment.ts --verify-host; then
+  [ "${SHENRON_STRICT_TOOLCHAIN:-0}" != 1 ] || exit 1
+  echo "== warning: toolchain differs from deploy/environment.json (artifact keys record the real one)"
+fi
+
 phase "bun install"
 bun install --frozen-lockfile
 
-# Incremental lanes: each lane records the Git tree of its inputs plus its toolchain and is
-# skipped while both are unchanged and its outputs exist, so a commit that only touches the bot,
-# the docs or the crates rebuilds only what depends on it. SHENRON_FORCE_<LANE>=1 forces a lane.
+# Incremental, content-addressed lanes (scripts/deploy/lanes.ts, lanes of deploy/environment.json).
+# A lane key hashes the Git listing of the lane's inputs (tests excluded), the real compiler
+# identity and its upstream keys. A lane is reused when the worktree already holds its outputs
+# for that key, restored from the artifact store when any earlier build produced that key (a
+# revert or a rebuilt branch costs a copy), and built otherwise. SHENRON_FORCE_<LANE>=1 rebuilds.
 STAMPS=.cache/shenron-build-stamps
 mkdir -p "$STAMPS"
-lane_key() { # toolchain paths...
-  local toolchain=$1
-  shift
-  { git ls-tree HEAD -- "$@"; echo "$toolchain"; } | sha256sum | cut -d' ' -f1
+LANES=scripts/deploy/lanes.ts
+STORE=scripts/deploy/artifacts.ts
+EXTRAS=(--extra "rustc=$(rustc -V)" --extra "bun=$(bun --revision)")
+eval "$(bun "$LANES" keys --rev HEAD --format shell "${EXTRAS[@]}")"
+
+lane_outputs() { # lane: its outputs, one per line
+  LANE=$1 bun -e 'const e = await Bun.file("deploy/environment.json").json(); console.log(e.lanes[process.env.LANE].outputs.join("\n"))'
 }
-lane_fresh() { # lane key outputs...
-  local lane=$1 key=$2 force output
-  shift 2
+lane_ready() { # lane key: 0 when the outputs of that key are in the worktree
+  local lane=$1 key=$2 force output missing=0
   force=SHENRON_FORCE_${lane^^}
   [ "${!force:-0}" != 1 ] || return 1
-  [ "$(cat "$STAMPS/$lane" 2>/dev/null)" = "$key" ] || return 1
-  for output in "$@"; do [ -s "$output" ] || return 1; done
+  while read -r output; do [ -e "$output" ] || missing=1; done < <(lane_outputs "$lane")
+  if [ "$missing" = 0 ] && [ "$(cat "$STAMPS/$lane" 2>/dev/null)" = "$key" ]; then
+    echo "== $lane: ${key:0:12} already in the worktree"
+    return 0
+  fi
+  if bun "$STORE" has "$lane" "$key"; then
+    bun "$STORE" get "$lane" "$key"
+    echo "$key" > "$STAMPS/$lane"
+    return 0
+  fi
+  rm -f "$STAMPS/$lane"
+  return 1
 }
-lane_done() { echo "$2" > "$STAMPS/$1"; }
-BUN_ID="bun $("$SHENRON_COMPILE_BUN" --revision)"
-JS_INPUTS=(package.json bun.lock bunfig.toml tsconfig.json packages data scripts/build scripts/lib)
-SITE_KEY=$(lane_key "$BUN_ID" "${JS_INPUTS[@]}" apps/site docs/reference)
-SITE_OUTPUTS=(apps/site/.next-standalone/standalone/apps/site/server.js)
-BOT_KEY=$(lane_key "$BUN_ID" "${JS_INPUTS[@]}" apps/bot assets scripts/ops/bun-source-pipeline.ts)
-BOT_OUTPUTS=(dist/bot/linux-x64/shenron-bot dist/bot/linux-x64/pipeline.mjs)
-# The crates also embed data files with include_str!.
-RUST_KEY=$(lane_key "$(rustc -V)" Cargo.toml Cargo.lock .cargo rust-toolchain.toml crates \
-  data/lexique-db-canonique.json data/lexicon)
-RUST_OUTPUTS=(target/release/shenron-mcp target/release/libshenron_ffi.so target/release/koharu-sdk)
+lane_store() { # lane key
+  local outputs
+  mapfile -t outputs < <(lane_outputs "$1")
+  bun "$STORE" put "$1" "$2" "${outputs[@]}"
+  echo "$2" > "$STAMPS/$1"
+}
 
 fetch_vfs() {
   local out=dist/vfs/shenron-vfs.public.sqlite source=${SHENRON_VFS_SOURCE:-}
@@ -109,12 +129,8 @@ fetch_vfs() {
   test -s "$out" || { echo "No public VFS: set SHENRON_VFS_SOURCE" >&2; exit 1; }
 }
 
-build_site() {
-  if lane_fresh site "$SITE_KEY" "${SITE_OUTPUTS[@]}"; then
-    echo "== site: inputs unchanged, reusing the standalone build"
-    return
-  fi
-  rm -f "$STAMPS/site"
+build_wasm() {
+  lane_ready wasm "$LANE_KEY_WASM" && return
   bun packages/koharu/scripts/build-wasm.ts &
   local canvas=$!
   bun packages/pipeline/scripts/build-re-wasm.ts &
@@ -127,7 +143,13 @@ build_site() {
   fi
   wait "$canvas"
   wait "$re"
+  lane_store wasm "$LANE_KEY_WASM"
   phase "wasm done"
+}
+
+build_site() {
+  build_wasm
+  lane_ready site "$LANE_KEY_SITE" && return
   # The Next build only needs the installed workspace and the wasm modules, so it overlaps the
   # Rust, VFS and bot lanes. It peaks near 14 GiB RSS: start it only with enough headroom.
   local min_kib=$(( ${SHENRON_SITE_BUILD_MIN_GIB:-20} * 1024 * 1024 ))
@@ -138,31 +160,24 @@ build_site() {
   SHENRON_NEXT_BUILD_CACHE=${SHENRON_NEXT_BUILD_CACHE:-1} \
     BUILD_CPUS=${SHENRON_SITE_BUILD_CPUS:-6} \
     bun scripts/build/server.ts --site-only --flavor production --target linux-x64
-  lane_done site "$SITE_KEY"
+  lane_store site "$LANE_KEY_SITE"
   phase "site done"
 }
 
 build_rust() {
-  if lane_fresh rust "$RUST_KEY" "${RUST_OUTPUTS[@]}"; then
-    echo "== cargo: Rust inputs unchanged, reusing target/release"
-    return
-  fi
-  rm -f "$STAMPS/rust"
+  lane_ready rust "$LANE_KEY_RUST" && return
   local jobs=${SHENRON_CARGO_JOBS:-$(nproc)}
   cargo build --release --locked -j "$jobs" -p shenron-mcp -p shenron-ffi
   cargo build --release --locked -j "$jobs" -p koharu-library --bin koharu-sdk
-  lane_done rust "$RUST_KEY"
+  lane_store rust "$LANE_KEY_RUST"
+  sccache --show-stats 2>/dev/null | grep -E 'Cache (hits|misses)' || true
   phase "cargo done"
 }
 
 build_bot() {
-  if lane_fresh bot "$BOT_KEY" "${BOT_OUTPUTS[@]}"; then
-    echo "== bot: inputs unchanged, reusing dist/bot"
-    return
-  fi
-  rm -f "$STAMPS/bot"
+  lane_ready bot "$LANE_KEY_BOT" && return
   bun scripts/build/bot.ts --target linux-x64
-  lane_done bot "$BOT_KEY"
+  lane_store bot "$LANE_KEY_BOT"
   phase "bot done"
 }
 
@@ -176,23 +191,33 @@ status=0
 for pid in "${pids[@]}"; do wait "$pid" || status=$?; done
 ((status == 0)) || { echo "A parallel build lane failed (exit $status)" >&2; exit "$status"; }
 
-phase "server package"
-SHENRON_PAYLOAD_ZSTD_LEVEL=${SHENRON_PAYLOAD_ZSTD_LEVEL:-6} \
-  bun scripts/build/server.ts --skip-site --flavor production --target linux-x64
-install -D -m 0755 target/release/shenron-mcp dist/mcp/linux-x64/shenron-mcp
-install -D -m 0755 target/release/libshenron_ffi.so dist/server/linux-x64/native/libshenron_ffi.so
-install -D -m 0755 target/release/koharu-sdk dist/server/linux-x64/native/koharu-sdk
+# The server package and the image also depend on the public VFS.
+VFS_ID=$(sha256sum dist/vfs/shenron-vfs.public.sqlite | cut -d' ' -f1)
+eval "$(bun "$LANES" keys --rev HEAD --format shell "${EXTRAS[@]}" --extra "vfs=$VFS_ID")"
 
+if ! lane_ready server "$LANE_KEY_SERVER"; then
+  phase "server package"
+  SHENRON_PAYLOAD_ZSTD_LEVEL=${SHENRON_PAYLOAD_ZSTD_LEVEL:-6} \
+    bun scripts/build/server.ts --skip-site --flavor production --target linux-x64
+  install -D -m 0755 target/release/shenron-mcp dist/mcp/linux-x64/shenron-mcp
+  install -D -m 0755 target/release/libshenron_ffi.so dist/server/linux-x64/native/libshenron_ffi.so
+  install -D -m 0755 target/release/koharu-sdk dist/server/linux-x64/native/koharu-sdk
+  lane_store server "$LANE_KEY_SERVER"
+fi
+
+# Stable layers first, per-release binaries last (deploy/docker/Dockerfile): with unchanged lanes
+# every COPY layer is a cache hit, and a registry or delta ship only moves the changed tail.
 phase "image"
 "$ENGINE" build -q -f deploy/docker/Dockerfile --build-arg SHENRON_REVISION="$SHA" \
-  -t "$IMAGE:$SHA" -t "$IMAGE:local" .
-timeout 60 "$ENGINE" run --rm "$IMAGE:$SHA" version
-timeout 60 "$ENGINE" run --rm --entrypoint /usr/local/bin/shenron-bot "$IMAGE:$SHA" --smoke
-timeout 60 "$ENGINE" run --rm --entrypoint /usr/local/bin/koharu-sdk "$IMAGE:$SHA" --help >/dev/null
+  --label "dev.shenron.image-key=$LANE_KEY_IMAGE" -t "$IMAGE:$SHA" -t "$IMAGE:local" .
+timeout 60 "$ENGINE" run --rm --network none "$IMAGE:$SHA" version
+timeout 60 "$ENGINE" run --rm --network none --entrypoint /usr/local/bin/shenron-bot "$IMAGE:$SHA" --smoke
+timeout 60 "$ENGINE" run --rm --network none --entrypoint /usr/local/bin/koharu-sdk "$IMAGE:$SHA" --help >/dev/null
 # Keep the current image plus the newest previous revisions; never touch volumes.
 "$ENGINE" image ls --format '{{.Repository}}:{{.Tag}}' "$IMAGE" \
   | grep -v -F -e "$IMAGE:$SHA" -e "$IMAGE:local" \
   | sed -n "$(( ${SHENRON_KEEP_IMAGES:-3} + 1 )),\$p" \
   | xargs -r -n1 "$ENGINE" image rm >/dev/null 2>&1 || true
+bun "$STORE" prune --keep "${SHENRON_ARTIFACT_KEEP:-8}" >/dev/null
 phase "image verified"
-echo "{\"commit\":\"$SHA\",\"image\":\"$("$ENGINE" image inspect -f '{{.Id}}' "$IMAGE:$SHA")\"}"
+echo "{\"commit\":\"$SHA\",\"image\":\"$("$ENGINE" image inspect -f '{{.Id}}' "$IMAGE:$SHA")\",\"imageKey\":\"$LANE_KEY_IMAGE\"}"
