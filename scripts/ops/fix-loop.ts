@@ -278,6 +278,9 @@ export function agentPrompt(batch: AgentBatch, source: string): string {
 
 // ---------------------------------------------------------------- process helpers
 
+/** Optional prefix for heavy cargo runs, e.g. `flock -w 3000 ~/build/locks/heavy.lock` on the shared build host. */
+const CARGO_WRAP = process.env.FIX_LOOP_CARGO_WRAP ?? "";
+
 const PATH_PREFIX =
   'export PATH="$HOME/.bun/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH"; export NEXT_TELEMETRY_DISABLED=1;';
 
@@ -386,7 +389,7 @@ export async function checkClippy(root: string, pkg?: string): Promise<Finding[]
   if (!existsSync(join(root, "Cargo.toml"))) return [];
   const scope = pkg ? `-p ${q(pkg)}` : "--workspace";
   const r = await sh(
-    `cargo clippy ${scope} --all-targets --message-format=json -- -D warnings`,
+    `${CARGO_WRAP} cargo clippy ${scope} --all-targets --message-format=json -- -D warnings`,
     root,
     3_000_000,
   );
@@ -773,7 +776,7 @@ export async function main(argv: string[]): Promise<number> {
       "clippy-fix",
       "clippy",
       plan.mechanical.clippyFix
-        ? "cargo clippy --fix --allow-dirty --allow-staged --workspace --all-targets"
+        ? `${CARGO_WRAP} cargo clippy --fix --allow-dirty --allow-staged --workspace --all-targets`
         : null,
       "fix(rust): cargo clippy --fix machine-applicable suggestions",
     );
