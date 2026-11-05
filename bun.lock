@@ -190,9 +190,9 @@
         "zod": "catalog:",
       },
       "devDependencies": {
-        "@aphrody/bun-plugin-tailwind": "catalog:",
         "@aphrody/bun-test-dom": "catalog:",
         "@huggingface/transformers": "catalog:",
+        "@tailwindcss/postcss": "catalog:",
         "@types/howler": "catalog:",
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
@@ -462,7 +462,6 @@
     "@aphrody/agent-browser": "1.0.0-canary.4",
     "@aphrody/api": "3.0.0-alpha.5",
     "@aphrody/bun": "3.3.13",
-    "@aphrody/bun-plugin-tailwind": "0.1.0",
     "@aphrody/bun-runtime-sdk": "1.4.10",
     "@aphrody/bun-test-dom": "0.1.1",
     "@aphrody/bun-video": "https://dist.aphrody.app/packages/bun-video/1.4.4-video.1/db7590aff424cc85c783a316556b8552f780898f92d9765443092a5c69970056/package.tgz",
@@ -626,8 +625,6 @@
 
     "@aphrody/bun": ["@aphrody/bun@3.3.13", "", { "dependencies": { "@aphrody/paths": "0.1.3", "@aphrody/runtime-sdk": "0.1.4", "@aphrody/update": "0.1.5" } }, "sha512-xCOGVJqO3NTdyRhil1MOcpSd94mEjG4gX/g42SXVG36UummvQu31OZpRFfawI62PlwS+Tjs+0eogVdoQHKc5Hw=="],
 
-    "@aphrody/bun-plugin-tailwind": ["@aphrody/bun-plugin-tailwind@0.1.0", "", { "dependencies": { "@aphrody/m3-tailwind": "^3.3.7", "@aphrody/m3-tokens": "^3.3.7", "@tailwindcss/node": "^4.3.3", "@tailwindcss/oxide": "^4.3.3", "enhanced-resolve": "^5.26.0", "tailwindcss": "^4.3.3" }, "peerDependencies": { "postcss": "^8" }, "optionalPeers": ["postcss"] }, "sha512-JqaYwVBB3CK2na8Nr74pWjkA5U5YtBg07uTYSry539DikBWC9kgovBio/yWAeOT4AH0yF4PfrOuuHsDtk96S+g=="],
-
     "@aphrody/bun-runtime-sdk": ["@aphrody/bun-runtime-sdk@1.4.10", "", {}, "sha512-Zbltu8tR/UajI+NOnM4wXf+gXesHC4CRptCyp+nn4RkZqvoXsto8izdsHtUdEPH/BbmIq+BKq/1ModOBI2xSmw=="],
 
     "@aphrody/bun-test-dom": ["@aphrody/bun-test-dom@0.1.1", "", { "dependencies": { "@happy-dom/global-registrator": "^20.14.5" } }, "sha512-XZKt0FwXS8S4NiZIYr/X8BTCleTFlH72T4+W46tx1xrKXHDuIk4tOS+G3nLpuHbzinYiX+Efw+zfKlNuWlCoTA=="],
@@ -649,8 +646,6 @@
     "@aphrody/m3-primitives": ["@aphrody/m3-primitives@3.3.11", "", { "dependencies": { "@aphrody/m3-motion": "3.3.11", "@base-ui/react": "npm:@aphrody/base-ui@1.8.0-aphrody.1", "class-variance-authority": "^0.7.1", "clsx": "^2.1.1", "motion": "^13.4.4", "react-hook-form": "^7.89.0", "react-resizable-layout": "^0.7.3", "sonner": "^2.0.8", "zod": "^4.6.5" }, "peerDependencies": { "react": ">=18.0.0", "react-dom": ">=18.0.0", "tailwindcss": ">=4.1.0" } }, "sha512-DtQYG0jE7OHH/y8HPrzxZzVx5WoMw2lRIL7LvymO4RLzG3OPvxv/i6qBobdT25wUo5GYE1Ow0adQjojAsgC0TA=="],
 
     "@aphrody/m3-reader": ["@aphrody/m3-reader@3.3.12", "", { "dependencies": { "@tanstack/react-virtual": "3.14.13", "lucide-react": "1.49.0", "swiper": "14.3.0" }, "peerDependencies": { "react": ">=18.0.0", "react-dom": ">=18.0.0", "tailwindcss": ">=4.1.0" } }, "sha512-4psFJGSqffdgWkm2dNkVp4l93vJpRpExVmSGwhm7kmpBjhv3CxpvDsz5Dfn8NLqbQK71breE6nqm4XTXjkJM4g=="],
-
-    "@aphrody/m3-tailwind": ["@aphrody/m3-tailwind@3.3.7", "", { "dependencies": { "@aphrody/m3-tokens": "3.3.7" }, "peerDependencies": { "tailwindcss": "^4.0.0" } }, "sha512-8OiSxdDRM28z03LLAR4cGUhHz+S9tkggSRFhxaD6R6RaVCZikFtz6lbZc26iOMCvW/F7CVAiCnIfoUBWxNajzw=="],
 
     "@aphrody/m3-theme": ["@aphrody/m3-theme@3.3.11", "", { "dependencies": { "@aphrody/m3-tokens": "3.3.11" }, "peerDependencies": { "react": ">=18.0.0" } }, "sha512-T4c6vOwBoEw3raNv5l+V5xrpO1uJ0APEOmLXJOYbf6TKCP2kiqP9OGXRbjLjhq0z/dFCLPQPRv4zzjudJnV3Jg=="],
 
@@ -2877,8 +2872,6 @@
     "@aphrody/inference/@aphrody/paths": ["@aphrody/paths@0.1.1", "", {}, "sha512-Vkh5d/Q/VZV71ddqtFCmF1D0CyLaKLtZk6usn2Mbi7u3jrgkyskcGplolBuzrv8QIzzi38oNytaiM4TS6WY0iA=="],
 
     "@aphrody/m3-primitives/@base-ui/react": ["@aphrody/base-ui@1.8.0-aphrody.1", "", { "dependencies": { "@babel/runtime": "^7.29.7 || ^8.0.0", "@base-ui/utils": "npm:@aphrody/base-ui-utils@0.4.0-aphrody.1", "@floating-ui/react-dom": "^2.1.9", "@floating-ui/utils": "^0.2.12", "use-sync-external-store": "^1.7.0" }, "peerDependencies": { "@date-fns/tz": "^1.2.0", "@types/react": "^17 || ^18 || ^19", "date-fns": "^4.0.0", "react": "^17 || ^18 || ^19", "react-dom": "^17 || ^18 || ^19" }, "optionalPeers": ["@date-fns/tz", "@types/react", "date-fns"] }, "sha512-e0jPD4UK9eVFHfNH5ZHCKdPhMjBsQI9ARURKLfoUzJ7/v4ygW4W1UrEeIbrAyJGShwy/iBmCaIdnK4oJJ7fFGg=="],
-
-    "@aphrody/m3-tailwind/@aphrody/m3-tokens": ["@aphrody/m3-tokens@3.3.7", "", { "dependencies": { "@material/material-color-utilities": "^0.4.0" } }, "sha512-SBgjx6Wujh6k+KP8dsOaqweBUa8e82LAmFpkujKlSufDzzxg2Re56trrk9MpS98zveuko5UbjHWdjZsZVw3NOg=="],
 
     "@aphrody/web-test/@aphrody/next-bun": ["@aphrody/next-bun@0.2.0-aphrody.1", "", { "peerDependencies": { "next": ">=16.0.0" }, "optionalPeers": ["next"], "bin": { "next-bun": "bin/next-bun.js" } }, "sha512-0u3LBl+H8t4i+BzDNMYccr/bcrKfDNALy4iNaYRF5fuGg1pP90YJPj9Xw9V+6dA3IfnG8gQFly+rvgM2EQc9hQ=="],
 
