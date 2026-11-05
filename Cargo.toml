@@ -241,3 +241,11 @@ debug = "line-tables-only"
 lto = "thin"
 codegen-units = 16
 strip = "debuginfo"
+
+# Shipped artifacts: `cargo build --profile production` (output in target/production). Fat LTO
+# over a single codegen unit trades a much longer link for smaller, faster binaries; `release`
+# stays the quick optimised build that scripts/deploy and scripts/build use today.
+[profile.production]
+inherits = "release"
+lto = "fat"
+codegen-units = 1
