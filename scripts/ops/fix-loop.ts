@@ -434,6 +434,13 @@ ${r.err}`,
   return out;
 }
 
+/** A failed cargo run that produced no diagnostics (resolution error, missing path dependency, lock) must not look green. */
+export function withCargoFailure(found: Finding[], r: { code: number; err: string }): Finding[] {
+  if (r.code === 0 || found.length) return found;
+  const tail = r.err.trim().split(String.fromCharCode(10)).slice(-4).join(" | ");
+  return [{ tool: "clippy", file: "<cargo>", line: 0, col: 0, code: "cargo-failed", message: `cargo exited ${r.code}: ${tail}`, severity: "error" }];
+}
+
 export async function checkClippy(root: string, pkg?: string): Promise<Finding[]> {
   if (!existsSync(join(root, "Cargo.toml"))) return [];
   const scope = pkg ? `-p ${q(pkg)}` : "--workspace";
@@ -442,7 +449,7 @@ export async function checkClippy(root: string, pkg?: string): Promise<Finding[]
     root,
     3_000_000,
   );
-  return parseClippyJson(r.out, root);
+  return withCargoFailure(parseClippyJson(r.out, root), r);
 }
 
 export type CheckSet = Tool[];
