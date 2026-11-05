@@ -12,7 +12,7 @@
  * make the run exit 1. Output is one JSON object per line. Idempotent; a lock
  * directory prevents concurrent runs.
  */
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync, writeSync } from "node:fs";
 import { homedir, hostname, tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
@@ -111,20 +111,22 @@ export function expandPath(path: string): string {
   return resolve(path.startsWith("~") ? join(homedir(), path.slice(1)) : path);
 }
 
-async function syncSubmodules(path: string, policy: SubmodulePolicy, emit: Emit, name: string) {
+async function syncSubmodules(path: string, policy: SubmodulePolicy, emit: Emit, name: string, changed: boolean) {
   if (policy === false || !existsSync(join(path, ".gitmodules"))) return;
-  const sync = await git(path, ["submodule", "sync", "--recursive"]);
-  if (sync.code !== 0) emit({ level: "error", name, step: "submodule-sync", error: sync.err });
-  let args = ["submodule", "update", "--recursive"];
-  if (policy === true) args = ["submodule", "update", "--init", "--recursive"];
-  else {
+  if (!changed) {
+    // Nothing moved: only touch submodules when one is out of sync with its pin.
     const status = await git(path, ["submodule", "status"]);
-    const stale = status.out.split("\n").some((line) => line.startsWith("+") || line.startsWith("U"));
-    if (!stale) {
+    const drift = status.out.split("\n").some((l) => l.startsWith("+") || l.startsWith("U") || (policy === true && l.startsWith("-")));
+    if (!drift) {
       emit({ level: "info", name, step: "submodule-update", result: "in-sync" });
       return;
     }
   }
+  const sync = await git(path, ["submodule", "sync", "--recursive"]);
+  if (sync.code !== 0) emit({ level: "error", name, step: "submodule-sync", error: sync.err });
+  let args = ["submodule", "update", "--recursive"];
+  if (policy === true) args = ["submodule", "update", "--init", "--recursive"];
+
   const update = await git(path, args, 900_000);
   emit({
     level: update.code === 0 ? "info" : "error",
@@ -175,12 +177,12 @@ export async function syncCheckout(
       }
       const after = (await git(path, ["rev-parse", "--short", "HEAD"])).out;
       emit({ ...detail, level: "info", head: after, from: before });
-      await syncSubmodules(path, spec.submodules, emit, spec.name);
+      await syncSubmodules(path, spec.submodules, emit, spec.name, true);
       return true;
     }
     case "up-to-date":
       emit({ ...detail, level: "info" });
-      if (!dryRun) await syncSubmodules(path, spec.submodules, emit, spec.name);
+      if (!dryRun) await syncSubmodules(path, spec.submodules, emit, spec.name, false);
       return true;
     default:
       emit({ ...detail, level: "warn" });
@@ -248,7 +250,8 @@ function arg(name: string): string | undefined {
 if (import.meta.main) {
   const host = arg("host") ?? process.env.SYNC_HOST ?? hostname();
   const manifestPath = resolve(arg("manifest") ?? join(import.meta.dir, "../../deploy/checkouts.json"));
-  const emit: Emit = (record) => console.log(JSON.stringify({ ts: new Date().toISOString(), host, ...record }));
+  const emit: Emit = (record) => writeSync(1, `${JSON.stringify({ ts: new Date().toISOString(), host, ...record })}
+`);
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Manifest;
   const release = process.argv.includes("--no-lock")
     ? () => {}
