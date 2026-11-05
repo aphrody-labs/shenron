@@ -74,7 +74,6 @@
   },
   "ignorePatterns": [
     "**/node_modules/**",
-    "vendor/**",
     "plugin/skills/*/scripts/*.js",
     "target/**",
     "var/**",
