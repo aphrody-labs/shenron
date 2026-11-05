@@ -52,9 +52,9 @@ allow-wildcard-paths = true
 unknown-registry = "deny"
 unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
-# Aphrody (pinned by `rev` in [workspace.dependencies]) and the two upstream revisions Aphrody's
-# workspace pins: hf-hub ([patch.crates-io] of Cargo.toml) and oxc.
-allow-git = ["https://github.com/huggingface/hf-hub", "https://github.com/oxc-project/oxc.git"]
+# Aphrody (pinned by `rev` in [workspace.dependencies]) and the upstream hf-hub revision of
+# [patch.crates-io] in Cargo.toml.
+allow-git = ["https://github.com/huggingface/hf-hub"]
 
 [sources.allow-org]
 github = ["aphrody-labs"]
