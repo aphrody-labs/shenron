@@ -126,14 +126,3 @@ export function adminPageForPath(pathname: string): AdminPageId | null {
     })?.[0] ?? null
   );
 }
-
-/**
- * Routes qui ne rendent pas d'en-tête propre : la racine et les anciens écrans
- * IA redirigent (`/admin/assistance-ia` répond un 308 depuis le proxy), le cockpit IA
- * porte le sien.
- */
-export const ADMIN_ROUTES_WITHOUT_HEADING = [
-  "/admin",
-  "/admin/evaluations",
-  "/admin/canon",
-] as const;
