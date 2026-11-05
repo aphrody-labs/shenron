@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { allowsPublicAds, needsAdvertisingReset } from "@/lib/public-ads";
 import { useAdsEligibility } from "@/lib/ads-eligibility";
 import { afterInteractionOrIdle } from "@/lib/deferred-third-party";
+import { getConsent, onConsentChange } from "@/lib/consent";
 
 export function PublicAdsScript({ client }: { client: string }) {
   const pathname = usePathname();
@@ -22,6 +23,7 @@ export function PublicAdsScript({ client }: { client: string }) {
   useEffect(() => {
     if (!allowed) return;
     let cancelled = false;
+    let started = false;
     const loadScript = () => {
       if (cancelled) return;
       const src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(client)}`;
@@ -32,11 +34,23 @@ export function PublicAdsScript({ client }: { client: string }) {
       script.crossOrigin = "anonymous";
       document.head.appendChild(script);
     };
-    // AdSense (et son CMP certifié) ne charge qu'après la première interaction
-    // ou au repos : ~250 Kio de JS hors du chemin critique, TBT allégé.
-    void afterInteractionOrIdle().then(loadScript);
+    // Meme consentement `dbfr_consent` que GTM : aucune requete vers les hotes
+    // publicitaires Google tant que le visiteur n'a pas accepte. Sans accord,
+    // les emplacements `AdUnit` reservent leur hauteur puis se replient (aucun
+    // script charge). Apres accord, AdSense (et son CMP certifie) demarre a la
+    // premiere interaction ou au repos.
+    const start = () => {
+      if (started || cancelled) return;
+      started = true;
+      void afterInteractionOrIdle().then(loadScript);
+    };
+    if (getConsent().analytics) start();
+    const off = onConsentChange((state) => {
+      if (state.analytics) start();
+    });
     return () => {
       cancelled = true;
+      off();
     };
   }, [allowed, client]);
 
