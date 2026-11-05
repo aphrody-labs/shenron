@@ -388,7 +388,6 @@ function log(line: string) {
   appendFileSync(LOG, line + "\n");
 }
 
-const MEDIA_EXT = /\.(mp3|wav|ogg|m4a|png|jpe?g|webp|gif|svg|avif)(\?|$)/i;
 const MEDIA_URL_RE =
   /https?:\/\/[^\s"'<>\\]+\.(?:mp3|wav|ogg|m4a|png|jpe?g|webp|gif|svg|avif)(?:\?[^\s"'<>\\]*)?/gi;
 

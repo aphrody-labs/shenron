@@ -26,7 +26,7 @@
  */
 import { mkdir, readdir, rename, stat, unlink, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
-import { join, basename, resolve } from "node:path";
+import { join, basename } from "node:path";
 import postgres from "postgres";
 import sharp from "sharp";
 import { urlBase } from "./_databooks-base";

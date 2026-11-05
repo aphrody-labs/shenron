@@ -1,5 +1,4 @@
 #!/usr/bin/env bun
-import { userHome } from "@aphrody/paths";
 /**
  * jimaku-subtitles.ts — Sous-titres JAPONAIS depuis jimaku.cc vers la base :
  * épisodes (`bot.db_episodes.subtitles`) et films (`bot.db_movies.subtitles`),

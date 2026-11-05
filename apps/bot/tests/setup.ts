@@ -5,7 +5,7 @@
 import "reflect-metadata";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { join, resolve } from "node:path";
+import { join } from "node:path";
 
 Bun.env.NODE_ENV = "test";
 Bun.env.DISCORD_TOKEN ??= "test-token";
