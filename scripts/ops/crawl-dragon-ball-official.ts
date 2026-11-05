@@ -110,8 +110,7 @@ export async function runOfficialCrawl(
     };
   }
   const capture =
-    options.capture ??
-    (async (url: string) => (await scrapeWithYoloWeb(url)).content);
+    options.capture ?? (async (url: string) => (await scrapeWithYoloWeb(url)).content);
   const urls = await discoverOfficialPages(capture);
   const campaignId = new Bun.CryptoHasher("sha256")
     .update(urls.join("\n"))

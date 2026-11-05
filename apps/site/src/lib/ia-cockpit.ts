@@ -524,7 +524,8 @@ export async function fetchYoloWebCrawlStats(options: {
   timeoutMs?: number;
 }): Promise<WebCrawlData> {
   const raw = options.baseUrl?.trim();
-  if (!raw) throw new SourceNotConfiguredError("YOLO_WEB_API_URL absent de l'environnement du site");
+  if (!raw)
+    throw new SourceNotConfiguredError("YOLO_WEB_API_URL absent de l'environnement du site");
   let base: URL;
   try {
     base = new URL(raw);
