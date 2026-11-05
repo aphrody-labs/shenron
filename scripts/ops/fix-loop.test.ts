@@ -274,7 +274,10 @@ describe("rust members", () => {
 
 describe("cargo failure", () => {
   test("a failed cargo run without diagnostics is a finding, not a green result", () => {
-    const out = withCargoFailure([], { code: 101, err: "error: failed to load manifest\ncaused by: path dep missing" });
+    const out = withCargoFailure([], {
+      code: 101,
+      err: "error: failed to load manifest\ncaused by: path dep missing",
+    });
     expect(out).toHaveLength(1);
     expect(out[0]).toMatchObject({ tool: "clippy", code: "cargo-failed" });
     expect(out[0]!.message).toContain("path dep missing");

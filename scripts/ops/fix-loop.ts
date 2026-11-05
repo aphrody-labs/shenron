@@ -438,7 +438,17 @@ ${r.err}`,
 export function withCargoFailure(found: Finding[], r: { code: number; err: string }): Finding[] {
   if (r.code === 0 || found.length) return found;
   const tail = r.err.trim().split(String.fromCharCode(10)).slice(-4).join(" | ");
-  return [{ tool: "clippy", file: "<cargo>", line: 0, col: 0, code: "cargo-failed", message: `cargo exited ${r.code}: ${tail}`, severity: "error" }];
+  return [
+    {
+      tool: "clippy",
+      file: "<cargo>",
+      line: 0,
+      col: 0,
+      code: "cargo-failed",
+      message: `cargo exited ${r.code}: ${tail}`,
+      severity: "error",
+    },
+  ];
 }
 
 export async function checkClippy(root: string, pkg?: string): Promise<Finding[]> {
