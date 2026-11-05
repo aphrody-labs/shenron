@@ -14,7 +14,8 @@
 #                         (default: dist/vfs/shenron-vfs.public.sqlite already in the worktree)
 #   SHENRON_CONTAINER     docker | podman (default: whichever is installed, docker first)
 #   SHENRON_IMAGE         image name (default: localhost/shenron)
-#   SHENRON_COMPILE_BUN   Bun used to compile the release binaries (default: bun on PATH)
+#   SHENRON_COMPILE_BUN   Bun used to compile the release binaries, must be >= 1.4.6 (default: bun-1.4.6, else bun on PATH)
+#   SHENRON_WBG_DIR       directory of the wasm-bindgen CLI pinned by Cargo.lock (default: $HOME/build/tools/wbg-<version>/bin)
 #   SHENRON_CARGO_JOBS    Cargo jobs (default: all CPUs)
 #   SHENRON_SITE_BUILD_CPUS, SHENRON_SITE_BUILD_MIN_GIB, SHENRON_PAYLOAD_ZSTD_LEVEL,
 #   SHENRON_NEXT_BUILD_CACHE (1), SHENRON_KEEP_IMAGES (3)
@@ -42,6 +43,15 @@ export SHENRON_COMPILE_BUN
 case "$("$SHENRON_COMPILE_BUN" --version)" in
   *debug*) echo "Refusing a debug runtime for production compilation" >&2; exit 1 ;;
 esac
+# A server compiled with Bun older than 1.4.6 starts but cannot launch the Next standalone.
+MIN_COMPILE_BUN=1.4.6
+COMPILE_BUN_VERSION=$("$SHENRON_COMPILE_BUN" --version)
+if [ "$(printf '%s
+%s
+' "$MIN_COMPILE_BUN" "${COMPILE_BUN_VERSION%%-*}" | sort -V | head -n1)" != "$MIN_COMPILE_BUN" ]; then
+  echo "Refusing Bun $COMPILE_BUN_VERSION to compile: need >= $MIN_COMPILE_BUN (set SHENRON_COMPILE_BUN)" >&2
+  exit 1
+fi
 bun() { "$SHENRON_COMPILE_BUN" "$@"; }
 
 mkdir -p "$(dirname "$W")" "$(dirname "$LOCK")"
@@ -62,6 +72,18 @@ fi
 if [ -f "$W/.gitmodules" ]; then git -C "$W" submodule update --init --recursive --force; fi
 cd "$W"
 SHA=$(git rev-parse HEAD)
+
+# wasm-bindgen-cli must match the wasm-bindgen crate of Cargo.lock. The pinned CLI goes before
+# ~/.cargo/bin in PATH (SHENRON_WBG_DIR, default $HOME/build/tools/wbg-<version>/bin).
+WBG_VERSION=$(awk '/^name = "wasm-bindgen"$/ {getline; gsub(/[^0-9.]/, "", $0); print; exit}' Cargo.lock)
+WBG_DIR=${SHENRON_WBG_DIR:-$HOME/build/tools/wbg-$WBG_VERSION/bin}
+if [ -n "$WBG_VERSION" ]; then
+  [ -x "$WBG_DIR/wasm-bindgen" ] && export PATH="$WBG_DIR:$PATH"
+  case "$(wasm-bindgen --version 2>/dev/null)" in
+    "wasm-bindgen $WBG_VERSION") ;;
+    *) echo "wasm-bindgen $WBG_VERSION required (Cargo.lock), found: $(wasm-bindgen --version 2>&1); install it in $WBG_DIR" >&2; exit 1 ;;
+  esac
+fi
 STARTED=$SECONDS
 phase() { echo "== $1 (+$((SECONDS - STARTED))s)"; }
 echo "== commit $SHA"
