@@ -4,8 +4,8 @@
  * Owners, never local files of another process:
  *   - Aphrody AI private HTTP (`APHRODY_AI_HTTP_URL`, loopback, bearer
  *     `APHRODY_AI_HTTP_TOKEN`, legacy aliases accepted): health, RAG statistics, search mode;
- *   - YOLO WEB coordinator (`YOLO_WEB_API_URL`, optional bearer `YOLO_WEB_API_TOKEN`):
- *     crawl queue statistics (`GET /status`);
+ *   - YOLO WEB (`YOLO_WEB_CLI` spawned as `web-cli mcp` over stdio, then the CDP endpoint of
+ *     `YOLO_CDP_ENDPOINT`/`YOLO_CDP_PORT`): MCP handshake, tool list and CDP version;
  *   - the bot process over HTTP (`BOT_INTERNAL_URL`, else the configured bot
  *     API URL): its local index while `RAG_BACKEND` is not `aphrody`, and
  *     every write on its runtime tables (admin bearer `SHENRON_ADMIN_TOKEN`);
@@ -20,6 +20,7 @@ import { join } from "node:path";
 import { sql } from "drizzle-orm";
 import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody/compute";
 import { hasAiHttpToken } from "@aphrody/shenron-pipeline/ai/config";
+import { probeYoloWeb, YoloWebNotConfiguredError } from "@aphrody/shenron-pipeline/yolo-web";
 import { createShenronApiClient, type ApiResult } from "@aphrody/shenron-api/client";
 import type {
   CompleteGoalBody,
@@ -37,7 +38,7 @@ import {
   SourceNotConfiguredError,
   computeRetrievalMetrics,
   describeError,
-  fetchYoloWebCrawlStats,
+  summarizeYoloWebProbe,
   goldCaseView,
   mapDiscordMessage,
   mapEvalRow,
@@ -199,13 +200,16 @@ export function createIaCockpitFetchers(): IaCockpitFetchers {
     },
     yoloWeb: {
       label: "YOLO WEB — crawl",
-      target: "GET /status",
-      run: () =>
-        fetchYoloWebCrawlStats({
-          baseUrl: process.env.YOLO_WEB_API_URL,
-          token: process.env.YOLO_WEB_API_TOKEN,
-          timeoutMs: APHRODY_TIMEOUT_MS,
-        }),
+      target: "web-cli mcp (stdio) + CDP /json/version",
+      run: async () => {
+        try {
+          return summarizeYoloWebProbe(await probeYoloWeb({ timeoutMs: APHRODY_TIMEOUT_MS }));
+        } catch (error) {
+          if (error instanceof YoloWebNotConfiguredError)
+            throw new SourceNotConfiguredError("YOLO_WEB_CLI absent de l'environnement du site");
+          throw error;
+        }
+      },
     },
     botRag: {
       label: "Bot Shenron — index local",

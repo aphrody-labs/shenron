@@ -313,7 +313,7 @@ Autres variables Aphrody :
 | ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
 | `RAG_BACKEND`                                                | `aphrody` (égalité exacte) : recherche, contexte et statistiques RAG par `aphrody-ai-http`.                                |
 | `EMBED_TIMEOUT_MS`, `RERANK_TIMEOUT_MS`, `RAG_RERANK`        | Délai du chemin chaud d'embedding, délai du reranker, `RAG_RERANK=0` coupe le rerank.                                      |
-| `YOLO_WEB_API_URL`, `YOLO_WEB_MCP_URL`, `YOLO_WEB_API_TOKEN` | YOLO WEB : coordinateur de crawl (`/status`, `/enqueue`), serveur MCP (`/mcp`), jeton optionnel. Aucune valeur par défaut. |
+| `YOLO_WEB_CLI`, `YOLO_CDP_ENDPOINT`, `YOLO_CDP_PORT`, `YOLO_CDP_TOKEN` | YOLO WEB : entrée `web-cli` lancée en `mcp` (stdio) ; endpoint CDP que ses outils `browser_*` pilotent (non démarré par yolo-web). Aucune valeur par défaut pour `YOLO_WEB_CLI`. |
 | `APHRODY_BIN`                                                | Chemin du CLI `aphrody` quand il n'est pas sur le `PATH`.                                                                  |
 
 ## Acquisition native des sources — bot Shenron

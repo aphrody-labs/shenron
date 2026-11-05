@@ -122,7 +122,7 @@ function fakeFetchers(): IaCockpitFetchers {
     aphrodyHealth: notExercised("Aphrody AI — santé"),
     aphrodyRagStats: notExercised("Aphrody RAG — statistiques"),
     aphrodyRagProbe: notExercised("Aphrody RAG — sonde"),
-    yoloWeb: unconfigured("YOLO WEB — crawl", "YOLO_WEB_API_URL absent de l'environnement du site"),
+    yoloWeb: unconfigured("YOLO WEB — crawl", "YOLO_WEB_CLI absent de l'environnement du site"),
     botRag: notExercised("Bot Shenron — index local"),
     evalHistory: ok("Historique", []),
     goldSet: ok("Jeu doré", { cases: 3, sample: [] }),

@@ -3,16 +3,14 @@ import {
   SourceNotConfiguredError,
   collectIaCockpit,
   computeRetrievalMetrics,
-  fetchYoloWebCrawlStats,
   mapDiscordMessage,
   mapEvalRow,
   parseBotIaStatus,
-  parseCrawlStats,
   parseGoldSet,
   probeSource,
   resolveRagBackend,
   summarizeAphrodyRagStats,
-  type FetchLike,
+  summarizeYoloWebProbe,
   type IaCockpitFetchers,
   type SourceSpec,
 } from "../src/lib/ia-cockpit";
@@ -78,9 +76,10 @@ function syntheticFetchers(): IaCockpitFetchers {
       hits: 1,
     }),
     yoloWeb: ok("YOLO WEB — crawl", {
-      queue: { pending: 1, locked: 0, done: 10, failed: 2, total: 13 },
-      jobs: 1,
-      runningJobs: 0,
+      server: "io.github.yolo-rs/web-mcp-server 1.0.0",
+      tools: 70,
+      cdpEndpoint: "http://127.0.0.1:9222",
+      cdpBrowser: "Chrome/150.0",
     }),
     botRag: ok("Bot Shenron — index local", {
       chunks: 2_000,
@@ -130,11 +129,11 @@ describe("probeSource — chaque source rend son propre état", () => {
 
   test("configuration absente : non configuré, sans latence", async () => {
     const report = await probeSource(
-      failing("Web", new SourceNotConfiguredError("YOLO_WEB_API_URL absent")),
+      failing("Web", new SourceNotConfiguredError("YOLO_WEB_CLI absent")),
     );
     expect(report.status).toBe("unconfigured");
     expect(report.latencyMs).toBeNull();
-    expect(report.error).toBe("YOLO_WEB_API_URL absent");
+    expect(report.error).toBe("YOLO_WEB_CLI absent");
   });
 
   test("délai dépassé : nommé comme tel", async () => {
@@ -231,7 +230,7 @@ describe("collectIaCockpit — règles d'agrégation sur des rapports de sources
     });
     fetchers.yoloWeb = failing(
       "YOLO WEB — crawl",
-      new SourceNotConfiguredError("YOLO_WEB_API_URL absent de l'environnement du site"),
+      new SourceNotConfiguredError("YOLO_WEB_CLI absent de l'environnement du site"),
     );
     fetchers.feedbacks = failing("Retours", new Error("connect ECONNREFUSED"));
 
@@ -356,18 +355,23 @@ describe("parseurs de charges utiles d'exemple", () => {
     });
   });
 
-  test("YOLO WEB /status", () => {
-    expect(
-      parseCrawlStats({ queued: 2, workers: 1, observers: 0, jobs: { running: 1, done: 30 } }),
-    ).toEqual({
-      queue: { pending: 2, locked: 1, done: 30, failed: 0, total: 31 },
-      jobs: 31,
-      runningJobs: 1,
+  test("sonde YOLO WEB : handshake MCP, outils et version CDP", () => {
+    const probe = {
+      server: { name: "io.github.yolo-rs/web-mcp-server", version: "1.0.0" },
+      tools: 70,
+      hasBrowserTools: true,
+      cdp: { endpoint: "http://127.0.0.1:9222", browser: "Chrome/150.0" },
+    };
+    expect(summarizeYoloWebProbe(probe)).toEqual({
+      server: "io.github.yolo-rs/web-mcp-server 1.0.0",
+      tools: 70,
+      cdpEndpoint: "http://127.0.0.1:9222",
+      cdpBrowser: "Chrome/150.0",
     });
-    expect(() => parseCrawlStats({ queued: -1, jobs: {} })).toThrow("statut de crawl valide");
-    expect(() => parseCrawlStats({ queued: 0, jobs: { done: "x" } })).toThrow(
-      "Compteur de crawl invalide",
+    expect(() => summarizeYoloWebProbe({ ...probe, hasBrowserTools: false })).toThrow(
+      "outils browser_*",
     );
+    expect(() => summarizeYoloWebProbe({ ...probe, tools: 0 })).toThrow("outils browser_*");
   });
 
   test("message Discord : auteur, texte ou titre d'embed", () => {
@@ -385,50 +389,6 @@ describe("parseurs de charges utiles d'exemple", () => {
       content: "RAPPORT — Recall@5 80 %",
       timestamp: "2026-09-23T09:44:11.492Z",
     });
-  });
-});
-
-describe("fetchYoloWebCrawlStats — contrat du coordinateur YOLO WEB", () => {
-  const okFetcher =
-    (seen: string[]): FetchLike =>
-    async (input, init) => {
-      seen.push(`${String(input)} ${new Headers(init?.headers).get("authorization")}`);
-      return Response.json({ queued: 0, workers: 1, observers: 0, jobs: { done: 5, failed: 1 } });
-    };
-
-  test("sans URL : non configuré, aucune requête, aucune valeur de repli", async () => {
-    const seen: string[] = [];
-    await expect(fetchYoloWebCrawlStats({ fetcher: okFetcher(seen) })).rejects.toBeInstanceOf(
-      SourceNotConfiguredError,
-    );
-    expect(seen).toEqual([]);
-  });
-
-  test("GET /status, jeton optionnel", async () => {
-    const seen: string[] = [];
-    await fetchYoloWebCrawlStats({ baseUrl: "http://127.0.0.1:8787", fetcher: okFetcher(seen) });
-    await fetchYoloWebCrawlStats({
-      baseUrl: "https://yolo-web.example.org",
-      token: "t0k",
-      fetcher: okFetcher(seen),
-    });
-    expect(seen).toEqual([
-      "http://127.0.0.1:8787/status null",
-      "https://yolo-web.example.org/status Bearer t0k",
-    ]);
-  });
-
-  test("HTTP non loopback refusé comme mauvaise configuration", async () => {
-    await expect(
-      fetchYoloWebCrawlStats({ baseUrl: "http://10.0.0.5:8787", fetcher: okFetcher([]) }),
-    ).rejects.toBeInstanceOf(SourceNotConfiguredError);
-  });
-
-  test("erreur serveur : statut et corps rapportés", async () => {
-    const fetcher: FetchLike = async () => new Response("pg down", { status: 500 });
-    await expect(
-      fetchYoloWebCrawlStats({ baseUrl: "http://127.0.0.1:8787", fetcher }),
-    ).rejects.toThrow("YOLO WEB HTTP 500 sur /status : pg down");
   });
 });
 

@@ -898,10 +898,8 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
                 <SourceRow report={sources.yoloWeb}>
                   {(web) => (
                     <div className="text-[11px] text-white/70">
-                      File : {fmtInt(web.queue.pending)} en attente · {fmtInt(web.queue.locked)} en
-                      cours · {fmtInt(web.queue.done)} traitées · {fmtInt(web.queue.failed)} en
-                      échec (total {fmtInt(web.queue.total)}) · {web.jobs} travail(aux),{" "}
-                      {web.runningJobs} actif(s)
+                      {web.server} · {fmtInt(web.tools)} outils MCP · CDP {web.cdpEndpoint} (
+                      {web.cdpBrowser})
                     </div>
                   )}
                 </SourceRow>

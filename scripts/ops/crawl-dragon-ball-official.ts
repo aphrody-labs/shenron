@@ -3,7 +3,7 @@
 /** Resumable official-site campaign. YOLO WEB owns network capture. */
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { YoloWebBatchClient } from "@aphrody/shenron-pipeline/yolo-web";
+import { YoloWebBatchCapture } from "@aphrody/shenron-pipeline/yolo-web";
 import { scrapeWithYoloWeb } from "../../packages/pipeline/scripts/lib/yolo-web-scrape.ts";
 
 const ORIGIN = "https://dragon-ball-official.com";
@@ -83,7 +83,7 @@ export async function runOfficialCrawl(
   mode: OfficialCrawlMode,
   options: {
     capture?: (url: string) => Promise<string>;
-    client?: Pick<YoloWebBatchClient, "crawl" | "status">;
+    client?: Pick<YoloWebBatchCapture, "crawl" | "status">;
     stateDir?: string;
     sleep?: (ms: number) => Promise<void>;
   } = {},
@@ -144,7 +144,7 @@ export async function runOfficialCrawl(
     await Bun.write(join(stateDir, "current.json"), JSON.stringify(state, null, 2));
   };
   await save();
-  const client = options.client ?? new YoloWebBatchClient();
+  const client = options.client ?? new YoloWebBatchCapture(join(stateDir, "pages"));
   const sleep = options.sleep ?? Bun.sleep;
   for (let batch = 0; batch < batches; batch++) {
     if (state.completedBatches.includes(batch)) continue;

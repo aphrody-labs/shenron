@@ -15,7 +15,7 @@
  * Usage : bun apps/bot/scripts/ingest/scrape-manga-chapters.ts [--force] [--limit 10]
  */
 import postgres from "postgres";
-import { YoloWebMcp } from "@aphrody/shenron-pipeline/yolo-web";
+import { withYoloWeb } from "@aphrody/shenron-pipeline/yolo-web";
 
 const NEON_URL = process.env.DATABASE_URL;
 if (!NEON_URL) {
@@ -37,13 +37,13 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function runPageImages(url: string): Promise<string[]> {
   try {
-    const mcp = new YoloWebMcp();
-    await mcp.tool("browser_navigate", { url });
-    const out = await mcp.tool<{ result?: { value?: unknown } }>("browser_evaluate", {
-      script: "Array.from(document.images, (img) => img.currentSrc || img.src).filter(Boolean)",
+    return await withYoloWeb(async (mcp) => {
+      await mcp.navigate(url);
+      const value = await mcp.evaluate<unknown>(
+        "Array.from(document.images, (img) => img.currentSrc || img.src).filter(Boolean)",
+      );
+      return Array.isArray(value) ? value.filter((u): u is string => typeof u === "string") : [];
     });
-    const value = out.result?.value;
-    return Array.isArray(value) ? value.filter((u): u is string => typeof u === "string") : [];
   } catch {
     return [];
   }

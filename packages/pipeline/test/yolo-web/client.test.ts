@@ -1,85 +1,102 @@
 import { describe, expect, it } from "bun:test";
+import { mkdtempSync, readdirSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
-  YoloWebCrawlClient,
-  YoloWebMcp,
+  YoloWebBatchCapture,
   YoloWebNotConfiguredError,
-  resolveYoloWebUrl,
+  probeYoloWeb,
+  withYoloWeb,
+  yoloWebScrape,
 } from "../../src/yolo-web";
 
-describe("YOLO WEB client", () => {
-  it("has no default host: missing URL is a configuration error", () => {
-    const saved = process.env.YOLO_WEB_API_URL;
-    delete process.env.YOLO_WEB_API_URL;
+const FIXTURE = join(import.meta.dir, "fixture-server.ts");
+
+describe("YOLO WEB stdio client (fixture server with the web-cli mcp framing)", () => {
+  it("has no default entry: a missing YOLO_WEB_CLI is a configuration error", async () => {
+    const saved = process.env.YOLO_WEB_CLI;
+    delete process.env.YOLO_WEB_CLI;
     try {
-      expect(() => resolveYoloWebUrl("YOLO_WEB_API_URL")).toThrow(YoloWebNotConfiguredError);
+      await expect(yoloWebScrape("https://example.org/")).rejects.toBeInstanceOf(
+        YoloWebNotConfiguredError,
+      );
     } finally {
-      if (saved !== undefined) process.env.YOLO_WEB_API_URL = saved;
+      if (saved !== undefined) process.env.YOLO_WEB_CLI = saved;
     }
   });
 
-  it("refuses plain HTTP off loopback and embedded credentials", () => {
-    expect(() => resolveYoloWebUrl("X", "http://10.0.0.5:18800")).toThrow("HTTPS or loopback");
-    expect(() => resolveYoloWebUrl("X", "https://u:p@host.example")).toThrow("credentials");
-    expect(resolveYoloWebUrl("X", "http://127.0.0.1:18800").port).toBe("18800");
+  it("refuses non-HTTP(S) URLs and embedded credentials before spawning anything", async () => {
+    await withYoloWeb(
+      async (mcp) => {
+        await expect(mcp.navigate("file:///etc/passwd")).rejects.toThrow("HTTP(S)");
+        await expect(mcp.capture("https://u:p@example.org/")).rejects.toThrow("credentials");
+      },
+      { cli: FIXTURE },
+    );
   });
 
-  it("enqueues, reads status and results from the coordinator", async () => {
-    const seen: string[] = [];
-    const client = new YoloWebCrawlClient({
-      baseUrl: "http://127.0.0.1:18800",
-      fetcher: (async (input, init) => {
-        const path = new URL(String(input)).pathname;
-        seen.push(`${init?.method} ${path}`);
-        if (path === "/enqueue") return Response.json({ enqueued: [7] });
-        if (path === "/status")
-          return Response.json({ queued: 1, workers: 1, observers: 0, jobs: { done: 2 } });
-        return Response.json([]);
-      }) as typeof fetch,
-    });
-    expect(await client.enqueue(["https://example.org/"], "cdp")).toEqual([7]);
-    expect((await client.status()).queued).toBe(1);
-    expect(await client.results()).toEqual([]);
-    expect(seen).toEqual(["POST /enqueue", "GET /status", "GET /results"]);
-    await expect(client.enqueue([])).rejects.toThrow("1 to 10");
+  it("handshakes, lists tools and calls a tool over stdio", async () => {
+    await withYoloWeb(
+      async (mcp) => {
+        const tools = await mcp.listTools();
+        expect(tools.map((tool) => tool.name)).toContain("browser_navigate");
+        expect(mcp.serverInfo.name).toBe("fixture-web-mcp");
+        expect(await mcp.markdown("https://example.org/a")).toContain(
+          "Source: https://example.org/a",
+        );
+        expect(await mcp.capture("https://example.org/b")).toEqual({
+          url: "https://example.org/b",
+          title: "Fixture",
+          content: "<html>https://example.org/b</html>",
+        });
+        await expect(mcp.tool("nope")).rejects.toThrow("unknown tool nope");
+      },
+      { cli: FIXTURE },
+    );
   });
 
-  it("captures a page through the MCP tools", async () => {
-    const calls: string[] = [];
-    const mcp = new YoloWebMcp({
-      baseUrl: "http://127.0.0.1:3100",
-      fetcher: (async (_input, init) => {
-        const body = JSON.parse(String(init?.body)) as {
-          id?: number;
-          method: string;
-          params?: { name?: string };
-        };
-        calls.push(body.params?.name ?? body.method);
-        if (body.method === "notifications/initialized") return new Response(null, { status: 202 });
-        const result =
-          body.method === "initialize"
-            ? {}
-            : body.params?.name === "browser_evaluate"
-              ? {
-                  content: [
-                    {
-                      type: "text",
-                      text: JSON.stringify({
-                        result: { value: { title: "T", html: "<html>x</html>" } },
-                      }),
-                    },
-                  ],
-                }
-              : { content: [{ type: "text", text: "{}" }] };
-        return Response.json({ jsonrpc: "2.0", id: body.id, result });
-      }) as typeof fetch,
+  it("probe reports tools and the CDP version, and fails when the CDP endpoint is down", async () => {
+    const ok = await probeYoloWeb({
+      cli: FIXTURE,
+      env: { YOLO_CDP_ENDPOINT: "http://127.0.0.1:9" },
+      fetcher: (async () => Response.json({ Browser: "Chrome/150.0" })) as unknown as typeof fetch,
     });
-    const page = await mcp.capture("https://example.org/a");
-    expect(page).toEqual({ url: "https://example.org/a", title: "T", content: "<html>x</html>" });
-    expect(calls).toEqual([
-      "initialize",
-      "notifications/initialized",
-      "browser_navigate",
-      "browser_evaluate",
-    ]);
+    expect(ok).toMatchObject({
+      server: { name: "fixture-web-mcp" },
+      tools: 3,
+      hasBrowserTools: true,
+      cdp: { endpoint: "http://127.0.0.1:9", browser: "Chrome/150.0" },
+    });
+    await expect(
+      probeYoloWeb({
+        cli: FIXTURE,
+        env: { YOLO_CDP_ENDPOINT: "http://127.0.0.1:9" },
+        fetcher: (async () => new Response("no", { status: 502 })) as unknown as typeof fetch,
+      }),
+    ).rejects.toThrow("HTTP 502");
+  });
+
+  it("a server that exits is reported with its status, not a hang", async () => {
+    await expect(
+      yoloWebScrape("https://example.org/", { cli: "/bin/false", timeoutMs: 5_000 }),
+    ).rejects.toThrow(/exited with code|failed to start|timed out/);
+  });
+
+  it("batch capture writes one HTML file per URL", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "yolo-web-batch-"));
+    try {
+      const batch = new YoloWebBatchCapture(dir, { cli: FIXTURE });
+      const job = await batch.crawl({ urls: ["https://example.org/1", "https://example.org/2"] });
+      expect(job.status).toBe("completed");
+      expect(job.stats).toEqual({ total: 2, saved: 2, failed: 0 });
+      const files = readdirSync(dir);
+      expect(files).toHaveLength(2);
+      expect(readFileSync(join(dir, files[0]!), "utf8")).toContain("<html>");
+      expect((await batch.status(job.id)).status).toBe("completed");
+      await expect(batch.status("unknown")).rejects.toMatchObject({ status: 404 });
+      await expect(batch.crawl({ urls: [] })).rejects.toThrow("1 to 10");
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });

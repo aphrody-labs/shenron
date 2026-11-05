@@ -132,18 +132,13 @@ interface RagProbeData {
   hits: number;
 }
 
-interface WebCrawlQueue {
-  pending: number;
-  locked: number;
-  done: number;
-  failed: number;
-  total: number;
-}
-
 export interface WebCrawlData {
-  queue: WebCrawlQueue;
-  jobs: number;
-  runningJobs: number;
+  /** MCP server name and version announced by `web-cli mcp`. */
+  server: string;
+  tools: number;
+  /** CDP endpoint probed and the browser that answered on it. */
+  cdpEndpoint: string;
+  cdpBrowser: string;
 }
 
 export interface BotRagData {
@@ -301,29 +296,22 @@ export function parseBotIaStatus(json: unknown): BotRagData {
 }
 
 /**
- * YOLO WEB coordinator `GET /status` (yolo-web `packages/web-cluster`):
- * `{ queued, workers, observers, jobs: { <status>: count } }`.
+ * Maps the probe of the YOLO WEB stdio transport (`probeYoloWeb`) to the cockpit data.
+ * A server without the browser tools is a failure, never a degraded "ok".
  */
-export function parseCrawlStats(json: unknown): WebCrawlData {
-  if (!isRecord(json) || !isCount(json.queued) || !isRecord(json.jobs))
-    throw new Error("YOLO WEB n'a pas renvoyé un statut de crawl valide");
-  const byStatus: Record<string, number> = {};
-  for (const [status, count] of Object.entries(json.jobs)) {
-    if (!isCount(count)) throw new Error(`Compteur de crawl invalide pour « ${status} »`);
-    byStatus[status] = count;
-  }
-  const total = Object.values(byStatus).reduce((sum, n) => sum + n, 0);
-  const running = byStatus.running ?? 0;
+export function summarizeYoloWebProbe(probe: {
+  server: { name?: string; version?: string };
+  tools: number;
+  hasBrowserTools: boolean;
+  cdp: { endpoint: string; browser: string };
+}): WebCrawlData {
+  if (probe.tools < 1 || !probe.hasBrowserTools)
+    throw new Error("Le serveur MCP YOLO WEB n'expose pas les outils browser_*");
   return {
-    queue: {
-      pending: json.queued,
-      locked: running,
-      done: byStatus.done ?? 0,
-      failed: byStatus.failed ?? 0,
-      total,
-    },
-    jobs: total,
-    runningJobs: running,
+    server: `${probe.server.name ?? "web-mcp"} ${probe.server.version ?? ""}`.trim(),
+    tools: probe.tools,
+    cdpEndpoint: probe.cdp.endpoint,
+    cdpBrowser: probe.cdp.browser,
   };
 }
 
@@ -504,60 +492,6 @@ export function computeRetrievalMetrics(
     durationMs,
     misses,
   };
-}
-
-// ── YOLO WEB crawl statistics ────────────────────────────────────────────────
-
-export type FetchLike = (input: string | URL, init?: RequestInit) => Promise<Response>;
-
-const LOOPBACK_HOSTS = new Set(["127.0.0.1", "[::1]", "localhost"]);
-
-/**
- * Crawl queue statistics of the YOLO WEB coordinator (`GET /status`). There is no
- * default endpoint: a missing `YOLO_WEB_API_URL` is reported as not configured.
- * The bearer `YOLO_WEB_API_TOKEN` is optional (loopback coordinators are open).
- */
-export async function fetchYoloWebCrawlStats(options: {
-  baseUrl?: string;
-  token?: string;
-  fetcher?: FetchLike;
-  timeoutMs?: number;
-}): Promise<WebCrawlData> {
-  const raw = options.baseUrl?.trim();
-  if (!raw)
-    throw new SourceNotConfiguredError("YOLO_WEB_API_URL absent de l'environnement du site");
-  let base: URL;
-  try {
-    base = new URL(raw);
-  } catch {
-    throw new SourceNotConfiguredError("YOLO_WEB_API_URL n'est pas une URL valide");
-  }
-  const loopback = LOOPBACK_HOSTS.has(base.hostname);
-  if (
-    (base.protocol !== "https:" && !(base.protocol === "http:" && loopback)) ||
-    base.username ||
-    base.password
-  ) {
-    throw new SourceNotConfiguredError(
-      "YOLO_WEB_API_URL doit utiliser HTTPS ou HTTP loopback, sans identifiants",
-    );
-  }
-  const url = new URL("/status", base);
-  const headers: Record<string, string> = { accept: "application/json" };
-  const token = options.token?.trim();
-  if (token) headers.authorization = `Bearer ${token}`;
-  const response = await (options.fetcher ?? fetch)(url, {
-    headers,
-    cache: "no-store",
-    signal: AbortSignal.timeout(options.timeoutMs ?? 5_000),
-  });
-  if (!response.ok) {
-    const detail = (await response.text().catch(() => "")).trim().slice(0, 200);
-    throw new Error(
-      `YOLO WEB HTTP ${response.status} sur ${url.pathname}${detail ? ` : ${detail}` : ""}`,
-    );
-  }
-  return parseCrawlStats(await response.json());
 }
 
 // ── Aggregation ──────────────────────────────────────────────────────────────
