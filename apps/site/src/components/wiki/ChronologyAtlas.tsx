@@ -121,13 +121,20 @@ export function ChronologyAtlas({
               return (
                 <article
                   key={saga.id}
-                  className="group relative min-h-48 overflow-hidden rounded-2xl border border-white/10 bg-dbz-card p-5 transition-colors hover:border-dbz-orange/60"
+                  className="group relative min-h-48 overflow-hidden rounded-2xl border border-white/10 bg-dbz-card p-5 transition-colors [contain-intrinsic-size:auto_240px] [content-visibility:auto] hover:border-dbz-orange/60"
                 >
+                  {/* <img> paresseux et non un `background-image` : un fond CSS se charge dès que la
+                      carte est rendue, ici 33 sagas de 25 Kio à 1,1 Mio (12,8 Mio mesurés sur la
+                      prod, LCP 22 s) alors que la frise est sous la bannière. */}
                   {saga.image && (
-                    <div
+                    <img
+                      src={assetUrl(saga.image)}
+                      alt=""
                       aria-hidden
-                      className="absolute inset-0 bg-cover bg-center opacity-20 transition-opacity duration-300 group-hover:opacity-30"
-                      style={{ backgroundImage: `url(${assetUrl(saga.image)})` }}
+                      loading="lazy"
+                      decoding="async"
+                      fetchPriority="low"
+                      className="absolute inset-0 h-full w-full object-cover object-center opacity-20 transition-opacity duration-300 group-hover:opacity-30"
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-[#101116] via-[#101116]/85 to-[#101116]/35" />
@@ -197,6 +204,10 @@ export function ChronologyAtlas({
                   <img
                     src={assetUrl(book.cover)}
                     alt=""
+                    width={40}
+                    height={56}
+                    loading="lazy"
+                    decoding="async"
                     className="h-14 w-10 rounded-md object-cover"
                   />
                 ) : (
