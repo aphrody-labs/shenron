@@ -47,7 +47,10 @@ describe("the renderer contains no visible text", () => {
 
   test("no UI word in a string literal (import paths excluded)", () => {
     for (const file of files) {
-      for (const match of code(file).matchAll(LITERAL)) {
+      const source = code(file);
+      for (const match of source.matchAll(LITERAL)) {
+        // DOM event names passed to (add|remove)EventListener are API identifiers, not text
+        if (/(add|remove)EventListener\(\s*$/.test(source.slice(0, match.index))) continue;
         // interpolated expressions are code, not text
         const literal = (match[1] ?? match[2] ?? match[3] ?? "").replace(/\$\{[^}]*\}/g, "");
         if (/^(\.|~|@|node:|bun:)/.test(literal)) continue;

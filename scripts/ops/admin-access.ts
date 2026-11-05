@@ -30,8 +30,10 @@ const args = new Set(process.argv.slice(2));
 const apply = args.has("--apply");
 const restartPostgres = args.has("--restart-postgres");
 
-function infraCommand(args: string[]): string[] {
-  return process.platform === "win32" ? ["aphrody", "infra", ...args] : ["aphrody-infra", ...args];
+function infraCommand(infraArgs: string[]): string[] {
+  return process.platform === "win32"
+    ? ["aphrody", "infra", ...infraArgs]
+    : ["aphrody-infra", ...infraArgs];
 }
 
 async function publicIp(url: string): Promise<string | null> {
