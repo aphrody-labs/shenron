@@ -1,0 +1,5 @@
+# RFC 9116. Signaler une vulnerabilite : voir la page de contact ci-dessous.
+Contact: https://dragonballfr.com/about
+Expires: 2027-11-05T00:00:00.000Z
+Preferred-Languages: fr, en
+Canonical: https://dragonballfr.com/.well-known/security.txt
