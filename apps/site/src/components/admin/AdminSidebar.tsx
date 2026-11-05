@@ -275,13 +275,6 @@ const ADMIN_LINKS: AdminLink[] = [
     section: "encyclopedie",
   },
   {
-    href: "/admin/bxc-campaigns",
-    label: "Campagnes BXC",
-    description: "Réception, provenance et revue des collectes BXC",
-    icon: <Activity className="h-4 w-4 text-dbz-orange" />,
-    section: "encyclopedie",
-  },
-  {
     href: "/admin/db-universe/sagas",
     label: "Sagas",
     description: "Arcs narratifs de l'univers DBZ",

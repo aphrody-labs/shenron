@@ -1849,10 +1849,6 @@
         "title": "Databooks et interviews",
         "description": "Guides officiels, artbooks et interviews, triables par date."
       },
-      "bxcCampaigns": {
-        "title": "Campagnes BXC",
-        "description": "Réception, provenance et revue des collectes BXC."
-      },
       "timeline": {
         "title": "Chronologie",
         "description": "Ordre officiel de la frise universelle : épisodes et films."
@@ -2102,8 +2098,7 @@
           "title": "Traduction et campagnes",
           "description": "Catalogue des ouvrages officiels, campagnes de traduction française et qualité OCR."
         },
-        "catalogue": "Catalogue (métadonnées)",
-        "bxc": "Campagnes BXC"
+        "catalogue": "Catalogue (métadonnées)"
       }
     },
     "studio": {

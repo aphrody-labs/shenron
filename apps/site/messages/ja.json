@@ -1849,10 +1849,6 @@
         "title": "資料集とインタビュー",
         "description": "公式ガイド、画集、インタビュー（日付順に並べ替え可能）。"
       },
-      "bxcCampaigns": {
-        "title": "BXC キャンペーン",
-        "description": "BXC 収集の受付、出どころ、レビュー。"
-      },
       "timeline": {
         "title": "年表",
         "description": "エピソードと映画による公式年表の順序。"
@@ -2102,8 +2098,7 @@
           "title": "翻訳とキャンペーン",
           "description": "公式書籍の目録、フランス語翻訳キャンペーン、OCR の品質。"
         },
-        "catalogue": "目録（メタデータ）",
-        "bxc": "BXC キャンペーン"
+        "catalogue": "目録（メタデータ）"
       }
     },
     "studio": {

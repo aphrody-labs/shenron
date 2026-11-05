@@ -1849,10 +1849,6 @@
         "title": "Databooks and interviews",
         "description": "Official guides, artbooks and interviews, sortable by date."
       },
-      "bxcCampaigns": {
-        "title": "BXC campaigns",
-        "description": "Intake, provenance and review of BXC harvests."
-      },
       "timeline": {
         "title": "Timeline",
         "description": "Official order of the universal timeline: episodes and films."
@@ -2102,8 +2098,7 @@
           "title": "Translation and campaigns",
           "description": "Catalogue of official books, French translation campaigns and OCR quality."
         },
-        "catalogue": "Catalogue (metadata)",
-        "bxc": "BXC campaigns"
+        "catalogue": "Catalogue (metadata)"
       }
     },
     "studio": {
