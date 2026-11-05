@@ -88,7 +88,15 @@ async function git(cwd: string, args: string[], timeoutMs = 300_000) {
 }
 
 export async function readState(path: string, branch: string): Promise<RepoState> {
-  const empty = { exists: false, detached: false, branch: "", dirty: false, ahead: 0, behind: 0, hasUpstream: false };
+  const empty = {
+    exists: false,
+    detached: false,
+    branch: "",
+    dirty: false,
+    ahead: 0,
+    behind: 0,
+    hasUpstream: false,
+  };
   if (!existsSync(join(path, ".git"))) return empty;
   const sym = await git(path, ["symbolic-ref", "-q", "--short", "HEAD"]);
   const detached = sym.code !== 0;
@@ -104,21 +112,39 @@ export async function readState(path: string, branch: string): Promise<RepoState
     behind = Number(b);
     ahead = Number(a);
   }
-  return { exists: true, detached, branch: current, dirty: status.out.length > 0, ahead, behind, hasUpstream: has };
+  return {
+    exists: true,
+    detached,
+    branch: current,
+    dirty: status.out.length > 0,
+    ahead,
+    behind,
+    hasUpstream: has,
+  };
 }
 
 export function expandPath(path: string): string {
   return resolve(path.startsWith("~") ? join(homedir(), path.slice(1)) : path);
 }
 
-async function syncSubmodules(path: string, policy: SubmodulePolicy, emit: Emit, name: string, changed: boolean) {
+async function syncSubmodules(
+  path: string,
+  policy: SubmodulePolicy,
+  emit: Emit,
+  name: string,
+  changed: boolean,
+) {
   if (policy === false || !existsSync(join(path, ".gitmodules"))) return;
   if (!changed) {
     // Nothing moved: "initialized" policy never rescans (status on hundreds of submodules is slow);
     // policy true only acts when a submodule drifted from its pin.
     if (policy === "initialized") return;
     const status = await git(path, ["submodule", "status"]);
-    const drift = status.out.split("\n").some((l) => l.startsWith("+") || l.startsWith("U") || (policy === true && l.startsWith("-")));
+    const drift = status.out
+      .split("\n")
+      .some(
+        (l) => l.startsWith("+") || l.startsWith("U") || (policy === true && l.startsWith("-")),
+      );
     if (!drift) {
       emit({ level: "info", name, step: "submodule-update", result: "in-sync" });
       return;
@@ -162,7 +188,14 @@ export async function syncCheckout(
   }
   const decision = plan(state, spec.branch);
   const before = (await git(path, ["rev-parse", "--short", "HEAD"])).out;
-  const detail = { ...base, decision, head: before, ahead: state.ahead, behind: state.behind, dirty: state.dirty };
+  const detail = {
+    ...base,
+    decision,
+    head: before,
+    ahead: state.ahead,
+    behind: state.behind,
+    dirty: state.dirty,
+  };
   switch (decision) {
     case "diverged":
       emit({ ...detail, level: "error" });
@@ -174,7 +207,12 @@ export async function syncCheckout(
       }
       const merge = await git(path, ["merge", "--ff-only", "--quiet", `origin/${spec.branch}`]);
       if (merge.code !== 0) {
-        emit({ ...detail, level: "error", decision: "merge-refused", error: merge.err.slice(0, 400) });
+        emit({
+          ...detail,
+          level: "error",
+          decision: "merge-refused",
+          error: merge.err.slice(0, 400),
+        });
         return false;
       }
       const after = (await git(path, ["rev-parse", "--short", "HEAD"])).out;
@@ -230,7 +268,9 @@ export async function runSync(
     const raw = spec.paths[host];
     if (!raw) continue;
     const path = expandPath(raw);
-    const excluded = manifest.excluded?.find((entry) => entry.host === host && expandPath(entry.path) === path);
+    const excluded = manifest.excluded?.find(
+      (entry) => entry.host === host && expandPath(entry.path) === path,
+    );
     if (excluded) {
       emit({ level: "info", name: spec.name, path, decision: "excluded", reason: excluded.reason });
       continue;
@@ -251,9 +291,15 @@ function arg(name: string): string | undefined {
 
 if (import.meta.main) {
   const host = arg("host") ?? process.env.SYNC_HOST ?? hostname();
-  const manifestPath = resolve(arg("manifest") ?? join(import.meta.dir, "../../deploy/checkouts.json"));
-  const emit: Emit = (record) => writeSync(1, `${JSON.stringify({ ts: new Date().toISOString(), host, ...record })}
-`);
+  const manifestPath = resolve(
+    arg("manifest") ?? join(import.meta.dir, "../../deploy/checkouts.json"),
+  );
+  const emit: Emit = (record) =>
+    writeSync(
+      1,
+      `${JSON.stringify({ ts: new Date().toISOString(), host, ...record })}
+`,
+    );
   const manifest = JSON.parse(readFileSync(manifestPath, "utf8")) as Manifest;
   const release = process.argv.includes("--no-lock")
     ? () => {}

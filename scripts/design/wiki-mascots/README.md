@@ -13,11 +13,11 @@ Le second appel vérifie l'absence de dérive entre chaque générateur versionn
 le fichier livré ; il ne modifie rien. Le reçu affiché donne taille, nombre de tracés
 et SHA-256. Il ne constitue pas une appréciation artistique ou une preuve GPU.
 
-| Mascotte | Générateur | Mesures et limites | Actif |
-| --- | --- | --- | --- |
-| Goku | [goku.ts](goku.ts) | [goku.md](goku.md) | [SVG](../../../packages/ui/assets/wiki-mascots/goku-full.svg) |
-| Kid Buu | [kid-buu.ts](kid-buu.ts) | [kid-buu.md](kid-buu.md) | [SVG](../../../packages/ui/assets/wiki-mascots/kid-buu-full.svg) |
-| Shenron | [shenron.ts](shenron.ts) | [shenron.md](shenron.md) | [SVG](../../../packages/ui/assets/wiki-mascots/shenron-full.svg) |
+| Mascotte | Générateur               | Mesures et limites       | Actif                                                            |
+| -------- | ------------------------ | ------------------------ | ---------------------------------------------------------------- |
+| Goku     | [goku.ts](goku.ts)       | [goku.md](goku.md)       | [SVG](../../../packages/ui/assets/wiki-mascots/goku-full.svg)    |
+| Kid Buu  | [kid-buu.ts](kid-buu.ts) | [kid-buu.md](kid-buu.md) | [SVG](../../../packages/ui/assets/wiki-mascots/kid-buu-full.svg) |
+| Shenron  | [shenron.ts](shenron.ts) | [shenron.md](shenron.md) | [SVG](../../../packages/ui/assets/wiki-mascots/shenron-full.svg) |
 
 Les captures, masques et comparaisons restent sous `var/reports/wiki-scene-20261103/`.
 Les PNG des références restent les mascottes affichées du portail : leur remplacement

@@ -15,15 +15,15 @@ ni d'une illustration officielle, ni d'une reproduction pixel pour pixel.
 Le repère reste celui de la référence, 512 × 939. Les points suivants sont des
 estimations visuelles, arrondies, pas des résultats de segmentation anatomique :
 
-| Point | X | Y |
-| --- | ---: | ---: |
+| Point            |   X |   Y |
+| ---------------- | --: | --: |
 | Centre du visage | 277 | 211 |
-| Poing levé | 373 | 207 |
-| Poing bas | 62 | 524 |
-| Ceinture | 265 | 473 |
-| Entrejambe | 267 | 658 |
-| Pied gauche | 57 | 882 |
-| Pied droit | 464 | 899 |
+| Poing levé       | 373 | 207 |
+| Poing bas        |  62 | 524 |
+| Ceinture         | 265 | 473 |
+| Entrejambe       | 267 | 658 |
+| Pied gauche      |  57 | 882 |
+| Pied droit       | 464 | 899 |
 
 Les yeux, les deux bras/poings, les deux jambes/bottes, le pantalon ample,
 la ceinture à emblème géométrique et l'appendice crânien recourbé sont construits
