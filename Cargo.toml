@@ -7,7 +7,8 @@
 [workspace]
 resolver = "3"
 members = ["crates/*"]
-exclude = ["crates/shenron-video", "crates/filmcraft"]
+# Empty submodule directory until the vendor slice removes it.
+exclude = ["crates/filmcraft"]
 
 [workspace.package]
 version = "1.4.5"
