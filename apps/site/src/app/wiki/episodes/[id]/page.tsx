@@ -1,5 +1,6 @@
 import { readPlaybackCapabilities } from "@/lib/playback-capabilities";
 /* oxlint-disable react/iframe-missing-sandbox -- legacy UI kept as-is (behavior-preserving lint pass) */
+import { clampTitle } from "@/lib/seo-title";
 import { WatchLayout, WatchStage, WatchColumns } from "@/components/episodes/WatchLayout";
 import { T } from "@/components/T";
 import { ArrowLeft, ArrowRight, Film } from "lucide-react";
@@ -85,10 +86,10 @@ export async function generateMetadata({
       ? `${ep.title} — ${ep.series}`
       : `Fiche détaillée de l'épisode ${ep.number_in_series} de ${ep.series}.`);
   return {
-    title:
-      ep.number_in_series === null
-        ? `${ep.title} — ${SERIES_LABELS[ep.series] ?? ep.series}`
-        : `Épisode ${ep.number_in_series} : ${ep.title} — ${SERIES_LABELS[ep.series] ?? ep.series}`,
+    title: clampTitle(
+      ep.number_in_series === null ? ep.title : `Épisode ${ep.number_in_series} : ${ep.title}`,
+      ` — ${SERIES_LABELS[ep.series] ?? ep.series}`,
+    ),
     description,
     ...ogMeta({
       title: `${ep.title} — ${SERIES_LABELS[ep.series] ?? ep.series}`,

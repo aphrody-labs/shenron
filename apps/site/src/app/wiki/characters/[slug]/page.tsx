@@ -1,4 +1,5 @@
 import { hasEditorialDatabase } from "@/lib/prerender";
+import { clampTitle } from "@/lib/seo-title";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { TrackView } from "@/components/TrackView";
 import { WikiSources } from "@/components/wiki/WikiArticle";
@@ -262,9 +263,10 @@ export async function generateMetadata({
   const description = c.description
     ? plainText(c.description)
     : `${c.name} — fiche personnage Dragon Ball : race, techniques, transformations et lore sur DBFR.`;
-  const pageTitle = c.nameJa
-    ? `${c.name} (${c.nameJa}) — Personnage Dragon Ball`
-    : `${c.name} — Personnage Dragon Ball`;
+  const pageTitle = clampTitle(
+    c.nameJa ? `${c.name} (${c.nameJa})` : c.name,
+    " — Personnage Dragon Ball",
+  );
   return {
     title: pageTitle,
     description,

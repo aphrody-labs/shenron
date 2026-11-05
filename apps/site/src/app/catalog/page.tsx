@@ -9,6 +9,7 @@ import { getDictionary } from "@/lib/i18n";
 export const dynamic = "force-dynamic";
 export const metadata = {
   title: getDictionary("fr").catalog.title,
+  alternates: { canonical: "/catalog" },
   description: getDictionary("fr").catalog.description,
 };
 export default async function CatalogIndex() {

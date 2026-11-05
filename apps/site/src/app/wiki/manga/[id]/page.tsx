@@ -1,4 +1,5 @@
 import { mangaData } from "@/lib/manga-data";
+import { clampTitle } from "@/lib/seo-title";
 import { hasEditorialDatabase } from "@/lib/prerender";
 import { assetUrl } from "@/lib/db-universe";
 import { MangaReader } from "@/components/manga/MangaReader";
@@ -74,7 +75,7 @@ export async function generateMetadata({
   ].filter(Boolean);
   const description = `${morceaux.join(", ")}.`;
   return {
-    title: `${label} — Manga Dragon Ball`,
+    title: clampTitle(label, " — Manga Dragon Ball"),
     description,
     ...ogMeta({
       title: label,

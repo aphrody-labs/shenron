@@ -9,7 +9,11 @@ import { getReferenceTranslations } from "@/lib/i18n/reference";
 /** Metadata stays in the reference language, like the cached HTML (see `components/T.tsx`). */
 export function generateMetadata(): Metadata {
   const t = getReferenceTranslations("billing.vip");
-  return { title: t("title"), description: t("metaDescription") };
+  return {
+    title: t("title"),
+    description: t("metaDescription"),
+    alternates: { canonical: "/vip" },
+  };
 }
 
 const LINK =

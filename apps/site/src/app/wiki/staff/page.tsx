@@ -14,7 +14,7 @@ import { Sparkles, Award, ArrowRight } from "lucide-react";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Autour de Dragon Ball — Staff de Production & Casting Vocal International",
+  title: "Autour de Dragon Ball : Staff & Casting Vocal international",
   description:
     "La cartographie exhaustive des bâtisseurs de Dragon Ball en 6 niveaux : Akira Toriyama & Bird Studio, éditeurs Shueisha, animateurs et réalisateurs Toei, seiyū japonais, VF légendaire, VA américain et doublages internationaux.",
   ...ogMeta({
