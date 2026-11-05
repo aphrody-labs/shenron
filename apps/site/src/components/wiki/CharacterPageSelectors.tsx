@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { CharacterVariant } from "@/lib/shenron";
 
 type CharacterChoice = {
@@ -44,11 +44,10 @@ export function CharacterPageSelectors({
   const router = useRouter();
   const pathname = usePathname();
   const [pendingTimelineSlug, setPendingTimelineSlug] = useState<string | null>(null);
-  useEffect(() => {
-    if (pendingTimelineSlug && pendingTimelineSlug === selectedTimelineSlug) {
-      setPendingTimelineSlug(null);
-    }
-  }, [pendingTimelineSlug, selectedTimelineSlug]);
+  // The requested timeline has arrived: clear the pending marker (state adjusted during render).
+  if (pendingTimelineSlug && pendingTimelineSlug === selectedTimelineSlug) {
+    setPendingTimelineSlug(null);
+  }
   const useShowcaseChoices = preview;
   const timelineTransitionPending =
     useShowcaseChoices &&
@@ -126,9 +125,9 @@ export function CharacterPageSelectors({
           <span className="wiki-infobox-label flex items-center justify-between gap-2">
             {labels.saga}
             {timelineTransitionPending && (
-              <span role="status" className="text-[10px] normal-case tracking-normal text-white/50">
+              <output className="text-[10px] normal-case tracking-normal text-white/50">
                 {labels.loading}
-              </span>
+              </output>
             )}
           </span>
           <select

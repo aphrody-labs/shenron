@@ -97,11 +97,11 @@ export function SkeletonRows({
 }) {
   const t = useTranslations("adminBot.common");
   return (
-    <div role="status" aria-label={t("loading")} className="space-y-2">
+    <output aria-label={t("loading")} className="block space-y-2">
       {Array.from({ length: count }, (_, i) => (
         <div key={i} className={`animate-pulse rounded-lg bg-muted/40 ${className}`} />
       ))}
-    </div>
+    </output>
   );
 }
 

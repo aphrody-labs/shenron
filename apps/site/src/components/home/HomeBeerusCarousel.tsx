@@ -1,8 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { CSSProperties, KeyboardEvent, PointerEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useEffectEvent,
+  useMemo,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
+import type { CSSProperties, PointerEvent } from "react";
 import { useLocale } from "next-intl";
 import { ArrowRight, ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { useT } from "@/components/T";
@@ -24,6 +32,23 @@ const SWIPE_MIN_PX = 48;
 /** Outlasts the incoming fade (CSS --hero-enter) so the outgoing image keeps zooming while it fades. */
 const LEAVE_MS = 900;
 
+/** Wall clock read after hydration and refreshed every minute (`undefined` on the server). */
+let clockNow: number | undefined;
+const subscribeClock = (onChange: () => void) => {
+  clockNow = Date.now();
+  onChange();
+  const tick = setInterval(() => {
+    clockNow = Date.now();
+    onChange();
+  }, 60_000);
+  return () => {
+    clearInterval(tick);
+    clockNow = undefined;
+  };
+};
+const clockSnapshot = () => clockNow;
+const serverClock = () => undefined;
+
 /**
  * Full-frame carousel of the latest aired DB Beerus episodes. Every slide is a real
  * episode; the progress bar is the CSS animation that actually times the slide.
@@ -42,7 +67,7 @@ export function HomeBeerusCarousel({ slides }: { slides: readonly BeerusSlide[] 
   const [inView, setInView] = useState(false);
   const [pageVisible, setPageVisible] = useState(true);
   const [reduced, setReduced] = useState(false);
-  const [now, setNow] = useState<number | undefined>(undefined);
+  const now = useSyncExternalStore(subscribeClock, clockSnapshot, serverClock);
   const [announcement, setAnnouncement] = useState("");
   const swipe = useRef<{ x: number; y: number } | null>(null);
   const swiped = useRef(false);
@@ -55,14 +80,11 @@ export function HomeBeerusCarousel({ slides }: { slides: readonly BeerusSlide[] 
       setPageVisible(!document.hidden);
     };
     sync();
-    setNow(Date.now());
-    const tick = setInterval(() => setNow(Date.now()), 60_000);
     query.addEventListener("change", sync);
     document.addEventListener("visibilitychange", sync);
     const observer = new IntersectionObserver(([entry]) => setInView(!!entry?.isIntersecting));
     if (root.current) observer.observe(root.current);
     return () => {
-      clearInterval(tick);
       clearTimeout(leaveTimer.current);
       query.removeEventListener("change", sync);
       document.removeEventListener("visibilitychange", sync);
@@ -95,7 +117,8 @@ export function HomeBeerusCarousel({ slides }: { slides: readonly BeerusSlide[] 
 
   const step = (delta: number) => goTo(index + delta, true);
 
-  const onKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+  // Arrow keys pressed on any control of the carousel bubble up to its section.
+  const onKeyDown = useEffectEvent((event: KeyboardEvent) => {
     if (event.key === "ArrowLeft") {
       event.preventDefault();
       step(-1);
@@ -103,7 +126,31 @@ export function HomeBeerusCarousel({ slides }: { slides: readonly BeerusSlide[] 
       event.preventDefault();
       step(1);
     }
-  };
+  });
+  // Keyboard focus inside the carousel pauses it (WCAG 2.2.2).
+  const onFocusIn = useEffectEvent((event: FocusEvent) => {
+    if (event.target instanceof Element && event.target.matches(":focus-visible"))
+      setKeyboardFocus(true);
+  });
+  const onFocusOut = useEffectEvent((event: FocusEvent) => {
+    if (!root.current?.contains(event.relatedTarget as Node | null)) setKeyboardFocus(false);
+  });
+  // The section delegates the events of its controls, like the observer above.
+  useEffect(() => {
+    const section = root.current;
+    if (!section) return;
+    const keydown = (event: KeyboardEvent) => onKeyDown(event);
+    const focusin = (event: FocusEvent) => onFocusIn(event);
+    const focusout = (event: FocusEvent) => onFocusOut(event);
+    section.addEventListener("keydown", keydown);
+    section.addEventListener("focusin", focusin);
+    section.addEventListener("focusout", focusout);
+    return () => {
+      section.removeEventListener("keydown", keydown);
+      section.removeEventListener("focusin", focusin);
+      section.removeEventListener("focusout", focusout);
+    };
+  }, []);
 
   const onPointerDown = (event: PointerEvent<HTMLElement>) => {
     swiped.current = false;
@@ -141,15 +188,8 @@ export function HomeBeerusCarousel({ slides }: { slides: readonly BeerusSlide[] 
       data-running={running}
       data-auto={auto}
       style={{ "--slide-ms": `${SLIDE_DURATION_MS}ms` } as CSSProperties}
-      onKeyDown={onKeyDown}
       onPointerEnter={(event) => event.pointerType === "mouse" && setHovered(true)}
       onPointerLeave={(event) => event.pointerType === "mouse" && setHovered(false)}
-      onFocus={(event) => {
-        if (event.target.matches(":focus-visible")) setKeyboardFocus(true);
-      }}
-      onBlur={(event) => {
-        if (!root.current?.contains(event.relatedTarget as Node | null)) setKeyboardFocus(false);
-      }}
       onPointerDown={onPointerDown}
       onPointerUp={onPointerUp}
       onPointerCancel={() => (swipe.current = null)}
@@ -201,10 +241,9 @@ export function HomeBeerusCarousel({ slides }: { slides: readonly BeerusSlide[] 
           {slides.map((slide, position) => {
             const active = position === index;
             return (
-              <div
+              <fieldset
                 key={slide.id}
                 className={styles.slide}
-                role="group"
                 aria-roledescription={t("accueil.hero.carousel.slideRoleDescription")}
                 aria-label={t("accueil.hero.carousel.slideOf", {
                   current: position + 1,
@@ -246,18 +285,14 @@ export function HomeBeerusCarousel({ slides }: { slides: readonly BeerusSlide[] 
                     {t("dbsBeerus.heroAll")}
                   </Link>
                 </div>
-              </div>
+              </fieldset>
             );
           })}
         </div>
 
         {count > 1 && (
           <div className={styles.controlBar}>
-            <div
-              className={styles.segments}
-              role="group"
-              aria-label={t("accueil.hero.carousel.segments")}
-            >
+            <fieldset className={styles.segments} aria-label={t("accueil.hero.carousel.segments")}>
               {slides.map((slide, position) => {
                 const state = position === index ? "active" : position < index ? "done" : "todo";
                 return (
@@ -287,7 +322,7 @@ export function HomeBeerusCarousel({ slides }: { slides: readonly BeerusSlide[] 
                   </button>
                 );
               })}
-            </div>
+            </fieldset>
             <div className={styles.controls}>
               <button
                 type="button"
@@ -329,9 +364,9 @@ export function HomeBeerusCarousel({ slides }: { slides: readonly BeerusSlide[] 
             </div>
           </div>
         )}
-        <p role="status" aria-live="polite" className="sr-only">
+        <output aria-live="polite" className="sr-only">
           {announcement}
-        </p>
+        </output>
       </div>
     </section>
   );

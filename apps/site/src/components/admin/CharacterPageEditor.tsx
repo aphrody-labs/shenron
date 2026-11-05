@@ -80,7 +80,7 @@ export function CharacterPageEditor() {
   });
   const sagaVariants = useMemo(
     () =>
-      [...(variantsQuery.data?.rows ?? [])].sort(
+      (variantsQuery.data?.rows ?? []).toSorted(
         (left, right) => left.sortOrder - right.sortOrder || left.id - right.id,
       ),
     [variantsQuery.data?.rows],

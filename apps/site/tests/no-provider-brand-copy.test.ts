@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { createElement } from "react";
+import { createElement, type ComponentProps, type ComponentType } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { NextIntlClientProvider } from "next-intl";
 import fr from "../messages/fr.json";
@@ -106,12 +106,13 @@ describe("OffreLegale rendering", () => {
   ] as const) {
     test(`${locale}: visible text is neutral and the link is untouched`, () => {
       const html = renderToStaticMarkup(
-        createElement(NextIntlClientProvider, {
-          locale,
-          messages: messages as never,
-          timeZone: "UTC",
-          children: createElement(OffreLegale, { offres: offers as never }),
-        }),
+        createElement(
+          NextIntlClientProvider as ComponentType<
+            Omit<ComponentProps<typeof NextIntlClientProvider>, "children">
+          >,
+          { locale, messages: messages as never, timeZone: "UTC" },
+          createElement(OffreLegale, { offres: offers as never }),
+        ),
       );
       const text = html.replace(/<[^>]*>/g, " ");
       expect(text).not.toMatch(BRAND);

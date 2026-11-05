@@ -724,12 +724,12 @@ function TicketAccessEditor({
           {t("tickets.syncOpen")}
         </button>
         {sync.data && (
-          <span role="status" className="text-xs text-muted-foreground">
+          <output className="text-xs text-muted-foreground">
             {t("tickets.synced", { updated: sync.data.updated })}
             {sync.data.skipped > 0
               ? ` · ${t("tickets.skipped", { skipped: sync.data.skipped })}`
               : ""}
-          </span>
+          </output>
         )}
         {sync.isError && (
           <span role="alert" className="text-xs text-red-400">

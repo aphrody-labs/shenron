@@ -173,10 +173,9 @@ export async function buildWikiContentPanels({
           !PROFILE_ONLY_HEADINGS.test(section.label.trim()) &&
           (section.body.trim() || !section.group?.toLowerCase().includes("pws")),
       )
-      .map((section) => ({
-        ...section,
-        body: normalizeCharacterProfileBody(section.body),
-      }))
+      .map((section) =>
+        Object.assign(section, { body: normalizeCharacterProfileBody(section.body) }),
+      )
       .filter((section) => section.body.trim());
   }
 

@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import { ArrowLeft, ArrowRight, BookOpen, ChevronRight, Search } from "lucide-react";
 import type { CatalogPage, CatalogSummary, CatalogDetail } from "@/lib/catalog-explorer-contract";
 import { CatalogRecordContent } from "@/components/catalog/CatalogRecordContent";
@@ -39,6 +40,12 @@ export function usePublicCatalog<T>(url: string | null, revision: number) {
   return result?.url === url && result?.revision === revision ? result : undefined;
 }
 
+/** Shows a new view from its top and moves focus to its heading. */
+function revealView(contents: HTMLDivElement | null, heading: HTMLHeadingElement | null) {
+  contents?.scrollTo({ top: 0 });
+  heading?.focus();
+}
+
 export default function WorldCatalog({ text, locale }: { text: typeof fr; locale: string }) {
   const heading = useRef<HTMLHeadingElement>(null);
   const contents = useRef<HTMLDivElement>(null);
@@ -54,10 +61,12 @@ export default function WorldCatalog({ text, locale }: { text: typeof fr; locale
     revision,
   );
   const detail = usePublicCatalog<CatalogDetail>(record ? worldCatalogUrl(record) : null, revision);
-  useEffect(() => {
-    contents.current?.scrollTo({ top: 0 });
-    heading.current?.focus();
-  }, [category, record]);
+  useEffect(() => revealView(contents.current, heading.current), []);
+  /** Commits a view change, then reveals it once the heading shows the new view. */
+  const changeView = (update: () => void) => {
+    flushSync(update);
+    revealView(contents.current, heading.current);
+  };
   const categoryLabel = (key: string) =>
     Object.hasOwn(text.categories, key)
       ? text.categories[key as keyof typeof text.categories]
@@ -87,12 +96,14 @@ export default function WorldCatalog({ text, locale }: { text: typeof fr; locale
             aria-label={record ? text.backToResults : text.back}
             onClick={() => {
               if (record) {
-                setRecord(null);
+                changeView(() => setRecord(null));
                 return;
               }
-              setCategory(null);
-              setSearch("");
-              setQuery("");
+              changeView(() => {
+                setCategory(null);
+                setSearch("");
+                setQuery("");
+              });
             }}
           >
             <ArrowLeft size={18} />
@@ -128,10 +139,12 @@ export default function WorldCatalog({ text, locale }: { text: typeof fr; locale
               className={styles.collection}
               type="button"
               key={item.category}
-              onClick={() => {
-                setCategory(item.category);
-                setPage(1);
-              }}
+              onClick={() =>
+                changeView(() => {
+                  setCategory(item.category);
+                  setPage(1);
+                })
+              }
             >
               <span>{categoryLabel(item.category)}</span>
               <small>{item.total.toLocaleString(locale)}</small>
@@ -161,7 +174,7 @@ export default function WorldCatalog({ text, locale }: { text: typeof fr; locale
                     )
                       return;
                     event.preventDefault();
-                    setRecord({ category: item.category, id: item.id });
+                    changeView(() => setRecord({ category: item.category, id: item.id }));
                   }}
                 >
                   {image ? (

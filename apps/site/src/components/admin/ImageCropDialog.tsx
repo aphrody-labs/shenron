@@ -30,7 +30,6 @@ export function ImageCropDialog({
   const imageRef = useRef<HTMLImageElement>(null);
   const viewportRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef<{ x: number; y: number; panX: number; panY: number } | null>(null);
-  const [src, setSrc] = useState("");
   const [size, setSize] = useState({ width: 0, height: 0 });
   const [natural, setNatural] = useState({ width: 0, height: 0 });
   const [aspectKey, setAspectKey] = useState<Preset>(defaultAspect);
@@ -56,9 +55,12 @@ export function ImageCropDialog({
     return natural.width / Math.max(1, natural.height);
   }, [aspectKey, natural.height, natural.width]);
 
+  // The object URL is an external resource: attach it to the preview and revoke it on change.
   useEffect(() => {
+    const image = imageRef.current;
+    if (!image) return;
     const objectUrl = URL.createObjectURL(file);
-    setSrc(objectUrl);
+    image.src = objectUrl;
     return () => URL.revokeObjectURL(objectUrl);
   }, [file]);
 
@@ -88,7 +90,7 @@ export function ImageCropDialog({
       cancelAnimationFrame(frame);
       observer.disconnect();
     };
-  }, [aspect, measureViewport]);
+  }, [measureViewport]);
 
   const baseScale = Math.max(
     size.width / Math.max(natural.width, 1),
@@ -97,18 +99,12 @@ export function ImageCropDialog({
   const imageWidth = natural.width * baseScale * zoom;
   const imageHeight = natural.height * baseScale * zoom;
 
-  useEffect(() => {
-    setPan((current) => ({
-      x: Math.max(
-        -(imageWidth - size.width) / 2,
-        Math.min((imageWidth - size.width) / 2, current.x),
-      ),
-      y: Math.max(
-        -(imageHeight - size.height) / 2,
-        Math.min((imageHeight - size.height) / 2, current.y),
-      ),
-    }));
-  }, [imageHeight, imageWidth, size.height, size.width]);
+  // Keep the pan inside the image bounds when they shrink (state adjusted during render).
+  const boundedPan = {
+    x: Math.max(-(imageWidth - size.width) / 2, Math.min((imageWidth - size.width) / 2, pan.x)),
+    y: Math.max(-(imageHeight - size.height) / 2, Math.min((imageHeight - size.height) / 2, pan.y)),
+  };
+  if (!Object.is(boundedPan.x, pan.x) || !Object.is(boundedPan.y, pan.y)) setPan(boundedPan);
 
   const finish = useCallback(() => {
     const image = imageRef.current;
@@ -193,6 +189,8 @@ export function ImageCropDialog({
               onClick={() => {
                 setAspectKey(key);
                 setPan({ x: 0, y: 0 });
+                // The viewport ratio changes on the next commit: measure it once laid out.
+                requestAnimationFrame(measureViewport);
               }}
               className={`rounded-lg border px-3 py-2 text-xs font-semibold transition-colors ${aspectKey === key ? "border-dbz-orange bg-dbz-orange/15 text-dbz-orange" : "border-white/15 bg-white/5 text-white/70 hover:border-white/40"}`}
             >
@@ -236,30 +234,27 @@ export function ImageCropDialog({
               dragRef.current = null;
             }}
           >
-            {src && (
-              // The image is positioned from its measured source dimensions so dragging maps directly to crop offsets.
-              <img
-                ref={imageRef}
-                src={src}
-                alt={t("cropPreview")}
-                draggable={false}
-                onLoad={(event) => {
-                  setNatural({
-                    width: event.currentTarget.naturalWidth,
-                    height: event.currentTarget.naturalHeight,
-                  });
-                  requestAnimationFrame(measureViewport);
-                }}
-                className="pointer-events-none absolute max-w-none select-none"
-                style={{
-                  width: imageWidth,
-                  height: imageHeight,
-                  left: `calc(50% + ${pan.x}px)`,
-                  top: `calc(50% + ${pan.y}px)`,
-                  transform: "translate(-50%, -50%)",
-                }}
-              />
-            )}
+            {/* The image is positioned from its measured source dimensions so dragging maps directly to crop offsets. */}
+            <img
+              ref={imageRef}
+              alt={t("cropPreview")}
+              draggable={false}
+              onLoad={(event) => {
+                setNatural({
+                  width: event.currentTarget.naturalWidth,
+                  height: event.currentTarget.naturalHeight,
+                });
+                requestAnimationFrame(measureViewport);
+              }}
+              className="pointer-events-none absolute max-w-none select-none"
+              style={{
+                width: imageWidth,
+                height: imageHeight,
+                left: `calc(50% + ${pan.x}px)`,
+                top: `calc(50% + ${pan.y}px)`,
+                transform: "translate(-50%, -50%)",
+              }}
+            />
             <div className="pointer-events-none absolute inset-0 border border-white/50" />
           </div>
         </div>

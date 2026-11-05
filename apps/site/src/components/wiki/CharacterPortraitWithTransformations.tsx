@@ -47,10 +47,9 @@ export function CharacterPortraitWithTransformations({
         </ViewTransition>
 
         {appearances.length > 0 && (
-          <div
-            role="group"
+          <fieldset
             aria-label={appearanceLabel}
-            className="pointer-events-none absolute inset-0 z-20"
+            className="pointer-events-none absolute inset-0 z-20 min-w-0"
           >
             <div className="pointer-events-auto absolute bottom-2 right-2 flex max-h-[calc(100%-1rem)] flex-col gap-1.5 overflow-y-auto">
               {appearances.map((appearance) => (
@@ -75,7 +74,7 @@ export function CharacterPortraitWithTransformations({
                 </button>
               ))}
             </div>
-          </div>
+          </fieldset>
         )}
       </div>
     </>
