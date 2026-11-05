@@ -5,6 +5,7 @@ import {
   existsSync,
   mkdirSync,
   mkdtempSync,
+  readdirSync,
   readFileSync,
   rmSync,
   statSync,
@@ -12,7 +13,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
-import { join } from "node:path";
+import { join, relative, sep } from "node:path";
 
 import { extract, pack, prunePayloadCache, publicVfsProblems } from "../src/payload";
 import { writeTestVfs } from "./support";
@@ -40,7 +41,47 @@ function payloadFile(name: string, bytes: Uint8Array): string {
   return file;
 }
 
+/** The packer before it read files straight into the archive buffer: one Buffer per file. */
+function referencePack(sources: Record<string, string>, level: number): Uint8Array {
+  const entries: { path: string; size: number; mode: number }[] = [];
+  const chunks: Uint8Array[] = [];
+  const walk = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
+      entry.isDirectory() ? walk(join(dir, entry.name)) : [join(dir, entry.name)],
+    );
+  for (const [prefix, source] of Object.entries(sources)) {
+    const directory = statSync(source).isDirectory();
+    for (const file of (directory ? walk(source) : [source]).toSorted()) {
+      const bytes = readFileSync(file);
+      const rel = directory ? relative(source, file).split(sep).join("/") : "";
+      entries.push({
+        path: [prefix, rel].filter(Boolean).join("/"),
+        size: bytes.byteLength,
+        mode: statSync(file).mode & 0o777,
+      });
+      chunks.push(bytes);
+    }
+  }
+  const manifest = new TextEncoder().encode(JSON.stringify({ entries }));
+  const magic = new TextEncoder().encode("SHENRONPAK1
+");
+  const header = new Uint8Array(magic.length + 4);
+  header.set(magic);
+  new DataView(header.buffer).setUint32(magic.length, manifest.byteLength, true);
+  return Bun.zstdCompressSync(Buffer.concat([header, manifest, ...chunks]), { level });
+}
+
 describe("payload", () => {
+  test("pack writes the same bytes as the per-file Buffer packer", () => {
+    const sources = fixture();
+    const empty = join(root, "src", "empty.bin");
+    writeFileSync(empty, new Uint8Array(0));
+    const big = join(root, "src", "big.bin");
+    writeFileSync(big, Uint8Array.from({ length: 3_000_000 }, (_, i) => (i * 31) & 0xff));
+    const all = { ...sources, "empty.bin": empty, "big.bin": big };
+    expect(Buffer.compare(pack(all, 3), referencePack(all, 3))).toBe(0);
+  });
+
   test("pack then extract restores every file under its archive prefix", async () => {
     const file = payloadFile("roundtrip.zst", pack(fixture(), 1));
     const cache = join(root, "cache-roundtrip");

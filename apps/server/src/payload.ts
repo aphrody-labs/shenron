@@ -11,10 +11,13 @@
 import { Database } from "bun:sqlite";
 import {
   chmodSync,
+  closeSync,
   existsSync,
   mkdirSync,
+  openSync,
   readdirSync,
   readFileSync,
+  readSync,
   renameSync,
   rmSync,
   statSync,
@@ -41,29 +44,47 @@ function* walk(dir: string): Generator<string> {
 /** Pack `sources` (archive prefix -> directory or file) into a zstd-compressed payload. */
 export function pack(sources: Record<string, string>, level = 12): Uint8Array {
   const entries: PackEntry[] = [];
-  const chunks: Uint8Array[] = [];
+  const files: string[] = [];
   for (const [prefix, source] of Object.entries(sources)) {
-    const files = statSync(source).isDirectory() ? [...walk(source)] : [source];
-    for (const file of files.toSorted()) {
+    const isDirectory = statSync(source).isDirectory();
+    for (const file of (isDirectory ? [...walk(source)] : [source]).toSorted()) {
       const stat = statSync(file);
-      const rel = statSync(source).isDirectory() ? relative(source, file).split(sep).join("/") : "";
-      const path = [prefix, rel].filter(Boolean).join("/");
-      const bytes = readFileSync(file);
-      entries.push({ path, size: bytes.byteLength, mode: stat.mode & 0o777 });
-      chunks.push(bytes);
+      const rel = isDirectory ? relative(source, file).split(sep).join("/") : "";
+      entries.push({
+        path: [prefix, rel].filter(Boolean).join("/"),
+        size: stat.size,
+        mode: stat.mode & 0o777,
+      });
+      files.push(file);
     }
   }
   const manifest = new TextEncoder().encode(JSON.stringify({ entries }));
   const header = new Uint8Array(MAGIC.length + 4);
   header.set(new TextEncoder().encode(MAGIC));
   new DataView(header.buffer).setUint32(MAGIC.length, manifest.byteLength, true);
-  const total =
-    header.byteLength + manifest.byteLength + chunks.reduce((n, c) => n + c.byteLength, 0);
-  const raw = new Uint8Array(total);
-  let offset = 0;
-  for (const part of [header, manifest, ...chunks]) {
-    raw.set(part, offset);
-    offset += part.byteLength;
+  const prefix = header.byteLength + manifest.byteLength;
+  const raw = new Uint8Array(entries.reduce((n, entry) => n + entry.size, prefix));
+  raw.set(header, 0);
+  raw.set(manifest, header.byteLength);
+  // Each file is read straight into its slot of the archive buffer: no per-file Buffer that is
+  // then copied (the payload is hundreds of MiB, so that copy doubled the peak memory).
+  let offset = prefix;
+  for (const [index, file] of files.entries()) {
+    const size = entries[index]!.size;
+    const fd = openSync(file, "r");
+    try {
+      let filled = 0;
+      while (filled < size) {
+        const n = readSync(fd, raw, offset + filled, size - filled, filled);
+        if (n === 0) break;
+        filled += n;
+      }
+      if (filled !== size || readSync(fd, new Uint8Array(1), 0, 1, size) !== 0)
+        throw new Error(`${file} changed size while packing`);
+    } finally {
+      closeSync(fd);
+    }
+    offset += size;
   }
   return Bun.zstdCompressSync(raw, { level });
 }
