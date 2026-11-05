@@ -52,6 +52,14 @@ test.skipIf(typeof document === "undefined")(
       expect(load.textContent).toBe("Charger le lecteur 1");
       await act(async () => load.click());
       let frame = container.querySelector("iframe")!;
+      // Sandbox sans popups ni navigation du top-window, et un nom accessible.
+      const sandbox = (frame.getAttribute("sandbox") ?? "").split(" ");
+      expect(sandbox).toEqual(
+        expect.arrayContaining(["allow-scripts", "allow-same-origin", "allow-presentation"]),
+      );
+      expect(sandbox).not.toContain("allow-popups");
+      expect(sandbox).not.toContain("allow-top-navigation");
+      expect(frame.title).toContain("Lecteur 1");
       expect(frame.src).toBe("https://player.example/first");
       frame.getBoundingClientRect = () => ({ width: 0, height: 0 }) as DOMRect;
       frame.parentElement!.getBoundingClientRect = () => ({ width: 640, height: 360 }) as DOMRect;

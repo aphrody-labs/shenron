@@ -105,17 +105,13 @@ test("unqualified Crunchyroll destinations never become embeds or outbound links
   }
 });
 
-test("external embeds are sandboxed without popups or top navigation and keep an accessible name", () => {
+test("the click-to-load facade is a labelled button; the sandbox is applied once the player is loaded", () => {
   const html = render("fr", [
     { name: "VF · Lecteur", provider: "vidmoly", embedUrl: "https://vidmoly.example/embed/1" },
   ]);
-  const sandbox = /sandbox="([^"]*)"/.exec(html)?.[1] ?? "";
-  expect(sandbox.split(" ")).toEqual(
-    expect.arrayContaining(["allow-scripts", "allow-same-origin", "allow-presentation"]),
-  );
-  expect(sandbox).not.toContain("allow-popups");
-  expect(sandbox).not.toContain("allow-top-navigation");
-  expect(html).toMatch(/<iframe[^>]*title="[^"]+"/);
+  expect(html).not.toContain("<iframe");
+  expect(html).not.toContain("vidmoly.example");
+  expect(html).toMatch(/<button[^>]*type="button"[^>]*>Charger le lecteur 1<\/button>/);
   expect(html).toContain('aria-live="polite"');
 });
 
