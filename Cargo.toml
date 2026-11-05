@@ -47,6 +47,10 @@ rars = "0.9.4"
 rfd = "0.17.2"
 revision = { version = "0.30.0", features = ["uuid"] }
 secrecy = { version = "0.10.3", features = ["serde"] }
+# koharu-library reads user CBZ/ZIP archives: zip >= 9.0.5 fixes GHSA-m665-v7pm-7grj (critical),
+# GHSA-9hj8-73fh-9963, GHSA-hjqx-j4rw-g7xv, GHSA-q7v9-x93c-xqv3 and GHSA-8hxf-qr8p-62x4.
+# Declared here, not taken from Aphrody's workspace, which still pins 8.6.0 for its own crates.
+zip = { version = "9.3.0", features = ["deflate"] }
 serde-wasm-bindgen = "0.6.5"
 slotmap = "1.1.1"
 smallvec = "1.16.0"
@@ -177,7 +181,6 @@ wasm-bindgen-futures = "0.4.78"
 web-sys = "0.3.105"
 webp = { version = "0.3.1" }
 windows = { version = "0.62.2", features = ["Foundation", "Globalization", "Graphics_Imaging", "Media_Ocr", "Media_SpeechSynthesis", "Media_Core", "Storage_Streams", "Win32_Foundation", "Win32_Media_Audio", "Win32_Security", "Win32_Graphics_Dwm", "Win32_Graphics_Gdi", "Win32_Storage_IndexServer", "Win32_System_Com", "Win32_System_Ole", "Win32_System_Search", "Win32_System_Threading", "Win32_System_IO", "Win32_System_Diagnostics_Debug", "Win32_System_Memory", "Win32_System_SystemInformation", "Win32_System_Diagnostics_ToolHelp", "Win32_System_Variant", "Win32_UI_WindowsAndMessaging", "Win32", "Win32_System", "Win32_System_Console"] }
-zip = { version = "8.6.0", features = ["deflate"] }
 # END generated
 
 # Aphrody fdd0a036b declares hf-hub = "1.0.0" (crates.io) while aphrody-models uses
