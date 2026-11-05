@@ -30,7 +30,7 @@ import { cn } from "@aphrody/shenron-ui/lib/utils";
 /**
  * Les avatars Discord sont servis en grande taille et souvent en GIF animé
  * (~888 Kio d'économie mesurée sur l'accueil). Un avatar s'affiche à 28-64 px :
- * on demande au CDN Discord une variante WebP statique (~1,75x la taille d'affichage
+ * on demande au CDN Discord une variante WebP statique, environ 1,75x la taille d'affichage
  * (écrans denses), bornée à 32-128 px. Les autres URLs sont laissées telles quelles.
  */
 export function discordAvatarVariant(url: string | null, displaySize: number): string | null {
