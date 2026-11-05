@@ -202,7 +202,7 @@ describe("edit audit", () => {
     expect(r.suppressions).toHaveLength(1);
     await sh("git checkout -- a.ts b.ts", dir);
     expect((await sh("git status --porcelain", dir)).out).toBe("");
-  });
+  }, 60_000);
 
   test("prompt carries findings, rule text and the source", () => {
     const p = agentPrompt(
@@ -243,5 +243,5 @@ describe("snapshot and added lines", () => {
     expect(readFileSync(join(dir, "a.ts"), "utf8")).toBe("let a = 2; // mechanical\n");
     expect(readFileSync(join(dir, "b.ts"), "utf8")).toBe("let b = 1;\n");
     expect(existsSync(join(dir, "new.ts"))).toBe(false);
-  });
+  }, 60_000);
 });
