@@ -659,8 +659,7 @@ const git = (root: string, args: string) => sh(`git ${args}`, root);
 export async function worktreeSnapshot(root: string): Promise<Map<string, string>> {
   const names = new Set<string>();
   for (const cmd of ["diff --name-only", "ls-files -o --exclude-standard"])
-    for (const n of (await git(root, cmd)).out.split("
-")) if (n) names.add(toPosix(n));
+    for (const n of (await git(root, cmd)).out.split("\n")) if (n) names.add(toPosix(n));
   const snap = new Map<string, string>();
   for (const n of names) if (existsSync(join(root, n))) snap.set(n, readFileSync(join(root, n), "utf8"));
   return snap;
@@ -687,11 +686,9 @@ export async function restoreSnapshot(root: string, snap: Map<string, string>, f
 /** Lines of `next` that are not in `prev` (multiset), for the suppression audit. */
 export function addedLines(prev: string, next: string): string[] {
   const pool = new Map<string, number>();
-  for (const l of prev.split("
-")) pool.set(l, (pool.get(l) ?? 0) + 1);
+  for (const l of prev.split("\n")) pool.set(l, (pool.get(l) ?? 0) + 1);
   const out: string[] = [];
-  for (const l of next.split("
-")) {
+  for (const l of next.split("\n")) {
     const n = pool.get(l) ?? 0;
     if (n > 0) pool.set(l, n - 1);
     else out.push(l);
