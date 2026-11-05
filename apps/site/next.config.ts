@@ -529,8 +529,7 @@ const nextConfig: NextConfig = {
           // après un relevé propre.
           {
             key: "Content-Security-Policy-Report-Only",
-            value:
-              `script-src ${CSP_SCRIPT_SRC}; report-uri /api/csp-report`,
+            value: `script-src ${CSP_SCRIPT_SRC}; report-uri /api/csp-report`,
           },
           // Aucune de ces API n'est utilisée par le site : les refuser évite
           // qu'un script tiers (régie pub) puisse les demander en notre nom.

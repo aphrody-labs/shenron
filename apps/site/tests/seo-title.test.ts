@@ -26,7 +26,10 @@ describe("clampTitle", () => {
   });
 
   test("tronque sans mot coupe ni ponctuation pendante", () => {
-    const t = clampTitle("Chapitre 167 — Un Tenkaichi Budokai plein de surprises", " — Manga Dragon Ball");
+    const t = clampTitle(
+      "Chapitre 167 — Un Tenkaichi Budokai plein de surprises",
+      " — Manga Dragon Ball",
+    );
     expect(full(t).length).toBeLessThanOrEqual(TITLE_MAX);
     expect(t).not.toMatch(/[ \-—,:]…/u);
   });
