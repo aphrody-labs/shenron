@@ -8,7 +8,6 @@
  * test or an instrumentation layer that replaces `globalThis.fetch` after the
  * client was created is honoured.
  */
-import "../zod-runtime";
 import type { z } from "zod";
 import { JsonTransportError, requestJson } from "@aphrody/http";
 import {

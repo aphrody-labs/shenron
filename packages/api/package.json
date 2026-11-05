@@ -15,9 +15,7 @@
     "openapi"
   ],
   "type": "module",
-  "sideEffects": [
-    "./src/zod-runtime.ts"
-  ],
+  "sideEffects": false,
   "exports": {
     "./contract": "./src/contract/index.ts",
     "./client": "./src/client/index.ts",
