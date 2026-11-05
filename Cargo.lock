@@ -503,8 +503,9 @@ dependencies = [
 
 [[package]]
 name = "aphrody-jev"
-version = "1.4.4"
-source = "git+https://github.com/aphrody-labs/bun?rev=892ea1ae93820a9ea839027ff466f44f732ccfa8#892ea1ae93820a9ea839027ff466f44f732ccfa8"
+version = "1.4.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d282443ad17718e722d4e865ddb8588b6fd7b16bd35ef0ed348c5522a4909239"
 dependencies = [
  "futures",
  "reqwest",
@@ -13120,7 +13121,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.3.4",
+ "getrandom 0.4.3",
  "once_cell",
  "rustix 1.1.5",
  "windows-sys 0.61.2",
