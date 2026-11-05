@@ -276,7 +276,7 @@
       "dependencies": {
         "@aphrody/shenron-config": "workspace:*",
         "@aphrody/shenron-media": "workspace:*",
-        "@modelcontextprotocol/sdk": "^1.5.0",
+        "@modelcontextprotocol/sdk": "catalog:",
       },
       "devDependencies": {
         "@types/bun": "catalog:",
@@ -463,7 +463,6 @@
     "@aphrody/api": "3.0.0-alpha.5",
     "@aphrody/bun": "3.3.13",
     "@aphrody/bun-plugin-tailwind": "0.1.0",
-    "@aphrody/bun-runtime": "1.4.3-aphrody.2",
     "@aphrody/bun-runtime-sdk": "1.4.10",
     "@aphrody/bun-test-dom": "0.1.1",
     "@aphrody/bun-video": "https://dist.aphrody.app/packages/bun-video/1.4.4-video.1/db7590aff424cc85c783a316556b8552f780898f92d9765443092a5c69970056/package.tgz",
@@ -482,7 +481,6 @@
     "@aphrody/runtime-sdk": "0.1.4",
     "@aphrody/sql": "0.1.2",
     "@aphrody/typesafe-sdk": "0.6.2",
-    "@aphrody/update": "0.1.5",
     "@aphrody/web-test": "0.2.8",
     "@base-ui/react": "^1.8.0",
     "@better-auth/cimd": "1.7.14",
@@ -497,6 +495,7 @@
     "@discordx/di": "^3.3.4",
     "@discordx/pagination": "^4.4.2",
     "@huggingface/transformers": "^4.3.0",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "@napi-rs/canvas": "1.0.9",
     "@next/env": "16.5.0-canary.5",
     "@next/third-parties": "16.5.0-canary.5",

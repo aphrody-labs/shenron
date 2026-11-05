@@ -28,7 +28,7 @@
   "dependencies": {
     "@aphrody/shenron-config": "workspace:*",
     "@aphrody/shenron-media": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.5.0"
+    "@modelcontextprotocol/sdk": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:"
