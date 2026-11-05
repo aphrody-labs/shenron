@@ -253,7 +253,7 @@ test("the Next child runs under the Bun shipped beside an AOT executable", () =>
     resolveNextRuntime({
       compiled: true,
       platform: "win32",
-      execPath: "C:\shenron\shenron-server.exe",
+      execPath: "C:/shenron/shenron-server.exe",
       env: {},
       exists: (path) => path.endsWith("bun.exe"),
     }).beBun,
