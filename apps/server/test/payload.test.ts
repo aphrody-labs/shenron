@@ -63,8 +63,7 @@ function referencePack(sources: Record<string, string>, level: number): Uint8Arr
     }
   }
   const manifest = new TextEncoder().encode(JSON.stringify({ entries }));
-  const magic = new TextEncoder().encode("SHENRONPAK1
-");
+  const magic = new TextEncoder().encode("SHENRONPAK1\n");
   const header = new Uint8Array(magic.length + 4);
   header.set(magic);
   new DataView(header.buffer).setUint32(magic.length, manifest.byteLength, true);
@@ -77,7 +76,10 @@ describe("payload", () => {
     const empty = join(root, "src", "empty.bin");
     writeFileSync(empty, new Uint8Array(0));
     const big = join(root, "src", "big.bin");
-    writeFileSync(big, Uint8Array.from({ length: 3_000_000 }, (_, i) => (i * 31) & 0xff));
+    writeFileSync(
+      big,
+      Uint8Array.from({ length: 3_000_000 }, (_, i) => (i * 31) & 0xff),
+    );
     const all = { ...sources, "empty.bin": empty, "big.bin": big };
     expect(Buffer.compare(pack(all, 3), referencePack(all, 3))).toBe(0);
   });
