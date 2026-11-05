@@ -54,9 +54,11 @@ const nextConfig: NextConfig = {
   // info gratuite pour un scan automatisé, et elle ne sert à personne côté client.
   poweredByHeader: false,
 
-  // Désactivation explicite des source maps navigateur en production :
-  // évite la surconsommation de mémoire au build Turbopack et supprime les fichiers .map.
-  productionBrowserSourceMaps: false,
+  // Source maps navigateur publiées : Lighthouse (`valid-source-maps`, Bonnes pratiques)
+  // échoue quand un gros JS first-party n'en a pas. Le coût est mémoire/temps au build
+  // (c'était la raison de l'ancienne désactivation) : `SHENRON_BROWSER_SOURCEMAPS=0`
+  // les coupe sur une machine de build contrainte.
+  productionBrowserSourceMaps: process.env.SHENRON_BROWSER_SOURCEMAPS !== "0",
   // Source maps du prérendu : mêmes règles que les source maps serveur (`experimental`).
   enablePrerenderSourceMaps: process.env.SHENRON_SERVER_SOURCEMAPS === "1",
 
