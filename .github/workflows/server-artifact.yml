@@ -1,25 +1,30 @@
-name: Production image build and auto-deploy
+name: Production auto-deploy
 
-# Build, verify and automatically ship the Shenron container image of main commits on the
-# trusted self-hosted runner through scripts/deploy/release.sh (build-image.sh + ship-image.sh).
-# Never schedule pull-request code on this host.
+# Push to main -> plan against what production runs -> build only the changed lanes -> switch only
+# the reached services (deploy/activation/activate.sh, --no-deps, automatic rollback).
+# Runbook: docs/operations/AUTO-DEPLOY.md.
+#
+# INERT BY DEFAULT. Nothing runs on push unless the repository variable AUTO_DEPLOY_ENABLED is
+# exactly "true" (Settings > Secrets and variables > Actions > Variables). A manual dispatch also
+# needs it, except with plan_only. Flipping it is the owner's decision; unsetting it stops auto
+# deploy at once. Never schedule pull-request code on the production runner.
 
 on:
   push:
     branches: ["main"]
-    paths-ignore:
-      - "docs/**"
-      - "*.md"
-      - "var/**"
-      - ".coord/**"
   workflow_dispatch:
     inputs:
-      vfs:
-        description: Public VFS (local path, http(s) URL or scp host:path); empty reuses the build worktree's
+      revision:
+        description: Revision to release (default the pushed or dispatched commit)
         required: false
         default: ""
-      build_only:
-        description: Build and verify only without shipping to production
+      plan_only:
+        description: Print the plan against production only (no build, no deploy)
+        required: false
+        type: boolean
+        default: true
+      accept_holds:
+        description: Migrations of this diff are applied by Infra already (releases a HOLD)
         required: false
         type: boolean
         default: false
@@ -27,36 +32,49 @@ on:
 permissions:
   contents: read
 
+# One release at a time; a newer push waits instead of cancelling a release mid-switch. The plan
+# compares with the running revision, so a skipped commit is still deployed by the next one.
 concurrency:
   group: shenron-production-deploy
   cancel-in-progress: false
 
 jobs:
-  build:
-    name: Build, verify and deploy Shenron image (linux-x64 -> prod)
-    runs-on: [self-hosted, Linux, X64, shenron-factory]
-    timeout-minutes: 120
+  release:
+    name: Plan, build changed lanes, switch reached services
+    if: >-
+      vars.AUTO_DEPLOY_ENABLED == 'true' ||
+      (github.event_name == 'workflow_dispatch' && inputs.plan_only && vars.SHENRON_PROD_RUNNER_READY == 'true')
+    # The production host is the build host (deploy/environment.json "primary": "native"):
+    # its persistent checkout keeps target/, sccache, node_modules and the Turbopack cache.
+    runs-on: [self-hosted, Linux, X64, shenron-prod]
+    timeout-minutes: 90
     env:
-      SHENRON_VFS_SOURCE: ${{ inputs.vfs }}
-      # build-image.sh builds from a reusable worktree of this checkout (fetch + submodules).
+      # build-image.sh builds from a reusable worktree of this checkout (fetch).
       SHENRON_SOURCE_REPO: ${{ github.workspace }}
       SHENRON_BUILD_REPO: ${{ vars.SHENRON_BUILD_REPO }}
-      SHENRON_DEPLOY_TARGET: ${{ vars.SHENRON_DEPLOY_TARGET || 'ssh:prod' }}
+      SHENRON_VFS_SOURCE: ${{ vars.SHENRON_VFS_SOURCE }}
+      SHENRON_DEPLOY_TARGET: ${{ vars.SHENRON_DEPLOY_TARGET || 'local' }}
+      SHENRON_DEPLOY_COMMAND: ${{ vars.SHENRON_DEPLOY_COMMAND || 'bash /root/deploy-shenron-image.sh' }}
+      SHENRON_ACCEPT_HOLDS: ${{ inputs.accept_holds && '1' || '0' }}
+      REVISION: ${{ inputs.revision || github.sha }}
     steps:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - uses: ./.github/actions/setup-bun
 
-      - name: Build, verify and deploy the image
+      - name: Plan against production
+        shell: bash
+        run: bash scripts/deploy/release.sh --plan "$REVISION"
+
+      - name: Build changed lanes and switch reached services
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.plan_only) }}
         shell: bash
         run: |
           set -euo pipefail
-          if [ -z "$SHENRON_BUILD_REPO" ]; then unset SHENRON_BUILD_REPO; fi
-          if [ -z "$SHENRON_VFS_SOURCE" ]; then unset SHENRON_VFS_SOURCE; fi
-          if [ "${{ inputs.build_only }}" = "true" ]; then
-            bash scripts/deploy/release.sh --build-only "$GITHUB_SHA"
-          else
-            bash scripts/deploy/release.sh "$GITHUB_SHA"
-          fi
+          for name in SHENRON_BUILD_REPO SHENRON_VFS_SOURCE; do
+            [ -n "${!name}" ] || unset "$name"
+          done
+          bash scripts/deploy/release.sh --auto "$REVISION"

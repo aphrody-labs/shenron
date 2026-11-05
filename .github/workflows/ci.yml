@@ -41,6 +41,12 @@ jobs:
           key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
           restore-keys: bun-${{ runner.os }}-
 
+      # Before install: both only need Git and Bun (deploy/environment.json, scripts/deploy).
+      - name: Deploy environment and change detection
+        run: |
+          bun scripts/deploy/environment.ts --check
+          bun scripts/deploy/lanes.ts --check
+
       - name: Install
         run: bun ci
 

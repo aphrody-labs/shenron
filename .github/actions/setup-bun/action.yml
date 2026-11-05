@@ -72,6 +72,3 @@ runs:
           }
           console.log(`Qualified Aphrody Bun ${Bun.version}`);
         '
-    - name: Initialize the pinned configuration workspace
-      shell: bash
-      run: git submodule update --init -- packages/config
