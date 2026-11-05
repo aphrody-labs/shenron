@@ -25,7 +25,6 @@
  */
 import { join } from "node:path";
 import postgres from "postgres";
-import sharp from "sharp";
 
 const args = process.argv.slice(2);
 const opt = (nom: string, defaut?: string) => {
@@ -170,7 +169,7 @@ try {
     let largeur: number | null = null,
       hauteur: number | null = null;
     try {
-      const meta = await sharp(donnees).metadata();
+      const meta = await new Bun.Image(donnees).metadata();
       largeur = meta.width ?? null;
       hauteur = meta.height ?? null;
     } catch {
