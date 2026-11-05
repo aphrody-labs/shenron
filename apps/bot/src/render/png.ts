@@ -6,14 +6,12 @@
 
 const SIGNATURE = Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10]);
 
-function chunk(type: string, data: Uint8Array): Uint8Array {
-  const out = new Uint8Array(12 + data.length);
-  const view = new DataView(out.buffer);
-  view.setUint32(0, data.length);
-  for (let i = 0; i < 4; i++) out[4 + i] = type.charCodeAt(i);
-  out.set(data, 8);
-  view.setUint32(8 + data.length, Bun.hash.crc32(out.subarray(4, 8 + data.length)) >>> 0);
-  return out;
+/** Writes the chunk header at `at` and its CRC after `length` data bytes; returns the next offset. */
+function sealChunk(out: Uint8Array, view: DataView, at: number, type: string, length: number) {
+  view.setUint32(at, length);
+  for (let i = 0; i < 4; i++) out[at + 4 + i] = type.charCodeAt(i);
+  view.setUint32(at + 8 + length, Bun.hash.crc32(out.subarray(at + 4, at + 8 + length)) >>> 0);
+  return at + 12 + length;
 }
 
 export interface PngOptions {
@@ -39,21 +37,26 @@ export function encodePngRgba(
     scanlines.set(rgba.subarray(y * stride, (y + 1) * stride), y * (stride + 1) + 1);
   }
   const deflated = Bun.deflateSync(scanlines, { level: (options.level ?? 6) as 6 });
-  const zlib = new Uint8Array(2 + deflated.length + 4);
-  zlib[0] = 0x78;
-  zlib[1] = 0x9c;
-  zlib.set(deflated, 2);
-  new DataView(zlib.buffer).setUint32(2 + deflated.length, Bun.hash.adler32(scanlines) >>> 0);
-  const header = new Uint8Array(13);
-  const view = new DataView(header.buffer);
-  view.setUint32(0, width);
-  view.setUint32(4, height);
-  header[8] = 8; // bit depth
-  header[9] = 6; // colour type: RGBA
-  return Buffer.concat([
-    SIGNATURE,
-    chunk("IHDR", header),
-    chunk("IDAT", zlib),
-    chunk("IEND", new Uint8Array(0)),
-  ]);
+  // One output buffer: the signature, IHDR, an IDAT whose zlib stream (header, deflate data,
+  // adler32) is written in place, and IEND. No intermediate zlib, chunk or concat copies.
+  const zlibLength = 2 + deflated.length + 4;
+  const out = Buffer.allocUnsafe(8 + 25 + (12 + zlibLength) + 12);
+  const view = new DataView(out.buffer, out.byteOffset, out.byteLength);
+  out.set(SIGNATURE, 0);
+  view.setUint32(8 + 8, width);
+  view.setUint32(8 + 12, height);
+  out[8 + 16] = 8; // bit depth
+  out[8 + 17] = 6; // colour type: RGBA
+  out[8 + 18] = 0;
+  out[8 + 19] = 0;
+  out[8 + 20] = 0;
+  let at = sealChunk(out, view, 8, "IHDR", 13);
+  const data = at + 8;
+  out[data] = 0x78;
+  out[data + 1] = 0x9c;
+  out.set(deflated, data + 2);
+  view.setUint32(data + 2 + deflated.length, Bun.hash.adler32(scanlines) >>> 0);
+  at = sealChunk(out, view, at, "IDAT", zlibLength);
+  sealChunk(out, view, at, "IEND", 0);
+  return out;
 }
