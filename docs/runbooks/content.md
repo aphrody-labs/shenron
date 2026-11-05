@@ -3,11 +3,13 @@
 Audit en lecture seule réalisé le 2026-11-05 (environ 06:00-07:30 UTC). Dépôt `C:\src\shenron` à HEAD `2e465772`. La production sert l'image `f04de517` (`/srv/shenron/current` → `releases/docker-f04de517…`).
 
 Aucune écriture n'a eu lieu :
+
 - aucun pipeline lancé en mode écriture ;
 - aucune API ni aucun outil MCP d'écriture appelé ;
 - aucune modification sur un hôte.
 
 Les mesures viennent de quatre sources :
+
 - PostgreSQL de production, `shenron-postgres`, base `shenron_site`, rôle `postgres` sur socket, chaque requête dans `BEGIN READ ONLY … ROLLBACK`.
 - Outils MCP publics `dragonball_data_coverage`, `dragonball_sources` et `dragonball_a2a_agent_card`.
 - Requêtes HEAD publiques sur `cdn.dragonballfr.com`.
@@ -45,29 +47,30 @@ Les chemins de dépôt sont relatifs à `C:\src\shenron`.
 
 ## 1. Tableau de synthèse
 
-| # | Chaîne | Couverture mesurée | Commande principale | Dry-run | Hôte | Prochaine étape |
-|---|---|---|---|---|---|---|
-| 1 | OCR databooks + manga | Databooks : 16 409 / 17 093 pages scannées ont un texte JA (96 %), 683 pages de livres visibles sans OCR. Manga : 12 593 / 53 304 planches transcrites (23,6 %) | `bun packages/pipeline/scripts/run-manga-ocr.ts` ; `bun scripts/ops/gpu-continuous-ocr.ts` (databooks) | Manga : `--dry-run` réel (manifestes + SHA). Databooks : aucun ; sonde `aphrody ocr dbfr survey --json` | Local RTX 4070 (inférence) → API prod | Exporter les 683 pages databook restantes avec `export-databooks-ocr.ts --plan`, puis lot GPU borné `--limite-lots 1` |
-| 2 | Traduction ja→fr/en + lexique | FR : 11 351 / 16 409 pages OCR (69 %), 4 779 pages visibles OCR sans FR. EN : 0. Lexique : 772 termes, 47 avec EN (6 %), 32 techniques seulement | `bun apps/site/scripts/traduction-boucle.ts [--appliquer]` ; `bun scripts/data/lexicon.ts coverage --json` | Simulation par défaut, mais elle appelle les moteurs | Prod tmux ou vps (CPU NLLB) ; Gemini web en local | Enrichir le lexique (techniques, EN), puis lots FR sur les 4 779 pages |
-| 3 | Wiki | Visibles : 683 personnages (666 sourcés), 597 techniques (62 `name_ja`, 554 sourcées), 28 transformations (0 description), 20 lieux, 61 planètes, 103/468 variantes (365 masquées à relire, 21 images) | `bun scripts/ops/wiki-fill-agents.ts inventory|run|status` → `publish-wiki-proposals.ts plan|apply` | `status` et `plan` sont en lecture seule | Local ou vps (codex) → API wiki-admin | `wiki-fill-agents.ts status` puis inventaire ciblé techniques `name_ja` et variantes |
-| 4 | News | `bot.db_news` 2 013 lignes (le chiffre « 2 064 » ne se retrouve pas en PG). Dernier fetch le 2026-09-19. 99 % viennent de salons Discord | `apps/bot/src/events/NewsScan.ts` (temps réel) ; `db:sync-news` | `sync-news` : aucun | Bot prod (évènement) | Diagnostiquer pourquoi NewsScan n'écrit plus depuis le 19/09 |
-| 5 | Crawl sources externes | 59 248 `external_source_records` (dernier fetch 2026-10-15), 0 `canonical_eligible`. Ingest canon : dernier run 2026-09-20 | `pipeline crawl <cible> --dry-run` ; `bun scripts/ops/publish-source.ts … [--apply]` | Oui (`--dry-run`, `plan.json` sans `--apply`) | vps | `pipeline crawl kanzenshuu --dry-run` avec `config/soshuhen-reference-crawl.json` |
-| 6 | Databooks | 482 notices, 428 visibles (407 databooks au sens strict). 17 378 pages, dont 17 093 avec scan. OCR 16 409 ; relues (`verifiee`) 1 082 (6,6 %) ; FR 11 351. 11 notices visibles sans aucune page | `bun apps/site/scripts/databooks.ts etat|sante|verifie --json` ; API `/api/admin/databooks/campaign` | `etat`, `sante` et `verifie` sont en lecture seule | Prod tmux (DB) | Masquer ou compléter les 11 notices vides ; campagne de relecture |
-| 7 | Manga | 53 304 planches déclarées, toutes présentes sur R2. 12 593 transcrites (DB 8 238, DBS 4 355). 0 transcrite pour DBJP, DBKZ, anime comics, films, ARALE, SOSH | `export-manga-ocr.ts --plan` → `run-manga-ocr.ts --dry-run` → `deposit-manga-transcriptions.ts [--appliquer]` | Oui sur les trois | Local GPU → prod | Ce qui bloque : l'OCR et la politique d'édition, plus les scans. Décider des séries prioritaires |
-| 8 | SVG Toriyama | Pas de métrique de couverture : la vectorisation automatique est interdite. 51 SVG de techniques référencés en base sont absents de R2 (servis par le site seulement) | `plugin/skills/toriyama-svg/scripts/*.ts` ; `bun scripts/design/build-toriyama-catalog.ts --check` | `--check` | Local | Publier les 51 SVG sur R2 (ligne 13) |
-| 9 | Épisodes | 878 fiches visibles : 878 avec synopsis FR, 830 avec image, 52 avec lecteurs, 878 avec `availability`, 684 avec `official_source_url`. Sous-titres : JA seulement, 816 épisodes (814 Jimaku), 0 FR/EN | `bun apps/bot/scripts/ingest/jimaku-subtitles.ts [--appliquer]` ; `scripts/ops/crunchyroll-sync.ts [--apply]` ; `complete-episode.ts --id N [--apply]` | Oui (simulation par défaut) | vps ou prod tmux | Combler les 48 SDBH et les 2 Beerus en métadonnées et sous-titres JA |
-| 10 | Chronologie | 32 `db_timeline_events` (0 article), 92 `narrative_events`, 4 frises. RAG : 708 `timeline_episode` | Curation `/admin/chronologie` ; API `/api/timeline` | Aucun builder |, | Rédiger les 32 articles d'évènements avec sources |
-| 11 | Index RAG | 257 436 docs visibles vectorisés e5-small (384 dimensions), plus 59 995 tombstones. Dernière synchronisation le 2026-10-20. News et frames ne sont pas indexées | `bun packages/pipeline/scripts/rag-sync-aphrody.ts --toutes [--appliquer]` | Oui (sans `--appliquer`) | Prod tmux, hors conteneur bot | Lancer le dry-run `--toutes` avec rapport, puis `--appliquer` en tmux |
-| 12 | Frames | 830 / 878 épisodes avec frames (6 736 frames ; moyenne 8, entre 7 et 41). 41 PNG de l'épisode 876 absents de R2. 0 frame pour les 48 SDBH | `bun apps/bot/scripts/build-frame-catalog.ts [--check]` ; `scripts/ops/index-frames.ts --dry-run` | Oui (`--check`, `--dry-run`) | vps (téléchargement + ffmpeg) | Recaler le catalogue (826 épisodes contre 830 en base) avec `--check` |
-| 13 | CDN R2 | Inventaire de 246 420 chemins. Références en base : databooks 17 084/17 084, manga 53 304/53 304, sous-titres 2 738/2 738, personnages 683/683. Manquants : 51 SVG de techniques, 41 frames de l'ép. 876, couverture 486 (introuvable partout) | `deploy/cloudflare/cli/transfer.ts status` ; `publish-catalog.ts --options F` ; `scripts/ops/audit-cdn-gaps.ts` | Oui (sans `--apply`) | Prod (origine 9077, `shenron-cdn-origin` actif) | Plan `publish-catalog.ts` pour les 92 objets manquants |
-| 14 | Outils média | Bun Video épinglé `1.4.4-video.1`. Remotion : libellés seulement. Pas de service d'images autonome (`/_next/image`) | `scripts/video/render.ts` ; `packages/images` (bibliothèque) | Sans objet | Local ou vps | Aucune |
-| 15 | Fournisseurs IA | Prod : `shenron-chat-v2` local, puis gemma4-e2b, puis gemini-web (repli désactivé en prod), e5 local. Pas de clé Gemini API (mode web par cookies). Anthropic par HTTP direct (`ANTHROPIC_API_KEY`), pas de SDK Agent. `locally-uncensored` absent de `C:\src` | `packages/config/src/chat-model.ts` ; `packages/pipeline/src/ai/config.ts` |, |, | Décider quels fournisseurs payants utiliser pour 1, 2 et 3 |
+| #   | Chaîne                        | Couverture mesurée                                                                                                                                                                                                                                             | Commande principale                                                                                                                                    | Dry-run                                                                                                 | Hôte                                                | Prochaine étape                                                                                                       |
+| --- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| 1   | OCR databooks + manga         | Databooks : 16 409 / 17 093 pages scannées ont un texte JA (96 %), 683 pages de livres visibles sans OCR. Manga : 12 593 / 53 304 planches transcrites (23,6 %)                                                                                                | `bun packages/pipeline/scripts/run-manga-ocr.ts` ; `bun scripts/ops/gpu-continuous-ocr.ts` (databooks)                                                 | Manga : `--dry-run` réel (manifestes + SHA). Databooks : aucun ; sonde `aphrody ocr dbfr survey --json` | Local RTX 4070 (inférence) → API prod               | Exporter les 683 pages databook restantes avec `export-databooks-ocr.ts --plan`, puis lot GPU borné `--limite-lots 1` |
+| 2   | Traduction ja→fr/en + lexique | FR : 11 351 / 16 409 pages OCR (69 %), 4 779 pages visibles OCR sans FR. EN : 0. Lexique : 772 termes, 47 avec EN (6 %), 32 techniques seulement                                                                                                               | `bun apps/site/scripts/traduction-boucle.ts [--appliquer]` ; `bun scripts/data/lexicon.ts coverage --json`                                             | Simulation par défaut, mais elle appelle les moteurs                                                    | Prod tmux ou vps (CPU NLLB) ; Gemini web en local   | Enrichir le lexique (techniques, EN), puis lots FR sur les 4 779 pages                                                |
+| 3   | Wiki                          | Visibles : 683 personnages (666 sourcés), 597 techniques (62 `name_ja`, 554 sourcées), 28 transformations (0 description), 20 lieux, 61 planètes, 103/468 variantes (365 masquées à relire, 21 images)                                                         | `bun scripts/ops/wiki-fill-agents.ts inventory                                                                                                         | run                                                                                                     | status`→`publish-wiki-proposals.ts plan             | apply`                                                                                                                | `status` et `plan` sont en lecture seule | Local ou vps (codex) → API wiki-admin                             | `wiki-fill-agents.ts status` puis inventaire ciblé techniques `name_ja` et variantes |
+| 4   | News                          | `bot.db_news` 2 013 lignes (le chiffre « 2 064 » ne se retrouve pas en PG). Dernier fetch le 2026-09-19. 99 % viennent de salons Discord                                                                                                                       | `apps/bot/src/events/NewsScan.ts` (temps réel) ; `db:sync-news`                                                                                        | `sync-news` : aucun                                                                                     | Bot prod (évènement)                                | Diagnostiquer pourquoi NewsScan n'écrit plus depuis le 19/09                                                          |
+| 5   | Crawl sources externes        | 59 248 `external_source_records` (dernier fetch 2026-10-15), 0 `canonical_eligible`. Ingest canon : dernier run 2026-09-20                                                                                                                                     | `pipeline crawl <cible> --dry-run` ; `bun scripts/ops/publish-source.ts … [--apply]`                                                                   | Oui (`--dry-run`, `plan.json` sans `--apply`)                                                           | vps                                                 | `pipeline crawl kanzenshuu --dry-run` avec `config/soshuhen-reference-crawl.json`                                     |
+| 6   | Databooks                     | 482 notices, 428 visibles (407 databooks au sens strict). 17 378 pages, dont 17 093 avec scan. OCR 16 409 ; relues (`verifiee`) 1 082 (6,6 %) ; FR 11 351. 11 notices visibles sans aucune page                                                                | `bun apps/site/scripts/databooks.ts etat                                                                                                               | sante                                                                                                   | verifie --json`; API`/api/admin/databooks/campaign` | `etat`, `sante` et `verifie` sont en lecture seule                                                                    | Prod tmux (DB)                           | Masquer ou compléter les 11 notices vides ; campagne de relecture |
+| 7   | Manga                         | 53 304 planches déclarées, toutes présentes sur R2. 12 593 transcrites (DB 8 238, DBS 4 355). 0 transcrite pour DBJP, DBKZ, anime comics, films, ARALE, SOSH                                                                                                   | `export-manga-ocr.ts --plan` → `run-manga-ocr.ts --dry-run` → `deposit-manga-transcriptions.ts [--appliquer]`                                          | Oui sur les trois                                                                                       | Local GPU → prod                                    | Ce qui bloque : l'OCR et la politique d'édition, plus les scans. Décider des séries prioritaires                      |
+| 8   | SVG Toriyama                  | Pas de métrique de couverture : la vectorisation automatique est interdite. 51 SVG de techniques référencés en base sont absents de R2 (servis par le site seulement)                                                                                          | `plugin/skills/toriyama-svg/scripts/*.ts` ; `bun scripts/design/build-toriyama-catalog.ts --check`                                                     | `--check`                                                                                               | Local                                               | Publier les 51 SVG sur R2 (ligne 13)                                                                                  |
+| 9   | Épisodes                      | 878 fiches visibles : 878 avec synopsis FR, 830 avec image, 52 avec lecteurs, 878 avec `availability`, 684 avec `official_source_url`. Sous-titres : JA seulement, 816 épisodes (814 Jimaku), 0 FR/EN                                                          | `bun apps/bot/scripts/ingest/jimaku-subtitles.ts [--appliquer]` ; `scripts/ops/crunchyroll-sync.ts [--apply]` ; `complete-episode.ts --id N [--apply]` | Oui (simulation par défaut)                                                                             | vps ou prod tmux                                    | Combler les 48 SDBH et les 2 Beerus en métadonnées et sous-titres JA                                                  |
+| 10  | Chronologie                   | 32 `db_timeline_events` (0 article), 92 `narrative_events`, 4 frises. RAG : 708 `timeline_episode`                                                                                                                                                             | Curation `/admin/chronologie` ; API `/api/timeline`                                                                                                    | Aucun builder                                                                                           | ,                                                   | Rédiger les 32 articles d'évènements avec sources                                                                     |
+| 11  | Index RAG                     | 257 436 docs visibles vectorisés e5-small (384 dimensions), plus 59 995 tombstones. Dernière synchronisation le 2026-10-20. News et frames ne sont pas indexées                                                                                                | `bun packages/pipeline/scripts/rag-sync-aphrody.ts --toutes [--appliquer]`                                                                             | Oui (sans `--appliquer`)                                                                                | Prod tmux, hors conteneur bot                       | Lancer le dry-run `--toutes` avec rapport, puis `--appliquer` en tmux                                                 |
+| 12  | Frames                        | 830 / 878 épisodes avec frames (6 736 frames ; moyenne 8, entre 7 et 41). 41 PNG de l'épisode 876 absents de R2. 0 frame pour les 48 SDBH                                                                                                                      | `bun apps/bot/scripts/build-frame-catalog.ts [--check]` ; `scripts/ops/index-frames.ts --dry-run`                                                      | Oui (`--check`, `--dry-run`)                                                                            | vps (téléchargement + ffmpeg)                       | Recaler le catalogue (826 épisodes contre 830 en base) avec `--check`                                                 |
+| 13  | CDN R2                        | Inventaire de 246 420 chemins. Références en base : databooks 17 084/17 084, manga 53 304/53 304, sous-titres 2 738/2 738, personnages 683/683. Manquants : 51 SVG de techniques, 41 frames de l'ép. 876, couverture 486 (introuvable partout)                 | `deploy/cloudflare/cli/transfer.ts status` ; `publish-catalog.ts --options F` ; `scripts/ops/audit-cdn-gaps.ts`                                        | Oui (sans `--apply`)                                                                                    | Prod (origine 9077, `shenron-cdn-origin` actif)     | Plan `publish-catalog.ts` pour les 92 objets manquants                                                                |
+| 14  | Outils média                  | Bun Video épinglé `1.4.4-video.1`. Remotion : libellés seulement. Pas de service d'images autonome (`/_next/image`)                                                                                                                                            | `scripts/video/render.ts` ; `packages/images` (bibliothèque)                                                                                           | Sans objet                                                                                              | Local ou vps                                        | Aucune                                                                                                                |
+| 15  | Fournisseurs IA               | Prod : `shenron-chat-v2` local, puis gemma4-e2b, puis gemini-web (repli désactivé en prod), e5 local. Pas de clé Gemini API (mode web par cookies). Anthropic par HTTP direct (`ANTHROPIC_API_KEY`), pas de SDK Agent. `locally-uncensored` absent de `C:\src` | la configuration du modèle de chat ; `packages/pipeline/src/ai/config.ts`                                                                              | ,                                                                                                       | ,                                                   | Décider quels fournisseurs payants utiliser pour 1, 2 et 3                                                            |
 
 ## 2. Détail par chaîne
 
 ### 1. OCR (databooks et planches manga)
 
 Couverture. Voir aussi les lignes 6 et 7.
+
 - Databooks.
   - 17 378 pages déclarées, dont 17 093 avec image.
   - 16 409 pages ont un texte OCR, dont 11 425 de plus de 200 caractères.
@@ -75,6 +78,7 @@ Couverture. Voir aussi les lignes 6 et 7.
 - Manga. 12 593 planches dans `bot.db_manga_pages`. 5 544 ont du japonais (`has_ja=1`) ; la langue principale est `fr` sur 12 528. `bot.media_chapters.ocr_status` vaut `unprocessed` sur les 561 chapitres : aucun code n'écrit ce champ.
 
 Commandes.
+
 - Sonde en lecture seule : `aphrody ocr dbfr survey --json --top 50`, ou le CLI natif `shenron dbfr survey --include-hidden --top 20` (`crates/shenron-cli/src/ocr_dbfr.rs:59`).
 - Export des lots databooks : `bun apps/site/scripts/export-databooks-ocr.ts --sortie <dir> --plan`. Avec `--plan`, rien n'est écrit.
 - Boucle OCR databooks : `bun scripts/ops/gpu-continuous-ocr.ts --limite-lots N`.
@@ -89,6 +93,7 @@ Commandes.
 - Second avis : `GET /api/databooks/:id/ocr-review?page=N` vers `shenron-relecture-ocr.service` (127.0.0.1:8791). Ce service est hors ligne en prod.
 
 Hôte et ressources.
+
 - Inférence : poste Windows local (RTX 4070), avec `aphrody` compilé avec la feature `ocr`.
 - Dépôt : par l'API prod.
 - Prod n'a pas de GPU.
@@ -99,10 +104,12 @@ Coûts. PP-OCR est local et gratuit. La relecture Gemini web reste dans le quota
 Dépendances. L'OCR alimente 2, puis 6, puis 11.
 
 Risques.
+
 - Provenance : `run-manga-ocr.ts` estampille toujours `engine:"hybrid-luna-ppocr"`, `model:"gpt-5.6-luna"`, quel que soit le modèle réel (`packages/pipeline/src/manga-ocr.ts:321,376`). C'est à corriger avant tout lot massif.
 - Contrainte éditoriale : les scans, le manga et Toriyama priment ; Fandom est interdit.
 
 Prochaine étape.
+
 1. `export-databooks-ocr.ts --plan` sur les livres visibles, pour cibler les 683 pages restantes.
 2. Corriger l'estampille de provenance manga.
 3. Lancer un lot GPU unique `gpu-continuous-ocr.ts --limite-lots 1` dans une session surveillée.
@@ -110,6 +117,7 @@ Prochaine étape.
 ### 2. Traduction ja→fr/en et lexique partagé
 
 Couverture.
+
 - 11 351 pages databook ont `text_fr`. Attribution (`text_fr_by`) :
   - `shenron-massive-vps` : 8 559
   - `machine:sonnet` : 1 110
@@ -126,6 +134,7 @@ Couverture.
 - Lexique `data/lexicon/terms.json` : 772 termes, tous en `ja` et `fr`, 47 en `en`, 11 en `romaji`. Répartition : 645 personnages, 32 techniques (le wiki en compte 597), 35 lieux.
 
 Commandes.
+
 - `bun apps/site/scripts/traduction-boucle.ts [--lots N --taille N --databook ID --moteur auto|aphrody|aphrody-translate|agy|google|nllb --modele Xenova/nllb-200-distilled-600M --shards K --shard-index i] [--appliquer]`
 - Ou la même chose via `bun run --filter @aphrody/shenron-pipeline pipeline translation …`
 - Statut : `bun scripts/ops/translate-databooks-corpus.ts --statut`
@@ -144,6 +153,7 @@ Dépendances. Il faut l'OCR (1). Le lexique dépend du wiki (3) : seules 62 tech
 Risques. Les traductions machine doivent rester signées `machine:<moteur>`. Il n'y a pas de gel actif.
 
 Prochaine étape.
+
 1. Compléter `name_ja` des techniques (ligne 3) et le lexique EN.
 2. Lancer `traduction-boucle.ts --lots 1 --taille 20 --moteur nllb` en simulation pour mesurer.
 3. Puis `--appliquer` en tmux, avec des shards.
@@ -152,21 +162,23 @@ Prochaine étape.
 
 Couverture (lignes visibles) :
 
-| Catégorie | Visibles / total | Image | `name_ja` | Article | Sources | Description |
-|---|---|---|---|---|---|---|
-| Personnages | 683 / 1 324 | 683 | 679 | 683 | 666 | 683 |
-| Techniques | 597 / 828 | 596 | 62 | 569 | 554 | 562 |
-| Transformations | 28 / 33 | 28 |, | 26 | 27 | 0 (colonne absente) |
-| Lieux | 20 / 35 | 17 | 20 | 20 | 20 | 20 |
-| Planètes | 61 / 62 | 61 | 61 | 61 | 61 | 61 |
-| Variantes | 103 / 468 | 21 | 14 | 40 | 86 (evidence) | 103 |
+| Catégorie       | Visibles / total | Image | `name_ja` | Article | Sources       | Description         |
+| --------------- | ---------------- | ----- | --------- | ------- | ------------- | ------------------- |
+| Personnages     | 683 / 1 324      | 683   | 679       | 683     | 666           | 683                 |
+| Techniques      | 597 / 828        | 596   | 62        | 569     | 554           | 562                 |
+| Transformations | 28 / 33          | 28    | ,         | 26      | 27            | 0 (colonne absente) |
+| Lieux           | 20 / 35          | 17    | 20        | 20      | 20            | 20                  |
+| Planètes        | 61 / 62          | 61    | 61        | 61      | 61            | 61                  |
+| Variantes       | 103 / 468        | 21    | 14        | 40      | 86 (evidence) | 103                 |
 
 Notes sur la couverture :
+
 - Les 365 variantes masquées sont générées (`origin` vaut `ocr-manga` et/ou `synopsis-episodes`) et attendent une relecture.
 - `wiki_contributions` : 85 acceptées, 30 remplacées, aucune en attente.
 - Images réellement absentes du CDN : 51 SVG de techniques. Un personnage a un chemin sans extension (`assets/dbz/characters/Kaio-shin`), qui renvoie 404.
 
 Commandes.
+
 - `bun scripts/ops/wiki-fill-agents.ts status|inventory|run|export --db <var/reports/…/queue.sqlite> [--evidence] [--smoke | --campaign --limit N] [--concurrency 4]`
   - `status` est en lecture seule.
   - `inventory` exige `SHENRON_API_ADMIN_TOKEN`.
@@ -184,11 +196,13 @@ Coûts. Abonnement codex (`gpt-5.6-luna`). En option : `ANTHROPIC_API_KEY` (`cla
 Dépendances. Le wiki alimente 2 (lexique), 10 et 11.
 
 Risques.
+
 - Provenance : uniquement des sources officielles, le manga et les databooks.
 - Suppression : toujours logique (`visible=false`), avec `wiki_revisions`.
 - Publication : aucune page publique vide.
 
 Prochaine étape.
+
 1. `wiki-fill-agents.ts status`.
 2. Inventaire ciblé de `name_ja` pour les techniques (535 manquants), avec preuves tirées des databooks par `scripts/ops/wiki-corpus-enricher.ts`.
 3. File de relecture des 365 variantes masquées.
@@ -196,14 +210,16 @@ Prochaine étape.
 ### 4. Suivi des news
 
 Couverture.
+
 - `bot.db_news` compte 2 013 lignes. Les sources sont 21 salons Discord, plus `dbo-fr` (5), `dragon-ball-official-(fr)` (1) et `bandai-namco-news` (1).
 - Dernier `published_at` et dernier `fetched_at` : 2026-09-19, soit environ 47 jours sans nouvelle entrée.
 - Le chiffre de 2 064 n'apparaît pas en PostgreSQL ; il vient peut-être du SQLite du bot.
 - Les news ne sont pas dans l'index RAG.
 
 Commandes.
+
 - Temps réel : `apps/bot/src/events/NewsScan.ts`, qui capture les salons d'annonce Discord (persona `grandPretre`) dans le bot prod.
-- `bun --filter @aphrody/shenron-bot db:sync-news` → `scripts/sync-news.ts` : prend les 5 dernières URL du sitemap officiel FR. Pas de dry-run.
+- `bun --filter @aphrody/shenron-bot db:sync-news` → `apps/bot/scripts/sync-news.ts` : prend les 5 dernières URL du sitemap officiel FR. Pas de dry-run.
 - `NewsService.syncFromSitemap` n'est qu'un stub (`apps/bot/src/services/NewsService.ts:146`).
 
 Cadence. Aucune hors des évènements Discord : pas de cron ni de timer.
@@ -215,22 +231,26 @@ Coûts. Aucun.
 Risques. Les excerpts reproduisent des annonces tierces : garder la citation courte et la source.
 
 Prochaine étape.
+
 1. Vérifier en lecture les journaux du bot (`docker logs shenron-bot`, événements NewsScan) et le réglage `channel.announce`.
 2. Ajouter une cadence au `cron-registry` (développement, hors audit).
 
 ### 5. Crawl de sources externes (Soshuhen, publish-source)
 
 Couverture.
+
 - `public.external_source_records` compte 59 248 lignes : media 31 592, reference 18 420, archive 8 692, statistics 207, community 199, official 104, publisher 34.
 - Dernier fetch le 2026-10-15. 0 ligne `canonical_eligible`.
 - `canon_ingest_runs` : derniers runs le 2026-09-20 (manga 523 runs, databooks 853, aphrody 853), sans erreur.
 - `bot.db_sources` compte 18 sources sous licence.
 
 Configuration.
+
 - `config/soshuhen-crawl.json` : pages éditeur Shueisha pour les ISBN 978-4-08-111165… à 111182. Limites : robots respectés, 2 s par hôte, concurrence 1, profondeur 2, 64 pages.
 - `config/soshuhen-reference-crawl.json` : articles Kanzenshuu. Limites : 3 s, concurrence 1, profondeur 1, 96 pages.
 
 Commandes.
+
 - `bun run --filter @aphrody/shenron-pipeline pipeline crawl <dragonballcn|kanzenshuu|official|databooks|guides|custom|universal> [URL] --dry-run [--max-depth --max-requests --out]`. La cible `custom` refuse Fandom.
 - `pipeline unify --dry-run` : réindexe les exports existants sans recrawler.
 - Skill publish-source : `bun scripts/ops/publish-source.ts --source URL --target https://dragonballfr.com/publications/<slug> --job /abs/private [--apply]`.
@@ -252,6 +272,7 @@ Prochaine étape. `pipeline crawl kanzenshuu --dry-run` avec la config de réfé
 ### 6. Databooks
 
 Couverture.
+
 - 482 notices, 428 visibles. Par type :
   - databook : 407 (355 visibles)
   - guidebook : 52
@@ -259,18 +280,19 @@ Couverture.
   - interview : 7
 - Pages et avancement par type :
 
-| Type | Livres avec pages | Pages | OCR | FR | Relues |
-|---|---|---|---|---|---|
-| databook | 405 | 14 432 | 13 976 | 9 850 | 1 050 |
-| guidebook | 52 | 1 866 | 1 863 | 1 115 | 0 |
-| artbook | 11 | 1 061 | 557 | 382 | 23 |
-| interview | 3 | 19 | 13 | 4 | 9 |
+| Type      | Livres avec pages | Pages  | OCR    | FR    | Relues |
+| --------- | ----------------- | ------ | ------ | ----- | ------ |
+| databook  | 405               | 14 432 | 13 976 | 9 850 | 1 050  |
+| guidebook | 52                | 1 866  | 1 863  | 1 115 | 0      |
+| artbook   | 11                | 1 061  | 557    | 382   | 23     |
+| interview | 3                 | 19     | 13     | 4     | 9      |
 
 - Entonnoir global : 17 378 pages déclarées → 17 093 scannées → 16 409 OCR → 1 082 relues → publiées (visibles) 16 055.
 - Images : 17 084 locales (`./assets/wiki/databooks/…`), toutes présentes sur R2 ; 9 externes.
 - 11 notices visibles sans aucune page, contraire à la directive « aucune page publique vide » : IDs 8, 14, 39, 40, 41, 42, 43, 55, 56, 57 et 486. La couverture de la 486 (`/assets/databooks/covers/486.webp`) renvoie 404 partout.
 
 Vue admin (Chrome, session du propriétaire, lecture seule) : `https://dragonballfr.com/api/admin/databooks/campaign`, consultée le 2026-11-05.
+
 - Chiffres concordants avec PostgreSQL : 482 ouvrages, 17 378 planches, 16 409 transcrites, 11 351 traduites.
 - 414 ouvrages restent en attente, 5 058 planches restent à traduire et 3 424 982 signes JA restent à traiter.
 - Plusieurs ouvrages sont marqués `sourceQuality: "to-retranscribe"`, avec une majorité de planches fautives :
@@ -284,6 +306,7 @@ Vue admin (Chrome, session du propriétaire, lecture seule) : `https://dragonbal
 - `https://dragonballfr.com/admin/dashboard` n'affiche, en texte, que l'état de l'API du bot.
 
 Commandes.
+
 - `bun apps/site/scripts/databooks.ts etat|sante|verifie --json` : lecture seule.
 - `scripts/ops/batch-databooks-ocr.ts --statut` : lecture seule.
 - API admin `GET /api/admin/databooks/status|campaign`.
@@ -297,40 +320,43 @@ Dépendances. Les databooks consomment 1 et 2, et alimentent 11.
 Risques. Fichier de gel (aujourd'hui `false`). Relecture humaine (`verifiee`), qu'on ne peut pas automatiser sans décision du propriétaire.
 
 Prochaine étape.
+
 1. Décider, pour les 11 notices vides : masquer (`visible=false` par API, avec révision) ou déposer les scans.
 2. Lancer une campagne de relecture sur les databooks les plus consultés.
 
 ### 7. Manga (tomes, chapitres, planches)
 
 Couverture.
+
 - 329 volumes catalogués et 942 chapitres en base.
 - `GET /api/manga` déclare 53 304 planches (somme de `db_manga_chapters.pages` sur les volumes et chapitres visibles).
 - Les 53 304 sont toutes dans l'inventaire R2 : contrôle exhaustif sur l'inventaire, plus 300 HEAD → 200.
 - Planches et transcription par série :
 
-| Série | Planches | Transcrites |
-|---|---|---|
-| DB (régulier + Full Color) | 15 919 | 8 238 |
-| DBS | 8 703 | 4 355 |
-| DBJP | 8 031 | 0 |
-| DBKZ | 8 202 | 0 |
-| DBZ_ANIME_COMICS | 5 604 | 0 |
-| ARALE | 3 342 | 0 |
-| DB_MOVIES | 3 070 | 0 |
-| SOSH | 381 | 0 |
-| DB_GAIDEN_YAMCHA | 32 | 0 |
-| DB_SD | 20 | 0 |
+| Série                      | Planches | Transcrites |
+| -------------------------- | -------- | ----------- |
+| DB (régulier + Full Color) | 15 919   | 8 238       |
+| DBS                        | 8 703    | 4 355       |
+| DBJP                       | 8 031    | 0           |
+| DBKZ                       | 8 202    | 0           |
+| DBZ_ANIME_COMICS           | 5 604    | 0           |
+| ARALE                      | 3 342    | 0           |
+| DB_MOVIES                  | 3 070    | 0           |
+| SOSH                       | 381      | 0           |
+| DB_GAIDEN_YAMCHA           | 32       | 0           |
+| DB_SD                      | 20       | 0           |
 
 - `media_editions` : seules les éditions FR tankobon (42 volumes, 7 965 pages) et FR Full Color (42 volumes, 7 935 pages) sont `self_hosted`. Les éditions JA sont `metadata_only`.
 - Le RAG contient 10 030 documents `manga_page`, contre 12 593 planches transcrites.
 
 Ce qui bloque le reste.
+
 1. L'OCR n'a jamais été lancé sur les séries JA ou dérivées.
 2. La politique d'édition : DBKZ et DBJP reprennent le récit de DB ; leur transcription est redondante en texte, et leur `scan_policy` est `metadata_only` pour JA.
 3. Le dépôt passe par `deposit-manga-transcriptions.ts`, dont la provenance est mal estampillée (voir ligne 1).
 4. Le pool de sources (`manga-source-pool.ts`) : 0 worker actif et 51 544 tâches en attente, selon REPRISE.
 
-Commandes. Voir ligne 1, plus `scripts/ops/manga-publication-worker.ts` et `docs/operations/manga-publication-worker.md`.
+Commandes. Voir ligne 1, plus `scripts/ops/manga-publication-worker.ts`.
 
 Hôte. Local GPU pour l'OCR, prod pour le dépôt.
 
@@ -343,20 +369,21 @@ Prochaine étape. Le propriétaire choisit l'ordre des séries. Proposition : DB
 ### 8. Extraction SVG (Toriyama)
 
 État.
-- Le dépôt interdit la vectorisation automatique de planches (« c'est du décalque », `docs/architecture/pipeline-svg.md:28-37`, `plugin/skills/toriyama-svg/SKILL.md:31-33`). Les SVG sont construits à la main à partir de mesures.
+
+- Le dépôt interdit la vectorisation automatique de planches (« c'est du décalque », `plugin/skills/toriyama-svg/SKILL.md:31-33`). Les SVG sont construits à la main à partir de mesures.
 - Un seul vrai traceur existe, limité au logo du site : `scripts/design/trace-dragonballfr-logo.ts`.
 - Constat CDN : 51 fichiers `/assets/techniques/*.svg` référencés par `bot.db_techniques.image` renvoient 200 depuis le site et 404 depuis `cdn.dragonballfr.com`. Ils sont absents de l'inventaire R2.
 
 Commandes.
+
 - `bun plugin/skills/toriyama-svg/scripts/mesurer.ts img`
 - `rendu.ts x.svg --compare ref.png`
 - `icones.ts`
 - `bun scripts/design/build-toriyama-catalog.ts --check`
-- `bun scripts/design/wiki-mascots/index.ts --check`
 
 Hôte. Local (Bun.WebView ou resvg).
 
-Risques. Droit d'auteur (pas de décalque) et charte visuelle (`docs/products/wiki-art-direction.md`).
+Risques. Droit d'auteur (pas de décalque) et charte visuelle.
 
 Prochaine étape. Publier les 51 SVG sur R2 avec la ligne 13. Les nouveaux SVG ne se font qu'à la demande, par le skill.
 
@@ -364,17 +391,17 @@ Prochaine étape. Publier les 51 SVG sur R2 avec la ligne 13. Les nouveaux SVG n
 
 Couverture. 878 fiches visibles :
 
-| Série | Fiches |
-|---|---|
-| DB | 153 |
-| DBZ | 291 |
-| DBGT | 64 |
-| DBZ_KAI | 97 |
-| DBZ_KAI_FINAL | 70 |
-| DBS | 131 |
-| DB_DAIMA | 20 |
-| SDBH | 48 |
-| DBS_BEERUS | 4 |
+| Série         | Fiches |
+| ------------- | ------ |
+| DB            | 153    |
+| DBZ           | 291    |
+| DBGT          | 64     |
+| DBZ_KAI       | 97     |
+| DBZ_KAI_FINAL | 70     |
+| DBS           | 131    |
+| DB_DAIMA      | 20     |
+| SDBH          | 48     |
+| DBS_BEERUS    | 4      |
 
 - 878 avec synopsis FR, 823 avec synopsis original, 830 avec image (les 48 SDBH n'en ont pas en local).
 - Lecteurs : 52 fiches seulement (SDBH et Beerus) ; les autres passent par `video_url` et `streams`.
@@ -383,6 +410,7 @@ Couverture. 878 fiches visibles :
 - La plage « 826 à 876 » correspond à l'ancienne réplique SQLite (max id 826) et aux épisodes ajoutés après en PG (875-877 Beerus).
 
 Commandes.
+
 - `bun apps/bot/scripts/ingest/jimaku-subtitles.ts --series S [--entry N] [--limite N] [--appliquer]` : simulation par défaut. `JIMAKU_API_KEY` est optionnelle.
 - `bun scripts/ops/crunchyroll-sync.ts --series DBS_BEERUS --locale fr-FR [--apply]` : métadonnées seulement. Identifiants : `BUN_VIDEO_CRUNCHYROLL_ACCESS_TOKEN`, ou `CRUNCHYROLL_EMAIL`, `CRUNCHYROLL_PASSWORD` et `BUN_VIDEO_CRUNCHYROLL_BASIC_AUTHORIZATION`. Sans identifiants, il sort en code 0.
 - `bun scripts/ops/complete-episode.ts --id N --dir <stage> [--frames 36] [--subtitle-vtt …] [--synopsis-fr …] [--apply]` : sans `--apply`, il produit `plan.json`.
@@ -401,11 +429,13 @@ Prochaine étape. `jimaku-subtitles.ts --series SDBH` en simulation, puis la mê
 ### 10. Chronologie
 
 Couverture.
+
 - `bot.db_timeline_events` : 32 évènements, tous visibles, canon et sourcés (`source_ref`), mais aucun article.
 - `narrative_timelines` : 4 frises (manga, anime, film, xenoverse). `narrative_events` : 92.
 - RAG : 708 `timeline_episode`, 16 `timeline_manga`, 9 `timeline_movie`, 32 `timeline_event`.
 
 Commandes.
+
 - Aucun builder. Le graphe vient de la migration `0019_narrative_graph_and_contributors.sql`, puis de la curation dans `/admin/chronologie`.
 - API : `/api/timeline`, `/api/wiki/timelines`, et MCP `dragonball.timeline`.
 
@@ -416,24 +446,26 @@ Prochaine étape. Rédiger les articles des 32 évènements via l'agent wiki, en
 ### 11. Index RAG
 
 Couverture.
+
 - Index servi : `shenron_compute.aphrody_rag_documents` (317 431 lignes) et `aphrody_shenron_vectors` (257 436 vecteurs `Xenova/multilingual-e5-small`, créés entre le 2026-10-07 et le 2026-10-20).
 - Les 59 995 documents sans vecteur sont tous `visible=false` et sans génération ; ce sont des résidus. Leur répartition : databook 33 738, manga_page 10 030, canon 7 512, character_section 1 819, etc.
 - Corpus visibles :
 
-| Corpus | Documents |
-|---|---|
-| wiki_pages | 181 636 |
-| databooks | 46 270 |
-| manga | 10 030 |
-| canon | 6 905 |
-| kz | 1 925 |
-| db_episodes | 1 666 |
-| db_characters | 1 311 |
+| Corpus        | Documents |
+| ------------- | --------- |
+| wiki_pages    | 181 636   |
+| databooks     | 46 270    |
+| manga         | 10 030    |
+| canon         | 6 905     |
+| kz            | 1 925     |
+| db_episodes   | 1 666     |
+| db_characters | 1 311     |
 
 - Le MCP `data_coverage` rapporte `model:"aphrody"`, `dim:null`, `builtAt:null` : les métadonnées d'index sont mal renseignées.
 - Absents de l'index : news, frames, planches 10 031 à 12 593, et toutes les révisions postérieures au 2026-10-20.
 
 Commandes.
+
 - Dry-run, sans `--appliquer` : `bun packages/pipeline/scripts/rag-sync-aphrody.ts --toutes --report=<abs>/rag-dry.json`
 - Écriture : `… --toutes --appliquer`
 - Incrémental : `rag-resync-entites.ts <source> --appliquer`
@@ -448,6 +480,7 @@ Coûts. Aucun (local). Temps CPU : par lots de 16, pour environ 13 000 documents
 Dépendances. L'index dépend de tout le reste ; il passe en dernier dans chaque vague.
 
 Risques.
+
 - Ne pas mélanger les espaces d'embedding (le script refuse).
 - La documentation cite le schéma `aphrody_ai`, alors que la prod utilise `shenron_compute` : vérifier le DSN avant `--appliquer`.
 
@@ -456,6 +489,7 @@ Prochaine étape. Dry-run `--toutes` avec rapport, puis `--appliquer` en tmux, p
 ### 12. Frames par épisode
 
 Couverture.
+
 - 830 / 878 épisodes ont des frames : 6 736 au total, de 7 à 41 par épisode, dont 6 600 en `./assets/ext/db_episodes_frames/<SERIE>/epNNN/frame-NNNNN.webp` (source ffmpeg).
 - 788 aperçus de scène.
 - Le catalogue `apps/bot/assets/render/frame-catalog.json` couvre 826 épisodes et 6 600 frames.
@@ -463,6 +497,7 @@ Couverture.
 - 41 PNG de l'épisode 876 (`/assets/wiki/episode-876/*.png`) sont servis par le site mais absents de R2.
 
 Commandes.
+
 - `cd apps/bot && bun scripts/build-frame-catalog.ts --check` (déterminisme). Options : `--source db|api`, `--nice`, `--offline`.
 - `bun scripts/ops/index-frames.ts --dry-run [--series S --limit 10 --fps 1]` : index ColorLayout. Il dépend de `/api/hls/<id>/download`, qui renvoie 502 ou 404 sur les flux expirés. Garde-fou : 4 Gio libres.
 - Nouveaux épisodes : `complete-episode.ts --frames 36`.
@@ -476,6 +511,7 @@ Prochaine étape. Lancer `build-frame-catalog.ts --check` pour recaler 826 → 8
 ### 13. CDN (R2 `shenron-cdn`, Worker, origine)
 
 État.
+
 - `shenron-cdn-origin.service` est actif sur prod (127.0.0.1:9077). Il exécute `bun /srv/shenron/config/cloudflare/cli/cdn-origin.mjs origin-cdn.json`.
 - Inventaire : `/srv/shenron/data/cdn/inventory-9a8ecae6371f.json`, daté du 2026-11-01, 246 420 entrées et 154 344 objets uniques.
 - Le catalogue public `https://cdn.dragonballfr.com/catalog/assets/index.json` est plus ancien : 2026-10-15, 112 718 fichiers, 54 Go.
@@ -483,24 +519,25 @@ Prochaine étape. Lancer `build-frame-catalog.ts --check` pour recaler 826 → 8
 
 Couverture R2 (comparaison exhaustive références en base / inventaire) :
 
-| Référence | Présentes | Manquantes |
-|---|---|---|
-| Pages databook | 17 084 / 17 084 | 0 |
-| Planches manga | 53 304 / 53 304 | 0 |
-| Assets de pages manga | 15 900 / 15 900 | 0 |
-| Sous-titres | 2 738 / 2 738 | 0 |
-| Aperçus épisode | 788 / 788 | 0 |
-| Images épisode | 830 / 830 | 0 |
-| Personnages | 683 / 683 | 0 |
-| Planètes, lieux, transformations, variantes | toutes | 0 |
-| Images de techniques | 545 / 596 | 51 SVG |
-| Frames | 6 695 / 6 736 | 41 (ép. 876) |
-| Couvertures databook | 480 / 481 | 486 (absente partout) |
+| Référence                                   | Présentes       | Manquantes            |
+| ------------------------------------------- | --------------- | --------------------- |
+| Pages databook                              | 17 084 / 17 084 | 0                     |
+| Planches manga                              | 53 304 / 53 304 | 0                     |
+| Assets de pages manga                       | 15 900 / 15 900 | 0                     |
+| Sous-titres                                 | 2 738 / 2 738   | 0                     |
+| Aperçus épisode                             | 788 / 788       | 0                     |
+| Images épisode                              | 830 / 830       | 0                     |
+| Personnages                                 | 683 / 683       | 0                     |
+| Planètes, lieux, transformations, variantes | toutes          | 0                     |
+| Images de techniques                        | 545 / 596       | 51 SVG                |
+| Frames                                      | 6 695 / 6 736   | 41 (ép. 876)          |
+| Couvertures databook                        | 480 / 481       | 486 (absente partout) |
 
 - Échantillon HEAD de 1 300 URL : 1 291 en 200, 9 en 404 (8 SVG de techniques et `Kaio-shin` sans extension).
 - `bot.db_assets` (1 018 lignes) est un registre de provenance aux chemins relatifs non alignés sur les chemins publics ; il n'est pas comparable directement.
 
 Commandes.
+
 - `bun deploy/cloudflare/cli/transfer.ts status --manifest … --objects … --state …` : hors ligne, en lecture seule.
 - `bun deploy/cloudflare/cli/publish-catalog.ts --options F` : plan. `--apply --plan-sha256 H` écrit.
 - `cloudflare-ops.ts status|r2|worker` : lecture seule sans `--apply`.
@@ -513,10 +550,12 @@ Hôte. Prod.
 Coûts. R2 : stockage d'environ 54 Go et plus, et opérations de classe A. Le quota du Worker a déjà été atteint une fois (« repli quota Worker 1027 », MEMORY).
 
 Risques.
+
 - Ne jamais modifier une release scellée.
 - Il y a 60 sauvegardes `origin-cdn.json.*.bak` dans `/srv/shenron/config/cloudflare` : à nettoyer sur prod après sauvegarde.
 
 Prochaine étape.
+
 1. Plan `publish-catalog.ts` pour les 92 objets manquants (51 SVG, 41 PNG), sources prises dans la release active.
 2. Corriger l'image `Kaio-shin`.
 3. Couverture 486 : la déposer ou la retirer.
@@ -530,7 +569,7 @@ Prochaine étape.
 
 ### 15. Fournisseurs IA et replis
 
-- Chat. `packages/config/src/chat-model.ts:39-45` définit l'ordre : `shenron-chat-v2` (Qwen3-4B Q4_K_M + LoRA), puis `gemma4-e2b`, puis `gemini-web/flash`.
+- Chat. La configuration du modèle de chat définit l'ordre : `shenron-chat-v2` (Qwen3-4B Q4_K_M + LoRA), puis `gemma4-e2b`, puis `gemini-web/flash`.
   - En prod, `SHENRON_CHAT_BACKENDS` vaut `local` uniquement (`apps/server/src/chat-model.ts:102`).
   - Sur prod : `/srv/shenron/models/{qwen3/base.gguf, adapter/shenron-chat-v2.gguf, e5, llama}`, restaurés le 2026-11-05 après la purge du 2026-11-04.
 - Embedding. e5-small local (`shenron-embed`, `APHRODY_AI_EMBED_MODEL=Xenova/multilingual-e5-small`).
@@ -546,6 +585,7 @@ Prochaine étape.
 ## 3. Ordre d'exécution proposé (vagues)
 
 Règles générales :
+
 - Un seul écrivain par chemin ou table.
 - Chaque lot commence par son dry-run et produit un rapport sous `var/reports/<date>/` (local) ou `~/reports/shenron/` (hôte).
 - Pas de build concurrent à une release en cours.
@@ -568,44 +608,44 @@ Règles générales :
 
 ### Vague 1 : réparations sans dépendance (en parallèle, sur des tables disjointes)
 
-| Hôte | Ligne | Action |
-|---|---|---|
-| Prod | 13 | Publier les 92 objets manquants sur R2 (`publish-catalog.ts` plan puis `--apply`) |
-| API admin | 6 | Masquer ou compléter les 11 databooks vides, corriger `Kaio-shin` |
-| Bot | 4 | Relancer la capture des news (réglage `channel.announce` ou correctif) |
-| vps | 9 | Sous-titres JA manquants (Jimaku `--appliquer`, SDBH et KAI_FINAL) |
+| Hôte      | Ligne | Action                                                                            |
+| --------- | ----- | --------------------------------------------------------------------------------- |
+| Prod      | 13    | Publier les 92 objets manquants sur R2 (`publish-catalog.ts` plan puis `--apply`) |
+| API admin | 6     | Masquer ou compléter les 11 databooks vides, corriger `Kaio-shin`                 |
+| Bot       | 4     | Relancer la capture des news (réglage `channel.announce` ou correctif)            |
+| vps       | 9     | Sous-titres JA manquants (Jimaku `--appliquer`, SDBH et KAI_FINAL)                |
 
 Ces quatre actions touchent R2, `db_databooks.visible`, `db_news` et `db_episodes.subtitles` : on peut les lancer en même temps.
 
 ### Vague 2 : production de texte (GPU local et CPU, en parallèle)
 
-| Hôte | Ligne | Action |
-|---|---|---|
-| Local RTX 4070 | 1 | OCR databooks : 683 pages restantes, lots bornés `--limite-lots`, dépôt par l'API |
-| Local RTX 4070, en alternance | 7 | OCR manga des séries décidées : lots `run-manga-ocr.ts`, puis dépôt `--appliquer`. Partage le GPU avec la ligne 1 : alterner, ne pas lancer en parallèle |
-| Local ou vps (codex) | 3 | `wiki-fill-agents` sur `name_ja` des techniques, puis relecture des variantes ; publication par `publish-wiki-proposals.ts` |
-| Local | 2 | Enrichir le lexique (`data/lexicon/terms.json`, `lexicon.ts --check`) à partir des `name_ja` validés |
+| Hôte                          | Ligne | Action                                                                                                                                                   |
+| ----------------------------- | ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Local RTX 4070                | 1     | OCR databooks : 683 pages restantes, lots bornés `--limite-lots`, dépôt par l'API                                                                        |
+| Local RTX 4070, en alternance | 7     | OCR manga des séries décidées : lots `run-manga-ocr.ts`, puis dépôt `--appliquer`. Partage le GPU avec la ligne 1 : alterner, ne pas lancer en parallèle |
+| Local ou vps (codex)          | 3     | `wiki-fill-agents` sur `name_ja` des techniques, puis relecture des variantes ; publication par `publish-wiki-proposals.ts`                              |
+| Local                         | 2     | Enrichir le lexique (`data/lexicon/terms.json`, `lexicon.ts --check`) à partir des `name_ja` validés                                                     |
 
 Les lignes 1 et 3 peuvent tourner en même temps (`db_databooks` contre les tables wiki).
 
 ### Vague 3 : traduction et dérivés (dépendent de la vague 2)
 
-| Hôte | Ligne | Action |
-|---|---|---|
-| Prod tmux ou vps (CPU) | 2 | `traduction-boucle.ts --appliquer` en shards (NLLB) sur les 4 779 pages, avec Gemini web en local pour la relecture si accordé |
-| vps | 12 | Frames manquantes (`index-frames`, `complete-episode`) pour les épisodes à source autorisée |
-| Local ou vps | 10 | Articles des 32 évènements de chronologie (agent wiki, modération) |
-| Prod | 5 | `publish-source.ts --apply` des sources validées en vague 0 |
+| Hôte                   | Ligne | Action                                                                                                                         |
+| ---------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------ |
+| Prod tmux ou vps (CPU) | 2     | `traduction-boucle.ts --appliquer` en shards (NLLB) sur les 4 779 pages, avec Gemini web en local pour la relecture si accordé |
+| vps                    | 12    | Frames manquantes (`index-frames`, `complete-episode`) pour les épisodes à source autorisée                                    |
+| Local ou vps           | 10    | Articles des 32 évènements de chronologie (agent wiki, modération)                                                             |
+| Prod                   | 5     | `publish-source.ts --apply` des sources validées en vague 0                                                                    |
 
 Les lignes 2 et 6 ne doivent jamais écrire en même temps sur le même livre : partager par `--databook`, ou sérialiser.
 
 ### Vague 4 : indexation et contrôle (en dernier, sur prod)
 
-| Hôte | Ligne | Action |
-|---|---|---|
-| Prod tmux | 11 | `rag-sync-aphrody.ts --toutes --appliquer`, puis `eval-aphrody-rag.ts --ci` |
-| Prod | 13 | Régénérer le catalogue public CDN (`public-cdn-catalog.ts`) |
-| Local |, | `audit-readers.ts --origin https://dragonballfr.com --embeds`, plus un contrôle Chrome à 1280 et 390 px |
+| Hôte      | Ligne | Action                                                                                                  |
+| --------- | ----- | ------------------------------------------------------------------------------------------------------- |
+| Prod tmux | 11    | `rag-sync-aphrody.ts --toutes --appliquer`, puis `eval-aphrody-rag.ts --ci`                             |
+| Prod      | 13    | Régénérer le catalogue public CDN (`public-cdn-catalog.ts`)                                             |
+| Local     | ,     | `audit-readers.ts --origin https://dragonballfr.com --embeds`, plus un contrôle Chrome à 1280 et 390 px |
 
 ### Chaînes hors vagues
 
@@ -616,24 +656,24 @@ Les lignes 2 et 6 ne doivent jamais écrire en même temps sur le même livre : 
 ## 4. Décisions ouvertes et identifiants à fournir
 
 1. Hébergement des pipelines. Faut-il autoriser des jobs longs (traduction NLLB, RAG, tmux) sur prod, malgré la consigne de purge du 2026-11-04 ? Sinon, quel hôte : vps à 82 % de disque, ou bunos à 11 Gio ?
-3. Séries manga à transcrire, et confirmation du droit de publier le texte intégral par série. Faut-il transcrire DBKZ et DBJP, ou les exclure comme doublons ?
-4. Relecture humaine des databooks. Seulement 1 082 pages sont relues sur 16 409. Une relecture par IA (Gemini web, sonnet) peut-elle poser `verifiee=true`, ou ce champ reste-t-il réservé aux humains ?
-5. Traduction EN. Faut-il produire `text_en` (aucun champ de stockage n'existe ; développement de schéma) ?
-6. Sous-titres FR des épisodes. Existe-t-il une source autorisée ? Sinon, on n'en publie pas.
-7. Les 11 databooks visibles sans pages : masquer, ou fournir les scans (artbooks Toriyama The World, Dragon Quest 486 et sa couverture) ?
-8. Purge des 59 995 tombstones RAG, et des 60 sauvegardes `origin-cdn.json.*.bak`.
-10. Identifiants à fournir (aucun n'est présent dans les conteneurs prod) :
-    - `SHENRON_ADMIN_TOKEN` et `SHENRON_API_ADMIN_TOKEN` (OCR, inventaire wiki, commandes admin)
-    - `SHENRON_DATABOOKS_API_TOKEN` et `DBFR_TOKEN`
-    - `SHENRON_AGENT_API_KEY`
-    - `SHENRON_A2A_TOKEN`
-    - `APHRODY_AI_HTTP_URL` et `APHRODY_AI_HTTP_TOKEN` (serveur OCR, vision)
-    - Cookies Gemini web (`~/.aphrody/cookies/gemini-web.json`)
-    - `ANTHROPIC_API_KEY` et/ou un abonnement codex (`gpt-5.6-luna`), selon les quotas accordés
-    - `JIMAKU_API_KEY` (optionnelle)
-    - Identifiants Crunchyroll (`BUN_VIDEO_CRUNCHYROLL_ACCESS_TOKEN`, ou e-mail, mot de passe et `BASIC_AUTHORIZATION`)
-    - `CLOUDFLARE_API_TOKEN` et `CLOUDFLARE_ACCOUNT_ID`, pour toute publication R2 hors de l'origine prod
-11. Budget. Plafond de dépenses Gemini, Anthropic et OpenAI pour les vagues 2 et 3, et limites R2/Worker acceptées.
+2. Séries manga à transcrire, et confirmation du droit de publier le texte intégral par série. Faut-il transcrire DBKZ et DBJP, ou les exclure comme doublons ?
+3. Relecture humaine des databooks. Seulement 1 082 pages sont relues sur 16 409. Une relecture par IA (Gemini web, sonnet) peut-elle poser `verifiee=true`, ou ce champ reste-t-il réservé aux humains ?
+4. Traduction EN. Faut-il produire `text_en` (aucun champ de stockage n'existe ; développement de schéma) ?
+5. Sous-titres FR des épisodes. Existe-t-il une source autorisée ? Sinon, on n'en publie pas.
+6. Les 11 databooks visibles sans pages : masquer, ou fournir les scans (artbooks Toriyama The World, Dragon Quest 486 et sa couverture) ?
+7. Purge des 59 995 tombstones RAG, et des 60 sauvegardes `origin-cdn.json.*.bak`.
+8. Identifiants à fournir (aucun n'est présent dans les conteneurs prod) :
+   - `SHENRON_ADMIN_TOKEN` et `SHENRON_API_ADMIN_TOKEN` (OCR, inventaire wiki, commandes admin)
+   - `SHENRON_DATABOOKS_API_TOKEN` et `DBFR_TOKEN`
+   - `SHENRON_AGENT_API_KEY`
+   - `SHENRON_A2A_TOKEN`
+   - `APHRODY_AI_HTTP_URL` et `APHRODY_AI_HTTP_TOKEN` (serveur OCR, vision)
+   - Cookies Gemini web (`~/.aphrody/cookies/gemini-web.json`)
+   - `ANTHROPIC_API_KEY` et/ou un abonnement codex (`gpt-5.6-luna`), selon les quotas accordés
+   - `JIMAKU_API_KEY` (optionnelle)
+   - Identifiants Crunchyroll (`BUN_VIDEO_CRUNCHYROLL_ACCESS_TOKEN`, ou e-mail, mot de passe et `BASIC_AUTHORIZATION`)
+   - `CLOUDFLARE_API_TOKEN` et `CLOUDFLARE_ACCOUNT_ID`, pour toute publication R2 hors de l'origine prod
+9. Budget. Plafond de dépenses Gemini, Anthropic et OpenAI pour les vagues 2 et 3, et limites R2/Worker acceptées.
 
 ## Annexe : requêtes de mesure (lecture seule, reproductibles)
 
