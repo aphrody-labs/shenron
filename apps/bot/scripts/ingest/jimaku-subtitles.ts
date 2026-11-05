@@ -94,7 +94,7 @@ import { userHome } from "@aphrody/paths";
  *   --appliquer   télécharger et écrire réellement
  *
  * Env : DATABASE_URL (Neon) requis. JIMAKU_API_KEY optionnel.
- * Lancer via systemd-run avec EnvironmentFile (cf. enrich-episode-synopsis.ts).
+ * Lancer via systemd-run avec EnvironmentFile.
  */
 import { mkdir } from "node:fs/promises";
 import { dirname, join } from "node:path";
