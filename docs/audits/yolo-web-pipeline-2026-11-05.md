@@ -1,0 +1,72 @@
+# YOLO WEB pipeline migration: inventory and status (2026-11-05)
+
+Branch `claude-yolo-web-pipeline` from `origin/main` 2e465772. Reference list: 179 tracked files match
+`bxc|aphrody[-_ ]?web` at that sha (110 at the time of the brief; the count grew with later commits).
+
+## Finding: there is no separate upstream to copy from
+
+The brief assumed Dragon Ball code living in "Aphrody Web" and "BXC" codebases. Searched:
+
+| Place | Result |
+| --- | --- |
+| `gh repo list aphrody-labs` / `yolo-rs` | no repo named aphrody-web, bxc, bxc-api or aphrody-bxc |
+| `C:\src\yolo-web` (origin/main c93ffbd3) | no Shenron or Dragon Ball code (matches are Brave test fixtures, auth/google docs); provides the replacement backend (see below) |
+| `C:\src\yolo-hub`, `yolo-ai`, `yolo`, `rosegriffon`, `FCMCP`, `migration-backups` | only memory notes, plans, env backups and unrelated code |
+| `~/.aphrody` | config, credentials, models; no BXC/Aphrody Web source |
+| `git log -S bxc` in shenron | `apps/site/src/lib/bxc.ts` deleted in 3b2c7c0e (consolidation); no source of the Rust `bxc` binary ever existed in this repo |
+
+Conclusion: the Shenron/Dragon Ball code that "lives in" BXC / Aphrody Web is the code already in this repo
+(thin wrappers over a native `aphrody web ...` CLI plus Shenron-specific scrapers). Nothing outside Shenron
+had to be copied; the work is to repoint the backend to YOLO WEB and purge the dead names.
+
+## Replacement backend (source: yolo-rs/yolo-web c93ffbd3)
+
+| yolo-web source | Shenron destination | Status |
+| --- | --- | --- |
+| `packages/web-mcp` (`/mcp`, tools browser_navigate, browser_evaluate, browser_markdown, browser_screenshot, browser_storage_state) | `packages/pipeline/src/yolo-web/client.ts` `YoloWebMcp` | done, tested |
+| `packages/web-cluster` coordinator (`GET /status`, `POST /enqueue`, `GET /results`) | `YoloWebCrawlClient`, `YoloWebBatchClient`; cockpit `fetchYoloWebCrawlStats` | done, tested |
+
+Env: `YOLO_WEB_API_URL`, `YOLO_WEB_MCP_URL`, `YOLO_WEB_API_TOKEN` (optional). No default host.
+
+## Done
+
+- Cockpit tile (apps/site `ia-cockpit*.ts`, `UnifiedIaCockpit.tsx`, tests): source key `yoloWeb`, label
+  "YOLO WEB - crawl", `GET /status`; missing `YOLO_WEB_API_URL` shows "non configure", no fallback.
+- Removed: `/admin/bxc-campaigns` page, `src/lib/bxc-campaigns.ts`, `/api/bxc/{manga,status,stream}`,
+  `/api/admin/bxc-harvest/[key]`, sidebar entry, `admin-pages.ts` entry, workshop translation link,
+  i18n keys `bxcCampaigns` and `library.workshop.staff.bxc` (en, fr, ja), "BXC" labels in shell-ui and
+  command-palette locales.
+- Removed from pipeline: `scrapeWithAphrody`, `AphrodyWebClient` (HTTP client to aphrody.com), their tests
+  and exports; `scripts/lib/aphrody-web-scrape.ts` replaced by `yolo-web-scrape.ts`.
+- `crawl-dragonballcn.ts` and the official-site campaign script (renamed
+  `scripts/ops/crawl-dragon-ball-official.ts`, state schema `shenron-official-crawl/v1`) use YOLO WEB.
+- `apps/bot/.env.example`, `docs/operations/ENV.md`: APHRODY_WEB_API_URL / APHRODY_BXC_API_TOKEN replaced.
+
+## Remaining (not done in this branch)
+
+| Item | Why |
+| --- | --- |
+| `packages/pipeline/src/bxc/*` (services.ts 64 refs, spawn, snapshot, contracts, server, cli) and the `./bxc` exports | consumed by apps/bot, apps/site scripts, crates/shenron-cli/mcp and tests; wraps the `aphrody web` native CLI whose Rust source is not in any searched repo. Needs a per-service decision (animesama, voiranime, wiki, frames, media, dbcn) on the YOLO WEB equivalent. |
+| `apps/bot/scripts/_bxc-media.ts` + `tests/bxc-media.test.ts`, `ingest/bxc-ingest.ts`, `frames-depuis-lecteur.ts`, `episode-resolver.ts`, `import-*voiranime*`, `resolve-streams.ts`, `scrape-manga-chapters.ts` | stream/frames/manga resolvers depend on the bxc services above; moving them to `packages/pipeline/src/{media,frames,manga}` should follow the service rewrite |
+| `apps/site/scripts/bxc-asset-harvest.ts`, `_aphrody-translate-remote.ts`, `traduire-pages-collectees-aphrody.ts`, `i18n-translate.ts`, `fill-*`, `export-databooks-ocr.ts` | same dependency; translation/wiki workflows to `packages/pipeline/src/{translation,wiki}` |
+| `scripts/ops/import-bxc-crawls-to-postgres.ts`, `index-frames.ts`, `run-content-session-pipeline.ts`, `translate-databooks-session.ts`, `crawl-guides.ts`, `rag-harvest.ts`, `rag-recon.ts`, `volumetrie-dragonballcn.ts`, `telecharge-planches-dragonballcn.ts` | use `aphrodyWebCrawl/Recon/Scrape` CLI wrappers (`src/aphrody/web.ts`) |
+| `scripts/testing/obscura.ts`, `scripts/ops/sosh-browser-workers.ts`, `capture-shueisha-public-preview.ts`, 4 integration live tests, `APHRODY_WEB_BIN`, binary `aphrody-web` | launch Obscura via `aphrody-web launch`; yolo-web ships `yolo-browser` whose CLI (info/query) has no `launch` verified. Reverted my rename attempt to avoid an unverified contract. |
+| `packages/api/src/contract/web.ts`, `packages/native/src/web-pipeline.ts`, `crates/shenron-cli`, `crates/shenron-mcp`, `crates/shenron-manga` strings | Rust/contract surface; needs a cargo build on vps |
+| Docs: dragon-ball-web.md, APHRODY-ECOSYSTEM.md, STACK.md (19 refs), content-session-pipeline.md, publish-source.md, others (see `git grep -il -E "bxc|aphrody[- ]?web"`) | prose rewrite to follow the code changes |
+| `apps/bot/tests/setup.ts` `BXC_BIN`, `docs/.../.gitignore`, AGENTS.md, TODO.md, plugin skill | tied to the bxc binary |
+
+## Unsure (data, not deleted)
+
+| Path | Note |
+| --- | --- |
+| `apps/site/scripts/inventaires/bxc-asset-inventory.json` (1152 refs, `engine: "bxc"`), `bxc-harvest-inventory.json` | real asset inventories; consumed by `tests/bxc-harvest.test.ts` and `bxc-asset-harvest.ts`; rename only with those |
+| `apps/site/shenron-media-masters/bxc-harvest/**` | media masters; path read by the harvest script |
+| `data/catalogues/dragonballcn-inventaire.json`, `apps/site/data/extracted-wiki-assets.json` | mention bxc as provenance |
+| Postgres table(s) filled by `import-bxc-crawls-to-postgres.ts` (59 248 records visible on production `/admin/bxc-campaigns`) | the page is removed; the data is untouched |
+
+## Production observations (read-only, Claude in Chrome, dragonballfr.com/admin, old version)
+
+- `/admin/ai`: header chip "Aphrody Web: Non configure"; tile "Aphrody Web - crawl, GET /crawl/stats,
+  APHRODY_BXC_API_TOKEN absent". Replaced by the YOLO WEB tile in this branch.
+- `/admin/bxc-campaigns` exists ("Campagnes BXC", 59 248 imported records, 15 Oct 2026); removed here.
+- The sidebar text read from `/admin/ai` listed no BXC entry (the entry is in the Encyclopedie section).
