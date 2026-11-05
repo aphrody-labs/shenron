@@ -29,6 +29,9 @@ import {
 import { apiAt } from "@/lib/admin-api";
 import { TABLE_LABELS, colLabel } from "@/lib/db-labels";
 import { isStudioTable } from "@/lib/wiki-fields";
+import { canRestoreCardImage } from "@/lib/card-image-history";
+import { CardImageHistoryRestore } from "./CardImageHistoryRestore";
+import { useWikiEditorialText } from "@/lib/wiki-editorial-text";
 
 interface Revision {
   id: string;
@@ -105,6 +108,7 @@ export function WikiHistory({
   compact?: boolean;
 }) {
   const qc = useQueryClient();
+  const t = useWikiEditorialText();
   const scoped = !!(table && rowId);
   const [action, setAction] = useState<string>("");
   const [page, setPage] = useState(0);
@@ -217,7 +221,8 @@ export function WikiHistory({
             const tableLabel = TABLE_LABELS[r.tableName] ?? r.tableName;
             const isOpen = expanded[r.id];
             const canStudio = isStudioTable(r.tableName) && !r.rowId.includes(":");
-            const canRevert = r.action !== "revert";
+            const cardHistory = r.tableName === "CardCatalogCard";
+            const canRevert = cardHistory ? canRestoreCardImage(r) : r.action !== "revert";
             const diffKeys = r.changedKeys.length
               ? r.changedKeys
               : Object.keys({ ...r.before, ...r.after });
@@ -269,11 +274,11 @@ export function WikiHistory({
                     <button
                       type="button"
                       onClick={() => setConfirmId(r.id)}
-                      title="Revenir à l'état précédent cette révision"
+                      title={cardHistory ? t("historyRestore.hint") : "Revenir à l'état précédent cette révision"}
                       className="inline-flex items-center gap-1 rounded border border-purple-400/30 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-purple-300 hover:border-purple-400/60 hover:bg-purple-500/10"
                     >
                       <Undo2 className="h-3 w-3" />
-                      Annuler
+                      {cardHistory ? t("historyRestore.action") : "Annuler"}
                     </button>
                   )}
                 </div>
@@ -298,7 +303,15 @@ export function WikiHistory({
                   </div>
                 )}
 
-                {confirmId === r.id && (
+                {confirmId === r.id && cardHistory && (
+                  <CardImageHistoryRestore key={r.id} revision={r} onCancel={() => setConfirmId(null)} onRestored={(cacheInvalidated) => {
+                    setConfirmId(null);
+                    setToast({ type: "success", msg: t(cacheInvalidated ? "historyRestore.success" : "historyRestore.cachePending") });
+                    void qc.invalidateQueries({ queryKey: ["wiki-history"] });
+                    void qc.invalidateQueries({ queryKey: ["db"] });
+                  }} />
+                )}
+                {confirmId === r.id && !cardHistory && (
                   <div className="border-t border-purple-400/30 bg-purple-500/5 p-3">
                     <p className="mb-2 text-xs text-white/70">
                       Revenir à l'état <strong className="text-white">avant</strong> cette{" "}

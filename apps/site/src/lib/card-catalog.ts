@@ -25,6 +25,31 @@ export const getPublishedCardCount = cache(async (): Promise<number> => {
   return Number(row?.value ?? 0);
 });
 
+/** One illustrated public card for the portal; never ship the full catalogue to select artwork. */
+export const getPublishedCardArtwork = cache(async () => {
+  const [row] = await db
+    .select({
+      id: schema.cardCatalogCards.id,
+      title: schema.cardCatalogCards.name,
+      image: schema.cardCatalogCards.frontImageUrl,
+    })
+    .from(schema.cardCatalogCards)
+    .innerJoin(schema.cardCatalogSets, eq(schema.cardCatalogCards.setId, schema.cardCatalogSets.id))
+    .innerJoin(
+      schema.cardCatalogSeries,
+      eq(schema.cardCatalogSets.seriesId, schema.cardCatalogSeries.id),
+    )
+    .where(
+      and(
+        publishedCatalogWhere,
+        sql`nullif(btrim(${schema.cardCatalogCards.frontImageUrl}), '') is not null`,
+      ),
+    )
+    .orderBy(asc(schema.cardCatalogCards.cardNumber), asc(schema.cardCatalogCards.id))
+    .limit(1);
+  return row;
+});
+
 export async function getPublicCardCatalog(
   filters: {
     search?: string;

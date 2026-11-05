@@ -1,6 +1,7 @@
 import fr from "../../messages/wiki-public/fr.json";
 import en from "../../messages/wiki-public/en.json";
 import ja from "../../messages/wiki-public/ja.json";
+import { decodeHtmlEntitiesPlain } from "./markdown-plain";
 
 export interface CharacterVersionMessages {
   intro: string;
@@ -235,7 +236,7 @@ function interpolate(template: string, values?: Record<string, string | number>)
 export function getWikiPortalMessages(locale: string = "fr") {
   const dict = portalDictionaries[locale as WikiLocale] ?? portalDictionaries.fr;
   return (key: WikiPortalKey, values?: Record<string, string | number>) =>
-    interpolate(dict[key], values);
+    decodeHtmlEntitiesPlain(interpolate(dict[key], values));
 }
 
 export function getWikiReaderMessages(locale: string = "fr") {
