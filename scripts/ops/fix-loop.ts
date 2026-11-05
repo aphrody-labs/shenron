@@ -470,6 +470,8 @@ function claudeSdkBackend(sdkDir: string, model?: string): Backend {
           maxTurns: turns,
           abortController: abort,
           settingSources: [],
+          mcpServers: {},
+          extraArgs: { "strict-mcp-config": null, "disable-slash-commands": null },
           permissionMode: "default",
           pathToClaudeCodeExecutable: claudeBin || undefined,
           disallowedTools: [
