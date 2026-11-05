@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-import { afterEach, describe, expect, it } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { AphrodyComputeClient, createOpenAiChat, directChatFromEnv } from "./compute";
-import { AphrodyWebClient } from "./web";
 
 // B18 (docs/architecture/STACK.md §2.2): the embed path now checks 384-dimensional vectors.
 const E5_VECTOR = Array.from({ length: 384 }, (_, i) => i / 384);
@@ -84,75 +83,6 @@ describe("AphrodyComputeClient", () => {
       }) as unknown as typeof fetch,
     });
     expect(await client.embed(["source"], "passage")).toEqual([E5_VECTOR]);
-  });
-});
-
-describe("AphrodyWebClient", () => {
-  const originalFetch = globalThis.fetch;
-  afterEach(() => {
-    globalThis.fetch = originalFetch;
-  });
-
-  it("routes Aphrody Web requests through its configured proxy", async () => {
-    let requestInit: (RequestInit & { proxy?: unknown }) | undefined;
-    globalThis.fetch = (async (_input, init) => {
-      requestInit = init as RequestInit & { proxy?: unknown };
-      return Response.json({
-        success: true,
-        job: { id: "12345678-1234-1234-1234-123456789abc", status: "completed", stats: {} },
-      });
-    }) as typeof fetch;
-
-    const client = new AphrodyWebClient({
-      token: "fixture",
-      baseUrl: "https://aphrody.com",
-      httpProxy: "http://127.0.0.1:8080",
-    });
-    await client.status("12345678-1234-1234-1234-123456789abc");
-
-    expect(requestInit?.proxy).toEqual({ url: "http://127.0.0.1:8080", respectNoProxy: false });
-  });
-
-  it("uses native BXC paths on the private VPS listener", async () => {
-    const paths: string[] = [];
-    const client = new AphrodyWebClient({
-      token: "fixture",
-      baseUrl: "http://127.0.0.1:3007",
-      fetcher: (async (input) => {
-        paths.push(new URL(String(input)).pathname);
-        return Response.json({
-          success: true,
-          job: { id: "12345678-1234-1234-1234-123456789abc", status: "completed", stats: {} },
-        });
-      }) as typeof fetch,
-    });
-    const job = await client.crawl({ urls: ["https://example.org/news"], maxRequests: 1 });
-    await client.status(job.id);
-    expect(paths).toEqual(["/api/v1/crawl", "/api/v1/crawl/stats"]);
-  });
-
-  it("submits a bounded authenticated crawl and reads its status", async () => {
-    const paths: string[] = [];
-    const client = new AphrodyWebClient({
-      token: "fixture",
-      baseUrl: "https://aphrody.com",
-      fetcher: (async (input, init) => {
-        paths.push(new URL(String(input)).pathname);
-        expect(new Headers(init?.headers).get("authorization")).toBe("Bearer fixture");
-        return Response.json({
-          success: true,
-          job: {
-            id: "12345678-1234-1234-1234-123456789abc",
-            status: paths.length === 1 ? "running" : "completed",
-            stats: {},
-          },
-        });
-      }) as typeof fetch,
-    });
-    const job = await client.crawl({ urls: ["https://example.org/news"], maxDepth: 1 });
-    expect(job.status).toBe("running");
-    expect((await client.status(job.id)).status).toBe("completed");
-    expect(paths).toEqual(["/api/v1/web/crawl", "/api/v1/web/crawl/stats"]);
   });
 });
 

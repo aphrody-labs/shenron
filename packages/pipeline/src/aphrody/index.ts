@@ -30,17 +30,9 @@ export {
   aphrodyWebCrawl,
   aphrodyWebSearch,
   aphrodyWebScrape,
-  scrapeWithAphrody,
-  type AphrodyScrapeOptions,
-  type AphrodyScrapeProfile,
-  type AphrodyScrapeResult,
   type AphrodyWebScrapeOptions,
   type AphrodyWebCrawlRequest,
   type AphrodyWebCrawlReport,
-  AphrodyWebClient,
-  type AphrodyCrawlJob,
-  type AphrodyCrawlOptions,
-  type AphrodyCrawlRequest,
 } from "./web";
 export {
   aphrodyInfraCheck,

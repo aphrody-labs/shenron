@@ -240,7 +240,7 @@ voir `START-HERE.md` §5), et le relais SSH de développement (PostgreSQL 15433,
 
 Le déploiement, les migrations de production et la publication appartiennent à l'Infra d'Aphrody ;
 ce dépôt ne déploie rien en continu. Le crawl du site officiel passe par
-`scripts/ops/crawl-dragon-ball-official-aphrody.ts` (`--status | --dry-run | --apply`) ; ses
+`scripts/ops/crawl-dragon-ball-official.ts` (`--status | --dry-run | --apply`) ; ses
 captures ne sont pas encore ingérées dans les tables éditoriales ni dans le VFS. La boucle
 `scripts/ops/train-shenron-chat-loop.ts` génère des rollouts et les évalue sur le jeu gold : elle
 ne lance aucun entraînement LoRA/SFT.

@@ -1,19 +1,19 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
-/** Resumable official-site campaign. Aphrody Web owns network capture and index. */
+/** Resumable official-site campaign. YOLO WEB owns network capture. */
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { AphrodyWebClient } from "@aphrody/shenron-pipeline/aphrody";
-import { scrapeWithAphrody } from "../../packages/pipeline/scripts/lib/aphrody-web-scrape.ts";
+import { YoloWebBatchClient } from "@aphrody/shenron-pipeline/yolo-web";
+import { scrapeWithYoloWeb } from "../../packages/pipeline/scripts/lib/yolo-web-scrape.ts";
 
 const ORIGIN = "https://dragon-ball-official.com";
 const SITEMAP = `${ORIGIN}/sitemap.xml`;
-const STATE_DIR = join(import.meta.dir, "../../var/runs/dragon-ball-official-aphrody");
+const STATE_DIR = join(import.meta.dir, "../../var/runs/dragon-ball-official");
 const BATCH_SIZE = 10;
 
 export type OfficialCrawlMode = "status" | "dry-run" | "apply";
 export interface OfficialCrawlState {
-  schema: "shenron-official-aphrody-crawl/v1";
+  schema: "shenron-official-crawl/v1";
   campaignId: string;
   discovered: number;
   completedBatches: number[];
@@ -83,7 +83,7 @@ export async function runOfficialCrawl(
   mode: OfficialCrawlMode,
   options: {
     capture?: (url: string) => Promise<string>;
-    client?: Pick<AphrodyWebClient, "crawl" | "status">;
+    client?: Pick<YoloWebBatchClient, "crawl" | "status">;
     stateDir?: string;
     sleep?: (ms: number) => Promise<void>;
   } = {},
@@ -111,7 +111,7 @@ export async function runOfficialCrawl(
   }
   const capture =
     options.capture ??
-    (async (url: string) => (await scrapeWithAphrody(url, { profile: "http" })).content);
+    (async (url: string) => (await scrapeWithYoloWeb(url)).content);
   const urls = await discoverOfficialPages(capture);
   const campaignId = new Bun.CryptoHasher("sha256")
     .update(urls.join("\n"))
@@ -126,7 +126,7 @@ export async function runOfficialCrawl(
   const state: OfficialCrawlState = (await saved.exists())
     ? ((await saved.json()) as OfficialCrawlState)
     : {
-        schema: "shenron-official-aphrody-crawl/v1",
+        schema: "shenron-official-crawl/v1",
         campaignId,
         discovered: urls.length,
         completedBatches: [],
@@ -134,7 +134,7 @@ export async function runOfficialCrawl(
         updatedAt: new Date().toISOString(),
       };
   if (
-    state.schema !== "shenron-official-aphrody-crawl/v1" ||
+    state.schema !== "shenron-official-crawl/v1" ||
     state.campaignId !== campaignId ||
     state.discovered !== urls.length
   )
@@ -145,7 +145,7 @@ export async function runOfficialCrawl(
     await Bun.write(join(stateDir, "current.json"), JSON.stringify(state, null, 2));
   };
   await save();
-  const client = options.client ?? new AphrodyWebClient();
+  const client = options.client ?? new YoloWebBatchClient();
   const sleep = options.sleep ?? Bun.sleep;
   for (let batch = 0; batch < batches; batch++) {
     if (state.completedBatches.includes(batch)) continue;
@@ -168,11 +168,7 @@ export async function runOfficialCrawl(
     if (!job) {
       job = await client.crawl({
         urls: seeds,
-        allowedDomains: ["dragon-ball-official.com"],
-        maxDepth: 0,
-        maxRequests: seeds.length,
-        maxConcurrency: 4,
-        profile: "static",
+        mode: "fetch",
       });
       record = { batch, id: job.id, status: job.status };
       state.jobs.push(record);
@@ -186,7 +182,7 @@ export async function runOfficialCrawl(
     if (job.status !== "completed") {
       await save();
       throw new Error(
-        `Aphrody Web official crawl batch ${batch} ended as ${job.status}; rerun --apply to resume`,
+        `YOLO WEB official crawl batch ${batch} ended as ${job.status}; rerun --apply to resume`,
       );
     }
     state.completedBatches.push(batch);

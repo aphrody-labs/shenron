@@ -2,7 +2,7 @@ import { afterEach, describe, expect, it } from "bun:test";
 import { mkdtemp, realpath, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, sep } from "node:path";
-import { discoverOfficialPages, runOfficialCrawl } from "./crawl-dragon-ball-official-aphrody.ts";
+import { discoverOfficialPages, runOfficialCrawl } from "./crawl-dragon-ball-official.ts";
 
 const sitemap =
   "<sitemapindex><sitemap><loc>https://dragon-ball-official.com/news.xml</loc></sitemap></sitemapindex>";
@@ -29,11 +29,11 @@ describe("official crawl migration", () => {
     stateDir = await mkdtemp(join(tmpdir(), "shenron-official-crawl-"));
     const planned = await runOfficialCrawl("dry-run", { capture, stateDir });
     const state = {
-      schema: "shenron-official-aphrody-crawl/v1",
+      schema: "shenron-official-crawl/v1",
       campaignId: planned.campaignId,
       discovered: planned.discovered,
       completedBatches: [],
-      jobs: [{ batch: 0, id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", status: "running" }],
+      jobs: [{ batch: 0, id: "1,2", status: "running" }],
       updatedAt: new Date().toISOString(),
     };
     await Bun.write(planned.stateFile!, JSON.stringify(state));
@@ -65,11 +65,11 @@ describe("official crawl migration", () => {
     await Bun.write(
       planned.stateFile!,
       JSON.stringify({
-        schema: "shenron-official-aphrody-crawl/v1",
+        schema: "shenron-official-crawl/v1",
         campaignId: planned.campaignId,
         discovered: planned.discovered,
         completedBatches: [],
-        jobs: [{ batch: 0, id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", status: "running" }],
+        jobs: [{ batch: 0, id: "1,2", status: "running" }],
         updatedAt: new Date().toISOString(),
       }),
     );
@@ -83,7 +83,7 @@ describe("official crawl migration", () => {
         },
         crawl: async () => {
           submitted++;
-          return { id: "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb", status: "completed", stats: {} };
+          return { id: "3,4", status: "completed", stats: {} };
         },
       },
     });
@@ -92,7 +92,7 @@ describe("official crawl migration", () => {
     expect((await Bun.file(planned.stateFile!).json()).jobs[0].status).toBe("lost");
   });
 
-  it("discovers only official page URLs through Aphrody sitemap capture", async () => {
+  it("discovers only official page URLs through YOLO WEB sitemap capture", async () => {
     expect(await discoverOfficialPages(capture)).toEqual([
       "https://dragon-ball-official.com/news/1/",
       "https://dragon-ball-official.com/news/2/",
@@ -106,13 +106,13 @@ describe("official crawl migration", () => {
       crawl: async ({ urls }: { urls: string[] }) => {
         calls.push(urls);
         return {
-          id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          id: "1,2",
           status: "completed" as const,
           stats: {},
         };
       },
       status: async () => ({
-        id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        id: "1,2",
         status: "completed" as const,
         stats: {},
       }),
@@ -139,11 +139,11 @@ describe("official crawl migration", () => {
     stateDir = await mkdtemp(join(tmpdir(), "shenron-official-crawl-"));
     const planned = await runOfficialCrawl("dry-run", { capture, stateDir });
     const state = {
-      schema: "shenron-official-aphrody-crawl/v1",
+      schema: "shenron-official-crawl/v1",
       campaignId: planned.campaignId,
       discovered: planned.discovered,
       completedBatches: [],
-      jobs: [{ batch: 0, id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", status: "running" }],
+      jobs: [{ batch: 0, id: "1,2", status: "running" }],
       updatedAt: new Date().toISOString(),
     };
     await Bun.write(planned.stateFile!, JSON.stringify(state));
@@ -154,7 +154,7 @@ describe("official crawl migration", () => {
         throw new Error("duplicate job");
       },
       status: async () => ({
-        id: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        id: "1,2",
         status: "completed" as const,
         stats: {},
       }),

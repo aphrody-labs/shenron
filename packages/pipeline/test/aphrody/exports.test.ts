@@ -11,7 +11,6 @@ describe("@aphrody/shenron-pipeline/aphrody exports", () => {
       "AphrodyComputeClient",
       "AphrodyFramesClient",
       "AphrodyTranslateService",
-      "AphrodyWebClient",
       "AphrodyWikiSearchService",
       "AphrodyWikiService",
       "SHENRON_EMBED_DIMENSIONS",
@@ -30,7 +29,6 @@ describe("@aphrody/shenron-pipeline/aphrody exports", () => {
       "aphrodyWebScrape",
       "aphrodyWebSearch",
       "resolveWikiApiUrl",
-      "scrapeWithAphrody",
     ]);
   });
 

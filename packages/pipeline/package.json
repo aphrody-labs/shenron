@@ -40,6 +40,7 @@
     "./aphrody/compute": "./src/aphrody/compute.ts",
     "./aphrody/native": "./src/aphrody/native.ts",
     "./aphrody/web": "./src/aphrody/web.ts",
+    "./yolo-web": "./src/yolo-web/index.ts",
     "./aphrody/mirror": "./src/aphrody/mirror.ts",
     "./aphrody/frames": "./src/aphrody/frames.ts",
     "./manga-ocr": "./src/manga-ocr.ts",
