@@ -71,7 +71,12 @@ export function LanguageSwitcher({
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
         aria-controls={menuId}
-        aria-label={`${dico.common.language} : ${current.nativeName}`}
+        // WCAG 2.5.3 : le nom accessible doit contenir le texte visible (« FR »).
+        aria-label={
+          variant === "compact"
+            ? `${dico.common.language} : ${current.nativeName}`
+            : `${CODE_AFFICHE(current.code)} : ${dico.common.language} (${current.nativeName})`
+        }
         className={`shenron-language-trigger ${variant === "compact" ? "is-compact" : ""}`}
       >
         {variant === "compact" ? (
