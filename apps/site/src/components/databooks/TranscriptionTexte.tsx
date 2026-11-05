@@ -16,7 +16,7 @@
  * Isomorphe (pas de `"use client"`) : sert au rendu public comme à l'aperçu du
  * relecteur admin, pour que les deux montrent exactement la même chose.
  */
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { type Components } from "react-markdown";
 import remarkBreaks from "remark-breaks";
 import remarkGfm from "remark-gfm";
 import { classerDefaut, type Defaut } from "@/lib/databooks-defauts";
@@ -33,6 +33,12 @@ const CJK = /[　-〿぀-ゟ゠-ヿ㐀-䶿一-鿿＀-ﾟ]/;
  * serait faux là où ça compte : un lecteur d'écran ânonnerait du français avec
  * une voix japonaise. On ne le pose que si le texte contient réellement du CJK.
  */
+// Scan headings sit below the book title and the reader section heading.
+const SCAN_HEADINGS: Components = {
+  h1: ({ node: _node, children, ...props }) => <h3 {...props}>{children}</h3>,
+  h2: ({ node: _node, children, ...props }) => <h4 {...props}>{children}</h4>,
+};
+
 function langue(texte: string): "ja" | undefined {
   return CJK.test(texte) ? "ja" : undefined;
 }
@@ -116,14 +122,7 @@ export function TranscriptionTexte({
         className="prose-transcription text-sm leading-relaxed text-white/85"
         lang={langue(texte)}
       >
-        <ReactMarkdown
-          remarkPlugins={[remarkGfm, remarkBreaks]}
-          components={{
-            // Scan headings sit below the book title and the reader section heading.
-            h1: ({ node: _node, ...props }) => <h3 {...props} />,
-            h2: ({ node: _node, ...props }) => <h4 {...props} />,
-          }}
-        >
+        <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]} components={SCAN_HEADINGS}>
           {texte}
         </ReactMarkdown>
       </div>

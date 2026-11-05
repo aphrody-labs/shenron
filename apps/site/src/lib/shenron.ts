@@ -471,7 +471,7 @@ export async function getShenronCharacterVariantStaffCredits(
         asc(botCharacterVariantStaffCredits.sortOrder),
         asc(botCharacterVariantStaffCredits.id),
       );
-    return rows.map(({ credit }) => ({ ...credit }));
+    return rows.map(({ credit }) => credit);
   } catch (error) {
     console.error("[shenron] getShenronCharacterVariantStaffCredits failed:", error);
     return [];

@@ -1,5 +1,4 @@
 import { hasEditorialDatabase } from "@/lib/prerender";
-import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiDetailPage, WikiEntityHeader } from "@/components/wiki/WikiDetailPage";
 import { WikiFicheVide } from "@/components/wiki/WikiFicheVide";
 import { WikiSectionsReader } from "@/components/wiki/WikiSectionsReader";

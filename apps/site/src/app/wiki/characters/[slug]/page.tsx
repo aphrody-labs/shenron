@@ -503,11 +503,17 @@ export default async function CharacterPage({
     : [];
   const liveTimelineChoices = (
     continuities.length > 0
-      ? continuities.map(({ id, name, slug, label, isMain }) => ({ id, name, slug, label, isMain }))
-      : character.versions.map(({ id, name, slug }) => ({
+      ? continuities.map(({ id, name, slug: versionSlug, label, isMain }) => ({
           id,
           name,
-          slug,
+          slug: versionSlug,
+          label,
+          isMain,
+        }))
+      : character.versions.map(({ id, name, slug: versionSlug }) => ({
+          id,
+          name,
+          slug: versionSlug,
           label: null,
           isMain: false,
         }))
@@ -521,7 +527,7 @@ export default async function CharacterPage({
         identity.includes("fusion")
       );
     })
-    .map(({ id, name, slug, label, isMain }) => {
+    .map(({ id, name, slug: versionSlug, label, isMain }) => {
       const identity = normalizeVersionLabel(`${name} ${label ?? ""}`);
       const displayName = identity.includes("xeno")
         ? versionT("xenoGoku")
@@ -530,7 +536,14 @@ export default async function CharacterPage({
           : identity.includes("gokucc")
             ? versionT("gokuCc")
             : versionT("gokuFusion");
-      return { id, name: displayName, slug, label: displayName, isMain, seriesGroup: undefined };
+      return {
+        id,
+        name: displayName,
+        slug: versionSlug,
+        label: displayName,
+        isMain,
+        seriesGroup: undefined,
+      };
     });
   const versionChoices = isGokuMainCharacter
     ? [
@@ -630,7 +643,7 @@ export default async function CharacterPage({
   const earlierVariantIds = new Set(sagaVariants.slice(0, activeVariantIndex).map(({ id }) => id));
   const savedCurrentTechniqueUses = techniqueUses
     .filter((use) => use.variantId === activeVariant?.id)
-    .sort((left, right) => left.sortOrder - right.sortOrder || left.id - right.id);
+    .toSorted((left, right) => left.sortOrder - right.sortOrder || left.id - right.id);
   const currentTechniqueUses =
     showcasePreview && activeVariant && savedCurrentTechniqueUses.length === 0
       ? (activeVariant.techniqueIds ?? []).slice(0, 3).map((techniqueId, index) => ({
@@ -657,7 +670,7 @@ export default async function CharacterPage({
   const variantPositions = new Map(sagaVariants.map((variant, index) => [variant.id, index]));
   const earlierTechniqueUses = techniqueUses
     .filter((use) => earlierVariantIds.has(use.variantId))
-    .sort(
+    .toSorted(
       (a, b) =>
         (variantPositions.get(a.variantId) ?? -1) - (variantPositions.get(b.variantId) ?? -1) ||
         a.sortOrder - b.sortOrder ||
@@ -667,7 +680,7 @@ export default async function CharacterPage({
   for (const use of earlierTechniqueUses) lastUseByTechnique.set(use.techniqueId, use);
   const techniquesInArc = character.techniques
     .filter(({ technique }) => currentTechniqueIds.has(technique.id))
-    .sort(
+    .toSorted(
       (a, b) =>
         currentTechniqueUses.filter((use) => use.techniqueId === b.technique.id).length -
         currentTechniqueUses.filter((use) => use.techniqueId === a.technique.id).length,
@@ -680,13 +693,20 @@ export default async function CharacterPage({
     isSummaryVersion && !showcasePreview
       ? (
           await Promise.all([
-            ...getGokuSeriesTimelineChoices((key) => versionT(key)).map((timeline) => ({
-              ...timeline,
-              description: null,
-              sagas: filterGokuVariantsByTimeline(loadedVariants, timeline.seriesGroup!),
-            })),
+            ...getGokuSeriesTimelineChoices((key) => versionT(key)).map((timeline) =>
+              Object.assign(timeline, {
+                description: null,
+                sagas: filterGokuVariantsByTimeline(loadedVariants, timeline.seriesGroup!),
+              }),
+            ),
+            // Fresh objects: these choices are also the version selector entries.
             ...liveTimelineChoices.map(async (continuity) => ({
-              ...continuity,
+              id: continuity.id,
+              name: continuity.name,
+              slug: continuity.slug,
+              label: continuity.label,
+              isMain: continuity.isMain,
+              seriesGroup: continuity.seriesGroup,
               sagas: await getShenronCharacterVariants(continuity.id),
             })),
           ])
@@ -1017,8 +1037,7 @@ export default async function CharacterPage({
           ): item is { battle: (typeof variantBattles)[number]; image: string; accent: string } =>
             Boolean(item.battle),
         );
-        return {
-          ...panel,
+        return Object.assign(panel, {
           node: (
             <div className="space-y-7">
               <p className="rounded-xl border border-dbz-orange/25 bg-dbz-orange/5 px-4 py-3 text-sm leading-relaxed text-white/65">
@@ -1064,15 +1083,14 @@ export default async function CharacterPage({
               <WikiMarkdown body={versionT("previewBuuStoryAfterKidBuu")} />
             </div>
           ),
-        };
+        });
       }
       if (
         showcasePreview &&
         activeVariant?.slug === "goku-preview-main-majin-buu" &&
         key === "anecdotes"
       ) {
-        return {
-          ...panel,
+        return Object.assign(panel, {
           group: versionT("anecdotes"),
           node: (
             <div className="space-y-4">
@@ -1099,13 +1117,13 @@ export default async function CharacterPage({
               </div>
             </div>
           ),
-        };
+        });
       }
       if (/anecdote|trivia|origine-du-nom|apparition|voix/.test(key)) {
-        return { ...panel, group: versionT("anecdotes") };
+        return Object.assign(panel, { group: versionT("anecdotes") });
       }
       if (TRANSFO_SECTION_KEYS.has(panel.key) || TECH_SECTION_KEYS.has(panel.key)) {
-        return { ...panel, group: versionT("powersAndForms") };
+        return Object.assign(panel, { group: versionT("powersAndForms") });
       }
       return panel;
     });
