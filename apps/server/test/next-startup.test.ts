@@ -3,7 +3,12 @@ import { expect, test } from "bun:test";
 import { existsSync, mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import { tmpdir } from "node:os";
-import { startNextStandalone, stopStandaloneChild, waitForNextStartup } from "../src/next-startup";
+import {
+  resolveNextRuntime,
+  startNextStandalone,
+  stopStandaloneChild,
+  waitForNextStartup,
+} from "../src/next-startup";
 
 async function serverFixture(source: string) {
   const root = mkdtempSync(join(tmpdir(), "shenron-lifecycle-"));
@@ -225,3 +230,32 @@ test.skipIf(process.platform === "win32")(
     }
   },
 );
+
+test("the Next child runs under the Bun shipped beside an AOT executable", () => {
+  const exists = (path: string) => path === "/srv/shenron/runtime/bun";
+  const base = { compiled: true, execPath: "/srv/shenron/shenron-server", env: {}, exists };
+  expect(resolveNextRuntime(base)).toEqual({ program: "/srv/shenron/runtime/bun", beBun: false });
+  // No runtime shipped: the bytecode executable is its own Bun.
+  expect(resolveNextRuntime({ ...base, exists: () => false })).toEqual({
+    program: "/srv/shenron/shenron-server",
+    beBun: true,
+  });
+  // A source run uses the Bun running it, whatever sits next to it.
+  expect(resolveNextRuntime({ ...base, compiled: false })).toEqual({
+    program: "/srv/shenron/shenron-server",
+    beBun: false,
+  });
+  expect(resolveNextRuntime({ ...base, env: { SHENRON_NEXT_BUN: "/opt/bun/bin/bun" } })).toEqual({
+    program: "/opt/bun/bin/bun",
+    beBun: false,
+  });
+  expect(
+    resolveNextRuntime({
+      compiled: true,
+      platform: "win32",
+      execPath: "C:\shenron\shenron-server.exe",
+      env: {},
+      exists: (path) => path.endsWith("bun.exe"),
+    }).beBun,
+  ).toBe(false);
+});

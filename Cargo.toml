@@ -246,9 +246,19 @@ codegen-units = 16
 strip = "debuginfo"
 
 # Shipped artifacts: `cargo build --profile production` (output in target/production). Fat LTO
-# over a single codegen unit trades a much longer link for smaller, faster binaries; `release`
-# stays the quick optimised build that scripts/deploy and scripts/build use today.
+# over a single codegen unit trades a much longer link for smaller, faster binaries, and the
+# symbol table is stripped. `release` stays the quick lane for iterations. panic stays "unwind":
+# shenron-ffi contains panics at the FFI boundary with catch_unwind, so abort would kill the
+# server process that loads it.
 [profile.production]
 inherits = "release"
 lto = "fat"
 codegen-units = 1
+strip = "symbols"
+
+# Standalone executables (shenron, shenron-mcp, shenron-video, koharu-sdk, service binaries):
+# nothing catches panics there, so abort drops the unwinding tables. Never use it for
+# shenron-ffi or other cdylibs loaded into a host process.
+[profile.production-abort]
+inherits = "production"
+panic = "abort"
