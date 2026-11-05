@@ -20,7 +20,6 @@
   "close": "Close",
   "none": "No images found.",
   "count": "{count} image(s).",
-  "filteredCount": "Showing {shown} of {total} — refine the filter.",
   "cropTitle": "Crop image",
   "cropHelp": "Choose the frame shape, then move and zoom the image to adjust its preview.",
   "cropAspect": "Frame shape",
