@@ -20,10 +20,10 @@ Prod porte l’application Shenron et son stockage de production. DBFR ne sert p
 
 ## Procédure d’exploitation
 
-- Piloter Shenron par SSH `prod`, avec tmux pour les tâches longues et leurs journaux. Cette migration a été faite directement, sans Aphrody Infra.
+- Piloter Shenron par SSH `prod`, avec tmux pour les tâches longues et leurs journaux. Cette migration a été faite par SSH direct, hors du dépôt `aphrody-infra` ; c'est l'exploitation Infra au sens de [`INFRA-DELEGATION.md`](INFRA-DELEGATION.md) (répartition effective du 2026-11-05).
 - Runtime global : `/usr/local/bin/bun`, upstream officiel oven-sh canary `1.4.4-canary.1+a4c3a5eee`. Les services systemd CDN, audit Cloudflare, renouvellement S3 et copie DBFR l’utilisent. L’ancien binaire Aphrody isolé sous `/srv/shenron/config/cloudflare/runtime/bun` a été retiré.
 - Le pair WireGuard Prod↔VPS utilise le port d’écoute UDP fixe 52244 et l’endpoint IPv6 épinglé `[2001:41d0:404:200::4d8e]:51821`. Le handshake, le ping privé et SSH vers `10.200.77.1` ont été rétablis et vérifiés.
-- Le timer Prod `shenron-autodeploy.timer` reste désactivé : il pointait vers l’ancienne cible de fabrique.
+- Le timer Prod `shenron-autodeploy.timer` reste désactivé : il pointait vers l’ancienne cible de fabrique. Le déploiement automatique cible est décrit dans [`AUTO-DEPLOY.md`](AUTO-DEPLOY.md), inerte tant que `AUTO_DEPLOY_ENABLED` n’est pas posé.
 - DBFR reçoit `/srv/backups/prod-shenron/current` par une clé SSH dédiée limitée à rsync. Le service `shenron-dbfr-backup.timer` copie l’instantané vérifié chaque jour vers 04:00 UTC, avec délai aléatoire et rattrapage au démarrage.
 - Conserver séparément les archives DBFR et les sauvegardes Prod : les bases éditoriales diffèrent. Ne jamais restaurer le dump DBFR par-dessus Prod sans comparaison explicite.
 - Préserver sur DBFR `auto-minio` et `auto-extraction-ia`, et sur le VPS Bun OS ainsi que les workloads sans lien avec Shenron.
@@ -32,7 +32,7 @@ Prod porte l’application Shenron et son stockage de production. DBFR ne sert p
 
 Le checkout de build est propre à `3fdad5b8` avant les changements de modèles et de documentation de ce lot. L’image `localhost/shenron:aac017cec3887c7f445284fcfd22fb22dbdf0bae` est active sur `shenron-site` et `shenron-bot` ; les deux sont sains. `shenron-gateway`, `shenron-cloudflared`, `shenron-compute`, `shenron-embed`, `shenron-chat`, `shenron-postgres` et `shenron-redis` sont aussi actifs sur Prod. L’origine CDN écoute sur `127.0.0.1:9077` et répond `cdn ok`. `/api/health` répond 200 ; `/api/local/health` avait rapporté `chat.available=true`. La route `/api/v1/chat/ws` est montée et protégée (401 sans session) ; aucun handshake WebSocket authentifié n’a été qualifié.
 
-Le pointeur historique `/srv/shenron/current` référence encore une ancienne release Docker scellée. Compose fournit l’image réellement active ; le pointeur n’a pas été modifié.
+Le pointeur historique `/srv/shenron/current` référençait alors une ancienne release Docker scellée. Depuis le 2026-11-03, l’activateur le fait suivre l’image (relu le 2026-11-05 : `current`, `.env` et les conteneurs site et bot sont tous à `f04de517`). Il ne nomme pourtant que le répertoire statique monté par la gateway : la release active se lit sur les conteneurs (`scripts/deploy/active-release.sh`).
 
 Les migrations 0049 et 0050 ont été appliquées après sauvegardes Prod vérifiées. Le backup pré-déploiement fait 645287642 octets (955 entrées pg_restore) ; le backup pré-0049 fait 645287891 octets en mode 600.
 

@@ -3,6 +3,26 @@
 Référence unique de la frontière d'exploitation. Ce dépôt livre des artefacts ;
 il ne modifie aucun hôte.
 
+## Répartition effective (2026-11-05)
+
+Les documents divergeaient (audit `surface-2026-11-05`, E1) : `PROD-HOSTING.md` décrivait une
+exploitation directe de Prod « sans Aphrody Infra », ce fichier et `AGENTS.md` un hébergement
+entièrement porté par `aphrody-infra`. La règle commune est désormais :
+
+- **Ce dépôt possède les définitions** : `deploy/environment.json` (environnement unique),
+  `deploy/prod/compose.yaml` (pile de Prod, sans secret), `deploy/activation/activate.sh`
+  (activation par service), les scripts `scripts/deploy/` et le workflow
+  `server-artifact.yml`. Il ne modifie aucun hôte.
+- **Aphrody Infra, c'est-à-dire l'exploitation du propriétaire, quel que soit l'outil (dépôt
+  `aphrody-infra` ou SSH `prod` direct), possède l'hôte** : installation de ces gabarits,
+  exécution de l'activateur, runner, fichiers d'environnement, secrets, migrations, sauvegardes.
+  « Sans Aphrody Infra » dans `PROD-HOSTING.md` signifie seulement que la migration du
+  2026-11-02 s'est faite par SSH direct, hors du dépôt `aphrody-infra`.
+- Le checkout `aphrody-infra` relu pour l'audit ne contenait ni `config/service-catalog.json`,
+  ni `nginx/`, ni `systemd/` ; la source reconstructible de la pile de Prod est donc
+  `deploy/prod/compose.yaml` ici, que Infra installe. Procédure :
+  [`AUTO-DEPLOY.md`](AUTO-DEPLOY.md).
+
 ## Ce que possède `aphrody-infra`
 
 - Le catalogue des services, leurs unités systemd et timers, les hôtes et les
@@ -47,10 +67,12 @@ Sans ces services, le bot et le site démarrent et dégradent explicitement.
   commande qui modifie un hôte.
 - Une documentation ou un commit ne prouve pas un déploiement : seule la
   release active, sondée par `aphrody-infra`, fait foi.
-- Mise en production outillée : `scripts/deploy/release.sh [revision]` construit et vérifie
-  l'image sur un hôte de build Linux x64, puis la livre à la cible (`SHENRON_DEPLOY_TARGET`,
-  défaut `ssh:prod`) où l'entrée d'activation Infra (`/root/deploy-shenron-image.sh`) assemble,
-  scelle, vérifie et active la release (voir `CONTAINER-COMPLET.md`).
+- Mise en production outillée : `scripts/deploy/release.sh [--auto] [revision]` construit les
+  lanes modifiées et vérifie l'image, puis la livre à la cible (`SHENRON_DEPLOY_TARGET`) où
+  l'entrée d'activation Infra (`/root/deploy-shenron-image.sh`, lien vers
+  `/srv/shenron/bin/deploy-image.sh`) bascule les services atteints (voir `AUTO-DEPLOY.md`).
+  La release active se lit sur les conteneurs (`scripts/deploy/active-release.sh`), pas sur
+  `/srv/shenron/current`, qui ne nomme que le répertoire statique de la gateway.
 - Exception voulue par le propriétaire : `scripts/ops/admin-access.ts` tient la liste
   des postes d'administration (IP publique du poste, VPS, WireGuard, comptes désignés)
   sur `vps` et `dbfr` par `aphrody-infra ssh exec` — ufw, fail2ban, PostgreSQL

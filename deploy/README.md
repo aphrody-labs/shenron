@@ -12,8 +12,11 @@ backups, timers, rétention) est portée par le dépôt frère `aphrody-infra` :
   `aphrody-infra/docs/PRODUCTION-ALLOCATION.md`.
 
 Ce dépôt construit et livre l'image : `scripts/deploy/release.sh` (voir
-[`../docs/operations/CONTAINER-COMPLET.md`](../docs/operations/CONTAINER-COMPLET.md)) ;
-l'activation sur l'hôte reste celle d'`aphrody-infra`.
+[`../docs/operations/AUTO-DEPLOY.md`](../docs/operations/AUTO-DEPLOY.md)) ;
+l'activation sur l'hôte reste celle d'`aphrody-infra`, qui installe les gabarits d'ici :
+`environment.json` (environnement unique de build, livraison et prod), `prod/compose.yaml`
+(pile de Prod sans secret), `activation/activate.sh` (bascule par service). Les chemins
+`aphrody-infra` ci-dessus étaient absents du checkout relu le 2026-11-05 (audit E1).
 
 Aucune adresse, aucun hôte ni port de production n'est décrit ici : les lire
 dans le catalogue `aphrody-infra`. Frontière et historique des suppressions :

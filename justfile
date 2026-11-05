@@ -281,3 +281,20 @@ build-local-guard *args="--static --context":
 [group('build-local')]
 build-local-windows *args="":
     pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/build/local-windows.ps1 {{ args }}
+
+# Deploy plan of a revision against what production runs (read-only; docs/operations/AUTO-DEPLOY.md)
+[group('deploy')]
+deploy-plan revision="origin/main":
+    bash scripts/deploy/release.sh --plan {{ revision }}
+
+# Change detection dry run over recent commits (what each one would rebuild and restart)
+[group('deploy')]
+deploy-history count="30":
+    bun scripts/deploy/lanes.ts history --count {{ count }}
+
+# Deploy definition gates: pins, classification, tests of scripts/deploy
+[group('deploy')]
+deploy-check:
+    bun scripts/deploy/environment.ts --check
+    bun scripts/deploy/lanes.ts --check
+    bun test scripts/deploy
