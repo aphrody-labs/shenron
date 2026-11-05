@@ -6,6 +6,10 @@ import { join, relative, sep } from "node:path";
 import {
   DEFAULT_CONFIG,
   KEEP_IN_MAIN,
+  MIN_DISK_GIB,
+  MIN_MEMORY_GIB,
+  parseProbe,
+  rankHosts,
   regenerablePaths,
   remoteScript,
   shellQuote,
@@ -117,5 +121,41 @@ describe("remoteScript", () => {
   test("shellQuote leaves safe words bare", () => {
     expect(shellQuote("a/b-c.d")).toBe("a/b-c.d");
     expect(shellQuote("a b")).toBe("'a b'");
+  });
+});
+
+describe("build host selection", () => {
+  const host = (name: string, load1: number, cores: number, mem = 30, disk = 100) => ({
+    host: name,
+    cores,
+    load1,
+    memAvailableGiB: mem,
+    diskFreeGiB: disk,
+  });
+
+  test("prefers the lowest load per core, not the lowest raw load", () => {
+    const ranked = rankHosts([host("vps", 6, 12), host("bunos", 4, 6)]);
+    expect(ranked.map((h) => h.host)).toEqual(["vps", "bunos"]);
+  });
+
+  test("drops hosts short on memory or disk", () => {
+    const ranked = rankHosts([
+      host("tight-memory", 0, 8, MIN_MEMORY_GIB - 1),
+      host("tight-disk", 0, 8, 30, MIN_DISK_GIB - 1),
+      host("busy", 7, 8),
+    ]);
+    expect(ranked.map((h) => h.host)).toEqual(["busy"]);
+  });
+
+  test("parses the probe output and rejects garbage", () => {
+    const probe = parseProbe("bunos", "6\n0.49\n10485760\n73400320\n");
+    expect(probe).toEqual({
+      host: "bunos",
+      cores: 6,
+      load1: 0.49,
+      memAvailableGiB: 10,
+      diskFreeGiB: 70,
+    });
+    expect(parseProbe("x", "Permission denied")).toBeUndefined();
   });
 });
