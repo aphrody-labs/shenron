@@ -24,7 +24,10 @@ export async function POST(request: Request): Promise<Response> {
       const r = body as Record<string, unknown>;
       console.info(
         "[csp-report]",
-        String(r.effectiveDirective ?? r["effective-directive"] ?? r.violatedDirective ?? "").slice(0, 60),
+        String(r.effectiveDirective ?? r["effective-directive"] ?? r.violatedDirective ?? "").slice(
+          0,
+          60,
+        ),
         String(r.blockedURL ?? r["blocked-uri"] ?? "").slice(0, 200),
         String(r.documentURL ?? r["document-uri"] ?? "").slice(0, 200),
       );

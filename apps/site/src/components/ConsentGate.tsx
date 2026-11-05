@@ -123,24 +123,24 @@ export function ConsentGate() {
       // on attend ce signal, puis on le guette brièvement avant de conclure à son
       // absence.
       void afterInteractionOrIdle().then(() => {
-      if (cancelled || settled) return;
-      const startedAt = performance.now();
-      poll = setInterval(() => {
-        if (settled) return;
-        const api = tcfApi();
-        if (api) {
-          if (poll) clearInterval(poll);
-          attach(api);
-          return;
-        }
-        // Fin de la fenêtre de surveillance : plus aucun CMP n'est attendu.
-        if (performance.now() - startedAt >= CMP_WATCH_MS && poll) clearInterval(poll);
-      }, 150);
-      timer = setTimeout(() => {
-        // Pas (encore) de CMP certifié → notre bannière prend le relais ; la
-        // surveillance continue et la retirera si le CMP finit par arriver.
-        if (!settled) setVisible(true);
-      }, CMP_WAIT_MS);
+        if (cancelled || settled) return;
+        const startedAt = performance.now();
+        poll = setInterval(() => {
+          if (settled) return;
+          const api = tcfApi();
+          if (api) {
+            if (poll) clearInterval(poll);
+            attach(api);
+            return;
+          }
+          // Fin de la fenêtre de surveillance : plus aucun CMP n'est attendu.
+          if (performance.now() - startedAt >= CMP_WATCH_MS && poll) clearInterval(poll);
+        }, 150);
+        timer = setTimeout(() => {
+          // Pas (encore) de CMP certifié → notre bannière prend le relais ; la
+          // surveillance continue et la retirera si le CMP finit par arriver.
+          if (!settled) setVisible(true);
+        }, CMP_WAIT_MS);
       });
     }
 
