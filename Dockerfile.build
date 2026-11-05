@@ -34,7 +34,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates curl git jq unzip xz-utils zstd tar \
-      build-essential pkg-config cmake clang lld llvm libssl-dev libsqlite3-dev \
+      build-essential pkg-config cmake clang lld llvm libssl-dev libsqlite3-dev binaryen \
       nsis nsis-pluginapi \
  && (id ubuntu >/dev/null 2>&1 && userdel -r ubuntu || true) \
  && groupadd --gid 10001 builder \
