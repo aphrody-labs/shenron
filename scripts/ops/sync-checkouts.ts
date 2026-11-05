@@ -114,7 +114,9 @@ export function expandPath(path: string): string {
 async function syncSubmodules(path: string, policy: SubmodulePolicy, emit: Emit, name: string, changed: boolean) {
   if (policy === false || !existsSync(join(path, ".gitmodules"))) return;
   if (!changed) {
-    // Nothing moved: only touch submodules when one is out of sync with its pin.
+    // Nothing moved: "initialized" policy never rescans (status on hundreds of submodules is slow);
+    // policy true only acts when a submodule drifted from its pin.
+    if (policy === "initialized") return;
     const status = await git(path, ["submodule", "status"]);
     const drift = status.out.split("\n").some((l) => l.startsWith("+") || l.startsWith("U") || (policy === true && l.startsWith("-")));
     if (!drift) {

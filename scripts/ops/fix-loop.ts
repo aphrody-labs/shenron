@@ -8,7 +8,7 @@
  *
  * 1. Runs the repo checks (oxlint JSON, oxfmt file list, tsc per workspace, rustfmt per member,
  *    cargo clippy JSON) and parses them into structured findings.
- * 2. Mechanical fixes first (oxfmt write, oxlint --fix, cargo fmt per member, cargo clippy --fix).
+ * 2. Mechanical fixes first (oxfmt write, oxlint --fix, rustfmt per member, cargo clippy --fix).
  * 3. Remaining findings go to an agent backend, one batch per file, edit scope restricted to that
  *    file and verified with git. A fix is kept only when that file's findings dropped and nothing
  *    new appeared; otherwise the file is reverted and recorded as unresolved.
@@ -369,29 +369,67 @@ export async function checkTsc(root: string, only?: string[]): Promise<Finding[]
   return dedupe(out);
 }
 
-export type Member = { name: string; dir: string; manifest: string };
+export type Member = {
+  name: string;
+  dir: string;
+  manifest: string;
+  edition: string;
+  files: string[];
+};
 
+/** Crates found from tracked Cargo.toml files (works when path dependencies are missing, unlike `cargo metadata`). */
 export async function rustMembers(root: string): Promise<Member[]> {
-  if (!existsSync(join(root, "Cargo.toml"))) return [];
-  const r = await sh("cargo metadata --no-deps --format-version 1", root);
-  try {
-    const meta = JSON.parse(r.out);
-    return meta.packages.map((p: any) => ({
-      name: p.name,
-      manifest: toPosix(p.manifest_path),
-      dir: toPosix(dirname(p.manifest_path)),
-    }));
-  } catch {
-    return [];
+  const tracked = (await sh("git ls-files -- '*Cargo.toml' '*.rs'", root)).out
+    .split("\n")
+    .filter(Boolean);
+  const manifests = tracked.filter((f) => f.endsWith("Cargo.toml"));
+  const rootToml = existsSync(join(root, "Cargo.toml"))
+    ? (Bun.TOML.parse(readFileSync(join(root, "Cargo.toml"), "utf8")) as any)
+    : {};
+  const wsEdition = rootToml.workspace?.package?.edition ?? "2024";
+  const members: Member[] = [];
+  for (const m of manifests) {
+    let toml: any;
+    try {
+      toml = Bun.TOML.parse(readFileSync(join(root, m), "utf8"));
+    } catch {
+      continue;
+    }
+    if (!toml.package?.name) continue;
+    const ed = toml.package.edition;
+    members.push({
+      name: String(toml.package.name),
+      manifest: toPosix(m),
+      dir: toPosix(dirname(m)) === "." ? "" : toPosix(dirname(m)),
+      edition: typeof ed === "string" ? ed : wsEdition,
+      files: [],
+    });
   }
+  const bySpecificity = members.toSorted((x, y) => y.dir.length - x.dir.length);
+  for (const f of tracked.filter((x) => x.endsWith(".rs"))) {
+    const owner = bySpecificity.find((m) => m.dir === "" || f.startsWith(`${m.dir}/`));
+    if (owner) owner.files.push(toPosix(f));
+  }
+  return members.filter((m) => m.files.length);
+}
+
+export function rustfmtCommand(root: string, m: Member, check: boolean): string {
+  const cfg = existsSync(join(root, "rustfmt.toml")) ? `--config-path ${q(root)}` : "";
+  return `rustfmt ${check ? "--check" : ""} --edition ${m.edition} ${cfg} ${m.files.map(q).join(" ")}`;
 }
 
 export async function checkRustfmt(root: string, members: Member[], only?: string[]) {
   const out: Finding[] = [];
   for (const m of members) {
-    if (only && !only.some((f) => toPosix(join(root, f)).startsWith(m.dir))) continue;
-    const r = await sh(`cargo fmt --check --manifest-path ${q(m.manifest)}`, root);
-    out.push(...parseRustfmt(`${r.out}\n${r.err}`, root));
+    if (only && !only.some((f) => toPosix(f).startsWith(`${m.dir}/`) || m.dir === "")) continue;
+    const r = await sh(rustfmtCommand(root, m, true), root);
+    out.push(
+      ...parseRustfmt(
+        `${r.out}
+${r.err}`,
+        root,
+      ),
+    );
   }
   return out;
 }
@@ -433,7 +471,7 @@ async function recheck(root: string, tool: Tool, file: string, members: Member[]
     case "rustfmt":
       return checkRustfmt(root, members, [file]);
     case "clippy": {
-      const m = members.find((x) => toPosix(join(root, file)).startsWith(x.dir));
+      const m = members.find((x) => x.files.includes(file));
       return checkClippy(root, m?.name);
     }
   }
@@ -655,6 +693,48 @@ type Options = {
 
 const git = (root: string, args: string) => sh(`git ${args}`, root);
 
+/** Dirty files (modified or untracked) with their current content, so an agent batch can be undone without losing earlier mechanical fixes. */
+export async function worktreeSnapshot(root: string): Promise<Map<string, string>> {
+  const names = new Set<string>();
+  for (const cmd of ["diff --name-only", "ls-files -o --exclude-standard"])
+    for (const n of (await git(root, cmd)).out.split("\n")) if (n) names.add(toPosix(n));
+  const snap = new Map<string, string>();
+  for (const n of names)
+    if (existsSync(join(root, n))) snap.set(n, readFileSync(join(root, n), "utf8"));
+  return snap;
+}
+
+export async function changedSince(root: string, snap: Map<string, string>): Promise<string[]> {
+  const now = await worktreeSnapshot(root);
+  const out: string[] = [];
+  for (const [n, c] of now) if (snap.get(n) !== c) out.push(n);
+  for (const n of snap.keys()) if (!now.has(n)) out.push(n);
+  return out;
+}
+
+export async function restoreSnapshot(root: string, snap: Map<string, string>, files: string[]) {
+  for (const f of files) {
+    const before = snap.get(f);
+    if (before !== undefined) writeFileSync(join(root, f), before);
+    else if ((await git(root, `ls-files --error-unmatch -- ${q(f)}`)).code === 0)
+      await git(root, `checkout -- ${q(f)}`);
+    else await sh(`rm -f ${q(f)}`, root);
+  }
+}
+
+/** Lines of `next` that are not in `prev` (multiset), for the suppression audit. */
+export function addedLines(prev: string, next: string): string[] {
+  const pool = new Map<string, number>();
+  for (const l of prev.split("\n")) pool.set(l, (pool.get(l) ?? 0) + 1);
+  const out: string[] = [];
+  for (const l of next.split("\n")) {
+    const n = pool.get(l) ?? 0;
+    if (n > 0) pool.set(l, n - 1);
+    else out.push(l);
+  }
+  return out;
+}
+
 const GENERATED = /(^|\/)(node_modules|vendor|target|dist|wasm|generated|examples)\//;
 
 async function commitGroup(o: Options, label: string, message: string, log: string[]) {
@@ -720,7 +800,8 @@ export async function main(argv: string[]): Promise<number> {
   const sha0 = (await git(root, "rev-parse HEAD")).out.trim();
 
   say(`fix-loop root=${root} HEAD=${sha0} tools=${o.tools.join(",")} reportOnly=${o.reportOnly}`);
-  if (flag("install")) say(`install: exit ${(await sh("bun install --frozen-lockfile", root)).code}`);
+  if (flag("install"))
+    say(`install: exit ${(await sh("bun install --frozen-lockfile", root)).code}`);
   const baseline = await runChecks(root, o.tools, members);
   say(`baseline: ${JSON.stringify(countByTool(baseline))} total=${baseline.length}`);
 
@@ -780,9 +861,12 @@ export async function main(argv: string[]): Promise<number> {
       "cargo-fmt",
       "rustfmt",
       members.length && plan.mechanical.rustfmt.length
-        ? members.map((m) => `cargo fmt --manifest-path ${q(m.manifest)}`).join(" ; ")
+        ? members
+            .filter((m) => plan.mechanical.rustfmt.some((f) => m.files.includes(f)))
+            .map((m) => rustfmtCommand(root, m, false))
+            .join(" ; ")
         : null,
-      "style(rust): cargo fmt per member",
+      "style(rust): rustfmt per member",
     );
     await step(
       "clippy-fix",
@@ -828,14 +912,22 @@ export async function main(argv: string[]): Promise<number> {
         agentCalls++;
         const tool = batch.findings[0]!.tool;
         const source = readFileSync(join(root, batch.file), "utf8");
+        const snap = await worktreeSnapshot(root);
         const res = await backend.fix(root, batch, agentPrompt(batch, source));
-        const changed = (await git(root, "diff --name-only")).out.split("\n").filter(Boolean);
-        const diff = (await git(root, `diff -U0 -- ${q(batch.file)}`)).out;
-        const audit = auditEdit([batch.file], changed, diff);
+        const changed = await changedSince(root, snap);
+        const added = addedLines(
+          snap.get(batch.file) ?? source,
+          existsSync(join(root, batch.file)) ? readFileSync(join(root, batch.file), "utf8") : "",
+        );
+        const audit = auditEdit(
+          [batch.file],
+          changed,
+          added.map((l) => "+" + l).join(String.fromCharCode(10)),
+        );
         let verdict = "";
         if (audit.outOfScope.length) verdict = `out-of-scope edits: ${audit.outOfScope.join(", ")}`;
         else if (audit.suppressions.length) verdict = `added suppression: ${audit.suppressions[0]}`;
-        else if (!res.ok && !diff) verdict = `agent made no change: ${res.reason}`;
+        else if (!changed.includes(batch.file)) verdict = `agent made no change: ${res.reason}`;
         if (!verdict) {
           const after = await recheck(root, tool, batch.file, members);
           const beforeFile = current.filter((f) => f.tool === tool && f.file === batch.file);
@@ -860,7 +952,7 @@ export async function main(argv: string[]): Promise<number> {
           verdict = `no improvement (${beforeFile.length} -> ${afterFile.length}) or new findings`;
         }
         // revert everything the agent touched
-        await git(root, `checkout -- ${changed.length ? changed.map(q).join(" ") : q(batch.file)}`);
+        await restoreSnapshot(root, snap, changed.length ? changed : [batch.file]);
         unresolved.set(batch.file, { reason: verdict, findings: batch.findings });
         say(`  reverted ${batch.file}: ${verdict}`);
       }

@@ -1,0 +1,90 @@
+# Audit de base Lighthouse + fact-check technique, dragonballfr.com (prod), 2026-11-05
+
+Lecture seule. Aucune modification de serveur ni deploiement. Mesures faites depuis le VPS (`ssh vps`), Lighthouse via `bun x lighthouse@latest`, Chrome headless `/usr/bin/google-chrome`, port CDP 19333, categories performance/accessibility/best-practices/seo, mobile (emulation par defaut) et `--preset=desktop`. Un passage par URL et par profil.
+
+## Limites de la mesure (a lire avant les chiffres)
+
+- **Le VPS etait tres charge pendant les mesures** : `load average 45.6 / 54.0 / 50.2` sur 12 coeurs. Les valeurs lab de TBT, TTI, LCP et Speed Index sont donc fortement gonflees (TBT de 8 a 22 s en mobile). Elles servent d'ordre de grandeur et de classement relatif, pas de reference absolue. A refaire depuis une machine au repos (ou PageSpeed Insights / CrUX) avant tout objectif chiffre.
+- **INP n'existe pas en lab Lighthouse** (mesure de terrain uniquement). Non mesure ici. Le TBT est le proxy affiche.
+- Un seul passage par URL : pas de mediane.
+- Premier passage `/` mobile : echec (timeout 240 s, installation de lighthouse a froid sur VPS charge). Relance reussie ; le score ci-dessous vient de la relance.
+- **Les URLs demandees `/fr`, `/en`, `/ja`, `/search` et `/fr/wiki` renvoient 404** (le site n'a pas de prefixe de locale ; la langue est `fr` fixe, selecteur de langue cote client). Lighthouse n'a donc pas ete lance dessus. Substituts mesures : `/wiki` (wiki), `/wiki/manga/volume/82` (manga), `/wiki/databooks/45` (databook), `/wiki/search` (recherche), plus `/wiki/characters`, `/wiki/episodes`, `/news` pour atteindre 8 URLs.
+
+## Scores bruts
+
+Metriques : LCP, CLS, TBT (INP : non mesurable en lab).
+
+| URL | Profil | Perf | A11y | BP | SEO | LCP | CLS | TBT | FCP | SI |
+|---|---|---|---|---|---|---|---|---|---|---|
+| / | mobile | 36 | 100 | 77 | 100 | 8.6 s | 0 | 15 160 ms | 1.6 s | 8.8 s |
+| / | desktop | 58 | 100 | 77 | 100 | 1.9 s | 0 | 2 100 ms | 0.5 s | 2.0 s |
+| /wiki | mobile | 44 | 100 | 77 | 100 | 5.6 s | 0 | 12 280 ms | 2.5 s | 4.3 s |
+| /wiki | desktop | 52 | 100 | 77 | 100 | 1.7 s | 0.214 | 1 570 ms | 0.6 s | 1.4 s |
+| /wiki/manga/volume/82 | mobile | 42 | 96 | 77 | 100 | 8.5 s | 0 | 8 350 ms | 1.3 s | 4.7 s |
+| /wiki/manga/volume/82 | desktop | 61 | 96 | 77 | 100 | 1.4 s | 0.032 | 2 720 ms | 0.4 s | 2.3 s |
+| /wiki/databooks/45 | mobile | 39 | 100 | 77 | 100 | 15.3 s | 0 | 9 290 ms | 1.9 s | 5.8 s |
+| /wiki/databooks/45 | desktop | 62 | 100 | 77 | 100 | 1.7 s | 0.032 | 1 360 ms | 0.4 s | 1.6 s |
+| /wiki/search | mobile | 36 | 100 | 77 | 66 | 7.1 s | 0.143 | 12 300 ms | 2.3 s | 4.1 s |
+| /wiki/search | desktop | 43 | 100 | 77 | 69 | 2.2 s | 0.279 | 1 490 ms | 0.7 s | 1.3 s |
+| /wiki/characters | mobile | 40 | 97 | 77 | 100 | 8.0 s | 0 | 12 600 ms | 2.5 s | 4.5 s |
+| /wiki/characters | desktop | 47 | 97 | 77 | 100 | 3.9 s | 0.017 | 1 730 ms | 0.7 s | 1.5 s |
+| /wiki/episodes | mobile | 32 | 100 | 77 | 100 | 11.8 s | 0 | 22 440 ms | 2.5 s | 11.0 s |
+| /wiki/episodes | desktop | 38 | 100 | 77 | 100 | 2.2 s | 0.378 | 1 940 ms | 0.7 s | 1.8 s |
+| /news | mobile | 66 | 95 | 77 | 100 | 1.5 s | 0 | 17 240 ms | 1.5 s | 4.9 s |
+| /news | desktop | 68 | 95 | 77 | 100 | 1.1 s | 0.017 | 1 470 ms | 0.3 s | 1.2 s |
+
+Constats : accessibilite 95-100 et SEO 100 partout sauf `/wiki/search` ; Bonnes pratiques bloquee a 77 sur toutes les pages ; Performance 32-68, tiree vers le bas par le TBT (partiellement artefact de charge, voir limites) et par des CLS desktop > 0,1 sur `/wiki`, `/wiki/search`, `/wiki/episodes`.
+
+Audits en echec releves (Lighthouse) :
+- BP 77 : `third-party-cookies` (cookies DoubleClick/AdSense), `inspector-issues`, `valid-source-maps` (page manga).
+- SEO 66/69 sur `/wiki/search` : `is-crawlable` en echec, car la page porte `robots: { index: false, follow: true }` (`apps/site/src/app/wiki/search/page.tsx:20`). Voulu a priori, donc non regressif ; le score est un faux positif de design.
+- Accueil mobile : `unused-javascript` ~253 Kio (AdSense `show_ads_impl`, GTM), `image-delivery-insight` ~888 Kio d'economie (avatars Discord `.gif`/`.webp` charges depuis cdn.discordapp.com), `total-byte-weight` 2 672 Kio, `render-blocking-insight` (5 feuilles CSS), `bf-cache` (3 raisons), `legacy-javascript` 14 Kio, `forced-reflow`.
+- Manga : `unsized-images` (pages `vol1/001.webp`...), `color-contrast` (`.m3-reader-btn` a opacity 40), `heading-order` (h3 sans h2), `server-response-time` document racine 840 ms, `total-byte-weight` 3 166 Kio (inclut un `koharu_canvas_bg.wasm`).
+- Partout : `label-content-name-mismatch` sur le bouton `shenron-language-trigger` (aria-label "Langue : Francais" different du texte visible), `cache-insight` (ex. `/official/beerus/logo-en.webp`, images `assets/ext/db_episodes/*.jpg`).
+- Accueil : image hero `https://cdn.dragonballfr.com/assets/crawl/dragon-ball-super.com/st04-01.jpg` 1440x810 en `loading="eager" fetchPriority="high"` (candidat LCP).
+
+## Fact-check technique
+
+| Controle | Resultat | Mesure |
+|---|---|---|
+| Pages en 4xx/5xx (home + liens internes de la home + 150 URLs du sitemap tirees au hasard, 278 URLs) | Aucune | `curl` GET, 0 reponse >= 400 |
+| Sitemap exhaustif (4 126 URLs) | NON FAIT | Seul un echantillon de 150 a ete crawle pour ne pas charger la prod |
+| Liens casses | Aucun sur l'echantillon | idem |
+| Assets 4xx/5xx | Aucun detecte sur les assets echantillonnes (css/js/woff2/svg) ; Lighthouse n'a pas signale de ressource en erreur | Pas de crawl exhaustif des assets |
+| Locales `/fr` `/en` `/ja` `/fr/wiki`, `/search` | 404 | A confirmer si attendu (voir correctifs) |
+| Canonical | Present et auto-referent sur 38 pages sur 40 echantillonnees (les 2 autres = favicons PNG). Accueil : `https://dragonballfr.com` sans slash final | `/wiki/canon?q=...` : canonical = URL avec `?q=`, ces URLs sont liees depuis la home |
+| hreflang | Absent partout (0/40) | Coherent avec un site sans locales d'URL ; `<html lang="fr">` |
+| h1 unique | 1 h1 sur toutes les pages HTML echantillonnees (`/wiki/characters/5` a 0 h1 car c'est une redirection vers `/wiki/characters/freezer`, corps de redirection) | |
+| meta description | Presente (HTML echantillonnes) | |
+| og:image | Present (HTML echantillonnes) | |
+| robots.txt | 200, `User-agent: *` Allow `/`, Disallow `/admin/ /api/ /profile/`, liste explicite des bots IA, deux `Sitemap:` | |
+| sitemap.xml | 200, 4 126 `<loc>` toutes sur `https://dragonballfr.com`, aucune URL avec `?` ; `/sources/sitemap.xml` est un index (`sitemaps/1.xml`...) non parcouru | `lastmod` = date de generation (identique pour les entrees vues) |
+| HSTS | `max-age=63072000` sans `includeSubDomains` ni `preload` | |
+| X-Content-Type-Options | `nosniff` | |
+| Referrer-Policy | `strict-origin-when-cross-origin` | |
+| CSP | `object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'` : pas de `default-src` ni `script-src`, volontaire (commentaire dans `apps/site/next.config.ts`) | Ne protege pas contre XSS script |
+| Autres | `X-Frame-Options: SAMEORIGIN`, COOP `same-origin-allow-popups`, Permissions-Policy | Pas de COEP/CORP |
+| Cache-Control assets | `_next/static` css/js : `public, max-age=31536000, immutable` (HIT Cloudflare). Police woff2 : `max-age=2592000, immutable` (30 j). Logo SVG : `max-age=86400` | |
+| Cache-Control HTML | Accueil : `private, no-cache, no-store, max-age=0, must-revalidate` ; pages wiki : `public, max-age=0, must-revalidate`. `cf-cache-status: DYNAMIC` (pas de cache edge du HTML) | |
+| Compression | `content-encoding: br` sur HTML, JS, CSS, SVG | gzip non teste separement |
+| HTTP/2 | Oui (`HTTP/2 200`) | |
+| HTTP/3 | Annonce (`alt-svc: h3=":443"; ma=86400"`) ; non teste (libcurl du VPS sans `--http3`) | |
+| Early Hints | `HTTP/2 103` recu avec `Link` preload | |
+
+## Correctifs priorises
+
+1. **Reduire le JS tiers et le TBT sur le chemin critique** : AdSense + GTM (`show_ads_impl`, `gtm.js`, ~250 Kio JS inutilise par page) ; les charger apres interaction/idle et uniquement apres consentement. Fichiers probables : `apps/site/src/components/ads/PublicAdsScript.tsx`, `apps/site/src/components/ads/AdUnit.tsx`, `apps/site/src/components/ConsentGate.tsx`, `apps/site/src/lib/ads.ts`, `apps/site/src/app/layout.tsx`.
+2. **Refaire la mesure sur machine au repos** (VPS a load 45-54) pour fixer des objectifs LCP/TBT fiables ; ajouter un budget Lighthouse CI et un suivi INP de terrain (web-vitals/CrUX). Fichier probable : nouveau script dans `scripts/` ou `apps/site/scripts/`.
+3. **Bonnes pratiques 77 -> 90+** : supprimer les cookies tiers DoubleClick avant consentement, corriger les `inspector-issues` (console), publier les source maps ou ne pas les referencer (`valid-source-maps`). Fichiers : `apps/site/next.config.ts` (`productionBrowserSourceMaps`), `apps/site/src/components/ConsentGate.tsx`.
+4. **LCP mobile (5,6 a 15,3 s lab)** : hero accueil et couvertures databook/manga. Servir des variantes redimensionnees/AVIF/WebP via `packages/images`, `srcset`/`sizes`, preload du seul element LCP ; l'image hero actuelle est un JPEG 1440x810 `crawl/dragon-ball-super.com/st04-01.jpg`. Fichiers : `packages/images/`, `apps/site/src/app/page.tsx`, `apps/site/src/app/wiki/databooks/`.
+5. **Poids des images de l'accueil** : avatars Discord (`cdn.discordapp.com`, ~888 Kio d'economie estimee) a proxifier/redimensionner a 32-64 px et en WebP statique, pas de GIF anime ; `loading="lazy"` hors ecran. Fichiers : composant de leaderboard/communaute sous `apps/site/src/components/` (a localiser), `packages/images/`.
+6. **CLS desktop > 0,1** sur `/wiki` (0,214), `/wiki/search` (0,279), `/wiki/episodes` (0,378) : reserver la hauteur des conteneurs (`data-shell-content`, `data-shell-footer`, emplacements pub), `aspect-ratio`/`min-height` sur les slots AdUnit et les listes chargees en differe. Fichiers : `apps/site/src/app/wiki/layout.tsx`, `apps/site/src/app/wiki/IndexLoading.tsx`, `apps/site/src/components/ads/AdUnit.tsx`, `apps/site/src/app/wiki/episodes/`.
+7. **Lecteur manga** : images sans dimensions (`unsized-images`), contraste `.m3-reader-btn` (opacity 40 desactive), h3 sans h2. Ajouter `width`/`height`, revoir contraste/`aria-disabled`, corriger la hierarchie. Fichiers : `apps/site/src/app/wiki/manga/`, styles `m3-reader-btn` (`apps/site/src/app/globals.css` ou `packages/ui`). Verifier aussi le chargement de `koharu_canvas_bg.wasm` (`packages/koharu`) sur la page de lecture.
+8. **Accessibilite du selecteur de langue** : `aria-label="Langue : Francais"` different du texte visible (`label-content-name-mismatch`) sur toutes les pages. Aligner le label avec le texte visible. Fichier probable : composant `shenron-language-trigger` dans `apps/site/src/components/` ou `packages/ui` (a localiser).
+9. **Cache et edge** : HTML wiki en `DYNAMIC` + `max-age=0`, TTFB document racine 840 ms sur le lecteur manga. Ajouter `s-maxage` + `stale-while-revalidate` pour les pages wiki publiques et une regle de cache Cloudflare ; rallonger le cache des petits assets (logo `max-age=86400`, `official/beerus/logo-en.webp`, `assets/ext/*.jpg`). Fichiers : `apps/site/next.config.ts` (blocs `headers()` autour des lignes 397-460), regles Cloudflare.
+10. **Durcissement des en-tetes et SEO structurel** : HSTS `includeSubDomains; preload` (apres verification des sous-domaines, dont `cdn.`) ; CSP avec `script-src` en `Report-Only` d'abord (le choix actuel est volontairement minimal, cf. commentaire de `next.config.ts`) ; decider si `/fr`, `/en`, `/ja` doivent exister (i18n par URL + `hreflang`) ou rester absents ; `lastmod` reel par entree dans `apps/site/src/app/sitemap.ts` ; ne pas lier les URLs `/wiki/canon?q=...` depuis la home ou les `noindex`. Fichiers : `apps/site/next.config.ts`, `apps/site/src/app/sitemap.ts`, `apps/site/src/app/robots.ts`.
+
+## Reproduction
+
+- Lighthouse : `bun x lighthouse <url> --port=19333 [--preset=desktop] --only-categories=performance,accessibility,best-practices,seo --output=json --chrome-flags="--headless=new --no-sandbox --remote-debugging-port=19333"` (JSON dans `/tmp/lh/` sur le VPS).
+- Fact-check : `curl -sI` / `curl --compressed` sur le VPS ; echantillon sitemap `shuf -n 150`.
