@@ -49,7 +49,7 @@ export const DEFAULT_CONFIG: RemoteDevConfig = {
   host: process.env.SHENRON_DEV_HOST ?? "vps",
   workspace: process.env.SHENRON_DEV_WORKSPACE ?? "shenron-dev",
   snapshotRef: "refs/dev/snapshot",
-  seedRemote: "git@github.com:aphrody-labs/shenron.git",
+  seedRemote: process.env.SHENRON_DEV_SEED ?? "git@github.com:aphrody-labs/shenron.git",
   devSession: "shenron-dev",
   remoteDevPort: 3310,
   localDevPort: Number(process.env.SHENRON_DEV_PORT ?? 3000),
