@@ -506,6 +506,16 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'",
           },
+          // `script-src` en Report-Only UNIQUEMENT : mesure ce qu'une politique stricte
+          // casserait (GTM, AdSense, lecteurs vidéo tiers) sans rien bloquer. Les
+          // violations partent vers `/api/csp-report` (Chrome les
+          // écrit aussi dans la console). À promouvoir en `Content-Security-Policy` seulement
+          // après un relevé propre.
+          {
+            key: "Content-Security-Policy-Report-Only",
+            value:
+              "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.gstatic.com https://*.google.com https://*.vercel-scripts.com; report-uri /api/csp-report",
+          },
           // Aucune de ces API n'est utilisée par le site : les refuser évite
           // qu'un script tiers (régie pub) puisse les demander en notre nom.
           {
