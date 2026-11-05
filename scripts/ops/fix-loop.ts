@@ -229,6 +229,7 @@ export function planRound(
   const byFile = new Map<string, Finding[]>();
   for (const f of findings) {
     if (f.tool === "oxfmt" || f.tool === "rustfmt") continue; // purely mechanical
+    if (f.file.startsWith("<")) continue; // pseudo-file (cargo-failed): an environment problem, not a source edit
     if (opts.unresolved.has(f.file) || opts.skip?.(f.file)) continue;
     byFile.set(f.file, [...(byFile.get(f.file) ?? []), f]);
   }

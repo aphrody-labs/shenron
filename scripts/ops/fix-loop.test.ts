@@ -284,3 +284,13 @@ describe("cargo failure", () => {
     expect(withCargoFailure([], { code: 0, err: "" })).toEqual([]);
   });
 });
+
+describe("pseudo findings", () => {
+  test("cargo-failed never becomes an agent batch", () => {
+    const p = planRound(
+      [f({ tool: "clippy", file: "<cargo>", code: "cargo-failed" })],
+      { unresolved: new Set(), budget: 5 },
+    );
+    expect(p.agent).toEqual([]);
+  });
+});
