@@ -22,9 +22,7 @@ export function PublicAdsScript({ client }: { client: string }) {
   useEffect(() => {
     if (!allowed) return;
     let cancelled = false;
-    // AdSense (et son CMP certifié) ne charge qu'après la première interaction
-    // ou au repos : ~250 Kio de JS hors du chemin critique, TBT allégé.
-    void afterInteractionOrIdle().then(() => {
+    const loadScript = () => {
       if (cancelled) return;
       const src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${encodeURIComponent(client)}`;
       if (document.querySelector(`script[src="${src}"]`)) return;
@@ -33,7 +31,10 @@ export function PublicAdsScript({ client }: { client: string }) {
       script.async = true;
       script.crossOrigin = "anonymous";
       document.head.appendChild(script);
-    });
+    };
+    // AdSense (et son CMP certifié) ne charge qu'après la première interaction
+    // ou au repos : ~250 Kio de JS hors du chemin critique, TBT allégé.
+    void afterInteractionOrIdle().then(loadScript);
     return () => {
       cancelled = true;
     };

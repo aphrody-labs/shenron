@@ -122,7 +122,7 @@ export function ConsentGate() {
       // interaction ou au repos (`PublicAdsScript`, même déclencheur partagé) :
       // on attend ce signal, puis on le guette brièvement avant de conclure à son
       // absence.
-      void afterInteractionOrIdle().then(() => {
+      const watchForCmp = (): void => {
         if (cancelled || settled) return;
         const startedAt = performance.now();
         poll = setInterval(() => {
@@ -141,7 +141,8 @@ export function ConsentGate() {
           // surveillance continue et la retirera si le CMP finit par arriver.
           if (!settled) setVisible(true);
         }, CMP_WAIT_MS);
-      });
+      };
+      void afterInteractionOrIdle().then(watchForCmp);
     }
 
     return () => {

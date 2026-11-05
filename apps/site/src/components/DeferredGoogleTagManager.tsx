@@ -35,6 +35,7 @@ export function DeferredGoogleTagManager({ gtmId }: { gtmId: string }) {
       started = true;
       void afterInteractionOrIdle().then(() => {
         if (!cancelled) injectGtm(gtmId);
+        return undefined;
       });
     };
     if (getConsent().analytics) start();
