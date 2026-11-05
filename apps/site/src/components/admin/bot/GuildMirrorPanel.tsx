@@ -148,11 +148,7 @@ export function GuildMirrorPanel() {
                 className="col-span-2"
               />
             </MetricGrid>
-            {stale && (
-              <p role="status" className="text-sm text-dbz-amber">
-                {t("stats.stale")}
-              </p>
-            )}
+            {stale && <output className="block text-sm text-dbz-amber">{t("stats.stale")}</output>}
           </div>
         )}
         {sync.isError && (
@@ -161,7 +157,7 @@ export function GuildMirrorPanel() {
           </div>
         )}
         {sync.data && (
-          <p role="status" className="mt-4 text-sm text-foreground">
+          <output className="mt-4 block text-sm text-foreground">
             {t("sync.done", {
               members: fmt.number(sync.data.members),
               left: fmt.number(sync.data.membersLeft),
@@ -169,7 +165,7 @@ export function GuildMirrorPanel() {
               channels: fmt.number(sync.data.channels),
               duration: fmt.duration(sync.data.durationMs),
             })}
-          </p>
+          </output>
         )}
       </Section>
 
@@ -201,28 +197,30 @@ function MemberSearch() {
 
   return (
     <Section title={t("title")} description={t("description")}>
-      <form onSubmit={submit} role="search" className="flex flex-wrap gap-2">
-        <label className="sr-only" htmlFor="guild-member-query">
-          {t("label")}
-        </label>
-        <input
-          id="guild-member-query"
-          type="search"
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
-          placeholder={t("placeholder")}
-          autoComplete="off"
-          className="input min-w-0 flex-1 basis-60"
-        />
-        <button
-          type="submit"
-          disabled={!draft.trim() || results.isFetching}
-          className="btn btn-primary"
-        >
-          <Search aria-hidden className="h-3.5 w-3.5" />
-          {t("button")}
-        </button>
-      </form>
+      <search>
+        <form onSubmit={submit} className="flex flex-wrap gap-2">
+          <label className="sr-only" htmlFor="guild-member-query">
+            {t("label")}
+          </label>
+          <input
+            id="guild-member-query"
+            type="search"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder={t("placeholder")}
+            autoComplete="off"
+            className="input min-w-0 flex-1 basis-60"
+          />
+          <button
+            type="submit"
+            disabled={!draft.trim() || results.isFetching}
+            className="btn btn-primary"
+          >
+            <Search aria-hidden className="h-3.5 w-3.5" />
+            {t("button")}
+          </button>
+        </form>
+      </search>
 
       <div className="mt-4" aria-live="polite">
         {!query ? (

@@ -93,7 +93,7 @@ export function BotSelector({ value, onChange, className }: BotSelectorProps) {
   if (bots.length <= 1) return null;
 
   return (
-    <div role="group" aria-label={t("label")} className={`flex flex-wrap gap-2 ${className ?? ""}`}>
+    <fieldset aria-label={t("label")} className={`flex min-w-0 flex-wrap gap-2 ${className ?? ""}`}>
       {bots.map((b) => {
         const active = b.id === value;
         return (
@@ -121,13 +121,13 @@ export function BotSelector({ value, onChange, className }: BotSelectorProps) {
             )}
             <span className="font-medium">{b.name}</span>
             <span
-              role="img"
-              aria-label={b.online ? t("online") : t("offline")}
+              aria-hidden="true"
               className={`h-2 w-2 rounded-full ${b.online ? "bg-emerald-400" : "bg-red-500"}`}
             />
+            <span className="sr-only">{b.online ? t("online") : t("offline")}</span>
           </button>
         );
       })}
-    </div>
+    </fieldset>
   );
 }

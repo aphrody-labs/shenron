@@ -69,7 +69,7 @@ export default function ReportsPage() {
     <div className="space-y-5">
       <p className="max-w-3xl text-sm text-muted-foreground">{t("intro")}</p>
 
-      <div role="group" aria-label={t("filters")} className="flex flex-wrap items-center gap-2">
+      <fieldset aria-label={t("filters")} className="flex min-w-0 flex-wrap items-center gap-2">
         {FILTERS.map((key) => {
           const active = filter === key;
           return (
@@ -98,7 +98,7 @@ export default function ReportsPage() {
         {q.isFetching && (
           <Chargement aria-hidden className="h-4 w-4 animate-spin text-muted-foreground" />
         )}
-      </div>
+      </fieldset>
 
       {q.isError ? (
         <ErrorState message={t("loadFailed")} onRetry={() => q.refetch()} retrying={q.isFetching} />

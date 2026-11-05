@@ -49,7 +49,7 @@ export function OffreLegale({ offres }: { offres: Availability[] | null | undefi
       </header>
 
       {langs.length > 1 && (
-        <div role="group" aria-label={t("versionChoice")} className="flex flex-wrap gap-2">
+        <fieldset aria-label={t("versionChoice")} className="flex min-w-0 flex-wrap gap-2">
           {["all", ...langs].map((l) => (
             <button
               type="button"
@@ -65,7 +65,7 @@ export function OffreLegale({ offres }: { offres: Availability[] | null | undefi
               {l === "all" ? t("allVersions") : t(l)}
             </button>
           ))}
-        </div>
+        </fieldset>
       )}
 
       <ul className="flex flex-col gap-2">
