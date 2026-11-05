@@ -21,4 +21,3 @@ serde_json = { workspace = true }
 shenron-cli = { workspace = true }
 shenron-rag = { workspace = true }
 tauri = { workspace = true }
-tokio = { workspace = true }

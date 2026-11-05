@@ -102,11 +102,9 @@ pub fn to_420(p: &Picture, w: usize, h: usize) -> Yuv420 {
             for c in 0..hw {
                 out.push(match p.chroma {
                     ChromaFormat::Yuv420 => src[r * cw + c],
-                    ChromaFormat::Yuv422 => {
-                        (u16::from(src[2 * r * cw + c])
-                            + u16::from(src[(2 * r + 1) * cw + c]))
-                            .div_ceil(2) as u8
-                    },
+                    ChromaFormat::Yuv422 => (u16::from(src[2 * r * cw + c])
+                        + u16::from(src[(2 * r + 1) * cw + c]))
+                    .div_ceil(2) as u8,
                     ChromaFormat::Yuv444 => src[2 * r * cw + 2 * c],
                 });
             }

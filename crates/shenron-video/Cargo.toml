@@ -1,14 +1,14 @@
 # SPDX-License-Identifier: Apache-2.0
-# Optional standalone tool, excluded from the root workspace. FilmCraft is owned by Bun OS in
-# aphrody-labs/bun-distribution; every dependency uses the same source revision.
-[workspace]
+# Workspace member that still builds alone: scripts/ops/build-shenron-video.sh copies this manifest
+# out of the tree to qualify an artifact, so it inherits nothing from the root Cargo.toml.
+# FilmCraft is owned by Bun OS (aphrody-labs/bun-distribution) and published on crates.io.
 
 [package]
 name = "shenron-video"
 description = "Shenron video library, pure Rust, no ffmpeg: MPEG-1/2 decode, H.264 encode, fragmented MP4 mux, probe, stills."
 version = "1.4.5"
 edition = "2024"
-rust-version = "1.95"
+rust-version = "1.97"
 license = "Apache-2.0"
 authors = ["aphrody-dev <contact@aphrody.com>"]
 homepage = "https://dragonballfr.com"
@@ -24,10 +24,10 @@ name = "shenron-video"
 path = "src/main.rs"
 
 [dependencies]
-filmcraft-mpeg2v = { git = "https://github.com/aphrody-labs/bun-distribution", rev = "f067d7f77e4b5a95412bc35e8bcee5f809670ecc" }
-filmcraft-h264enc = { git = "https://github.com/aphrody-labs/bun-distribution", rev = "f067d7f77e4b5a95412bc35e8bcee5f809670ecc" }
-filmcraft-isobmff = { git = "https://github.com/aphrody-labs/bun-distribution", rev = "f067d7f77e4b5a95412bc35e8bcee5f809670ecc" }
-filmcraft-export = { git = "https://github.com/aphrody-labs/bun-distribution", rev = "f067d7f77e4b5a95412bc35e8bcee5f809670ecc" }
+filmcraft-mpeg2v = "0.9.0"
+filmcraft-h264enc = "0.9.0"
+filmcraft-isobmff = "0.9.0"
+filmcraft-export = "0.9.0"
 
 [lints.rust]
 unsafe_code = "forbid"
