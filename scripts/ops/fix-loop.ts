@@ -758,7 +758,8 @@ const GENERATED = /(^|\/)(node_modules|vendor|target|dist|wasm|generated|example
 async function commitGroup(o: Options, label: string, message: string, log: string[]) {
   const status = await git(o.root, "status --porcelain");
   if (!status.out.trim()) return null;
-  await git(o.root, "add -A");
+  // reports and lockfile churn from cargo resolution never belong in a fix commit
+  await git(o.root, "add -A -- . ':!var/reports' ':!Cargo.lock'");
   const body = `${message}\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>`;
   const r = await sh(`git commit -q -m ${q(body)} && git rev-parse HEAD`, o.root);
   log.push(`commit ${label}: ${r.out.trim() || r.err.trim()}`);
