@@ -107,7 +107,7 @@ export default function Bt3Player() {
   };
 
   // Adopt emulator canvas into our fullscreen frame
-  const adoptCanvas = (known: Set<Element>) => {
+  const adoptCanvas = useCallback((known: Set<Element>) => {
     const target = frameRef.current;
     if (!target) return;
     const started = performance.now();
@@ -125,7 +125,7 @@ export default function Bt3Player() {
       }
     };
     look();
-  };
+  }, []);
 
   // Pre-load WASM & start streaming game immediately
   useEffect(() => {
@@ -157,7 +157,8 @@ export default function Bt3Player() {
           let buffer = new Uint8Array(CHUNK_BYTES);
           let bufPos = 0;
 
-          while (active) {
+          for (;;) {
+            if (!active) break;
             const { done, value } = await reader.read();
             if (done) {
               if (bufPos > 0) {
@@ -214,7 +215,7 @@ export default function Bt3Player() {
         geckoModuleRef.current?.cancel_game_load();
       } catch {}
     };
-  }, []);
+  }, [adoptCanvas]);
 
   // Local file selection or drag and drop
   const handleLocalFile = async (file: File) => {

@@ -91,14 +91,14 @@ export function CardImageHistoryRestore({
         <p className="mb-2 text-xs text-dbz-text-muted">{t("historyRestore.removeImage")}</p>
       )}
       {preview.isFetching && (
-        <p role="status" className="mb-2 text-xs text-dbz-text-muted">
+        <output className="mb-2 block text-xs text-dbz-text-muted">
           {t("historyRestore.checking")}
-        </p>
+        </output>
       )}
       {ready && (
-        <p role="status" className="mb-2 text-xs text-dbz-text-muted">
+        <output className="mb-2 block text-xs text-dbz-text-muted">
           {t("historyRestore.ready")}
-        </p>
+        </output>
       )}
       {error && (
         <p role="alert" className="mb-2 text-xs text-dbz-text-muted">

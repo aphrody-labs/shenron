@@ -13,12 +13,12 @@ const flat = (o: any, p = "", out: Record<string, string> = {}) => {
   }
   return out;
 };
-const tok = (s: string) => (s.match(/\{[^}]*\}|<\/?[a-zA-Z][^>]*>|%[sd]/g) ?? []).sort().join("|");
+const tok = (s: string) => (s.match(/\{[^}]*\}|<\/?[a-zA-Z][^>]*>|%[sd]/g) ?? []).toSorted().join("|");
 let bad = 0;
 for (const f of files) {
   const a = flat(JSON.parse(execSync(`git show ${base}:${f}`, { encoding: "utf8" })));
   const b = flat(JSON.parse(readFileSync(f, "utf8")));
-  if (Object.keys(a).sort().join() !== Object.keys(b).sort().join()) {
+  if (Object.keys(a).toSorted().join() !== Object.keys(b).toSorted().join()) {
     console.log("KEY MISMATCH", f);
     bad++;
   }
