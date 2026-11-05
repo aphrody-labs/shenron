@@ -83,7 +83,11 @@ describe("official crawl migration", () => {
         },
         crawl: async () => {
           submitted++;
-          return { id: "3,4", status: "completed", stats: {} };
+          return {
+            id: "3,4",
+            status: "completed" as const,
+            stats: { total: 0, saved: 0, failed: 0 },
+          };
         },
       },
     });
@@ -108,13 +112,13 @@ describe("official crawl migration", () => {
         return {
           id: "1,2",
           status: "completed" as const,
-          stats: {},
+          stats: { total: 0, saved: 0, failed: 0 },
         };
       },
       status: async () => ({
         id: "1,2",
         status: "completed" as const,
-        stats: {},
+        stats: { total: 0, saved: 0, failed: 0 },
       }),
     };
     const planned = await runOfficialCrawl("dry-run", { capture, client, stateDir });
@@ -156,7 +160,7 @@ describe("official crawl migration", () => {
       status: async () => ({
         id: "1,2",
         status: "completed" as const,
-        stats: {},
+        stats: { total: 0, saved: 0, failed: 0 },
       }),
     };
     const result = await runOfficialCrawl("apply", {

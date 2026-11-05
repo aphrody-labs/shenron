@@ -167,13 +167,12 @@ export async function runOfficialCrawl(
     if (!job) {
       job = await client.crawl({
         urls: seeds,
-        mode: "fetch",
       });
       record = { batch, id: job.id, status: job.status };
       state.jobs.push(record);
       await save();
     }
-    while (job.status === "running") {
+    while ((job.status as string) === "running") {
       await sleep(2_000);
       job = await client.status(job.id);
     }
