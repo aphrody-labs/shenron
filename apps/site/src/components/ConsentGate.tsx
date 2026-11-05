@@ -18,6 +18,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { getConsent, setConsent, setConsentFromCmp } from "@/lib/consent";
+import { afterInteractionOrIdle } from "@/lib/deferred-third-party";
 
 /**
  * API IAB TCF v2.2, exposée par un CMP certifié — chez nous « Confidentialité et
@@ -82,6 +83,7 @@ export function ConsentGate() {
     let timer: ReturnType<typeof setTimeout> | undefined;
     let poll: ReturnType<typeof setInterval> | undefined;
     let settled = false;
+    let cancelled = false;
 
     const tcfApi = (): TcfApi | undefined => (window as unknown as { __tcfapi?: TcfApi }).__tcfapi;
 
@@ -116,8 +118,12 @@ export function ConsentGate() {
     if (existing) {
       attach(existing);
     } else {
-      // Le stub `__tcfapi` est posé par le script AdSense, donc après notre
-      // montage : on le guette brièvement avant de conclure à son absence.
+      // Le stub `__tcfapi` est posé par le script AdSense, chargé à la première
+      // interaction ou au repos (`PublicAdsScript`, même déclencheur partagé) :
+      // on attend ce signal, puis on le guette brièvement avant de conclure à son
+      // absence.
+      void afterInteractionOrIdle().then(() => {
+      if (cancelled || settled) return;
       const startedAt = performance.now();
       poll = setInterval(() => {
         if (settled) return;
@@ -135,9 +141,11 @@ export function ConsentGate() {
         // surveillance continue et la retirera si le CMP finit par arriver.
         if (!settled) setVisible(true);
       }, CMP_WAIT_MS);
+      });
     }
 
     return () => {
+      cancelled = true;
       if (poll) clearInterval(poll);
       if (timer) clearTimeout(timer);
       if (listenerId !== undefined) {

@@ -7,7 +7,8 @@ import { FONT_PRELOADS } from "@/lib/font-preloads";
 // remontée des pastilles flottantes et du bandeau de consentement).
 import "@aphrody/shenron-ui/barre-nav.css";
 import dynamic from "next/dynamic";
-import { GoogleTagManager, GoogleAnalytics } from "@next/third-parties/google";
+import { GoogleAnalytics } from "@next/third-parties/google";
+import { DeferredGoogleTagManager } from "@/components/DeferredGoogleTagManager";
 import { ShellBoot } from "@aphrody/shenron-ui/navigation/ShellBoot";
 import { SiteShell } from "@/components/SiteShell";
 import { LocaleProvider } from "@/lib/i18n/client";
@@ -209,8 +210,8 @@ export default async function RootLayout({
           <style id="site-theme" dangerouslySetInnerHTML={{ __html: `:root{${themeCss}}` }} />
         )}
       </head>
-      {/* Google Tag Manager — injecté via le composant officiel @next/third-parties */}
-      <GoogleTagManager gtmId={gtmId} />
+      {/* Google Tag Manager — chargé après interaction ou au repos (cf. lib/deferred-third-party) */}
+      <DeferredGoogleTagManager gtmId={gtmId} />
       {/* Google Analytics GA4 — seulement si une vraie property est posée en env
 			    (sinon GA4 est déjà géré par le conteneur GTM ci-dessus). */}
       {env.NEXT_PUBLIC_GA_ID && <GoogleAnalytics gaId={env.NEXT_PUBLIC_GA_ID} />}
