@@ -2,7 +2,7 @@
 /**
  * One page interface over the three rendering engines the site is checked with:
  *  - chrome     real Chromium through playwright-core (pixel-accurate; the reference for visual calls)
- *  - obscura    `aphrody-web launch` (Aphrody's engine; layout is approximate, fonts and transforms differ)
+ *  - obscura    `yolo-browser serve` (YOLO WEB engine; layout is approximate, fonts and transforms differ)
  *  - lightpanda var/tools/lightpanda/lightpanda serve (DOM/JS only, no screenshots)
  * Chromium comes from `bun node_modules/playwright-core/cli.js install chromium-headless-shell`
  * (cache ~/.cache/ms-playwright; libnss3/libnspr4 must be installed).

@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 /**
- * bxc-asset-harvest.ts — extraction d'assets via Aphrody Web.
+ * yolo-web-asset-harvest.ts — extraction d'assets (scrape, recon, miroir).
  *
  * Scrape, reconnaissance et miroir récursif passent par l'owner Aphrody Web.
  *
@@ -11,11 +11,11 @@
  *  4. Download des URLs image/audio découvertes → public/{sfx,dbz,sprites}/bxc/
  *
  * Usage :
- *   bun apps/site/scripts/bxc-asset-harvest.ts
- *   bun apps/site/scripts/bxc-asset-harvest.ts --profile max --delay 800
- *   bun apps/site/scripts/bxc-asset-harvest.ts --mirror-only
- *   bun apps/site/scripts/bxc-asset-harvest.ts --max-sources 1 --no-mirror
- *   APHRODY_BIN=aphrody bun apps/site/scripts/bxc-asset-harvest.ts
+ *   bun apps/site/scripts/yolo-web-asset-harvest.ts
+ *   bun apps/site/scripts/yolo-web-asset-harvest.ts --profile max --delay 800
+ *   bun apps/site/scripts/yolo-web-asset-harvest.ts --mirror-only
+ *   bun apps/site/scripts/yolo-web-asset-harvest.ts --max-sources 1 --no-mirror
+ *   APHRODY_BIN=aphrody bun apps/site/scripts/yolo-web-asset-harvest.ts
  *
  * Voir aussi : `bun apps/bot/scripts/rag-harvest.ts run-seeds`
  */
@@ -37,7 +37,7 @@ const PUBLIC = join(SITE_ROOT, "public");
 // icône Toei) — que le site rediffusait sur son propre domaine sans qu'aucune
 // ligne de code ni de base n'y renvoie. Le dépôt reste hors du dossier servi ;
 // ce qui doit être publié passe par une étape de tri explicite.
-const MOISSON = join(process.env.HOME ?? SITE_ROOT, "shenron-media-masters", "bxc-harvest");
+const MOISSON = join(process.env.HOME ?? SITE_ROOT, "shenron-media-masters", "yolo-web-harvest");
 const OUT_AUDIO = join(MOISSON, "audio");
 const OUT_IMG = join(MOISSON, "images");
 const OUT_SPRITES = join(MOISSON, "sprites");
@@ -46,8 +46,8 @@ const BOT_ASSET_ROOT = join(SITE_ROOT, "..", "bot", "assets", "ext", "bxc");
 // Inventaire et journal hors de `public/` : ils nommaient les sources
 // moissonnées et les chemins internes, en lecture libre sur le domaine.
 const INVENTAIRES = join(SITE_ROOT, "scripts", "inventaires");
-const INV = join(INVENTAIRES, "bxc-asset-inventory.json");
-const LOG = join(INVENTAIRES, "bxc-asset-harvest.log");
+const INV = join(INVENTAIRES, "yolo-web-asset-inventory.json");
+const LOG = join(INVENTAIRES, "yolo-web-asset-harvest.log");
 
 // CLI
 const argv = process.argv.slice(2);
@@ -529,7 +529,7 @@ async function downloadOne(hit: AssetHit): Promise<DlRec> {
     }
     const res = await fetch(hit.url, {
       headers: {
-        "User-Agent": "DBFR-bxc-harvest/2.0 (shenron rag-harvest pattern; rights FR)",
+        "User-Agent": "DBFR-yolo-web-harvest/2.0 (shenron rag-harvest pattern; rights FR)",
         Referer: hit.fromPage,
       },
       signal: AbortSignal.timeout(40_000),
