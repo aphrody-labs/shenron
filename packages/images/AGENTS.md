@@ -1,8 +1,19 @@
-# Instructions agents
+# packages/images
 
-Unité modulaire `@aphrody/shenron-images` du monorepo Shenron.
+Hachage d'images, déduplication, choix de variantes et sélection d'illustrations sourcées (Bun et sharp).
 
-- Le code et les identifiants restent en anglais ; la documentation reste en français.
-- Utiliser Bun Aphrody pour les scripts, tests et builds.
-- Respecter le contrat workspace du dépôt parent et ne jamais inclure de secrets, données privées ou artefacts générés.
-- Vérifier le diff et les tests propres à cette unité avant de synchroniser son dépôt GitHub.
+Commands:
+
+```sh
+bun run --filter @aphrody/shenron-images test
+bun run --filter @aphrody/shenron-images lint
+bun run --filter @aphrody/shenron-images typecheck
+```
+
+Rules:
+
+- Bun 1.4.4+ only. No Node, npm, yarn or pnpm.
+- Code identifiers and comments in English; documentation in French.
+- No secret, private data or generated artifact in a tracked file.
+- No heavy build on the Windows PC: run builds on vps or bunos.
+- Repo-wide rules: `AGENTS.md` at the root.

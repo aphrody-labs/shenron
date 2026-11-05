@@ -1,12 +1,19 @@
 # @aphrody/shenron-lexicon
 
-Le lexique unique ja/fr/en de Shenron, en TypeScript (classe `pure`, sans dépendance).
+Lexique de traduction Dragon Ball (ja/fr/en) côté TypeScript: recherche, repli de graphies, masquage de termes.
 
-- `@aphrody/shenron-lexicon` : moteur — `Lexicon` (`resolve`, `label`, `search`, `mask`,
-  `coverage`, `legacyEntries`), `maskText`, `restoreTokens`, `findTokens`, `fold`.
-- `@aphrody/shenron-lexicon/data` : `lexicon()`, les termes de `data/lexicon/terms.json` embarqués
-  (`src/terms.generated.ts`, généré par `bun scripts/data/lexicon.ts build`).
+## Commandes
 
-Mêmes règles que le crate Rust `shenron-lexicon` : les deux lisent les fixtures dorées de
-`data/lexicon/fixtures/` (`bun test`). Format, propriétaires et couverture :
-[docs/architecture/lexicon.md](../../docs/architecture/lexicon.md).
+```sh
+bun run --filter @aphrody/shenron-lexicon test
+bun run --filter @aphrody/shenron-lexicon lint
+bun run --filter @aphrody/shenron-lexicon typecheck
+```
+
+Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce dossier.
+
+## Règles du dossier
+
+- `src/terms.generated.ts` est généré.
+
+Règles générales: `AGENTS.md` à la racine.

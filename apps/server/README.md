@@ -1,9 +1,22 @@
 # @aphrody/shenron-server
 
-Application privée du serveur Bun autonome Shenron.
+`shenron-server`: site, API Shenron et API locales empaquetés en un binaire Bun autonome.
 
-Cette unité est suivie comme sous-module Git du dépôt `aphrody-labs/shenron` et reste testable dans le workspace Bun parent.
+## Commandes
 
-## Développement
+```sh
+bun run --filter @aphrody/shenron-server dev
+bun run --filter @aphrody/shenron-server start
+bun run --filter @aphrody/shenron-server build
+bun run --filter @aphrody/shenron-server test
+bun run --filter @aphrody/shenron-server lint
+bun run --filter @aphrody/shenron-server typecheck
+```
 
-Depuis le monorepo parent : `bun install --frozen-lockfile`, puis la commande de test ou de build déclarée dans ce package.
+Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce dossier.
+
+## Règles du dossier
+
+- Le binaire se construit avec `scripts/build/server.ts`.
+
+Règles générales: `AGENTS.md` à la racine.

@@ -1,19 +1,12 @@
-# CDN R2 de Shenron
+# deploy/cloudflare
 
-Worker déployé en qualification sur `shenron-cdn.aphrody-labs.workers.dev`, sans route DNS de production. Le bucket `shenron-cdn` est privé ; seuls les chemins présents dans les manifests sont servis. Les clés de manifests sont `_migration/manifests/<deux premiers caractères SHA256 du chemin décodé avec slash initial>.json`. Chaque shard est un dictionnaire `path → { sha256, size, contentType, cacheControl }` ; le SHA256 du contenu est en hexadécimal minuscule. Les alias partagent `_objects/<sha256>`.
+Worker CDN (`cdn-worker.ts`) devant le bucket R2 `shenron-cdn`, origine locale (`cdn-origin.ts`, `shenron-cdn-origin.service`) et outils d'opérations dans `cli/`.
 
-`IMPORT_ENABLED=false` par défaut. Pour la copie avant bascule, l'opérateur active temporairement `true` : un HEAD mappé dont l'objet manque copie en flux depuis l'origine fixe `https://cdn.dragonballfr.com`, sans suivre les redirections ni transmettre les en-têtes clients. Le checksum SHA256 R2 est obligatoire. GET ne déclenche jamais de copie et retourne503 tant que l'objet manque. Un manifest absent retourne503 ; un chemin absent du manifest retourne404. Seuls GET etHEAD sont acceptés.
+Le Worker ne sert que les chemins présents dans les manifests du bucket. Configuration: `wrangler.jsonc`.
 
-Après vérification de toute la copie, désactiver l'import et redéployer **avant** la bascule DNS vers ce Worker, afin d'éviter une boucle sur son origine. `MANIFEST_PREFIX` peut épingler un jeu de shards pour un rollback, par exemple `_migration/manifests/release1/`. La configuration livrée ne déclare volontairement aucune route.
+```sh
+bun test deploy/cloudflare/cdn-worker.test.ts
+bun check -p deploy/cloudflare
+```
 
-La copie principale utilise des credentials S3 temporaires limités au bucket et aux préfixes `_objects/` et `_migration/`. Chaque source est vérifiée contre son SHA256 inventorié avant l'upload. Un HEAD de qualification, avec `VERIFY_UPLOADS=true`, vérifie le corps déjà stocké par le checksum obligatoire R2 avant d'attacher ses métadonnées de service. Cette option couvre aussi les uploads REST dont les métadonnées personnalisées ne sont pas conservées. GET ne déclenche aucune écriture. Désactiver également `VERIFY_UPLOADS` après qualification et avant la bascule.
-
-`X-Content-SHA256` et `X-Content-Size` exposent l'empreinte et la taille du corps complet validé. Cloudflare peut retirer `Content-Length` d'un HEAD HTML ; la qualification utilise alors `X-Content-Size`. Un reçu de transfert est enregistré seulement après confirmation de ces deux valeurs. Les manifests doivent inclure les assets des déploiements terminés, en conservant les anciens chunks encore référencés, avant toute modification DNS.
-
-Pendant l'import seulement, un shard absent de R2 peut être amorcé depuis l'origine fixe `https://cdn.dragonballfr.com/assets/ext/cf-migrate-20261011/manifests/<xx>.json`. Les quatre bindings JSON `MANIFEST_SHARD_HASHES_0` à `_3`, groupés par 64 shards, fournissent les SHA256 exacts du texte UTF-8 de chaque shard (`{"00":"<64hex>", ...}`). Un binding reste sous la limite Cloudflare de 5,1 Ko. Le Worker refuse une réponse redirigée, non200, compressée, supérieure à2MiB, invalide JSON ou dont le checksum diffère ; il stocke le shard privé dans R2 avec le checksum obligatoire. Les URLs de manifests restent refusées aux visiteurs. Le bootstrap ne copie aucun corps d'asset lors d'un GET. Les deux racines publiques spéciales `/_next/static` et `/.well-known` restent soumises au manifeste.
-
-Validation locale : `bun test deploy/cloudflare/cdn-worker.test.ts` puis `bun check -p deploy/cloudflare`. Les doubles R2 simulent notamment un rejet checksum ; ils ne remplacent pas un essai R2 réel avec le binding déployé.
-
-Les routes `/` (302 vers le site), `/health` et `/robots.txt` conservent leur contrat CDN. `/api/health` et `/_next/image` passent uniquement par l'origine fixe `https://origin-cdn.dragonballfr.com`, lorsque `DYNAMIC_ORIGIN` vaut exactement cette origine. Infra doit qualifier son DNS, son certificat edge et son ingress tunnel TLS avec SNI/Host CDN avant activation. L'optimiseur Next garde son allowlist d'images et ses contraintes de qualité/largeur ; le Worker borne les paramètres et refuse les sources privées, IP et credentials. Seul Accept est transmis, jamais Cookie/Authorization/Host ; aucun Set-Cookie n'est relayé. Les redirections restent manuelles et seules celles vers l'image demandée sont conservées. Une panne origine donne le JSON503 historique pour la santé et une redirection302 vers la source publique validée pour l'image. Cette route dédiée évite une boucle quand le hostname CDN public devient le Worker.
-
-Contrats vérifiés dans la [référence Workers R2 officielle](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/) : `head`, `get` avec ranges, `put` de ReadableStream avec SHA256 hex et métadonnées. Aucun secret, manifeste réel ni objet éditorial n'est inclus dans ces fichiers.
+Aucun secret ni manifeste réel dans ce dossier. Les exemples de configuration sont les fichiers `*.example*`.

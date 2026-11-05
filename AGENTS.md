@@ -1,353 +1,79 @@
-# CLAUDE.md
+# Shenron contributor rules
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Shenron is the product behind dragonballfr.com: the site, the Discord bot, the API, the editorial pipeline (databook OCR and translation), Shenron Studio (the manga translation editor, code name Koharu), RAG and the MCP server. `CLAUDE.md` is a symlink to this file.
 
-<!-- SPDX-License-Identifier: Apache-2.0 -->
-<!-- CLAUDE.md est un lien symbolique vers AGENTS.md : un seul fichier pour tous les agents. -->
+## Mission
 
+Rebuild Shenron on Rust and Bun only, and keep the live product running during the move. Rules follow the YOLO repos (`yolo-stack`, `yolo-ui`, `yolo-web`, `yolo-bun`).
 
-Shenron est le produit de dragonballfr.com : site, bot Discord, API, chaîne éditoriale (OCR et
-traduction des databooks), Shenron Studio (éditeur de traduction manga, nom de code Koharu), RAG
-et serveur MCP. Répondre et documenter en français ; le code, lui, est en anglais (voir « Langues
-et noms »). Exécuter de bout en bout ; commit et push à la fin de chaque lot vert,
-auteur `aphrody-dev <contact@aphrody.com>`
-Mémoire des conversations : avant tout travail substantiel, lire `data/home/MEMORY.md` s'il existe (privé, ignoré par Git) et `docs/reference/root/REPRISE.md`.
+## Stack decision
 
+ADR 0003 of yolo-stack sets the stack. The local copy is `docs/decisions/0001-pile-du-site.md`.
 
-Directive de publication (propriétaire, 2026-10-18) : accord total pour publier sur
-dragonballfr.com l'ensemble des données, épisodes, planches, médias et exports du
-catalogue (films, épisodes, tomes manga, databooks), dans le périmètre de l'attestation
-ci-dessus. Règles d'application :
-- Aucune page publique ne doit rester sans donnée, média, épisode ou planche. Une page
-  sans contenu réel ne se publie pas : elle reste masquée ou répond un état vide explicite
-  (jamais une erreur 503 ni une coquille vide indexable).
+- Site: Leptos 0.8 SSR with islands on Axum.
+- Native Studio: Dioxus.
+- Rendering and layout: wgpu, vello, Parley, Taffy, AccessKit.
+- Tooling, scripts, bot, tests: Bun 1.4.4+.
+- Out: Next.js, Tailwind, Base UI, shadcn. `apps/site` and `packages/ui` still use them and are being replaced. Add no new dependency of that kind.
 
-## Exécution autonome NHIL
+## Repo map
 
-L’utilisateur a autorisé l’exécution autonome de bout en bout dans le périmètre de chaque
-demande, l’usage des CLI/MCP/skills pertinents et la délégation parallèle des sous-tâches
-indépendantes. Au début d’un travail substantiel, formuler l’objectif concret depuis la demande
-courante, reprendre l’objectif actif correspondant s’il existe, puis poursuivre jusqu’aux portes
-requises et à la livraison sans demander de confirmation intermédiaire. Trancher les choix
-réversibles, continuer les tâches indépendantes en cas de blocage, déléguer par défaut quand cela
-réduit réellement le délai et revendiquer des chemins disjoints. Garder les tâches simples ou
-fortement couplées dans un seul fil ; relire chaque résultat délégué.
+- `apps/site`: current site (Next.js). `apps/bot`: Discord bot. `apps/server`: single Bun binary serving site and APIs. `apps/activity`: Discord Activity server.
+- `packages/*`: Bun workspace packages named `@aphrody/shenron-*`. Keep these names.
+- `crates/*`: Rust workspace (`shenron-*`, `koharu-*`, `dragon-pixel`). `crates/shenron-video` is excluded from the workspace.
+- `deploy/`: Docker, compose, Cloudflare worker, SQL migrations. `scripts/`: Bun and shell tooling. `plugin/`: agent plugin sources. `data/`: catalogues and local data.
+- `docs/`: see `docs/README.md`.
 
-Cette autorisation ne change ni le périmètre demandé, ni les accès disponibles, ni les règles
-données, les politiques des outils/reviewers ou les propriétaires techniques. Ne pas transformer
-un ancien backlog en nouvelle demande. Si une approbation externe exacte ou une décision
-indispensable du propriétaire manque, terminer d’abord le travail indépendant autorisé puis
-rapporter le blocage concret. Suivre le skill global `nhil` et son rappel au démarrage.
+## Commands
 
-### Accord permanent du propriétaire — 2026-10-25
-
-L’accord NHIL couvre durablement l’exécution complète des demandes du propriétaire :
-recherche, création et enrichissement de contenus, fonctionnalités nécessaires, corrections,
-qualification, commit/push, publication et déploiement par leurs propriétaires techniques.
-Livrer le maximum de contenu et de fonctionnalités utiles dans le périmètre courant, avec
-les capacités effectivement disponibles et des preuves de résultat. Ne pas redemander une
-confirmation intermédiaire pour une action déjà couverte par cet accord ; résoudre les choix
-réversibles et déléguer les tâches indépendantes quand cela réduit le délai. Lorsqu’il demande
-d’informer les autres sessions, transmettre les consignes aux sessions concernées et vérifier
-les retours, sans prétendre avoir informé une session inaccessible.
-
-Cet accord n’élargit pas une demande à un ancien backlog. Conserver des revendications
-étroites et un seul écrivain par chemin, les protections des secrets et données privées, les
-gels éditoriaux, la provenance des sources et les contrôles des outils/reviewers. Les mutations
-de production passent toujours par les API autorisées et Aphrody Infra ; une capacité absente
-ou une approbation externe requise se rapporte comme telle, sans inventer une livraison.
-
-Pour Bun Video, rechercher la version publiée la plus récente depuis le dépôt upstream
-propriétaire et son sous-module qualifié, puis qualifier cette version avant consommation.
-Conserver une version exactement épinglée et la provenance du commit/package. Le propriétaire
-autorise explicitement une exception au délai `minimumReleaseAge` de trois jours pour
-`@aphrody/bun-video` uniquement ; cette exception ne dispense ni des portes ni des contrôles
-sur média réel et ne vaut pas preuve d’une capacité de codec ou d’une accélération.
-
-Graphe de code : Graphify (`uv tool install graphifyy`, skill `/graphify`) indexe le code localement, sans LLM (`.graphifyignore`). `graphify update .` construit ou rafraîchit le graphe ; préférer `graphify query "<question>"`, `graphify explain` ou `graphify path` aux greps larges quand `graphify-out/graph.json` existe (sortie locale, ignorée par Git).
-
-## Langues et noms
-
-- Code (identifiants, commentaires nouveaux), slugs, segments de routes, chemins et champs d'API,
-  schémas, clés de configuration, noms d'outils MCP, bot et backend : en anglais. Un ancien
-  segment français reste servi par un 308 vers son équivalent anglais.
-- Aucun texte visible codé en dur, ni en français ni ailleurs : toute chaîne d'interface passe
-  par les dictionnaires (`apps/site/messages/{fr,en,ja}.json`, locales des paquets). Le français
-  est la langue de référence ; l'anglais et le japonais sont complets. Les API acceptent la
-  langue (`lang` ou `Accept-Language`, `fr | en | ja`) et renvoient les libellés localisés.
-- Un seul lexique de traduction (personnages, techniques, lieux… en ja/fr/en) sert le site,
-  l'API, le bot, le plugin, le pipeline et le traducteur de Shenron Studio.
-- Koharu est un nom de code interne (crates `koharu-*`, `@aphrody/shenron-koharu`) : le produit public
-  est **Shenron Studio**, et aucun texte visible ne dit « Koharu ».
-- La documentation (`docs/`) reste en français.
-
-## Sources de vérité
-
-- Index de la documentation : `docs/README.md`. Carte des paquets et graphe de dépendances
-  autorisé : `docs/architecture/STACK.md` (§3–4), avec `RUNTIME.md` et `i18n.md` à côté. En
-  cas d'écart, le code fait foi.
-- Variables d'environnement : `docs/operations/ENV.md`. Les défauts codés ne vivent que dans
-  `@aphrody/shenron-config` ; le site lit l'environnement par `apps/site/src/lib/env.ts` (t3-env).
-- Plan directeur : `docs/reference/root/PLAN.md` (invariants éditoriaux). Mémoire datée :
-  `data/home/MEMORY.md`, privée et ignorée par Git. Les rapports générés (signalements,
-  objectifs, audits i18n/SEO, profils) s'écrivent dans `var/reports/`, jamais dans `docs/`.
-
-## Périmètre et propriétaires
-
-- Produit : `apps/site` (application frontale unique), `apps/bot`, `apps/server`
-  (`shenron-server`), `packages/ui` (couche UI unique), `crates/shenron-*`, `crates/koharu-*`,
-  `plugin/` (plugin Claude Code « shenron », version dans `plugin/.claude-plugin/plugin.json` ;
-  installation : `claude plugin marketplace add <dépôt>` puis `claude plugin install shenron@shenron`,
-  le dépôt déclare la marketplace dans `.claude-plugin/marketplace.json`).
-- Aphrody fournit les capacités (socle ML `koharu-{llama,torch,diffusion,runtime,config}`,
-  `aphrody-rag`, `aphrody-ocr`, `aphrody-models`, `aphrody-translate`, Tauri 3
-  `aphrody-tauri*`, paquets npm `@aphrody/*`) : on les consomme, on ne les copie pas.
-- L'hébergement (systemd, nginx, CDN, sauvegardes, migrations de production) appartient à
-  l'Infra d'Aphrody (`aphrody-infra`) ; ce dépôt livre les artefacts (`dist/`, `deploy/`) et
-  ne modifie aucun hôte.
-- Travail parallèle : un seul écrivain par chemin, revendications dans
-  `.coord/claims/<agent>.json` (`paths`, `released`) à lire avant d'écrire ;
-  `git commit --only -- <chemins>` ; jamais `git add -A`, `stash`, `reset` ni checkout global.
-  L'arbre de travail porte souvent le travail non commité d'autres agents : une porte rouge
-  dans un chemin revendiqué par un autre se signale, elle ne se corrige pas.
-
-## Outils
-
-HLS : le propriétaire est `@aphrody/bun-video` (`@aphrody/bun-video/hls`), consommé par Shenron ;
-aucun sous-module ni copie de hls.js dans ce dépôt. Le build ne publie que le worker same-origin
-et les notices Apache-2.0/Dailymotion explicitement exposés par ce paquet. Shenron possède
-contrôles, i18n et reprise. Tester le worker réellement actif et les changements de source. La demande
-propriétaire courante interdit les nouveaux contrôles de lecture sur média synthétique :
-qualifier un média réel autorisé, sans extraire de flux protégé ni contourner DRM.
-Les preuves historiques restent datées. Un build Bun plus récent ne prouve pas une accélération vidéo.
-
-Bun (`bun`, `bun -e`, Bun Shell, `bun test`, `bun build --compile`) et Rust (`cargo`).
-Recherche : `rg`, `fd`. Pas de node/npm/npx/bunx ni d'utilitaires GNU pour le travail d'agent ;
-qualité par
-`bun check`, `bun lint`, `bun fmt` natifs (ni tsc, tsgo, oxlint, oxfmt, eslint).
-Rust : `just` (tâches Bun et Rust, `just --list`), alias Cargo de `.cargo/config.toml`
-(`cargo ck|lint|t|koharu|wasm`), cargo-nextest, cargo-deny ; référence `docs/development/rust.md`.
-
-`bunfig.toml` : `linker = "isolated"`, seuls `react` et `react-dom` sont hissés
-(`hoistPattern`) ; chaque paquet déclare ses dépendances, scripts racine compris (le
-`package.json` racine déclare ce qu'importe `scripts/`) ; versions tierces centralisées dans `workspaces.catalog` du `package.json` racine
-(`"catalog:"`), `@aphrody/*` épinglés exactement ; `minimumReleaseAge` de 3 jours, sauf
-`@aphrody/bun-video` selon l’accord propriétaire du 2026-10-25 ci-dessus.
-
-## Commandes
+All tasks go through `just` (shell is `bun exec`). Run `just` to list them.
 
 ```sh
-bun install --frozen-lockfile          # ou bun ci
-bun run typecheck                      # bun check : les 13 paquets, puis scripts/ (scripts/tsconfig.json)
-bun run lint                           # bun lint (.oxlintrc.json) sur apps packages scripts
-bun run test                           # bun test de chaque paquet, *.live.test.ts exclus
-bun run format:check                   # bun fmt
-bun run --filter @aphrody/shenron-db test      # un seul paquet
-cd packages/db && bun test test/vfs-data.test.ts -t "motif"   # un fichier, un test
-cd apps/site && bun test --isolate tests/<fichier>.test.ts    # apps site et bot : --isolate
-bun run test:scripts                   # tests de scripts/ (bun test ./scripts)
-bun run test:live                      # suites live (SHENRON_LIVE=1, services réels)
+just install        # bun install --frozen-lockfile
+just check          # bun check on packages and scripts, then cargo check
+just lint           # bun lint, then clippy with warnings denied
+just format-check   # bun fmt --check, then rustfmt
+just test           # bun tests, script tests, cargo nextest
+just drift          # generated files (OpenAPI, UI tokens, AI contracts) are current
+just ci             # what the CI runs
+just dev-site       # site dev server
+just dev-bot        # bot dev server
 ```
 
-Contrôles de dérive (CI) : `bun packages/api/scripts/openapi.ts --check` (sans `--check`, il
-régénère `packages/api/openapi/public.json`, à commiter), `bun packages/ui/scripts/generate-tokens.ts --check`,
-`bun packages/pipeline/scripts/ai/check-contracts.ts`. Migrations : audit hors ligne par
-`bun run --filter @aphrody/shenron-db audit:migrations`.
+Format JS and TS with `bun run fmt`; check Rust formatting with `bun run fmt:rust` (`cargo fmt --all --check`). Per package: `bun run --filter <name> <script>`; scripts are listed in each `package.json`. Rust, scoped: `cargo check -p <crate>`, `cargo nextest run -p <crate>`.
 
-Rust : `bun run check:rust`, `bun run clippy:rust` (`-D warnings`), `bun run test:rust`
-(nextest sur les crates de `cargo metadata`), `cargo nextest run -p shenron-rag <filtre>`. Le bloc généré de
-`[workspace.dependencies]` se régénère par `bun scripts/build/rust/workspace-deps.ts [--check]`
-(Aphrody en `git` à une `rev`).
+## Build and deploy
 
-Lancer et construire :
+- Builds run on vps or bunos, never on the Windows PC. Linting and formatting of Markdown or small files are fine locally.
+- Release: `bun run ship` (`scripts/deploy/release.sh`) builds the image, then ships and activates it on prod. Details in `docs/operations/deploy.md`.
+- Auto-deploy lanes live on branch `claude-deploy` (`docs/operations/AUTO-DEPLOY.md` there). They are not on `main` yet.
+- Never push to `main` directly from a session. Work on a branch in a worktree under `C:\src\.wt\shenron\`.
 
-- `bun --filter @aphrody/shenron-site dev` (Next, `.next-dev` ; `predev` copie les assets de
-  `packages/ui/assets` vers `public/`) ; `bun --filter @aphrody/shenron-bot dev`.
-- `bun apps/server/src/cli.ts serve|doctor|paths|init` (le site standalone vient de
-  `SHENRON_SITE_DIR` ou de `site/` à côté du binaire).
-- `bun run build:server` (`--target linux-x64|windows-x64`, `--flavor desktop|production`,
-  `--skip-site`, `--no-embed`), `bun run build:bot`, `bun scripts/build/desktop.ts`
-  (installeur NSIS), `cargo build --release -p shenron-{cli,mcp,desktop}`.
-- Après ajout ou retrait d'une commande ou d'un événement discordx :
-  `bun --filter @aphrody/shenron-bot gen:entries` (barrel `apps/bot/src/_entries.ts`, commité).
-- `bun --filter @aphrody/shenron-koharu protocol` régénère `packages/koharu/src/protocol.ts` (Specta) ;
-  `build:wasm` reconstruit `koharu-canvas`.
+## No human in the loop
 
-## Workflow direct : lecteurs et livraison
+- Run end to end. Do not ask for confirmation on reversible choices; pick one and record it in the commit message or an ADR.
+- Commit small slices when a slice is green. Commit author is `aphrody-dev`. End messages with the `Co-Authored-By` line given by the session.
+- If an external approval or an owner decision is missing, finish the independent work, then report the specific blocker.
+- Do not turn an old backlog item into a new task.
+- Use Bun 1.4.4+ only. No Node, npm, yarn, pnpm.
+- Code identifiers and comments in English. Documentation in French. No emoji. Facts only, no filler.
+- User-visible strings go through the dictionaries (`apps/site/messages/{fr,en,ja}.json`).
 
-Procédure qualifiée le 2026-10-10. Vérifier la configuration et l'aide installées avant
-de réutiliser les chemins distants ; cette date ne garantit pas leur disponibilité future.
+## Safety
 
-### Exécuter un lot sans refaire la découverte
+- Never touch production data without a dry-run first, then a verified backup, then the write.
+- Never print, log or commit a secret. Name environment variables, never their values.
+- Never run a purge, `docker rm`, `rm -rf` or a model deletion on prod. The 2026-11-04 outage came from exactly that (`docs/operations/backup-recovery.md`).
+- Use `docker compose up -d --no-deps --no-recreate <service>` to restore one service.
+- Do not restore the DBFR dump over prod without a comparison.
+- Preserve uncommitted work of other sessions. Do not reset or clean a tree you did not create.
 
-1. Lire les consignes et le plan, `git status --short` et les revendications `.coord/claims` ;
-   revendiquer uniquement les chemins du lot. Réutiliser les capacités installées et les
-   rapports existants ; conserver un `TODO.md` borné et ne pas rouvrir un chantier livré.
-2. Reproduire le défaut sur le lecteur réel, puis corriger son propriétaire. Manga :
-   `@aphrody/m3-reader/source`, styles consommateurs dans `packages/ui/src/reader-styles.css`.
-   Databooks : `packages/ui/src/reader/DatabookReader.tsx`, pas la distribution M3 installée.
-3. Valider les chemins modifiés et les comportements concernés. Depuis `apps/site`, utiliser
-   `bun test --isolate tests/<fichier>.test.ts` ; `bun --cwd apps/site test ...` peut lancer
-   le script du paquet et toute la suite. Depuis la racine : `bun fmt <chemins>`.
-   Pour une modification documentaire seule : contrôle du diff et des liens, sans build moteur.
-4. Relire le diff, commiter uniquement les chemins possédés, puis `git fetch origin` et
-   `git merge-base --is-ancestor origin/main HEAD` avant le push normal. Si la vérification
-   échoue, intégrer les nouveaux commits en préservant les travaux concurrents, sans autostash.
-   Libérer la revendication après livraison ; rapporter les preuves et limites réelles.
+## Pointers
 
-### Crawl et contrôle du rendu
-
-- Combiner `aphrody web crawl` récursif, limité aux routes publiques concernées, avec
-  `bun scripts/ops/audit-readers.ts --origin https://dragonballfr.com --out var/reports/readers --concurrency 3 --embeds`.
-  Le crawl HTML seul ne couvre pas les catalogues paginés ; le script parcourt leurs API.
-  `--frontier <fichier.sqlite>` permet de reprendre les URL du crawl natif. Sur le VPS,
-  placer les rapports dans le foyer du profil dbfr, hors du worktree de build nettoyable.
-- Réessayer les erreurs réseau après stabilisation du déploiement. `/api/health` est la
-  sonde publique ; `/api/public/health` n'est pas une sonde supportée. Le GET de
-  `/api/databooks/:id/pages` renvoie normalement 405 : cette route est PATCH uniquement.
-- `reader-assets.ts` centralise les scans locaux : `/assets/manga/...` reste local,
-  `/assets/wiki/...` devient `/wiki/...` sur le site. Conserver les paramètres et les sources
-  externes étrangères ; les assets éditables locaux doivent refléter les remplacements admin.
-- Contrôler en navigateur les éditions manga, les modes vertical/paginé des databooks et
-  les largeurs 1280/390 : `naturalWidth > 0`, largeur affichée positive, pagination et absence
-  de débordement. Une image chargée peut mesurer 2 px ; les grilles/Swiper exigent des
-  colonnes `minmax(0, 1fr)` et des enfants `min-width: 0`.
-- Canvas admin : attendre la réponse réelle des membres Discord et vérifier les cinq
-  aperçus. Les valeurs par défaut suivent les données asynchrones sans écraser les choix.
-  Vidéos : tester une panne réseau du fournisseur et le repli dans la même langue ;
-  `iframe.onload` et HTTP 200 ne prouvent pas la lecture effective d'un épisode ou film.
-- Préférer Aphrody Web avec `@aphrody/agent-browser/engine` et `@aphrody/web-test`
-  ([exemple live](scripts/testing/integration/test/dev.live.test.ts)). Résoudre la bibliothèque
-  native qualifiée depuis la configuration ; `YOLO_RUNTIME_LIB` éventuel reste propre au job.
-  Fermer page et moteur en `finally`. Auth admin par session autorisée, cookies limités au
-  domaine et supprimés après contrôle ; aucun en-tête secret global vers les iframes externes.
-
-### Release : build, image scellée, activation (`scripts/deploy`)
-
-Point d'entrée unique : `scripts/deploy/release.sh [--build-only | --ship-only] [revision]`
-(défaut `origin/main`), qui enchaîne `build-image.sh` puis `ship-image.sh` ; leurs en-têtes
-font foi. Il tourne sur tout hôte Linux x64 doté de Git, Bun, Rust (rustup) et docker ou
-podman, sans checkout Aphrody local ni nom d'hôte figé. Tout se règle par variables
-d'environnement (`docs/operations/ENV.md`) : `SHENRON_BUILD_REPO` (worktree de build réutilisé,
-défaut `$HOME/build/shenron`), `SHENRON_VFS_SOURCE` (fichier, URL ou `hôte:chemin`),
-`SHENRON_CONTAINER`, `SHENRON_DEPLOY_TARGET` (`ssh:<hôte>` | `registry:<dépôt>` | `local`,
-défaut `ssh:prod`), `SHENRON_DEPLOY_COMMAND`, `SHENRON_ACTIVE_COMMAND`, `SHENRON_ALLOW_ROLLBACK`,
-`SHENRON_FORCE_RUST`, `SHENRON_NEXT_BUILD_CACHE`, `SHENRON_PAYLOAD_ZSTD_LEVEL`,
-`SHENRON_SITE_BUILD_MIN_GIB`…
-
-- Build : un `flock` par worktree sérialise les builds ; le build du site chevauche les lanes
-  Rust, VFS et bot ; chaque lane (site, bot, Rust) est sautée tant que l'arbre Git de ses
-  entrées et sa chaîne d'outils sont inchangés (`SHENRON_FORCE_SITE|BOT|RUST=1` pour forcer) :
-  un commit de doc ou du seul bot ne relance pas Next ; le cache Turbopack est conservé ; payload zstd 6 ;
-  chaque phase est horodatée (`== <phase> (+Ns)`). L'image est vérifiée (`version`, bot
-  `--smoke`) avant tout envoi. Une sortie 143 du site vient d'un tueur OOM : le build attend
-  `SHENRON_SITE_BUILD_MIN_GIB` (20 par défaut) de mémoire disponible.
-- Livraison : la cible `ssh:prod` diffuse l'image (zstd) et lance
-  `/root/deploy-shenron-image.sh <sha> <tar>`, l’entrée d’activation Infra de la production, qui charge, assemble, scelle, vérifie puis
-  active. Les mutations de production restent celles d'Aphrody Infra sur la cible. Le garde de
-  rollback refuse un commit qui ne descend pas de la release active, sauf
-  `SHENRON_ALLOW_ROLLBACK=1`.
-- Une release modifiée à la main après scellement (fichiers hors manifeste) bloque toute
-  activation : l'adaptateur revérifie la release précédente comme cible de rollback. Ne jamais
-  copier de fichiers dans une release scellée.
-- Lancer le build long dans une session détachée avec journal durable, puis sonder ce journal
-  par extraits bornés plutôt que relancer. Après livraison, vérifier la release active
-  (`readlink -f /srv/shenron/current`), les conteneurs, `/api/health` et les lecteurs
-  réellement rendus. Pour `ENOSPC`, inventorier l'espace sans jamais purger les volumes Docker
-  ni les données protégées. Les scripts `.sh` doivent rester en LF.
-- Une modification de documentation seule ne nécessite aucun déploiement.
-
-## Architecture
-
-- **Graphe** : acyclique, `config ← db/auth ← api` ; `@aphrody/shenron-ui` ne dépend que de `config`,
-  `koharu` et `pipeline` ; aucun paquet n'importe une app. Chaque export déclare une classe `"shenron.runtime"`
-  (`pure | server | bun | json`) auditée par `scripts/audit/check-workspace-packages.ts` :
-  un module `"use client"` n'importe ni `@aphrody/shenron-db/postgres-js`, ni `api/server`, ni rien
-  de classe `bun`. `next.config.ts` liste chaque `@aphrody/shenron-*` et `@aphrody/*` dans
-  `transpilePackages`.
-- **Données** : PostgreSQL est la source éditoriale (Drizzle, `packages/db/src/schema.ts` pour
-  le site, `bot-schema.ts` pour le schéma `bot`) ; le SQLite du bot (`data/bot.db`, ses propres
-  migrations) en est le réplica. Migrations du site dans `apps/site/src/db/migrations` ;
-  `db:push` est interdit, l'application passe par le runbook `aphrody-infra`. Suppression
-  éditoriale toujours logique (`visible = false`) et révisée dans `wiki_revisions`.
-- **VFS** (`packages/db/src/vfs/`) : une base `shenron-vfs.sqlite` embarquée dans les binaires
-  (nœuds de fichiers, store aphrody-rag, wiki public), recherche FTS5 BM25 fusionnée RRF avec
-  un cosinus e5 ; construite par `scripts/data/build-vfs.ts`. Le store de conversations
-  (`src/conversations/`) a le même contrat en SQLite local et en PostgreSQL (schéma `chat`),
-  last-writer-wins sur `updatedAt`.
-- **API** : `@aphrody/shenron-api/contract` est le catalogue zod v4 des endpoints (auth, cache, SSE,
-  WebSocket) ; `server/` est un routeur `Bun.serve` natif (pas Hono), `createShenronApi(ports)`
-  n'active que les groupes dont les ports sont fournis. Le site le monte par
-  `app/api/public/[...route]` (`toNextRouteHandlers`), le bot en repli après ses routes
-  historiques (plus `/graphql` en lecture seule). L'OpenAPI 3.1 est dérivée du contrat.
-- **Site** : Next 16 App Router, Turbopack ; `src/proxy.ts` remplace le middleware (host
-  canonique, garde admin) ; next-intl par cookie `NEXT_LOCALE`, sans segment `[locale]`
-  (`messages/{fr,en,ja}.json`). `/studio` (Shenron Studio, l'éditeur de traduction manga), `/desktop` (accueil de
-  l'application de bureau) et `/desktop/control` (son pilotage) montent `@aphrody/shenron-ui`.
-  Espace Bibliothèque (`src/lib/library.ts`) : `/wiki/manga`, `/wiki/databooks`, `/workshop`
-  (avancement public ; outils staff `/workshop/{transcription,translation,databooks/[id]}`, gardés
-  par `proxy.ts` comme `/admin`) et `/studio` partagent leurs onglets. Les anciennes adresses
-  (françaises, `/koharu`, `/bureau`) vivent dans `src/lib/legacy-routes.ts` : 308 de
-  `next.config.ts` (pages publiques),
-  308 du proxy après la garde (admin, outils staff), `rewrite` vers le handler anglais (API) ;
-  `tests/english-routes.test.ts` refuse tout nouveau segment français.
-  `/mcp` relaie vers `shenron-mcp --http --public`.
-- **Bot** : discordx + tsyringe ; `entry-standalone.ts` (`--smoke`, `--dry-run`) puis
-  `index.ts` (migrations, base, `ApiServer`, Discord). Le socle Discord vient d'Aphrody :
-  `@aphrody/discord-kit` (intents, cache, interactions, commandes, gardes `NotBot` et
-  mono-guilde, arrêt propre, binaire compilé, REST `discordFetch`, aussi sous
-  `scripts/lib/discord-rest.ts`) et `@aphrody/messaging` (texte et DM hors gateway) ; les
-  gardes métier (owner, staff, salon, permissions) restent dans `src/guards/`.
-- **Binaire autonome** (`apps/server`) : un `Bun.serve` frontal sert, dans cet ordre,
-  `/api/local/*` (`bun:ffi` vers `libshenron_ffi` ; `health` rapporte les `groups` de
-  l'API, type `LocalHealthResponse` du contrat), l'hôte `@aphrody/shenron-api/host` (`/api/v1/*`
-  toujours, `/api/public/*` et `/mcp` quand il les sert, WebSocket du chat), les assets
-  statiques puis `/assets/*` du VFS, et relaie le reste vers le `server.js` standalone de
-  Next lancé en processus enfant. `src/backend.ts` câble l'hôte depuis `SHENRON_HOME` et
-  le payload (VFS public, conversations SQLite, agent home, OCR `aphrody`, sidecar
-  `shenron-mcp` voisin, chat sur un modèle local déclaré) ; une capacité absente désactive
-  son groupe sans arrêter le serveur. `SHENRON_HOME` contient
-  `config/shenron.env` (refusé s'il n'est pas en 600) ; profil `production` dès que
-  `DATABASE_URL` est posé, sinon URLs publiques de dragonballfr.com. Le build compile le site
-  sans base, aplatit `node_modules/.bun`, échoue sur toute donnée privée, emballe un payload
-  zstd (site, bibliothèque native, VFS public gardé, modèle de l'agent home) dans
-  `bun build --compile`. `/api/local/koharu` relaie l'éditeur d'un navigateur local vers un
-  enfant `koharu-sdk` (groupe `koharu` de `health`, jamais en production).
-- **Application de bureau** : **Shenron Studio** (`crates/shenron-desktop`, Tauri 3) est le
-  seul binaire graphique, un identifiant, un dossier de données (`SHENRON_HOME`), un installeur
-  (`scripts/build/desktop.ts`). Elle lance `shenron-server` en sidecar (avec `shenron-mcp` et
-  `koharu-sdk` à côté) et ouvre `/studio` (le site local complet, `/desktop` et `/desktop/control` en sont l’accueil et le pilotage) ; le moteur de l’éditeur (`koharu-library`,
-  propriétaire unique de l'état) tourne dans son processus derrière `koharu-app`, simple
-  bibliothèque de commandes Specta (`docs/products/koharu/README.md`).
-- **Natif** : `@aphrody/shenron-native` (`bun:ffi` vers `crates/shenron-ffi`, `SHENRON_FFI_LIB`) ;
-  `@aphrody/shenron-koharu/protocol` parle au moteur par son transport (`src/transport.ts`) : Tauri
-  IPC dans Shenron Studio, le pont `/api/local/koharu` ailleurs ; `./native` pilote
-  `koharu-sdk` (JSON Lines sur stdio) pour `@aphrody/shenron-pipeline`.
-  Les globals Tauri se lisent par `globalThis.__TAURI_INTERNALS__`.
-- **Chaîne éditoriale** : `bun run --filter @aphrody/shenron-pipeline pipeline <ocr|rag|ia|translation|crawl|unify>`
-  délègue le calcul à Aphrody.
-
-## Portes et invariants
-
-### Direction artistique et UI UX du monorepo
-
-- Les outils visuels globaux UI/UX Pro Max et 3dviz Pro Max sont épinglés dans `.agents/visual-skills.lock.json` ; installation reproductible par `bun scripts/ops/install-visual-skills.ts`, vérification par `--check`. Lire le skill 3dviz global pour les scènes 3D, sa composition et ses contrats Blender/glTF ; ses exemples WebGL ne sont pas compatibles avec la contrainte WebGPU du propriétaire.
-
-- Lire `.agents/skills/ui-ux-pro-max/SKILL.md` pour les interfaces, puis les références utiles. `UPSTREAM.json` conserve la provenance. Confronter les recommandations au produit ; ne pas appliquer automatiquement un thème généré.
-- La direction propriétaire du 3 novembre 2026 demande un wiki illustré immersif, avec Goku, Kid Buu et Shenron, toutes les rubriques également accessibles et peu de défilement inutile. Les héros génériques et les grilles répétitives ne sont pas la cible.
-- La correction du 4 novembre impose la continuité directe avec l’accueil réel de `dragonballfr.com` : même shell, typographie, surfaces et langage cinématographique, images authentiques en grand format et navigation immédiatement lisible. La piste d’atlas dessiné, les îlots schématiques, les fenêtres flottantes et les décors de remplissage sont rejetés. Voir `docs/products/wiki-art-direction.md`. Le choix d’un moteur ne définit pas la direction artistique ; aucun contrôle statique ne prouve sa qualité visuelle.
-- Les nouvelles scènes utilisent WebGPU explicitement, jamais WebGL ni un repli automatique WebGL. Les contenus et liens restent disponibles en HTML/SVG sans GPU. Le CSS original et React consomment les rôles sémantiques partagés ; ne pas créer de palette parallèle.
-- Contrôler clavier, focus, contrastes, lisibilité, mouvement réduit, pause et destruction des ressources. Un canvas ne doit jamais être le seul accès à une rubrique.
-- Les interfaces Rust et desktop partagent ces contrats visuels et préférences. Respecter leurs propriétaires ; ne pas transformer un travail UI en réécriture du backend.
-- Le propriétaire a levé l’arrêt le 4 novembre 2026 pour construire, déployer et qualifier le portail wiki dans Chrome desktop/mobile. Sérialiser les livraisons par leur propriétaire technique et vérifier le rendu réellement publié ; une modification source seule ne prouve ni qualification ni publication. Ne pas lancer de build concurrent à la release suivie.
-
-- `bun install --frozen-lockfile`, `bun run typecheck`, `bun run test`, `bun run lint` ; Rust :
-  `bun run clippy:rust`, `bun run test:rust`. La CI GitHub : `ci.yml` pour Bun, `rust.yml` pour
-  Rust (actif avec le secret `APHRODY_GIT_TOKEN`).
-- Les suites `*.live.test.ts` (et `describe.if(isLive())` de `@aphrody/shenron-pipeline/testing/live-rag`) exigent les services réels.
-- Manga, scans et déclarations d'Akira Toriyama priment ; Fandom est interdit comme source.
-  Aucune écriture OCR/traduction pendant un gel des databooks ; `rag:build` jamais au premier
-  plan ni sur le bot de production.
-- Accueil et shell du site : logo style DB Super, nuage Kinto'un et vidéos par section restent ; admin séparé du public ; nouvelles puis mini-jeux en bas ; rien de visible ne se supprime sans accord (`docs/products/accueil-et-shell.md`).
-- Données privées (bases, corpus, identifiants, `data/home/`, `.env`) : jamais dans Git ni
-  dans un artefact public ; le build public passe une garde (`scripts/build/server.ts`).
+- `docs/README.md`: index.
+- `docs/decisions/`: ADRs.
+- `docs/architecture/README.md`: layers and runtimes.
+- `docs/operations/`: production, deploy, backup and recovery.
+- `docs/runbooks/content.md`: content pipelines (OCR, translation, wiki, RAG, CDN).
+- `docs/plans/refonte-rust-bun-yolo-stack.md`: the migration plan.
+- Models: `C:\src\yolo-stack\AGENTS.md`, `C:\src\yolo-stack\docs\decisions`.

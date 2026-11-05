@@ -1,9 +1,19 @@
 # @aphrody/shenron-koharu
 
-Protocole et intégration de Shenron Studio.
+Client du moteur de traduction manga Koharu: protocole IPC typé généré depuis `koharu-app`, transport JSON Lines `koharu-sdk`, canvas wasm.
 
-Cette unité est suivie comme sous-module Git du dépôt `aphrody-labs/shenron` et reste testable dans le workspace Bun parent.
+## Commandes
 
-## Développement
+```sh
+bun run --filter @aphrody/shenron-koharu test
+bun run --filter @aphrody/shenron-koharu lint
+bun run --filter @aphrody/shenron-koharu typecheck
+```
 
-Depuis le monorepo parent : `bun install --frozen-lockfile`, puis la commande de test ou de build déclarée dans ce package.
+Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce dossier.
+
+## Règles du dossier
+
+- `src/protocol.ts` se régénère avec `bun run --filter @aphrody/shenron-koharu protocol`.
+
+Règles générales: `AGENTS.md` à la racine.

@@ -1,12 +1,14 @@
-<!-- SPDX-License-Identifier: Apache-2.0 -->
-
 # shenron-lexicon
 
-Propriétaire de la logique du lexique unique ja/fr/en de Shenron : données embarquées
-(`data/lexicon/terms.json`, `Lexicon::embedded`), recherche par langue et par alias,
-normalisation (`fold`), masquage du plus long au plus court par jetons (`Masker`),
-restauration tolérante (`restore`) et contrôle des jetons inventés ou perdus.
+Lexique de traduction Dragon Ball (ja/fr/en): données embarquées, recherche, protection des termes autour d'une traduction.
 
-`koharu-translator` (`Glossary`) et `shenron-manga` le consomment ; `@aphrody/shenron-lexicon`
-implémente les mêmes règles et lit les mêmes fixtures (`data/lexicon/fixtures/`,
-`cargo test -p shenron-lexicon`). Voir [docs/architecture/lexicon.md](../../docs/architecture/lexicon.md).
+## Commandes
+
+Sur vps ou bunos, jamais sur le poste Windows.
+
+```sh
+cargo check -p shenron-lexicon
+cargo nextest run -p shenron-lexicon
+```
+
+Lint du workspace: `cargo lint`. Règles générales: `AGENTS.md` à la racine.

@@ -1,8 +1,14 @@
-<!-- SPDX-License-Identifier: Apache-2.0 -->
 # shenron-gpu
 
-Gestion WGPU partagée pour Shenron : sélection de l'adaptateur et du périphérique, cibles de rendu, relecture des pixels et intégration Vello. L'application consommatrice détermine la disponibilité du GPU.
+Backend wgpu unique de Shenron: choix d'adaptateur et de device, limites, perte de device, cibles de rendu, lecture, présentation.
 
-Source : [aphrody-labs/shenron](https://github.com/aphrody-labs/shenron).
+## Commandes
 
-Sous licence Apache-2.0.
+Sur vps ou bunos, jamais sur le poste Windows.
+
+```sh
+cargo check -p shenron-gpu
+cargo nextest run -p shenron-gpu
+```
+
+Lint du workspace: `cargo lint`. Règles générales: `AGENTS.md` à la racine.

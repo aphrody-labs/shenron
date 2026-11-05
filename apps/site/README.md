@@ -1,24 +1,24 @@
-# Dragon Ball FR site
+# @aphrody/shenron-site
 
-Next.js site in the Shenron Bun monorepo.
+Site dragonballfr.com actuel (Next.js 16, pages fr/en/ja, wiki, lecteurs). Le site Leptos décrit dans `docs/decisions/0001-pile-du-site.md` le remplace.
 
-## Development
-
-From the monorepo root:
+## Commandes
 
 ```sh
-bun install --frozen-lockfile
-bun --filter @aphrody/shenron-site dev
+bun run --filter @aphrody/shenron-site dev
+bun run --filter @aphrody/shenron-site start
+bun run --filter @aphrody/shenron-site build
+bun run --filter @aphrody/shenron-site test
+bun run --filter @aphrody/shenron-site lint
+bun run --filter @aphrody/shenron-site typecheck
 ```
 
-Next's dev server prints the local URL. This command does not generate `.env.local`.
-The variable inventory lives in [`docs/operations/ENV.md`](../../docs/operations/ENV.md);
-[`docs/operations/DEV-LOCAL.md`](../../docs/operations/DEV-LOCAL.md) is historical. Database
-and site-specific commands are defined in this package's `package.json`.
+Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce dossier.
 
-## Build and release
+## Règles du dossier
 
-`bun run build:server` (root) compiles the site into the autonomous `shenron-server`
-binary. A production release is built, verified and shipped as a container image by
-`scripts/deploy/release.sh` (`build-image.sh` then `ship-image.sh`); the manual
-`server-artifact` workflow runs the build step only on a self-hosted runner.
+- Aucune nouvelle dépendance de pile (Next, Tailwind, Base UI): le dossier est en fin de vie.
+- Textes visibles dans `apps/site/messages/{fr,en,ja}.json`, jamais en dur.
+- Migrations dans `apps/site/src/db/migrations`; `db:push` est interdit.
+
+Règles générales: `AGENTS.md` à la racine.

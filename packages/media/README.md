@@ -1,9 +1,15 @@
 # @aphrody/shenron-media
 
-Modèle et pipeline média Shenron.
+Logique média partagée: lecture d'épisodes, livraison vidéo, mapping Crunchyroll, manga, OCR, pipeline mediabunny.
 
-Cette unité est suivie comme sous-module Git du dépôt `aphrody-labs/shenron` et reste testable dans le workspace Bun parent.
+## Commandes
 
-## Développement
+```sh
+bun run --filter @aphrody/shenron-media test
+bun run --filter @aphrody/shenron-media lint
+bun run --filter @aphrody/shenron-media typecheck
+```
 
-Depuis le monorepo parent : `bun install --frozen-lockfile`, puis la commande de test ou de build déclarée dans ce package.
+Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce dossier.
+
+Règles générales: `AGENTS.md` à la racine.

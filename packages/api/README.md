@@ -1,9 +1,19 @@
 # @aphrody/shenron-api
 
-Contrats et serveur API publics de Shenron.
+Contrat de l'API publique Shenron: routes typées, client et schéma OpenAPI (`openapi/public.json`, généré).
 
-Cette unité est suivie comme sous-module Git du dépôt `aphrody-labs/shenron` et reste testable dans le workspace Bun parent.
+## Commandes
 
-## Développement
+```sh
+bun run --filter @aphrody/shenron-api test
+bun run --filter @aphrody/shenron-api lint
+bun run --filter @aphrody/shenron-api typecheck
+```
 
-Depuis le monorepo parent : `bun install --frozen-lockfile`, puis la commande de test ou de build déclarée dans ce package.
+Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce dossier.
+
+## Règles du dossier
+
+- `openapi/public.json` se régénère avec `bun run --filter @aphrody/shenron-api openapi`; `openapi:check` détecte l'écart.
+
+Règles générales: `AGENTS.md` à la racine.

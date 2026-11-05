@@ -1,92 +1,32 @@
-<!-- SPDX-License-Identifier: Apache-2.0 -->
-
 # Shenron
 
-Shenron est le produit de [dragonballfr.com](https://dragonballfr.com) : encyclopédie
-Dragon Ball, actualités, bot Discord, API, lecteurs manga et databooks, recherche
-RAG, chaîne éditoriale et **Shenron Studio**, l'éditeur de traduction manga.
-Les interfaces proposent le français, l'anglais et le japonais.
+Shenron est le produit de dragonballfr.com: site, bot Discord, API, chaîne éditoriale (OCR et traduction des databooks), Shenron Studio (éditeur de traduction manga) et serveur MCP. Le dépôt migre vers Rust et Bun seuls, selon les décisions de `docs/decisions/`.
 
-## Architecture et données
+## État
 
-| Chemin                                                              | Propriétaire fonctionnel                                                                     |
-| ------------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
-| `apps/site`                                                         | Application Next 16 : site public, administration, `/studio`, lecteurs et passerelle `/mcp`. |
-| `apps/bot`                                                          | Bot Discord et API Bun.                                                                      |
-| `apps/server`                                                       | Serveur autonome et pont des API locales.                                                    |
-| `packages/ui`                                                       | Couche UI unique, lecteurs et Shenron Studio.                                                |
-| `packages/{api,auth,config,db,images,koharu,media,native,pipeline}` | Contrats, configuration, données et adaptateurs des capacités Aphrody.                       |
-| `crates/shenron-*`                                                  | CLI, MCP, RAG, moteur RE, liaison native et application de bureau.                           |
-| `crates/koharu-*`                                                   | Moteur de traduction manga ; Koharu reste un nom de code interne.                            |
-| `plugin/`                                                           | Compétences et manifestes Claude Code, Antigravity, Codex et ChatGPT.                        |
-| `deploy/cloudflare`                                                 | Worker CDN R2 et outils de transfert/qualification.                                          |
+- Site en production: Next.js 16 (`apps/site`), Bun, PostgreSQL et Redis sur un hôte unique.
+- Cible: Leptos 0.8 SSR avec îlots sur Axum pour le site, Dioxus pour Studio. Voir `docs/decisions/0001-pile-du-site.md`.
 
-Les paquets JavaScript du produit utilisent `@aphrody/shenron-*`. PostgreSQL
-est la source éditoriale ; SQLite est le réplica du bot. Les écritures passent
-par les writers authentifiés et révisés. Redis contient des projections
-reconstructibles, dont les articles publics dans la base logique 4 ; il ne
-remplace pas PostgreSQL. Les contenus futurs ou en brouillon restent exclus
-[du miroir des actualités](docs/operations/news-redis.md).
-
-Les capacités ML, OCR, traduction et navigateur proviennent d'Aphrody. Shenron
-les consomme sans recopier leur propriétaire. Le moteur Rust `shenron-re` et la
-liaison `@aphrody/shenron-native/re` exposent les parseurs DBXV2 et CPK. Les
-fichiers de jeu, sauvegardes et extractions restent dans leurs stores protégés ;
-la présence d'un parseur ne constitue pas une publication d'assets du jeu.
-
-## Développement
+## Démarrer
 
 ```sh
-bun install --frozen-lockfile
-bun run typecheck
-bun run test
-bun run lint
-bun run format:check
-bun run check:rust
-bun run clippy:rust
-bun run test:rust
+just install
+just check
+just test
 ```
 
-## MCP, plugin et A2A
+`just` sans argument liste toutes les recettes. Les builds lourds tournent sur vps ou bunos, pas sur un poste Windows.
 
-Le plugin  déclare le binaire stdio `shenron-mcp` dans
-`plugin/.mcp.json`. Les manifestes portables déclarent le MCP HTTP public
-[dragonballfr.com/mcp](https://dragonballfr.com/mcp). Le serveur public filtre
-les outils privés ; les noms du protocole sont `dragonball.*`. Vérifier
-`tools/list` et les annotations du serveur connecté avant de conclure à une
-capacité. Une connexion publique ne donne pas de droits éditoriaux.
+## Carte
 
-```sh
-bun scripts/plugin/sync.ts --check
-bun scripts/plugin/sync.ts
-```
+- `apps/`: site, bot, serveur, Activité Discord.
+- `packages/`: paquets Bun `@aphrody/shenron-*`.
+- `crates/`: workspace Rust (`shenron-*`, `koharu-*`, `dragon-pixel`).
+- `deploy/`: Docker, compose, worker CDN, migrations SQL.
+- `docs/`: index dans `docs/README.md`.
 
-La synchronisation orchestre les générateurs canoniques et aligne les versions,
-URL et références embarquées. Elle est idempotente, sans accès aux comptes ni
-commit/push automatique. Voir le [contrat du plugin](plugin/references/synchronization.md)
-et les [consignes Codex/ChatGPT](plugin/openai/README.md). Une marketplace locale
-ne prouve pas une publication dans l'annuaire public d'OpenAI.
+Règles de contribution et d'exploitation: `AGENTS.md`.
 
-A2A utilise le client de coordination durable Aphrody du pipeline Shenron,
-configuré par `APHRODY_A2A_COORD_API`. Une configuration absente est une erreur
-en production. Ce transport et l'authentification des routes A2A sont distincts
-du MCP ; leur présence dans le code ne prouve pas l'exécution d'un agent distant.
+## Licence
 
-## CDN et opérations
-
-Le [Worker CDN R2](deploy/cloudflare/README.md) sert uniquement les chemins
-répertoriés dans les manifests, avec objets adressés par SHA-256. Les outils
-[Cloudflare](docs/operations/cloudflare-cli.md) et
-[de transfert](docs/operations/cloudflare-transfer.md) décrivent la qualification.
-Les flags d'import et de vérification restent des contrôles opératoires ; une
-configuration de dépôt ne prouve ni la copie des objets ni la bascule DNS.
-La configuration SSH, GitHub, Cloudflare et OVH appartient aux workflows Infra
-et aux stores protégés, jamais aux manifestes distribués du plugin.
-
-La [documentation](docs/README.md), la [carte d'architecture](docs/architecture/STACK.md)
-et le [plan directeur](docs/reference/root/PLAN.md) détaillent les contrats.
-
-## Licence et sources
-
-Apache-2.0 ([LICENSE](LICENSE))/
-Dragon Ball © Bird Studio/Shueisha, Toei Animation/ Bandai Nanco
+Apache-2.0, voir `LICENSE`.

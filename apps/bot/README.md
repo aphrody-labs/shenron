@@ -1,9 +1,23 @@
 # @aphrody/shenron-bot
 
-Application privée du bot Discord Shenron.
+Bot Discord de Shenron (discordx sur Bun), API du bot, base `bot.*` (Drizzle), scripts d'ingestion et de seed.
 
-Cette unité est suivie comme sous-module Git du dépôt `aphrody-labs/shenron` et reste testable dans le workspace Bun parent.
+## Commandes
 
-## Développement
+```sh
+bun run --filter @aphrody/shenron-bot dev
+bun run --filter @aphrody/shenron-bot start
+bun run --filter @aphrody/shenron-bot build
+bun run --filter @aphrody/shenron-bot test
+bun run --filter @aphrody/shenron-bot lint
+bun run --filter @aphrody/shenron-bot typecheck
+```
 
-Depuis le monorepo parent : `bun install --frozen-lockfile`, puis la commande de test ou de build déclarée dans ce package.
+Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce dossier.
+
+## Règles du dossier
+
+- Modèle de variables: `apps/bot/.env.example`. Aucune valeur dans un fichier suivi.
+- Les migrations ne s'appliquent jamais automatiquement: dry-run, sauvegarde vérifiée, puis application.
+
+Règles générales: `AGENTS.md` à la racine.

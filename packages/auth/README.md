@@ -1,9 +1,15 @@
 # @aphrody/shenron-auth
 
-Intégration d’authentification de Shenron.
+Briques Better Auth partagées entre le site, le bot et l'API: secret, origines, cookies, fournisseur Discord, handler Request/Response.
 
-Cette unité est suivie comme sous-module Git du dépôt `aphrody-labs/shenron` et reste testable dans le workspace Bun parent.
+## Commandes
 
-## Développement
+```sh
+bun run --filter @aphrody/shenron-auth test
+bun run --filter @aphrody/shenron-auth lint
+bun run --filter @aphrody/shenron-auth typecheck
+```
 
-Depuis le monorepo parent : `bun install --frozen-lockfile`, puis la commande de test ou de build déclarée dans ce package.
+Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce dossier.
+
+Règles générales: `AGENTS.md` à la racine.

@@ -1,9 +1,19 @@
 # @aphrody/shenron-db
 
-Schémas et accès aux données Shenron.
+PostgreSQL partagé de Shenron: schéma Drizzle, pool postgres-js, driver Bun.SQL pour les scripts et l'API.
 
-Cette unité est suivie comme sous-module Git du dépôt `aphrody-labs/shenron` et reste testable dans le workspace Bun parent.
+## Commandes
 
-## Développement
+```sh
+bun run --filter @aphrody/shenron-db test
+bun run --filter @aphrody/shenron-db lint
+bun run --filter @aphrody/shenron-db typecheck
+```
 
-Depuis le monorepo parent : `bun install --frozen-lockfile`, puis la commande de test ou de build déclarée dans ce package.
+Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce dossier.
+
+## Règles du dossier
+
+- Toute migration passe d'abord par un dry-run. `audit:migrations` et `audit:schema` restent verts.
+
+Règles générales: `AGENTS.md` à la racine.

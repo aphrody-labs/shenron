@@ -1,9 +1,15 @@
 # @aphrody/shenron-images
 
-Traitement et contrats d’images Shenron.
+Hachage d'images, déduplication, choix de variantes et sélection d'illustrations sourcées (Bun et sharp).
 
-Cette unité est suivie comme sous-module Git du dépôt `aphrody-labs/shenron` et reste testable dans le workspace Bun parent.
+## Commandes
 
-## Développement
+```sh
+bun run --filter @aphrody/shenron-images test
+bun run --filter @aphrody/shenron-images lint
+bun run --filter @aphrody/shenron-images typecheck
+```
 
-Depuis le monorepo parent : `bun install --frozen-lockfile`, puis la commande de test ou de build déclarée dans ce package.
+Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce dossier.
+
+Règles générales: `AGENTS.md` à la racine.
