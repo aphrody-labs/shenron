@@ -17,7 +17,10 @@
  *   bun scripts/dev/remote-dev.ts clean-wsl [--apply] list (or delete) regenerable Shenron artefacts in WSL
  *   bun scripts/dev/remote-dev.ts backup [--apply]    archive the vital private state to /mnt/c/shenron/vital
  *
- * `--host <ssh alias>` (default `vps`, env SHENRON_DEV_HOST) picks the build host. See
+ * `--host <ssh alias>` (default `vps`, env SHENRON_DEV_HOST) picks the build host; `--host auto` probes
+ * SHENRON_DEV_HOSTS (default `vps,bunos`; production is never a candidate unless listed) and takes the
+ * least loaded host with enough memory and disk. `--workspace <name>` (env SHENRON_DEV_WORKSPACE) gives
+ * each local worktree its own remote checkout, so parallel worktrees never overwrite each other. See
  * docs/development/remote-dev.md.
  */
 import { existsSync, readdirSync } from "node:fs";
@@ -44,9 +47,9 @@ export type RemoteDevConfig = {
 
 export const DEFAULT_CONFIG: RemoteDevConfig = {
   host: process.env.SHENRON_DEV_HOST ?? "vps",
-  workspace: "shenron-dev",
+  workspace: process.env.SHENRON_DEV_WORKSPACE ?? "shenron-dev",
   snapshotRef: "refs/dev/snapshot",
-  seedRemote: "git@github.com:aphrody-labs/shenron.git",
+  seedRemote: process.env.SHENRON_DEV_SEED ?? "git@github.com:aphrody-labs/shenron.git",
   devSession: "shenron-dev",
   remoteDevPort: 3310,
   localDevPort: Number(process.env.SHENRON_DEV_PORT ?? 3000),
@@ -410,14 +413,94 @@ async function backup(config: RemoteDevConfig, apply: boolean): Promise<number> 
   return 0;
 }
 
+/** Live capacity of one candidate build host. */
+export type HostProbe = {
+  host: string;
+  cores: number;
+  load1: number;
+  memAvailableGiB: number;
+  diskFreeGiB: number;
+};
+
+export const MIN_MEMORY_GIB = 6;
+export const MIN_DISK_GIB = 20;
+
+/** Usable hosts, least loaded first: load per core, then free memory as the tie-breaker. */
+export function rankHosts(probes: HostProbe[]): HostProbe[] {
+  return probes
+    .filter(
+      (p) => p.cores > 0 && p.memAvailableGiB >= MIN_MEMORY_GIB && p.diskFreeGiB >= MIN_DISK_GIB,
+    )
+    .toSorted(
+      (a, b) => a.load1 / a.cores - b.load1 / b.cores || b.memAvailableGiB - a.memAvailableGiB,
+    );
+}
+
+/** Parses the four lines printed by PROBE_SCRIPT; undefined when the output is malformed. */
+export function parseProbe(host: string, output: string): HostProbe | undefined {
+  const [cores, load, memKiB, diskKiB] = output
+    .trim()
+    .split("\n")
+    .map((line) => Number.parseFloat(line));
+  if (![cores, load, memKiB, diskKiB].every((n) => Number.isFinite(n))) return undefined;
+  return {
+    host,
+    cores: cores!,
+    load1: load!,
+    memAvailableGiB: memKiB! / 1024 / 1024,
+    diskFreeGiB: diskKiB! / 1024 / 1024,
+  };
+}
+
+const PROBE_SCRIPT = [
+  "nproc",
+  "cut -d' ' -f1 /proc/loadavg",
+  "awk '/MemAvailable/ {print $2}' /proc/meminfo",
+  `df -Pk "$HOME" | awk 'NR==2 {print $4}'`,
+].join("; ");
+
+async function probe(host: string): Promise<HostProbe | undefined> {
+  const child = Bun.spawn(
+    ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=8", host, PROBE_SCRIPT],
+    {
+      stdout: "pipe",
+      stderr: "ignore",
+    },
+  );
+  const timer = setTimeout(() => child.kill(), 15_000);
+  const [out, code] = await Promise.all([new Response(child.stdout).text(), child.exited]);
+  clearTimeout(timer);
+  return code === 0 ? parseProbe(host, out) : undefined;
+}
+
+export async function pickHost(candidates: string[]): Promise<string> {
+  const probes = (await Promise.all(candidates.map(probe))).filter((p) => p !== undefined);
+  for (const p of probes)
+    console.log(
+      `remote-dev: ${p.host} load=${p.load1}/${p.cores} mem=${p.memAvailableGiB.toFixed(1)}G disk=${p.diskFreeGiB.toFixed(0)}G`,
+    );
+  const best = rankHosts(probes)[0];
+  if (!best) throw new Error(`no usable build host among ${candidates.join(", ")}`);
+  console.log(`remote-dev: using ${best.host}`);
+  return best.host;
+}
+
 const USAGE =
-  "usage: remote-dev <doctor|sync|install|gates [--rust]|dev|stop|run -- <cmd>|up [--rust]|clean-wsl [--apply]|backup [--apply]> [--host <alias>]";
+  "usage: remote-dev <doctor|sync|install|gates [--rust]|dev|stop|run -- <cmd>|up [--rust]|clean-wsl [--apply]|backup [--apply]> [--host <alias>|auto] [--workspace <name>]";
 
 async function main(argv: string[]): Promise<number> {
   const dash = argv.indexOf("--");
   const options = dash >= 0 ? argv.slice(0, dash) : argv;
-  const hostAt = options.indexOf("--host");
-  const config = { ...DEFAULT_CONFIG, ...(hostAt >= 0 ? { host: options[hostAt + 1] ?? "" } : {}) };
+  const value = (name: string) => {
+    const at = options.indexOf(name);
+    return at >= 0 ? (options[at + 1] ?? "") : undefined;
+  };
+  const workspace = value("--workspace") ?? DEFAULT_CONFIG.workspace;
+  let host = value("--host") ?? DEFAULT_CONFIG.host;
+  if (host === "auto")
+    host = await pickHost((process.env.SHENRON_DEV_HOSTS ?? "vps,bunos").split(","));
+  // One tmux session per workspace, so parallel dev servers do not kill each other.
+  const config = { ...DEFAULT_CONFIG, host, workspace, devSession: workspace };
   const flag = (name: string) => options.includes(name);
   switch (options[0]) {
     case "doctor":
