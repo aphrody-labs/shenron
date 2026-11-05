@@ -79,18 +79,8 @@
     }
   },
   "activation": {
-    "order": [
-      "site",
-      "bot"
-    ],
-    "neverTouched": [
-      "postgres",
-      "redis",
-      "embed",
-      "compute",
-      "chat",
-      "cloudflared"
-    ],
+    "order": ["site", "bot"],
+    "neverTouched": ["postgres", "redis", "embed", "compute", "chat", "cloudflared"],
     "keepImages": 4,
     "keepReleases": 6
   },
@@ -111,13 +101,8 @@
         "target/release/libshenron_ffi.so",
         "target/release/koharu-sdk"
       ],
-      "services": [
-        "site",
-        "bot"
-      ],
-      "extras": [
-        "rustc"
-      ]
+      "services": ["site", "bot"],
+      "extras": ["rustc"]
     },
     "wasm": {
       "toolchain": "rust",
@@ -141,13 +126,8 @@
         "packages/pipeline/src/wasm",
         "packages/engine/src/wasm"
       ],
-      "services": [
-        "site"
-      ],
-      "extras": [
-        "rustc",
-        "bun"
-      ]
+      "services": ["site"],
+      "extras": ["rustc", "bun"]
     },
     "site": {
       "toolchain": "bun",
@@ -170,15 +150,9 @@
         "apps/site/.next-standalone/static",
         "apps/site/public"
       ],
-      "services": [
-        "site"
-      ],
-      "after": [
-        "wasm"
-      ],
-      "extras": [
-        "bun"
-      ]
+      "services": ["site"],
+      "after": ["wasm"],
+      "extras": ["bun"]
     },
     "bot": {
       "toolchain": "bun",
@@ -196,27 +170,15 @@
         "data",
         "scripts/ops/bun-source-pipeline.ts"
       ],
-      "outputs": [
-        "dist/bot/linux-x64"
-      ],
-      "services": [
-        "bot"
-      ],
-      "extras": [
-        "bun"
-      ]
+      "outputs": ["dist/bot/linux-x64"],
+      "services": ["bot"],
+      "extras": ["bun"]
     },
     "server": {
       "toolchain": "bun",
       "workspace": "apps/server",
-      "after": [
-        "site",
-        "rust"
-      ],
-      "extras": [
-        "bun",
-        "vfs"
-      ],
+      "after": ["site", "rust"],
+      "extras": ["bun", "vfs"],
       "inputs": [
         "package.json",
         "bun.lock",
@@ -231,31 +193,15 @@
         "plugin",
         "data/lexique-db-canonique.json"
       ],
-      "outputs": [
-        "dist/server/linux-x64",
-        "dist/mcp/linux-x64",
-        "dist/cdn"
-      ],
-      "services": [
-        "site"
-      ]
+      "outputs": ["dist/server/linux-x64", "dist/mcp/linux-x64", "dist/cdn"],
+      "services": ["site"]
     },
     "image": {
       "toolchain": "none",
-      "after": [
-        "rust",
-        "bot",
-        "server"
-      ],
-      "inputs": [
-        "deploy/docker/Dockerfile",
-        ".dockerignore"
-      ],
+      "after": ["rust", "bot", "server"],
+      "inputs": ["deploy/docker/Dockerfile", ".dockerignore"],
       "outputs": [],
-      "services": [
-        "site",
-        "bot"
-      ]
+      "services": ["site", "bot"]
     }
   },
   "classification": {

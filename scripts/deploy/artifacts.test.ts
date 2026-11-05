@@ -1,6 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterEach, expect, test } from "bun:test";
-import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { get, has, prune, put } from "./artifacts.ts";
@@ -33,7 +41,9 @@ test("put then get restores identical files and dedupes objects", async () => {
   await put(store, source, "site", KEY_B, ["out"]);
   expect(has(store, "site", KEY_A)).toBe(true);
   // "same" is stored once for both keys: three objects in total.
-  const objects = readdirSync(join(store, "objects")).flatMap((prefix) => readdirSync(join(store, "objects", prefix)));
+  const objects = readdirSync(join(store, "objects")).flatMap((prefix) =>
+    readdirSync(join(store, "objects", prefix)),
+  );
   expect(objects.length).toBe(3);
   const target = temp();
   await get(store, target, "site", KEY_A);

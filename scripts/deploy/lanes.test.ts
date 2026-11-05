@@ -17,10 +17,33 @@ import {
 const environment: Environment = {
   toolchain: { rust: "1.0.0", bun: "1.0.0" },
   lanes: {
-    rust: { toolchain: "rust", inputs: ["Cargo.toml", "crates", "crates/inner"], outputs: [], services: ["site", "bot"] },
-    site: { toolchain: "bun", workspace: "apps/site", inputs: ["package.json"], outputs: [], services: ["site"] },
-    bot: { toolchain: "bun", workspace: "apps/bot", inputs: ["package.json"], outputs: [], services: ["bot"] },
-    image: { toolchain: "none", after: ["rust", "site", "bot"], inputs: ["Dockerfile"], outputs: [], services: ["site", "bot"] },
+    rust: {
+      toolchain: "rust",
+      inputs: ["Cargo.toml", "crates", "crates/inner"],
+      outputs: [],
+      services: ["site", "bot"],
+    },
+    site: {
+      toolchain: "bun",
+      workspace: "apps/site",
+      inputs: ["package.json"],
+      outputs: [],
+      services: ["site"],
+    },
+    bot: {
+      toolchain: "bun",
+      workspace: "apps/bot",
+      inputs: ["package.json"],
+      outputs: [],
+      services: ["bot"],
+    },
+    image: {
+      toolchain: "none",
+      after: ["rust", "site", "bot"],
+      inputs: ["Dockerfile"],
+      outputs: [],
+      services: ["site", "bot"],
+    },
   },
   classification: {
     noDeploy: ["docs", "README.md"],
@@ -46,7 +69,19 @@ const write = (path: string, text: string) => {
 const commit = (message: string) => {
   git("add", "-A");
   // A scratch repository: no user hook or signing applies to it.
-  git("-c", "user.name=t", "-c", "user.email=t@t", "-c", "core.hooksPath=.no-hooks", "-c", "commit.gpgsign=false", "commit", "-qm", message);
+  git(
+    "-c",
+    "user.name=t",
+    "-c",
+    "user.email=t@t",
+    "-c",
+    "core.hooksPath=.no-hooks",
+    "-c",
+    "commit.gpgsign=false",
+    "commit",
+    "-qm",
+    message,
+  );
   return git("rev-parse", "HEAD");
 };
 
@@ -60,7 +95,10 @@ beforeAll(() => {
   write("crates/inner/lib.rs", "i");
   write("Dockerfile", "FROM x");
   write("README.md", "r");
-  write("apps/site/package.json", JSON.stringify({ name: "site", dependencies: { ui: "workspace:*" } }));
+  write(
+    "apps/site/package.json",
+    JSON.stringify({ name: "site", dependencies: { ui: "workspace:*" } }),
+  );
   write("apps/site/page.ts", "1");
   write("apps/bot/package.json", JSON.stringify({ name: "bot" }));
   write("apps/bot/main.ts", "1");

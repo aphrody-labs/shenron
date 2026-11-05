@@ -82,11 +82,14 @@ export function git(root: string, args: string[], optional = false): string | nu
 export function objectIds(root: string, rev: string, paths: string[]): Map<string, string> {
   const ids = new Map<string, string>();
   if (paths.length === 0) return ids;
-  const run = Bun.spawnSync(["git", "-C", root, "cat-file", "--batch-check=%(objectname) %(objecttype)"], {
-    stdin: Buffer.from(paths.map((path) => `${rev}:${path}\n`).join("")),
-    stdout: "pipe",
-    stderr: "pipe",
-  });
+  const run = Bun.spawnSync(
+    ["git", "-C", root, "cat-file", "--batch-check=%(objectname) %(objecttype)"],
+    {
+      stdin: Buffer.from(paths.map((path) => `${rev}:${path}\n`).join("")),
+      stdout: "pipe",
+      stderr: "pipe",
+    },
+  );
   if (run.exitCode !== 0) throw new Error(`git cat-file: ${run.stderr.toString().trim()}`);
   const lines = run.stdout.toString().split("\n");
   paths.forEach((path, index) => {
@@ -119,7 +122,12 @@ export function globToRegExp(pattern: string): RegExp {
  * `<mode> <id> <path>` records under it, minus the files matched by `ignore` (tests: they never
  * reach an artifact). A path without any record is absent from the map.
  */
-export function inputDigests(root: string, rev: string, paths: string[], ignore: string[]): Map<string, string> {
+export function inputDigests(
+  root: string,
+  rev: string,
+  paths: string[],
+  ignore: string[],
+): Map<string, string> {
   const digests = new Map<string, string>();
   if (paths.length === 0) return digests;
   const ignored = ignore.map(globToRegExp);
@@ -134,7 +142,9 @@ export function inputDigests(root: string, rev: string, paths: string[], ignore:
   }
   records.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
   for (const input of paths) {
-    const lines = records.filter((record) => record.path === input || record.path.startsWith(`${input}/`));
+    const lines = records.filter(
+      (record) => record.path === input || record.path.startsWith(`${input}/`),
+    );
     if (lines.length > 0) digests.set(input, sha256(lines.map((record) => record.line).join("\n")));
   }
   return digests;
@@ -174,7 +184,11 @@ function workspaces(root: string, rev: string): Workspaces {
   const directories = git(root, ["ls-tree", "--name-only", rev, "apps/", "packages/"])
     .split("\n")
     .filter(Boolean);
-  const contents = blobs(root, rev, directories.map((directory) => `${directory}/package.json`));
+  const contents = blobs(
+    root,
+    rev,
+    directories.map((directory) => `${directory}/package.json`),
+  );
   const manifests = new Map<string, { directory: string; dependencies: string[] }>();
   const byDirectory = new Map<string, string[]>();
   for (const directory of directories) {
@@ -203,7 +217,7 @@ function workspaces(root: string, rev: string): Workspaces {
       }
       // Entries without a readable manifest are submodules every package may import.
       for (const directory of directories) if (!byDirectory.has(directory)) reached.add(directory);
-      return [...reached].sort();
+      return [...reached].toSorted();
     },
   };
   workspaceCache.set(cacheKey, graph);
@@ -224,7 +238,7 @@ export function workspaceClosure(root: string, rev: string, start: string): stri
 /** Input paths of a lane at a revision: its declared inputs plus its workspace closure. */
 export function laneInputs(root: string, rev: string, lane: Lane): string[] {
   const closure = lane.workspace ? workspaceClosure(root, rev, lane.workspace) : [];
-  return [...new Set([...lane.inputs.map(bare), ...closure])].sort();
+  return [...new Set([...lane.inputs.map(bare), ...closure])].toSorted();
 }
 
 const sha256 = (text: string) => new Bun.CryptoHasher("sha256").update(text).digest("hex");
@@ -252,7 +266,9 @@ export function laneKeys(
 ): Record<string, string> {
   const keys: Record<string, string> = {};
   const names = orderedLanes(environment);
-  const inputs = new Map(names.map((name) => [name, laneInputs(root, rev, environment.lanes[name]!)]));
+  const inputs = new Map(
+    names.map((name) => [name, laneInputs(root, rev, environment.lanes[name]!)]),
+  );
   const ids = inputDigests(
     root,
     rev,
@@ -276,7 +292,8 @@ export function laneKeys(
   return keys;
 }
 
-const covers = (pattern: string, path: string) => path === pattern || path.startsWith(`${pattern}/`);
+const covers = (pattern: string, path: string) =>
+  path === pattern || path.startsWith(`${pattern}/`);
 
 export function changedFiles(root: string, base: string, head: string): string[] {
   return git(root, ["diff", "--name-only", "--no-renames", base, head]).split("\n").filter(Boolean);
@@ -300,10 +317,15 @@ export function plan(
   const rebuild = Object.keys(lanes).filter((name) => lanes[name]!.changed);
   const { noDeploy, holds, infraNotices } = environment.classification;
   const services = [
-    ...new Set(rebuild.filter((name) => name !== "image").flatMap((name) => environment.lanes[name]!.services)),
-  ].sort();
+    ...new Set(
+      rebuild
+        .filter((name) => name !== "image")
+        .flatMap((name) => environment.lanes[name]!.services),
+    ),
+  ].toSorted();
   // The image alone changing (its Dockerfile) still restarts every service it carries.
-  if (services.length === 0 && lanes.image?.changed) services.push(...environment.lanes.image!.services);
+  if (services.length === 0 && lanes.image?.changed)
+    services.push(...environment.lanes.image!.services);
   const held: Plan["holds"] = {};
   for (const [hold, patterns] of Object.entries(holds)) {
     if (!Array.isArray(patterns)) continue;
@@ -311,12 +333,12 @@ export function plan(
     if (matched.length > 0) held[hold] = matched;
   }
   const inputs = Object.values(environment.lanes).flatMap((lane) => lane.inputs.map(bare));
-  const workspaces = ["apps", "packages"];
+  const workspaceRoots = ["apps", "packages"];
   const unclassified = files.filter(
     (file) =>
       !noDeploy.some((pattern) => covers(pattern, file)) &&
       !inputs.some((pattern) => covers(pattern, file)) &&
-      !workspaces.some((pattern) => covers(pattern, file)),
+      !workspaceRoots.some((pattern) => covers(pattern, file)),
   );
   return {
     base: baseSha,
@@ -351,16 +373,24 @@ export function classificationProblems(
     .filter(Boolean)
     .filter((entry) => !known.has(entry))
     .map((entry) => `unclassified top-level path: ${entry}`);
-  const declared = [...new Set(Object.values(environment.lanes).flatMap((lane) => lane.inputs.map(bare)))];
+  const declared = [
+    ...new Set(Object.values(environment.lanes).flatMap((lane) => lane.inputs.map(bare))),
+  ];
   const present = objectIds(root, rev, declared);
   for (const [name, lane] of Object.entries(environment.lanes))
     for (const input of lane.inputs)
-      if (!input.endsWith("?") && !present.has(input)) problems.push(`lane ${name}: input ${input} is absent at ${rev}`);
+      if (!input.endsWith("?") && !present.has(input))
+        problems.push(`lane ${name}: input ${input} is absent at ${rev}`);
   return problems;
 }
 
 /** One line per recent commit: what a deploy of it alone would have rebuilt. */
-export function history(root: string, rev: string, count: number, environment = loadEnvironment(root)) {
+export function history(
+  root: string,
+  rev: string,
+  count: number,
+  environment = loadEnvironment(root),
+) {
   const commits = git(root, ["rev-list", "--first-parent", `--max-count=${count}`, rev])
     .split("\n")
     .filter(Boolean);
@@ -414,7 +444,8 @@ function main(argv: string[]) {
   if (command === "keys") {
     const keys = laneKeys(ROOT, rev, extras);
     if (format === "shell")
-      for (const [name, key] of Object.entries(keys)) console.log(`LANE_KEY_${name.toUpperCase()}=${key}`);
+      for (const [name, key] of Object.entries(keys))
+        console.log(`LANE_KEY_${name.toUpperCase()}=${key}`);
     else console.log(JSON.stringify(keys, null, 2));
     return;
   }

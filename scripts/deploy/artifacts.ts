@@ -58,8 +58,10 @@ function assertId(lane: string, key: string) {
   if (!HEX.test(key)) throw new Error(`invalid lane key: ${key}`);
 }
 
-const objectPath = (store: string, digest: string) => join(store, "objects", digest.slice(0, 2), digest);
-const manifestPath = (store: string, lane: string, key: string) => join(store, "manifests", lane, `${key}.json`);
+const objectPath = (store: string, digest: string) =>
+  join(store, "objects", digest.slice(0, 2), digest);
+const manifestPath = (store: string, lane: string, key: string) =>
+  join(store, "manifests", lane, `${key}.json`);
 
 async function hashFile(path: string): Promise<string> {
   const hasher = new Bun.CryptoHasher("sha256");
@@ -73,7 +75,7 @@ function* walk(path: string): Generator<string> {
     yield path;
     return;
   }
-  for (const entry of readdirSync(path).sort()) yield* walk(join(path, entry));
+  for (const entry of readdirSync(path).toSorted()) yield* walk(join(path, entry));
 }
 
 const toPosix = (path: string) => path.split(sep).join(posix.sep);
@@ -94,7 +96,13 @@ export function has(store: string, lane: string, key: string): boolean {
   return existsSync(manifestPath(store, lane, key));
 }
 
-export async function put(store: string, root: string, lane: string, key: string, paths: string[]): Promise<Manifest> {
+export async function put(
+  store: string,
+  root: string,
+  lane: string,
+  key: string,
+  paths: string[],
+): Promise<Manifest> {
   assertId(lane, key);
   const files: FileEntry[] = [];
   const links: LinkEntry[] = [];
@@ -136,7 +144,12 @@ function safeDestination(root: string, name: string) {
   return destination;
 }
 
-export async function get(store: string, root: string, lane: string, key: string): Promise<Manifest> {
+export async function get(
+  store: string,
+  root: string,
+  lane: string,
+  key: string,
+): Promise<Manifest> {
   assertId(lane, key);
   const path = manifestPath(store, lane, key);
   if (!existsSync(path)) throw new Error(`no artifact for ${lane} ${key}`);
@@ -188,7 +201,7 @@ export function prune(store: string, keep: number): { manifests: number; objects
         const path = join(root, lane, name);
         return { path, manifest: JSON.parse(readFileSync(path, "utf8")) as Manifest };
       })
-      .sort((a, b) => b.manifest.createdAt.localeCompare(a.manifest.createdAt));
+      .toSorted((a, b) => b.manifest.createdAt.localeCompare(a.manifest.createdAt));
     entries.forEach(({ path, manifest }, index) => {
       if (index >= keep) {
         rmSync(path);

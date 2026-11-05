@@ -20,10 +20,19 @@ import { join, resolve } from "node:path";
 const ROOT = resolve(import.meta.dir, "../..");
 
 export type Definition = {
-  toolchain: { rust: string; bun: string; bunLinuxSha256: string; sccache: string; baseImage: string };
+  toolchain: {
+    rust: string;
+    bun: string;
+    bunLinuxSha256: string;
+    sccache: string;
+    baseImage: string;
+  };
   caches: Record<string, string | number>;
   runtime: { packages: string[]; env: Record<string, string>; files: string[] };
-  services: Record<string, { container: string; health: string; healthHost?: string; waitSeconds: number }>;
+  services: Record<
+    string,
+    { container: string; health: string; healthHost?: string; waitSeconds: number }
+  >;
   activation: { order: string[]; keepImages: number; keepReleases: number };
 };
 
@@ -51,7 +60,10 @@ function stage(dockerfile: string, name?: string) {
 /** KEY=value pairs of the first multi-line ENV instruction of a stage. */
 function envOf(text: string): Record<string, string> {
   const block = text.match(/^ENV ((?:.*\\\r?\n)*.*)$/m)?.[1] ?? "";
-  const pairs = block.replace(/\\\r?\n/g, " ").trim().split(/\s+/);
+  const pairs = block
+    .replace(/\\\r?\n/g, " ")
+    .trim()
+    .split(/\s+/);
   return Object.fromEntries(
     pairs.filter(Boolean).map((pair) => {
       const index = pair.indexOf("=");
@@ -76,7 +88,9 @@ export function driftProblems(root = ROOT, definition = loadDefinition(root)): s
   const problems: string[] = [];
   const expect = (label: string, actual: unknown, wanted: unknown) => {
     if (!same(actual, wanted))
-      problems.push(`${label}: found ${JSON.stringify(actual)}, the definition says ${JSON.stringify(wanted)}`);
+      problems.push(
+        `${label}: found ${JSON.stringify(actual)}, the definition says ${JSON.stringify(wanted)}`,
+      );
   };
   const { toolchain, runtime } = definition;
   expect(
@@ -93,7 +107,11 @@ export function driftProblems(root = ROOT, definition = loadDefinition(root)): s
   expect("Dockerfile.build BASE_IMAGE", arg(build, "BASE_IMAGE"), toolchain.baseImage);
   expect("Dockerfile.build RUST_VERSION", arg(build, "RUST_VERSION"), toolchain.rust);
   expect("Dockerfile.build BUN_VERSION", arg(build, "BUN_VERSION"), toolchain.bun);
-  expect("Dockerfile.build BUN_LINUX_SHA256", arg(build, "BUN_LINUX_SHA256"), toolchain.bunLinuxSha256);
+  expect(
+    "Dockerfile.build BUN_LINUX_SHA256",
+    arg(build, "BUN_LINUX_SHA256"),
+    toolchain.bunLinuxSha256,
+  );
   expect("Dockerfile.build SCCACHE_VERSION", arg(build, "SCCACHE_VERSION"), toolchain.sccache);
   const factory = read(root, "deploy/docker/Dockerfile");
   expect("deploy/docker/Dockerfile base", factory.match(/^FROM (\S+)/m)?.[1], toolchain.baseImage);
@@ -120,7 +138,8 @@ function versionProblems(definition: Definition): string[] {
     problems.push(`rustc: found "${rustc}", wanted ${definition.toolchain.rust}`);
   const compile = process.env.SHENRON_COMPILE_BUN ?? "bun";
   const bun = output([compile, "--version"]);
-  if (bun !== definition.toolchain.bun) problems.push(`bun: found "${bun}", wanted ${definition.toolchain.bun}`);
+  if (bun !== definition.toolchain.bun)
+    problems.push(`bun: found "${bun}", wanted ${definition.toolchain.bun}`);
   return problems;
 }
 
@@ -175,11 +194,15 @@ function main(argv: string[]) {
   }
   const emit = argv[argv.indexOf("--emit") + 1];
   if (argv.includes("--emit") && emit === "shell") process.stdout.write(shellExports(definition));
-  else if (argv.includes("--emit") && emit === "activation") process.stdout.write(activationEnv(definition));
+  else if (argv.includes("--emit") && emit === "activation")
+    process.stdout.write(activationEnv(definition));
   else if (argv.includes("--emit") && emit === "runtime-env")
-    for (const [name, value] of Object.entries(definition.runtime.env)) console.log(`${name}=${value}`);
+    for (const [name, value] of Object.entries(definition.runtime.env))
+      console.log(`${name}=${value}`);
   else {
-    console.error("usage: environment.ts --check | --verify-host | --emit shell|runtime-env|activation");
+    console.error(
+      "usage: environment.ts --check | --verify-host | --emit shell|runtime-env|activation",
+    );
     process.exit(64);
   }
 }
