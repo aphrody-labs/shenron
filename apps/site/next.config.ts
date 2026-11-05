@@ -441,6 +441,27 @@ const nextConfig: NextConfig = {
         ],
       },
       {
+        // Accueil : le HTML est identique pour tous (la langue et l'état communautaire
+        // sont résolus côté client), mais deux `fetch` `no-store` (home-config,
+        // banner-config) le rendent dynamique, donc servi `private, no-store`. Pour un
+        // visiteur SANS cookie de session ni jeton admin, on autorise un cache partagé
+        // court. Avec un cookie, la règle ne s'applique pas : en-tête Next par défaut.
+        source: "/",
+        missing: [
+          { type: "cookie", key: "dbfr_admin" },
+          { type: "cookie", key: "better-auth.session_token" },
+          { type: "cookie", key: "__Secure-better-auth.session_token" },
+          { type: "header", key: "authorization" },
+          { type: "header", key: "x-admin-token" },
+        ],
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=0, s-maxage=60, stale-while-revalidate=600",
+          },
+        ],
+      },
+      {
         source: "/assets/(.*)",
         headers: [
           {
