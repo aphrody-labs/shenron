@@ -1,7 +1,10 @@
-# Dragon Ball pack for dragonballfr.com (Shenron), Yolo UI theme pack schema v1.
-# Every value is measured from Shenron's design system or the live site; sources per field are in
-# README.md. Wallpapers stay on cdn.dragonballfr.com and are referenced by URL, hash and focal point:
-# no Toei or manga image is stored in this repository.
+# Dragon Ball pack for dragonballfr.com (Shenron), Yolo UI theme pack schema v1.1.
+# Rights: the product owner decided on 2026-11-05 (in the work chat), after settling with the rights
+# holders, that Shenron may serve the real Dragon Ball assets. Licence of every asset below is
+# LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05: that decision, not a published licence text.
+# THESE ASSETS ARE NOT REDISTRIBUTABLE OUTSIDE SHENRON (dragonballfr.com and its CDN). Do not
+# publish this pack, mirror its files or ship it in another product. Sources and sha256: PROVENANCE.md.
+# Wallpapers and sounds stay on cdn.dragonballfr.com and are referenced by URL and sha256.
 id = "dragon-ball"
 name = "Dragon Ball"
 
@@ -16,31 +19,18 @@ ntp_heading = "Dragon Ball, en français et sourcé"
 # packages/ui/assets/dbz/kinto-un-icone.svg, the site's favicon source. Rasters and .ico already
 # exist in packages/ui/assets and are not duplicated here (no binaries in the pack).
 mark = "assets/logo/kinto-un-mark.svg"
+wordmark = "assets/brand/dragonballfr-wordmark.svg"
 monochrome = "assets/logo/kinto-un-monochrome.svg"
 
 [color]
-# Accent --dbz-orange #e78220 (replica/design/tokens.json "accent"). Fidelity keeps the generated
-# containers close to the seed's chroma; the overrides pin the roles to the site's measured tokens.
-seed = "#e78220"
+# Seed = the real focus-ring colour of the live site, read from computed styles on 2026-11-05
+# (`focus-visible:outline-kinto-lumiere`, --color-kinto-lumiere = rgb(252, 240, 58)). All 50 roles,
+# focus-ring included, are computed (HCT, vibrant) in both schemes: no role is pinned.
+seed = "#fcf03a"
 source = "seed"
-variant = "fidelity"
+variant = "vibrant"
 contrast = 0.0
-mode = "dark"
-
-[color.overrides]
-primary = "#e78220"               # accent, --color-dbz-orange
-on-primary = "#0a0a0a"            # on-accent; 7.18:1
-background = "#0a0a0a"            # bg, --color-dbz-bg
-on-background = "#efe9d8"         # text, --color-os; 16.33:1
-surface = "#0a0a0a"               # bg, --color-dbz-bg
-on-surface = "#efe9d8"            # text, --color-os; 16.33:1
-surface-container-low = "#141410" # surface, --color-dbz-card (the live --dbz-card mapping); 15.23:1 with on-surface
-surface-variant = "#2a2a26"       # border tone; 5.71:1 with on-surface-variant
-on-surface-variant = "#a8a393"    # text-muted; 7.85:1 on bg, 7.32:1 on card
-outline = "#8a8a7e"               # border-input; 5.67:1 on bg (UI component, >= 3:1)
-outline-variant = "#2a2a26"       # border hairline, --color-dbz-border (decorative)
-tertiary = "#fefd03"              # focus-ring, --color-dbz-yellow; 18.16:1 on bg
-on-tertiary = "#0a0a0a"           # 18.16:1
+mode = "system"
 
 [icons]
 # The site imports lucide-react in 121 places (2 px stroke outlines).
@@ -55,9 +45,9 @@ weight = 400
 file = "https://cdn.dragonballfr.com/media/episodes/876/hero/15415c1073ea1809729659d109842fc4a4d34e977e2b50a62735684e33957aa1/frame-1115.webp"
 mode = "dark"
 seed = "#edca57"
-license = "LicenseRef-AllRightsReserved"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
 source = "https://cdn.dragonballfr.com/media/episodes/876/hero/15415c1073ea1809729659d109842fc4a4d34e977e2b50a62735684e33957aa1/frame-1115.webp"
-attribution = "Dragon Ball Super, episode 876, 18:35 (c) Bird Studio/Shueisha, Toei Animation. Usage limited to dragonballfr.com, not redistributable."
+attribution = "Dragon Ball Super, episode 876, 18:35 (c) Bird Studio/Shueisha, Toei Animation. Authorised for Shenron only (owner decision 2026-11-05), not redistributable."
 fit = "cover"
 focal = [30, 42]
 sha256 = "15415c1073ea1809729659d109842fc4a4d34e977e2b50a62735684e33957aa1"
@@ -66,9 +56,9 @@ sha256 = "15415c1073ea1809729659d109842fc4a4d34e977e2b50a62735684e33957aa1"
 file = "https://cdn.dragonballfr.com/media/episodes/875/hero/84284388bf476254dd74ab2b9284476e6135d578d3d5b039dd38dff13e762ab3/frame-1100.webp"
 mode = "dark"
 seed = "#f61819"
-license = "LicenseRef-AllRightsReserved"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
 source = "https://cdn.dragonballfr.com/media/episodes/875/hero/84284388bf476254dd74ab2b9284476e6135d578d3d5b039dd38dff13e762ab3/frame-1100.webp"
-attribution = "Dragon Ball Super, episode 875, 18:20 (c) Bird Studio/Shueisha, Toei Animation. Usage limited to dragonballfr.com, not redistributable."
+attribution = "Dragon Ball Super, episode 875, 18:20 (c) Bird Studio/Shueisha, Toei Animation. Authorised for Shenron only (owner decision 2026-11-05), not redistributable."
 fit = "cover"
 focal = [25, 42]
 sha256 = "84284388bf476254dd74ab2b9284476e6135d578d3d5b039dd38dff13e762ab3"
@@ -77,9 +67,9 @@ sha256 = "84284388bf476254dd74ab2b9284476e6135d578d3d5b039dd38dff13e762ab3"
 file = "https://cdn.dragonballfr.com/media/episodes/876/hero/5c591046a2e494cebc48f6704aef84d17fbd2900807ea7e8437c7d4057ad279f/frame-900.webp"
 mode = "dark"
 seed = "#c781d2"
-license = "LicenseRef-AllRightsReserved"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
 source = "https://cdn.dragonballfr.com/media/episodes/876/hero/5c591046a2e494cebc48f6704aef84d17fbd2900807ea7e8437c7d4057ad279f/frame-900.webp"
-attribution = "Dragon Ball Super, episode 876, 15:00 (c) Bird Studio/Shueisha, Toei Animation. Usage limited to dragonballfr.com, not redistributable."
+attribution = "Dragon Ball Super, episode 876, 15:00 (c) Bird Studio/Shueisha, Toei Animation. Authorised for Shenron only (owner decision 2026-11-05), not redistributable."
 fit = "cover"
 focal = [22, 30]
 sha256 = "5c591046a2e494cebc48f6704aef84d17fbd2900807ea7e8437c7d4057ad279f"
@@ -88,9 +78,9 @@ sha256 = "5c591046a2e494cebc48f6704aef84d17fbd2900807ea7e8437c7d4057ad279f"
 file = "https://cdn.dragonballfr.com/media/episodes/876/hero/e59bb6df4d152cb9b1c7b256fa40b683d85f537f8028dcf466fa325349dde7f9/frame-240.webp"
 mode = "dark"
 seed = "#623f53"
-license = "LicenseRef-AllRightsReserved"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
 source = "https://cdn.dragonballfr.com/media/episodes/876/hero/e59bb6df4d152cb9b1c7b256fa40b683d85f537f8028dcf466fa325349dde7f9/frame-240.webp"
-attribution = "Dragon Ball Super, episode 876, 04:00 (c) Bird Studio/Shueisha, Toei Animation. French subtitle burned in. Usage limited to dragonballfr.com, not redistributable."
+attribution = "Dragon Ball Super, episode 876, 04:00 (c) Bird Studio/Shueisha, Toei Animation. French subtitle burned in. Authorised for Shenron only (owner decision 2026-11-05), not redistributable."
 fit = "cover"
 focal = [50, 38]
 sha256 = "e59bb6df4d152cb9b1c7b256fa40b683d85f537f8028dcf466fa325349dde7f9"
@@ -100,15 +90,82 @@ sha256 = "e59bb6df4d152cb9b1c7b256fa40b683d85f537f8028dcf466fa325349dde7f9"
 file = "https://cdn.dragonballfr.com/assets/manga/DBFC/ch516/001.jpg"
 mode = "dark"
 seed = "#9df0fa"
-license = "LicenseRef-AllRightsReserved"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
 source = "https://cdn.dragonballfr.com/assets/manga/DBFC/ch516/001.jpg"
-attribution = "Dragon Ball, chapter 516 \"L'issue du combat\", page 1, full colour edition (c) Bird Studio/Shueisha. Usage limited to dragonballfr.com, not redistributable."
+attribution = "Dragon Ball, chapter 516 \"L'issue du combat\", page 1, full colour edition (c) Bird Studio/Shueisha. Authorised for Shenron only (owner decision 2026-11-05), not redistributable."
 fit = "contain"
 focal = [50, 62]
 sha256 = "7b949dbee672171643a0cfcf30da3843cefdfc152796a0806aecf774e6f915bd"
 
-# No [pet]: neither the shenron plugin nor toriyama-svg provides an animated character with
-# per-state files (pets/<provider>/<id>/<state>.webp|json). See README.md.
+
+
+# Light wallpapers: site banners (3216x1072, wide). No precomputed seed: decoded at runtime.
+[[wallpapers]]
+file = "https://cdn.dragonballfr.com/banners/banner-14.jpg"
+mode = "light"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/banners/banner-14.jpg"
+attribution = "Dragon Ball, DBFR banner 14, Son Goku carrying a child under a cloudy sky (c) Bird Studio/Shueisha, Toei Animation. Authorised for Shenron only (owner decision 2026-11-05), not redistributable."
+fit = "cover"
+focal = [62, 50]
+sha256 = "8a1c0d3425e825fd06b146a9536450a347023eb9caee8bb1446eb6a59bd4ddff"
+
+[[wallpapers]]
+file = "https://cdn.dragonballfr.com/banners/banner-05.jpg"
+mode = "light"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/banners/banner-05.jpg"
+attribution = "Dragon Ball, DBFR banner 05, colour illustration (c) Bird Studio/Shueisha, Toei Animation. Authorised for Shenron only (owner decision 2026-11-05), not redistributable."
+fit = "cover"
+focal = [62, 55]
+sha256 = "475f9e4cc1f9849fbe1832dcc7d4a6d4c9004d3744c27fe56b73594bed359b96"
+
+[[wallpapers]]
+file = "https://cdn.dragonballfr.com/banners/banner-08.jpg"
+mode = "light"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/banners/banner-08.jpg"
+attribution = "Dragon Ball, DBFR banner 08, Super Saiyan Son Goku (c) Bird Studio/Shueisha, Toei Animation. Authorised for Shenron only (owner decision 2026-11-05), not redistributable."
+fit = "cover"
+focal = [72, 40]
+sha256 = "58734e61080ad1e86efe4165fa2354365e86260411ec2d3759f3e362339084a5"
+
+# Dark wallpapers (banners): added to the four Toei stills and the manga page above.
+[[wallpapers]]
+file = "https://cdn.dragonballfr.com/banners/banner-16.png"
+mode = "dark"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/banners/banner-16.png"
+attribution = "Dragon Ball, DBFR banner 16 (c) Bird Studio/Shueisha, Toei Animation. Authorised for Shenron only (owner decision 2026-11-05), not redistributable."
+fit = "cover"
+focal = [70, 55]
+sha256 = "153ea52587bc3097f3fbc38673927883f3e6cdd7939da265eecaacfd4cdf9c19"
+
+[[wallpapers]]
+file = "https://cdn.dragonballfr.com/banners/dbs-beerus-2026.jpg"
+mode = "dark"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/banners/dbs-beerus-2026.jpg"
+attribution = "Dragon Ball Super, DBFR banner dbs-beerus-2026 (c) Bird Studio/Shueisha, Toei Animation. Authorised for Shenron only (owner decision 2026-11-05), not redistributable."
+fit = "cover"
+focal = [50, 50]
+sha256 = "ca4270c5b0fa8634dc827b18825cefa8bc51e59a7056d1731b27ffe0e4490352"
+
+# Companion: Shenron, the site's own vector illustration (static, one file for every state: the
+# shell animates it). Dragon Radar and Nuage Magique have no pet asset in the repository or on the
+# CDN; the Nuage Magique mark is the logo.
+[pet]
+id = "shenron"
+provider = "pack"
+anchor = "bottom-right"
+name = "Shenron"
+states = ["idle", "active", "sleep"]
+size = 160
+
+[pet.files]
+idle = "assets/pet/shenron.svg"
+active = "assets/pet/shenron.svg"
+sleep = "assets/pet/shenron.svg"
 
 [typography]
 # apps/site/src/app/fonts.css: --font-sans, --font-mono-src (both OFL, served by the CDN).
@@ -125,3 +182,70 @@ density = 0
 radius = [6, 8, 16]
 glass_blur = 12
 motion = "calm"
+
+# Named assets (sounds from the site pack, technique stills); each with sha256 and the owner-decision licence.
+[assets.sound-shenron]
+file = "https://cdn.dragonballfr.com/sfx/shenron.mp3"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/sfx/shenron.mp3"
+sha256 = "387986ad102e605eb947b293b4c2f244335b8151fec0f91967283d9005b87057"
+
+[assets.sound-nimbus]
+file = "https://cdn.dragonballfr.com/sfx/nimbus.mp3"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/sfx/nimbus.mp3"
+sha256 = "6e094628d723f7f040a835ee5abcd67ba003d453d15d2da035d4b4b07d4ef1b4"
+
+[assets.sound-select]
+file = "https://cdn.dragonballfr.com/sfx/select.mp3"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/sfx/select.mp3"
+sha256 = "a2c7b70e8652d16517eaa303c4c2ec04dfdc699a6e1247a6c6f39cdac686a654"
+
+[assets.sound-click]
+file = "https://cdn.dragonballfr.com/sfx/click.mp3"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/sfx/click.mp3"
+sha256 = "1dbc3b5d933065a1facc1189b570336aee3a598be5af63bb07c6f56287fcef3d"
+
+[assets.sound-kamehameha]
+file = "https://cdn.dragonballfr.com/sfx/kamehameha.mp3"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/sfx/kamehameha.mp3"
+sha256 = "7fa45c4116be3fe947120dcca3ae57864e87275883bedb396c5e1646ab19a36a"
+
+[assets.sound-ki-charge]
+file = "https://cdn.dragonballfr.com/sfx/ki-charge.mp3"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/sfx/ki-charge.mp3"
+sha256 = "cbb54b7e0335d96d858b209e278322e95cde31525cc7c57bb3f6bd57812cd47b"
+
+[assets.technique-kamehameha]
+file = "https://cdn.dragonballfr.com/techniques/kamehameha.webp"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/techniques/kamehameha.webp"
+sha256 = "a8bd4b29e18de2a3040bbb6ba0d5b385f64475cb947b4f5269a4ac1e96479d5e"
+
+[assets.technique-genkidama]
+file = "https://cdn.dragonballfr.com/techniques/genkidama.webp"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/techniques/genkidama.webp"
+sha256 = "a62d51cc1b0fd9a92b6303a795cf99c59412d29af6fbefec355cf95b7ce45edf"
+
+[assets.technique-final-flash]
+file = "https://cdn.dragonballfr.com/techniques/final-flash.webp"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/techniques/final-flash.webp"
+sha256 = "181f46dd5e4794fcc96f0e29bcd821c2731dfaff3cb28451902c925365de1371"
+
+[assets.technique-kaioken]
+file = "https://cdn.dragonballfr.com/techniques/kaioken.webp"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/techniques/kaioken.webp"
+sha256 = "7c35a32cdc575e2f2e0d4db0b6902e50d59035f21b07d99700290b04df3c2c69"
+
+[assets.technique-kienzan]
+file = "https://cdn.dragonballfr.com/techniques/kienzan.webp"
+license = "LicenseRef-DBFR-Rights-Holder-Authorized-2026-11-05"
+source = "https://cdn.dragonballfr.com/techniques/kienzan.webp"
+sha256 = "2591b27b052fa86eda01cd37f16ae6560b38a69babf322cd5e4f69e7063412c2"

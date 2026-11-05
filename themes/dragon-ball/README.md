@@ -4,8 +4,8 @@ Yolo UI theme pack, schema v1 (`crates/yolo-theme-pack/src/manifest.rs` in yolo-
 Yolo shell into the dragonballfr.com look: the near-black DBFR background, the gi orange accent,
 the yellow focus ring, the Kinto-Un mark and the Toei stills from the live home hero.
 
-Nothing here is published or deployed. Publishing is the Shenron admin's decision (see the open
-decisions below).
+Rights: owner decision of 2026-11-05, see PROVENANCE.md. The assets are for Shenron only and are not
+redistributable. Schema v1.1.
 
 ## Contents
 
@@ -21,34 +21,9 @@ are left empty so they are not duplicated. Wallpapers are referenced by their CD
 
 ## Colour
 
-The seed is the DBFR accent `#e78220` (`replica/design/tokens.json` `accent`,
-`--color-dbz-orange`), with the `fidelity` variant and a dark default. The overrides pin the roles
-the site actually measures; every other role comes from the generated scheme.
-
-| Role | Value | Source token | Contrast |
-| --- | --- | --- | --- |
-| `primary` | `#e78220` | accent, `--color-dbz-orange` | 7.18:1 on bg, 6.69:1 on card |
-| `on-primary` | `#0a0a0a` | on-accent | 7.18:1 |
-| `background`, `surface` | `#0a0a0a` | bg, `--color-dbz-bg` | |
-| `on-background`, `on-surface` | `#efe9d8` | text, `--color-os` | 16.33:1 |
-| `surface-container-low` | `#141410` | surface, `--color-dbz-card` | 15.23:1 with text |
-| `surface-variant` | `#2a2a26` | border tone | 5.71:1 with muted text |
-| `on-surface-variant` | `#a8a393` | text-muted | 7.85:1 on bg, 7.32:1 on card |
-| `outline` | `#8a8a7e` | border-input | 5.67:1 on bg (UI, needs 3:1) |
-| `outline-variant` | `#2a2a26` | border, `--color-dbz-border` | 1.37:1, decorative hairline as on the site |
-| `tertiary` | `#fefd03` | focus-ring, `--color-dbz-yellow` | 18.16:1 on bg |
-| `on-tertiary` | `#0a0a0a` | | 18.16:1 |
-
-Ratios are WCAG 2.x relative luminance. With these overrides no `on-*` / base pair falls under
-4.5:1 (checked against the material-color-utilities 0.4.0 fidelity scheme that yolo-tokens ports).
-`surface-variant` is overridden only because the generated `#554336` gave 3.71:1 with the muted
-text.
-
-The schema has no focus-ring role. The site's `#fefd03` focus ring is carried by `tertiary`; a shell
-that wants the DBFR focus ring should draw it from `tertiary`.
-
-The overrides are dark values and apply in both modes, so the pack is dark only (`mode = "dark"`),
-like the site (`<html class="dark">`).
+The seed is `#fcf03a`, the focus-ring colour of the live site (computed style of the nav links,
+`outline-kinto-lumiere`, 2026-11-05), `vibrant` variant, mode `system`. Every role, `focus-ring`
+included, is computed by the HCT engine in light and dark; nothing is pinned. Contrast: PROVENANCE.md.
 
 ### Drift on the live site
 
