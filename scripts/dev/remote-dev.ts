@@ -203,13 +203,13 @@ async function sync(config: RemoteDevConfig): Promise<string> {
   return sha;
 }
 
-/** Restore gitlink workspaces before Bun resolves their workspace dependencies. */
+/** Checkout commands of a snapshot, run in order in the remote workspace. */
 export function snapshotCheckoutCommands(sha: string): string[][] {
   return [
     ["-c", "advice.detachedHead=false", "checkout", "-q", "-f", "--detach", sha],
-    ["submodule", "update", "--init", "--recursive"],
-    // Keep ignored build caches while discarding leftovers from an older snapshot.
-    ["clean", "-fdq"],
+    // Keep ignored build caches while discarding leftovers from an older snapshot. The double force
+    // also removes nested repositories, such as the checkout of a submodule this repository dropped.
+    ["clean", "-ffdq"],
   ];
 }
 

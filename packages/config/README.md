@@ -2,7 +2,7 @@
 
 Configuration partagée de Shenron.
 
-Cette unité est suivie comme sous-module Git du dépôt `aphrody-labs/shenron` et reste testable dans le workspace Bun parent.
+Cette unité vit dans le dépôt `aphrody-labs/shenron` et reste testable dans le workspace Bun parent.
 
 ## Développement
 

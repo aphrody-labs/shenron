@@ -40,7 +40,7 @@ le runner transmet exactement ses `ignorePatterns` en arguments
 La dépendance TypeScript reste pour Next et les outils de l'éditeur ; elle ne
 détermine plus les portes de types. Une éventuelle génération de déclarations
 est une opération distincte, car `bun check` n'émet aucun fichier. Aucun changement
-n'est effectué dans le sous-module `packages/config` ; sa porte de types native
+n'est effectué dans `packages/config` ; sa porte de types native
 reste incluse dans la solution racine.
 
 Les tests exécutent réellement un projet avec une erreur de types dans sa seconde

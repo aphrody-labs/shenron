@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, relative, sep } from "node:path";
 import {
@@ -50,9 +50,9 @@ describe("regenerablePaths", () => {
   });
 });
 
-test("a fresh remote snapshot restores its config workspace from the gitlink", () => {
-  const source = tree(["config", "project"]);
-  const config = join(source, "config");
+test("a remote snapshot drops the checkout of a removed submodule", () => {
+  const source = tree(["film", "project"]);
+  const film = join(source, "film");
   const project = join(source, "project");
   const checkout = join(source, "checkout");
   const git = (cwd: string, args: string[]) => {
@@ -72,21 +72,22 @@ test("a fresh remote snapshot restores its config workspace from the gitlink", (
     if (child.exitCode !== 0) throw new Error(new TextDecoder().decode(child.stderr));
     return new TextDecoder().decode(child.stdout).trim();
   };
-  git(config, ["init", "-q"]);
-  writeFileSync(join(config, "package.json"), JSON.stringify({ name: "@fixture/config" }));
-  git(config, ["add", "package.json"]);
-  git(config, ["commit", "-qm", "config fixture"]);
+  git(film, ["init", "-q"]);
+  writeFileSync(join(film, "Cargo.toml"), "[workspace]");
+  git(film, ["add", "Cargo.toml"]);
+  git(film, ["commit", "-qm", "film fixture"]);
   git(project, ["init", "-q"]);
-  git(project, ["submodule", "add", config, "packages/config"]);
-  git(project, ["commit", "-qam", "project fixture"]);
+  git(project, ["submodule", "add", film, "crates/film"]);
+  git(project, ["commit", "-qam", "older snapshot"]);
+  git(source, ["clone", "-q", "--recurse-submodules", project, checkout]);
+  expect(existsSync(join(checkout, "crates/film/Cargo.toml"))).toBe(true);
+  git(project, ["rm", "-q", "crates/film"]);
+  git(project, ["commit", "-qam", "newer snapshot"]);
   const sha = git(project, ["rev-parse", "HEAD"]);
-  git(source, ["clone", "-q", project, checkout]);
-  expect(Bun.file(join(checkout, "packages/config/package.json")).size).toBe(0);
+  git(checkout, ["fetch", "-q", "origin"]);
   for (const args of snapshotCheckoutCommands(sha)) git(checkout, args);
-  expect(Bun.file(join(checkout, "packages/config/package.json")).size).toBeGreaterThan(0);
-  expect(git(join(checkout, "packages/config"), ["rev-parse", "HEAD"])).toBe(
-    git(config, ["rev-parse", "HEAD"]),
-  );
+  // A stale manifest here would join the `crates/*` Cargo workspace glob.
+  expect(existsSync(join(checkout, "crates/film"))).toBe(false);
   // About a dozen Git processes: 3 s on a quiet Windows machine, so the 5 s default is too tight.
 }, 60_000);
 

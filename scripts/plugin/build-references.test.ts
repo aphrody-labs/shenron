@@ -15,7 +15,7 @@ async function fichiers(motif: string): Promise<string[]> {
 }
 
 describe("instantanés du plugin", () => {
-  test("a pinned config submodule remains readable from the parent source revision", async () => {
+  test("a committed config source reads the same from a revision and from the tree", async () => {
     const path = "packages/config/src/economy-canon.ts";
     expect(await lire(path, { check: true, depuis: "HEAD" })).toBe(
       await Bun.file(join(RACINE, path)).text(),
