@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
-import { LOCALES_INFO, SUPPORTED_LOCALES, type SupportedLocale } from "@/lib/i18n";
+import { LOCALES_INFO, SUPPORTED_LOCALES, type SupportedLocale } from "@/lib/i18n/types";
 import { useLangue } from "@/lib/i18n/client";
 import { ChevronBas, MaterialSymbol } from "@aphrody/shenron-ui/icones";
 

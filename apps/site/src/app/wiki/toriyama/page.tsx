@@ -528,7 +528,7 @@ export default async function ToriyamaPage() {
                 <section
                   key={group.documentKey}
                   aria-labelledby={`src-${slugifyAnchor(group.documentKey)}`}
-                  className="rounded-xl border border-white/[0.08] bg-dbz-card/60 p-6"
+                  className="[contain-intrinsic-size:auto_900px] [content-visibility:auto] rounded-xl border border-white/[0.08] bg-dbz-card/60 p-6"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-center gap-4">

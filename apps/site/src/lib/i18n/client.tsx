@@ -15,16 +15,35 @@
  * doctrine du site. Le sélecteur le dit en toutes lettres.
  */
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { NextIntlClientProvider } from "next-intl";
+import fr from "../../../messages/fr.json";
+import type { Dictionary } from "@/lib/i18n";
 import {
   COOKIE_LOCALE_NAME,
   DEFAULT_LOCALE,
-  getDictionary,
   normalizeLocale,
-  type Dictionary,
   type SupportedLocale,
-} from "@/lib/i18n";
+} from "@/lib/i18n/types";
+
+/**
+ * Seul le français (langue du document, rendue par le serveur) est embarqué. L'anglais et le
+ * japonais — 330 Kio de JSON, 90 Kio compressés, servis auparavant à CHAQUE page — ne
+ * sont téléchargés qu'au moment où le visiteur les choisit.
+ */
+const CHARGEURS: Record<SupportedLocale, () => Promise<Dictionary>> = {
+  fr: async () => fr,
+  en: async () => (await import("../../../messages/en.json")).default as Dictionary,
+  ja: async () => (await import("../../../messages/ja.json")).default as Dictionary,
+};
 
 interface ContexteLangue {
   locale: SupportedLocale;
@@ -34,14 +53,25 @@ interface ContexteLangue {
 
 const Contexte = createContext<ContexteLangue>({
   locale: DEFAULT_LOCALE,
-  dico: getDictionary(DEFAULT_LOCALE),
+  dico: fr,
   changerLangue: () => {},
 });
 
 export function LocaleProvider({ children }: { children: React.ReactNode }) {
   // Le serveur rend toujours le français : c'est la langue du document par
   // défaut, et c'est ce que le CDN met en cache. La bascule se fait juste après.
-  const [locale, setLocale] = useState<SupportedLocale>(DEFAULT_LOCALE);
+  const [{ locale, dico }, setEtat] = useState<{ locale: SupportedLocale; dico: Dictionary }>({
+    locale: DEFAULT_LOCALE,
+    dico: fr,
+  });
+  // Dernière langue demandée : une réponse tardive d'une demande périmée est ignorée.
+  const demandee = useRef<SupportedLocale>(DEFAULT_LOCALE);
+
+  const appliquer = useCallback(async (code: SupportedLocale) => {
+    demandee.current = code;
+    const dictionnaire = await CHARGEURS[code]();
+    if (demandee.current === code) setEtat({ locale: code, dico: dictionnaire });
+  }, []);
 
   useEffect(() => {
     const trouve = document.cookie.match(new RegExp(`(?:^|; )${COOKIE_LOCALE_NAME}=([^;]*)`))?.[1];
@@ -57,23 +87,26 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
       } catch {
         /* valeur illégale : on garde la chaîne telle quelle */
       }
-      // oxlint-disable-next-line react/set-state-in-effect -- sync with external source on mount
-      setLocale(normalizeLocale(brut));
+      const code = normalizeLocale(brut);
+      if (code !== DEFAULT_LOCALE) void appliquer(code);
     }
-  }, []);
+  }, [appliquer]);
 
   useEffect(() => {
     document.documentElement.lang = locale;
   }, [locale]);
 
-  const changerLangue = useCallback((code: SupportedLocale) => {
-    document.cookie = `${COOKIE_LOCALE_NAME}=${code}; path=/; max-age=31536000; SameSite=Lax`;
-    setLocale(code);
-  }, []);
+  const changerLangue = useCallback(
+    (code: SupportedLocale) => {
+      document.cookie = `${COOKIE_LOCALE_NAME}=${code}; path=/; max-age=31536000; SameSite=Lax`;
+      void appliquer(code);
+    },
+    [appliquer],
+  );
 
   const valeur = useMemo<ContexteLangue>(
-    () => ({ locale, dico: getDictionary(locale), changerLangue }),
-    [locale, changerLangue],
+    () => ({ locale, dico, changerLangue }),
+    [locale, dico, changerLangue],
   );
 
   // next-intl hooks (`useTranslations`, `useFormatter`) read the same locale and

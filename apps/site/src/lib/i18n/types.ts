@@ -18,3 +18,15 @@ export const LOCALES_INFO: Record<SupportedLocale, LocaleInfo> = {
   ja: { code: "ja", name: "Japonais", nativeName: "日本語", flag: "🇯🇵", dir: "ltr" },
   en: { code: "en", name: "Anglais", nativeName: "English", flag: "🇬🇧", dir: "ltr" },
 };
+
+/** Normalises and validates a language code against the supported list. */
+export function normalizeLocale(locale?: string | null): SupportedLocale {
+  if (!locale) return DEFAULT_LOCALE;
+  const clean = locale.toLowerCase().trim().slice(0, 2);
+  if (clean === "ja" || clean === "jp") return "ja";
+  if (clean === "en") return "en";
+  if (clean === "fr") return "fr";
+  return DEFAULT_LOCALE;
+}
+
+export const COOKIE_LOCALE_NAME = "NEXT_LOCALE";

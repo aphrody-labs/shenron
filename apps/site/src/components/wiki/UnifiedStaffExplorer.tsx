@@ -260,7 +260,7 @@ export function UnifiedStaffExplorer({ items, initialTier = "all" }: UnifiedStaf
             <article
               key={item.id}
               id={item.slug}
-              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.015] p-5 backdrop-blur-md transition-all duration-300 hover:border-orange-500/50 hover:shadow-xl hover:shadow-orange-950/20"
+              className="group flex flex-col justify-between [contain-intrinsic-size:auto_420px] [content-visibility:auto] rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.07] to-white/[0.015] p-5 backdrop-blur-md transition-all duration-300 hover:border-orange-500/50 hover:shadow-xl hover:shadow-orange-950/20"
             >
               <div>
                 {/* Badges du Niveau & Studio */}
