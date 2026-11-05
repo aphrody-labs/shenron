@@ -20,9 +20,11 @@ import {
   buildSourcePipelineAsset,
 } from "./bot-runtime-assets";
 import {
+  aotBun,
   aotRequested,
   chooseCompileMode,
   compileModeFlags,
+  supportsAot,
   type CompileMode,
 } from "./compile-mode";
 
@@ -62,7 +64,7 @@ async function compile(mode: CompileMode): Promise<number> {
       "--label",
       `bot-compile-${target}-${mode}`,
       "--",
-      process.execPath,
+      aotBun(mode),
       "build",
       "src/entry-standalone.ts",
       // Workers are extra entry points: new Worker() can only load modules embedded in the binary.
@@ -81,6 +83,9 @@ async function compile(mode: CompileMode): Promise<number> {
       // of NAPI_RS_NATIVE_LIBRARY_PATH beside the binary (src/lib/canvas-binding.ts): AOT must
       // allow that load from disk.
       ...compileModeFlags(mode, { codeFromDisk: true }),
+      // Opt-in: removes the Bun APIs the code never calls (-45 MiB on Linux). --smoke does not exercise
+      // the gateway or the database, so it is not the default until a deploy has run it.
+      ...(mode === "aot" && process.env.SHENRON_AOT_TRIM === "1" ? ["--trim"] : []),
       ...(mode === "aot" && args.includes("--aot-log-type-mismatches")
         ? ["--aot-log-type-mismatches"]
         : []),
@@ -107,6 +112,10 @@ const choice = chooseCompileMode({
   compileBun: process.env.SHENRON_COMPILE_BUN,
 });
 let mode = choice.mode;
+if (mode === "aot" && !supportsAot(aotBun(mode))) {
+  mode = "bytecode";
+  choice.reason = `${aotBun("aot")} has no --aot`;
+}
 if (choice.reason)
   console.error(JSON.stringify({ label: "bot-compile-mode", mode, reason: choice.reason }));
 if ((await compile(mode)) !== 0) {

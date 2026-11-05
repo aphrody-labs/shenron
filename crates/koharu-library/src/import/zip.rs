@@ -18,7 +18,15 @@ pub(super) fn extract(path: &Path) -> Result<Vec<EncodedPage>> {
         if member.is_dir() {
             continue;
         }
-        let name = member.name().to_owned();
+        let name = member
+            .name()
+            .with_context(|| {
+                format!(
+                    "failed to decode the name of member {index} from ZIP/CBZ container {}",
+                    path.display()
+                )
+            })?
+            .into_owned();
         let member_path = Path::new(&name);
         let supported = member_path
             .extension()

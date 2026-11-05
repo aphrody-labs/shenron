@@ -2,10 +2,12 @@
 import { describe, expect, test } from "bun:test";
 
 import {
+  aotBun,
   aotRequested,
   chooseCompileMode,
   compileModeFlags,
   foreignRuntime,
+  helpMentionsAot,
   hostTarget,
 } from "./compile-mode";
 
@@ -75,5 +77,27 @@ describe("compile mode", () => {
     expect(hostTarget("linux", "x64")).toBe("linux-x64");
     expect(hostTarget("linux", "arm64")).toBeNull();
     expect(hostTarget("darwin", "x64")).toBeNull();
+  });
+});
+
+describe("aotBun", () => {
+  test("only an AOT compile uses SHENRON_AOT_BUN", () => {
+    const env = { SHENRON_AOT_BUN: "/opt/bun-aot/bin/bun" };
+    expect(aotBun("aot", env, "/usr/bin/bun")).toBe("/opt/bun-aot/bin/bun");
+    expect(aotBun("bytecode", env, "/usr/bin/bun")).toBe("/usr/bin/bun");
+    expect(aotBun("aot", {}, "/usr/bin/bun")).toBe("/usr/bin/bun");
+    expect(aotBun("aot", { SHENRON_AOT_BUN: "  " }, "/usr/bin/bun")).toBe("/usr/bin/bun");
+  });
+});
+
+describe("helpMentionsAot", () => {
+  test("reads the --aot flag from the build help", () => {
+    expect(helpMentionsAot("      --aot                Compile JavaScript to machine code\n")).toBe(
+      true,
+    );
+    expect(helpMentionsAot("      --bytecode           Use a bytecode cache\n")).toBe(false);
+    expect(helpMentionsAot("      --aot-allow-code-from-disk   With --aot: let import()\n")).toBe(
+      false,
+    );
   });
 });

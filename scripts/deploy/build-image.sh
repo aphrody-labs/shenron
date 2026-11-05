@@ -93,9 +93,13 @@ SITE_OUTPUTS=(apps/site/.next-standalone/standalone/apps/site/server.js)
 BOT_KEY=$(lane_key "$BUN_ID" "${JS_INPUTS[@]}" apps/bot assets scripts/ops/bun-source-pipeline.ts)
 BOT_OUTPUTS=(dist/bot/linux-x64/shenron-bot dist/bot/linux-x64/pipeline.mjs)
 # The crates also embed data files with include_str!.
-RUST_KEY=$(lane_key "$(rustc -V)" Cargo.toml Cargo.lock .cargo rust-toolchain.toml crates \
+RUST_KEY=$(lane_key "$(rustc -V) ${SHENRON_CARGO_PROFILE:-production}" Cargo.toml Cargo.lock .cargo rust-toolchain.toml crates \
   data/lexique-db-canonique.json data/lexicon)
-RUST_OUTPUTS=(target/release/shenron-mcp target/release/libshenron_ffi.so target/release/koharu-sdk)
+# Shipped Rust is built with --profile production (fat LTO, one codegen unit, stripped); the
+# fast lane for quick iterations is SHENRON_CARGO_PROFILE=release. Cargo writes a profile to
+# target/<profile> ("dev" excepted, which nothing here uses).
+CARGO_PROFILE=${SHENRON_CARGO_PROFILE:-production}
+RUST_OUTPUTS=("target/$CARGO_PROFILE/shenron-mcp" "target/$CARGO_PROFILE/libshenron_ffi.so" "target/$CARGO_PROFILE/koharu-sdk")
 
 fetch_vfs() {
   local out=dist/vfs/shenron-vfs.public.sqlite source=${SHENRON_VFS_SOURCE:-}
@@ -144,13 +148,13 @@ build_site() {
 
 build_rust() {
   if lane_fresh rust "$RUST_KEY" "${RUST_OUTPUTS[@]}"; then
-    echo "== cargo: Rust inputs unchanged, reusing target/release"
+    echo "== cargo: Rust inputs unchanged, reusing target/$CARGO_PROFILE"
     return
   fi
   rm -f "$STAMPS/rust"
   local jobs=${SHENRON_CARGO_JOBS:-$(nproc)}
-  cargo build --release --locked -j "$jobs" -p shenron-mcp -p shenron-ffi
-  cargo build --release --locked -j "$jobs" -p koharu-library --bin koharu-sdk
+  cargo build --profile "$CARGO_PROFILE" --locked -j "$jobs" -p shenron-mcp -p shenron-ffi
+  cargo build --profile "$CARGO_PROFILE" --locked -j "$jobs" -p koharu-library --bin koharu-sdk
   lane_done rust "$RUST_KEY"
   phase "cargo done"
 }
@@ -179,9 +183,9 @@ for pid in "${pids[@]}"; do wait "$pid" || status=$?; done
 phase "server package"
 SHENRON_PAYLOAD_ZSTD_LEVEL=${SHENRON_PAYLOAD_ZSTD_LEVEL:-6} \
   bun scripts/build/server.ts --skip-site --flavor production --target linux-x64
-install -D -m 0755 target/release/shenron-mcp dist/mcp/linux-x64/shenron-mcp
-install -D -m 0755 target/release/libshenron_ffi.so dist/server/linux-x64/native/libshenron_ffi.so
-install -D -m 0755 target/release/koharu-sdk dist/server/linux-x64/native/koharu-sdk
+install -D -m 0755 target/$CARGO_PROFILE/shenron-mcp dist/mcp/linux-x64/shenron-mcp
+install -D -m 0755 target/$CARGO_PROFILE/libshenron_ffi.so dist/server/linux-x64/native/libshenron_ffi.so
+install -D -m 0755 target/$CARGO_PROFILE/koharu-sdk dist/server/linux-x64/native/koharu-sdk
 
 phase "image"
 "$ENGINE" build -q -f deploy/docker/Dockerfile --build-arg SHENRON_REVISION="$SHA" \

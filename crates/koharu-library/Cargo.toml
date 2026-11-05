@@ -49,7 +49,6 @@ aphrody-llama = { workspace = true }
 aphrody-torch = { workspace = true }
 rars = { workspace = true }
 rayon = { workspace = true }
-reqwest = { workspace = true }
 rfd = { workspace = true, optional = true }
 schemars = { workspace = true }
 serde = { workspace = true }

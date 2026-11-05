@@ -17,29 +17,24 @@ crate-type = ["cdylib", "rlib"]
 workspace = true
 
 [features]
-default = ["vello"]
-vello = ["dep:vello"]
 wasm = ["dep:wasm-bindgen", "dep:wasm-bindgen-futures", "dep:serde-wasm-bindgen", "dep:js-sys", "dep:web-sys"]
 
 [dependencies]
 # Math, memory and core
-glam = { version = "0.30", features = ["bytemuck", "serde"] }
-bytemuck = { version = "1.25", features = ["derive"] }
+glam = { workspace = true }
+bytemuck = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
-log = { workspace = true }
 parking_lot = { workspace = true }
 rayon = { workspace = true }
-bytes = { workspace = true }
 sha2 = { workspace = true }
 shenron-panels = { workspace = true }
-shenron-re = { path = "../shenron-re", version = "1.4.4" }
-dragon-pixel = { path = "../dragon-pixel" }
+shenron-re = { workspace = true }
+dragon-pixel = { workspace = true }
 
 # GPU & Graphics
 wgpu = { workspace = true }
-vello = { workspace = true, optional = true }
 
 image = { workspace = true }
 
@@ -68,6 +63,6 @@ web-sys = { workspace = true, features = [
 ] }
 
 [dev-dependencies]
-naga = { version = "30.0.1", features = ["wgsl-in"] }
+naga = { workspace = true }
 pollster = { workspace = true }
 serde_json = { workspace = true }

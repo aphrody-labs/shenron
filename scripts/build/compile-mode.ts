@@ -5,7 +5,9 @@
  * - `aot`: `--aot` compiles the JavaScript to machine code. It cannot cross-compile (the
  *   compiler only targets the platform it runs on) and the executable carries no Bun command
  *   line, so `BUN_BE_BUN=1` cannot run a script from disk with it: the server, which starts
- *   the Next standalone `server.js` that way, never uses it.
+ *   the Next standalone `server.js`, ships a real Bun at runtime/bun beside its AOT executable.
+ *   Not every Bun 1.4.4 canary build links big module graphs: 11c367163 panics in LinkAndEmit on
+ *   Linux for the bot and the server (5b598476c does not), hence the fallback to `bytecode`.
  * - `bytecode`: the bundle plus a JavaScriptCore bytecode cache (`--bytecode --format=esm`),
  *   which skips parsing at start-up. The cache is only valid for the JavaScriptCore of the Bun
  *   that writes it, so it is left out when another runtime (`SHENRON_COMPILE_BUN`) is embedded.
@@ -76,4 +78,32 @@ export function aotRequested(
   env: Record<string, string | undefined> = process.env,
 ) {
   return !args.includes("--no-aot") && env.SHENRON_AOT !== "0";
+}
+
+/**
+ * The Bun that runs `bun build --compile --aot`, and that the executable embeds. Bun 1.4.4
+ * canaries differ in whether the AOT linker handles the bot and server module graphs (see the
+ * header), so a release can name a known good one with `SHENRON_AOT_BUN`; otherwise the Bun
+ * running the build is used.
+ */
+export function aotBun(
+  mode: CompileMode,
+  env: Record<string, string | undefined> = process.env,
+  execPath = process.execPath,
+) {
+  return mode === "aot" && env.SHENRON_AOT_BUN?.trim() ? env.SHENRON_AOT_BUN.trim() : execPath;
+}
+
+/**
+ * Whether `bun` knows `--aot`. A Bun without it (the Aphrody 1.4.3 runtime of the container
+ * images) ignores the flag silently and writes a plain bundle, so the mode must be decided
+ * from the help text, not from the exit code.
+ */
+export function supportsAot(bun: string): boolean {
+  const help = Bun.spawnSync([bun, "build", "--help"], { stdout: "pipe", stderr: "pipe" });
+  return help.exitCode === 0 && helpMentionsAot(help.stdout.toString());
+}
+
+export function helpMentionsAot(help: string): boolean {
+  return /^\s*--aot\s/m.test(help);
 }

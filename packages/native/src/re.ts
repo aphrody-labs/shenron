@@ -95,6 +95,7 @@ export function resolveShenronReLibraryPath(): string | undefined {
   const libName = `${process.platform === "win32" ? "" : "lib"}shenron_re.${suffix}`;
   const repoRoot = resolve(import.meta.dir, "../../..");
   const candidates = [
+    join(repoRoot, "target/production", libName),
     join(repoRoot, "target/release", libName),
     join(repoRoot, "target/debug", libName),
     join(import.meta.dir, "../native", libName),

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-import { join } from "node:path";
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
 
 export const NEXT_STARTUP_TIMEOUT_MS = 120_000;
 const PROBE_TIMEOUT_MS = 1_000;
@@ -32,6 +33,41 @@ export async function stopStandaloneChild(
 const COMPILED =
   import.meta.path.startsWith("/$bunfs/") || /^[A-Z]:[\\/]~BUN[\\/]/i.test(import.meta.path);
 
+export interface NextRuntime {
+  /** The program that runs the Next standalone `server.js`. */
+  program: string;
+  /** `BUN_BE_BUN=1`: the compiled server executable acts as the Bun command line. */
+  beBun: boolean;
+}
+
+/**
+ * Which Bun runs the Next standalone server. An AOT executable carries no Bun command line, so
+ * `BUN_BE_BUN=1` does nothing for it: the build ships a real Bun at `runtime/bun[.exe]` beside
+ * the executable (scripts/build/server.ts), or `SHENRON_NEXT_BUN` names one. A bytecode or bundle
+ * executable still runs the child as itself with `BUN_BE_BUN=1`; a source run uses its own Bun.
+ */
+export function resolveNextRuntime(
+  options: {
+    compiled?: boolean;
+    execPath?: string;
+    env?: Record<string, string | undefined>;
+    exists?: (path: string) => boolean;
+    platform?: NodeJS.Platform;
+  } = {},
+): NextRuntime {
+  const compiled = options.compiled ?? COMPILED;
+  const execPath = options.execPath ?? process.execPath;
+  const env = options.env ?? process.env;
+  const exists = options.exists ?? existsSync;
+  const override = env.SHENRON_NEXT_BUN?.trim();
+  if (override) return { program: override, beBun: false };
+  if (!compiled) return { program: execPath, beBun: false };
+  const exe = (options.platform ?? process.platform) === "win32" ? "bun.exe" : "bun";
+  const shipped = join(dirname(execPath), "runtime", exe);
+  if (exists(shipped)) return { program: shipped, beBun: false };
+  return { program: execPath, beBun: true };
+}
+
 /** Run the standalone UI in Bun, including when the parent is a compiled executable. */
 export async function startNextStandalone(
   app: string,
@@ -39,12 +75,13 @@ export async function startNextStandalone(
   extraEnv: Record<string, string>,
   options: StartupOptions = {},
 ): Promise<ReturnType<typeof Bun.spawn>> {
-  const child = Bun.spawn([process.execPath, join(app, "server.js")], {
+  const runtime = resolveNextRuntime();
+  const child = Bun.spawn([runtime.program, join(app, "server.js")], {
     cwd: app,
     env: {
       ...process.env,
       ...extraEnv,
-      ...(COMPILED ? { BUN_BE_BUN: "1" } : {}),
+      ...(runtime.beBun ? { BUN_BE_BUN: "1" } : {}),
       PORT: String(port),
       HOSTNAME: "127.0.0.1",
       NODE_ENV: "production",
