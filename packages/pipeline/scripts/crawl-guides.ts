@@ -10,7 +10,7 @@
 
 import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { aphrodyWebScrape } from "@aphrody/shenron-pipeline/aphrody";
+import { yoloWebScrape } from "@aphrody/shenron-pipeline/yolo-web";
 
 const OUT_DIR = new URL("../data/rag/raw/guides/", import.meta.url).pathname;
 
@@ -50,7 +50,7 @@ if (!existsSync(OUT_DIR)) {
 
 async function runAphrodyScrape(url: string): Promise<string> {
   console.log(`[CRAWL GUIDE] Ingestion via Aphrody Web : ${url}`);
-  return await aphrodyWebScrape(url, { profile: "static" });
+  return await yoloWebScrape(url, {});
 }
 
 function cleanMarkdown(rawMarkdown: string, title: string, url: string): string {

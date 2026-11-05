@@ -27,7 +27,7 @@
  *   bun apps/bot/scripts/volumetrie-dragonballcn.ts --recommencer      # ignore les mesures acquises
  */
 import { join } from "node:path";
-import { aphrodyWebScrape } from "@aphrody/shenron-pipeline/aphrody";
+import { yoloWebScrape } from "@aphrody/shenron-pipeline/yolo-web";
 
 const args = process.argv.slice(2);
 const opt = (nom: string, defaut?: string) => {
@@ -55,7 +55,7 @@ type Collection = { slug: string; titre: string; ouvrages: Ouvrage[] };
 class AphrodyWebScraper {
   async scrapeMarkdown(url: string): Promise<string | null> {
     try {
-      return await aphrodyWebScrape(url, { profile: "max", timeoutMs: DUREE_MAX_MS });
+      return await yoloWebScrape(url, { timeoutMs: DUREE_MAX_MS });
     } catch (error) {
       console.error(
         `Aphrody Web scrape failed for ${url}: ${error instanceof Error ? error.message : String(error)}`,

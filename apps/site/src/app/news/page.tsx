@@ -37,7 +37,7 @@ export default async function ActualitesPage() {
               href="/sources/dragon-ball"
               className="inline-flex min-h-11 shrink-0 items-center rounded-sm font-semibold text-dbz-orange hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kinto-lumiere"
             >
-              Voir les sources BXC
+              Voir les sources
             </Link>
           </p>
         }

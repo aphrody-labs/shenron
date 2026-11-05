@@ -26,7 +26,6 @@ describe("@aphrody/shenron-pipeline/aphrody exports", () => {
       "aphrodyWebCrawl",
       "aphrodyWebMirror",
       "aphrodyWebRecon",
-      "aphrodyWebScrape",
       "aphrodyWebSearch",
       "resolveWikiApiUrl",
     ]);

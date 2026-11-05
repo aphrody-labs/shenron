@@ -3,7 +3,7 @@
 import { chmod, mkdir, statfs } from "node:fs/promises";
 import { join } from "node:path";
 import sharp from "sharp";
-import { aphrodyWebScrape } from "@aphrody/shenron-pipeline/aphrody";
+import { yoloWebScrape } from "@aphrody/shenron-pipeline/yolo-web";
 
 const args = process.argv.slice(2);
 const flag = (nom: string) => args.includes(`--${nom}`);
@@ -141,7 +141,7 @@ const estUneImage = (corps: Uint8Array) => {
 
 async function resoutDossier(url: string): Promise<string | null> {
   try {
-    const markdown = await aphrodyWebScrape(url, { profile: "max", timeoutMs: DUREE_WEB_MS });
+    const markdown = await yoloWebScrape(url, { timeoutMs: DUREE_WEB_MS });
     return /list\/+([^"')\s\\]+?)\/_thumb\./.exec(markdown)?.[1] ?? null;
   } catch (error) {
     console.error(`Aphrody Web: ${error instanceof Error ? error.message : String(error)}`);

@@ -29,7 +29,6 @@ export {
   aphrodyWebRecon,
   aphrodyWebCrawl,
   aphrodyWebSearch,
-  aphrodyWebScrape,
   type AphrodyWebScrapeOptions,
   type AphrodyWebCrawlRequest,
   type AphrodyWebCrawlReport,

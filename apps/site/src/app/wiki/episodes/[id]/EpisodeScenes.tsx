@@ -2,15 +2,15 @@
 "use client";
 
 /**
- * EpisodeScenes — Section « Scènes & Frame Finder (bxc frames) » d'un épisode.
+ * EpisodeScenes — Section « Scènes & Frame Finder (frames) » d'un épisode.
  *
  * Combine deux moteurs :
  *   1. Galerie des scènes de l'épisode (`EpisodeFrame[]`) + export GIF animé (`encodeFramesToGif`).
- *   2. Scanner & Identifier de frames `bxc frames` (MPEG-7 ColorLayout DCT + trace.moe)
+ *   2. Scanner & Identifier de frames le scanner de frames (MPEG-7 ColorLayout DCT + trace.moe)
  *      permettant d'analyser n'importe quelle capture d'écran, de vérifier le timecode
  *      d'une scène et d'extraire la signature visuelle compacte de 33 coefficients.
  *
- * Affiché sur TOUS les épisodes du site pour offrir la feature frames de bxc en direct.
+ * Affiché sur TOUS les épisodes du site pour offrir la feature frames en direct.
  */
 
 import { useCallback, useMemo, useState } from "react";
@@ -68,7 +68,7 @@ interface FrameSearchResult {
   anilist: number;
 }
 
-interface BxcApiResponse {
+interface FramesApiResponse {
   success: boolean;
   hash: string | null;
   /** Moteur qui a répondu : index local de la machine, trace.moe, ou rien. */
@@ -164,12 +164,12 @@ export function EpisodeScenes({
   const [errorGif, setErrorGif] = useState<string | null>(null);
   const [gifUrl, setGifUrl] = useState<string | null>(null);
 
-  // État du scanner / analyseur bxc frames
+  // État du scanner / analyseur frames
   const [searchUrl, setSearchUrl] = useState<string>("");
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [scanning, setScanning] = useState(false);
   const [scanError, setScanError] = useState<string | null>(null);
-  const [scanResults, setScanResults] = useState<BxcApiResponse | null>(null);
+  const [scanResults, setScanResults] = useState<FramesApiResponse | null>(null);
 
   const selectionMode = selected.size > 0;
 
@@ -222,7 +222,7 @@ export function EpisodeScenes({
     setErrorGif(null);
   }, []);
 
-  // Lancement de l'analyse bxc frames
+  // Lancement de l'analyse frames
   const executeScan = async (overrideTarget?: { file?: File; url?: string }) => {
     setScanning(true);
     setScanError(null);
@@ -249,7 +249,7 @@ export function EpisodeScenes({
         signal: AbortSignal.timeout(30_000),
       });
 
-      const data = (await res.json()) as BxcApiResponse & { error?: string };
+      const data = (await res.json()) as FramesApiResponse & { error?: string };
       if (!res.ok || data.error) {
         throw new Error(data.error || `Erreur serveur (${res.status})`);
       }
@@ -455,7 +455,7 @@ export function EpisodeScenes({
         </div>
       )}
 
-      {/* Onglet 2 : Frame Finder & Reconnaissance bxc frames */}
+      {/* Onglet 2 : Frame Finder & Reconnaissance frames */}
       {activeTab === "finder" && (
         <div className="space-y-6">
           <div className="rounded-2xl border border-border bg-card p-4 sm:p-6">
@@ -556,7 +556,7 @@ export function EpisodeScenes({
             )}
           </div>
 
-          {/* Résultats de l'analyse bxc frames */}
+          {/* Résultats de l'analyse frames */}
           {scanResults && (
             <div className="rounded-2xl border border-border bg-card p-4 space-y-6 sm:p-6">
               <h4 className="text-base font-bold text-foreground">

@@ -23,11 +23,8 @@ import { Database } from "bun:sqlite";
 import { mkdirSync, writeFileSync, existsSync, readFileSync, appendFileSync } from "node:fs";
 import { join, dirname, basename, extname } from "node:path";
 import { createHash } from "node:crypto";
-import {
-  aphrodyWebMirror,
-  aphrodyWebRecon,
-  aphrodyWebScrape,
-} from "@aphrody/shenron-pipeline/aphrody";
+import { aphrodyWebMirror, aphrodyWebRecon } from "@aphrody/shenron-pipeline/aphrody";
+import { yoloWebScrape } from "@aphrody/shenron-pipeline/yolo-web";
 import { BOT_HOST, CDN_ORIGIN, SITE_URL } from "../src/lib/config";
 
 const SITE_ROOT = join(import.meta.dir, "..");
@@ -597,10 +594,7 @@ async function harvestSource(src: (typeof SOURCES)[0]): Promise<AssetHit[]> {
     // 1) scrape markdown through the Aphrody Web owner
     log(`[*] Aphrody Web scrape --markdown ${src.url}`);
     try {
-      const markdown = await aphrodyWebScrape(src.url, {
-        profile: profile as "static" | "http" | "fast" | "stealth" | "max",
-        bin: process.env.APHRODY_BIN,
-      });
+      const markdown = await yoloWebScrape(src.url, {});
       if (markdown.length > 80) {
         const mdHits = extractFromMarkdown(markdown, src.url);
         log(`  [scrape] ${mdHits.length} media URLs from markdown (${markdown.length} chars)`);
@@ -616,10 +610,10 @@ async function harvestSource(src: (typeof SOURCES)[0]): Promise<AssetHit[]> {
     // 2) structured asset recon through Aphrody Web
     log(`[*] Aphrody Web recon --json ${src.url}`);
     try {
-      const recon = await aphrodyWebRecon<{ assets?: { type?: string; url?: string }[] }>(src.url, {
-        profile: profile as "static" | "http" | "fast" | "stealth" | "max",
-        bin: process.env.APHRODY_BIN,
-      });
+      const recon = await aphrodyWebRecon<{ assets?: { type?: string; url?: string }[] }>(
+        src.url,
+        {},
+      );
       const rHits = extractFromReconJson(JSON.stringify(recon), src.url);
       log(`  [recon] ${rHits.length} assets`);
       hits.push(...rHits);

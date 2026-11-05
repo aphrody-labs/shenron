@@ -423,7 +423,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
               </section>
             )}
 
-            {/* === Scènes & Frame Finder : moteur bxc frames MPEG-7 et scènes === */}
+            {/* === Scènes & Frame Finder : moteur frames MPEG-7 et scènes === */}
             {cdnOnly ? (
               cdnSource ? (
                 <div id="episode-timeline" className={detailStyles.timeline}>

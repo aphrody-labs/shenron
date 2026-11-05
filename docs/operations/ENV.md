@@ -309,12 +309,12 @@ jamais directement par un serveur de modèle).
 
 Autres variables Aphrody :
 
-| Variable                                              | Rôle                                                                                        |
-| ----------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `RAG_BACKEND`                                         | `aphrody` (égalité exacte) : recherche, contexte et statistiques RAG par `aphrody-ai-http`. |
-| `EMBED_TIMEOUT_MS`, `RERANK_TIMEOUT_MS`, `RAG_RERANK` | Délai du chemin chaud d'embedding, délai du reranker, `RAG_RERANK=0` coupe le rerank.       |
+| Variable                                                     | Rôle                                                                                                                       |
+| ------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------- |
+| `RAG_BACKEND`                                                | `aphrody` (égalité exacte) : recherche, contexte et statistiques RAG par `aphrody-ai-http`.                                |
+| `EMBED_TIMEOUT_MS`, `RERANK_TIMEOUT_MS`, `RAG_RERANK`        | Délai du chemin chaud d'embedding, délai du reranker, `RAG_RERANK=0` coupe le rerank.                                      |
 | `YOLO_WEB_API_URL`, `YOLO_WEB_MCP_URL`, `YOLO_WEB_API_TOKEN` | YOLO WEB : coordinateur de crawl (`/status`, `/enqueue`), serveur MCP (`/mcp`), jeton optionnel. Aucune valeur par défaut. |
-| `APHRODY_BIN`                                         | Chemin du CLI `aphrody` quand il n'est pas sur le `PATH`.                                   |
+| `APHRODY_BIN`                                                | Chemin du CLI `aphrody` quand il n'est pas sur le `PATH`.                                                                  |
 
 ## Acquisition native des sources — bot Shenron
 

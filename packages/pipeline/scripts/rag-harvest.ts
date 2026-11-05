@@ -14,9 +14,9 @@ import { homedir } from "node:os";
 import {
   aphrodyWebCrawl,
   aphrodyWebRecon,
-  aphrodyWebScrape,
   aphrodyWebSearch,
 } from "@aphrody/shenron-pipeline/aphrody";
+import { yoloWebScrape } from "@aphrody/shenron-pipeline/yolo-web";
 import { aphrodyWebMirror } from "@aphrody/shenron-pipeline/aphrody/mirror";
 
 // Paths
@@ -52,11 +52,6 @@ for (let i = 0; i < subArgs.length; i++) {
 }
 
 // Map configuration options
-const profile =
-  (options.profile as string) ||
-  process.env.APHRODY_WEB_PROFILE ||
-  process.env.BXC_PROFILE ||
-  "max";
 const proxy =
   (options.proxy as string) ||
   process.env.APHRODY_WEB_PROXY ||
@@ -353,9 +348,7 @@ async function handleRecon(url: string, customSourceId?: string) {
   console.log(`[*] Harvesting Markdown through Aphrody Web: ${url}`);
   let markdown: string;
   try {
-    markdown = await aphrodyWebScrape(url, {
-      profile: profile as "static" | "http" | "fast" | "stealth" | "max",
-    });
+    markdown = await yoloWebScrape(url, {});
   } catch (error) {
     console.error(
       `[-] Aphrody Web scrape failed for ${url}: ${error instanceof Error ? error.message : String(error)}`,
@@ -372,9 +365,7 @@ async function handleRecon(url: string, customSourceId?: string) {
 
   console.log(`[*] Running Aphrody Web reconnaissance: ${url}`);
   try {
-    const report = await aphrodyWebRecon(url, {
-      profile: profile as "static" | "http" | "fast" | "stealth" | "max",
-    });
+    const report = await aphrodyWebRecon(url, {});
     const savedReconPath = saveHarvestedDoc(
       url,
       JSON.stringify(report, null, 2),
@@ -398,9 +389,8 @@ async function handleScrape(url: string, selector?: string, customSourceId?: str
   );
   let stdout: string;
   try {
-    stdout = await aphrodyWebScrape(url, {
-      profile: profile as "static" | "http" | "fast" | "stealth" | "max",
-      ...(selector ? { selector } : {}),
+    stdout = await yoloWebScrape(url, {
+      selector,
     });
   } catch (error) {
     console.error(
@@ -581,7 +571,6 @@ Subcommands:
   run-seeds              Harvest all seeds from db_sources and pre-configured links
 
 Options:
-  --profile <name>       Stealth profile (static | fast | http | stealth | max) [default: max]
   --proxy <url>          Use HTTP/Socks5 proxy for Aphrody Web mirror requests
   --max-assets <N>       Maximum linked assets to mirror [default: 1000]
   --delay <ms>           Rate-limiting delay between requests in milliseconds [default: 1000]

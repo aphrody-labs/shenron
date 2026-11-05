@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // SPDX-FileCopyrightText: 2026 aphrody contributors
 
-//! Direct integration with the Aphrody Web & Dragon Ball FR manga & databooks catalog and CDN.
+//! Direct integration with the Dragon Ball FR manga & databooks catalog and CDN.
 //!
 //! Fetches exact encoded manga/databook image bytes for Koharu processing.
 

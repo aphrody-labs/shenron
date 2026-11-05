@@ -103,7 +103,7 @@ function normalizeProvenance(value: unknown): Record<string, unknown> {
 /**
  * Texte affichable d'une collecte.
  *
- * Les collectes BXC stockent la page convertie en markdown (`[Login](/login)`,
+ * Les collectes stockent la page convertie en markdown (`[Login](/login)`,
  * `[![logo](…)](/)`, soulignés `=====`) et le `<title>` HTML tel quel
  * (`Pok&eacute;mon Scarlet &amp; Violet`). Rendus en nœuds texte sur
  * /sources/dragon-ball, cette syntaxe s'affichait au lecteur et remplissait la
@@ -121,7 +121,7 @@ function displayable<T extends { title: string; excerpt: string }>(record: T): T
 }
 
 /**
- * Index de recherche transversal des collectes BXC.
+ * Index de recherche transversal des collectes.
  *
  * Toutes les classifications sont interrogables, y compris archives, données
  * statistiques et médias. `kind` renseigne la provenance ; il ne décide jamais

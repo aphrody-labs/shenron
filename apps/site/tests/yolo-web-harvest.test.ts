@@ -12,17 +12,17 @@ const INV = join(ROOT, "scripts/inventaires/yolo-web-asset-inventory.json");
 const SCRIPT = join(ROOT, "scripts/yolo-web-asset-harvest.ts");
 
 describe("moisson d'assets YOLO WEB", () => {
-  test("script harvest existe et passe par Aphrody Web (rag-harvest pattern)", () => {
+  test("script harvest existe et passe par YOLO WEB (rag-harvest pattern)", () => {
     expect(existsSync(SCRIPT)).toBe(true);
     const src = readFileSync(SCRIPT, "utf8");
-    expect(src.includes("@aphrody/shenron-pipeline/aphrody")).toBe(true);
+    expect(src.includes("@aphrody/shenron-pipeline/yolo-web")).toBe(true);
     expect(src.includes("rag-harvest")).toBe(true);
     // Sous-commandes scrape, recon et mirror
     expect(src.includes('"scrape"') || src.includes("scrape")).toBe(true);
     expect(src.includes('"recon"') || src.includes("recon")).toBe(true);
     expect(src.includes('"mirror"') || src.includes("mirror")).toBe(true);
     // Ne doit PAS se contenter d'un fetch raw comme moteur principal
-    expect(src.includes("aphrodyWebScrape")).toBe(true);
+    expect(src.includes("yoloWebScrape")).toBe(true);
   });
 
   test("inventaire yolo-web-asset-inventory prouve un run réel", async () => {
@@ -61,7 +61,7 @@ describe("moisson d'assets YOLO WEB", () => {
     }
   });
 
-  test("l'inventaire prouve les appels aux sous-commandes BXC réelles", async () => {
+  test("l'inventaire prouve les appels aux sous-commandes scrape, recon et mirror", async () => {
     const inv = JSON.parse(await Bun.file(INV).text()) as {
       records: { via: string }[];
     };

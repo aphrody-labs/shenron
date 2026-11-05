@@ -20,7 +20,7 @@ import { drizzle } from "drizzle-orm/bun-sqlite";
 import { Database } from "bun:sqlite";
 import { dbNews } from "../../src/db/schema";
 import { eq } from "drizzle-orm";
-import { aphrodyWebScrape } from "@aphrody/shenron-pipeline/aphrody";
+import { yoloWebScrape } from "@aphrody/shenron-pipeline/yolo-web";
 
 const sqlite = new Database(Bun.env.DATABASE_PATH ?? "./data/bot.db");
 sqlite.exec("PRAGMA foreign_keys = ON");
@@ -51,8 +51,7 @@ async function scrapeWithAphrody(url: string, selector: string): Promise<string[
   console.log(`Scraping via Aphrody Web (${WEB_PROFILE}): ${url}`);
   let out: string;
   try {
-    out = await aphrodyWebScrape(url, {
-      profile: WEB_PROFILE as "static" | "fast" | "http" | "stealth" | "max",
+    out = await yoloWebScrape(url, {
       selector,
       max: 10,
     });

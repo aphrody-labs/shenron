@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 /**
  * GET /api/sources/search?q=goku&kind=archive&limit=24&offset=0
  *
- * API publique de l'index BXC. Elle ne masque aucune classification : le
+ * API publique de l'index des sources. Elle ne masque aucune classification : le
  * consommateur peut filtrer par provenance mais aucun type de source n'est
  * exclu de l'index. Le canon concerne l'éditorial, pas la trouvabilité.
  */

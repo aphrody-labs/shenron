@@ -271,3 +271,26 @@ export class YoloWebBatchClient {
     };
   }
 }
+
+export interface YoloWebScrapeOptions extends YoloWebOptions {
+  /** CSS selector: returns the trimmed text of each match, one per line, instead of Markdown. */
+  selector?: string;
+  /** Maximum number of selector matches. */
+  max?: number;
+}
+
+/** Page Markdown (or selector text) through YOLO WEB `YOLO_WEB_MCP_URL`; throws when unconfigured. */
+export async function yoloWebScrape(
+  url: string,
+  options: YoloWebScrapeOptions = {},
+): Promise<string> {
+  const mcp = new YoloWebMcp(options);
+  if (!options.selector) return mcp.markdown(url);
+  await mcp.tool("browser_navigate", { url: assertPageUrl(url).href });
+  const out = await mcp.tool<{ result?: { value?: unknown } }>("browser_evaluate", {
+    script: `Array.from(document.querySelectorAll(${JSON.stringify(options.selector)})).slice(0, ${Math.max(1, Math.floor(options.max ?? 200))}).map((el) => (el.textContent ?? "").trim()).filter(Boolean)`,
+  });
+  const value = out.result?.value;
+  if (!Array.isArray(value)) throw new Error("YOLO WEB selector query returned no list");
+  return value.join("\n");
+}

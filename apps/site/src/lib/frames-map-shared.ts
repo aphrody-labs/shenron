@@ -86,7 +86,7 @@ export type SiteEpisodeRef = {
   image?: string | null;
 };
 
-/** Correspondance brute renvoyée par `bxc frames search` (local ou trace.moe). */
+/** Correspondance brute renvoyée par la recherche de frames (local ou trace.moe). */
 export type FrameMatchLike = {
   /** Titre stocké : nom trace.moe, code série (`DB`…) ou `movie:<id>` en local. */
   title?: string | null;
@@ -98,7 +98,7 @@ export type FrameMatchLike = {
 /** Clé de regroupement `série:numéro` — le couple que trace.moe nous donne. */
 export const episodeKey = (series: string, episode: number) => `${series}:${episode}`;
 
-/** Codes série indexés par le crawl local (`bxc frames index --title <code>`). */
+/** Codes série indexés par le crawl local . */
 const LOCAL_SERIES_CODES: ReadonlySet<string> = new Set(Object.values(ANILIST_TO_SERIES));
 
 /**

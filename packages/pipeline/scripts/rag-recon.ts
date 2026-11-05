@@ -12,11 +12,10 @@
 import { Database } from "bun:sqlite";
 import { mkdirSync, writeFileSync } from "node:fs";
 
-import { aphrodyWebScrape } from "@aphrody/shenron-pipeline/aphrody";
+import { yoloWebScrape } from "@aphrody/shenron-pipeline/yolo-web";
 
 const DB = new URL("../data/bot.db", import.meta.url).pathname;
 const OUT = new URL("../data/rag/", import.meta.url).pathname;
-const WEB_PROFILE = process.env.APHRODY_WEB_PROFILE ?? process.env.BXC_PROFILE ?? "max";
 mkdirSync(OUT, { recursive: true });
 
 const db = new Database(DB, { readonly: true });
@@ -54,9 +53,7 @@ const SEEDS: { id: string; name: string; url: string }[] = [
 
 async function recon(url: string): Promise<string | null> {
   try {
-    const markdown = await aphrodyWebScrape(url, {
-      profile: WEB_PROFILE as "static" | "http" | "fast" | "stealth" | "max",
-    });
+    const markdown = await yoloWebScrape(url, {});
     return markdown.length >= 50 ? markdown : null;
   } catch {
     return null;

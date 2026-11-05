@@ -39,25 +39,6 @@ export interface AphrodyWebCrawlReport {
   frontier?: Record<string, number>;
 }
 
-/** Scrapes one page through the shared Aphrody Web Rust CLI and returns Markdown. */
-export async function aphrodyWebScrape(
-  url: string,
-  options: AphrodyWebScrapeOptions = {},
-): Promise<string> {
-  const parsed = new URL(url);
-  if (!["http:", "https:"].includes(parsed.protocol) || parsed.username || parsed.password) {
-    throw new Error("Aphrody Web scrape requires an HTTP(S) URL without credentials");
-  }
-  const args = ["web", "scrape", url];
-  if (options.selector) args.push(options.selector);
-  else args.push("--markdown");
-  args.push("--profile", options.profile ?? "static");
-  if (options.max !== undefined) args.push("--max", String(options.max));
-  const result = await runAphrodyCli(args, { timeoutMs: 120_000, ...options });
-  if (result.kind === "exit" && result.ok) return result.stdout.trimEnd();
-  throw new Error(formatCliError(result));
-}
-
 /** Fetches a JSON reconnaissance report through Aphrody Web. */
 export async function aphrodyWebRecon<T = Record<string, unknown>>(
   url: string,
