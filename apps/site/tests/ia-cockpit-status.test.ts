@@ -3,7 +3,7 @@ import {
   SourceNotConfiguredError,
   collectIaCockpit,
   computeRetrievalMetrics,
-  fetchAphrodyWebCrawlStats,
+  fetchYoloWebCrawlStats,
   mapDiscordMessage,
   mapEvalRow,
   parseBotIaStatus,
@@ -77,7 +77,7 @@ function syntheticFetchers(): IaCockpitFetchers {
       mode: "hybrid",
       hits: 1,
     }),
-    aphrodyWeb: ok("Aphrody Web — crawl", {
+    yoloWeb: ok("YOLO WEB — crawl", {
       queue: { pending: 1, locked: 0, done: 10, failed: 2, total: 13 },
       jobs: 1,
       runningJobs: 0,
@@ -130,11 +130,11 @@ describe("probeSource — chaque source rend son propre état", () => {
 
   test("configuration absente : non configuré, sans latence", async () => {
     const report = await probeSource(
-      failing("Web", new SourceNotConfiguredError("APHRODY_BXC_API_TOKEN absent")),
+      failing("Web", new SourceNotConfiguredError("YOLO_WEB_API_URL absent")),
     );
     expect(report.status).toBe("unconfigured");
     expect(report.latencyMs).toBeNull();
-    expect(report.error).toBe("APHRODY_BXC_API_TOKEN absent");
+    expect(report.error).toBe("YOLO_WEB_API_URL absent");
   });
 
   test("délai dépassé : nommé comme tel", async () => {
@@ -229,9 +229,9 @@ describe("collectIaCockpit — règles d'agrégation sur des rapports de sources
       mode: "lexical",
       hits: 1,
     });
-    fetchers.aphrodyWeb = failing(
-      "Aphrody Web — crawl",
-      new SourceNotConfiguredError("APHRODY_BXC_API_TOKEN absent de l'environnement du site"),
+    fetchers.yoloWeb = failing(
+      "YOLO WEB — crawl",
+      new SourceNotConfiguredError("YOLO_WEB_API_URL absent de l'environnement du site"),
     );
     fetchers.feedbacks = failing("Retours", new Error("connect ECONNREFUSED"));
 
@@ -240,7 +240,7 @@ describe("collectIaCockpit — règles d'agrégation sur des rapports de sources
     expect(report.summary.status).toBe("degraded");
     expect(report.summary.failing.map((f) => [f.key, f.status])).toEqual([
       ["aphrodyRagStats", "unavailable"],
-      ["aphrodyWeb", "unconfigured"],
+      ["yoloWeb", "unconfigured"],
       ["feedbacks", "unavailable"],
     ]);
     // The probe source still answers: serving is ok, but the counters of the failed source are unknown, not zero.
@@ -356,25 +356,18 @@ describe("parseurs de charges utiles d'exemple", () => {
     });
   });
 
-  test("Aphrody Web /crawl/stats", () => {
+  test("YOLO WEB /status", () => {
     expect(
-      parseCrawlStats({
-        success: true,
-        stats: { pending: 2, locked: 1, done: 30, failed: 0, total: 33 },
-        jobs: [
-          { id: "a", status: "running" },
-          { id: "b", status: "completed" },
-        ],
-      }),
+      parseCrawlStats({ queued: 2, workers: 1, observers: 0, jobs: { running: 1, done: 30 } }),
     ).toEqual({
-      queue: { pending: 2, locked: 1, done: 30, failed: 0, total: 33 },
-      jobs: 2,
+      queue: { pending: 2, locked: 1, done: 30, failed: 0, total: 31 },
+      jobs: 31,
       runningJobs: 1,
     });
-    expect(() => parseCrawlStats({ success: true, stats: { pending: -1 } })).toThrow(
-      "Statistiques de file de crawl invalides",
+    expect(() => parseCrawlStats({ queued: -1, jobs: {} })).toThrow("statut de crawl valide");
+    expect(() => parseCrawlStats({ queued: 0, jobs: { done: "x" } })).toThrow(
+      "Compteur de crawl invalide",
     );
-    expect(() => parseCrawlStats({ ok: false, success: false, error: "Not Found" })).toThrow();
   });
 
   test("message Discord : auteur, texte ou titre d'embed", () => {
@@ -395,62 +388,47 @@ describe("parseurs de charges utiles d'exemple", () => {
   });
 });
 
-describe("fetchAphrodyWebCrawlStats — contrat du client Aphrody Web", () => {
+describe("fetchYoloWebCrawlStats — contrat du coordinateur YOLO WEB", () => {
   const okFetcher =
     (seen: string[]): FetchLike =>
     async (input, init) => {
       seen.push(`${String(input)} ${new Headers(init?.headers).get("authorization")}`);
-      return Response.json({
-        success: true,
-        stats: { pending: 0, locked: 0, done: 5, failed: 1, total: 6 },
-        jobs: [],
-      });
+      return Response.json({ queued: 0, workers: 1, observers: 0, jobs: { done: 5, failed: 1 } });
     };
 
-  test("sans jeton : non configuré, aucune requête", async () => {
+  test("sans URL : non configuré, aucune requête, aucune valeur de repli", async () => {
     const seen: string[] = [];
-    await expect(fetchAphrodyWebCrawlStats({ fetcher: okFetcher(seen) })).rejects.toBeInstanceOf(
+    await expect(fetchYoloWebCrawlStats({ fetcher: okFetcher(seen) })).rejects.toBeInstanceOf(
       SourceNotConfiguredError,
     );
     expect(seen).toEqual([]);
   });
 
-  test("API privée loopback :3007 → /api/v1, route publique → /api/v1/web", async () => {
+  test("GET /status, jeton optionnel", async () => {
     const seen: string[] = [];
-    await fetchAphrodyWebCrawlStats({
-      baseUrl: "http://127.0.0.1:3007",
-      token: "t0k",
-      fetcher: okFetcher(seen),
-    });
-    await fetchAphrodyWebCrawlStats({
-      baseUrl: "https://aphrody.com",
+    await fetchYoloWebCrawlStats({ baseUrl: "http://127.0.0.1:8787", fetcher: okFetcher(seen) });
+    await fetchYoloWebCrawlStats({
+      baseUrl: "https://yolo-web.example.org",
       token: "t0k",
       fetcher: okFetcher(seen),
     });
     expect(seen).toEqual([
-      "http://127.0.0.1:3007/api/v1/crawl/stats Bearer t0k",
-      "https://aphrody.com/api/v1/web/crawl/stats Bearer t0k",
+      "http://127.0.0.1:8787/status null",
+      "https://yolo-web.example.org/status Bearer t0k",
     ]);
   });
 
   test("HTTP non loopback refusé comme mauvaise configuration", async () => {
     await expect(
-      fetchAphrodyWebCrawlStats({
-        baseUrl: "http://10.0.0.5:3007",
-        token: "t",
-        fetcher: okFetcher([]),
-      }),
+      fetchYoloWebCrawlStats({ baseUrl: "http://10.0.0.5:8787", fetcher: okFetcher([]) }),
     ).rejects.toBeInstanceOf(SourceNotConfiguredError);
   });
 
-  test("erreur serveur : statut et corps rapportés (constat de production)", async () => {
-    const fetcher: FetchLike = async () =>
-      new Response("unable to open database file", { status: 500 });
+  test("erreur serveur : statut et corps rapportés", async () => {
+    const fetcher: FetchLike = async () => new Response("pg down", { status: 500 });
     await expect(
-      fetchAphrodyWebCrawlStats({ baseUrl: "http://127.0.0.1:3007", token: "t", fetcher }),
-    ).rejects.toThrow(
-      "Aphrody Web HTTP 500 sur /api/v1/crawl/stats : unable to open database file",
-    );
+      fetchYoloWebCrawlStats({ baseUrl: "http://127.0.0.1:8787", fetcher }),
+    ).rejects.toThrow("YOLO WEB HTTP 500 sur /status : pg down");
   });
 });
 

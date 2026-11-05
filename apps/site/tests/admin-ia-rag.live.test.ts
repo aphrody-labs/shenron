@@ -74,7 +74,7 @@ mock.module("@/lib/ia-cockpit-server", () => ({
   ...realServer,
   createIaCockpitFetchers: (): IaCockpitFetchers => ({
     ...realServer.createIaCockpitFetchers(),
-    aphrodyWeb: notInScope("Aphrody Web — crawl"),
+    yoloWeb: notInScope("YOLO WEB — crawl"),
     botRag: notInScope("Bot Shenron — index local"),
     evalHistory: notInScope("Historique d'évaluation (PostgreSQL)"),
     feedbacks: notInScope("Retours d'entraînement (PostgreSQL)"),

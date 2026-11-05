@@ -300,33 +300,30 @@ export function parseBotIaStatus(json: unknown): BotRagData {
   };
 }
 
-/** Aphrody Web `GET <prefix>/crawl/stats` (no jobId): persistent queue + in-memory jobs. */
+/**
+ * YOLO WEB coordinator `GET /status` (yolo-web `packages/web-cluster`):
+ * `{ queued, workers, observers, jobs: { <status>: count } }`.
+ */
 export function parseCrawlStats(json: unknown): WebCrawlData {
-  if (!isRecord(json) || json.success !== true)
-    throw new Error("Aphrody Web n'a pas confirmé les statistiques de crawl");
-  const stats = json.stats;
-  if (
-    !isRecord(stats) ||
-    !isCount(stats.pending) ||
-    !isCount(stats.locked) ||
-    !isCount(stats.done) ||
-    !isCount(stats.failed) ||
-    !isCount(stats.total)
-  ) {
-    throw new Error("Statistiques de file de crawl invalides");
+  if (!isRecord(json) || !isCount(json.queued) || !isRecord(json.jobs))
+    throw new Error("YOLO WEB n'a pas renvoyé un statut de crawl valide");
+  const byStatus: Record<string, number> = {};
+  for (const [status, count] of Object.entries(json.jobs)) {
+    if (!isCount(count)) throw new Error(`Compteur de crawl invalide pour « ${status} »`);
+    byStatus[status] = count;
   }
-  const jobs = json.jobs === undefined ? [] : json.jobs;
-  if (!Array.isArray(jobs)) throw new Error("Liste des travaux de crawl invalide");
+  const total = Object.values(byStatus).reduce((sum, n) => sum + n, 0);
+  const running = byStatus.running ?? 0;
   return {
     queue: {
-      pending: stats.pending,
-      locked: stats.locked,
-      done: stats.done,
-      failed: stats.failed,
-      total: stats.total,
+      pending: json.queued,
+      locked: running,
+      done: byStatus.done ?? 0,
+      failed: byStatus.failed ?? 0,
+      total,
     },
-    jobs: jobs.length,
-    runningJobs: jobs.filter((job) => isRecord(job) && job.status === "running").length,
+    jobs: total,
+    runningJobs: running,
   };
 }
 
@@ -509,32 +506,30 @@ export function computeRetrievalMetrics(
   };
 }
 
-// ── Aphrody Web crawl statistics ─────────────────────────────────────────────
+// ── YOLO WEB crawl statistics ────────────────────────────────────────────────
 
 export type FetchLike = (input: string | URL, init?: RequestInit) => Promise<Response>;
 
 const LOOPBACK_HOSTS = new Set(["127.0.0.1", "[::1]", "localhost"]);
 
 /**
- * Aggregate crawl statistics of Aphrody Web. `AphrodyWebClient` only exposes
- * per-job status, so this mirrors its URL rules (HTTPS or loopback HTTP, no
- * credentials, `/api/v1` on the private loopback API and `/api/v1/web` behind
- * the public route) and its bearer `APHRODY_BXC_API_TOKEN`.
+ * Crawl queue statistics of the YOLO WEB coordinator (`GET /status`). There is no
+ * default endpoint: a missing `YOLO_WEB_API_URL` is reported as not configured.
+ * The bearer `YOLO_WEB_API_TOKEN` is optional (loopback coordinators are open).
  */
-export async function fetchAphrodyWebCrawlStats(options: {
+export async function fetchYoloWebCrawlStats(options: {
   baseUrl?: string;
   token?: string;
   fetcher?: FetchLike;
   timeoutMs?: number;
 }): Promise<WebCrawlData> {
-  const token = options.token?.trim();
-  if (!token)
-    throw new SourceNotConfiguredError("APHRODY_BXC_API_TOKEN absent de l'environnement du site");
+  const raw = options.baseUrl?.trim();
+  if (!raw) throw new SourceNotConfiguredError("YOLO_WEB_API_URL absent de l'environnement du site");
   let base: URL;
   try {
-    base = new URL(options.baseUrl?.trim() || "https://aphrody.com");
+    base = new URL(raw);
   } catch {
-    throw new SourceNotConfiguredError("APHRODY_WEB_API_URL n'est pas une URL valide");
+    throw new SourceNotConfiguredError("YOLO_WEB_API_URL n'est pas une URL valide");
   }
   const loopback = LOOPBACK_HOSTS.has(base.hostname);
   if (
@@ -543,21 +538,22 @@ export async function fetchAphrodyWebCrawlStats(options: {
     base.password
   ) {
     throw new SourceNotConfiguredError(
-      "APHRODY_WEB_API_URL doit utiliser HTTPS ou HTTP loopback, sans identifiants",
+      "YOLO_WEB_API_URL doit utiliser HTTPS ou HTTP loopback, sans identifiants",
     );
   }
-  const prefix =
-    base.protocol === "http:" && loopback && base.port === "3007" ? "/api/v1" : "/api/v1/web";
-  const url = new URL(`${prefix}/crawl/stats`, base);
+  const url = new URL("/status", base);
+  const headers: Record<string, string> = { accept: "application/json" };
+  const token = options.token?.trim();
+  if (token) headers.authorization = `Bearer ${token}`;
   const response = await (options.fetcher ?? fetch)(url, {
-    headers: { accept: "application/json", authorization: `Bearer ${token}` },
+    headers,
     cache: "no-store",
     signal: AbortSignal.timeout(options.timeoutMs ?? 5_000),
   });
   if (!response.ok) {
     const detail = (await response.text().catch(() => "")).trim().slice(0, 200);
     throw new Error(
-      `Aphrody Web HTTP ${response.status} sur ${url.pathname}${detail ? ` : ${detail}` : ""}`,
+      `YOLO WEB HTTP ${response.status} sur ${url.pathname}${detail ? ` : ${detail}` : ""}`,
     );
   }
   return parseCrawlStats(await response.json());
@@ -569,7 +565,7 @@ export interface IaCockpitFetchers {
   aphrodyHealth: SourceSpec<AphrodyHealthData>;
   aphrodyRagStats: SourceSpec<AphrodyRagStatsData>;
   aphrodyRagProbe: SourceSpec<RagProbeData>;
-  aphrodyWeb: SourceSpec<WebCrawlData>;
+  yoloWeb: SourceSpec<WebCrawlData>;
   botRag: SourceSpec<BotRagData>;
   evalHistory: SourceSpec<EvalSnapshot[]>;
   goldSet: SourceSpec<GoldSetData>;
@@ -621,7 +617,7 @@ const SOURCE_KEYS: IaSourceKey[] = [
   "aphrodyHealth",
   "aphrodyRagStats",
   "aphrodyRagProbe",
-  "aphrodyWeb",
+  "yoloWeb",
   "botRag",
   "evalHistory",
   "goldSet",

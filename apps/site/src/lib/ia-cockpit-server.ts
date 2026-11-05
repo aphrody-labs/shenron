@@ -4,8 +4,8 @@
  * Owners, never local files of another process:
  *   - Aphrody AI private HTTP (`APHRODY_AI_HTTP_URL`, loopback, bearer
  *     `APHRODY_AI_HTTP_TOKEN`, legacy aliases accepted): health, RAG statistics, search mode;
- *   - Aphrody Web (`APHRODY_WEB_API_URL`, bearer `APHRODY_BXC_API_TOKEN`):
- *     crawl queue statistics;
+ *   - YOLO WEB coordinator (`YOLO_WEB_API_URL`, optional bearer `YOLO_WEB_API_TOKEN`):
+ *     crawl queue statistics (`GET /status`);
  *   - the bot process over HTTP (`BOT_INTERNAL_URL`, else the configured bot
  *     API URL): its local index while `RAG_BACKEND` is not `aphrody`, and
  *     every write on its runtime tables (admin bearer `SHENRON_ADMIN_TOKEN`);
@@ -37,7 +37,7 @@ import {
   SourceNotConfiguredError,
   computeRetrievalMetrics,
   describeError,
-  fetchAphrodyWebCrawlStats,
+  fetchYoloWebCrawlStats,
   goldCaseView,
   mapDiscordMessage,
   mapEvalRow,
@@ -197,13 +197,13 @@ export function createIaCockpitFetchers(): IaCockpitFetchers {
         return { query: RAG_PROBE_QUERY, mode, hits: results.length };
       },
     },
-    aphrodyWeb: {
-      label: "Aphrody Web — crawl",
-      target: "GET /crawl/stats",
+    yoloWeb: {
+      label: "YOLO WEB — crawl",
+      target: "GET /status",
       run: () =>
-        fetchAphrodyWebCrawlStats({
-          baseUrl: process.env.APHRODY_WEB_API_URL,
-          token: process.env.APHRODY_BXC_API_TOKEN,
+        fetchYoloWebCrawlStats({
+          baseUrl: process.env.YOLO_WEB_API_URL,
+          token: process.env.YOLO_WEB_API_TOKEN,
           timeoutMs: APHRODY_TIMEOUT_MS,
         }),
     },
