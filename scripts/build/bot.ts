@@ -3,7 +3,11 @@
 /**
  * Build the autonomous `shenron-bot` binary (Discord bot + public API) with bun build --compile.
  *
- *   bun scripts/build/bot.ts [--target linux-x64|linux-x64-musl|windows-x64]
+ *   bun scripts/build/bot.ts [--target linux-x64|linux-x64-musl|windows-x64] [--no-aot]
+ *                            [--aot-log-type-mismatches]
+ *
+ * Native targets compile ahead of time (`--aot`, see ./compile-mode.ts); a cross target,
+ * `--no-aot` or `SHENRON_AOT=0` keeps a bytecode bundle, and a failed AOT compile falls back to it.
  *
  * The binary carries every command and event (static barrel src/_entries.ts) and its SQL
  * migrations; `shenron-bot --smoke` loads them all without databases or Discord.
@@ -15,6 +19,12 @@ import {
   copyRuntimeFile,
   buildSourcePipelineAsset,
 } from "./bot-runtime-assets";
+import {
+  aotRequested,
+  chooseCompileMode,
+  compileModeFlags,
+  type CompileMode,
+} from "./compile-mode";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const BOT = join(ROOT, "apps/bot");
@@ -42,45 +52,72 @@ const canvasPlatform = {
   "windows-x64": "win32-x64-msvc",
 }[target];
 const canvasBinding = Bun.resolveSync(`@napi-rs/canvas-${canvasPlatform}`, dirname(canvas));
-const child = Bun.spawn(
-  [
-    process.execPath,
-    join(ROOT, "scripts/build/measure.ts"),
-    "--out",
-    join(ROOT, "dist/bot/measures.jsonl"),
-    "--label",
-    `bot-compile-${target}`,
-    "--",
-    process.execPath,
-    "build",
-    "src/entry-standalone.ts",
-    // Workers are extra entry points: new Worker() can only load modules embedded in the binary.
-    // The embedded root is pinned to apps/bot (cwd): without `--root` Bun derives it from the
-    // entries, and the canvas addon below lives outside apps/bot, so the workers' embedded path
-    // moved with the checkout layout. They are at `src/workers/` (see src/lib/bundled-worker.ts).
-    "--root",
-    ".",
-    "src/workers/indexer.ts",
-    "src/workers/vector-builder.ts",
-    "src/workers/render.ts",
-    canvas,
-    canvasBinding,
-    "--compile",
-    "--asset-naming=[name].[ext]",
-    `--target=${bunTarget}`,
-    `--external=@napi-rs/canvas-${canvasPlatform}`,
-    // Cross-compiling: the fork's runtime for the target (upstream has no build of the fork's version).
-    ...(process.env.SHENRON_COMPILE_BUN
-      ? [`--compile-executable-path=${process.env.SHENRON_COMPILE_BUN}`]
-      : []),
-    "--minify-whitespace",
-    "--minify-syntax",
-    "--outfile",
-    exe,
-  ],
-  { cwd: BOT, stdio: ["inherit", "inherit", "inherit"] },
-);
-if ((await child.exited) !== 0) throw new Error("bot compile failed");
+async function compile(mode: CompileMode): Promise<number> {
+  const child = Bun.spawn(
+    [
+      process.execPath,
+      join(ROOT, "scripts/build/measure.ts"),
+      "--out",
+      join(ROOT, "dist/bot/measures.jsonl"),
+      "--label",
+      `bot-compile-${target}-${mode}`,
+      "--",
+      process.execPath,
+      "build",
+      "src/entry-standalone.ts",
+      // Workers are extra entry points: new Worker() can only load modules embedded in the binary.
+      // The embedded root is pinned to apps/bot (cwd): without `--root` Bun derives it from the
+      // entries, and the canvas addon below lives outside apps/bot, so the workers' embedded path
+      // moved with the checkout layout. They are at `src/workers/` (see src/lib/bundled-worker.ts).
+      "--root",
+      ".",
+      "src/workers/indexer.ts",
+      "src/workers/vector-builder.ts",
+      "src/workers/render.ts",
+      canvas,
+      canvasBinding,
+      "--compile",
+      // discordx, tsyringe and the workers run compiled; the canvas addon is a native require()
+      // of NAPI_RS_NATIVE_LIBRARY_PATH beside the binary (src/lib/canvas-binding.ts): AOT must
+      // allow that load from disk.
+      ...compileModeFlags(mode, { codeFromDisk: true }),
+      ...(mode === "aot" && args.includes("--aot-log-type-mismatches")
+        ? ["--aot-log-type-mismatches"]
+        : []),
+      "--asset-naming=[name].[ext]",
+      `--target=${bunTarget}`,
+      `--external=@napi-rs/canvas-${canvasPlatform}`,
+      // Cross-compiling: the fork's runtime for the target (upstream has no build of the fork's version).
+      ...(process.env.SHENRON_COMPILE_BUN
+        ? [`--compile-executable-path=${process.env.SHENRON_COMPILE_BUN}`]
+        : []),
+      "--minify-whitespace",
+      "--minify-syntax",
+      "--outfile",
+      exe,
+    ],
+    { cwd: BOT, stdio: ["inherit", "inherit", "inherit"] },
+  );
+  return child.exited;
+}
+
+const choice = chooseCompileMode({
+  target,
+  aot: aotRequested(args),
+  compileBun: process.env.SHENRON_COMPILE_BUN,
+});
+let mode = choice.mode;
+if (choice.reason)
+  console.error(JSON.stringify({ label: "bot-compile-mode", mode, reason: choice.reason }));
+if ((await compile(mode)) !== 0) {
+  if (mode !== "aot") throw new Error("bot compile failed");
+  // A dependency the AOT compiler rejects must not block a release: keep the bytecode build.
+  console.error(
+    JSON.stringify({ label: "bot-compile-mode", mode: "bytecode", reason: "aot failed" }),
+  );
+  mode = "bytecode";
+  if ((await compile(mode)) !== 0) throw new Error("bot compile failed");
+}
 // Bun's compiled loader keeps the napi binding as a relative native require.
 // Keep the platform package beside the binary so the sealed image can copy it
 // into the runtime filesystem; this is required by Bun 1.4.4 as well as Linux.
@@ -121,6 +158,7 @@ console.log(
   JSON.stringify({
     target,
     binary: exe,
+    mode,
     sizeMiB: Math.round(statSync(exe).size / 1048576),
     pipeline,
   }),

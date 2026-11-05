@@ -24,6 +24,21 @@ describe("bundled worker path", () => {
     ).toBe("B:/~BUN/root/src/workers/indexer.ts");
   });
 
+  test("an --aot binary reports its entry module as main: the root is still the embedded root", () => {
+    expect(
+      bundledWorkerSpecifier("indexer.ts", {
+        compiled: true,
+        main: "B:\\~BUN\\root\\src\\entry-standalone.ts",
+      }),
+    ).toBe("B:/~BUN/root/src/workers/indexer.ts");
+    expect(
+      bundledWorkerSpecifier("indexer.ts", {
+        compiled: true,
+        main: "/$bunfs/root/src/entry-standalone.ts",
+      }),
+    ).toBe("/$bunfs/root/src/workers/indexer.ts");
+  });
+
   test("from source the worker is the real file next to the library", () => {
     const specifier = bundledWorkerSpecifier("indexer.ts", { compiled: false });
     expect(specifier.startsWith("file:")).toBe(true);

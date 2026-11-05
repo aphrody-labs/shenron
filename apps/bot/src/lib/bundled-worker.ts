@@ -22,14 +22,20 @@ export function bundledWorkerSpecifier(
   file: string,
   { compiled = isCompiledBinary(), main = Bun.main }: Runtime = {},
 ): string {
-  if (compiled) {
-    const directory = (main.includes("\\") ? win32.dirname(main) : dirname(main)).replaceAll(
-      "\\",
-      "/",
-    );
-    return `${directory}/${COMPILED_WORKER_DIR}/${file}`;
-  }
+  if (compiled) return `${embeddedRoot(main)}/${COMPILED_WORKER_DIR}/${file}`;
   return new URL(`../workers/${file}`, import.meta.url).href;
+}
+
+/**
+ * Root of the embedded tree. `bun build --compile` reports the executable itself as `Bun.main`
+ * (`B:/~BUN/root/shenron-bot.exe`), an `--aot` build the compiled entry module
+ * (`B:/~BUN/root/src/entry-standalone.ts`): cut at the virtual root when it is present.
+ */
+function embeddedRoot(main: string): string {
+  const path = main.replaceAll("\\", "/");
+  const root = /^(.*?\/(?:~BUN|\$bunfs)\/root)(?:\/|$)/.exec(path)?.[1];
+  if (root) return root;
+  return (main.includes("\\") ? win32.dirname(main) : dirname(main)).replaceAll("\\", "/");
 }
 
 export function startBundledWorker(file: string, runtime?: Runtime): Worker {

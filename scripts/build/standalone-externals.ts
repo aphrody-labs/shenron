@@ -1,5 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
-import { cpSync, lstatSync, readFileSync, readdirSync, realpathSync } from "node:fs";
+import {
+  cpSync,
+  lstatSync,
+  readFileSync,
+  readdirSync,
+  readlinkSync,
+  realpathSync,
+  rmSync,
+} from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { flattenStandalone } from "@aphrody/next-bun/standalone";
 
@@ -21,6 +29,19 @@ function isInside(root: string, path: string): boolean {
   );
 }
 
+/**
+ * Real path of a store link. On Windows `cpSync(..., { verbatimSymlinks: true })` recreates a
+ * directory link as a file symlink, which `realpathSync` refuses (EPERM): follow it by hand.
+ */
+function linkTarget(file: string): string {
+  try {
+    return realpathSync(file);
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "EPERM") throw error;
+    return realpathSync(resolve(dirname(file), readlinkSync(file)));
+  }
+}
+
 /** Keep Turbopack's hashed external package names after the isolated store is removed. */
 export function flattenStandaloneExternals(directory: string) {
   const root = realpathSync(directory);
@@ -35,7 +56,7 @@ export function flattenStandaloneExternals(directory: string) {
         const scoped = parent.split(/[\\/]/).at(-1)?.startsWith("@");
         const modules = scoped ? dirname(parent) : parent;
         if (modules.split(/[\\/]/).at(-1) !== "node_modules") continue;
-        const target = realpathSync(file);
+        const target = linkTarget(file);
         if (!isInside(root, target)) throw new Error(`External alias escapes standalone: ${file}`);
         const manifest = JSON.parse(readFileSync(join(target, "package.json"), "utf8"));
         if (
@@ -67,6 +88,8 @@ export function flattenStandaloneExternals(directory: string) {
       throw new Error(`External package identity changed while flattening: ${alias.request}`);
     }
     // Copy only the already flattened package, not the store or dependency symlinks.
+    if (lstatSync(alias.path, { throwIfNoEntry: false })?.isSymbolicLink())
+      rmSync(alias.path, { force: true });
     cpSync(canonical, alias.path, { recursive: true, dereference: true });
     const resolved = resolve(Bun.resolveSync(alias.request, alias.importer));
     if (!isInside(root, resolved) || !lstatSync(resolved).isFile()) {
