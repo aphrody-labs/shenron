@@ -1,5 +1,5 @@
 const config = {
-  plugins: ["@aphrody/bun-plugin-tailwind/postcss"],
+  plugins: ["@tailwindcss/postcss"],
 };
 
 export default config;

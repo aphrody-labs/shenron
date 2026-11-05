@@ -106,9 +106,9 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@aphrody/bun-plugin-tailwind": "catalog:",
     "@aphrody/bun-test-dom": "catalog:",
     "@huggingface/transformers": "catalog:",
+    "@tailwindcss/postcss": "catalog:",
     "@types/howler": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",
