@@ -2,10 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { getLocale, getTranslations } from "next-intl/server";
 import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
-import {
-  getPublicCardCatalog,
-  getPublishedCardCount,
-} from "@/lib/card-catalog";
+import { getPublicCardCatalog, getPublishedCardCount } from "@/lib/card-catalog";
 
 export const revalidate = 3600;
 

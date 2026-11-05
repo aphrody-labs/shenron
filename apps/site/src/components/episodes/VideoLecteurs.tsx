@@ -479,14 +479,14 @@ export function VideoLecteurs({
               : !armed
                 ? t("loadPlayerNotice")
                 : status === "probing"
-                ? t("probing", {
-                    version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
-                    name: cleanName(current.name),
-                  })
-                : t("selected", {
-                    version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
-                    name: cleanName(current.name),
-                  })}
+                  ? t("probing", {
+                      version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
+                      name: cleanName(current.name),
+                    })
+                  : t("selected", {
+                      version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
+                      name: cleanName(current.name),
+                    })}
         </p>
       )}
     </div>

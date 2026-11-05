@@ -82,50 +82,44 @@ export async function getPublicCardCatalog(
   }
 
   const totalRows = await db
-      .select({ value: count() })
-      .from(schema.cardCatalogCards)
-      .innerJoin(
-        schema.cardCatalogSets,
-        eq(schema.cardCatalogCards.setId, schema.cardCatalogSets.id),
-      )
-      .innerJoin(
-        schema.cardCatalogSeries,
-        eq(schema.cardCatalogSets.seriesId, schema.cardCatalogSeries.id),
-      )
-      .where(and(...conditions));
+    .select({ value: count() })
+    .from(schema.cardCatalogCards)
+    .innerJoin(schema.cardCatalogSets, eq(schema.cardCatalogCards.setId, schema.cardCatalogSets.id))
+    .innerJoin(
+      schema.cardCatalogSeries,
+      eq(schema.cardCatalogSets.seriesId, schema.cardCatalogSeries.id),
+    )
+    .where(and(...conditions));
   const total = Number(totalRows[0]?.value ?? 0);
   const pageCount = Math.max(1, Math.ceil(total / CARD_CATALOG_PAGE_SIZE));
   const page = Math.min(Math.max(1, Math.trunc(filters.page ?? 1) || 1), pageCount);
   const rows = await db
-      .select({
-        card: schema.cardCatalogCards,
-        set: schema.cardCatalogSets,
-        series: schema.cardCatalogSeries,
-      })
-      .from(schema.cardCatalogCards)
-      .innerJoin(
-        schema.cardCatalogSets,
-        eq(schema.cardCatalogCards.setId, schema.cardCatalogSets.id),
-      )
-      .innerJoin(
-        schema.cardCatalogSeries,
-        eq(schema.cardCatalogSets.seriesId, schema.cardCatalogSeries.id),
-      )
-      .where(and(...conditions))
-      .orderBy(
-        asc(schema.cardCatalogSeries.name),
-        asc(sql`substring(${schema.cardCatalogSets.name} from '[0-9]{1,6}')::integer`),
-        asc(schema.cardCatalogSets.name),
-        asc(schema.cardCatalogSets.language),
-        asc(schema.cardCatalogSets.region),
-        asc(schema.cardCatalogCards.language),
-        asc(schema.cardCatalogCards.region),
-        asc(sql`CASE WHEN ${schema.cardCatalogCards.cardNumber} ~ '^[0-9]+$' THEN 0 ELSE 1 END`),
-        asc(
-          sql`CASE WHEN ${schema.cardCatalogCards.cardNumber} ~ '^[0-9]+$' THEN lpad(${schema.cardCatalogCards.cardNumber}, 12, '0') ELSE ${schema.cardCatalogCards.cardNumber} END`,
-        ),
-        asc(schema.cardCatalogCards.slug),
-      )
+    .select({
+      card: schema.cardCatalogCards,
+      set: schema.cardCatalogSets,
+      series: schema.cardCatalogSeries,
+    })
+    .from(schema.cardCatalogCards)
+    .innerJoin(schema.cardCatalogSets, eq(schema.cardCatalogCards.setId, schema.cardCatalogSets.id))
+    .innerJoin(
+      schema.cardCatalogSeries,
+      eq(schema.cardCatalogSets.seriesId, schema.cardCatalogSeries.id),
+    )
+    .where(and(...conditions))
+    .orderBy(
+      asc(schema.cardCatalogSeries.name),
+      asc(sql`substring(${schema.cardCatalogSets.name} from '[0-9]{1,6}')::integer`),
+      asc(schema.cardCatalogSets.name),
+      asc(schema.cardCatalogSets.language),
+      asc(schema.cardCatalogSets.region),
+      asc(schema.cardCatalogCards.language),
+      asc(schema.cardCatalogCards.region),
+      asc(sql`CASE WHEN ${schema.cardCatalogCards.cardNumber} ~ '^[0-9]+$' THEN 0 ELSE 1 END`),
+      asc(
+        sql`CASE WHEN ${schema.cardCatalogCards.cardNumber} ~ '^[0-9]+$' THEN lpad(${schema.cardCatalogCards.cardNumber}, 12, '0') ELSE ${schema.cardCatalogCards.cardNumber} END`,
+      ),
+      asc(schema.cardCatalogCards.slug),
+    )
     .limit(CARD_CATALOG_PAGE_SIZE)
     .offset((page - 1) * CARD_CATALOG_PAGE_SIZE);
 

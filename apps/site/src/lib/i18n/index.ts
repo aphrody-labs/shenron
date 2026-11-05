@@ -45,4 +45,3 @@ export function negotiateLocale(acceptLanguage?: string | null): SupportedLocale
   }
   return DEFAULT_LOCALE;
 }
-
