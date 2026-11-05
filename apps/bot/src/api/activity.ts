@@ -46,7 +46,7 @@ import {
 import { and, eq, gte, like } from "drizzle-orm";
 import type { GuildMember } from "discord.js";
 import { container } from "tsyringe";
-import { resolveMember } from "~/api/command-console";
+import { resolveMember } from "~/api/guild-member";
 import { DatabaseService } from "~/db/index";
 import { actionLogs, activitySettlements, users } from "~/db/schema";
 import { env } from "~/lib/env";

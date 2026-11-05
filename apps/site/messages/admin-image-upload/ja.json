@@ -20,7 +20,6 @@
   "close": "閉じる",
   "none": "画像が見つかりません。",
   "count": "画像{count}件。",
-  "filteredCount": "{total}件中{shown}件を表示。条件を絞り込んでください。",
   "cropTitle": "画像をトリミング",
   "cropHelp": "フレームの形を選び、画像を移動・拡大して表示範囲を調整してください。",
   "cropAspect": "フレームの形",

@@ -328,18 +328,6 @@ export const PWS_GROUP_PRESETS: SectionPreset[] = [
   { key: "faiblesse", label: "Faiblesse", accent: "purple", groupLabel: PWS_GROUP_NAME },
 ];
 
-/** Anciennes clés PWS → clés canoniques (ensureFullPwsPack / migration douce). */
-export const PWS_LEGACY_KEY_ALIASES: Record<string, string> = {
-  "puissance-attaque": "force-de-frappe",
-  "puissance-d-attaque": "force-de-frappe",
-  attaque: "force-de-frappe",
-  endurance: "durabilite",
-  "durabilite-endurance": "durabilite",
-  faiblesses: "faiblesse",
-  "intelligence-combat": "intelligence",
-  "portee-d-attaque": "portee",
-};
-
 /** Slug de section depuis un libellé libre (accents retirés, espaces → tirets). */
 export function sectionKeyFromLabel(label: string): string {
   return foldKey(label, "-").slice(0, 40) || "section";
