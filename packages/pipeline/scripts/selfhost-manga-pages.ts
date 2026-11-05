@@ -6,7 +6,7 @@
  * But : supprimer le « renvoi sur un autre site » — les planches étaient des
  * `<img src="https://www.scan-vf.net/…">` (servies par un tiers). Après ce
  * script, elles sont téléchargées sur le VPS (`assets/manga/<SERIE>/ch<id>/…`),
- * converties en WebP (sharp, q72) et servies depuis bot.dragonballfr.com.
+ * converties en WebP (Bun.Image, q72) et servies depuis bot.dragonballfr.com.
  *
  * Idempotent : un chapitre dont les `pages` sont déjà locales (sans `http`) est
  * sauté. Garde-fou disque (stop si < 800 Mo libres). Un chapitre n'est réécrit
@@ -17,7 +17,6 @@
  *   env DATABASE_URL=… bun scripts/selfhost-manga-pages.ts [--series DBS] [--limit 20] [--chapter <id>] [--dry-run]
  */
 import postgres from "postgres";
-import sharp from "sharp";
 import { mkdir, statfs } from "node:fs/promises";
 import { join } from "node:path";
 
@@ -101,7 +100,7 @@ async function selfhostChapter(ch: Chapter): Promise<{ ok: boolean; pages: strin
         return { ok: false, pages: ch.pages };
       }
       const raw = new Uint8Array(await r.arrayBuffer());
-      buf = new Uint8Array(await sharp(raw).webp({ quality: 72 }).toBuffer());
+      buf = new Uint8Array(await new Bun.Image(raw).webp({ quality: 72 }).bytes());
     } catch (e) {
       console.warn(`   ✗ ch${ch.id} p${pageNum}: ${(e as Error).message}`);
       return { ok: false, pages: ch.pages };

@@ -27,7 +27,6 @@
  */
 import { mkdir, readdir, rm } from "node:fs/promises";
 import { join } from "node:path";
-import sharp from "sharp";
 
 const args = process.argv.slice(2);
 const flag = (nom: string) => args.includes(`--${nom}`);
@@ -212,7 +211,7 @@ for (const collection of collections) {
 
       if (!FORCE && (await deja.exists())) {
         const donnees = new Uint8Array(await deja.arrayBuffer());
-        const meta = await sharp(donnees).metadata();
+        const meta = await new Bun.Image(donnees).metadata();
         fiche.couverture = {
           chemin: `./assets/dragonballcn/${relatif}`,
           source_url: ouvrage.couverture,
@@ -232,9 +231,9 @@ for (const collection of collections) {
           console.warn(`  ✗ ${relatif} — refusée ou vide (${ouvrage.couverture})`);
         } else {
           // Sans redimensionner : une couverture de catalogue fait déjà moins de 400 px.
-          const webp = new Uint8Array(await sharp(brut).webp({ quality: QUALITE }).toBuffer());
+          const webp = new Uint8Array(await new Bun.Image(brut).webp({ quality: QUALITE }).bytes());
           await Bun.write(cible, webp);
-          const meta = await sharp(webp).metadata();
+          const meta = await new Bun.Image(webp).metadata();
           fiche.couverture = {
             chemin: `./assets/dragonballcn/${relatif}`,
             source_url: ouvrage.couverture,

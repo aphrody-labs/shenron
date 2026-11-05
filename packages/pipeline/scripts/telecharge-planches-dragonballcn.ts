@@ -2,7 +2,6 @@
 
 import { chmod, mkdir, statfs } from "node:fs/promises";
 import { join } from "node:path";
-import sharp from "sharp";
 import { aphrodyWebScrape } from "@aphrody/shenron-pipeline/aphrody";
 
 const args = process.argv.slice(2);
@@ -208,9 +207,14 @@ async function verifiePrealables(sonde: boolean) {
     );
 
   try {
-    await sharp({ create: { width: 1, height: 1, channels: 3, background: "#000" } })
+    await new Bun.Image(
+      Buffer.from(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGNgYGD4DwABBAEAwS2OUAAAAABJRU5ErkJggg==",
+        "base64",
+      ),
+    )
       .webp()
-      .toBuffer();
+      .bytes();
   } catch (erreur) {
     manques.push(
       `\`sharp\` inutilisable (${(erreur as Error).message}) — \`bun install\` à la racine.`,
@@ -337,7 +341,7 @@ boucle: for (const tache of taches) {
 
     let webp: Uint8Array;
     try {
-      webp = new Uint8Array(await sharp(corps).webp({ quality: QUALITE }).toBuffer());
+      webp = new Uint8Array(await new Bun.Image(corps).webp({ quality: QUALITE }).bytes());
     } catch (erreur) {
       illisibles.push(`${tache.ouvrage.did}/${planche.n}`);
       console.warn(

@@ -531,8 +531,7 @@ async function main() {
       if (new Bun.CryptoHasher("sha256").update(imageBytes).digest("hex") !== digest) {
         throw new Error(`manifest review image changed: ${entry.image}`);
       }
-      const { default: sharp } = await import("sharp");
-      const metadata = await sharp(imageBytes).metadata();
+      const metadata = await new Bun.Image(new Uint8Array(imageBytes)).metadata();
       if (!metadata.width || !metadata.height)
         throw new Error(`manifest image has no dimensions: ${entry.image}`);
       const mime: OcrReviewImage["mime"] | null =
@@ -653,8 +652,7 @@ async function main() {
         if (new Bun.CryptoHasher("sha256").update(imageBytes).digest("hex") !== entry.imageSha256) {
           throw new Error(`manifest review image changed: ${entry.image}`);
         }
-        const { default: sharp } = await import("sharp");
-        const metadata = await sharp(imageBytes).metadata();
+        const metadata = await new Bun.Image(new Uint8Array(imageBytes)).metadata();
         if (!metadata.width || !metadata.height)
           throw new Error(`manifest image has no dimensions: ${entry.image}`);
         const mime =

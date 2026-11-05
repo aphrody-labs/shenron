@@ -61,7 +61,7 @@ async function readerImages(volume: number): Promise<string[]> {
 /** Aphrody OCR → true si la planche est une pub/crédits (à retirer). */
 async function isPromo(absPath: string): Promise<boolean> {
   try {
-    const png = await sharp(absPath).resize(1100).png().toBuffer();
+    const png = await new Bun.Image(absPath).resize(1100).png().bytes();
     const result = await recogniseRemotePage(new Uint8Array(png));
     if (result.suspect || result.quality.mean_confidence < 0.8) return false;
     const t = result.text.toLowerCase().replace(/\s+/g, " ");
