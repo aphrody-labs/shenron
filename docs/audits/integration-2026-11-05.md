@@ -55,3 +55,33 @@ removal and the lockfiles.
 
 End to end proofs (image and AOT binaries build, `--version` and `--smoke`, `/api/local/health`,
 site start, `/admin/ai`) are listed in the next section once run.
+
+## End to end on a fresh clone of main (085639eb), bunos, bun 1.4.6
+
+| Step | Command | Result |
+| --- | --- | --- |
+| install | `bun install --frozen-lockfile` | exit 0 |
+| lint | `bun run lint` | exit 0 |
+| format | `bun run format:check` | exit 0 |
+| typecheck | `bun run typecheck` | exit 0 (main was fixed by other sessions after the gates above) |
+| tests | `bun run test` | exit 1: 6357 pass, 1 fail (`shenron-ui portability`, pre-existing) |
+| bot AOT build | `bun run build:bot` | exit 0, `shenron-bot` 290 MB |
+| server build | `bun run build:server` | exit 0, `shenron-server` 336 MB |
+| server version | `shenron-server version` | exit 0, `shenron-server 1.4.5 (Bun 1.4.6)` |
+| bot smoke (bunos) | `shenron-bot --smoke` | exit 1: no system colour emoji font on bunos (host issue) |
+| bot smoke (vps, binary copied, `SHENRON_BOT_ASSETS_DIR=<dist>/share`) | `shenron-bot --smoke` | exit 0: `{"smoke":"ok","canvasFonts":11,"canvasFontsMissing":[],"renderAssetsMissing":[],"emojiFont":"Noto Color Emoji"}` |
+| server health (vps) | `shenron-server serve --port 34571` then `GET /api/local/health` | HTTP 200, `ok:true`, version 1.4.5; wiki/rag/vfs/chat groups unavailable (no VFS, no model: expected without data) |
+| site | `GET /` | HTTP 200 |
+| cockpit | `GET /admin/ai` | HTTP 307 (redirect to sign-in, route reachable; not signed in) |
+
+Note: `GET /` logs a server-side error in `frameEpisodes` (no editorial database in this run).
+
+## Not proven
+
+- Container image build (`scripts/deploy/release.sh --build-only`, `Dockerfile.build`): not run; the
+  production profile is fat LTO and bunos has about 5 GB of disk left. The merged Dockerfile.build and
+  build-image.sh were only checked with `bash -n`, `lanes.ts --check` and `environment.ts --check`.
+- Rust binaries (`shenron`, `shenron-mcp`) `--version` and the production-profile build: not run;
+  cargo fmt and clippy passed on the vendor merge (vps).
+- Site with its test database, and `/admin/ai` signed in: not run.
+- Windows gates (shenron-gpu tests): not run.
