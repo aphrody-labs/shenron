@@ -8,7 +8,7 @@
  *
  * 1. Runs the repo checks (oxlint JSON, oxfmt file list, tsc per workspace, rustfmt per member,
  *    cargo clippy JSON) and parses them into structured findings.
- * 2. Mechanical fixes first (oxfmt write, oxlint --fix, cargo fmt per member, cargo clippy --fix).
+ * 2. Mechanical fixes first (oxfmt write, oxlint --fix, rustfmt per member, cargo clippy --fix).
  * 3. Remaining findings go to an agent backend, one batch per file, edit scope restricted to that
  *    file and verified with git. A fix is kept only when that file's findings dropped and nothing
  *    new appeared; otherwise the file is reverted and recorded as unresolved.
@@ -369,29 +369,55 @@ export async function checkTsc(root: string, only?: string[]): Promise<Finding[]
   return dedupe(out);
 }
 
-export type Member = { name: string; dir: string; manifest: string };
+export type Member = { name: string; dir: string; manifest: string; edition: string; files: string[] };
 
+/** Crates found from tracked Cargo.toml files (works when path dependencies are missing, unlike `cargo metadata`). */
 export async function rustMembers(root: string): Promise<Member[]> {
-  if (!existsSync(join(root, "Cargo.toml"))) return [];
-  const r = await sh("cargo metadata --no-deps --format-version 1", root);
-  try {
-    const meta = JSON.parse(r.out);
-    return meta.packages.map((p: any) => ({
-      name: p.name,
-      manifest: toPosix(p.manifest_path),
-      dir: toPosix(dirname(p.manifest_path)),
-    }));
-  } catch {
-    return [];
+  const tracked = (await sh("git ls-files -- '*Cargo.toml' '*.rs'", root)).out.split("
+").filter(Boolean);
+  const manifests = tracked.filter((f) => f.endsWith("Cargo.toml"));
+  const rootToml = existsSync(join(root, "Cargo.toml"))
+    ? (Bun.TOML.parse(readFileSync(join(root, "Cargo.toml"), "utf8")) as any)
+    : {};
+  const wsEdition = rootToml.workspace?.package?.edition ?? "2024";
+  const members: Member[] = [];
+  for (const m of manifests) {
+    let toml: any;
+    try {
+      toml = Bun.TOML.parse(readFileSync(join(root, m), "utf8"));
+    } catch {
+      continue;
+    }
+    if (!toml.package?.name) continue;
+    const ed = toml.package.edition;
+    members.push({
+      name: String(toml.package.name),
+      manifest: toPosix(m),
+      dir: toPosix(dirname(m)) === "." ? "" : toPosix(dirname(m)),
+      edition: typeof ed === "string" ? ed : wsEdition,
+      files: [],
+    });
   }
+  const bySpecificity = members.toSorted((x, y) => y.dir.length - x.dir.length);
+  for (const f of tracked.filter((x) => x.endsWith(".rs"))) {
+    const owner = bySpecificity.find((m) => m.dir === "" || f.startsWith(`${m.dir}/`));
+    if (owner) owner.files.push(toPosix(f));
+  }
+  return members.filter((m) => m.files.length);
+}
+
+export function rustfmtCommand(root: string, m: Member, check: boolean): string {
+  const cfg = existsSync(join(root, "rustfmt.toml")) ? `--config-path ${q(root)}` : "";
+  return `rustfmt ${check ? "--check" : ""} --edition ${m.edition} ${cfg} ${m.files.map(q).join(" ")}`;
 }
 
 export async function checkRustfmt(root: string, members: Member[], only?: string[]) {
   const out: Finding[] = [];
   for (const m of members) {
-    if (only && !only.some((f) => toPosix(join(root, f)).startsWith(m.dir))) continue;
-    const r = await sh(`cargo fmt --check --manifest-path ${q(m.manifest)}`, root);
-    out.push(...parseRustfmt(`${r.out}\n${r.err}`, root));
+    if (only && !only.some((f) => toPosix(f).startsWith(`${m.dir}/`) || m.dir === "")) continue;
+    const r = await sh(rustfmtCommand(root, m, true), root);
+    out.push(...parseRustfmt(`${r.out}
+${r.err}`, root));
   }
   return out;
 }
@@ -433,7 +459,7 @@ async function recheck(root: string, tool: Tool, file: string, members: Member[]
     case "rustfmt":
       return checkRustfmt(root, members, [file]);
     case "clippy": {
-      const m = members.find((x) => toPosix(join(root, file)).startsWith(x.dir));
+      const m = members.find((x) => x.files.includes(file));
       return checkClippy(root, m?.name);
     }
   }
@@ -823,9 +849,9 @@ export async function main(argv: string[]): Promise<number> {
       "cargo-fmt",
       "rustfmt",
       members.length && plan.mechanical.rustfmt.length
-        ? members.map((m) => `cargo fmt --manifest-path ${q(m.manifest)}`).join(" ; ")
+        ? members.filter((m) => plan.mechanical.rustfmt.some((f) => m.files.includes(f))).map((m) => rustfmtCommand(root, m, false)).join(" ; ")
         : null,
-      "style(rust): cargo fmt per member",
+      "style(rust): rustfmt per member",
     );
     await step(
       "clippy-fix",
