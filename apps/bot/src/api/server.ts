@@ -134,7 +134,7 @@ import {
   dmMessages,
   ragTrainingFeedback,
 } from "~/db/schema";
-import { COMMAND_CATALOG, resolveMember, runConsoleCommand } from "~/api/command-console";
+import { resolveMember } from "~/api/guild-member";
 import {
   addGoldCaseRoute,
   completeGoalRoute,
@@ -4181,27 +4181,6 @@ export class ApiServer {
           }),
         },
 
-        // ── Console bot : exécution d'opérations réelles à distance ────
-        // GET  → catalogue des commandes (rendu par l'UI admin du site).
-        // POST → exécute { command, args } via les vrais services (XP, zénis,
-        // rôles, race, message). Admin-gated. Renvoie { ok, message, data }.
-        "/api/admin/console/commands": admin(async () =>
-          Response.json({ commands: COMMAND_CATALOG }),
-        ),
-        "/api/admin/console/exec": {
-          POST: admin(async (req) => {
-            const body = (await req.json().catch(() => null)) as {
-              command?: string;
-              args?: Record<string, unknown>;
-            } | null;
-            if (!body?.command) {
-              return Response.json({ ok: false, message: "command requis" }, { status: 400 });
-            }
-            const result = await runConsoleCommand(body.command, body.args ?? {});
-            return Response.json(result, { status: result.ok ? 200 : 400 });
-          }),
-        },
-
         // ── Cockpit IA du site (/admin/ai) : écritures sur les tables runtime ──
         // Le site lit le miroir PostgreSQL `bot.*` et délègue ici ses écritures :
         // le bot reste l'autorité de admin_goals, rag_training_feedback,
@@ -5317,36 +5296,6 @@ export class ApiServer {
             60_000,
           ),
         ),
-        "/api/discord/scan": admin(async () => {
-          const client = container.resolve(Client);
-          const guild = client.guilds.cache.get(env.GUILD_ID);
-          if (!guild) return Response.json({ error: "guild absente" }, { status: 404 });
-          const channels = [...guild.channels.cache.values()].map((c) => ({
-            id: c.id,
-            name: c.name,
-            type: c.type,
-            parentId: c.parentId,
-          }));
-          const roles = [...guild.roles.cache.values()].map((r) => ({
-            id: r.id,
-            name: r.name,
-            color: r.color,
-            position: r.position,
-          }));
-          return Response.json({
-            guild: {
-              id: guild.id,
-              name: guild.name,
-              memberCount: guild.memberCount,
-              iconUrl: guild.iconURL({ size: 256 }),
-            },
-            channels,
-            channelCount: channels.length,
-            roles,
-            roleCount: roles.length,
-            scannedAt: new Date().toISOString(),
-          });
-        }),
 
         // ── Templates de messages événementiels ───────────────────────
         "/api/messages": admin((req) =>
