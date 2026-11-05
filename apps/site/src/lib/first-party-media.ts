@@ -52,14 +52,20 @@ export function discordAvatarUpstream(
   const match = /^(.+)\.webp$/.exec(file);
   const hash = match?.[1];
   if (!hash || !SNOWFLAKE.test(user) || !AVATAR_HASH.test(hash)) return null;
+  if (size !== null && !/^(32|64|128)$/.test(size)) return null;
   const wanted = Number(size ?? 64);
-  if (!AVATAR_SIZES.includes(wanted as AvatarSize)) return null;
   return `https://cdn.discordapp.com/avatars/${user}/${hash}.webp?size=${wanted}&animated=false`;
 }
 
 const WIKIMEDIA_HOSTS = ["upload.wikimedia.org", "thumb.wikimedia.org"] as const;
 const WIKIMEDIA_EXT = /\.(?:jpe?g|png|webp|gif|svg)$/i;
 const WIKIMEDIA_SEGMENT = /^[\w%.,()'~!*+-]{1,300}$/;
+/** Segment point, brut ou encodé (`.`, `..`, `%2e`, `%2E%2e`, `.%2e`...) : le parseur WHATWG le replie. */
+const DOT_SEGMENT = /^(?:\.|%2e){1,2}$/i;
+
+function safeSegment(segment: string): boolean {
+  return WIKIMEDIA_SEGMENT.test(segment) && !DOT_SEGMENT.test(segment);
+}
 
 /** `/api/ext-image/<upload|thumb>/<chemin Wikimedia>` pour un fichier Wikimedia, sinon `null`. */
 export function wikimediaProxyPath(url: string): string | null {
@@ -75,9 +81,12 @@ export function wikimediaProxyPath(url: string): string | null {
   const path = parsed.pathname.replace(/^\/+/, "");
   const segments = path.split("/");
   if (segments.length < 3 || segments.length > 12) return null;
-  if (!segments.every((segment) => WIKIMEDIA_SEGMENT.test(segment) && segment !== "..")) {
-    return null;
-  }
+  if (!segments.every(safeSegment)) return null;
+  // Le chemin ne doit pas avoir été replié par le parseur : on contrôle aussi le chemin brut
+  // (segments point bruts ou encodés, `//`).
+  if (parsed.pathname !== `/${path}`) return null;
+  const rawPath = /^[a-z][a-z0-9+.-]*:\/\/[^/?#]*(\/[^?#]*)/i.exec(url)?.[1];
+  if (!rawPath || !rawPath.slice(1).split("/").every(safeSegment)) return null;
   return `/api/ext-image/${host === "upload.wikimedia.org" ? "upload" : "thumb"}/${path}`;
 }
 
@@ -86,10 +95,17 @@ export function wikimediaUpstream(segments: readonly string[]): string | null {
   const [kind, ...rest] = segments;
   if (kind !== "upload" && kind !== "thumb") return null;
   if (rest.length < 3 || rest.length > 12) return null;
-  if (!rest.every((segment) => WIKIMEDIA_SEGMENT.test(segment) && segment !== "..")) return null;
+  if (!rest.every(safeSegment)) return null;
   const last = rest[rest.length - 1] ?? "";
   if (!WIKIMEDIA_EXT.test(last)) return null;
-  return `https://${kind}.wikimedia.org/${rest.join("/")}`;
+  const joined = `/${rest.join("/")}`;
+  const out = `https://${kind}.wikimedia.org${joined}`;
+  try {
+    if (new URL(out).pathname !== joined) return null;
+  } catch {
+    return null;
+  }
+  return out;
 }
 
 /**
