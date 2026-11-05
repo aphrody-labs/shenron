@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "checkouts": [
+    {
+      "name": "shenron",
+      "repo": "https://github.com/aphrody-labs/shenron.git",
+      "branch": "main",
+      "submodules": false,
+      "mode": "ff-only",
+      "enabled": true,
+      "paths": {
+        "vps": "~/src/shenron",
+        "bunos": "~/src/shenron",
+        "windows": "C:/src/shenron",
+        "prod": "/srv/shenron/build/source"
+      }
+    },
+    {
+      "name": "yolo-ui",
+      "repo": "https://github.com/yolo-rs/yolo-ui.git",
+      "branch": "main",
+      "submodules": "initialized",
+      "mode": "ff-only",
+      "enabled": true,
+      "paths": { "vps": "~/build/yolo-ui", "windows": "C:/src/yolo-ui" }
+    },
+    {
+      "name": "yolo-stack",
+      "repo": "https://github.com/yolo-rs/yolo-stack.git",
+      "branch": "main",
+      "submodules": false,
+      "mode": "ff-only",
+      "enabled": true,
+      "paths": { "windows": "C:/src/yolo-stack" }
+    },
+    {
+      "name": "bun-os",
+      "repo": "https://github.com/aphrody-labs/bun-os.git",
+      "branch": "main",
+      "submodules": "initialized",
+      "mode": "ff-only",
+      "enabled": true,
+      "paths": { "vps": "~/src/bun-os", "bunos": "~/src/bun-os" }
+    },
+    {
+      "name": "yolo-web",
+      "repo": "https://github.com/yolo-rs/yolo-web.git",
+      "branch": "main",
+      "submodules": false,
+      "mode": "ff-only",
+      "enabled": false,
+      "paths": { "prod": "/srv/yolo-web" }
+    },
+    {
+      "name": "yolo-cloudflare",
+      "repo": "https://github.com/yolo-rs/yolo-cloudflare.git",
+      "branch": "main",
+      "submodules": "initialized",
+      "mode": "ff-only",
+      "enabled": false,
+      "paths": { "prod": "/root/src/yolo-cloudflare" }
+    }
+  ],
+  "excluded": [
+    { "host": "windows", "path": "C:/src/shenron", "reason": "main checkout holds other sessions' uncommitted work" },
+    { "host": "windows", "path": "C:/src/yolo-stack", "reason": "main checkout holds other sessions' uncommitted work" },
+    { "host": "windows", "path": "C:/src/yolo-ui", "reason": "main checkout holds other sessions' uncommitted work" }
+  ],
+  "notes": "prod entries are disabled on purpose: no automatic sync on production, fast-forward by hand only (git fetch + merge --ff-only, never touching compose, .env, models, data or the running release symlink). Windows is not scheduled."
+}
