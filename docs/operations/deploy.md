@@ -20,7 +20,7 @@ Le build se lance depuis vps ou bunos. Le poste Windows ne construit pas.
 
 ## Voies de déploiement automatique
 
-La branche `claude-deploy` ajoute des voies de build par lane, un activateur par service avec retour automatique au tag précédent, et `docs/operations/AUTO-DEPLOY.md` (sur cette branche). Elle n'est pas intégrée à `main`. Sur cette branche, les commandes sont `just deploy-plan`, `just deploy-history` et `just deploy-check`, et un diff qui touche des migrations met la release en attente (HOLD).
+Le dépôt contient les voies de build par lane, un activateur par service avec retour automatique au tag précédent, et `docs/operations/AUTO-DEPLOY.md`. Le workflow `server-artifact.yml` reste inerte tant que la variable de dépôt `AUTO_DEPLOY_ENABLED` n'est pas `true`. Commandes : `just deploy-plan`, `just deploy-history` et `just deploy-check`; un diff qui touche des migrations met la release en attente (HOLD).
 
 ## Migrations manuelles
 
