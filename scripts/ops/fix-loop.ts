@@ -373,8 +373,7 @@ export type Member = { name: string; dir: string; manifest: string; edition: str
 
 /** Crates found from tracked Cargo.toml files (works when path dependencies are missing, unlike `cargo metadata`). */
 export async function rustMembers(root: string): Promise<Member[]> {
-  const tracked = (await sh("git ls-files -- '*Cargo.toml' '*.rs'", root)).out.split("
-").filter(Boolean);
+  const tracked = (await sh("git ls-files -- '*Cargo.toml' '*.rs'", root)).out.split("\n").filter(Boolean);
   const manifests = tracked.filter((f) => f.endsWith("Cargo.toml"));
   const rootToml = existsSync(join(root, "Cargo.toml"))
     ? (Bun.TOML.parse(readFileSync(join(root, "Cargo.toml"), "utf8")) as any)
