@@ -14,8 +14,8 @@ vectoriel : aucun bitmap, décalquage automatique, filtre ou dépendance distant
 Depuis la racine du dépôt, avec le runtime Aphrody :
 
 ```sh
-bun packages/ui/assets/wiki-objects/generate.ts
-bun packages/ui/assets/wiki-objects/generate.ts --check
+bun scripts/build/wiki-objects.ts
+bun scripts/build/wiki-objects.ts --check
 ```
 
 Le générateur compose `svgSphere(1)` du point d’entrée mainteneur existant et

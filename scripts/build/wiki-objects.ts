@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-import { svgSphere } from "../../../../scripts/plugin/src/toriyama";
-import { svgIcone } from "../../src/toriyama-svg/senzu";
+import { svgSphere } from "../plugin/src/toriyama";
+import { svgIcone } from "../../packages/ui/src/toriyama-svg/senzu";
 
 // Compose the maintained geometry; do not duplicate paths or embed source scans.
 const assets = {
@@ -23,7 +23,7 @@ for (const [name, svg] of Object.entries(assets)) {
   if (/<(?:image|foreignObject|script)\b|(?:href|src)\s*=|data:image/i.test(svg)) {
     throw new Error(`Non-vector or external content in ${name}`);
   }
-  const path = `${import.meta.dir}/${name}`;
+  const path = `${import.meta.dir}/../../packages/ui/assets/wiki-objects/${name}`;
   if (Bun.argv.includes("--check")) {
     if (!(await Bun.file(path).exists()) || (await Bun.file(path).text()) !== svg) {
       throw new Error(`Regenerate ${path}`);
