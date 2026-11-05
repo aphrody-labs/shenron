@@ -57,7 +57,6 @@ if [ -e "$W/.git" ]; then
 else
   git -C "$SOURCE" worktree add -f --detach "$W" "$REVISION"
 fi
-git -C "$W" submodule update --init --recursive --force
 cd "$W"
 SHA=$(git rev-parse HEAD)
 STARTED=$SECONDS

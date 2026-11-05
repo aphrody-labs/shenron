@@ -28,7 +28,6 @@
 !/patches/
 !/config/
 !/plugin/
-!/vendor/
 !/docs/
 
 # Public data only (the canonical lexicon is the one file the server payload ships)
