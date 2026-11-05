@@ -17,6 +17,22 @@ import {
 
 const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL?.trim().replace(/\/+$/, "");
 
+// Origine des scripts `/_next/static/*` : `assetPrefix` pointe sur le CDN, donc
+// `'self'` seul ferait de chaque chunk une violation Report-Only.
+const cspCdnOrigin = (() => {
+  if (!cdnUrl) return "";
+  try {
+    return new URL(cdnUrl).origin;
+  } catch {
+    return "";
+  }
+})();
+const CSP_SCRIPT_SRC = [
+  "'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:",
+  ...(cspCdnOrigin ? [cspCdnOrigin] : []),
+  "https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.gstatic.com https://*.adtrafficquality.google https://*.google.com https://*.vercel-scripts.com",
+].join(" ");
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   // Native SDK loading is deferred to the Bun host, outside Next's server bundle.
@@ -514,7 +530,7 @@ const nextConfig: NextConfig = {
           {
             key: "Content-Security-Policy-Report-Only",
             value:
-              "script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob: https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.gstatic.com https://*.adtrafficquality.google https://*.google.com https://*.vercel-scripts.com; report-uri /api/csp-report",
+              `script-src ${CSP_SCRIPT_SRC}; report-uri /api/csp-report`,
           },
           // Aucune de ces API n'est utilisée par le site : les refuser évite
           // qu'un script tiers (régie pub) puisse les demander en notre nom.
