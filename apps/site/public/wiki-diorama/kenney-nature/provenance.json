@@ -1,0 +1,31 @@
+{
+  "schema": "shenron.scene-decoration-provenance/v1",
+  "kind": "authored-decoration",
+  "referenceUrl": "https://kenney.nl/assets/nature-kit",
+  "creator": "Kenney Vleugels",
+  "collection": "Nature Kit 2.1",
+  "license": "CC0-1.0",
+  "licenseFile": "License.txt",
+  "sourceModified": false,
+  "canonicalDragonBallObject": false,
+  "assets": [
+    {
+      "file": "tree_default.glb",
+      "bytes": 9428,
+      "sha256": "562d29638c902de3c7bee465d3a53bb77117efbc392ae04ed894faf6b5dc691d",
+      "triangles": 114
+    },
+    {
+      "file": "rock_largeA.glb",
+      "bytes": 7552,
+      "sha256": "6dd15390fd96501dcd1454765a17ba61dbbd8d47705dfe5149c8dd92b353ce25",
+      "triangles": 80
+    },
+    {
+      "file": "cliff_block_rock.glb",
+      "bytes": 2776,
+      "sha256": "2f31de8502288d6adcdae4d5605cfe65d4bcd4369dd0decd116c2615b9d3d01f",
+      "triangles": 12
+    }
+  ]
+}

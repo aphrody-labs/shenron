@@ -1,0 +1,19 @@
+{
+  "title": "Le wiki Dragon Ball",
+  "lead": "Explorez {total} fiches et les sources de Dragon Ball.",
+  "search": "Rechercher",
+  "searchLabel": "Rechercher dans le wiki",
+  "searchPlaceholder": "Personnage, saga, objet…",
+  "mascots": "Les figures du wiki",
+  "goku": "Goku",
+  "kid-buu": "Kid Buu",
+  "shenron": "Shenron",
+  "featured": "À l’honneur",
+  "explore": "Explorer la fiche",
+  "illustrated": "Illustration : {name}",
+  "imagePending": "Visuel à documenter",
+  "more": "Tous les aperçus du catalogue",
+  "moreLead": "Personnages, combats, lieux, films et lectures",
+  "recent": "Parutions du catalogue",
+  "resume": "Reprendre mes lectures"
+}

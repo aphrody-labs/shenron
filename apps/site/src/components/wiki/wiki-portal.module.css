@@ -1,0 +1,396 @@
+.portal {
+  --portal-gap: 1rem;
+}
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--portal-gap);
+}
+.header {
+  display: grid;
+  gap: 0.9rem;
+  align-items: center;
+}
+.header h1 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.5rem);
+  line-height: 1.12;
+  color: var(--wiki-paper, var(--foreground));
+  text-wrap: balance;
+}
+.header p {
+  margin-block: 0.4rem 0;
+  font-size: 0.875rem;
+  color: var(--wiki-muted, var(--muted-foreground));
+}
+.quickAccess {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.quickAccess a {
+  min-width: 0;
+  gap: 0.4rem;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.75rem;
+}
+.quickAccess a > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.quickAccess a > svg {
+  flex-shrink: 0;
+}
+.search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline-start: 0.7rem;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  background: var(--wiki-card);
+  color: var(--wiki-paper);
+}
+.search input {
+  min-width: 0;
+  width: 100%;
+  min-height: 2.75rem;
+  background: transparent;
+  border: 0;
+  outline-offset: -3px;
+}
+.search button {
+  flex-shrink: 0;
+  min-height: 2.75rem;
+  padding-inline: 0.8rem;
+  color: var(--wiki-paper);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border-inline-start: 1px solid var(--wiki-border);
+}
+.identity {
+  display: grid;
+  gap: 0.5rem;
+}
+.mascots {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.mascot {
+  --mascot-accent: var(--wiki-adventure);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 0;
+  min-height: 4.5rem;
+  overflow: hidden;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  background: color-mix(in srgb, var(--mascot-accent) 8%, var(--wiki-card));
+  color: var(--wiki-paper);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  transition:
+    border-color 180ms,
+    background-color 180ms;
+}
+.mascot[aria-pressed="true"] {
+  border-color: var(--mascot-accent);
+  background: color-mix(in srgb, var(--mascot-accent) 16%, var(--wiki-card));
+}
+.mascot[data-mascot="kid-buu"] {
+  --mascot-accent: var(--wiki-cosmos);
+}
+.mascot[data-mascot="shenron"] {
+  --mascot-accent: var(--wiki-namek);
+}
+.mascotImage {
+  position: relative;
+  display: block;
+  flex: 0 0 3.4rem;
+  height: 4.2rem;
+  overflow: hidden;
+}
+.mascotImage img {
+  object-fit: cover;
+  object-position: center top;
+  transition: transform 220ms;
+}
+.mascot:hover img {
+  transform: scale(1.06);
+}
+.mascot[aria-pressed="true"] img {
+  animation: portal-breathe 2.4s ease-in-out 1;
+}
+.featured {
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2rem;
+  color: var(--wiki-paper);
+  font-size: 0.75rem;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+}
+.category {
+  display: grid;
+  grid-template-columns: 3.5rem minmax(0, 1fr);
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  min-height: 6.25rem;
+  padding: 0.7rem;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  background: color-mix(in srgb, var(--wiki-accent) 7%, var(--wiki-card));
+  color: var(--wiki-paper);
+  transition:
+    border-color 160ms,
+    background-color 160ms;
+}
+.category:hover {
+  border-color: var(--wiki-accent);
+  background: color-mix(in srgb, var(--wiki-accent) 14%, var(--wiki-card));
+}
+.art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 4.5rem;
+  overflow: hidden;
+  border-radius: calc(var(--wiki-radius) / 2);
+  color: var(--wiki-accent);
+}
+.art img {
+  object-fit: cover;
+  object-position: center top;
+}
+.copy {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.label {
+  font-family: var(--font-display);
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+.count {
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--wiki-muted, var(--muted-foreground));
+}
+.caption {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+  overflow: hidden;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  color: var(--wiki-muted, var(--muted-foreground));
+}
+.sectionTitle {
+  margin-block-end: 0.6rem;
+  color: var(--wiki-paper);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.15rem;
+}
+.collections {
+  padding: 0.85rem;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  background: var(--wiki-card);
+}
+.collections > summary {
+  cursor: pointer;
+  min-height: 2.75rem;
+  color: var(--wiki-paper);
+  font-weight: 700;
+}
+.collections > summary > span {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--wiki-muted, var(--muted-foreground));
+}
+.collections[open] > summary {
+  margin-block-end: 1.5rem;
+}
+.collectionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.resume:empty {
+  display: none;
+}
+.publications h2 {
+  margin-block-end: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--wiki-paper);
+}
+.publications ul {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: 1fr;
+}
+.publications a {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.5rem;
+  border: 1px solid var(--wiki-border);
+  border-radius: var(--wiki-radius);
+  color: var(--wiki-paper);
+}
+.publications a > span:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+.publications strong {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 0.8125rem;
+  line-height: 1.3;
+}
+.publications time {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.75rem;
+  color: var(--wiki-muted, var(--muted-foreground));
+}
+.releaseImage {
+  position: relative;
+  flex: 0 0 2.5rem;
+  height: 3rem;
+  overflow: hidden;
+}
+.releaseImage img {
+  object-fit: cover;
+}
+.resume :global(section) {
+  padding: 0;
+  min-height: 0;
+}
+.resume :global(section > div) {
+  margin-block-end: 0.4rem;
+}
+.resume :global(ul) {
+  flex-wrap: wrap;
+  padding: 0;
+  overflow: visible;
+  gap: 0.5rem;
+}
+.resume :global(li) {
+  flex: 0 1 14rem;
+}
+.resume :global(li a) {
+  display: grid;
+  grid-template-columns: 3rem minmax(0, 1fr);
+  column-gap: 0.6rem;
+  width: auto;
+  align-items: center;
+}
+.resume :global(li a > div) {
+  grid-row: span 2;
+  width: 3rem;
+  aspect-ratio: 1;
+}
+.resume :global(li p) {
+  margin: 0;
+  color: var(--wiki-paper);
+}
+.portal :is(a, button, input, summary):focus-visible {
+  outline: 2px solid var(--wiki-adventure);
+  outline-offset: 3px;
+}
+@keyframes portal-breathe {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-2px);
+  }
+}
+@media (min-width: 640px) {
+  .quickAccess {
+    display: flex;
+  }
+  .header {
+    grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.85fr);
+  }
+  .identity {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+  }
+  .mascot {
+    min-height: 4.25rem;
+  }
+  .publications ul {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .category {
+    min-height: 6.5rem;
+  }
+}
+@media (max-width: 479px) {
+  .portal {
+    --portal-gap: 0.75rem;
+  }
+  .mascot {
+    flex-direction: column;
+    gap: 0;
+    padding-block-end: 0.3rem;
+    min-height: 5rem;
+  }
+  .mascotImage {
+    flex-basis: auto;
+    width: 3.2rem;
+    height: 3.7rem;
+  }
+  .category {
+    grid-template-columns: 2.75rem minmax(0, 1fr);
+    padding: 0.55rem;
+    gap: 0.45rem;
+  }
+  .art {
+    width: 2.75rem;
+    height: 4rem;
+  }
+  .label {
+    font-size: 0.8125rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .mascot,
+  .mascot img,
+  .category {
+    animation: none;
+    transition: none;
+  }
+  .mascot[aria-pressed="true"] img {
+    animation: none;
+  }
+}

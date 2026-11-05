@@ -1,0 +1,53 @@
+{
+  "frames": {
+    "kaioshin-background": {
+      "frame": {
+        "x": 2,
+        "y": 2,
+        "w": 480,
+        "h": 270
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 480,
+        "h": 270
+      },
+      "sourceSize": {
+        "w": 480,
+        "h": 270
+      }
+    },
+    "beerus-background": {
+      "frame": {
+        "x": 486,
+        "y": 2,
+        "w": 480,
+        "h": 270
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 480,
+        "h": 270
+      },
+      "sourceSize": {
+        "w": 480,
+        "h": 270
+      }
+    }
+  },
+  "meta": {
+    "image": "archive-atlas.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 968,
+      "h": 274
+    },
+    "scale": "1"
+  }
+}
