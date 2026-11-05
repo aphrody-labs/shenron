@@ -24,6 +24,7 @@ import {
   aotRequested,
   chooseCompileMode,
   compileModeFlags,
+  supportsAot,
   type CompileMode,
 } from "./compile-mode";
 
@@ -108,6 +109,10 @@ const choice = chooseCompileMode({
   compileBun: process.env.SHENRON_COMPILE_BUN,
 });
 let mode = choice.mode;
+if (mode === "aot" && !supportsAot(aotBun(mode))) {
+  mode = "bytecode";
+  choice.reason = `${aotBun("aot")} has no --aot`;
+}
 if (choice.reason)
   console.error(JSON.stringify({ label: "bot-compile-mode", mode, reason: choice.reason }));
 if ((await compile(mode)) !== 0) {

@@ -67,6 +67,7 @@ import {
   aotRequested,
   chooseCompileMode,
   compileModeFlags,
+  supportsAot,
   type CompileMode,
 } from "./compile-mode";
 
@@ -332,6 +333,12 @@ let compileMode: CompileMode = flag("--no-bytecode")
       aot: aotRequested(args),
       compileBun: process.env.SHENRON_COMPILE_BUN,
     }).mode;
+if (compileMode === "aot" && !supportsAot(aotBun(compileMode))) {
+  console.error(
+    JSON.stringify({ label: "server-compile-mode", mode: "bytecode", reason: "bun has no --aot" }),
+  );
+  compileMode = "bytecode";
+}
 const compileServer = (mode: CompileMode) =>
   measured(
     `server-compile-${target}-${mode}`,

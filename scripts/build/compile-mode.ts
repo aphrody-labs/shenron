@@ -93,3 +93,17 @@ export function aotBun(
 ) {
   return mode === "aot" && env.SHENRON_AOT_BUN?.trim() ? env.SHENRON_AOT_BUN.trim() : execPath;
 }
+
+/**
+ * Whether `bun` knows `--aot`. A Bun without it (the Aphrody 1.4.3 runtime of the container
+ * images) ignores the flag silently and writes a plain bundle, so the mode must be decided
+ * from the help text, not from the exit code.
+ */
+export function supportsAot(bun: string): boolean {
+  const help = Bun.spawnSync([bun, "build", "--help"], { stdout: "pipe", stderr: "pipe" });
+  return help.exitCode === 0 && helpMentionsAot(help.stdout.toString());
+}
+
+export function helpMentionsAot(help: string): boolean {
+  return /^\s*--aot\s/m.test(help);
+}

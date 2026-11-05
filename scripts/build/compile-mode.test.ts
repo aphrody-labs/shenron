@@ -7,6 +7,7 @@ import {
   chooseCompileMode,
   compileModeFlags,
   foreignRuntime,
+  helpMentionsAot,
   hostTarget,
 } from "./compile-mode";
 
@@ -86,5 +87,17 @@ describe("aotBun", () => {
     expect(aotBun("bytecode", env, "/usr/bin/bun")).toBe("/usr/bin/bun");
     expect(aotBun("aot", {}, "/usr/bin/bun")).toBe("/usr/bin/bun");
     expect(aotBun("aot", { SHENRON_AOT_BUN: "  " }, "/usr/bin/bun")).toBe("/usr/bin/bun");
+  });
+});
+
+describe("helpMentionsAot", () => {
+  test("reads the --aot flag from the build help", () => {
+    expect(helpMentionsAot("      --aot                Compile JavaScript to machine code\n")).toBe(
+      true,
+    );
+    expect(helpMentionsAot("      --bytecode           Use a bytecode cache\n")).toBe(false);
+    expect(helpMentionsAot("      --aot-allow-code-from-disk   With --aot: let import()\n")).toBe(
+      false,
+    );
   });
 });
