@@ -1,5 +1,5 @@
 /**
- * rag-recon.ts — Scrape toutes nos sources Dragon Ball via Aphrody Web
+ * rag-recon.ts — Scrape toutes nos sources Dragon Ball via YOLO WEB
  * (HTML → Markdown propre) et agrège dans un gros JSON + fichiers .md.
  *
  * Sources = table db_sources + seeds high-value (Wikipédia, sources officielles).

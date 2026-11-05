@@ -98,3 +98,26 @@ Not done, with cause:
 - Leftover env names in scripts: APHRODY_WEB_PROFILE, APHRODY_WEB_PROXY, BXC_PROFILE, BXC_PROXY, BXC_DIR, BXC_BIN, BXC_STATE_DIR.
 - Owner decision: Postgres campaign table (59 248 records), untouched.
 - Docs: not edited (claude-docs-reset deletes them).
+
+## Update 3 (owner go-ahead: removal of dead BXC services)
+
+Production check (read-only, by the coordinator): `/api/bxc/status` answers 503 "Shenron Web capability unavailable (HTTP 404)" and `/api/bxc/manga` 503.
+
+Frames finder: it ran `aphrody web frames vector|search` (the native Aphrody Web binary: local MPEG-7 index plus trace.moe) with no index of its own in the database, so it depended entirely on the dead backend. Removed with its route, tab and i18n keys.
+
+Removed:
+- pipeline: `src/bxc/*` (AnimesamaService, VoiranimeService, WikiService, GoogleTranslateService, DragonballCnService and snapshot reader, FramesService, MediaStreamService, BxcDbBridge, spawn, contracts, server), `src/aphrody/{web,mirror,frames,media,wiki,translate}.ts` (recon, crawl, search, mirror wrappers and the wiki, translate, frames and media clients), their tests and exports (`./bxc`, `./bxc/contracts`, `./bxc/server`, `./aphrody/{web,mirror,frames,media}`).
+- bot: `_bxc-media.ts`, `resolve-streams.ts`, `import-voiranime-players.ts`, `import-voiranime-players-vf.ts`, `import-kai-voiranime.ts`, `kai-final-realigner-vostfr.ts`, `refresh-dead-embed-players.ts`, `ingest/bxc-ingest.ts`, `frames-depuis-lecteur.ts`, `src/lib/episode-resolver.ts` (spawned the BXC checkout), the on-the-fly resolution in `server.ts`, the `/inspect-frames` Discord command and `TrainingService.inspectFrames`, tests `bxc-media`, `runtime-episode-resolver`.
+- site: `/api/frames/search`, the Frame Finder tab of `EpisodeScenes` (the scene gallery and timeline stay), `frames-map-shared.ts` and its tests (the scene text search moved to `scene-search.ts`), 17 `scene*` finder keys in `messages/video-ui/*.json`, `i18n-translate.ts` (Google via bxc), `_aphrody-translate-remote.ts`, `traduire-pages-collectees-aphrody.ts`, `_collected-page-translation.ts` and its test.
+- ops: `index-frames.ts`, `translate-databooks-session.ts`.
+- api: `src/contract/web.ts`, the six `/api/v1/web/*` endpoints, `WebPort`, the `web` local API group, `apps/server/src/web.ts` and tests; OpenAPI snapshot regenerated.
+- rag-harvest: `mirror`, `search`, `crawl-worker` subcommands and the recon report step; yolo-web-asset-harvest: recon and mirror steps.
+
+Replaced rather than removed: `scrape-manga-chapters.ts` (YoloWebMcp page images), `jimaku-subtitles.ts` frame lookup (api.trace.moe directly), `export-databooks-ocr.ts` scan fetch (plain fetch; the curl-impersonate client came from the dead repo).
+
+Owner decisions (not touched):
+- Postgres campaigns table (59 248 records) and its loader `scripts/ops/import-bxc-crawls-to-postgres.ts`, `run-content-session-pipeline.ts` (feeds it from `~/.bxc`).
+- `scripts/ops/sosh-browser-workers.ts`, `capture-shueisha-public-preview.ts` (bun:obscura and `aphrody-web crawl`; no yolo-browser equivalent), and `reader-source-workers.ts` which expects the same owner.
+- `STAFF_ROUTE_RENAMES` in the packages/config submodule still targets `/admin/bxc-campaigns`; `tests/english-routes.test.ts` now skips that target. Remove the rule in aphrody-labs/shenron-config.
+- `AphrodyWebJobs` (`src/aphrody/jobs.ts`), `pipeline crawl|unify` CLI commands, `packages/native/src/web-pipeline.ts` and `@aphrody/bun/web/pipeline`: native job worker still used by `admin-web-queue.ts` and the orchestrator; whether the native web-pipeline worker is alive was not verified.
+- Content strings kept on purpose: the `## Sources BXC associées` marker written in wiki revisions by `reconcile-crawled-editorial-content.ts`, `bxc/` asset output directories (`assets/ext/bxc`, `public/dbz/bxc`) referenced by served URLs, historical provenance values in the inventories and `fill-*` script comments.

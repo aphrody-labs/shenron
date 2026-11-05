@@ -9,7 +9,7 @@ import { assetUrl } from "@/lib/assets";
 
 import { canonPreuves, type PlanchePreuve } from "@/lib/canon-preuves";
 import { chercherPlanches, type ResultatPlanche } from "@/lib/manga-api";
-import { chercherScenes, type SceneTrouvee } from "@/lib/frames-map";
+import { chercherScenes, type SceneTrouvee } from "@/lib/scene-search";
 import { unstable_cache } from "next/cache";
 import { ogMeta } from "@/lib/og";
 import {

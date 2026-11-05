@@ -5,7 +5,7 @@
 //! Provides a unified, production-grade CLI and programmatic surface that exposes:
 //! - **AI**: Hybrid RAG (FTS5 + Dense E5 + Cross-Encoder Rerank), automated training (triples, embed, rerank, lora),
 //!   Toriyama/Shenron sovereign persona, and canon evaluation.
-//! - **Web**: YOLO WEB scraper bridge, VoirAnime/Anime-Sama media harvesting, DragonBallCN crawl, and frame indexing.
+//! - **Web**: reachability of the Shenron site and its public wiki API.
 //! - **Infra**: Host matrix (VPS, DBFR, WSL, Local), systemd service supervision, and deployment verification.
 //! - **Shell**: Nushell scripts, terminal tools, and batch data pipelines.
 //! - **OS**: WinClean diagnostics, process isolation, and host resource governance.
@@ -48,7 +48,7 @@ pub(crate) enum ShenronAction {
         #[command(subcommand)]
         action: crate::ocr_shenron::ShenronAction,
     },
-    /// Web crawling and scraping bridge (YOLO WEB, dragonballcn, frames)
+    /// Shenron site and wiki API reachability
     Web {
         #[command(subcommand)]
         action: ShenronWebAction,
@@ -197,7 +197,7 @@ pub(crate) enum ShenronTrainAction {
 
 #[derive(Debug, Subcommand)]
 pub(crate) enum ShenronWebAction {
-    /// Inspect YOLO WEB engine and scraper status for Dragon Ball sources
+    /// Probe the Shenron site and the public wiki API
     Status {
         /// Emit status as JSON
         #[arg(long)]

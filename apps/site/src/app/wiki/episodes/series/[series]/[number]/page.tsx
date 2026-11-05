@@ -175,8 +175,6 @@ export default async function OfficialBeerusEpisodePage({
             frames={episode.frames ?? []}
             title={text.episodeTitle}
             episodeNumber={1}
-            series={DBS_BEERUS_SERIES_CODE}
-            episodeImage={artwork}
           />
           <aside className="dbz-panel space-y-4 p-6">
             <h2 className="font-display text-xl font-bold text-white">

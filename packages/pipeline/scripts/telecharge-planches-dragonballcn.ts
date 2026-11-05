@@ -144,7 +144,7 @@ async function resoutDossier(url: string): Promise<string | null> {
     const markdown = await yoloWebScrape(url, { timeoutMs: DUREE_WEB_MS });
     return /list\/+([^"')\s\\]+?)\/_thumb\./.exec(markdown)?.[1] ?? null;
   } catch (error) {
-    console.error(`Aphrody Web: ${error instanceof Error ? error.message : String(error)}`);
+    console.error(`YOLO WEB: ${error instanceof Error ? error.message : String(error)}`);
     return null;
   }
 }

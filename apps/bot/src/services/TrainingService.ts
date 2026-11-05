@@ -97,20 +97,6 @@ export interface MangaInspection {
   }[];
 }
 
-export interface FramesInspection {
-  imageUrl: string;
-  latencyMs: number;
-  count: number;
-  matches: {
-    episodeId?: number;
-    titre: string;
-    timecode: string;
-    similarity: number;
-    href: string;
-  }[];
-  parasitesRejetes: number;
-}
-
 export interface TrainingStats {
   totalChunks: number;
   totalVectors: number;
@@ -393,41 +379,6 @@ export class TrainingService {
         href: r.href,
         score: r.score,
       })),
-    };
-  }
-
-  /**
-   * Diagnostic de la reconnaissance visuelle Frames.
-   */
-  async inspectFrames(imageUrl: string): Promise<FramesInspection> {
-    const start = performance.now();
-    let json: any = { matches: [] };
-    try {
-      const res = await fetch(`${SITE_INTERNAL}/api/frames/search`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64: imageUrl }),
-        signal: AbortSignal.timeout(6000),
-      });
-      if (res.ok) {
-        json = await res.json();
-      }
-    } catch {}
-
-    const matches = (json.matches ?? []).slice(0, 5).map((m: any) => ({
-      episodeId: m.episodeId,
-      titre: m.title ?? m.episodeTitle ?? "Épisode Dragon Ball",
-      timecode: m.timecode ?? "0:00",
-      similarity: Math.round((m.similarity ?? 0) * 100),
-      href: m.href ?? "",
-    }));
-
-    return {
-      imageUrl,
-      latencyMs: Math.round(performance.now() - start),
-      count: matches.length,
-      matches,
-      parasitesRejetes: json.parasitesRejetes ?? 0,
     };
   }
 

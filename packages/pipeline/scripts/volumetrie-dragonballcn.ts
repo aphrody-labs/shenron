@@ -12,8 +12,7 @@
  * relevé de `crawl-dragonballcn.ts`, qui sait quelles éditions existent mais
  * pas quel volume chacune représente ni où sa pagination diverge.
  *
- * Les fiches passent par le client partagé Aphrody Web (`aphrody web scrape
- * --markdown --profile max`). Le crawl reste séquentiel et persiste ses
+ * Les fiches passent par le client partagé YOLO WEB (`yoloWebScrape`). Le crawl reste séquentiel et persiste ses
  * checkpoints au fil de l'eau.
  *
  * Sorties :
@@ -50,15 +49,15 @@ type Planche = { n: number; fichier: string; poids: string | null; ajoutee: stri
 type Ouvrage = { did: string; url: string; libelle?: string; planches?: number | null };
 type Collection = { slug: string; titre: string; ouvrages: Ouvrage[] };
 
-// ---------------------------------------------------------- client Aphrody Web
+// ---------------------------------------------------------- client YOLO WEB
 
-class AphrodyWebScraper {
+class YoloWebScraper {
   async scrapeMarkdown(url: string): Promise<string | null> {
     try {
       return await yoloWebScrape(url, { timeoutMs: DUREE_MAX_MS });
     } catch (error) {
       console.error(
-        `Aphrody Web scrape failed for ${url}: ${error instanceof Error ? error.message : String(error)}`,
+        `YOLO WEB scrape failed for ${url}: ${error instanceof Error ? error.message : String(error)}`,
       );
       return null;
     }
@@ -105,7 +104,7 @@ for (const c of collections) {
 const cibles = LIMITE > 0 ? aFaire.slice(0, LIMITE) : aFaire;
 console.log(`${cibles.length} ouvrage(s) à inventorier (sur ${aFaire.length} restants).`);
 
-const client = new AphrodyWebScraper();
+const client = new YoloWebScraper();
 let mesures = 0;
 let muets = 0;
 try {

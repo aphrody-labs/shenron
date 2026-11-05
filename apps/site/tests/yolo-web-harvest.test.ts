@@ -17,10 +17,7 @@ describe("moisson d'assets YOLO WEB", () => {
     const src = readFileSync(SCRIPT, "utf8");
     expect(src.includes("@aphrody/shenron-pipeline/yolo-web")).toBe(true);
     expect(src.includes("rag-harvest")).toBe(true);
-    // Sous-commandes scrape, recon et mirror
     expect(src.includes('"scrape"') || src.includes("scrape")).toBe(true);
-    expect(src.includes('"recon"') || src.includes("recon")).toBe(true);
-    expect(src.includes('"mirror"') || src.includes("mirror")).toBe(true);
     // Ne doit PAS se contenter d'un fetch raw comme moteur principal
     expect(src.includes("yoloWebScrape")).toBe(true);
   });

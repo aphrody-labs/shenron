@@ -281,7 +281,6 @@ describe("absent capabilities: groups disabled, the server keeps serving", () =>
       vfs: { available: false, reason: "aucun VFS Shenron installé" },
       ocr: { available: false, reason: "aphrody introuvable : OCR indisponible" },
       mcp: { available: false, reason: "serveur MCP non configuré" },
-      web: { available: false, reason: "capacités Web natives indisponibles" },
       models: {
         available: false,
         reason: "aucun modèle de chat déclaré (llama-server, aphrody-llama-daemon)",

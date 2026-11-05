@@ -197,7 +197,10 @@ describe("anciennes adresses publiques : 308 de next.config", () => {
 });
 
 describe("anciennes adresses staff : 308 du proxy, après la garde", () => {
-  for (const rule of STAFF_ROUTE_RENAMES) {
+  // /admin/bxc-campaigns a été supprimée ; la règle /admin/campagnes-bxc vit encore dans le
+  // sous-module packages/config (shenron-config) et doit y être retirée.
+  const REMOVED_STAFF_TARGETS = new Set(["/admin/bxc-campaigns"]);
+  for (const rule of STAFF_ROUTE_RENAMES.filter((r) => !REMOVED_STAFF_TARGETS.has(r.to))) {
     test(`${rule.from} → ${rule.to}`, () => {
       expect(staffLegacyRedirect(rule.from)).toBe(rule.to);
       const target = rule.to.split("?")[0]!;

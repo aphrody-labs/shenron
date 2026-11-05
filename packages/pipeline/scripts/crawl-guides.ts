@@ -1,7 +1,7 @@
 /**
- * crawl-guides.ts — Crawl de guides et traductions de référence Dragon Ball via Aphrody Web.
+ * crawl-guides.ts — Crawl de guides et traductions de référence Dragon Ball via YOLO WEB.
  *
- * Utilise Aphrody Web pour récupérer les pages sous forme de Markdown propre,
+ * Utilise YOLO WEB pour récupérer les pages sous forme de Markdown propre,
  * extrait le contenu utile en enlevant le header, la navigation et le footer,
  * et enregistre les fichiers Markdown nettoyés dans data/rag/raw/guides/.
  *
@@ -49,7 +49,7 @@ if (!existsSync(OUT_DIR)) {
 }
 
 async function runAphrodyScrape(url: string): Promise<string> {
-  console.log(`[CRAWL GUIDE] Ingestion via Aphrody Web : ${url}`);
+  console.log(`[CRAWL GUIDE] Ingestion via YOLO WEB : ${url}`);
   return await yoloWebScrape(url, {});
 }
 

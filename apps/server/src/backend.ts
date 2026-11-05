@@ -57,7 +57,6 @@ import { freePort } from "./front";
 import { koharuBridge, type KoharuBridge } from "./koharu";
 import { libraryPath } from "./local-api";
 import { nativeMemory } from "./memory";
-import { createNativeWebPort } from "./web";
 import { nativeChatJev } from "./jev";
 
 export const VFS_FILE = "shenron-vfs.sqlite";
@@ -240,7 +239,6 @@ export function unavailableGroups(reason: string): LocalApiGroups {
     models: { ...status },
     memory: { ...status },
     auth: { ...status },
-    web: { ...status },
   };
 }
 
@@ -346,7 +344,6 @@ export async function startBackend(
       ...(chatModel ? { chatModels: chatModel.catalog } : {}),
       memory: nativeMemory(paths, plan.env),
       jev: nativeChatJev(plan.env, libraryPath(paths, plan.env)),
-      web: await createNativeWebPort(),
       ...(o.betterAuth !== undefined ? { betterAuth: o.betterAuth } : {}),
       ...(agentHomes
         ? {

@@ -36,15 +36,6 @@ const sqlite = new Database(dbPath);
 sqlite.exec("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;");
 const db = drizzle(sqlite);
 
-// The bot unit tier must not depend on an installed BXC binary (absent on CI
-// runners). Route the bridge to the deterministic CLI fixture; the real binary
-// is exercised by the @aphrody/shenron-pipeline/bxc live tier (`bun run test:live`).
-Bun.env.BXC_BIN = resolve(
-  import.meta.dir,
-  "../../../packages/pipeline/test/bxc/fixtures/bxc-frames-stats.mjs",
-);
-// Migrated frame queries use the Aphrody CLI contract in the same offline fixture.
-Bun.env.APHRODY_BIN = Bun.env.BXC_BIN;
 const migrationsFolder = join(import.meta.dir, "../src/db/migrations");
 console.log("Migrations folder:", migrationsFolder);
 migrate(db, { migrationsFolder });

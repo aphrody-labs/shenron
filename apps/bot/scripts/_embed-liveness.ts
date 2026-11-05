@@ -19,7 +19,7 @@
  *                 (timeout, 403, page de lecteur sans URL extractible) →
  *                 JAMAIS purgé automatiquement, uniquement remonté
  *
- * Aucun navigateur : que du `fetch`. Le re-scrape headless reste côté bxc.
+ * Aucun navigateur : que du `fetch`.
  */
 
 export type Player = {

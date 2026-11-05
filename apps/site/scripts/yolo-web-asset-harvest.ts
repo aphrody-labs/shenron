@@ -1,21 +1,17 @@
 #!/usr/bin/env bun
 /**
- * yolo-web-asset-harvest.ts — extraction d'assets (scrape, recon, miroir).
+ * yolo-web-asset-harvest.ts — extraction d'assets (scrape Markdown).
  *
- * Scrape, reconnaissance et miroir récursif passent par l'owner Aphrody Web.
+ * Le scrape Markdown passe par YOLO WEB (yoloWebScrape).
  *
  * Pipeline (aligné shenron crawl) :
- *  1. `aphrody web scrape <url> --markdown`         → MD + extraction liens média
- *  2. `aphrody web recon <url> --json`              → assets[] structurés
- *  3. `aphrody web mirror <url> <dir> --recursive`  → graphe HTML/CSS/assets
- *  4. Download des URLs image/audio découvertes → public/{sfx,dbz,sprites}/bxc/
+ *  1. yoloWebScrape(url)                           → MD + extraction liens média
+ *  2. Download des URLs image/audio découvertes → public/{sfx,dbz,sprites}/bxc/
  *
  * Usage :
  *   bun apps/site/scripts/yolo-web-asset-harvest.ts
- *   bun apps/site/scripts/yolo-web-asset-harvest.ts --profile max --delay 800
- *   bun apps/site/scripts/yolo-web-asset-harvest.ts --mirror-only
- *   bun apps/site/scripts/yolo-web-asset-harvest.ts --max-sources 1 --no-mirror
- *   APHRODY_BIN=aphrody bun apps/site/scripts/yolo-web-asset-harvest.ts
+ *   bun apps/site/scripts/yolo-web-asset-harvest.ts --delay 800
+ *   bun apps/site/scripts/yolo-web-asset-harvest.ts --max-sources 1
  *
  * Voir aussi : `bun apps/bot/scripts/rag-harvest.ts run-seeds`
  */
@@ -23,7 +19,6 @@ import { Database } from "bun:sqlite";
 import { mkdirSync, writeFileSync, existsSync, readFileSync, appendFileSync } from "node:fs";
 import { join, dirname, basename, extname } from "node:path";
 import { createHash } from "node:crypto";
-import { aphrodyWebMirror, aphrodyWebRecon } from "@aphrody/shenron-pipeline/aphrody";
 import { yoloWebScrape } from "@aphrody/shenron-pipeline/yolo-web";
 import { BOT_HOST, CDN_ORIGIN, SITE_URL } from "../src/lib/config";
 
@@ -38,7 +33,6 @@ const MOISSON = join(process.env.HOME ?? SITE_ROOT, "shenron-media-masters", "yo
 const OUT_AUDIO = join(MOISSON, "audio");
 const OUT_IMG = join(MOISSON, "images");
 const OUT_SPRITES = join(MOISSON, "sprites");
-const OUT_MIRROR = join(MOISSON, "miroir");
 const BOT_ASSET_ROOT = join(SITE_ROOT, "..", "bot", "assets", "ext", "bxc");
 // Inventaire et journal hors de `public/` : ils nommaient les sources
 // moissonnées et les chemins internes, en lecture libre sur le domaine.
@@ -53,20 +47,8 @@ function opt(name: string, dflt?: string): string | undefined {
   if (i >= 0 && argv[i + 1] && !argv[i + 1]!.startsWith("--")) return argv[i + 1];
   return dflt;
 }
-const profile = opt(
-  "profile",
-  process.env.APHRODY_WEB_PROFILE ?? process.env.BXC_PROFILE ?? "max",
-)!;
-const proxy = opt(
-  "proxy",
-  process.env.APHRODY_WEB_PROXY ?? process.env.BXC_PROXY ?? process.env.PROXY,
-);
 const delayMs = parseInt(opt("delay", "800")!, 10);
-const maxPages = parseInt(opt("max-pages", "25")!, 10);
-const maxDepth = parseInt(opt("max-depth", "3")!, 10);
 const maxSources = Math.max(1, parseInt(opt("max-sources", String(Number.MAX_SAFE_INTEGER))!, 10));
-const MIRROR_ONLY = argv.includes("--mirror-only");
-const SKIP_MIRROR = argv.includes("--no-mirror");
 const CDN_BASE = (process.env.BXC_ASSET_CDN_BASE ?? BOT_HOST).replace(/\/$/, "");
 const CDN_ALLOWED_ORIGINS = new Set(
   (process.env.BXC_ASSET_CDN_ALLOWED_ORIGINS ?? [SITE_URL, BOT_HOST, CDN_ORIGIN].join(","))
@@ -385,7 +367,7 @@ type AssetHit = {
   url: string;
   type: string;
   fromPage: string;
-  via: "aphrody-web-recon" | "aphrody-web-scrape" | "aphrody-web-mirror";
+  via: "yolo-web-scrape";
 };
 
 type DlRec = {
@@ -418,36 +400,7 @@ function extractFromMarkdown(md: string, page: string): AssetHit[] {
     if (seen.has(url)) continue;
     seen.add(url);
     const type = /\.(mp3|wav|ogg|m4a)(\?|$)/i.test(url) ? "audio" : "image";
-    hits.push({ url, type, fromPage: page, via: "aphrody-web-scrape" });
-  }
-  return hits;
-}
-
-function extractFromReconJson(stdout: string, page: string): AssetHit[] {
-  const hits: AssetHit[] = [];
-  // recon may print logs before JSON — find last {…}
-  const start = stdout.indexOf("{");
-  if (start < 0) return hits;
-  try {
-    const j = JSON.parse(stdout.slice(start)) as {
-      assets?: { type?: string; url?: string }[];
-    };
-    for (const a of j.assets ?? []) {
-      if (!a.url) continue;
-      const t = (a.type ?? "").toLowerCase();
-      // recon types: image, stylesheet, script, media, font…
-      if (t === "image" || t === "media" || t === "audio" || MEDIA_EXT.test(a.url)) {
-        const type = /\.(mp3|wav|ogg|m4a)(\?|$)/i.test(a.url) || t === "audio" ? "audio" : "image";
-        hits.push({ url: a.url, type, fromPage: page, via: "aphrody-web-recon" });
-      }
-    }
-  } catch {
-    // also harvest media URLs from plain recon markdown dump
-    hits.push(
-      ...extractFromMarkdown(stdout, page).map((h) =>
-        Object.assign(h, { via: "aphrody-web-recon" as const }),
-      ),
-    );
+    hits.push({ url, type, fromPage: page, via: "yolo-web-scrape" });
   }
   return hits;
 }
@@ -585,14 +538,10 @@ async function promoteToCdn(records: DlRec[]): Promise<number> {
 
 async function harvestSource(src: (typeof SOURCES)[0]): Promise<AssetHit[]> {
   const hits: AssetHit[] = [];
-  const doRecon = src.mode === "recon" || src.mode === "both";
-  const doMirror = (src.mode === "mirror" || src.mode === "both") && !SKIP_MIRROR;
 
-  if (MIRROR_ONLY && !doMirror) return hits;
-
-  if (doRecon && !MIRROR_ONLY) {
-    // 1) scrape markdown through the Aphrody Web owner
-    log(`[*] Aphrody Web scrape --markdown ${src.url}`);
+  {
+    // 1) scrape markdown through YOLO WEB
+    log(`[*] YOLO WEB scrape ${src.url}`);
     try {
       const markdown = await yoloWebScrape(src.url, {});
       if (markdown.length > 80) {
@@ -605,97 +554,6 @@ async function harvestSource(src: (typeof SOURCES)[0]): Promise<AssetHit[]> {
       }
     } catch (error) {
       log(`  [scrape] failed: ${error instanceof Error ? error.message : String(error)}`);
-    }
-
-    // 2) structured asset recon through Aphrody Web
-    log(`[*] Aphrody Web recon --json ${src.url}`);
-    try {
-      const recon = await aphrodyWebRecon<{ assets?: { type?: string; url?: string }[] }>(
-        src.url,
-        {},
-      );
-      const rHits = extractFromReconJson(JSON.stringify(recon), src.url);
-      log(`  [recon] ${rHits.length} assets`);
-      hits.push(...rHits);
-      const mdDir = join(MOISSON, "brut", src.id);
-      mkdirSync(mdDir, { recursive: true });
-      writeFileSync(join(mdDir, "recon.json"), JSON.stringify(recon, null, 2));
-    } catch (error) {
-      log(`  [recon] failed: ${error instanceof Error ? error.message : String(error)}`);
-    }
-  }
-
-  if (doMirror) {
-    const outDir = join(OUT_MIRROR, src.id);
-    mkdirSync(outDir, { recursive: true });
-    log(`[*] Aphrody Web mirror --recursive ${src.url} → ${outDir}`);
-    try {
-      const mir = await aphrodyWebMirror(
-        {
-          url: src.url,
-          outputDir: outDir,
-          recursive: true,
-          maxPages,
-          maxAssets: parseInt(opt("max-assets", "1000")!, 10),
-          maxDepth,
-          maxConcurrency: 4,
-          delayMs,
-          resolveCdns: true,
-          ...(proxy ? { proxy } : {}),
-        },
-        { bin: process.env.APHRODY_BIN, timeoutMs: 600_000 },
-      );
-      if (mir.failures.length === 0) {
-        log(
-          `  [mirror] ok: ${mir.pagesWritten} pages, ${mir.assetsWritten} assets (${mir.bytesWritten} bytes)`,
-        );
-      } else {
-        log(
-          `  [mirror] partial: ${mir.pagesWritten} pages, ${mir.assetsWritten} assets, ${mir.failures.length} failures`,
-        );
-        for (const failure of mir.failures.slice(0, 20))
-          log(`    ${failure.url}: ${failure.error}`);
-      }
-
-      // Keep harvesting files that succeeded even when another mirror request failed.
-      const { readdirSync } = await import("node:fs");
-      function walk(d: string) {
-        let n = 0;
-        try {
-          for (const ent of readdirSync(d, { withFileTypes: true })) {
-            const p = join(d, ent.name);
-            if (ent.isDirectory()) n += walk(p);
-            else if (MEDIA_EXT.test(ent.name)) {
-              n++;
-              const kind = classify(ent.name);
-              if (kind === "other") continue;
-              const dest = destPath(p, kind);
-              try {
-                const buf = readFileSync(p);
-                if (buf.byteLength > 400) {
-                  mkdirSync(dirname(dest), { recursive: true });
-                  if (!existsSync(dest)) writeFileSync(dest, buf);
-                  hits.push({
-                    url: `file://${p}`,
-                    type: kind,
-                    fromPage: src.url,
-                    via: "aphrody-web-mirror",
-                  });
-                }
-              } catch {
-                /* best effort per file */
-              }
-            }
-          }
-        } catch {
-          /* best effort per directory */
-        }
-        return n;
-      }
-      const n = walk(outDir);
-      log(`  [mirror] files on disk: ${n}`);
-    } catch (error) {
-      log(`  [mirror] failed: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 
@@ -737,13 +595,10 @@ async function main() {
   mkdirSync(OUT_AUDIO, { recursive: true });
   mkdirSync(OUT_IMG, { recursive: true });
   mkdirSync(OUT_SPRITES, { recursive: true });
-  mkdirSync(OUT_MIRROR, { recursive: true });
   writeFileSync(
     LOG,
-    `=== Shenron asset harvest through Aphrody Web ${new Date().toISOString()} ===\n`,
+    `=== Shenron asset harvest through YOLO WEB ${new Date().toISOString()} ===\n`,
   );
-
-  log(`Aphrody Web mirror owner: ${process.env.APHRODY_BIN ?? "aphrody"} profile=${profile}`);
 
   const sources = loadAllSources().slice(0, maxSources);
   log(`[*] ${sources.length} sources uniques (catalogue + db_sources)`);
@@ -784,8 +639,7 @@ async function main() {
   const promoted = await promoteToCdn(results);
   const inv = {
     generatedAt: new Date().toISOString(),
-    engine: "aphrody-web",
-    profile,
+    engine: "yolo-web",
     summary: {
       sources: sources.length,
       uniqueUrls: allHits.length,

@@ -33,11 +33,9 @@ const RUNTIME: Record<string, string> = {
 };
 
 /** Doctrine subpaths of `@aphrody/shenron-pipeline` that `./chat` and `./host` may import (§4.1). */
-const PIPELINE_CONTRACT = "@aphrody/shenron-pipeline/bxc/contracts";
 const PIPELINE_SUBPATHS = new Set([
   "@aphrody/shenron-pipeline/ai/prompts",
   "@aphrody/shenron-pipeline/agent-home",
-  PIPELINE_CONTRACT,
 ]);
 
 // The source tree is an immutable snapshot for this suite.
@@ -138,9 +136,8 @@ describe("@aphrody/shenron-api manifest", () => {
     () => {
       for (const key of ["./contract", "./client", "./http", "./server", "./next"]) {
         expect(
-          bareImports(key).filter(
-            ({ specifier }) =>
-              specifier.startsWith("@aphrody/shenron-pipeline") && specifier !== PIPELINE_CONTRACT,
+          bareImports(key).filter(({ specifier }) =>
+            specifier.startsWith("@aphrody/shenron-pipeline"),
           ),
         ).toEqual([]);
       }

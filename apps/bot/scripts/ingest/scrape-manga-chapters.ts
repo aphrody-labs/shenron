@@ -3,7 +3,7 @@
  * Dragon Ball Super en français depuis scan-vf.net et lelscanfr.com vers Neon
  * (`bot.db_manga_chapters.pages`, colonne jsonb Neon-only).
  *
- * Utilise BXC recon sous le capot pour contourner de manière transparente les
+ * Utilise YOLO WEB (navigation + extraction des images) pour contourner de manière transparente les
  * protections Cloudflare (méthode d'analyse d'assets / extracteur d'images).
  *
  * Options supportées :
@@ -15,6 +15,7 @@
  * Usage : bun apps/bot/scripts/ingest/scrape-manga-chapters.ts [--force] [--limit 10]
  */
 import postgres from "postgres";
+import { YoloWebMcp } from "@aphrody/shenron-pipeline/yolo-web";
 
 const NEON_URL = process.env.DATABASE_URL;
 if (!NEON_URL) {
@@ -34,16 +35,15 @@ const sql = postgres(NEON_URL, { max: 2, prepare: false });
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
-async function runBxcRecon(url: string): Promise<string[]> {
-  const proc = Bun.spawn(["bxc", "recon", url, "--profile", "static", "--json"]);
-  const output = await new Response(proc.stdout).text();
-
+async function runPageImages(url: string): Promise<string[]> {
   try {
-    const data = JSON.parse(output);
-    if (!data.assets) return [];
-
-    // Filtrer les images d'assets
-    return data.assets.filter((a: any) => a.type === "image").map((a: any) => a.url);
+    const mcp = new YoloWebMcp();
+    await mcp.tool("browser_navigate", { url });
+    const out = await mcp.tool<{ result?: { value?: unknown } }>("browser_evaluate", {
+      script: "Array.from(document.images, (img) => img.currentSrc || img.src).filter(Boolean)",
+    });
+    const value = out.result?.value;
+    return Array.isArray(value) ? value.filter((u): u is string => typeof u === "string") : [];
   } catch {
     return [];
   }
@@ -54,7 +54,7 @@ async function scrapeChapter(chapterNum: number): Promise<string[]> {
   const scanVfUrl = `https://www.scan-vf.net/dragon-ball-super/chapitre-${chapterNum}`;
   console.log(`🔍 [scan-vf.net] Tentative pour le chapitre ${chapterNum}...`);
   try {
-    const assets = await runBxcRecon(scanVfUrl);
+    const assets = await runPageImages(scanVfUrl);
     const scanUrls = assets.filter((img) => img.includes("/uploads/manga/"));
     if (scanUrls.length > 0) {
       console.log(`   ✓ ${scanUrls.length} pages trouvées sur scan-vf.net`);
@@ -68,7 +68,7 @@ async function scrapeChapter(chapterNum: number): Promise<string[]> {
   const lelscanUrl = `https://lelscanfr.com/manga/dragon-ball-super/${chapterNum}`;
   console.log(`🔍 [lelscanfr.com] Tentative pour le chapitre ${chapterNum}...`);
   try {
-    const assets = await runBxcRecon(lelscanUrl);
+    const assets = await runPageImages(lelscanUrl);
     const scanUrls = assets.filter((img) => img.includes("/storage/content/"));
     if (scanUrls.length > 0) {
       console.log(`   ✓ ${scanUrls.length} pages trouvées sur lelscanfr.com`);
@@ -82,7 +82,7 @@ async function scrapeChapter(chapterNum: number): Promise<string[]> {
 }
 
 async function main() {
-  console.log("🚀 Lancement de l'ingestion des planches manga via BXC...");
+  console.log("🚀 Lancement de l'ingestion des planches manga via YOLO WEB...");
 
   // Récupérer les chapitres DBS correspondants à la trame principale (vols 1 à 23)
   let query = sql`

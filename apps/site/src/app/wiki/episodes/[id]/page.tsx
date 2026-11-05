@@ -423,7 +423,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
               </section>
             )}
 
-            {/* === Scènes & Frame Finder : moteur frames MPEG-7 et scènes === */}
+            {/* === Scènes de l'épisode === */}
             {cdnOnly ? (
               cdnSource ? (
                 <div id="episode-timeline" className={detailStyles.timeline}>
@@ -435,9 +435,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
                 frames={frames}
                 title={ep.title}
                 episodeNumber={ep.number_in_series}
-                series={ep.series}
                 episodeId={ep.id}
-                episodeImage={ep.image}
                 timelineAvailable={
                   ep.players?.some(
                     (entry) =>

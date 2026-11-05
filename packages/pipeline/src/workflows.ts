@@ -417,7 +417,7 @@ export * from "./dragonballcn-gallery";
 
 /**
  * Unified Bun entrypoint for the repository translation pipeline.
- * The supervisor owns sharding, BXC startup, quality gates, atomic deposits,
+ * The supervisor owns sharding, quality gates, atomic deposits,
  * RAG ingestion and run evidence; this package only provides the stable CLI.
  */
 

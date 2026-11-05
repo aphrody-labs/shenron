@@ -84,7 +84,6 @@ import {
   type ShenronApi,
   type ShenronApiService,
   type VfsPort,
-  type WebPort,
   isBetterAuthPath,
 } from "../server";
 
@@ -343,8 +342,6 @@ export interface LocalApiOptions {
   rag?: RagPort | null;
   /** Native public-corpus Jev judgments supplied by the product backend. */
   jev?: ChatJevPort | null;
-  /** Qualified native capabilities injected by the product host. */
-  web?: WebPort | null;
   service?: ShenronApiService;
   /** Already-open VFS database (embedded binary) instead of `SHENRON_VFS_DB`. */
   vfsDatabase?: Database;
@@ -689,7 +686,6 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       mcp: mcpUrl ? { url: mcpUrl } : null,
       // `/api/public/plugin*` quand `SHENRON_PLUGIN_DIR` désigne un plugin lisible.
       plugin: pluginPort,
-      web: options.web,
       rateLimit: createMemoryRateLimiter(),
       publicCache: createPublicCache(),
       invalidation: noopInvalidation,
@@ -745,7 +741,6 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     ? available()
     : unavailable("aucun modèle de chat déclaré (llama-server, aphrody-llama-daemon)");
   const groups: LocalApiGroups = {
-    web: options.web ? available() : unavailable("capacités Web natives indisponibles"),
     wiki: wiki ? available() : unavailable(opened ? "wiki servi par le site" : vfsMissing),
     rag: rag ? available() : unavailable(ragReason),
     chat: chatGroup,
