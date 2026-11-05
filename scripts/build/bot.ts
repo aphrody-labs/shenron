@@ -20,6 +20,7 @@ import {
   buildSourcePipelineAsset,
 } from "./bot-runtime-assets";
 import {
+  aotBun,
   aotRequested,
   chooseCompileMode,
   compileModeFlags,
@@ -62,7 +63,7 @@ async function compile(mode: CompileMode): Promise<number> {
       "--label",
       `bot-compile-${target}-${mode}`,
       "--",
-      process.execPath,
+      aotBun(mode),
       "build",
       "src/entry-standalone.ts",
       // Workers are extra entry points: new Worker() can only load modules embedded in the binary.

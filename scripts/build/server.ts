@@ -63,6 +63,7 @@ import { templateProblems } from "@aphrody/shenron-db/agent-homes/template";
 import { AGENT_HOME_DOCUMENTS } from "@aphrody/shenron-db/agent-homes/types";
 import { syncUiAssets } from "../../packages/ui/scripts/sync-assets";
 import {
+  aotBun,
   aotRequested,
   chooseCompileMode,
   compileModeFlags,
@@ -333,7 +334,7 @@ const compileServer = (mode: CompileMode) =>
   measured(
     `server-compile-${target}-${mode}`,
     [
-      process.execPath,
+      aotBun(mode),
       "build",
       join(buildDir, "entry.ts"),
       "--compile",
@@ -363,7 +364,7 @@ const runtimeDir = join(OUT, "runtime");
 rmSync(runtimeDir, { recursive: true, force: true });
 if (compileMode === "aot") {
   mkdirSync(runtimeDir, { recursive: true });
-  cpSync(process.execPath, join(runtimeDir, target === "windows-x64" ? "bun.exe" : "bun"));
+  cpSync(aotBun(compileMode), join(runtimeDir, target === "windows-x64" ? "bun.exe" : "bun"));
 }
 if (embed) {
   for (const dir of [siteOut, nativeOut, vfsOut, homeOut, dataOut])

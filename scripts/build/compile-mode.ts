@@ -79,3 +79,17 @@ export function aotRequested(
 ) {
   return !args.includes("--no-aot") && env.SHENRON_AOT !== "0";
 }
+
+/**
+ * The Bun that runs `bun build --compile --aot`, and that the executable embeds. Bun 1.4.4
+ * canaries differ in whether the AOT linker handles the bot and server module graphs (see the
+ * header), so a release can name a known good one with `SHENRON_AOT_BUN`; otherwise the Bun
+ * running the build is used.
+ */
+export function aotBun(
+  mode: CompileMode,
+  env: Record<string, string | undefined> = process.env,
+  execPath = process.execPath,
+) {
+  return mode === "aot" && env.SHENRON_AOT_BUN?.trim() ? env.SHENRON_AOT_BUN.trim() : execPath;
+}
