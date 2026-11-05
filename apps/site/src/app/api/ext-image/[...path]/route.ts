@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { wikimediaUpstream } from "@/lib/first-party-media";
-import { fetchCachedImage, imageResponse } from "@/lib/upstream-image-cache";
+import { serveProxiedImage } from "@/lib/upstream-image-cache";
 
 export const dynamic = "force-dynamic";
 
@@ -14,10 +14,14 @@ export async function GET(request: Request): Promise<Response> {
   const raw = new URL(request.url).pathname.replace(/^\/api\/ext-image\//, "");
   const upstream = wikimediaUpstream(raw.split("/"));
   if (!upstream) return new Response(null, { status: 404 });
-  const image = await fetchCachedImage(upstream, {
-    maxBytes: 4 * 1024 * 1024,
-    ttlMs: 24 * 60 * 60 * 1000,
-    userAgent: "DragonBallFR/1.0 (https://dragonballfr.com; contact@aphrody.com)",
-  });
-  return imageResponse(image, 604_800);
+  return serveProxiedImage(
+    request,
+    upstream,
+    {
+      maxBytes: 4 * 1024 * 1024,
+      ttlMs: 24 * 60 * 60 * 1000,
+      userAgent: "DragonBallFR/1.0 (https://dragonballfr.com; contact@aphrody.com)",
+    },
+    604_800,
+  );
 }

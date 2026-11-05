@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { discordAvatarUpstream } from "@/lib/first-party-media";
-import { fetchCachedImage, imageResponse } from "@/lib/upstream-image-cache";
+import { serveProxiedImage } from "@/lib/upstream-image-cache";
 
 export const dynamic = "force-dynamic";
 
@@ -16,10 +16,14 @@ export async function GET(
   const { user, file } = await params;
   const upstream = discordAvatarUpstream(user, file, new URL(request.url).searchParams.get("s"));
   if (!upstream) return new Response(null, { status: 404 });
-  const image = await fetchCachedImage(upstream, {
-    maxBytes: 512 * 1024,
-    ttlMs: 6 * 60 * 60 * 1000,
-    userAgent: "DragonBallFR/1.0 (https://dragonballfr.com)",
-  });
-  return imageResponse(image, 604_800);
+  return serveProxiedImage(
+    request,
+    upstream,
+    {
+      maxBytes: 512 * 1024,
+      ttlMs: 6 * 60 * 60 * 1000,
+      userAgent: "DragonBallFR/1.0 (https://dragonballfr.com)",
+    },
+    604_800,
+  );
 }

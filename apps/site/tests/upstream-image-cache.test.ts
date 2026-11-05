@@ -4,7 +4,8 @@
 import { afterAll, beforeAll, describe, expect, mock, test } from "bun:test";
 
 mock.module("server-only", () => ({}));
-const { fetchCachedImage, imageResponse } = await import("../src/lib/upstream-image-cache");
+const { cacheKey, fetchCachedImage, imageResponse, serveProxiedImage, takeUpstreamToken } =
+  await import("../src/lib/upstream-image-cache");
 
 const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2, 3, 4]);
 const opts = { maxBytes: 1000, ttlMs: 60_000, userAgent: "ShenronAuditTest/1.0" };
@@ -13,6 +14,8 @@ let server: ReturnType<typeof Bun.serve>;
 let base = "";
 let hugeSent = 0;
 let chunkedPulled = 0;
+let inFlightNow = 0;
+let inFlightPeak = 0;
 const hits = new Map<string, number>();
 const seenHeaders: Record<string, Headers> = {};
 
@@ -25,6 +28,17 @@ beforeAll(() => {
       const p = new URL(req.url).pathname;
       hits.set(p, (hits.get(p) ?? 0) + 1);
       seenHeaders[p] = req.headers;
+      if (p.startsWith("/slowish/")) {
+        inFlightNow++;
+        inFlightPeak = Math.max(inFlightPeak, inFlightNow);
+        return new Promise<Response>((resolve) =>
+          setTimeout(() => {
+            inFlightNow--;
+            resolve(new Response(PNG, { headers: { "content-type": "image/png" } }));
+          }, 20),
+        );
+      }
+      if (p.startsWith("/404/")) return new Response("nope", { status: 404 });
       if (p.startsWith("/ok")) {
         return new Response(PNG, {
           headers: {
@@ -48,9 +62,13 @@ beforeAll(() => {
         case "/target":
           return new Response(PNG, { headers: { "content-type": "image/png" } });
         case "/html":
-          return new Response("<script>alert(1)</script>", { headers: { "content-type": "text/html" } });
+          return new Response("<script>alert(1)</script>", {
+            headers: { "content-type": "text/html" },
+          });
         case "/js-as-image":
-          return new Response("alert(1)", { headers: { "content-type": "application/javascript" } });
+          return new Response("alert(1)", {
+            headers: { "content-type": "application/javascript" },
+          });
         case "/notype":
           return new Response(PNG);
         case "/type-upper":
@@ -177,9 +195,8 @@ describe("fetchCachedImage : taille", () => {
     expect(r.status).toBe(502);
     expect(r.body).toBeNull();
   });
-  // Probleme connu : la limite est verifiee APRES `arrayBuffer()`. Un corps chunked sans
-  // content-length (ou gzip) est integralement telecharge et tamponne en memoire avant refus.
-  test.failing("la lecture s'arrete des que maxBytes est depasse (pas de tampon integral)", async () => {
+  // La limite est verifiee pendant la lecture : le flux amont est annule des que maxBytes est depasse.
+  test("la lecture s'arrete des que maxBytes est depasse (pas de tampon integral)", async () => {
     hugeSent = 0;
     const r = await fetchCachedImage(`${base}/huge-chunked`, { ...opts, maxBytes: 1000 });
     expect(r.status).toBe(502);
@@ -216,7 +233,13 @@ describe("aucun en-tete amont relaye", () => {
       "cross-origin-resource-policy",
       "x-content-type-options",
     ]);
-    for (const h of ["set-cookie", "location", "x-upstream-secret", "content-disposition", "access-control-allow-origin"]) {
+    for (const h of [
+      "set-cookie",
+      "location",
+      "x-upstream-secret",
+      "content-disposition",
+      "access-control-allow-origin",
+    ]) {
       expect(res.headers.get(h)).toBeNull();
     }
     expect(res.headers.get("x-content-type-options")).toBe("nosniff");
@@ -280,10 +303,85 @@ describe("cle de cache, amplification, eviction", () => {
     await fetchCachedImage(`${base}/legit`, opts);
     expect(hits.get("/legit")).toBe(2);
   }, 30_000);
-  test("aucune limitation de debit : 200 cles distinctes en parallele -> 200 requetes amont", async () => {
-    await Promise.all(Array.from({ length: 200 }, (_, i) => fetchCachedImage(`${base}/par/${i}`, opts)));
+  test("200 cles distinctes en parallele : toutes servies, fetchs amont simultanes <= 8", async () => {
+    inFlightPeak = 0;
+    await Promise.all(
+      Array.from({ length: 200 }, (_, i) => fetchCachedImage(`${base}/slowish/${i}`, opts)),
+    );
     let n = 0;
-    for (let i = 0; i < 200; i++) n += hits.get(`/par/${i}`) ?? 0;
+    for (let i = 0; i < 200; i++) n += hits.get(`/slowish/${i}`) ?? 0;
     expect(n).toBe(200);
+    expect(inFlightPeak).toBeLessThanOrEqual(8);
+    expect(inFlightPeak).toBeGreaterThan(1);
+  }, 30_000);
+  test("file d'attente pleine : refus 502 sans fetch amont", async () => {
+    const o = { ...opts, maxConcurrent: 1, maxQueue: 1 };
+    const results = await Promise.all(
+      Array.from({ length: 4 }, (_, i) => fetchCachedImage(`${base}/slowish/q${i}`, o)),
+    );
+    expect(results.filter((r) => r.status === 200).length).toBeGreaterThanOrEqual(1);
+    expect(results.filter((r) => r.status === 502).length).toBeGreaterThanOrEqual(1);
+  });
+  test("cle de cache normalisee : %2f/%2F et URL equivalentes = une seule requete amont", async () => {
+    expect(cacheKey(`${base}/n/a%2fb.png`)).toBe(cacheKey(`${base}/n/a%2Fb.png`));
+    expect(cacheKey("https://UPLOAD.wikimedia.org:443/a/b.png")).toBe(
+      "https://upload.wikimedia.org/a/b.png",
+    );
+    await fetchCachedImage(`${base}/norm/a%2fb.png`, opts);
+    await fetchCachedImage(`${base}/norm/a%2Fb.png`, opts);
+    expect((hits.get("/norm/a%2fb.png") ?? 0) + (hits.get("/norm/a%2Fb.png") ?? 0)).toBe(1);
+  });
+  test("entrees negatives : borne propre (100), les images valides ne sont pas evincees", async () => {
+    await fetchCachedImage(`${base}/keeper`, opts);
+    const before = hits.get("/keeper");
+    for (let i = 0; i < 250; i++) await fetchCachedImage(`${base}/404/${i}`, opts);
+    await fetchCachedImage(`${base}/keeper`, opts);
+    expect(hits.get("/keeper")).toBe(before);
+    // Les 404 les plus anciens (>100 derriere) ont ete oublies, les recents sont retenus.
+    await fetchCachedImage(`${base}/404/249`, opts);
+    expect(hits.get("/404/249")).toBe(1);
+    await fetchCachedImage(`${base}/404/0`, opts);
+    expect(hits.get("/404/0")).toBe(2);
+  }, 30_000);
+});
+
+describe("limite de debit par IP", () => {
+  const req = (ip: string) =>
+    new Request("http://x/api/ext-image/y", { headers: { "cf-connecting-ip": ip } });
+  const o = { ...opts, maxBytes: 1000 };
+
+  test("30 fetchs amont non caches par minute et par IP, puis 429 ; fenetre renouvelee", () => {
+    const t = 1_000_000;
+    for (let i = 0; i < 30; i++) expect(takeUpstreamToken("10.0.0.1", t + i)).toBe(true);
+    expect(takeUpstreamToken("10.0.0.1", t + 31)).toBe(false);
+    expect(takeUpstreamToken("10.0.0.2", t + 31)).toBe(true);
+    expect(takeUpstreamToken("10.0.0.1", t + 60_001)).toBe(true);
+  });
+  test("serveProxiedImage : 429 apres 30 non caches, le cache reste servi", async () => {
+    const ip = "203.0.113.7";
+    const statuses: number[] = [];
+    for (let i = 0; i < 40; i++) {
+      statuses.push((await serveProxiedImage(req(ip), `${base}/rl/${i}`, o, 60)).status);
+    }
+    expect(statuses.slice(0, 30).every((s) => s === 200)).toBe(true);
+    expect(statuses.slice(30).every((s) => s === 429)).toBe(true);
+    let upstream = 0;
+    for (let i = 0; i < 40; i++) upstream += hits.get(`/rl/${i}`) ?? 0;
+    expect(upstream).toBe(30);
+    const cached = await serveProxiedImage(req(ip), `${base}/rl/3`, o, 60);
+    expect(cached.status).toBe(200);
+    const limited = await serveProxiedImage(req(ip), `${base}/rl/39`, o, 60);
+    expect(limited.status).toBe(429);
+    expect(limited.headers.get("retry-after")).toBe("60");
+    // Une autre IP n'est pas affectee.
+    expect((await serveProxiedImage(req("203.0.113.8"), `${base}/rl/39`, o, 60)).status).toBe(200);
+  });
+  test("repli x-forwarded-for (dernier hop) quand cf-connecting-ip est absent", async () => {
+    const r = (xff: string) => new Request("http://x/y", { headers: { "x-forwarded-for": xff } });
+    for (let i = 0; i < 30; i++) {
+      await serveProxiedImage(r("1.1.1.1, 198.51.100.9"), `${base}/xf/${i}`, o, 60);
+    }
+    const res = await serveProxiedImage(r("2.2.2.2, 198.51.100.9"), `${base}/xf/new`, o, 60);
+    expect(res.status).toBe(429);
   });
 });
