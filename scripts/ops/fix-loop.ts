@@ -369,11 +369,19 @@ export async function checkTsc(root: string, only?: string[]): Promise<Finding[]
   return dedupe(out);
 }
 
-export type Member = { name: string; dir: string; manifest: string; edition: string; files: string[] };
+export type Member = {
+  name: string;
+  dir: string;
+  manifest: string;
+  edition: string;
+  files: string[];
+};
 
 /** Crates found from tracked Cargo.toml files (works when path dependencies are missing, unlike `cargo metadata`). */
 export async function rustMembers(root: string): Promise<Member[]> {
-  const tracked = (await sh("git ls-files -- '*Cargo.toml' '*.rs'", root)).out.split("\n").filter(Boolean);
+  const tracked = (await sh("git ls-files -- '*Cargo.toml' '*.rs'", root)).out
+    .split("\n")
+    .filter(Boolean);
   const manifests = tracked.filter((f) => f.endsWith("Cargo.toml"));
   const rootToml = existsSync(join(root, "Cargo.toml"))
     ? (Bun.TOML.parse(readFileSync(join(root, "Cargo.toml"), "utf8")) as any)
@@ -415,8 +423,13 @@ export async function checkRustfmt(root: string, members: Member[], only?: strin
   for (const m of members) {
     if (only && !only.some((f) => toPosix(f).startsWith(`${m.dir}/`) || m.dir === "")) continue;
     const r = await sh(rustfmtCommand(root, m, true), root);
-    out.push(...parseRustfmt(`${r.out}
-${r.err}`, root));
+    out.push(
+      ...parseRustfmt(
+        `${r.out}
+${r.err}`,
+        root,
+      ),
+    );
   }
   return out;
 }
@@ -848,7 +861,10 @@ export async function main(argv: string[]): Promise<number> {
       "cargo-fmt",
       "rustfmt",
       members.length && plan.mechanical.rustfmt.length
-        ? members.filter((m) => plan.mechanical.rustfmt.some((f) => m.files.includes(f))).map((m) => rustfmtCommand(root, m, false)).join(" ; ")
+        ? members
+            .filter((m) => plan.mechanical.rustfmt.some((f) => m.files.includes(f)))
+            .map((m) => rustfmtCommand(root, m, false))
+            .join(" ; ")
         : null,
       "style(rust): rustfmt per member",
     );
