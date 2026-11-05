@@ -30,7 +30,7 @@ import { cn } from "@aphrody/shenron-ui/lib/utils";
 /**
  * Les avatars Discord sont servis en grande taille et souvent en GIF animé
  * (~888 Kio d'économie mesurée sur l'accueil). Un avatar s'affiche à 28-64 px :
- * on demande au CDN Discord une variante WebP statique de 2x la taille d'affichage
+ * on demande au CDN Discord une variante WebP statique (~1,75x la taille d'affichage
  * (écrans denses), bornée à 32-128 px. Les autres URLs sont laissées telles quelles.
  */
 export function discordAvatarVariant(url: string | null, displaySize: number): string | null {
@@ -44,7 +44,7 @@ export function discordAvatarVariant(url: string | null, displaySize: number): s
   if (parsed.hostname !== "cdn.discordapp.com") return url;
   const match = /^(\/avatars\/\d+\/[\w-]+)\.(?:png|jpe?g|gif|webp)$/.exec(parsed.pathname);
   if (!match) return url;
-  const wanted = Math.min(128, Math.max(32, displaySize * 2));
+  const wanted = Math.min(128, Math.max(32, displaySize * 1.75));
   const size = [32, 64, 128].find((candidate) => candidate >= wanted) ?? 128;
   parsed.pathname = `${match[1]}.webp`;
   parsed.search = `?size=${size}&animated=false`;
