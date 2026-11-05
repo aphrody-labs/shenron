@@ -30,10 +30,13 @@
 !/plugin/
 !/docs/
 
-# Public data only (the canonical lexicon is the one file the server payload ships)
+# Public data only: the canonical lexicon the server payload ships, and the lexicon the Rust crates
+# embed with include_str! (crates/shenron-lexicon); without it the Rust stages cannot compile.
 !/data/
 /data/**
 !/data/lexique-db-canonique.json
+!/data/lexicon/
+!/data/lexicon/**
 
 # Never, whatever the allow-list above matched
 **/node_modules

@@ -1,0 +1,270 @@
+{
+  "$comment": "Single declarative definition of the Shenron build, deploy and production environment. Read by scripts/deploy/environment.ts (drift gate and emitters), scripts/deploy/lanes.ts (change detection) and deploy/activation/activate.sh (through --emit activation). Runbook: docs/operations/AUTO-DEPLOY.md. No secret, address or host name belongs here.",
+  "schema": 1,
+  "primary": "native",
+  "primaryReason": "The production host is also the build host: 8 CPU, 31 GiB, warm sccache, target/, Turbopack and Bun caches on local disk, one checkout and one node_modules. Nothing crosses the network, so shipping costs nothing. Dockerfile.build is the hermetic secondary path (other hosts, Windows cross builds, CI) and reads the same pins.",
+  "toolchain": {
+    "rust": "1.99.1",
+    "bun": "1.4.6",
+    "bunLinuxSha256": "247bd13f96cb10404a416291415a35690c4d76e3187f7bb9183c1c8784d314f6",
+    "sccache": "0.18.0",
+    "baseImage": "ubuntu:26.10"
+  },
+  "caches": {
+    "root": "$HOME/.cache/shenron",
+    "bun": "$HOME/.bun/install/cache",
+    "sccache": "$HOME/.cache/shenron/sccache",
+    "sccacheSize": "20G",
+    "artifacts": "$HOME/.cache/shenron/artifacts",
+    "artifactsKeepPerLane": 8
+  },
+  "runtime": {
+    "packages": [
+      "ca-certificates",
+      "curl",
+      "fonts-noto-color-emoji",
+      "fonts-wqy-microhei",
+      "jq",
+      "libfontconfig1",
+      "libgcc-s1",
+      "libsqlite3-0",
+      "libvulkan1",
+      "mesa-vulkan-drivers"
+    ],
+    "env": {
+      "SHENRON_HOME": "/var/lib/shenron",
+      "SHENRON_PROFILE": "production",
+      "PORT": "5011",
+      "HOSTNAME": "127.0.0.1",
+      "API_PORT": "5006",
+      "API_HOST": "127.0.0.1",
+      "DATABASE_PATH": "/app/data/bot.db",
+      "SHENRON_FFI_LIB": "/usr/local/lib/libshenron_ffi.so",
+      "SHENRON_BOT_ASSETS_DIR": "/usr/local/share/shenron-bot",
+      "SHENRON_STUDIO_SDK_BIN": "/usr/local/bin/koharu-sdk",
+      "SHENRON_STUDIO_HOME": "/var/lib/shenron/data/studio",
+      "NAPI_RS_NATIVE_LIBRARY_PATH": "/usr/local/bin/skia.linux-x64-gnu.node",
+      "NEXT_TELEMETRY_DISABLED": "1"
+    },
+    "files": [
+      "/usr/local/bin/skia.linux-x64-gnu.node",
+      "/usr/local/share/shenron-bot",
+      "/app/src/db/migrations",
+      "/usr/local/lib/shenron/pipeline-build-receipt.json",
+      "/usr/local/lib/shenron/pipeline.mjs",
+      "/usr/local/bin/koharu-sdk",
+      "/usr/local/lib/libshenron_ffi.so",
+      "/usr/local/bin/shenron-mcp",
+      "/usr/local/bin/shenron-bot",
+      "/usr/local/bin/shenron-server"
+    ]
+  },
+  "services": {
+    "site": {
+      "container": "shenron-site",
+      "health": "http://127.0.0.1:5011/api/local/health",
+      "waitSeconds": 150,
+      "static": true
+    },
+    "bot": {
+      "container": "shenron-bot",
+      "health": "http://127.0.0.1:5006/health",
+      "waitSeconds": 150
+    },
+    "gateway": {
+      "container": "shenron-gateway",
+      "health": "https://127.0.0.1/api/health",
+      "healthHost": "dragonballfr.com",
+      "waitSeconds": 90
+    }
+  },
+  "activation": {
+    "order": ["site", "bot"],
+    "neverTouched": ["postgres", "redis", "embed", "compute", "chat", "cloudflared"],
+    "keepImages": 4,
+    "keepReleases": 6
+  },
+  "lanes": {
+    "rust": {
+      "toolchain": "rust",
+      "inputs": [
+        "Cargo.toml",
+        "Cargo.lock",
+        ".cargo",
+        "rust-toolchain.toml",
+        "crates",
+        "data/lexique-db-canonique.json",
+        "data/lexicon"
+      ],
+      "outputs": [
+        "target/production/shenron-mcp",
+        "target/production/libshenron_ffi.so",
+        "target/production/koharu-sdk"
+      ],
+      "services": ["site", "bot"],
+      "extras": ["rustc"]
+    },
+    "wasm": {
+      "toolchain": "rust",
+      "inputs": [
+        "Cargo.toml",
+        "Cargo.lock",
+        ".cargo",
+        "rust-toolchain.toml",
+        "crates/koharu-canvas",
+        "crates/koharu-rasterizer",
+        "crates/shenron-re",
+        "crates/shenron-engine",
+        "crates/shenron-panels",
+        "crates/dragon-pixel",
+        "packages/koharu/scripts/build-wasm.ts",
+        "packages/pipeline/scripts/build-re-wasm.ts",
+        "packages/engine/scripts/build-wasm.ts"
+      ],
+      "outputs": [
+        "packages/koharu/src/wasm",
+        "packages/pipeline/src/wasm",
+        "packages/engine/src/wasm"
+      ],
+      "services": ["site"],
+      "extras": ["rustc", "bun"]
+    },
+    "site": {
+      "toolchain": "bun",
+      "workspace": "apps/site",
+      "inputs": [
+        "package.json",
+        "bun.lock",
+        "bunfig.toml",
+        "tsconfig.json",
+        "patches",
+        "vendor?",
+        "scripts/build",
+        "packages/dbxv2/src/guard.ts",
+        "packages/ui/scripts",
+        "data",
+        "docs/reference"
+      ],
+      "outputs": [
+        "apps/site/.next-standalone/standalone",
+        "apps/site/.next-standalone/static",
+        "apps/site/public"
+      ],
+      "services": ["site"],
+      "after": ["wasm"],
+      "extras": ["bun"]
+    },
+    "bot": {
+      "toolchain": "bun",
+      "workspace": "apps/bot",
+      "inputs": [
+        "package.json",
+        "bun.lock",
+        "bunfig.toml",
+        "tsconfig.json",
+        "patches",
+        "vendor?",
+        "scripts/build",
+        "packages/dbxv2/src/guard.ts",
+        "packages/ui/scripts",
+        "data",
+        "scripts/ops/bun-source-pipeline.ts"
+      ],
+      "outputs": ["dist/bot/linux-x64"],
+      "services": ["bot"],
+      "extras": ["bun"]
+    },
+    "server": {
+      "toolchain": "bun",
+      "workspace": "apps/server",
+      "after": ["site", "rust"],
+      "extras": ["bun", "vfs"],
+      "inputs": [
+        "package.json",
+        "bun.lock",
+        "bunfig.toml",
+        "tsconfig.json",
+        "patches",
+        "vendor?",
+        "scripts/build",
+        "packages/dbxv2/src/guard.ts",
+        "packages/ui/scripts",
+        "templates",
+        "plugin",
+        "data/lexique-db-canonique.json"
+      ],
+      "outputs": ["dist/server/linux-x64", "dist/mcp/linux-x64", "dist/cdn"],
+      "services": ["site"]
+    },
+    "image": {
+      "toolchain": "none",
+      "after": ["rust", "bot", "server"],
+      "inputs": ["deploy/docker/Dockerfile", ".dockerignore"],
+      "outputs": [],
+      "services": ["site", "bot"]
+    }
+  },
+  "classification": {
+    "$comment": "Every tracked top-level entry is either a lane input or listed here, so a new directory cannot silently escape change detection (lanes.ts --check).",
+    "noDeploy": [
+      ".agents",
+      ".claude",
+      ".claude-plugin",
+      ".codex",
+      ".config",
+      ".github",
+      ".gitignore",
+      ".gitmodules",
+      ".graphifyignore",
+      ".oxfmtrc.json",
+      ".oxlintrc.json",
+      ".vscode",
+      "AGENTS.md",
+      "CLAUDE.md",
+      "Dockerfile.build",
+      "Dockerfile.build.dockerignore",
+      "GOAL.md",
+      "LICENSE",
+      "README.md",
+      "TODO.md",
+      "clippy.toml",
+      "config",
+      "deny.toml",
+      "deploy",
+      "docker-bake.hcl",
+      "docs",
+      "install.ps1",
+      "justfile",
+      "replica",
+      "rust-analyzer.toml",
+      "rustfmt.toml",
+      "scripts",
+      "themes"
+    ],
+    "ignoreInKeys": [
+      "**/test/**",
+      "**/tests/**",
+      "**/__tests__/**",
+      "**/*.test.ts",
+      "**/*.test.tsx",
+      "**/*.live.test.ts",
+      "**/*.bench.ts"
+    ],
+    "holds": {
+      "$comment": "A release touching these needs a human step first: the release waits and nothing is applied.",
+      "migrations": [
+        "apps/site/src/db/migrations",
+        "apps/bot/src/db/migrations",
+        "packages/db/src/schema.ts",
+        "packages/db/src/bot-schema.ts"
+      ]
+    },
+    "infraNotices": [
+      "deploy/docker/compose.yaml",
+      "deploy/docker/compose.complete.yaml",
+      "deploy/docker/compose-gateway.nginx.conf",
+      "deploy/prod",
+      "deploy/activation"
+    ]
+  }
+}
