@@ -282,7 +282,7 @@ export default async function MangaVolumePage({ params }: { params: Promise<{ id
             )}
 
             <section aria-label="Sommaire des chapitres" className="space-y-5">
-              <SectionHeading level={3} title="Sommaire des chapitres" />
+              <SectionHeading level={2} title="Sommaire des chapitres" />
               <VolumeChaptersList chapters={volume.chapters} />
             </section>
 

@@ -666,6 +666,10 @@ export function DatabookReader({
                             src={imageSrc(item.imageUrl, 1080)}
                             srcSet={imageSrcSet(item.imageUrl, [828, 1080, 1920]) || undefined}
                             sizes="(min-width: 1024px) 900px, 100vw"
+                            // Dimensions intrinsèques indicatives (planche portrait 2:3) : réservent le rapport
+                            // avant le chargement (CLS, unsized-images) ; le vrai rapport prend le relais.
+                            width={1080}
+                            height={1620}
                             alt={`${title} — page ${item.number}`}
                             loading={Math.abs(i - current) <= 1 ? "eager" : "lazy"}
                             draggable={false}
@@ -770,6 +774,10 @@ export function DatabookReader({
                             src={imageSrc(item.imageUrl, 1080)}
                             srcSet={imageSrcSet(item.imageUrl, [828, 1080, 1920]) || undefined}
                             sizes="(min-width: 768px) 768px, 100vw"
+                            // Dimensions intrinsèques indicatives (planche portrait 2:3) : réservent le rapport
+                            // avant le chargement (CLS, unsized-images) ; le vrai rapport prend le relais.
+                            width={1080}
+                            height={1620}
                             alt={`${title} — page ${item.number}`}
                             // Trois planches de part et d'autre chargées d'avance :
                             // avec une seule, tourner la page laissait un rectangle
@@ -977,6 +985,8 @@ export function DatabookReader({
           >
             <img
               src={currentImage}
+              width={1080}
+              height={1620}
               alt={`${title} — page ${currentNum}`}
               className="max-h-full max-w-full object-contain will-change-transform motion-safe:transition-transform motion-safe:duration-75"
               style={visionneuse.style}

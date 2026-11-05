@@ -105,3 +105,11 @@
     min-width: 44px;
   }
 }
+/* Bouton inactif : l'opacité 40 % du thème de base passait sous 4,5:1 (color-contrast).
+   On garde l'état "éteint" par une teinte atténuée mais lisible (>= 4,5:1 sur la nuit). */
+.m3-reader--dragon-ball .m3-reader-btn:disabled,
+.m3-reader--dragon-ball .m3-reader-btn[aria-disabled="true"] {
+  opacity: 1;
+  color: color-mix(in srgb, var(--reader-on-surface) 62%, var(--reader-surface));
+  cursor: not-allowed;
+}
