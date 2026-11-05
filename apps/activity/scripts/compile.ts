@@ -6,6 +6,10 @@
  *   bun scripts/compile.ts                      host platform  -> dist/bin/shenron-activity[.exe]
  *   bun scripts/compile.ts --target linux-x64   cross-compile (linux-x64 | windows-x64 | darwin-arm64)
  *   bun scripts/compile.ts --outfile <path>
+ *   bun scripts/compile.ts --no-aot             plain bundle (also SHENRON_AOT=0)
+ *
+ * A native target compiles ahead of time (`aot: true`, Bun 1.4.4 canary) when the running Bun knows
+ * `--aot`; a cross target, an older Bun or a failed AOT compile keeps the plain bundle.
  *
  * How: the production client is built (`scripts/build.ts`), then a generated entry imports every
  * file of the bundle with `with { type: "file" }`, which makes `bun build --compile` embed them, and
@@ -15,6 +19,7 @@
  */
 import { mkdirSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { join, relative, resolve } from "node:path";
+import { hostTarget, supportsAot } from "../../../scripts/build/compile-mode";
 import { APP_ROOT, buildClient } from "./build";
 
 const TARGETS = new Set(["linux-x64", "linux-arm64", "windows-x64", "darwin-x64", "darwin-arm64"]);
@@ -27,7 +32,9 @@ function walk(dir: string, base = dir): string[] {
   );
 }
 
-export async function compileServer(options: { target?: string; outfile?: string } = {}) {
+export async function compileServer(
+  options: { target?: string; outfile?: string; aot?: boolean } = {},
+) {
   const target = options.target;
   if (target && !TARGETS.has(target)) throw new Error(`unknown target ${target}`);
   const windows =
@@ -62,18 +69,32 @@ ${entries.join("\n")}
   );
 
   mkdirSync(join(outfile, ".."), { recursive: true });
-  const result = await Bun.build({
-    entrypoints: [entry],
-    target: "bun",
-    minify: true,
-    compile: target ? { target: `bun-${target}` as never, outfile } : { outfile },
-    define: { "process.env.NODE_ENV": JSON.stringify("production") },
-  });
-  if (!result.success) {
-    for (const log of result.logs) console.error(String(log));
+  const native = !target || target === hostTarget();
+  const wantAot = (options.aot ?? true) && native && supportsAot(process.execPath);
+  const build = (aot: boolean) =>
+    Bun.build({
+      entrypoints: [entry],
+      target: "bun",
+      minify: true,
+      compile: {
+        ...(target ? { target: `bun-${target}` as never } : {}),
+        outfile,
+        ...(aot ? { aot: true } : {}),
+      } as never,
+      define: { "process.env.NODE_ENV": JSON.stringify("production") },
+    });
+  let aot = wantAot;
+  let result = await build(aot).catch(() => null);
+  if (!result?.success && aot) {
+    console.error("aot compile failed, building the plain bundle");
+    aot = false;
+    result = await build(false);
+  }
+  if (!result?.success) {
+    for (const log of result?.logs ?? []) console.error(String(log));
     throw new Error("compile failed");
   }
-  return { outfile, embedded: files.length, bytes: Bun.file(outfile).size };
+  return { outfile, embedded: files.length, bytes: Bun.file(outfile).size, aot };
 }
 
 if (import.meta.main) {
@@ -82,6 +103,12 @@ if (import.meta.main) {
     const index = args.indexOf(name);
     return index >= 0 ? args[index + 1] : undefined;
   };
-  const result = await compileServer({ target: option("--target"), outfile: option("--outfile") });
-  console.log(`${result.outfile} (${result.bytes} bytes, ${result.embedded} embedded files)`);
+  const result = await compileServer({
+    target: option("--target"),
+    outfile: option("--outfile"),
+    aot: !args.includes("--no-aot") && process.env.SHENRON_AOT !== "0",
+  });
+  console.log(
+    `${result.outfile} (${result.bytes} bytes, ${result.embedded} embedded files, ${result.aot ? "aot" : "bundle"})`,
+  );
 }
