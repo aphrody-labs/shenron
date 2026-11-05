@@ -190,6 +190,8 @@
     "playerChoice": "Choose a player",
     "playerNumber": "Player {number}",
     "playerTitle": "Player {number} — {name}",
+    "loadPlayer": "Load player {number}",
+    "loadPlayerNotice": "The player is hosted by a third-party service that may set cookies. Nothing loads before you click.",
     "voUnavailable": "This stream is currently unavailable. Other players remain accessible above.",
     "playersUnavailable": "None of the {count} players is responding at the moment.",
     "retry": "Retry automatically",

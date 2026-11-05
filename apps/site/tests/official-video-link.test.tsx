@@ -33,7 +33,7 @@ test("official Crunchyroll watch pages render a localized outbound link, never a
   }
 });
 
-test("an actual external embed keeps the existing iframe path", () => {
+test("an external embed renders a click-to-load facade, no iframe and no host before the click", () => {
   const html = render("fr", [
     {
       name: "Lecteur",
@@ -41,7 +41,9 @@ test("an actual external embed keeps the existing iframe path", () => {
       embedUrl: "https://player.example/embed/1",
     },
   ]);
-  expect(html).toContain("<iframe");
+  expect(html).not.toContain("<iframe");
+  expect(html).not.toContain("player.example");
+  expect(html).toContain("Charger le lecteur 1");
   expect(html).not.toContain(videoFr.officialProviderNote);
 });
 

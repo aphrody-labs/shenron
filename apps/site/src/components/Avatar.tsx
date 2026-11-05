@@ -26,29 +26,20 @@ import {
   discordUserIdFromAvatarUrl,
 } from "@aphrody/shenron-config/public-urls";
 import { cn } from "@aphrody/shenron-ui/lib/utils";
+import { discordAvatarProxyPath, snapAvatarSize } from "@/lib/first-party-media";
 
 /**
  * Les avatars Discord sont servis en grande taille et souvent en GIF animé
  * (~888 Kio d'économie mesurée sur l'accueil). Un avatar s'affiche à 28-64 px :
- * on demande au CDN Discord une variante WebP statique, environ 1,75x la taille d'affichage
- * (écrans denses), bornée à 32-128 px. Les autres URLs sont laissées telles quelles.
+ * on demande une variante WebP statique, environ 1,75x la taille d'affichage
+ * (écrans denses), bornée à 32-128 px — et via `/api/avatar`, c'est-à-dire depuis
+ * l'origine du site : `cdn.discordapp.com` pose un cookie tiers `__cf_bm` sur chaque
+ * avatar (audit `third-party-cookies`). Les autres URLs sont laissées telles quelles.
  */
 export function discordAvatarVariant(url: string | null, displaySize: number): string | null {
   if (!url) return url;
-  let parsed: URL;
-  try {
-    parsed = new URL(url);
-  } catch {
-    return url;
-  }
-  if (parsed.hostname !== "cdn.discordapp.com") return url;
-  const match = /^(\/avatars\/\d+\/[\w-]+)\.(?:png|jpe?g|gif|webp)$/.exec(parsed.pathname);
-  if (!match) return url;
-  const wanted = Math.min(128, Math.max(32, displaySize * 1.75));
-  const size = [32, 64, 128].find((candidate) => candidate >= wanted) ?? 128;
-  parsed.pathname = `${match[1]}.webp`;
-  parsed.search = `?size=${size}&animated=false`;
-  return parsed.toString();
+  const size = snapAvatarSize(Math.min(128, Math.max(32, displaySize * 1.75)));
+  return discordAvatarProxyPath(url, size) ?? url;
 }
 
 export function Avatar({
@@ -77,7 +68,12 @@ export function Avatar({
   fallback?: ReactNode;
 }) {
   const primary = discordAvatarVariant(src?.trim() || null, size);
-  const discordDefault = discordDefaultAvatarUrl(userId ?? discordUserIdFromAvatarUrl(primary));
+  const discordDefaultRaw = discordDefaultAvatarUrl(
+    userId ?? discordUserIdFromAvatarUrl(src?.trim() || null),
+  );
+  const discordDefault = discordDefaultRaw
+    ? (discordAvatarProxyPath(discordDefaultRaw, 64) ?? discordDefaultRaw)
+    : null;
   // URLs déjà tombées en erreur. Une URL nouvelle (autre `src`) n'y figure pas
   // et retente donc sa chance ; une URL morte n'est jamais redemandée.
   const [failed, setFailed] = useState<readonly string[]>([]);

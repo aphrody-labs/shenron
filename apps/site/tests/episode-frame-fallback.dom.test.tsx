@@ -46,6 +46,11 @@ test.skipIf(typeof document === "undefined")(
           </NextIntlClientProvider>,
         ),
       );
+      // Façade : aucun iframe avant le clic.
+      expect(container.querySelector("iframe")).toBeNull();
+      const load = container.querySelector<HTMLButtonElement>("button[data-primary]")!;
+      expect(load.textContent).toBe("Charger le lecteur 1");
+      await act(async () => load.click());
       let frame = container.querySelector("iframe")!;
       expect(frame.src).toBe("https://player.example/first");
       frame.getBoundingClientRect = () => ({ width: 0, height: 0 }) as DOMRect;

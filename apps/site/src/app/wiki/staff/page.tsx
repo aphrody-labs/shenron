@@ -83,7 +83,7 @@ export default async function StaffHubPage({
         {/* Portrait d'archive, volontairement fondu : il accompagne l'accès à
 					    l'anthologie sans concurrencer le texte ni fabriquer une illustration. */}
         <img
-          src="https://upload.wikimedia.org/wikipedia/en/1/15/Akira_Toriyama_in_1982.jpg"
+          src="/api/ext-image/upload/wikipedia/en/1/15/Akira_Toriyama_in_1982.jpg"
           alt=""
           aria-hidden="true"
           className="pointer-events-none absolute inset-y-0 right-0 h-full w-1/2 object-cover object-top opacity-20 [mask-image:linear-gradient(to_right,transparent,black_42%)]"

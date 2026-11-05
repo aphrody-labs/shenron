@@ -190,6 +190,8 @@
     "playerChoice": "プレーヤーを選択",
     "playerNumber": "プレーヤー {number}",
     "playerTitle": "プレーヤー {number} — {name}",
+    "loadPlayer": "プレーヤー{number}を読み込む",
+    "loadPlayerNotice": "このプレーヤーは外部サービスが提供しており、Cookieを設定する場合があります。クリックするまで何も読み込まれません。",
     "voUnavailable": "このストリームは現在利用できません。上の別のプレーヤーをご利用ください。",
     "playersUnavailable": "現在、{count} 件のプレーヤーから応答がありません。",
     "retry": "自動で再試行",

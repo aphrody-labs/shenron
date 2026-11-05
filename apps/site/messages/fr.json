@@ -190,6 +190,8 @@
     "playerChoice": "Choisir un lecteur",
     "playerNumber": "Lecteur {number}",
     "playerTitle": "Lecteur {number} — {name}",
+    "loadPlayer": "Charger le lecteur {number}",
+    "loadPlayerNotice": "Le lecteur est hébergé par un service tiers qui peut déposer des cookies. Rien n’est chargé avant votre clic.",
     "voUnavailable": "Ce flux est indisponible pour le moment. Les autres lecteurs restent accessibles ci-dessus.",
     "playersUnavailable": "Aucun des {count} lecteurs ne répond pour le moment.",
     "retry": "Réessayer automatiquement",

@@ -10,6 +10,7 @@
  * keeps the original URL: nothing is dropped on an outage.
  */
 import "server-only";
+import { firstPartyImage } from "@/lib/first-party-media";
 
 const THUMB_WIDTH = 330;
 const BATCH = 50;
@@ -140,12 +141,17 @@ export async function verifyWikimediaImages(
   return result;
 }
 
-/** Replaces each row's `image` with its verified Wikimedia thumbnail (or `null`). */
+/**
+ * Replaces each row's `image` with its verified Wikimedia thumbnail (or `null`), served from
+ * the site's own origin (`/api/ext-image`): upload.wikimedia.org sets a third-party cookie.
+ */
 export async function withVerifiedImages<T extends { image?: string | null }>(
   rows: T[],
 ): Promise<T[]> {
   const verified = await verifyWikimediaImages(rows.map((r) => r.image));
-  return rows.map((r) =>
-    r.image && verified.has(r.image) ? ({ ...r, image: verified.get(r.image) ?? null } as T) : r,
-  );
+  return rows.map((r) => {
+    if (!r.image) return r;
+    const image = verified.has(r.image) ? (verified.get(r.image) ?? null) : r.image;
+    return { ...r, image: firstPartyImage(image) } as T;
+  });
 }

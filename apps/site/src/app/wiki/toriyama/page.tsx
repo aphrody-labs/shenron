@@ -282,7 +282,7 @@ export default async function ToriyamaPage() {
           <div className="relative shrink-0 self-center md:self-auto">
             <div className="relative overflow-hidden rounded-xl border border-dbz-border bg-dbz-card p-1">
               <img
-                src="https://upload.wikimedia.org/wikipedia/en/1/15/Akira_Toriyama_in_1982.jpg"
+                src="/api/ext-image/upload/wikipedia/en/1/15/Akira_Toriyama_in_1982.jpg"
                 alt="Akira Toriyama (1982)"
                 loading="eager"
                 className="h-56 w-44 rounded-lg object-cover sm:h-64 sm:w-52"
@@ -300,7 +300,7 @@ export default async function ToriyamaPage() {
         {/* Signature watermark accent */}
         <div className="pointer-events-none absolute right-4 bottom-2 select-none opacity-5">
           <img
-            src="https://upload.wikimedia.org/wikipedia/commons/5/58/Signature_of_Akira_Toriyama.svg"
+            src="/api/ext-image/upload/wikipedia/commons/5/58/Signature_of_Akira_Toriyama.svg"
             alt=""
             className="h-24 w-auto invert"
             aria-hidden="true"

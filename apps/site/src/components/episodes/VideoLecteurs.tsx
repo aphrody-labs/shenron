@@ -154,6 +154,10 @@ export function VideoLecteurs({
   const [active, setActive] = useState(0);
   const [modeVo, setModeVo] = useState(false);
   const [status, setStatus] = useState<"probing" | "ready" | "failed">("probing");
+  // Façade « cliquer pour charger » : tant que le visiteur n'a pas demandé le lecteur
+  // externe, aucun `<iframe>`, aucune sonde réseau et aucun cookie tiers ne partent
+  // vers l'hébergeur (audit Lighthouse `third-party-cookies`, Bonnes pratiques 58).
+  const [armed, setArmed] = useState(false);
   // Le flux VO est résolu à la volée par le bot : il peut être mort. On ne le
   // sonde pas à l'affichage — ce serait une résolution de flux par visite de
   // page —, on le charge au clic et l'on bascule sur un message s'il échoue.
@@ -216,7 +220,7 @@ export function VideoLecteurs({
   // An iframe can emit load for its browser error document after a DNS failure.
   // Check the user's network independently; VPS reachability cannot establish it.
   useEffect(() => {
-    if (enVo || !current || officialPage || nativeSource) return;
+    if (enVo || !current || officialPage || nativeSource || !armed) return;
     networkFailure.current = null;
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 8_000);
@@ -233,20 +237,29 @@ export function VideoLecteurs({
       controller.abort();
       window.clearTimeout(timeout);
     };
-  }, [current?.embedUrl, enVo, officialPage, nativeSource, safeActive, list.length, probeAttempt]);
+  }, [
+    current?.embedUrl,
+    enVo,
+    officialPage,
+    nativeSource,
+    safeActive,
+    list.length,
+    probeAttempt,
+    armed,
+  ]);
 
   // Les embeds tiers ne permettent pas toujours un HEAD/CORS fiable. On sonde
   // le lecteur visible uniquement tant qu'il n'a pas confirmé son chargement (ready).
   // Dès que `onLoad` passe le statut à `ready`, ce timer est annulé et ne s'exécute pas.
   useEffect(() => {
-    if (enVo || !current || officialPage || nativeSource || status === "ready") return;
+    if (enVo || !current || officialPage || nativeSource || status === "ready" || !armed) return;
     const timeout = window.setTimeout(() => {
       const next = nextPlayerIndex(safeActive, list.length);
       if (next !== null) setActive(next);
       else setStatus("failed");
     }, 8_000);
     return () => window.clearTimeout(timeout);
-  }, [safeActive, current, enVo, officialPage, nativeSource, list.length, status]);
+  }, [safeActive, current, enVo, officialPage, nativeSource, list.length, status, armed]);
 
   // Choix de version : langues des lecteurs externes (ou « Lecteurs » s'ils ne
   // portent aucun tag), puis la VO quand elle existe.
@@ -277,6 +290,8 @@ export function VideoLecteurs({
       return;
     }
     if (!current || officialPage) return;
+    // Un lecteur externe n'est « ouvert » qu'après le clic sur la façade.
+    if (!nativeSource && !armed) return;
     const cle = `${entityId}:${current.embedUrl}`;
     if (dejaEmis.current === cle) return;
     dejaEmis.current = cle;
@@ -288,7 +303,7 @@ export function VideoLecteurs({
       // c'est l'hébergeur qui tombe, pas le libellé.
       player: current.provider || current.name || undefined,
     });
-  }, [entityType, entityId, current, enVo, officialPage]);
+  }, [entityType, entityId, current, enVo, officialPage, nativeSource, armed]);
   if (!current) return null;
 
   const choisir = (c: string) => {
@@ -398,6 +413,18 @@ export function VideoLecteurs({
             {t("retry")}
           </button>
         </div>
+      ) : !armed ? (
+        <div className="shenron-video relative flex aspect-video w-full flex-col items-center justify-center gap-3 p-6 text-center">
+          <button
+            type="button"
+            onClick={() => setArmed(true)}
+            className="inline-flex min-h-11 items-center rounded-full bg-primary px-5 py-2 text-sm font-bold text-primary-foreground"
+            data-primary
+          >
+            {t("loadPlayer", { number: safeActive + 1 })}
+          </button>
+          <p className="max-w-prose text-xs text-muted-foreground">{t("loadPlayerNotice")}</p>
+        </div>
       ) : (
         <div className="shenron-video relative aspect-video">
           {/* sandbox : autorise le player tiers (scripts + accès à SA propre
@@ -449,7 +476,9 @@ export function VideoLecteurs({
                   version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
                   name: cleanName(current.name),
                 })
-              : status === "probing"
+              : !armed
+                ? t("loadPlayerNotice")
+                : status === "probing"
                 ? t("probing", {
                     version: hasLangs ? `${langLabel(selectedLang)} · ` : "",
                     name: cleanName(current.name),
