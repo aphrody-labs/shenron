@@ -434,6 +434,23 @@ ${r.err}`,
   return out;
 }
 
+/** A failed cargo run that produced no diagnostics (resolution error, missing path dependency, lock) must not look green. */
+export function withCargoFailure(found: Finding[], r: { code: number; err: string }): Finding[] {
+  if (r.code === 0 || found.length) return found;
+  const tail = r.err.trim().split(String.fromCharCode(10)).slice(-4).join(" | ");
+  return [
+    {
+      tool: "clippy",
+      file: "<cargo>",
+      line: 0,
+      col: 0,
+      code: "cargo-failed",
+      message: `cargo exited ${r.code}: ${tail}`,
+      severity: "error",
+    },
+  ];
+}
+
 export async function checkClippy(root: string, pkg?: string): Promise<Finding[]> {
   if (!existsSync(join(root, "Cargo.toml"))) return [];
   const scope = pkg ? `-p ${q(pkg)}` : "--workspace";
@@ -442,7 +459,7 @@ export async function checkClippy(root: string, pkg?: string): Promise<Finding[]
     root,
     3_000_000,
   );
-  return parseClippyJson(r.out, root);
+  return withCargoFailure(parseClippyJson(r.out, root), r);
 }
 
 export type CheckSet = Tool[];
@@ -914,6 +931,14 @@ export async function main(argv: string[]): Promise<number> {
         const source = readFileSync(join(root, batch.file), "utf8");
         const snap = await worktreeSnapshot(root);
         const res = await backend.fix(root, batch, agentPrompt(batch, source));
+        // The agent edits in its own style: format only the target file so oxfmt/rustfmt stay green.
+        if (/\.(ts|tsx|js|jsx|json)$/.test(batch.file) && o.tools.includes("oxfmt"))
+          await sh(`bun scripts/testing/native-quality.ts fmt ${q(batch.file)}`, root);
+        else if (batch.file.endsWith(".rs"))
+          await sh(
+            `rustfmt --edition ${members.find((x) => x.files.includes(batch.file))?.edition ?? "2024"} ${existsSync(join(root, "rustfmt.toml")) ? `--config-path ${q(root)}` : ""} ${q(batch.file)}`,
+            root,
+          );
         const changed = await changedSince(root, snap);
         const added = addedLines(
           snap.get(batch.file) ?? source,

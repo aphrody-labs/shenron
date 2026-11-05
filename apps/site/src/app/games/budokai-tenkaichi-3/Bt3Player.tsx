@@ -1,7 +1,16 @@
 "use client";
 // SPDX-License-Identifier: Apache-2.0
 import { useEffect, useRef, useState, useCallback, type ChangeEvent } from "react";
-import { Maximize2, Minimize2, Volume2, VolumeX, RotateCcw, Gamepad, ArrowLeft, Disc } from "lucide-react";
+import {
+  Maximize2,
+  Minimize2,
+  Volume2,
+  VolumeX,
+  RotateCcw,
+  Gamepad,
+  ArrowLeft,
+  Disc,
+} from "lucide-react";
 import Link from "next/link";
 import { GECKO_WASM } from "@/lib/gecko-wasm.generated";
 
@@ -54,7 +63,8 @@ export default function Bt3Player() {
   const toggleFullscreen = useCallback(async () => {
     try {
       if (!document.fullscreenElement) {
-        await (containerRef.current?.requestFullscreen() || document.documentElement.requestFullscreen());
+        await (containerRef.current?.requestFullscreen() ||
+          document.documentElement.requestFullscreen());
         setIsFullscreen(true);
       } else {
         await document.exitFullscreen();
@@ -88,14 +98,16 @@ export default function Bt3Player() {
   // Play real Wii sound effect
   const playWiiSfx = (sound: "select" | "hover" | "startup") => {
     try {
-      const audio = new Audio(`/wii/audio/${sound === "startup" ? "startup.mp3" : sound === "hover" ? "button-hover.mp3" : "button-select.mp3"}`);
+      const audio = new Audio(
+        `/wii/audio/${sound === "startup" ? "startup.mp3" : sound === "hover" ? "button-hover.mp3" : "button-select.mp3"}`,
+      );
       audio.volume = 0.6;
       audio.play().catch(() => {});
     } catch {}
   };
 
   // Adopt emulator canvas into our fullscreen frame
-  const adoptCanvas = (known: Set<Element>) => {
+  const adoptCanvas = useCallback((known: Set<Element>) => {
     const target = frameRef.current;
     if (!target) return;
     const started = performance.now();
@@ -113,7 +125,7 @@ export default function Bt3Player() {
       }
     };
     look();
-  };
+  }, []);
 
   // Pre-load WASM & start streaming game immediately
   useEffect(() => {
@@ -122,7 +134,9 @@ export default function Bt3Player() {
     async function preloadAndBoot() {
       try {
         setStatusText("Pré-chargement du moteur Gecko WebGPU…");
-        const mod = (await import(/* webpackIgnore: true */ wasmUrl(GECKO_WASM.js))) as unknown as GeckoModule;
+        const mod = (await import(
+          /* webpackIgnore: true */ wasmUrl(GECKO_WASM.js)
+        )) as unknown as GeckoModule;
         await mod.default({ module_or_path: wasmUrl(GECKO_WASM.wasm) });
         if (!active) return;
         geckoModuleRef.current = mod;
@@ -143,7 +157,8 @@ export default function Bt3Player() {
           let buffer = new Uint8Array(CHUNK_BYTES);
           let bufPos = 0;
 
-          while (active) {
+          for (;;) {
+            if (!active) break;
             const { done, value } = await reader.read();
             if (done) {
               if (bufPos > 0) {
@@ -153,7 +168,7 @@ export default function Bt3Player() {
             }
             loaded += value.length;
             setProgress(Math.min(100, Math.round((loaded / totalBytes) * 100)));
-            setStatusText(`Pré-chargement du disque Wii… ${Math.round((loaded / (1024 * 1024)))} Mo`);
+            setStatusText(`Pré-chargement du disque Wii… ${Math.round(loaded / (1024 * 1024))} Mo`);
 
             let valOffset = 0;
             while (valOffset < value.length) {
@@ -171,7 +186,9 @@ export default function Bt3Player() {
           if (active) {
             setStatusText("Démarrage instantané…");
             const known = new Set(document.querySelectorAll("canvas"));
-            try { mod.prepare_audio(); } catch {}
+            try {
+              mod.prepare_audio();
+            } catch {}
             mod.start_loaded_game_with_ipl(undefined);
             adoptCanvas(known);
             setLoading(false);
@@ -194,9 +211,11 @@ export default function Bt3Player() {
 
     return () => {
       active = false;
-      try { geckoModuleRef.current?.cancel_game_load(); } catch {}
+      try {
+        geckoModuleRef.current?.cancel_game_load();
+      } catch {}
     };
-  }, []);
+  }, [adoptCanvas]);
 
   // Local file selection or drag and drop
   const handleLocalFile = async (file: File) => {
@@ -207,7 +226,9 @@ export default function Bt3Player() {
     const known = new Set(document.querySelectorAll("canvas"));
 
     try {
-      try { mod.prepare_audio(); } catch {}
+      try {
+        mod.prepare_audio();
+      } catch {}
       if (file.name.toLowerCase().endsWith(".rvz")) {
         mod.begin_game_load(file.name, file.size);
         for (let offset = 0; offset < file.size; offset += CHUNK_BYTES) {

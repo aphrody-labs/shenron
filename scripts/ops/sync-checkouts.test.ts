@@ -16,7 +16,10 @@ const root = mkdtempSync(join(tmpdir(), "sync-checkouts-"));
 afterAll(() => rmSync(root, { recursive: true, force: true }));
 
 function sh(cwd: string, ...args: string[]) {
-  const proc = Bun.spawnSync(["git", "-c", "user.name=t", "-c", "user.email=t@t", "-c", "commit.gpgsign=false", ...args], { cwd });
+  const proc = Bun.spawnSync(
+    ["git", "-c", "user.name=t", "-c", "user.email=t@t", "-c", "commit.gpgsign=false", ...args],
+    { cwd },
+  );
   if (proc.exitCode !== 0) throw Error(proc.stderr.toString());
   return proc.stdout.toString().trim();
 }
@@ -59,7 +62,15 @@ const collect = () => {
   return { records, emit: (r: Record<string, unknown>) => void records.push(r) };
 };
 
-const base: RepoState = { exists: true, detached: false, branch: "main", dirty: false, ahead: 0, behind: 0, hasUpstream: true };
+const base: RepoState = {
+  exists: true,
+  detached: false,
+  branch: "main",
+  dirty: false,
+  ahead: 0,
+  behind: 0,
+  hasUpstream: true,
+};
 
 describe("plan", () => {
   test("decisions", () => {
@@ -118,7 +129,11 @@ describe("runSync", () => {
     expect(await runSync(f.manifest, "test", a.emit)).toBe(0);
     expect(a.records[0]?.decision).toBe("detached");
     const b = collect();
-    await runSync({ ...f.manifest, excluded: [{ host: "test", path: f.work, reason: "other session" }] }, "test", b.emit);
+    await runSync(
+      { ...f.manifest, excluded: [{ host: "test", path: f.work, reason: "other session" }] },
+      "test",
+      b.emit,
+    );
     expect(b.records[0]?.decision).toBe("excluded");
     const c = collect();
     await runSync({ ...f.manifest, checkouts: [{ ...f.spec, enabled: false }] }, "test", c.emit);
@@ -128,7 +143,10 @@ describe("runSync", () => {
   test("missing checkout is a warning, other hosts ignored", async () => {
     const f = fixture("miss");
     const out = collect();
-    const manifest = { ...f.manifest, checkouts: [{ ...f.spec, paths: { test: join(root, "nope"), other: f.work } }] };
+    const manifest = {
+      ...f.manifest,
+      checkouts: [{ ...f.spec, paths: { test: join(root, "nope"), other: f.work } }],
+    };
     expect(await runSync(manifest, "test", out.emit)).toBe(0);
     expect(out.records).toHaveLength(1);
     expect(out.records[0]?.decision).toBe("missing");

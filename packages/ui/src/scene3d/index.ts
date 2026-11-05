@@ -3,3 +3,10 @@ export { loadSceneGlb, disposeSceneGlb } from "./glb";
 export type { SceneGlbAsset, SceneGlbBudget, SceneGlbOptions } from "./glb";
 export { createStrictWebGpuRenderer } from "./strict-webgpu";
 export type { StrictWebGpuOptions } from "./strict-webgpu";
+export { createPortalDiorama, preparePortalDiorama, projectDioramaRect } from "./portal-diorama";
+export type {
+  DioramaCamera2d,
+  DioramaPalette,
+  DioramaWorldRect,
+  PreparePortalDioramaOptions,
+} from "./portal-diorama";
