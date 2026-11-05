@@ -53,7 +53,10 @@ export async function compileServer(
     (file, index) =>
       `import f${index} from ${JSON.stringify(relative(work, join(client.outdir, file)).split("\\").join("/"))} with { type: "file" };`,
   );
-  const entries = files.map((file, index) => `  ${JSON.stringify(file)}: f${index},`);
+  // AOT type-checks the entry: an `.html` file import is typed as an HTMLBundle, not its path.
+  const entries = files.map(
+    (file, index) => `  ${JSON.stringify(file)}: f${index} as unknown as string,`,
+  );
   const entry = join(work, "entry.ts");
   writeFileSync(
     entry,
