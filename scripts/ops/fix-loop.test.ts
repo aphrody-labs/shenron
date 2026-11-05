@@ -8,6 +8,7 @@ import {
   agentPrompt,
   auditEdit,
   countByTool,
+  dedupe,
   diffFindings,
   parseClippyJson,
   parseOxfmtList,
@@ -207,5 +208,12 @@ describe("edit audit", () => {
     expect(p).toContain("line 3:2 [oxlint x/y] m (rule text: use toSorted)");
     expect(p).toContain("const x = 1;");
     expect(p).toContain("never add suppression comments");
+  });
+});
+
+describe("dedupe", () => {
+  test("drops the same finding reported by several workspaces", () => {
+    const a = f({ tool: "tsc", file: "apps/site/x.ts", line: 4, col: 2, code: "TS1" });
+    expect(dedupe([a, { ...a }, { ...a, line: 5 }])).toHaveLength(2);
   });
 });

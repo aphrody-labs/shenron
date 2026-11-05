@@ -4,7 +4,7 @@
  * Automated lint / typecheck / format fix loop.
  *
  *   bun scripts/ops/fix-loop.ts [--remote vps] [--report-only] [--agent auto|claude-agent-sdk|opencode|yolo-ai|none]
- *                               [--rounds 5] [--agent-budget 40] [--commit] [--push] [--only lint,oxfmt,tsc,rustfmt,clippy]
+ *                               [--rounds 5] [--agent-budget 40] [--commit] [--push] [--only oxlint,oxfmt,tsc,rustfmt,clippy] [--install]
  *
  * 1. Runs the repo checks (oxlint JSON, oxfmt file list, tsc per workspace, rustfmt per member,
  *    cargo clippy JSON) and parses them into structured findings.
@@ -168,6 +168,17 @@ export function parseClippyJson(text: string, root = ""): Finding[] {
 // ---------------------------------------------------------------- planner
 
 const identity = (f: Finding) => `${f.tool}|${f.file}|${f.code}|${f.message}`;
+
+/** Several workspaces type-check the same shared file: keep one finding per location and rule. */
+export function dedupe(findings: Finding[]): Finding[] {
+  const seen = new Set<string>();
+  return findings.filter((f) => {
+    const key = `${identity(f)}|${f.line}|${f.col}`;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
 
 export function countByFile(findings: Finding[]): Map<string, number> {
   const map = new Map<string, number>();
@@ -355,7 +366,7 @@ export async function checkTsc(root: string, only?: string[]): Promise<Finding[]
     const r = await sh(args.map(q).join(" "), w.cwd);
     out.push(...parseTsc(`${r.out}\n${r.err}`, relative(root, w.cwd)));
   }
-  return out;
+  return dedupe(out);
 }
 
 export type Member = { name: string; dir: string; manifest: string };
@@ -709,6 +720,7 @@ export async function main(argv: string[]): Promise<number> {
   const sha0 = (await git(root, "rev-parse HEAD")).out.trim();
 
   say(`fix-loop root=${root} HEAD=${sha0} tools=${o.tools.join(",")} reportOnly=${o.reportOnly}`);
+  if (flag("install")) say(`install: exit ${(await sh("bun install --frozen-lockfile", root)).code}`);
   const baseline = await runChecks(root, o.tools, members);
   say(`baseline: ${JSON.stringify(countByTool(baseline))} total=${baseline.length}`);
 
