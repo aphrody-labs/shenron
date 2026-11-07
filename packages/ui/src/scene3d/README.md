@@ -45,5 +45,42 @@ puis attend cette initialisation avant de libérer les managers et le périphér
 Le propriétaire natif Rust demeure `crates/shenron-gpu` : aucun second backend wgpu
 n’est introduit.
 
-Preuve actuelle : sources installées Three et types 0.187.0 inspectés. Aucun rendu,
-serveur, build, test GPU ou aller-retour Blender n’a été exécuté pour cet adaptateur.
+## Décor du portail
+
+`PORTAL_DIORAMA_ASSETS` décrit trois fichiers Kenney Nature Kit 2.1 CC0 servis sous
+`/wiki-diorama/kenney-nature/` : arbre, rocher et bloc de falaise, 19 756 octets et
+206 triangles au total. SHA, taille, provenance et bornes après transformation des
+nœuds sont épinglés. Les fichiers livrés restent identiques aux sources ; la licence
+et un reçu public précisent qu’il s’agit d’un décor sans attribution canonique.
+
+`preparePortalDiorama` décode les trois modèles sans GPU, vérifie leurs bornes et
+normalise leur décalage de sol de −0,05 m dans la composition uniquement. Il remplace
+explicitement leurs matériaux par des matériaux unlit pilotés par les quatre rôles
+de palette fournis par l’hôte : `foliage`, `trunk`, `grass`, `earth`. Fournir des couleurs
+CSS résolues, pas des références `var(...)`. La caméra orthographique conserve le
+décor entier pour chaque rapport largeur/hauteur ; aucune lumière supplémentaire
+n’est nécessaire.
+
+`projectDioramaRect(camera2d, worldRect)` reprend directement le `scale`, `x` et `y`
+de la caméra du portail. L’hôte fournit le rectangle d’ancrage en coordonnées monde,
+puis applique `left`, `top`, `width`, `height` au support CSS du décor. Aucun second
+jeu de dimensions monde, point de navigation ou classement éditorial n’est créé.
+
+`createPortalDiorama` combine cette préparation et l’adaptateur strict existant si
+l’hôte choisit de l’activer. Aucun GPU, canvas ou moteur n’est monté automatiquement.
+Le support reste derrière les callouts DOM et le repli SVG reste possédé par le
+portail. La fermeture, la perte du périphérique et l’annulation libèrent aussi les
+modèles ; l’hôte conserve ses événements de visibilité et ses préférences de mouvement.
+
+Preuve actuelle : sources Three et types 0.187.0 inspectées ; trois vrais GLB décodés
+avec le chargeur livré, bornes et matériaux contrôlés, six projections comparées à la
+caméra réelle du portail aux largeurs 1280/390, nettoyage idempotent et quatre refus
+contrôlés. Le transport de cette qualification lit les vrais fichiers publics par un
+`fetch` privé au processus ; aucun serveur, build, rendu ou test GPU n’a été exécuté.
+
+La régression durable vit dans `packages/ui/test/scene3d/diorama.test.ts` et lit ces
+mêmes GLB publics. Depuis `packages/ui`, `bun test --isolate test/scene3d` couvre le
+décodage, les refus SHA/budgets, la réponse trop volumineuse, l’annulation tardive
+et partielle, les événements de libération, les couleurs et les projections 1280/390.
+Les caméras de référence sont des mesures fixes du portail ; le paquet UI n’importe
+aucun code d’application. Ce contrôle CPU ne qualifie pas un rendu GPU.
