@@ -1,0 +1,253 @@
+diff --git a/harness/vk-bridge.mjs b/harness/vk-bridge.mjs
+index 3fd5c8a..d231e95 100644
+--- a/harness/vk-bridge.mjs
++++ b/harness/vk-bridge.mjs
+@@ -35,6 +35,7 @@ export class VkBridge {
+     #responseQueue    = [];                /* pending responses (legacy pull model) */
+     #pendingRead      = null;             /* legacy: { resolve } waiting for data */
+     #onResponseReady  = null;             /* push model: called when response built */
++    #dispatchQueue   = Promise.resolve(); /* preserve guest command/response order */
+ 
+     constructor(plugin) {
+         this.#plugin = plugin;
+@@ -116,7 +117,7 @@ export class VkBridge {
+             const payload     = this.#recvBuf.slice(HEADER_SIZE, total);
+             this.#recvBuf     = this.#recvBuf.slice(total);
+ 
+-            this.#dispatch(cmd, seq, payload);
++            this.#dispatchQueue = this.#dispatchQueue.then(() => this.#dispatch(cmd, seq, payload));
+         }
+     }
+ 
+diff --git a/harness/vkwebgpu-plugin.mjs b/harness/vkwebgpu-plugin.mjs
+index 1701816..d7e829b 100644
+--- a/harness/vkwebgpu-plugin.mjs
++++ b/harness/vkwebgpu-plugin.mjs
+@@ -23,6 +23,7 @@
+ // ── Vulkan result codes ────────────────────────────────────────────────────────
+ const VK_SUCCESS          = 0;
+ const VK_ERROR_DEVICE_LOST = -4;
++const VK_ERROR_INVALID_SHADER_NV = -1000012000;
+ 
+ // ── GPUBufferUsage numeric flags (stable across browsers) ─────────────────────
+ const BU_COPY_SRC  = 0x0004;
+@@ -310,6 +311,7 @@ export class VkWebGPUPlugin {
+     /** @type {HTMLCanvasElement}*/ #canvas  = null;
+     /** @type {GPUCanvasContext} */ #ctx     = null;
+     /** @type {string}           */ #canvasFormat = 'bgra8unorm';
++    /** @type {(device: GPUDevice, words: Uint32Array, label?: string) => Promise<{ok: boolean, module?: GPUShaderModule, error?: object}>} */ #shaderTranslator;
+ 
+     // ── Resource maps (guest handle bigint → host descriptor) ─────────────────
+     #renderPasses    = new Map(); // handle → { attachments[] }
+@@ -358,6 +360,17 @@ export class VkWebGPUPlugin {
+     // ── Host-side handle allocator (only used for pre-resource-creation bootstrap) ─
+     #nextHandle      = 0x0001_0000n;
+ 
++    #capturePresentedFrames = false;
++    #presentedReadback = null;
++
++    constructor({ shaderTranslator, capturePresentedFrames = false } = {}) {
++        this.#capturePresentedFrames = capturePresentedFrames === true;
++        if (typeof shaderTranslator !== 'function') {
++            throw new TypeError('VkWebGPUPlugin requires an injected Naga SPIR-V shaderTranslator');
++        }
++        this.#shaderTranslator = shaderTranslator;
++    }
++
+     // =========================================================================
+     async initialize(adapter, device, canvas) {
+         this.#adapter      = adapter;
+@@ -365,7 +378,7 @@ export class VkWebGPUPlugin {
+         this.#canvas       = canvas;
+         this.#ctx          = canvas.getContext('webgpu');
+         this.#canvasFormat = navigator.gpu.getPreferredCanvasFormat();
+-        this.#ctx.configure({ device, format: this.#canvasFormat, alphaMode: 'opaque' });
++        this.#ctx.configure({ device, format: this.#canvasFormat, alphaMode: 'opaque', usage: TU_RENDER_ATTACH | TU_COPY_DST | (this.#capturePresentedFrames ? TU_COPY_SRC : 0) });
+ 
+         // Push-constant resources: a 256-byte uniform buffer bound at group=0, binding=0.
+         // Pipelines with push constants prepend this BGL before user descriptor-set BGLs.
+@@ -409,17 +422,42 @@ struct VSOut { @builtin(position) pos: vec4f, @location(0) uv: vec2f };
+         console.log('[VkWebGPUPlugin] initialized —', adapter.info?.description ?? '(no description)');
+     }
+ 
+-    dispatch(cmd, seq, payload) {
++    async dispatch(cmd, seq, payload) {
+         const v = new DataView(payload.buffer, payload.byteOffset, payload.byteLength);
+         try {
+-            return this.#handle(cmd, v, payload);
++            return await this.#handle(cmd, v, payload);
+         } catch (err) {
+             console.error(`[VkWebGPUPlugin] cmd=0x${cmd.toString(16).padStart(4,'0')} threw:`, err);
+             return { result: VK_ERROR_DEVICE_LOST, data: new Uint8Array(0) };
+         }
+     }
+ 
++    async readbackPresentedFrame() {
++        const frame = this.#presentedReadback;
++        if (!frame) throw new Error('No captured presented frame');
++        this.#presentedReadback = null;
++        try {
++            await frame.buffer.mapAsync(1);
++            const source = new Uint8Array(frame.buffer.getMappedRange());
++            const data = new Uint8Array(frame.width * frame.height * 4);
++            for (let y = 0; y < frame.height; y++) {
++                data.set(source.subarray(y * frame.bytesPerRow, y * frame.bytesPerRow + frame.width * 4), y * frame.width * 4);
++            }
++            if (frame.format.startsWith('bgra')) {
++                for (let i = 0; i < data.length; i += 4) {
++                    const red = data[i]; data[i] = data[i + 2]; data[i + 2] = red;
++                }
++            }
++            return { width: frame.width, height: frame.height, data };
++        } finally {
++            frame.buffer.unmap();
++            frame.buffer.destroy();
++        }
++    }
++
+     destroy() {
++        this.#presentedReadback?.buffer.destroy();
++        this.#presentedReadback = null;
+         for (const bi of this.#buffers.values())  bi.gpuBuffer?.destroy();
+         for (const ii of this.#images.values())   if (!ii.isSwapchain) ii.texture?.destroy();
+         for (const t  of this.#swapImages)        t.destroy();
+@@ -431,7 +469,7 @@ struct VSOut { @builtin(position) pos: vec4f, @location(0) uv: vec2f };
+     // Top-level command dispatch
+     // =========================================================================
+ 
+-    #handle(cmd, v, payload) {
++    async #handle(cmd, v, payload) {
+         switch (cmd) {
+             // Instance
+             case 0x0001: return this.#createInstance();
+@@ -472,7 +510,7 @@ struct VSOut { @builtin(position) pos: vec4f, @location(0) uv: vec2f };
+             case 0x0048: return this.#createSampler(v);
+             case 0x0049: return this.#destroySampler(v);
+             // Pipelines
+-            case 0x0050: return this.#createShaderModule(v, payload);
++            case 0x0050: return await this.#createShaderModule(v, payload);
+             case 0x0051: return this.#destroyShaderModule(v);
+             case 0x0052: return this.#createPipelineLayout(v, payload);
+             case 0x0053: return ok();
+@@ -711,6 +749,16 @@ struct VSOut { @builtin(position) pos: vec4f, @location(0) uv: vec2f };
+             }
+         }
+ 
++        // Optional qualification capture copies the exact presented texture before
++        // the browser expires it. Normal operation allocates no readback buffer.
++        if (this.#capturePresentedFrames) {
++            if (!['rgba8unorm', 'bgra8unorm'].includes(dst.format)) throw new Error('Unsupported presented readback format');
++            this.#presentedReadback?.buffer.destroy();
++            const bytesPerRow = Math.ceil(dst.width * 4 / 256) * 256;
++            const buffer = this.#device.createBuffer({ size: bytesPerRow * dst.height, usage: 1 | BU_COPY_DST, label: 'vk-present-readback' });
++            enc.copyTextureToBuffer({ texture: dst }, { buffer, bytesPerRow, rowsPerImage: dst.height }, [dst.width, dst.height, 1]);
++            this.#presentedReadback = { buffer, bytesPerRow, width: dst.width, height: dst.height, format: dst.format };
++        }
+         this.#device.queue.submit([enc.finish()]);
+         return ok();
+     }
+@@ -885,27 +933,31 @@ struct VSOut { @builtin(position) pos: vec4f, @location(0) uv: vec2f };
+     }
+ 
+     // =========================================================================
+-    // Shaders  (SPIRV stored; WGSL transpilation is a TODO)
++    // Shaders (SPIR-V must translate and pass actual WebGPU compilation)
+     // =========================================================================
+ 
+-    #createShaderModule(v, payload) {
++    async #createShaderModule(v, payload) {
+         // C: dev(u64@0) + handle(u64@8) + codeSize(u32@16) + SPIR-V bytes@20
+         const h        = v.getBigUint64(8,  true);
+         const codeSize = v.getUint32(16, true);
++        if (codeSize < 20 || (codeSize & 3) !== 0 || 20 + codeSize > payload.byteLength) {
++            return shaderFailure('invalid_spirv_input', 'SPIR-V byte length is invalid.');
++        }
+         const spirv    = payload.slice(20, 20 + codeSize);
+-        let gpuModule  = null;
+-        // Attempt SPIR-V→WGSL translation via naga-bridge if loaded.
+-        if (typeof globalThis.spirvToWgsl === 'function') {
+-            try {
+-                const wgsl = globalThis.spirvToWgsl(spirv);
+-                gpuModule = this.#device.createShaderModule({ code: wgsl, label: `sm_${h}` });
+-            } catch (e) {
+-                console.warn(`[VkWebGPUPlugin] createShaderModule spirv→wgsl failed (h=${h}):`, e.message);
+-            }
+-        } else {
+-            console.warn(`[VkWebGPUPlugin] createShaderModule (h=${h}): no spirvToWgsl translator — shader deferred`);
++        const words = new Uint32Array(codeSize / 4);
++        const source = new DataView(spirv.buffer, spirv.byteOffset, spirv.byteLength);
++        for (let i = 0; i < words.length; i++) words[i] = source.getUint32(i * 4, true);
++        let translated;
++        try {
++            translated = await this.#shaderTranslator(this.#device, words, `sm_${h}`);
++        } catch (error) {
++            return shaderFailure('shader_translation_failed', error?.message ?? String(error));
+         }
+-        this.#shaderModules.set(h, { spirv, gpuModule });
++        if (!translated?.ok || !translated.module) {
++            const failure = translated?.error ?? { code: 'shader_translation_failed', message: 'Shader translator returned no validated module.' };
++            return shaderFailure(failure.code ?? 'shader_translation_failed', failure.message ?? 'Shader translation failed.', failure);
++        }
++        this.#shaderModules.set(h, { spirv, gpuModule: translated.module });
+         return ok();
+     }
+ 
+@@ -1404,7 +1456,35 @@ struct VSOut { @builtin(position) pos: vec4f, @location(0) uv: vec2f };
+         if (!variant) {
+             const base = this.#pipelineCreateInfos.get(this.#boundPipeH);
+             if (base) {
+-                const desc = structuredClone(base);
++                // GPUDevice, GPUShaderModule, and GPUPipelineLayout objects are
++                // browser host objects and cannot be structured-cloned. Copy the
++                // plain descriptor containers while preserving those references.
++                const desc = {
++                    label: base.label,
++                    layout: base.layout,
++                    vertex: {
++                        ...base.vertex,
++                        module: base.vertex.module,
++                        buffers: base.vertex.buffers.map(buffer => ({
++                            ...buffer,
++                            attributes: buffer.attributes.map(attribute => ({ ...attribute })),
++                        })),
++                    },
++                    primitive: { ...base.primitive },
++                    depthStencil: base.depthStencil ? { ...base.depthStencil } : undefined,
++                    fragment: base.fragment ? {
++                        ...base.fragment,
++                        module: base.fragment.module,
++                        targets: base.fragment.targets.map(target => target ? ({
++                            ...target,
++                            blend: target.blend ? {
++                                color: { ...target.blend.color },
++                                alpha: { ...target.blend.alpha },
++                            } : undefined,
++                        }) : target),
++                    } : undefined,
++                    multisample: base.multisample ? { ...base.multisample } : undefined,
++                };
+                 const s = this.#dynState;
+                 desc.primitive.topology = VK_TOPOLOGY[s.topology] ?? desc.primitive.topology;
+                 desc.primitive.cullMode = VK_CULL_MODE[s.cullMode] ?? desc.primitive.cullMode;
+@@ -2188,8 +2268,8 @@ struct VSOut { @builtin(position) pos: vec4f, @location(0) uv: vec2f };
+ // Plugin loader
+ // =============================================================================
+ 
+-export async function loadPlugin() {
+-    return new VkWebGPUPlugin();
++export async function loadPlugin(options) {
++    return new VkWebGPUPlugin(options);
+ }
+ 
+ // =============================================================================
+@@ -2197,6 +2277,10 @@ export async function loadPlugin() {
+ // =============================================================================
+ 
+ function ok()               { return { result: VK_SUCCESS, data: new Uint8Array(0) }; }
++function shaderFailure(code, message, details = undefined) {
++    const payload = { code, message, ...(details === undefined ? {} : { details }) };
++    return { result: VK_ERROR_INVALID_SHADER_NV, data: new TextEncoder().encode(JSON.stringify(payload)) };
++}
+ function u32Bytes(n)        { const b = new Uint8Array(4); new DataView(b.buffer).setUint32(0, n, true); return b; }
+ function okHandle(bigintH)  { const b = new Uint8Array(8); new DataView(b.buffer).setBigUint64(0, bigintH, true); return { result: VK_SUCCESS, data: b }; }
+ 
