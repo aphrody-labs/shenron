@@ -1,5 +1,4 @@
 import { readPlaybackCapabilities } from "@/lib/playback-capabilities";
-import { NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 import { lookupPublicEpisode } from "@/lib/episode-api-read";
 import { episodeApiSummary } from "@/lib/episode-api";
@@ -15,7 +14,7 @@ const CORS_HEADERS = {
 };
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+  return new Response(null, { status: 204, headers: CORS_HEADERS });
 }
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -23,7 +22,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     const { id } = await params;
     const numero = idDeFiche(id);
     if (numero === null) {
-      return NextResponse.json(
+      return Response.json(
         { error: "Identifiant d'épisode invalide" },
         { status: 404, headers: CORS_HEADERS },
       );
@@ -31,7 +30,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
     const lookup = await lookupPublicEpisode(numero);
     if (lookup.status === "unavailable") {
-      return NextResponse.json(
+      return Response.json(
         { error: "episode_temporarily_unavailable" },
         {
           status: 503,
@@ -40,7 +39,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
       );
     }
     if (lookup.status === "missing") {
-      return NextResponse.json(
+      return Response.json(
         { error: "Épisode introuvable" },
         { status: 404, headers: CORS_HEADERS },
       );
@@ -56,7 +55,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
     const previous = nav?.prev ?? null;
     const next = nav?.next ?? null;
-    return NextResponse.json(
+    return Response.json(
       {
         ...episodeApiSummary(ep, await readPlaybackCapabilities()),
         synopsisFr: ep.synopsis,
@@ -93,7 +92,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     );
   } catch (error) {
     console.error("Episode detail API request failed", error);
-    return NextResponse.json(
+    return Response.json(
       { error: "episode_fetch_failed" },
       { status: 500, headers: { ...CORS_HEADERS, "Cache-Control": "no-store" } },
     );

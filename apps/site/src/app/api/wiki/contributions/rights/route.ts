@@ -8,7 +8,6 @@
  * route de dépôt — celle-ci ne sert qu'à ne pas proposer un formulaire qui
  * serait refusé.
  */
-import { NextResponse, type NextRequest } from "next/server";
 import { getCurrentUser, isCurrentUserAdmin } from "@/lib/session";
 import { canContribute } from "@/lib/contribution-rights";
 import { CONTRIBUTION_SCOPES, scopeOf } from "@/lib/contribution-rights-shared";
@@ -16,18 +15,18 @@ import { CONTRIBUTION_SCOPES, scopeOf } from "@/lib/contribution-rights-shared";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function unavailable(error: string): NextResponse {
-  return NextResponse.json(
+function unavailable(error: string): Response {
+  return Response.json(
     { ok: false, error },
     { status: 503, headers: { "cache-control": "private, no-store", "retry-after": "30" } },
   );
 }
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
-  const table = req.nextUrl.searchParams.get("table") ?? "";
+export async function GET(req: Request): Promise<Response> {
+  const table = new URL(req.url).searchParams.get("table") ?? "";
   const scope = table ? scopeOf(table) : "wiki";
   if (!CONTRIBUTION_SCOPES.includes(scope)) {
-    return NextResponse.json({ ok: false, error: "bad_request" }, { status: 400 });
+    return Response.json({ ok: false, error: "bad_request" }, { status: 400 });
   }
 
   let session: Awaited<ReturnType<typeof getCurrentUser>>;
@@ -51,7 +50,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     return unavailable("rights_unavailable");
   }
 
-  return NextResponse.json(
+  return Response.json(
     { ok: true, scope, allowed, authenticated },
     { headers: { "cache-control": "private, no-store" } },
   );

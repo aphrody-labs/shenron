@@ -14,7 +14,6 @@
  * `SHENRON_ADMIN_TOKEN`) — jamais de session par cookie, pour ne pas exposer ces
  * routes à une écriture déclenchée depuis un onglet du navigateur (CSRF).
  */
-import { NextResponse } from "next/server";
 import { hasValidApiToken } from "@/lib/admin-guard";
 import {
   DATABOOK_LIMIT_MAX,
@@ -38,7 +37,7 @@ const CORS = {
 };
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS });
+  return new Response(null, { status: 204, headers: CORS });
 }
 
 function entier(v: string | null, defaut?: number): number | undefined {
@@ -62,7 +61,7 @@ export async function GET(req: Request) {
   };
   try {
     const r = await listDatabooks(q);
-    return NextResponse.json(
+    return Response.json(
       { ...r, items: r.items.map(databookView), limitMax: DATABOOK_LIMIT_MAX },
       {
         headers: {
@@ -79,13 +78,13 @@ export async function GET(req: Request) {
     );
   } catch (e) {
     console.error("[api/databooks] GET a échoué:", e);
-    return NextResponse.json({ error: "Lecture impossible." }, { status: 500, headers: CORS });
+    return Response.json({ error: "Lecture impossible." }, { status: 500, headers: CORS });
   }
 }
 
 export async function POST(req: Request) {
   if (!hasValidApiToken(req)) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Jeton porteur requis." },
       { status: 401, headers: { ...CORS, "WWW-Authenticate": "Bearer" } },
     );
@@ -94,18 +93,18 @@ export async function POST(req: Request) {
   try {
     corps = (await req.json()) as DatabookWrite;
   } catch {
-    return NextResponse.json({ error: "Corps JSON invalide." }, { status: 400, headers: CORS });
+    return Response.json({ error: "Corps JSON invalide." }, { status: 400, headers: CORS });
   }
   try {
     const rec = await createDatabook(corps);
-    return NextResponse.json(databookView(rec), { status: 201, headers: CORS });
+    return Response.json(databookView(rec), { status: 201, headers: CORS });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Création impossible.";
     // Un message d'erreur de contrainte Postgres nomme la table et la colonne :
     // on ne le renvoie que pour les validations que l'on formule nous-mêmes.
     const attendu = message.includes("`title` est requis");
     if (!attendu) console.error("[api/databooks] POST a échoué:", e);
-    return NextResponse.json(
+    return Response.json(
       { error: attendu ? message : "Création impossible." },
       { status: attendu ? 400 : 500, headers: CORS },
     );

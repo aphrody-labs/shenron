@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from "next/server";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
@@ -16,17 +15,17 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function jsonError(status: number, code: string) {
-  return NextResponse.json(
+  return Response.json(
     { error: code },
     { status, headers: { "Cache-Control": "private, no-store" } },
   );
 }
 
-function sameOrigin(request: NextRequest): boolean {
+function sameOrigin(request: Request): boolean {
   return request.headers.get("origin") === new URL(request.url).origin;
 }
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   if (!(await isAdminOrToken(request))) return jsonError(403, "forbidden");
   const [advertisers, campaigns, creatives, placements, dailyEvents] = await Promise.all([
     db.select().from(siteAdvertisers).orderBy(desc(siteAdvertisers.createdAt)).limit(100),
@@ -40,7 +39,7 @@ export async function GET(request: NextRequest) {
     db.select().from(siteAdPlacements).orderBy(siteAdPlacements.slotKey).limit(100),
     db.select().from(siteAdEventsDaily).orderBy(desc(siteAdEventsDaily.day)).limit(500),
   ]);
-  return NextResponse.json(
+  return Response.json(
     { advertisers, campaigns, creatives, placements, dailyEvents },
     {
       headers: { "Cache-Control": "private, no-store, max-age=0" },
@@ -48,7 +47,7 @@ export async function GET(request: NextRequest) {
   );
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   const decision = await adminUserOrToken(request);
   if (!decision.allowed) return jsonError(403, "forbidden");
   if (!sameOrigin(request)) return jsonError(403, "invalid_origin");
@@ -149,7 +148,7 @@ export async function POST(request: NextRequest) {
         });
         return [row];
       });
-      return NextResponse.json({ placement });
+      return Response.json({ placement });
     }
 
     if (body.action === "advertiser.create") {
@@ -185,7 +184,7 @@ export async function POST(request: NextRequest) {
         });
         return [advertiser];
       });
-      return NextResponse.json({ advertiser: created }, { status: 201 });
+      return Response.json({ advertiser: created }, { status: 201 });
     }
 
     if (body.action === "campaign.create") {
@@ -270,7 +269,7 @@ export async function POST(request: NextRequest) {
         });
         return [campaign];
       });
-      return NextResponse.json({ campaign: created }, { status: 201 });
+      return Response.json({ campaign: created }, { status: 201 });
     }
 
     if (body.action === "creative.create") {
@@ -357,7 +356,7 @@ export async function POST(request: NextRequest) {
         });
         return [creative];
       });
-      return NextResponse.json({ creative: created }, { status: 201 });
+      return Response.json({ creative: created }, { status: 201 });
     }
 
     return jsonError(400, "unsupported_action");
@@ -366,7 +365,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function PATCH(request: NextRequest) {
+export async function PATCH(request: Request) {
   const decision = await adminUserOrToken(request);
   if (!decision.allowed) return jsonError(403, "forbidden");
   if (!sameOrigin(request)) return jsonError(403, "invalid_origin");
@@ -431,7 +430,7 @@ export async function PATCH(request: NextRequest) {
         return [row];
       });
       return updated
-        ? NextResponse.json({ placement: updated })
+        ? Response.json({ placement: updated })
         : jsonError(404, "placement_not_found");
     }
 
@@ -456,7 +455,7 @@ export async function PATCH(request: NextRequest) {
         return [row];
       });
       return updated
-        ? NextResponse.json({ advertiser: updated })
+        ? Response.json({ advertiser: updated })
         : jsonError(404, "advertiser_not_found");
     }
 
@@ -504,7 +503,7 @@ export async function PATCH(request: NextRequest) {
         });
         return row;
       });
-      return NextResponse.json({ creative: updated });
+      return Response.json({ creative: updated });
     }
 
     if (body.action === "campaign.approve" || body.action === "campaign.pause") {
@@ -565,7 +564,7 @@ export async function PATCH(request: NextRequest) {
         });
         return row;
       });
-      return NextResponse.json({ campaign: updated });
+      return Response.json({ campaign: updated });
     }
     return jsonError(400, "unsupported_action");
   } catch {

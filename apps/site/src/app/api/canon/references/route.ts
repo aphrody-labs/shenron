@@ -7,7 +7,6 @@
  * aphrody | databooks | manuel. Lecture seule, CORS ouvert. La table est
  * alimentée 24h/24 par `scripts/canon-ingest.ts`.
  */
-import { NextRequest, NextResponse } from "next/server";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 
@@ -22,13 +21,13 @@ const CORS = {
 };
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS });
+  return new Response(null, { status: 204, headers: CORS });
 }
 
 const PROVENANCES = new Set(["aphrody", "databooks", "manuel", "manga"]);
 
-export async function GET(req: NextRequest) {
-  const p = req.nextUrl.searchParams;
+export async function GET(req: Request) {
+  const p = new URL(req.url).searchParams;
   const q = (p.get("q") ?? "").trim().slice(0, 200);
   const provenance = p.get("provenance") ?? "";
   const limit = Math.min(100, Math.max(1, Number(p.get("limit") ?? 20) || 20));
@@ -72,7 +71,7 @@ export async function GET(req: NextRequest) {
     ),
   ]);
 
-  return NextResponse.json(
+  return Response.json(
     {
       q,
       provenance: PROVENANCES.has(provenance) ? provenance : null,

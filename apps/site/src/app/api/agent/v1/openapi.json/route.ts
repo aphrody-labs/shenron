@@ -14,7 +14,6 @@
  * Réponse `404` et non `403` pour un appelant anonyme : le contrat n'a pas à
  * confirmer son existence.
  */
-import { NextResponse } from "next/server";
 import { buildOpenApiDocument } from "@/lib/agent-openapi";
 import { authenticateAgent } from "@/lib/agent-keys";
 import { getCurrentUser } from "@/lib/session";
@@ -23,7 +22,7 @@ import { SITE_URL } from "@/lib/config";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(req: Request): Promise<NextResponse> {
+export async function GET(req: Request): Promise<Response> {
   const agent = await authenticateAgent(req).catch(() => null);
   const lisible =
     (agent?.scopes.includes("read") ?? false) ||
@@ -32,7 +31,7 @@ export async function GET(req: Request): Promise<NextResponse> {
       .catch(() => false));
 
   if (!lisible) {
-    return NextResponse.json(
+    return Response.json(
       { ok: false, error: "not_found", message: "Ressource introuvable." },
       { status: 404, headers: { "Cache-Control": "private, no-store" } },
     );
@@ -47,7 +46,7 @@ export async function GET(req: Request): Promise<NextResponse> {
   } catch {
     // URL illisible (jamais en pratique) : la constante du site fait l'affaire.
   }
-  return NextResponse.json(buildOpenApiDocument(origin), {
+  return Response.json(buildOpenApiDocument(origin), {
     headers: { "Cache-Control": "private, no-store" },
   });
 }

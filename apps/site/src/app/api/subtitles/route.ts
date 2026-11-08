@@ -9,7 +9,6 @@
  * Same-origin pour le navigateur → pas de souci CORS sur `<track>`.
  */
 import { ASSET_BASE } from "@/lib/config";
-import { NextResponse, type NextRequest } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,10 +22,10 @@ function srtToVtt(srt: string): string {
   return `WEBVTT\n\n${body.trim()}\n`;
 }
 
-export async function GET(req: NextRequest) {
-  const src = (req.nextUrl.searchParams.get("src") ?? "").trim();
+export async function GET(req: Request) {
+  const src = (new URL(req.url).searchParams.get("src") ?? "").trim();
   if (!SRC_RE.test(src) || src.includes("..")) {
-    return new NextResponse("source invalide", { status: 400 });
+    return new Response("source invalide", { status: 400 });
   }
 
   let upstream: Response;
@@ -39,10 +38,10 @@ export async function GET(req: NextRequest) {
       signal: AbortSignal.timeout(10_000),
     });
   } catch {
-    return new NextResponse("source injoignable", { status: 502 });
+    return new Response("source injoignable", { status: 502 });
   }
   if (!upstream.ok) {
-    return new NextResponse("sous-titres introuvables", {
+    return new Response("sous-titres introuvables", {
       status: upstream.status === 404 ? 404 : 502,
     });
   }
@@ -54,7 +53,7 @@ export async function GET(req: NextRequest) {
       ? raw
       : `WEBVTT\n\n${raw.trim()}\n`;
 
-  return new NextResponse(vtt, {
+  return new Response(vtt, {
     headers: {
       "content-type": "text/vtt; charset=utf-8",
       "cache-control": "public, max-age=3600, stale-while-revalidate=86400",

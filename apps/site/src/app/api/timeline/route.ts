@@ -18,7 +18,6 @@
  * `serie`, `ere`, `ereLabel`, `numero` on each entry) stay as deprecated duplicates
  * until 1.4.0.
  */
-import { NextResponse } from "next/server";
 import { SITE_URL } from "@/lib/config";
 import { dbUniverse } from "@/lib/db-universe";
 import { getChronologyConfig } from "@/lib/chronology-config";
@@ -34,7 +33,7 @@ export const runtime = "nodejs";
 export const revalidate = 300;
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS_MANGA });
+  return new Response(null, { status: 204, headers: CORS_MANGA });
 }
 
 export async function GET(req: Request) {
@@ -44,7 +43,7 @@ export async function GET(req: Request) {
 
   const [raw, config] = await Promise.all([dbUniverse.timeline(), getChronologyConfig()]);
   if (!raw || raw.length === 0) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Chronologie momentanément indisponible." },
       { status: 503, headers: CORS_MANGA },
     );
@@ -90,7 +89,7 @@ export async function GET(req: Request) {
     .filter((e) => (era ? e.era.toLowerCase() === era.toLowerCase() : true))
     .filter((e) => (kind ? e.kind === kind : true));
 
-  return NextResponse.json(
+  return Response.json(
     {
       source: `${SITE_URL}/wiki/timeline`,
       note: "Ordre éditorial officiel de dragonballfr.com (curation humaine appliquée). Ne pas le recalculer à partir des dates.",

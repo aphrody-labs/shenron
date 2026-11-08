@@ -9,16 +9,15 @@
  * Aucune session, aucun cookie : la réponse est identique pour tous et se cache
  * au CDN comme le reste du wiki.
  */
-import { NextResponse } from "next/server";
 import { getShenronVariantCards } from "@/lib/shenron";
 
 export const runtime = "nodejs";
 export const revalidate = 3600;
 
-export async function GET(): Promise<NextResponse> {
+export async function GET(): Promise<Response> {
   try {
     const variants = await getShenronVariantCards();
-    return NextResponse.json(
+    return Response.json(
       { ok: true, variants },
       {
         headers: {
@@ -28,7 +27,7 @@ export async function GET(): Promise<NextResponse> {
     );
   } catch (error) {
     console.error("[wiki/variants] database unavailable", error);
-    return NextResponse.json(
+    return Response.json(
       { ok: false, error: "database_unavailable" },
       { status: 503, headers: { "cache-control": "no-store", "retry-after": "30" } },
     );

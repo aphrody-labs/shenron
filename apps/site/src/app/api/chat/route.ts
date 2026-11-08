@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from "next/server";
 import { API_URL } from "@/lib/config";
 import { createMemoryRateLimiter } from "@/lib/memory-rate-limit";
 import { clientIp } from "@/app/api/_client-ip";
@@ -55,7 +54,7 @@ function param(searchParams: URLSearchParams, nom: keyof typeof BORNES, defaut =
   return brut.slice(0, BORNES[nom]);
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const q = param(searchParams, "q");
   const persona = param(searchParams, "persona", "whis");
@@ -66,18 +65,18 @@ export async function GET(req: NextRequest) {
   const sourceId = param(searchParams, "sourceId");
 
   if (!q) {
-    return NextResponse.json({ error: "Missing query parameter 'q'" }, { status: 400 });
+    return Response.json({ error: "Missing query parameter 'q'" }, { status: 400 });
   }
   // Borne la longueur de `q` : évite une requête RAG/LLM amont démesurée.
   // (`param` a déjà tronqué ; on refuse explicitement plutôt que de répondre à
   // une question amputée sans le dire.)
   if ((searchParams.get("q") ?? "").length > BORNES.q) {
-    return NextResponse.json({ error: "query too long" }, { status: 400 });
+    return Response.json({ error: "query too long" }, { status: 400 });
   }
 
   const rate = await chatRateLimit.consume(clientIp(req));
   if (rate.limited) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Trop de questions d'affilée. Réessaie dans une minute." },
       { status: 429, headers: { "Retry-After": String(rate.retryAfter) } },
     );
@@ -92,7 +91,7 @@ export async function GET(req: NextRequest) {
         sourceId,
         signal: req.signal,
       });
-      return NextResponse.json(result, { headers: { "Cache-Control": "private, no-store" } });
+      return Response.json(result, { headers: { "Cache-Control": "private, no-store" } });
     }
     let botUrl =
       `${API_URL}/api/public/rag/chat?q=${encodeURIComponent(q)}&persona=${encodeURIComponent(persona)}` +
@@ -115,21 +114,21 @@ export async function GET(req: NextRequest) {
     }
 
     const data = await res.json();
-    return NextResponse.json(data);
+    return Response.json(data);
   } catch (err) {
     // Timeout amont (AbortSignal.timeout) ou annulation client → 504.
     if (err instanceof DOMException && (err.name === "TimeoutError" || err.name === "AbortError")) {
-      return NextResponse.json({ error: "Upstream timeout" }, { status: 504 });
+      return Response.json({ error: "Upstream timeout" }, { status: 504 });
     }
     console.error("[NEXT CHAT] RAG chat unavailable:", err);
-    return NextResponse.json({ error: "RAG chat unavailable" }, { status: 503 });
+    return Response.json({ error: "RAG chat unavailable" }, { status: 503 });
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   const rate = await chatRateLimit.consume(clientIp(req));
   if (rate.limited) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Trop de questions d'affilée. Réessaie dans une minute." },
       { status: 429, headers: { "Retry-After": String(rate.retryAfter) } },
     );
@@ -177,10 +176,10 @@ export async function POST(req: NextRequest) {
   const sourceId = typeof body.sourceId === "string" ? body.sourceId.slice(0, BORNES.sourceId) : "";
 
   if (!q) {
-    return NextResponse.json({ error: "Missing query or prompt in request body" }, { status: 400 });
+    return Response.json({ error: "Missing query or prompt in request body" }, { status: 400 });
   }
   if (q.length > BORNES.q) {
-    return NextResponse.json({ error: "query too long" }, { status: 400 });
+    return Response.json({ error: "query too long" }, { status: 400 });
   }
 
   try {
@@ -192,7 +191,7 @@ export async function POST(req: NextRequest) {
         sourceId,
         signal: req.signal,
       });
-      return NextResponse.json(
+      return Response.json(
         {
           answer: result.answer,
           hits: result.hits,
@@ -221,16 +220,16 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await res.json();
-    return NextResponse.json({
+    return Response.json({
       ...data,
       role: "assistant",
       content: data.answer || "",
     });
   } catch (err) {
     if (err instanceof DOMException && (err.name === "TimeoutError" || err.name === "AbortError")) {
-      return NextResponse.json({ error: "Upstream timeout" }, { status: 504 });
+      return Response.json({ error: "Upstream timeout" }, { status: 504 });
     }
     console.error("[NEXT CHAT POST] RAG chat unavailable:", err);
-    return NextResponse.json({ error: "RAG chat unavailable" }, { status: 503 });
+    return Response.json({ error: "RAG chat unavailable" }, { status: 503 });
   }
 }

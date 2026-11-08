@@ -22,7 +22,6 @@
  * `categorie`, `numero`, `texte` on each item, `fiches` at the top level) stay as
  * deprecated duplicates until 1.4.0.
  */
-import { NextResponse } from "next/server";
 import { hasValidApiToken, isAdminOrToken } from "@/lib/admin-guard";
 import { chercherDansPlanches } from "@/lib/databooks-transcription";
 import { parseDatabookId } from "@/lib/databooks-rules";
@@ -40,14 +39,14 @@ const CORS = {
 const TERME_MAX = 200;
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS });
+  return new Response(null, { status: 204, headers: CORS });
 }
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
   const terme = (url.searchParams.get("q") ?? "").trim().slice(0, TERME_MAX);
   if (!terme) {
-    return NextResponse.json({ error: "Paramètre `q` requis." }, { status: 400, headers: CORS });
+    return Response.json({ error: "Paramètre `q` requis." }, { status: 400, headers: CORS });
   }
 
   // `searchParams.get("limit")` vaut `null` quand le paramètre est absent, et
@@ -73,7 +72,7 @@ export async function GET(req: Request) {
       includeHidden: inclureMasquees,
       databookId: cible ? (parseDatabookId(cible) ?? undefined) : undefined,
     });
-    return NextResponse.json(
+    return Response.json(
       { q: terme, ...r },
       {
         headers: {
@@ -89,6 +88,6 @@ export async function GET(req: Request) {
     );
   } catch (e) {
     console.error("[api/databooks/search] a échoué:", e);
-    return NextResponse.json({ error: "Recherche impossible." }, { status: 500, headers: CORS });
+    return Response.json({ error: "Recherche impossible." }, { status: 500, headers: CORS });
   }
 }

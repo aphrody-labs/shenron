@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from "next/server";
 import {
   checkoutIntegrationIdentifier,
   getStripe,
@@ -17,9 +16,9 @@ import {
 } from "@/lib/subscription-reservation";
 import { isSameOriginPaymentRequest, paymentProviderUnavailable } from "@/lib/payment-request";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   if (!isSameOriginPaymentRequest(req)) {
-    return NextResponse.json(
+    return Response.json(
       { error: "invalid_origin", message: "Requête de paiement invalide" },
       { status: 403 },
     );
@@ -30,14 +29,14 @@ export async function POST(req: NextRequest) {
   try {
     const authHost = hostAuthUrl();
     if (!authHost) {
-      return NextResponse.json(
+      return Response.json(
         { error: "auth_unavailable", message: "Authentification indisponible" },
         { status: 503 },
       );
     }
     const session = await hostGetSession(authHost, req.headers);
     if (!session?.user.id) {
-      return NextResponse.json(
+      return Response.json(
         { error: "unauthenticated", message: "Authentification requise" },
         { status: 401 },
       );
@@ -49,7 +48,7 @@ export async function POST(req: NextRequest) {
       .where(eq(baUser.id, session.user.id))
       .limit(1);
     if (!authUser) {
-      return NextResponse.json(
+      return Response.json(
         { error: "account_not_found", message: "Compte introuvable" },
         { status: 401 },
       );
@@ -60,7 +59,7 @@ export async function POST(req: NextRequest) {
     const plan = STRIPE_PLANS[planKey];
 
     if (!plan) {
-      return NextResponse.json(
+      return Response.json(
         { error: "unknown_plan", message: "Plan d'abonnement inconnu" },
         { status: 400 },
       );
@@ -75,7 +74,7 @@ export async function POST(req: NextRequest) {
       plan: plan.id,
     });
     if (!createdReservationId) {
-      return NextResponse.json(
+      return Response.json(
         {
           error: "checkout_in_progress",
           message: "Un abonnement ou un paiement est déjà en cours pour ce compte.",
@@ -111,7 +110,7 @@ export async function POST(req: NextRequest) {
       idempotencyKey: `dbfr-vip-${reservationId}`,
     });
 
-    return NextResponse.json({ url: checkoutSession.url, sessionId: checkoutSession.id });
+    return Response.json({ url: checkoutSession.url, sessionId: checkoutSession.id });
   } catch (err: any) {
     if (
       reservationId &&
@@ -129,7 +128,7 @@ export async function POST(req: NextRequest) {
     console.error("Stripe subscription checkout failed", {
       code: typeof err?.code === "string" ? err.code : "unclassified",
     });
-    return NextResponse.json(
+    return Response.json(
       {
         error: "checkout_failed",
         message: "Impossible de démarrer le paiement de l'abonnement.",

@@ -21,7 +21,6 @@
  * French fields (`planches`, `analysePossible`, and `lu`/`attendu` on each finding)
  * stay as deprecated duplicates until 1.4.0.
  */
-import { NextResponse } from "next/server";
 import { isAdminUserOrToken } from "@/lib/admin-guard";
 import { getDatabook } from "@/lib/databooks";
 import { parseDatabookId } from "@/lib/databooks-rules";
@@ -32,14 +31,14 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
   if (!(await isAdminUserOrToken(req))) {
-    return NextResponse.json({ error: "Accès refusé." }, { status: 403 });
+    return Response.json({ error: "Accès refusé." }, { status: 403 });
   }
 
   const id = parseDatabookId((await ctx.params).id);
-  if (id === null) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
+  if (id === null) return Response.json({ error: "Fiche introuvable." }, { status: 404 });
 
   const fiche = await getDatabook(id);
-  if (!fiche) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
+  if (!fiche) return Response.json({ error: "Fiche introuvable." }, { status: 404 });
 
   // Une seule passe sur l'ouvrage : la référence de fréquence, c'est tout son
   // texte — une faute y est rare, une graphie juste s'y répète de planche en
@@ -60,7 +59,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   // qui n'a simplement pas pu être analysé.
   const analysisPossible = total > 0 || (await estAnalysable());
 
-  return NextResponse.json({
+  return Response.json({
     id,
     total,
     pages,

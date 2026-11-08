@@ -1,5 +1,4 @@
 import { and, eq, gt, gte, inArray, isNull, lte, or, sql } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
 import {
   baSubscription,
   siteAdCampaignPlacements,
@@ -17,15 +16,15 @@ import { allowsPublicAds } from "@/lib/public-ads";
 export const dynamic = "force-dynamic";
 
 function noAd() {
-  return NextResponse.json({ ad: null }, { headers: { "Cache-Control": "private, no-store" } });
+  return Response.json({ ad: null }, { headers: { "Cache-Control": "private, no-store" } });
 }
 
-export async function GET(request: NextRequest) {
-  const placementKey = request.nextUrl.searchParams.get("placement") ?? "";
-  const pathname = request.nextUrl.searchParams.get("path") ?? "";
-  const locale = request.nextUrl.searchParams.get("locale") ?? "fr";
-  const campaignId = request.nextUrl.searchParams.get("campaign") ?? "";
-  const creativeId = request.nextUrl.searchParams.get("creative") ?? "";
+export async function GET(request: Request) {
+  const placementKey = new URL(request.url).searchParams.get("placement") ?? "";
+  const pathname = new URL(request.url).searchParams.get("path") ?? "";
+  const locale = new URL(request.url).searchParams.get("locale") ?? "fr";
+  const campaignId = new URL(request.url).searchParams.get("campaign") ?? "";
+  const creativeId = new URL(request.url).searchParams.get("creative") ?? "";
   if (
     !/^[a-z0-9][a-z0-9_-]{1,63}$/.test(placementKey) ||
     !/^[a-z0-9_-]{3,80}$/.test(campaignId) ||
@@ -141,7 +140,7 @@ export async function GET(request: NextRequest) {
         set: { impressions: sql`${siteAdEventsDaily.impressions} + 1`, updatedAt: now },
       });
 
-    return NextResponse.json(
+    return Response.json(
       {
         ad: {
           creativeId: ad.creativeId,

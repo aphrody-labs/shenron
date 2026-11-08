@@ -28,7 +28,6 @@
  * consultable et réversible depuis /admin/wiki/history — une transcription
  * automatique est une proposition, pas une vérité.
  */
-import { NextResponse } from "next/server";
 import { hasValidApiToken } from "@/lib/admin-guard";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
@@ -54,7 +53,7 @@ const TEXTE_MAX = 40_000;
 const PAGES_MAX = 2_000;
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS });
+  return new Response(null, { status: 204, headers: CORS });
 }
 
 interface Corps {
@@ -66,37 +65,37 @@ interface Corps {
 export async function POST(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const freeze = databooksFreeze();
   if (freeze)
-    return NextResponse.json(
+    return Response.json(
       { error: "Écritures databooks gelées.", reason: freeze.reason },
       { status: 423, headers: CORS },
     );
   if (!hasValidApiToken(req)) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Jeton porteur requis." },
       { status: 401, headers: { ...CORS, "WWW-Authenticate": "Bearer" } },
     );
   }
   const id = parseDatabookId((await ctx.params).id);
   if (id === null) {
-    return NextResponse.json({ error: "Fiche introuvable." }, { status: 404, headers: CORS });
+    return Response.json({ error: "Fiche introuvable." }, { status: 404, headers: CORS });
   }
 
   let corps: Corps;
   try {
     corps = (await req.json()) as Corps;
   } catch {
-    return NextResponse.json({ error: "Corps JSON invalide." }, { status: 400, headers: CORS });
+    return Response.json({ error: "Corps JSON invalide." }, { status: 400, headers: CORS });
   }
 
   const entrees = Array.isArray(corps.pages) ? corps.pages : [];
   if (entrees.length === 0 && corps.description === undefined) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Rien à déposer : fournir `pages` et/ou `description`." },
       { status: 400, headers: CORS },
     );
   }
   if (entrees.length > PAGES_MAX) {
-    return NextResponse.json(
+    return Response.json(
       { error: `Trop de pages en un appel (max ${PAGES_MAX}).` },
       { status: 413, headers: CORS },
     );
@@ -104,7 +103,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
 
   const avant = await getDatabook(id);
   if (!avant) {
-    return NextResponse.json({ error: "Fiche introuvable." }, { status: 404, headers: CORS });
+    return Response.json({ error: "Fiche introuvable." }, { status: 404, headers: CORS });
   }
 
   // Textes déposés, indexés par numéro de page. `null` = effacer explicitement.
@@ -170,7 +169,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
       });
     }
     if (construites.size === 0) {
-      return NextResponse.json(
+      return Response.json(
         { error: "Mode `replace` : aucune page ne porte de numéro valide." },
         { status: 400, headers: CORS },
       );
@@ -221,7 +220,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
         })
       : await getDatabook(id);
   if (!apres) {
-    return NextResponse.json({ error: "Fiche introuvable." }, { status: 404, headers: CORS });
+    return Response.json({ error: "Fiche introuvable." }, { status: 404, headers: CORS });
   }
 
   // Trace réversible : une transcription automatique reste une proposition.
@@ -276,7 +275,7 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   );
 
   const transcribed = apres.pages.filter((p) => (p.text ?? "").length > 0).length;
-  return NextResponse.json(
+  return Response.json(
     {
       id,
       mode,

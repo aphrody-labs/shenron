@@ -7,20 +7,19 @@
  */
 import { isCurrentUserAdmin } from "@/lib/session";
 import { dbUniverse } from "@/lib/db-universe";
-import { NextRequest, NextResponse } from "next/server";
 import { wikiAiRequestSchema } from "@/lib/wiki-editorial-contracts";
 import { buildWikiExtractDraft, wikiSourceUrl } from "@/lib/wiki-ai-draft";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function privateJson(body: unknown, init: ResponseInit = {}): NextResponse {
+function privateJson(body: unknown, init: ResponseInit = {}): Response {
   const headers = new Headers(init.headers);
   headers.set("Cache-Control", "private, no-store");
-  return NextResponse.json(body, { ...init, headers });
+  return Response.json(body, { ...init, headers });
 }
 
-function unavailable(error: string): NextResponse {
+function unavailable(error: string): Response {
   return privateJson({ error }, { status: 503, headers: { "Retry-After": "30" } });
 }
 
@@ -29,7 +28,7 @@ function clean(s: string): string {
   return (s || "").replace(/\s+/g, " ").trim();
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   let isAdmin = false;
   try {
     isAdmin = await isCurrentUserAdmin();

@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 import { assetUrl } from "@/lib/assets";
 import { summarizeVideoSources } from "@/lib/video-source-coverage";
@@ -13,11 +12,11 @@ const CORS_HEADERS = {
 };
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+  return new Response(null, { status: 204, headers: CORS_HEADERS });
 }
 
-function unavailable(): NextResponse {
-  return NextResponse.json(
+function unavailable(): Response {
+  return Response.json(
     { error: "Le catalogue des films est momentanément indisponible." },
     {
       status: 503,
@@ -88,7 +87,7 @@ export async function GET(req: Request) {
       };
     });
 
-    return NextResponse.json(
+    return Response.json(
       {
         total: movies.length,
         movies,

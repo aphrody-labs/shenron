@@ -14,7 +14,6 @@
  * Les erreurs amont sont ramenées à un code (`a2a_upstream_*`) : le message brut peut contenir une
  * adresse ou un chemin interne. Le détail va dans les journaux du serveur.
  */
-import { NextResponse } from "next/server";
 import { parseBearer } from "@aphrody/shenron-auth/crypto";
 import { fetchEnvelopes, postEnvelope, postJsonRpc, type UpstreamReply } from "@/lib/a2a-hub";
 import { getCurrentUser } from "@/lib/session";
@@ -30,8 +29,8 @@ export const dynamic = "force-dynamic";
 
 const NO_STORE = { "Cache-Control": "private, no-store, max-age=0" };
 
-function reply(body: unknown, status = 200): NextResponse {
-  return NextResponse.json(body, { status, headers: NO_STORE });
+function reply(body: unknown, status = 200): Response {
+  return Response.json(body, { status, headers: NO_STORE });
 }
 
 /**
@@ -44,14 +43,14 @@ function isAgentKeyRequest(request: Request): boolean {
 }
 
 /** `a2a-hub` marque seul l'échec de connexion ; un 502 renvoyé par l'amont lui-même reste une erreur amont. */
-function upstreamFailure(upstream: UpstreamReply): NextResponse {
+function upstreamFailure(upstream: UpstreamReply): Response {
   const body = upstream.body as { error?: unknown } | null;
   const error =
     body?.error === "a2a_upstream_unreachable" ? "a2a_upstream_unreachable" : "a2a_upstream_error";
   return reply({ error, upstreamStatus: upstream.status }, 502);
 }
 
-async function denyUnlessAdmin(request: Request): Promise<NextResponse | null> {
+async function denyUnlessAdmin(request: Request): Promise<Response | null> {
   if (isAgentKeyRequest(request)) return reply({ error: "agent_key_not_allowed" }, 403);
   const me = await getCurrentUser();
   if (!me) return reply({ error: "unauthenticated" }, 401);
@@ -63,7 +62,7 @@ async function denyUnlessAdmin(request: Request): Promise<NextResponse | null> {
  * Écriture authentifiée par cookie : le corps doit être du JSON déclaré (une requête « simple »
  * inter-sites ne peut pas l'envoyer sans préliminaire CORS) et ne pas venir d'un autre site.
  */
-function denyCrossSiteWrite(request: Request): NextResponse | null {
+function denyCrossSiteWrite(request: Request): Response | null {
   const site = request.headers.get("sec-fetch-site");
   if (site && site !== "same-origin" && site !== "none")
     return reply({ error: "cross_site_denied" }, 403);

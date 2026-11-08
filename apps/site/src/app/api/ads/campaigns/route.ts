@@ -1,5 +1,4 @@
 import { and, eq, gt, gte, inArray, isNull, lte, or, sql } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
 import {
   baSubscription,
   siteAdCampaigns,
@@ -21,13 +20,13 @@ const PRIVATE_HEADERS = {
 };
 
 function emptyResponse() {
-  return NextResponse.json({ ads: [] }, { headers: PRIVATE_HEADERS });
+  return Response.json({ ads: [] }, { headers: PRIVATE_HEADERS });
 }
 
-export async function GET(request: NextRequest) {
-  const placement = request.nextUrl.searchParams.get("placement")?.trim() ?? "";
-  const pathname = request.nextUrl.searchParams.get("path") ?? "";
-  const locale = request.nextUrl.searchParams.get("locale") ?? "fr";
+export async function GET(request: Request) {
+  const placement = new URL(request.url).searchParams.get("placement")?.trim() ?? "";
+  const pathname = new URL(request.url).searchParams.get("path") ?? "";
+  const locale = new URL(request.url).searchParams.get("locale") ?? "fr";
   if (
     !/^[a-z0-9][a-z0-9_-]{1,63}$/.test(placement) ||
     !pathname.startsWith("/") ||
@@ -130,7 +129,7 @@ export async function GET(request: NextRequest) {
       .orderBy(sql`random()`)
       .limit(20);
 
-    return NextResponse.json(
+    return Response.json(
       {
         ads: ads.map((ad) => ({
           campaignId: ad.campaignId,

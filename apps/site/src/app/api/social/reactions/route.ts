@@ -8,7 +8,6 @@
  * doit pas déclencher douze requêtes. Le GET est `no-store` parce que la réponse
  * contient l'état du membre — jamais cacheable, même une seconde.
  */
-import { NextResponse, type NextRequest } from "next/server";
 import { getSessionUser } from "@/lib/session";
 import { createMemoryRateLimiter } from "@/lib/memory-rate-limit";
 import {
@@ -33,15 +32,15 @@ const toggleLimit = createMemoryRateLimiter({
 /** Plafond de cibles par lecture groupée — borne la requête SQL. */
 const MAX_TARGETS = 40;
 
-function fail(code: string, status: number): NextResponse {
-  return NextResponse.json(
+function fail(code: string, status: number): Response {
+  return Response.json(
     { ok: false, error: code, message: socialErrorMessage(code) },
     { status, headers: NO_STORE },
   );
 }
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
-  const raw = req.nextUrl.searchParams.getAll("target").slice(0, MAX_TARGETS);
+export async function GET(req: Request): Promise<Response> {
+  const raw = new URL(req.url).searchParams.getAll("target").slice(0, MAX_TARGETS);
   const targets = raw.map(parseTarget).filter((t): t is NonNullable<typeof t> => t !== null);
   if (targets.length === 0) return fail("target_unknown", 400);
 
@@ -57,7 +56,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   // compteurs par `kind`, regroupés pour ne pas multiplier les requêtes.
   if (targets.length === 1) {
     const state = await reactionState(targets[0]!, userId);
-    return NextResponse.json(
+    return Response.json(
       { ok: true, reactions: { [`${targets[0]!.kind}:${targets[0]!.id}`]: state } },
       { headers: NO_STORE },
     );
@@ -91,10 +90,10 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     }
   }
 
-  return NextResponse.json({ ok: true, reactions }, { headers: NO_STORE });
+  return Response.json({ ok: true, reactions }, { headers: NO_STORE });
 }
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function POST(req: Request): Promise<Response> {
   let userId: string | null = null;
   try {
     const me = await getSessionUser();
@@ -105,7 +104,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   if (!userId) return fail("auth_required", 401);
   const rate = await toggleLimit.consume(userId);
   if (rate.limited)
-    return NextResponse.json(
+    return Response.json(
       { ok: false, error: "rate_limited" },
       { status: 429, headers: { "Retry-After": String(rate.retryAfter) } },
     );
@@ -121,7 +120,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
   try {
     const res = await toggleReaction(target, userId);
-    return NextResponse.json({ ok: true, ...res }, { headers: NO_STORE });
+    return Response.json({ ok: true, ...res }, { headers: NO_STORE });
   } catch (err) {
     if (err instanceof SocialError) return fail(err.code, err.status);
     console.error("[social] POST reactions", err);

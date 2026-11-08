@@ -1,5 +1,4 @@
 import { getSessionUser } from "@/lib/session";
-import { NextResponse } from "next/server";
 
 // Endpoint léger pour l'état d'auth côté client (nav). Volontairement isolé du
 // rendu des pages : il lit la session (cookies) ici, ce qui permet au layout +
@@ -9,7 +8,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const me = await getSessionUser();
-  return NextResponse.json(
+  return Response.json(
     {
       authenticated: Boolean(me),
       username: me?.user?.username ?? null,

@@ -6,7 +6,6 @@
  * (le JSON complet d'un tome de 200 planches pèse plusieurs centaines de Ko,
  * dont 90 % d'URL d'images).
  */
-import { NextResponse } from "next/server";
 import { chapitreApi } from "@/lib/manga-api";
 import { CORS_MANGA } from "@/lib/manga-cors";
 
@@ -14,20 +13,20 @@ export const runtime = "nodejs";
 export const revalidate = 3600;
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS_MANGA });
+  return new Response(null, { status: 204, headers: CORS_MANGA });
 }
 
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const id = Number((await ctx.params).id);
   if (!Number.isSafeInteger(id) || id <= 0) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Identifiant invalide." },
       { status: 400, headers: CORS_MANGA },
     );
   }
   const chapitre = await chapitreApi(id);
   if (!chapitre) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Chapitre introuvable." },
       { status: 404, headers: CORS_MANGA },
     );
@@ -42,10 +41,10 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     const corps = chapitre.pageList
       .map((p) => `\n--- planche ${p.index} (${p.api}) ---\n${p.text ?? "[non transcrite]"}`)
       .join("\n");
-    return new NextResponse(entete + corps, {
+    return new Response(entete + corps, {
       headers: { ...cache, "Content-Type": "text/plain; charset=utf-8" },
     });
   }
 
-  return NextResponse.json(chapitre, { headers: cache });
+  return Response.json(chapitre, { headers: cache });
 }

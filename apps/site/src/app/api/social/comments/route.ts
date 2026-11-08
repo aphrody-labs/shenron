@@ -12,7 +12,6 @@
  * Un agent n'écrit PAS par cette route : il passe par `/api/agent/v1/comments`
  * avec sa clé et sa portée `comment`. Deux portes, deux contrôles distincts.
  */
-import { NextResponse, type NextRequest } from "next/server";
 import { getSessionUser } from "@/lib/session";
 import { createMemoryRateLimiter } from "@/lib/memory-rate-limit";
 import { createComment, listComments, SocialError } from "@/lib/social";
@@ -37,8 +36,8 @@ const writeLimit = createMemoryRateLimiter({
 
 const NO_STORE = { "Cache-Control": "private, no-store" } as const;
 
-function fail(code: string, status: number): NextResponse {
-  return NextResponse.json(
+function fail(code: string, status: number): Response {
+  return Response.json(
     { ok: false, error: code, message: socialErrorMessage(code) },
     { status, headers: NO_STORE },
   );
@@ -57,13 +56,13 @@ async function viewer() {
   }
 }
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
-  const target = parseTarget(req.nextUrl.searchParams.get("target"));
+export async function GET(req: Request): Promise<Response> {
+  const target = parseTarget(new URL(req.url).searchParams.get("target"));
   if (!target) return fail("target_unknown", 400);
 
-  const sortParam = req.nextUrl.searchParams.get("sort");
+  const sortParam = new URL(req.url).searchParams.get("sort");
   const sort: CommentSort = isCommentSort(sortParam) ? sortParam : "recent";
-  const page = Number(req.nextUrl.searchParams.get("page") ?? "1");
+  const page = Number(new URL(req.url).searchParams.get("page") ?? "1");
 
   const me = await viewer();
   const data = await listComments(target, {
@@ -73,15 +72,15 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     viewerIsAdmin: me.isAdmin,
   });
 
-  return NextResponse.json({ ok: true, ...data, viewerIsAdmin: me.isAdmin }, { headers: NO_STORE });
+  return Response.json({ ok: true, ...data, viewerIsAdmin: me.isAdmin }, { headers: NO_STORE });
 }
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function POST(req: Request): Promise<Response> {
   const me = await viewer();
   if (!me.id || !me.name) return fail("auth_required", 401);
   const rate = await writeLimit.consume(me.id);
   if (rate.limited)
-    return NextResponse.json(
+    return Response.json(
       { ok: false, error: "rate_limited" },
       { status: 429, headers: { "Retry-After": String(rate.retryAfter) } },
     );
@@ -109,7 +108,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       parentId: typeof parentId === "string" && parentId ? parentId : null,
       actor: { type: "user", id: me.id, name: me.name, isAdmin: me.isAdmin },
     });
-    return NextResponse.json({ ok: true, comment }, { status: 201, headers: NO_STORE });
+    return Response.json({ ok: true, comment }, { status: 201, headers: NO_STORE });
   } catch (err) {
     if (err instanceof SocialError) return fail(err.code, err.status);
     console.error("[social] POST comments", err);

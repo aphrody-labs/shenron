@@ -17,7 +17,6 @@
  * `SHENRON_A2A_ENFORCE` : un ordre déposé là s'écrit sur le disque du serveur.
  */
 
-import { NextResponse } from "next/server";
 import {
   a2aUpstreamConfigured,
   fetchAgentCard,
@@ -59,7 +58,7 @@ const READ_METHODS: ReadonlySet<string> = new Set([
   "agent/getCard",
 ]);
 
-function a2aGuard(request: Request, write = true): NextResponse | null {
+function a2aGuard(request: Request, write = true): Response | null {
   const decision = decideA2AWrite(request.headers, {
     token: process.env[A2A_TOKEN_ENV],
     enforce: a2aEnforced(process.env),
@@ -67,13 +66,13 @@ function a2aGuard(request: Request, write = true): NextResponse | null {
   if (decision.ok && !a2aUpstreamConfigured() && write) {
     // In-process hub: writes always need credentials (see the module comment).
     if (decision.authenticated || hasValidApiToken(request)) return null;
-    return NextResponse.json(
+    return Response.json(
       { error: "a2a_unauthorized" },
       { status: 401, headers: { ...CORS_HEADERS, "WWW-Authenticate": "Bearer" } },
     );
   }
   if (decision.ok) return null;
-  return NextResponse.json(a2aDeniedBody(decision), {
+  return Response.json(a2aDeniedBody(decision), {
     status: decision.status,
     headers:
       decision.status === 401 ? { ...CORS_HEADERS, "WWW-Authenticate": "Bearer" } : CORS_HEADERS,
@@ -81,7 +80,7 @@ function a2aGuard(request: Request, write = true): NextResponse | null {
 }
 
 export async function OPTIONS() {
-  return new NextResponse(null, {
+  return new Response(null, {
     status: 204,
     headers: CORS_HEADERS,
   });
@@ -100,19 +99,19 @@ export async function GET(request: Request) {
     if (denied) return denied;
     const reply = await fetchEnvelopes(100);
     if (reply.status !== 200 || !Array.isArray(reply.body)) {
-      return NextResponse.json(reply.body, {
+      return Response.json(reply.body, {
         status: reply.status === 200 ? 502 : reply.status,
         headers: CORS_HEADERS,
       });
     }
-    return NextResponse.json(
+    return Response.json(
       { envelopes: reply.body, total: reply.body.length },
       { headers: CORS_HEADERS },
     );
   }
 
   const card = await fetchAgentCard();
-  return NextResponse.json(card.body, {
+  return Response.json(card.body, {
     status: card.status,
     headers:
       card.status === 200
@@ -126,7 +125,7 @@ export async function POST(request: Request) {
   try {
     body = await request.json();
   } catch (err: any) {
-    return NextResponse.json(
+    return Response.json(
       {
         jsonrpc: "2.0",
         id: null,
@@ -144,5 +143,5 @@ export async function POST(request: Request) {
   if (denied) return denied;
   const reply = isEnvelope ? await postEnvelope(body) : await postJsonRpc(body);
   const status = reply.status >= 300 ? reply.status : isRpcError(reply.body) ? 400 : 200;
-  return NextResponse.json(reply.body, { status, headers: CORS_HEADERS });
+  return Response.json(reply.body, { status, headers: CORS_HEADERS });
 }

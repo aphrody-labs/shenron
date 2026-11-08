@@ -9,7 +9,6 @@
  *
  * POST `{ action: "reindex-redis" }` rebuilds the Redis index.
  */
-import { NextRequest, NextResponse } from "next/server";
 import { isCurrentUserAdmin } from "@/lib/session";
 import { getCampaignStats, reindexRedis } from "@/lib/databooks-campaign";
 
@@ -18,26 +17,26 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   if (!(await isCurrentUserAdmin())) {
-    return NextResponse.json({ error: "Accès réservé aux administrateurs." }, { status: 403 });
+    return Response.json({ error: "Accès réservé aux administrateurs." }, { status: 403 });
   }
 
   try {
     const stats = await getCampaignStats();
-    return NextResponse.json(stats, {
+    return Response.json(stats, {
       headers: { "Cache-Control": "private, no-store, max-age=0" },
     });
   } catch (error) {
     console.error("Campaign API GET error:", error);
-    return NextResponse.json(
+    return Response.json(
       { error: error instanceof Error ? error.message : "Erreur interne" },
       { status: 500 },
     );
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   if (!(await isCurrentUserAdmin())) {
-    return NextResponse.json({ error: "Accès réservé aux administrateurs." }, { status: 403 });
+    return Response.json({ error: "Accès réservé aux administrateurs." }, { status: 403 });
   }
 
   try {
@@ -46,13 +45,13 @@ export async function POST(req: NextRequest) {
 
     if (action === "reindex-redis") {
       const result = await reindexRedis();
-      return NextResponse.json(result);
+      return Response.json(result);
     }
 
-    return NextResponse.json({ error: "Action non supportée." }, { status: 400 });
+    return Response.json({ error: "Action non supportée." }, { status: 400 });
   } catch (error) {
     console.error("Campaign API POST error:", error);
-    return NextResponse.json(
+    return Response.json(
       { error: error instanceof Error ? error.message : "Erreur interne" },
       { status: 500 },
     );

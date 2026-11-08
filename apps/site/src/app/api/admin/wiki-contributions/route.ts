@@ -8,7 +8,6 @@
  * (`updateWiki` + révision au nom du CONTRIBUTEUR), donc annulable depuis
  * /admin/wiki/history comme n'importe quelle édition.
  */
-import { NextResponse, type NextRequest } from "next/server";
 import { getCurrentUser, isCurrentUserAdmin, revisionActorOf } from "@/lib/session";
 import type { RevisionActor } from "@/lib/wiki-revisions";
 import {
@@ -27,17 +26,17 @@ import { DatabooksFrozenError } from "@/lib/databooks-freeze";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function privateJson(body: unknown, init: ResponseInit = {}): NextResponse {
+function privateJson(body: unknown, init: ResponseInit = {}): Response {
   const headers = new Headers(init.headers);
   headers.set("Cache-Control", "private, no-store");
-  return NextResponse.json(body, { ...init, headers });
+  return Response.json(body, { ...init, headers });
 }
 
-function unavailable(error: string): NextResponse {
+function unavailable(error: string): Response {
   return privateJson({ error }, { status: 503, headers: { "Retry-After": "30" } });
 }
 
-async function requireAdmin(): Promise<NextResponse | null> {
+async function requireAdmin(): Promise<Response | null> {
   try {
     return (await isCurrentUserAdmin())
       ? null
@@ -52,10 +51,10 @@ async function currentActor(): Promise<RevisionActor> {
   return revisionActorOf(await getCurrentUser());
 }
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+export async function GET(req: Request): Promise<Response> {
   const authError = await requireAdmin();
   if (authError) return authError;
-  const parsed = parseContributionListQuery(req.nextUrl.searchParams);
+  const parsed = parseContributionListQuery(new URL(req.url).searchParams);
   if (!parsed.success) return privateJson({ error: "bad_request" }, { status: 400 });
   try {
     const [result, counts] = await Promise.all([listContributions(parsed.data), countByStatus()]);
@@ -66,7 +65,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
 }
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function POST(req: Request): Promise<Response> {
   const authError = await requireAdmin();
   if (authError) return authError;
   const parsed = reviewContributionSchema.safeParse(await req.json().catch(() => null));

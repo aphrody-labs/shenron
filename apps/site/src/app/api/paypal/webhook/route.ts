@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from "next/server";
 import { and, eq, isNull, or } from "drizzle-orm";
 import { db } from "@/lib/db";
 import {
@@ -38,26 +37,26 @@ const emailText = (template: string, values: Record<string, string>) =>
 const formatAmount = (amount: number) =>
   new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount / 100);
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   const rawBody = await request.text();
   let event: any;
   try {
     event = JSON.parse(rawBody);
   } catch {
-    return NextResponse.json({ error: "Payload webhook invalide" }, { status: 400 });
+    return Response.json({ error: "Payload webhook invalide" }, { status: 400 });
   }
 
   let verified: boolean;
   try {
     verified = await verifyPayPalWebhook(request.headers, rawBody);
   } catch {
-    return NextResponse.json({ error: "Vérification PayPal indisponible" }, { status: 503 });
+    return Response.json({ error: "Vérification PayPal indisponible" }, { status: 503 });
   }
   if (!verified) {
-    return NextResponse.json({ error: "Signature webhook invalide" }, { status: 400 });
+    return Response.json({ error: "Signature webhook invalide" }, { status: 400 });
   }
   if (typeof event.id !== "string" || typeof event.event_type !== "string") {
-    return NextResponse.json({ error: "Identifiant événement PayPal manquant" }, { status: 400 });
+    return Response.json({ error: "Identifiant événement PayPal manquant" }, { status: 400 });
   }
   const t = await getTranslations({ locale: "fr", namespace: "billingEmail" });
 
@@ -361,9 +360,9 @@ export async function POST(request: NextRequest) {
         .where(eq(siteBillingWebhookEvents.id, receipt.id));
     });
 
-    return NextResponse.json({ received: true });
+    return Response.json({ received: true });
   } catch {
-    return NextResponse.json(
+    return Response.json(
       { error: "Traitement webhook temporairement indisponible" },
       { status: 500 },
     );

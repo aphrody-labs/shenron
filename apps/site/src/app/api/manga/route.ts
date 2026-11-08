@@ -6,7 +6,6 @@
  * avec son URL exacte, pas décrite en prose. C'est ce qui permet à un client qui
  * ne connaît rien du site de descendre jusqu'à une planche en trois appels.
  */
-import { NextResponse } from "next/server";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { SITE_URL } from "@/lib/config";
@@ -16,7 +15,7 @@ export const runtime = "nodejs";
 export const revalidate = 3600;
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS_MANGA });
+  return new Response(null, { status: 204, headers: CORS_MANGA });
 }
 
 export async function GET() {
@@ -172,7 +171,7 @@ export async function GET() {
     `curl -L -o page.webp "${SITE_URL}/api/manga/chapter/1421/pages/12?format=image"`,
   ];
 
-  return NextResponse.json(
+  return Response.json(
     {
       name,
       description,

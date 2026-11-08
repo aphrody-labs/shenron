@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { sessionAuth } from "@/lib/host-auth";
 import {
   createSteamLinkFlow,
@@ -14,10 +13,10 @@ export async function GET(request: Request) {
   if (!origin) return new Response("Invalid host", { status: 400 });
   const session = await sessionAuth.api.getSession({ headers: request.headers });
   if (!session?.user?.id)
-    return NextResponse.redirect(new URL("/signin?callbackURL=%2Fsettings", origin));
+    return Response.redirect(new URL("/signin?callbackURL=%2Fsettings", origin));
 
   const flow = createSteamLinkFlow(session.user.id, origin);
-  const response = NextResponse.redirect(flow.authorizationUrl, 303);
+  const response = Response.redirect(flow.authorizationUrl, 303);
   response.headers.set(
     "Set-Cookie",
     steamLinkCookieHeader(flow.cookieName, flow.cookieValue, flow.cookieOptions),

@@ -7,7 +7,6 @@
  *   → upsert note (Discord lié requis).
  */
 import { revalidatePath, revalidateTag } from "next/cache";
-import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { getSessionUser } from "@/lib/session";
 import {
@@ -43,11 +42,11 @@ const ratingRateLimit = createMemoryRateLimiter({
   namespace: "ratings",
 });
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
-  const type = req.nextUrl.searchParams.get("type");
-  const id = req.nextUrl.searchParams.get("id");
+export async function GET(req: Request): Promise<Response> {
+  const type = new URL(req.url).searchParams.get("type");
+  const id = new URL(req.url).searchParams.get("id");
   if (!type || !id || !isRatingTargetType(type)) {
-    return NextResponse.json({ ok: false, error: "bad_request" }, { status: 400 });
+    return Response.json({ ok: false, error: "bad_request" }, { status: 400 });
   }
 
   let userId: string | null = null;
@@ -60,17 +59,17 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
   try {
     const state = await getRatingState(type, id.trim().slice(0, 64), userId);
-    return NextResponse.json(
+    return Response.json(
       { ok: true, ...state },
       { headers: { "Cache-Control": "private, no-store" } },
     );
   } catch (err) {
     console.error("[ratings] GET failed", err);
-    return NextResponse.json({ ok: false, error: "fetch_failed" }, { status: 500 });
+    return Response.json({ ok: false, error: "fetch_failed" }, { status: 500 });
   }
 }
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function POST(req: Request): Promise<Response> {
   let me: Awaited<ReturnType<typeof getSessionUser>> = null;
   try {
     me = await getSessionUser();
@@ -79,12 +78,12 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
   // Compte Discord lié obligatoire (user métier créé à la liaison OAuth).
   if (!me?.user?.id || !me.discordId) {
-    return NextResponse.json({ ok: false, error: "auth_required" }, { status: 401 });
+    return Response.json({ ok: false, error: "auth_required" }, { status: 401 });
   }
 
   const rate = await ratingRateLimit.consume(me.user.id);
   if (rate.limited) {
-    return NextResponse.json(
+    return Response.json(
       { ok: false, error: "rate_limited" },
       { status: 429, headers: { "Retry-After": String(rate.retryAfter) } },
     );
@@ -94,11 +93,11 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     parsed = postSchema.parse(await req.json());
   } catch {
-    return NextResponse.json({ ok: false, error: "bad_request" }, { status: 400 });
+    return Response.json({ ok: false, error: "bad_request" }, { status: 400 });
   }
 
   if (!isRatingTargetType(parsed.type)) {
-    return NextResponse.json({ ok: false, error: "bad_type" }, { status: 400 });
+    return Response.json({ ok: false, error: "bad_type" }, { status: 400 });
   }
 
   try {
@@ -110,13 +109,13 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       comment: parsed.comment === undefined ? undefined : parsed.comment,
     });
     revalidateTops();
-    return NextResponse.json({ ok: true, ...state });
+    return Response.json({ ok: true, ...state });
   } catch (err) {
     const msg = err instanceof Error ? err.message : "upsert_failed";
     if (msg === "invalid_score" || msg === "invalid_target" || msg === "comment_too_long") {
-      return NextResponse.json({ ok: false, error: msg }, { status: 400 });
+      return Response.json({ ok: false, error: msg }, { status: 400 });
     }
     console.error("[ratings] POST failed", err);
-    return NextResponse.json({ ok: false, error: "upsert_failed" }, { status: 500 });
+    return Response.json({ ok: false, error: "upsert_failed" }, { status: 500 });
   }
 }

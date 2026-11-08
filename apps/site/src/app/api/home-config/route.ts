@@ -16,13 +16,12 @@ import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
 import { getHomeConfig, saveHomeConfig } from "@/lib/home-config";
 import type { HomeClip } from "@aphrody/shenron-config/home";
 import { revalidatePath } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const forbidden = () => NextResponse.json({ error: "Forbidden" }, { status: 403 });
-const badRequest = (msg: string) => NextResponse.json({ error: msg }, { status: 400 });
+const forbidden = () => Response.json({ error: "Forbidden" }, { status: 403 });
+const badRequest = (msg: string) => Response.json({ error: msg }, { status: 400 });
 
 /** Liste les clips vidéo disponibles dans public/wiki (base URL-safe uniquement). */
 async function listClips(): Promise<HomeClip[]> {
@@ -49,13 +48,13 @@ async function listClips(): Promise<HomeClip[]> {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   if (!(await isAdminOrToken(req))) return forbidden();
   const [config, clips] = await Promise.all([getHomeConfig(), listClips()]);
-  return NextResponse.json({ config, clips });
+  return Response.json({ config, clips });
 }
 
-export async function PUT(req: NextRequest) {
+export async function PUT(req: Request) {
   const { allowed, me } = await adminUserOrToken(req);
   if (!allowed) return forbidden();
   let body: unknown;
@@ -73,10 +72,10 @@ export async function PUT(req: NextRequest) {
     );
     // La home est en ISR (revalidate 120) → purge immédiate pour voir l'édition.
     revalidatePath("/");
-    return NextResponse.json({ ok: true, config });
+    return Response.json({ ok: true, config });
   } catch (err) {
     if (err instanceof HostHomeError)
-      return NextResponse.json({ error: err.message }, { status: err.status });
+      return Response.json({ error: err.message }, { status: err.status });
     return badRequest(err instanceof Error ? err.message : "erreur");
   }
 }

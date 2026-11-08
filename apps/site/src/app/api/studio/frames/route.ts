@@ -1,9 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-import { NextResponse, type NextRequest } from "next/server";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const episode = searchParams.get("episode") ?? "dbs-876";
   const seconds = parseFloat(searchParams.get("seconds") ?? "350");
@@ -34,7 +33,7 @@ export async function GET(request: NextRequest) {
 
   if (existsSync(targetFile)) {
     const fileBytes = readFileSync(targetFile);
-    return new NextResponse(fileBytes, {
+    return new Response(fileBytes, {
       status: 200,
       headers: {
         "Content-Type": "image/png",
@@ -43,5 +42,5 @@ export async function GET(request: NextRequest) {
     });
   }
 
-  return NextResponse.json({ error: "Frame not rendered or not found" }, { status: 404 });
+  return Response.json({ error: "Frame not rendered or not found" }, { status: 404 });
 }

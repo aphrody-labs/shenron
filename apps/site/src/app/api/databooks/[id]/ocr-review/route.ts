@@ -32,7 +32,6 @@
  * un relecteur enchaîne les planches. Le service met en cache par empreinte du
  * scan, si bien qu'une planche déjà vue revient en quelques millisecondes.
  */
-import { NextResponse } from "next/server";
 import { isAdminUserOrToken } from "@/lib/admin-guard";
 import { getDatabook } from "@/lib/databooks";
 import { parseDatabookId } from "@/lib/databooks-rules";
@@ -64,27 +63,27 @@ function renderRegion(r: RegionLue) {
 
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
   if (!(await isAdminUserOrToken(req))) {
-    return NextResponse.json({ error: "Accès refusé." }, { status: 403 });
+    return Response.json({ error: "Accès refusé." }, { status: 403 });
   }
 
   const id = parseDatabookId((await ctx.params).id);
-  if (id === null) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
+  if (id === null) return Response.json({ error: "Fiche introuvable." }, { status: 404 });
 
   const query = new URL(req.url).searchParams;
   const numero = Number(query.get("page") ?? query.get("planche"));
   if (!Number.isSafeInteger(numero) || numero <= 0) {
-    return NextResponse.json({ error: "Numéro de planche invalide." }, { status: 400 });
+    return Response.json({ error: "Numéro de planche invalide." }, { status: 400 });
   }
 
   const fiche = await getDatabook(id);
-  if (!fiche) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
+  if (!fiche) return Response.json({ error: "Fiche introuvable." }, { status: 404 });
 
   const planche = fiche.pages.find((p) => p.number === numero);
-  if (!planche) return NextResponse.json({ error: "Planche introuvable." }, { status: 404 });
+  if (!planche) return Response.json({ error: "Planche introuvable." }, { status: 404 });
   if (!planche.image) {
     // Sans scan il n'y a rien à relire, et ce n'est pas une erreur : beaucoup
     // d'emplacements existent avant que la page ne soit numérisée.
-    return NextResponse.json({
+    return Response.json({
       id,
       page: numero,
       noScan: true,
@@ -115,7 +114,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
   } catch (e) {
     // Le service est optionnel : son absence ne doit pas casser la relecture,
     // seulement retirer le second avis.
-    return NextResponse.json(
+    return Response.json(
       {
         id,
         page: numero,
@@ -132,7 +131,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
 
   if (!reponse.ok) {
     const detail = await reponse.text().catch(() => "");
-    return NextResponse.json(
+    return Response.json(
       {
         id,
         page: numero,
@@ -154,7 +153,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     cache: boolean;
   };
 
-  return NextResponse.json({
+  return Response.json({
     id,
     page: numero,
     regions: lu.regions.map(renderRegion),

@@ -1,5 +1,4 @@
 import { readPlaybackCapabilities } from "@/lib/playback-capabilities";
-import { NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 import { episodeApiSummary, EPISODE_SERIES_LABELS } from "@/lib/episode-api";
 import { episodeLanguageQuery, EpisodeLanguageQueryError } from "@/lib/episode-query";
@@ -14,7 +13,7 @@ const CORS_HEADERS = {
 };
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+  return new Response(null, { status: 204, headers: CORS_HEADERS });
 }
 
 export async function GET(req: Request) {
@@ -41,7 +40,7 @@ export async function GET(req: Request) {
     }));
 
     if (!episodesResult) {
-      return NextResponse.json(
+      return Response.json(
         { error: "Episode catalogue unavailable" },
         { status: 503, headers: { ...CORS_HEADERS, "Cache-Control": "no-store" } },
       );
@@ -52,7 +51,7 @@ export async function GET(req: Request) {
       episodeApiSummary(episode, capabilities),
     );
 
-    return NextResponse.json(
+    return Response.json(
       {
         series: seriesSummary,
         total,
@@ -72,12 +71,12 @@ export async function GET(req: Request) {
     );
   } catch (error) {
     if (error instanceof EpisodeLanguageQueryError) {
-      return NextResponse.json(
+      return Response.json(
         { error: "invalid_media_language" },
         { status: 400, headers: { ...CORS_HEADERS, "Cache-Control": "no-store" } },
       );
     }
-    return NextResponse.json(
+    return Response.json(
       {
         error: "Erreur lors de la récupération des épisodes",
         detail: error instanceof Error ? error.message : String(error),

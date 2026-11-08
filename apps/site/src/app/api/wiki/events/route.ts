@@ -14,7 +14,6 @@
  *   - page : entier (défaut 1)
  *   - limit : entier (défaut 24, max 100)
  */
-import { NextRequest, NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 import { seriesFromLabels } from "@/lib/wiki-series";
 
@@ -40,7 +39,7 @@ function isXenoverseSeries(value: unknown): boolean {
 }
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS });
+  return new Response(null, { status: 204, headers: CORS });
 }
 
 export interface NarrativeEventApiResponse {
@@ -73,8 +72,8 @@ export interface NarrativeEventApiResponse {
   canonicalUrl: string;
 }
 
-export async function GET(req: NextRequest) {
-  const url = req.nextUrl;
+export async function GET(req: Request) {
+  const url = new URL(req.url);
   const q = (url.searchParams.get("q") ?? "").trim().toLowerCase();
 
   // Récupérer les types / kinds (supporte ?type=battle&type=tournament ou ?type=battle,tournament)
@@ -111,14 +110,14 @@ export async function GET(req: NextRequest) {
     return null;
   });
   if (reads === null) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Événements narratifs momentanément indisponibles." },
       { status: 503, headers: { ...CORS, "Cache-Control": "no-store", "Retry-After": "30" } },
     );
   }
   const [battles, tournaments, timelineEvents, movieData] = reads;
   if (battles === null || tournaments === null || timelineEvents === null || movieData === null) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Événements narratifs momentanément indisponibles." },
       { status: 503, headers: { ...CORS, "Cache-Control": "no-store" } },
     );
@@ -315,7 +314,7 @@ export async function GET(req: NextRequest) {
     canonicalUrl: "/api/wiki/events",
   };
 
-  return NextResponse.json(responsePayload, {
+  return Response.json(responsePayload, {
     status: 200,
     headers: {
       ...CORS,

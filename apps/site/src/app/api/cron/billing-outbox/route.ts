@@ -1,5 +1,4 @@
 import { and, asc, eq, inArray, lte, lt, or, sql } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
 import "server-only";
 import { sendSmtpEmail } from "@aphrody/shenron-api/host";
 import { siteEmailOutbox } from "@/db/schema";
@@ -15,14 +14,14 @@ const BATCH_SIZE = 10;
 const MAX_ATTEMPTS = 6;
 const LEASE_MS = 5 * 60_000;
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   const token = env.SHENRON_BILLING_OUTBOX_TOKEN;
-  if (!token) return NextResponse.json({ error: "worker_not_configured" }, { status: 503 });
+  if (!token) return Response.json({ error: "worker_not_configured" }, { status: 503 });
   if (verifyStaticBearer(request.headers, [token], { minLength: 32 }) !== "valid") {
-    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
+    return Response.json({ error: "unauthorized" }, { status: 401 });
   }
   if (!env.SMTP_PASSWORD) {
-    return NextResponse.json({ error: "smtp_not_configured" }, { status: 503 });
+    return Response.json({ error: "smtp_not_configured" }, { status: 503 });
   }
 
   const now = new Date();
@@ -99,7 +98,7 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  return NextResponse.json(
+  return Response.json(
     { claimed: claimed.length, sent, retried, failed },
     {
       headers: { "Cache-Control": "private, no-store, max-age=0" },

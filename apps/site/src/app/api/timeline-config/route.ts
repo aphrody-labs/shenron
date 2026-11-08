@@ -19,28 +19,27 @@ import {
   saveChronologyConfig,
 } from "@/lib/chronology-config";
 import { revalidatePath } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const forbidden = () => NextResponse.json({ error: "Forbidden" }, { status: 403 });
-const badRequest = (msg: string) => NextResponse.json({ error: msg }, { status: 400 });
+const forbidden = () => Response.json({ error: "Forbidden" }, { status: 403 });
+const badRequest = (msg: string) => Response.json({ error: msg }, { status: 400 });
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   if (!(await isAdminOrToken(req))) return forbidden();
   try {
     const [config, items] = await Promise.all([getChronologyConfig(), getTimelineItems()]);
-    return NextResponse.json({ config, items });
+    return Response.json({ config, items });
   } catch (err) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Timeline service unavailable" },
       { status: err instanceof HostChronologyError ? err.status : 502 },
     );
   }
 }
 
-export async function PUT(req: NextRequest) {
+export async function PUT(req: Request) {
   const { allowed, me } = await adminUserOrToken(req);
   if (!allowed) return forbidden();
   let body: unknown;
@@ -58,10 +57,10 @@ export async function PUT(req: NextRequest) {
     );
     // La frise publique est en ISR (revalidate 3600) → purge immédiate.
     revalidatePath("/wiki/timeline");
-    return NextResponse.json({ ok: true, config });
+    return Response.json({ ok: true, config });
   } catch (err) {
     if (err instanceof HostChronologyError)
-      return NextResponse.json({ error: err.message }, { status: err.status });
+      return Response.json({ error: err.message }, { status: err.status });
     return badRequest(err instanceof Error ? err.message : "erreur");
   }
 }

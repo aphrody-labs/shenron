@@ -4,7 +4,6 @@
 //
 // No `import "server-only"`: like admin-guard.ts this module only reaches the session through the
 // `@/lib/session` namespace, so `mock.module("@/lib/session")` in the suites intercepts it.
-import { NextResponse } from "next/server";
 import * as session from "@/lib/session";
 import type { CurrentUser, SiteUser } from "@/lib/session";
 
@@ -24,16 +23,16 @@ export function iaAccess(me: CurrentUser | null): IaAccess {
 
 export type IaAdminGate =
   | { ok: true; me: CurrentUser & { user: SiteUser } }
-  | { ok: false; response: NextResponse };
+  | { ok: false; response: Response };
 
-export function iaDenied(access: Exclude<IaAccess, "ok">): NextResponse {
+export function iaDenied(access: Exclude<IaAccess, "ok">): Response {
   if (access === "unauthenticated") {
-    return NextResponse.json(
+    return Response.json(
       { error: "Session requise : connectez-vous pour accéder au cockpit IA." },
       { status: 401, headers: { ...IA_NO_STORE, "WWW-Authenticate": "Bearer" } },
     );
   }
-  return NextResponse.json(
+  return Response.json(
     { error: "Accès réservé aux administrateurs." },
     { status: 403, headers: IA_NO_STORE },
   );

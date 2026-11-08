@@ -7,24 +7,23 @@
 import { isCurrentUserAdmin } from "@/lib/session";
 import { env } from "@/lib/env";
 import { botApiBaseUrl } from "@/lib/config";
-import { NextRequest, NextResponse } from "next/server";
 
 const TOKEN = env.SHENRON_ADMIN_TOKEN ?? "";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }> }) {
+async function proxy(req: Request, ctx: { params: Promise<{ path: string[] }> }) {
   if (!(await isCurrentUserAdmin())) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return Response.json({ error: "Forbidden" }, { status: 403 });
   }
   const { path } = await ctx.params;
   // Durcissement défense-en-profondeur : refuse toute traversée de chemin
   // (`..`, `.`, séparateurs) qui sortirait du préfixe `/api/` de l'hôte bot.
   if (path.some((s) => s === ".." || s === "." || s.includes("/") || s.includes("\\"))) {
-    return NextResponse.json({ error: "invalid path" }, { status: 400 });
+    return Response.json({ error: "invalid path" }, { status: 400 });
   }
-  const url = `${botApiBaseUrl()}/api/${path.join("/")}${req.nextUrl.search}`;
+  const url = `${botApiBaseUrl()}/api/${path.join("/")}${new URL(req.url).search}`;
   const body =
     req.method === "GET" || req.method === "HEAD"
       ? undefined
@@ -48,7 +47,7 @@ async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }
     });
     // Fetch responses with these statuses cannot carry a response body.
     if (res.status === 204 || res.status === 205 || res.status === 304 || req.method === "HEAD") {
-      return new NextResponse(null, {
+      return new Response(null, {
         status: res.status,
         headers: { "cache-control": "no-store" },
       });
@@ -58,7 +57,7 @@ async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }
 
     // SSE / streaming : forward le body tel quel, headers no-buffer
     if (ct.includes("text/event-stream") && res.body) {
-      return new NextResponse(res.body, {
+      return new Response(res.body, {
         status: res.status,
         headers: {
           "content-type": "text/event-stream; charset=utf-8",
@@ -77,16 +76,16 @@ async function proxy(req: NextRequest, ctx: { params: Promise<{ path: string[] }
       const headers = new Headers({ "content-type": ct });
       const cc = res.headers.get("cache-control");
       if (cc) headers.set("cache-control", cc);
-      return new NextResponse(buf, { status: res.status, headers });
+      return new Response(buf, { status: res.status, headers });
     }
 
     const text = await res.text();
-    return new NextResponse(text, {
+    return new Response(text, {
       status: res.status,
       headers: { "content-type": ct },
     });
   } catch {
-    return NextResponse.json(
+    return Response.json(
       { error: "Bot API unavailable" },
       { status: 502, headers: { "cache-control": "no-store" } },
     );

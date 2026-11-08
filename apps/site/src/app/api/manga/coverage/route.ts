@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-import { NextResponse } from "next/server";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { SITE_URL } from "@/lib/config";
@@ -10,7 +9,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS_MANGA });
+  return new Response(null, { status: 204, headers: CORS_MANGA });
 }
 
 export async function GET() {
@@ -38,7 +37,7 @@ export async function GET() {
       readerExtent: (row.reader_extents ?? []).some(value => mangaReaderExtent(value).kind === "preview") ? "preview" : ((row.reader_extents ?? []).length > 0 && row.reader_extents.every(value => mangaReaderExtent(value).kind === "full") ? "full" : "unknown"),
       url: `${SITE_URL}/api/manga/volume/${row.id}`,
     }));
-    return NextResponse.json({
+    return Response.json({
       observedAt: new Date().toISOString(),
       scope: "visible-catalogue-and-declared-page-references",
       assetAvailabilityVerified: false, fullEditionPaginationVerified: false,
@@ -54,7 +53,7 @@ export async function GET() {
       volumes,
     }, { headers: { ...CORS_MANGA, "Cache-Control": "public, max-age=30, s-maxage=30" } });
   } catch {
-    return NextResponse.json({ error: "coverage_unavailable" }, {
+    return Response.json({ error: "coverage_unavailable" }, {
       status: 503, headers: { ...CORS_MANGA, "Cache-Control": "no-store" },
     });
   }

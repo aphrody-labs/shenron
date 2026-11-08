@@ -6,7 +6,6 @@
  * chaque résultat porte l'URL de la page de lecture ET celle de la planche en
  * JSON : on passe d'une réponse à vérifier à la main à une réponse citable.
  */
-import { NextResponse } from "next/server";
 import { chercherPlanches } from "@/lib/manga-api";
 import { CORS_MANGA } from "@/lib/manga-cors";
 
@@ -14,14 +13,14 @@ export const runtime = "nodejs";
 export const revalidate = 300;
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS_MANGA });
+  return new Response(null, { status: 204, headers: CORS_MANGA });
 }
 
 export async function GET(req: Request) {
   const params = new URL(req.url).searchParams;
   const q = (params.get("q") ?? "").trim();
   if (q.length < 2) {
-    return NextResponse.json(
+    return Response.json(
       {
         error: "Paramètre `q` requis (2 caractères minimum).",
         example: "?q=kamehameha",
@@ -51,13 +50,13 @@ export async function GET(req: Request) {
       tome,
       surligner,
     });
-    return NextResponse.json(
+    return Response.json(
       { q, count: resultats.length, results: resultats, resultats },
       { headers: { ...CORS_MANGA, "Cache-Control": "public, max-age=60, s-maxage=600" } },
     );
   } catch (e) {
     console.error("[api/manga/search] échec:", e);
-    return NextResponse.json(
+    return Response.json(
       { error: "Recherche indisponible." },
       { status: 500, headers: CORS_MANGA },
     );

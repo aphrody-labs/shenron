@@ -7,29 +7,28 @@
  * Gated admin (isCurrentUserAdmin) : les sources de trafic et la volumétrie ne
  * sont pas publiques. La vitrine publique non-sensible vit sur `/stats`.
  */
-import { NextResponse, type NextRequest } from "next/server";
 import { isCurrentUserAdmin } from "@/lib/session";
 import { getAnalyticsOverview, isAnalyticsRange } from "@/lib/analytics";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+export async function GET(req: Request): Promise<Response> {
   if (!(await isCurrentUserAdmin())) {
-    return NextResponse.json({ ok: false, error: "forbidden" }, { status: 403 });
+    return Response.json({ ok: false, error: "forbidden" }, { status: 403 });
   }
 
-  const rangeParam = req.nextUrl.searchParams.get("range") ?? "7d";
+  const rangeParam = new URL(req.url).searchParams.get("range") ?? "7d";
   const range = isAnalyticsRange(rangeParam) ? rangeParam : "7d";
 
   try {
     const overview = await getAnalyticsOverview(range);
-    return NextResponse.json(
+    return Response.json(
       { ok: true, ...overview },
       { headers: { "cache-control": "no-store" } },
     );
   } catch (err) {
     console.error("[analytics] query failed", err);
-    return NextResponse.json({ ok: false, error: "query_failed" }, { status: 500 });
+    return Response.json({ ok: false, error: "query_failed" }, { status: 500 });
   }
 }

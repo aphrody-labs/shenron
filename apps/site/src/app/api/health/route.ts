@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { createServiceHealth } from "@/lib/service-health";
 
 export const dynamic = "force-dynamic";
@@ -14,7 +13,7 @@ export const dynamic = "force-dynamic";
  * - 5xx / No response: Process is dead, frozen, or OOM. Orchestrator (K8s / systemd)
  *   should restart the container.
  */
-export async function GET(): Promise<NextResponse> {
+export async function GET(): Promise<Response> {
   const health = createServiceHealth(
     "site",
     process.env.npm_package_version ?? "0.1.0",
@@ -26,7 +25,7 @@ export async function GET(): Promise<NextResponse> {
     },
   );
 
-  return NextResponse.json(health, {
+  return Response.json(health, {
     status: 200,
     headers: { "cache-control": "no-store" },
   });

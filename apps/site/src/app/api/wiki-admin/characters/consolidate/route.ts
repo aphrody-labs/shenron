@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { getCurrentUser, revisionActorOf } from "@/lib/session";
 import {
@@ -26,14 +25,14 @@ const requestSchema = z
     (value) => value.winnerId !== value.duplicateId && (value.dryRun || !!value.expectedPlanSha256),
   );
 
-export async function POST(request: NextRequest): Promise<NextResponse> {
+export async function POST(request: Request): Promise<Response> {
   try {
     const user = await getCurrentUser();
     if (!user?.user?.roleAdmin)
-      return NextResponse.json({ error: "forbidden" }, { status: 403, headers });
+      return Response.json({ error: "forbidden" }, { status: 403, headers });
     const parsed = requestSchema.safeParse(await request.json().catch(() => null));
     if (!parsed.success)
-      return NextResponse.json(
+      return Response.json(
         { error: "invalid_consolidation_request" },
         { status: 400, headers },
       );
@@ -47,15 +46,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       for (const change of result.plan.changes)
         revalidateWikiEntity(change.table, change.after ?? change.before);
     }
-    return NextResponse.json({ ok: true, ...result }, { headers });
+    return Response.json({ ok: true, ...result }, { headers });
   } catch (error) {
     if (error instanceof CharacterConsolidationConflict)
-      return NextResponse.json(
+      return Response.json(
         { error: error.message, plan: error.plan },
         { status: 409, headers },
       );
     console.error("[wiki-character-consolidation] request failed", error);
-    return NextResponse.json(
+    return Response.json(
       { error: "character_consolidation_unavailable" },
       { status: 503, headers },
     );

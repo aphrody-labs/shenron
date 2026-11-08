@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { NextRequest, NextResponse } from "next/server";
 import { sql } from "drizzle-orm";
 import { fetchEnvelopes, postJsonRpc } from "@/lib/a2a-hub";
 import { botApiBaseUrl } from "@/lib/config";
@@ -131,14 +130,14 @@ async function probeRedis(): Promise<ServiceProbe> {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   if (!(await isAdminOrToken(req))) {
-    return NextResponse.json({ error: "Accès réservé aux administrateurs." }, { status: 403 });
+    return Response.json({ error: "Accès réservé aux administrateurs." }, { status: 403 });
   }
 
   const now = Date.now();
   if (cachedPayload && now < cachedPayload.expiresAt) {
-    return NextResponse.json(cachedPayload.data, {
+    return Response.json(cachedPayload.data, {
       headers: { "cache-control": "private, no-store, max-age=0" },
     });
   }
@@ -228,7 +227,7 @@ export async function GET(req: NextRequest) {
     expiresAt: Date.now() + CACHE_TTL_MS,
   };
 
-  return NextResponse.json(payload, {
+  return Response.json(payload, {
     headers: { "cache-control": "private, no-store, max-age=0" },
   });
 }

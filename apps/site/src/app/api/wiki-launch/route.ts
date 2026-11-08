@@ -15,22 +15,21 @@ import { HostLaunchError } from "@/lib/host-launch-error";
 import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
 import type { AccessRule } from "@aphrody/shenron-config/wiki-launch";
 import { revalidatePath } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-function privateJson(body: unknown, init: ResponseInit = {}): NextResponse {
+function privateJson(body: unknown, init: ResponseInit = {}): Response {
   const headers = new Headers(init.headers);
   headers.set("Cache-Control", "private, no-store");
-  return NextResponse.json(body, { ...init, headers });
+  return Response.json(body, { ...init, headers });
 }
 
-function unavailable(error: string): NextResponse {
+function unavailable(error: string): Response {
   return privateJson({ error }, { status: 503, headers: { "Retry-After": "30" } });
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   let allowed: boolean;
   try {
     allowed = await isAdminOrToken(req);
@@ -47,7 +46,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function PUT(req: NextRequest) {
+export async function PUT(req: Request) {
   let decision: Awaited<ReturnType<typeof adminUserOrToken>>;
   try {
     decision = await adminUserOrToken(req);

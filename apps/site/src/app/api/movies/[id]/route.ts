@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 import { assetUrl } from "@/lib/assets";
 import { normalizeVideoSubtitles } from "@aphrody/shenron-media/episode-playback";
@@ -14,14 +13,14 @@ const CORS_HEADERS = {
 };
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS_HEADERS });
+  return new Response(null, { status: 204, headers: CORS_HEADERS });
 }
 
 export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
     if (!id || !id.trim()) {
-      return NextResponse.json(
+      return Response.json(
         { error: "Identifiant de film invalide" },
         { status: 404, headers: CORS_HEADERS },
       );
@@ -29,7 +28,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
     const movie = await dbUniverse.movie(id.trim());
     if (!movie) {
-      return NextResponse.json(
+      return Response.json(
         { error: "Film introuvable" },
         { status: 404, headers: CORS_HEADERS },
       );
@@ -49,7 +48,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
     const hasVostfr = players.some((p) => p.lang === "vostfr");
     const sourceCoverage = summarizeVideoSources(players, availability);
 
-    return NextResponse.json(
+    return Response.json(
       {
         id: movie.id,
         slug: movie.slug,
@@ -92,7 +91,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
       },
     );
   } catch (error) {
-    return NextResponse.json(
+    return Response.json(
       {
         error: "Erreur serveur lors de la récupération du film",
         detail: error instanceof Error ? error.message : String(error),

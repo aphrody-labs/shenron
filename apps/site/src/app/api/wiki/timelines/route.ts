@@ -4,7 +4,6 @@
  * Expose les 4 timelines narratives (manga-canon, anime-toei, movies-dbz, xenoverse)
  * et leur décompte d'événements rattachés conformément au Sprint 3 de la refonte.
  */
-import { type NextRequest, NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 
 export const runtime = "nodejs";
@@ -18,21 +17,21 @@ const CORS = {
 };
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS });
+  return new Response(null, { status: 204, headers: CORS });
 }
 
-export async function GET(_req: NextRequest) {
+export async function GET(_req: Request) {
   try {
     // `null` = lecture PostgreSQL échouée (`safe`) : une panne, jamais un `[]` en 200.
     const timelines = await dbUniverse.narrativeTimelines();
     if (timelines === null) {
-      return NextResponse.json(
+      return Response.json(
         { error: "Timelines narratives momentanément indisponibles." },
         { status: 503, headers: { ...CORS, "Cache-Control": "no-store" } },
       );
     }
 
-    return NextResponse.json(
+    return Response.json(
       {
         data: timelines,
         total: timelines.length,
@@ -47,7 +46,7 @@ export async function GET(_req: NextRequest) {
     );
   } catch (error) {
     console.error("[API_WIKI_TIMELINES_ERROR]", error);
-    return NextResponse.json(
+    return Response.json(
       { error: "Erreur interne lors de la récupération des timelines narratives." },
       { status: 500, headers: { ...CORS, "Cache-Control": "no-store" } },
     );

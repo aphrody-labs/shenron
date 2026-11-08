@@ -14,17 +14,16 @@ import { listRevisions, revertRevision, type RevisionActor } from "@/lib/wiki-re
 import { revalidateWikiEntity } from "@/lib/wiki-revalidate";
 import { revalidatePath } from "next/cache";
 import { DatabooksFrozenError } from "@/lib/databooks-freeze";
-import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const privateJson = (body: unknown, status = 200) =>
-  NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
+  Response.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
 const forbidden = () => privateJson({ error: "Forbidden" }, 403);
 const badRequest = (msg: string) => privateJson({ error: msg }, 400);
 
-async function requireAdmin(): Promise<NextResponse | null> {
+async function requireAdmin(): Promise<Response | null> {
   try {
     return (await isCurrentUserAdmin()) ? null : forbidden();
   } catch (err) {
@@ -43,10 +42,10 @@ async function currentActor(): Promise<RevisionActor> {
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   const authError = await requireAdmin();
   if (authError) return authError;
-  const sp = req.nextUrl.searchParams;
+  const sp = new URL(req.url).searchParams;
   try {
     const result = await listRevisions({
       table: sp.get("table") ?? undefined,
@@ -61,7 +60,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   const authError = await requireAdmin();
   if (authError) return authError;
   let body: { id?: string } | null = null;
@@ -103,7 +102,7 @@ export async function POST(req: NextRequest) {
  * introuvable ») restent renvoyées telles quelles : elles sont écrites pour
  * l'utilisateur et ne contiennent rien d'interne.
  */
-function writeFailed(context: string, err: unknown): NextResponse {
+function writeFailed(context: string, err: unknown): Response {
   if (err instanceof DatabooksFrozenError) {
     return privateJson({ error: err.code, reason: err.freeze.reason }, 423);
   }

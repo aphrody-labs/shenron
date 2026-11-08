@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { API_URL } from "@/lib/config";
 import {
   createServiceHealth,
@@ -39,7 +38,7 @@ export function createReadinessHandler(deps: ReadinessDeps = {}) {
   const checkRag = deps.probeRag ?? (() => probeRag());
   const dbRequired = deps.databaseRequired ?? (() => databaseRequired());
 
-  return async function GET(): Promise<NextResponse> {
+  return async function GET(): Promise<Response> {
     const [api, databaseState, rag] = await Promise.all([
       checkHttp(`${API_URL}/api/health/check`),
       checkDb(),
@@ -62,7 +61,7 @@ export function createReadinessHandler(deps: ReadinessDeps = {}) {
       },
     );
 
-    return NextResponse.json(health, {
+    return Response.json(health, {
       status: health.status === "ok" ? 200 : 503,
       headers: { "cache-control": "no-store" },
     });

@@ -28,7 +28,6 @@
  * vide fait la même chose — ici, contrairement au dépôt de masse, l'intention
  * vient d'un humain qui a vidé un champ, pas d'un modèle qui n'a rien su lire.
  */
-import { NextResponse } from "next/server";
 import { sql } from "drizzle-orm";
 import { adminUserOrToken } from "@/lib/admin-guard";
 import { db } from "@/lib/db";
@@ -48,29 +47,29 @@ const TEXTE_MAX = 40_000;
 export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const freeze = databooksFreeze();
   if (freeze)
-    return NextResponse.json(
+    return Response.json(
       { error: "Écritures databooks gelées.", reason: freeze.reason },
       { status: 423 },
     );
   const { allowed, me } = await adminUserOrToken(req);
   const admin = me?.user?.roleAdmin === true;
   if (!allowed) {
-    return NextResponse.json({ error: "Accès refusé." }, { status: 403 });
+    return Response.json({ error: "Accès refusé." }, { status: 403 });
   }
 
   const id = parseDatabookId((await ctx.params).id);
-  if (id === null) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
+  if (id === null) return Response.json({ error: "Fiche introuvable." }, { status: 404 });
 
   let corps: { number?: unknown; text?: unknown; verified?: unknown; verifiee?: unknown };
   try {
     corps = (await req.json()) as typeof corps;
   } catch {
-    return NextResponse.json({ error: "Corps JSON invalide." }, { status: 400 });
+    return Response.json({ error: "Corps JSON invalide." }, { status: 400 });
   }
 
   const numero = Number(corps.number);
   if (!Number.isSafeInteger(numero) || numero <= 0) {
-    return NextResponse.json({ error: "`number` doit être un entier positif." }, { status: 400 });
+    return Response.json({ error: "`number` doit être un entier positif." }, { status: 400 });
   }
   // `text` est facultatif : un acquittement (« vérifier quand même ») ne touche
   // pas à la transcription. Sans cette distinction, le drapeau aurait dû
@@ -78,7 +77,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
   // entre-temps.
   const changeTexte = corps.text !== undefined;
   if (changeTexte && corps.text !== null && typeof corps.text !== "string") {
-    return NextResponse.json({ error: "`text` doit être une chaîne ou null." }, { status: 400 });
+    return Response.json({ error: "`text` doit être une chaîne ou null." }, { status: 400 });
   }
   const texte =
     !changeTexte || corps.text === null
@@ -89,22 +88,22 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
   const verifiedInput = corps.verified !== undefined ? corps.verified : corps.verifiee;
   const changeVerifiee = verifiedInput !== undefined;
   if (changeVerifiee && typeof verifiedInput !== "boolean") {
-    return NextResponse.json({ error: "`verified` doit être un booléen." }, { status: 400 });
+    return Response.json({ error: "`verified` doit être un booléen." }, { status: 400 });
   }
   const verifiee = verifiedInput === true;
   if (!changeTexte && !changeVerifiee) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Rien à écrire : fournir `text` et/ou `verified`." },
       { status: 400 },
     );
   }
 
   const avant = await getDatabook(id);
-  if (!avant) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
+  if (!avant) return Response.json({ error: "Fiche introuvable." }, { status: 404 });
   if (!avant.pages.some((p) => p.number === numero)) {
     // Plutôt que d'ajouter une planche fantôme : un numéro absent signale un
     // décalage entre l'écran de relecture et la base (fiche rechargée ailleurs).
-    return NextResponse.json(
+    return Response.json(
       { error: `La planche n°${numero} n'existe pas dans cette fiche.` },
       { status: 404 },
     );
@@ -150,7 +149,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
 	`);
 
   const apres = await getDatabook(id);
-  if (!apres) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
+  if (!apres) return Response.json({ error: "Fiche introuvable." }, { status: 404 });
 
   await indexDatabook(apres);
   // La planche visée est journalisée sous `pages#<n>`, et non la fiche entière :
@@ -180,7 +179,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
   const transcribed = apres.pages.filter((p) => (p.text ?? "").length > 0).length;
   const plate = apres.pages.find((p) => p.number === numero);
   const verified = plate?.verifiee === true;
-  return NextResponse.json({
+  return Response.json({
     id,
     number: numero,
     text: plate?.text ?? null,

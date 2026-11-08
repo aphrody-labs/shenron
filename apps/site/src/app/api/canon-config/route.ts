@@ -12,31 +12,30 @@ import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
 import { CanonConfigWriteError, getCanonConfigSnapshot, saveCanonConfig } from "@/lib/canon-config";
 import { DEFAULT_CANON_CONFIG } from "@/lib/canon-engine";
 import { revalidatePath } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const forbidden = () => NextResponse.json({ error: "Forbidden" }, { status: 403 });
-const badRequest = (msg: string) => NextResponse.json({ error: msg }, { status: 400 });
+const forbidden = () => Response.json({ error: "Forbidden" }, { status: 403 });
+const badRequest = (msg: string) => Response.json({ error: msg }, { status: 400 });
 
 /** Plafond du corps accepté en écriture (16 Mio). */
 const MAX_CORPS = 16 * 1024 * 1024;
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   if (!(await isAdminOrToken(req))) return forbidden();
   try {
-    return NextResponse.json(
+    return Response.json(
       { ...(await getCanonConfigSnapshot()), defaults: DEFAULT_CANON_CONFIG },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch (error) {
     console.error("[api/canon-config] read failed:", error);
-    return NextResponse.json({ error: "Canon configuration unavailable" }, { status: 503 });
+    return Response.json({ error: "Canon configuration unavailable" }, { status: 503 });
   }
 }
 
-export async function PUT(req: NextRequest) {
+export async function PUT(req: Request) {
   const { allowed, me } = await adminUserOrToken(req);
   if (!allowed) return forbidden();
   // Le document complet (corpus de citations inclus) pèse quelques mégaoctets ;
@@ -66,11 +65,11 @@ export async function PUT(req: NextRequest) {
       input.expected,
     );
     revalidatePath("/wiki/canon");
-    return NextResponse.json({ ok: true, ...saved });
+    return Response.json({ ok: true, ...saved });
   } catch (err) {
     if (err instanceof CanonConfigWriteError)
-      return NextResponse.json({ error: err.message }, { status: err.status });
+      return Response.json({ error: err.message }, { status: err.status });
     console.error("[api/canon-config] save failed:", err);
-    return NextResponse.json({ error: "Canon configuration unavailable" }, { status: 503 });
+    return Response.json({ error: "Canon configuration unavailable" }, { status: 503 });
   }
 }

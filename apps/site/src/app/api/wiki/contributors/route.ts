@@ -13,7 +13,6 @@
  *   - page : entier (défaut 1)
  *   - limit : entier (défaut 24, max 100)
  */
-import { NextRequest, NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 
 export const runtime = "nodejs";
@@ -27,7 +26,7 @@ const CORS = {
 };
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS });
+  return new Response(null, { status: 204, headers: CORS });
 }
 
 export interface ContributorApiResponse {
@@ -55,8 +54,8 @@ export interface ContributorApiResponse {
   canonicalUrl: string;
 }
 
-export async function GET(req: NextRequest) {
-  const url = req.nextUrl;
+export async function GET(req: Request) {
+  const url = new URL(req.url);
   const q = (url.searchParams.get("q") ?? "").trim().toLowerCase();
 
   const rawCategories = [...url.searchParams.getAll("category")]
@@ -79,13 +78,13 @@ export async function GET(req: NextRequest) {
     allContributors = await dbUniverse.contributors();
   } catch (error) {
     console.error("[wiki/contributors] database read failed", error);
-    return NextResponse.json(
+    return Response.json(
       { error: "Contributeurs momentanément indisponibles." },
       { status: 503, headers: { ...CORS, "Cache-Control": "no-store", "Retry-After": "30" } },
     );
   }
   if (allContributors === null) {
-    return NextResponse.json(
+    return Response.json(
       { error: "Contributeurs momentanément indisponibles." },
       { status: 503, headers: { ...CORS, "Cache-Control": "no-store" } },
     );
@@ -172,7 +171,7 @@ export async function GET(req: NextRequest) {
     canonicalUrl: "/api/wiki/contributors",
   };
 
-  return NextResponse.json(responsePayload, {
+  return Response.json(responsePayload, {
     status: 200,
     headers: {
       ...CORS,

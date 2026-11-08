@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from "next/server";
 import { checkoutIntegrationIdentifier, getStripe, isStripeConfigured } from "@/lib/stripe";
 import { DONATION_TIERS } from "@/lib/billing-catalog";
 import { db } from "@/lib/db";
@@ -10,9 +9,9 @@ import { isSameOriginPaymentRequest, paymentProviderUnavailable } from "@/lib/pa
 
 export const dynamic = "force-dynamic";
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   if (!isSameOriginPaymentRequest(req)) {
-    return NextResponse.json(
+    return Response.json(
       { error: "invalid_origin", message: "Requête de paiement invalide" },
       { status: 403 },
     );
@@ -35,7 +34,7 @@ export async function POST(req: NextRequest) {
     if (tierId) {
       const tier = DONATION_TIERS.find((t) => t.id === tierId);
       if (!tier)
-        return NextResponse.json(
+        return Response.json(
           { error: "unknown_tier", message: "Palier de don inconnu." },
           { status: 400 },
         );
@@ -43,7 +42,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (!Number.isSafeInteger(amount) || amount < 100 || amount > 500_000) {
-      return NextResponse.json(
+      return Response.json(
         {
           error: "invalid_amount",
           message: "Le montant doit être compris entre 1,00 € et 5 000,00 €.",
@@ -53,7 +52,7 @@ export async function POST(req: NextRequest) {
     }
 
     if (donorName.length > 120 || message.length > 500 || (donorEmail && donorEmail.length > 254)) {
-      return NextResponse.json(
+      return Response.json(
         {
           error: "payload_too_large",
           message: "Les informations du don dépassent les limites autorisées.",
@@ -119,7 +118,7 @@ export async function POST(req: NextRequest) {
       .set({ stripeCheckoutSessionId: checkoutSession.id, updatedAt: new Date() })
       .where(eq(siteDonations.id, donationId));
 
-    return NextResponse.json({
+    return Response.json({
       url: checkoutSession.url,
       sessionId: checkoutSession.id,
       donationId,
@@ -135,7 +134,7 @@ export async function POST(req: NextRequest) {
     console.error("Stripe donation checkout failed", {
       code: typeof err?.code === "string" ? err.code : "unclassified",
     });
-    return NextResponse.json(
+    return Response.json(
       { error: "checkout_failed", message: "Impossible de démarrer le paiement du don." },
       { status: 503, headers: { "Cache-Control": "private, no-store" } },
     );
@@ -173,7 +172,7 @@ export async function GET() {
       createdAt: d.createdAt,
     }));
 
-    return NextResponse.json(
+    return Response.json(
       { donations: publicList },
       { headers: { "Cache-Control": "public, max-age=60, s-maxage=60" } },
     );
@@ -181,7 +180,7 @@ export async function GET() {
     console.error("Donation wall read failed", {
       code: typeof err?.code === "string" ? err.code : "unclassified",
     });
-    return NextResponse.json(
+    return Response.json(
       {
         donations: [],
         error: "donations_unavailable",

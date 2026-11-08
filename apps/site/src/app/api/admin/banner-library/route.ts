@@ -11,7 +11,6 @@ import { isAdminOrToken } from "@/lib/admin-guard";
 import { API_URL } from "@/lib/config";
 import { readdir } from "node:fs/promises";
 import { join } from "node:path";
-import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -53,9 +52,9 @@ async function listDir(abs: string, map: (name: string) => Entry | null): Promis
   }
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   if (!(await isAdminOrToken(req))) {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    return Response.json({ error: "Forbidden" }, { status: 403 });
   }
 
   // Chemins relatifs au monorepo (site tourne depuis apps/site).
@@ -116,7 +115,7 @@ export async function GET(req: NextRequest) {
 
   const items = [...official, ...toei, ...wiki].toSorted((a, b) => a.name.localeCompare(b.name));
 
-  return NextResponse.json({
+  return Response.json({
     count: items.length,
     items,
   });

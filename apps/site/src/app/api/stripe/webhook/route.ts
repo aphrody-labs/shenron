@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from "next/server";
 import { getStripe, stripeWebhookSecret, STRIPE_PLANS } from "@/lib/stripe";
 import { db } from "@/lib/db";
 import {
@@ -18,12 +17,12 @@ const emailText = (template: string, values: Record<string, string>) =>
 const formatAmount = (amount: number) =>
   new Intl.NumberFormat("fr-FR", { style: "currency", currency: "EUR" }).format(amount / 100);
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   let webhookSecret: string;
   try {
     webhookSecret = stripeWebhookSecret();
   } catch {
-    return NextResponse.json({ error: "Webhook Stripe non configuré" }, { status: 503 });
+    return Response.json({ error: "Webhook Stripe non configuré" }, { status: 503 });
   }
 
   const stripe = getStripe();
@@ -31,14 +30,14 @@ export async function POST(req: NextRequest) {
   const signature = req.headers.get("stripe-signature");
 
   if (!signature) {
-    return NextResponse.json({ error: "Signature Stripe manquante" }, { status: 400 });
+    return Response.json({ error: "Signature Stripe manquante" }, { status: 400 });
   }
 
   let event;
   try {
     event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret);
   } catch {
-    return NextResponse.json({ error: "Signature webhook invalide" }, { status: 400 });
+    return Response.json({ error: "Signature webhook invalide" }, { status: 400 });
   }
 
   // Fetch provider state before opening the database transaction. The event receipt
@@ -55,7 +54,7 @@ export async function POST(req: NextRequest) {
       try {
         checkoutSubscription = await stripe.subscriptions.retrieve(session.subscription);
       } catch {
-        return NextResponse.json({ error: "État abonnement indisponible" }, { status: 503 });
+        return Response.json({ error: "État abonnement indisponible" }, { status: 503 });
       }
     }
   }
@@ -68,7 +67,7 @@ export async function POST(req: NextRequest) {
       try {
         invoiceSubscriptionSnapshot = await stripe.subscriptions.retrieve(subscriptionId);
       } catch {
-        return NextResponse.json({ error: "État abonnement indisponible" }, { status: 503 });
+        return Response.json({ error: "État abonnement indisponible" }, { status: 503 });
       }
     }
   }
@@ -80,7 +79,7 @@ export async function POST(req: NextRequest) {
     try {
       subscriptionSnapshot = await stripe.subscriptions.retrieve(event.data.object.id);
     } catch {
-      return NextResponse.json({ error: "État abonnement indisponible" }, { status: 503 });
+      return Response.json({ error: "État abonnement indisponible" }, { status: 503 });
     }
   }
 
@@ -381,10 +380,10 @@ export async function POST(req: NextRequest) {
       return true;
     });
 
-    return NextResponse.json({ received: true, duplicate: !processed });
+    return Response.json({ received: true, duplicate: !processed });
   } catch {
     // Transaction rollback removes the receipt as well; Stripe can retry safely.
-    return NextResponse.json(
+    return Response.json(
       { error: "Traitement webhook temporairement indisponible" },
       { status: 500 },
     );

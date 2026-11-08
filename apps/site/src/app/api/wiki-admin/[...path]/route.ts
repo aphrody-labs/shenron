@@ -56,7 +56,6 @@ import {
   WikiUpdatePreconditionError,
   WikiUpdateRequestError,
 } from "@/lib/wiki-update-precondition";
-import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { parseWikiCollectionQuery, WikiCollectionQueryError } from "@/lib/wiki-collection-query";
 
@@ -81,18 +80,18 @@ async function currentActor(): Promise<RevisionActor> {
 }
 
 const privateError = (body: Record<string, unknown>, status: number) =>
-  NextResponse.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
+  Response.json(body, { status, headers: { "Cache-Control": "private, no-store" } });
 const forbidden = () => privateError({ error: "Forbidden" }, 403);
 const notFound = (msg = "Table inconnue") => privateError({ error: msg }, 404);
 const badRequest = (msg: string) => privateError({ error: msg }, 400);
 
 /** Keep authentication outages distinct from a denied admin session. */
-async function requireAdmin(): Promise<NextResponse | null> {
+async function requireAdmin(): Promise<Response | null> {
   try {
     return (await isCurrentUserAdmin()) ? null : forbidden();
   } catch (err) {
     console.error("[wiki-admin-auth]", err);
-    return NextResponse.json(
+    return Response.json(
       { error: "admin_auth_unavailable" },
       {
         status: 503,
@@ -102,7 +101,7 @@ async function requireAdmin(): Promise<NextResponse | null> {
   }
 }
 
-async function readJson(req: NextRequest): Promise<Record<string, unknown> | null> {
+async function readJson(req: Request): Promise<Record<string, unknown> | null> {
   try {
     const body: unknown = await req.json();
     return body !== null && typeof body === "object" && !Array.isArray(body)
@@ -116,7 +115,7 @@ async function readJson(req: NextRequest): Promise<Record<string, unknown> | nul
 function databookPagesFreezeError(
   table: string,
   body: Record<string, unknown>,
-): NextResponse | null {
+): Response | null {
   if (writesDatabookPages(table, body)) {
     const freeze = databooksFreeze();
     if (freeze) {
@@ -126,7 +125,7 @@ function databookPagesFreezeError(
   return null;
 }
 
-export async function GET(req: NextRequest, ctx: Ctx) {
+export async function GET(req: Request, ctx: Ctx) {
   const authError = await requireAdmin();
   if (authError) return authError;
   const { path } = await ctx.params;
@@ -137,35 +136,35 @@ export async function GET(req: NextRequest, ctx: Ctx) {
     if (id != null) {
       const row = await getWikiRow(table, decodeURIComponent(id));
       if (!row) return notFound("Row introuvable");
-      return NextResponse.json(row);
+      return Response.json(row);
     }
-    const query = parseWikiCollectionQuery(req.nextUrl.searchParams);
+    const query = parseWikiCollectionQuery(new URL(req.url).searchParams);
     switch (query.kind) {
       case "options":
-        return NextResponse.json({ options: await listWikiOptions(table) });
+        return Response.json({ options: await listWikiOptions(table) });
       case "relations":
-        return NextResponse.json({
+        return Response.json({
           ids: await listWikiRelations(table, query.col, query.id, query.target),
         });
       case "byParent":
-        return NextResponse.json(await listWikiByParent(table, query.col, query.id));
+        return Response.json(await listWikiByParent(table, query.col, query.id));
       case "visibility":
         if (!hasVisibility(table)) return badRequest("Table sans colonne de visibilité");
-        return NextResponse.json({ items: await listWikiVisibility(table, { q: query.q }) });
+        return Response.json({ items: await listWikiVisibility(table, { q: query.q }) });
       case "sectionsFor":
         if (table !== "db_wiki_sections") return badRequest("Réservé à db_wiki_sections");
-        return NextResponse.json({
+        return Response.json({
           items: await listWikiSectionsForEntity(query.entityType, query.entityId),
         });
       case "list":
-        return NextResponse.json(await listWiki(table, query));
+        return Response.json(await listWiki(table, query));
     }
   } catch (err) {
     return writeFailed("wiki-admin", err);
   }
 }
 
-export async function POST(req: NextRequest, ctx: Ctx) {
+export async function POST(req: Request, ctx: Ctx) {
   const authError = await requireAdmin();
   if (authError) return authError;
   const { path } = await ctx.params;
@@ -176,7 +175,7 @@ export async function POST(req: NextRequest, ctx: Ctx) {
   try {
     // Bascule de visibilité (une ligne ou toute la table) — écrit la colonne
     // `visible` directement (pas via l'allowlist mutable de l'éditeur générique).
-    if (req.nextUrl.searchParams.get("as") === "visibility") {
+    if (new URL(req.url).searchParams.get("as") === "visibility") {
       if (!hasVisibility(table)) return badRequest("Table sans colonne de visibilité");
       const visible = body.visible === true || body.visible === "true" || body.visible === 1;
       if (body.all === true || body.all === "true") {
@@ -193,7 +192,7 @@ export async function POST(req: NextRequest, ctx: Ctx) {
           actor: await currentActor(),
         });
         revalidateWikiEntity(table);
-        return NextResponse.json({ ok: true, updated, reversible: previous.length > 0 });
+        return Response.json({ ok: true, updated, reversible: previous.length > 0 });
       }
       const id = body.id;
       if (id == null || id === "") return badRequest("id ou all requis");
@@ -209,7 +208,7 @@ export async function POST(req: NextRequest, ctx: Ctx) {
         after: { ...(row ?? { id }), visible },
         actor: await currentActor(),
       });
-      return NextResponse.json({ ok: true });
+      return Response.json({ ok: true });
     }
     const bodyError = databookPagesFreezeError(table, body);
     if (bodyError) return bodyError;
@@ -220,13 +219,13 @@ export async function POST(req: NextRequest, ctx: Ctx) {
     revalidateWikiEntity(table, row);
     if (table === "db_wiki_sections") await revalidateSectionParent(row);
     await recordRevision({ table, action: "create", after: row, actor: await currentActor() });
-    return NextResponse.json({ ok: true, row });
+    return Response.json({ ok: true, row });
   } catch (err) {
     return writeFailed("wiki-admin", err);
   }
 }
 
-async function mutate(req: NextRequest, ctx: Ctx) {
+async function mutate(req: Request, ctx: Ctx) {
   const authError = await requireAdmin();
   if (authError) return authError;
   const { path } = await ctx.params;
@@ -272,7 +271,7 @@ async function mutate(req: NextRequest, ctx: Ctx) {
         after: row,
         actor,
       });
-    return NextResponse.json({ ok: true, row });
+    return Response.json({ ok: true, row });
   } catch (err) {
     return writeFailed("wiki-admin", err);
   }
@@ -281,7 +280,7 @@ async function mutate(req: NextRequest, ctx: Ctx) {
 export const PUT = mutate;
 export const PATCH = mutate;
 
-export async function DELETE(req: NextRequest, ctx: Ctx) {
+export async function DELETE(req: Request, ctx: Ctx) {
   const authError = await requireAdmin();
   if (authError) return authError;
   const { path } = await ctx.params;
@@ -296,7 +295,7 @@ export async function DELETE(req: NextRequest, ctx: Ctx) {
     await deleteWiki(table, decoded, await currentActor());
     revalidateWikiEntity(table, before ?? { id: decoded });
     if (table === "db_wiki_sections") await revalidateSectionParent(before ?? undefined);
-    return NextResponse.json({ ok: true });
+    return Response.json({ ok: true });
   } catch (err) {
     return writeFailed("wiki-admin", err);
   }
@@ -315,7 +314,7 @@ export async function DELETE(req: NextRequest, ctx: Ctx) {
  * introuvable ») restent renvoyées telles quelles : elles sont écrites pour
  * l'utilisateur et ne contiennent rien d'interne.
  */
-function writeFailed(context: string, err: unknown): NextResponse {
+function writeFailed(context: string, err: unknown): Response {
   if (err instanceof WikiUpdatePreconditionError) {
     return privateError({ error: err.code }, 409);
   }

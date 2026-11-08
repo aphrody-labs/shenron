@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { SITE_URL } from "@/lib/config";
 import { db } from "@/lib/db";
@@ -9,7 +8,7 @@ import { getStripe } from "@/lib/stripe";
 export async function POST() {
   const user = await getCurrentUser();
   if (!user?.sessionUserId || user.sessionUserId === "token-admin") {
-    return NextResponse.json(
+    return Response.json(
       { error: "unauthenticated", message: "Authentification requise" },
       { status: 401 },
     );
@@ -20,7 +19,7 @@ export async function POST() {
     .where(eq(baUser.id, user.sessionUserId))
     .limit(1);
   if (!authUser?.customerId) {
-    return NextResponse.json(
+    return Response.json(
       { error: "no_billing_profile", message: "Aucun profil de facturation Stripe" },
       { status: 404 },
     );
@@ -31,9 +30,9 @@ export async function POST() {
       customer: authUser.customerId,
       return_url: `${SITE_URL}/account/billing`,
     });
-    return NextResponse.json({ url: portal.url });
+    return Response.json({ url: portal.url });
   } catch {
-    return NextResponse.json(
+    return Response.json(
       { error: "provider_unavailable", message: "Portail de facturation indisponible" },
       { status: 503 },
     );

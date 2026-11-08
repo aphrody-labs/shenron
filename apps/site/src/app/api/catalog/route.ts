@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-import { NextResponse } from "next/server";
 import { readCatalogDetail, readCatalogPage, readCatalogSummary } from "@/lib/catalog-explorer";
 import { readCdnPage } from "@/lib/cdn-catalog";
 import { episodeLanguageQuery, EpisodeLanguageQueryError } from "@/lib/episode-query";
@@ -31,18 +30,18 @@ export async function GET(request: Request) {
                 kind: query.get("kind") ?? undefined,
                 domain: query.get("domain") ?? undefined,
               });
-    return NextResponse.json(data ?? { error: "not_found" }, {
+    return Response.json(data ?? { error: "not_found" }, {
       status: data ? 200 : 404,
       headers: { "cache-control": "no-store" },
     });
   } catch (error) {
     if (error instanceof EpisodeLanguageQueryError) {
-      return NextResponse.json(
+      return Response.json(
         { error: "invalid_media_language" },
         { status: 400, headers: { "cache-control": "no-store" } },
       );
     }
-    return NextResponse.json(
+    return Response.json(
       { error: "catalog_unavailable" },
       { status: 503, headers: { "cache-control": "no-store" } },
     );

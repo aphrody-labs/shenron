@@ -12,7 +12,6 @@ import { dbUniverse, type SearchResults } from "@/lib/db-universe";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 import { searchExternalSources, type ExternalSourceRecord } from "@/lib/external-source-catalog";
-import { NextResponse, type NextRequest } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -94,12 +93,12 @@ function filtrerSurAcces(r: SearchResults, cfg: Parameters<typeof isPathPublic>[
   return out;
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   // Cap la longueur de `q` : une requête très longue multiplie inutilement le
   // coût pg_trgm (ILIKE + similarité trigramme) ; ~100 chars couvrent tout.
-  const url = req.nextUrl ?? new URL(req.url);
+  const url = new URL(req.url);
   const q = (url.searchParams.get("q") ?? "").trim().slice(0, 100);
-  if (q.length < 2) return NextResponse.json(empty(q));
+  if (q.length < 2) return Response.json(empty(q));
   const [results, cfg, external] = await Promise.all([
     dbUniverse.search(q).catch(() => null),
     getLaunchConfig(),
@@ -107,12 +106,12 @@ export async function GET(req: NextRequest) {
   ]);
   // A failed database search is not an empty successful search. Never cache it.
   if (results === null)
-    return NextResponse.json(
+    return Response.json(
       { error: "Search unavailable" },
       { status: 503, headers: { "cache-control": "no-store", "retry-after": "5" } },
     );
   const wiki = filtrerSurAcces(results, cfg);
-  return NextResponse.json(
+  return Response.json(
     { ...wiki, sources: external.records },
     {
       headers: {

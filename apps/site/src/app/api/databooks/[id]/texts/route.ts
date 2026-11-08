@@ -21,7 +21,6 @@
  * chemins de lecture : l'index Redis ignore la visibilité (cf. `fichePubliee`),
  * il ne peut donc pas servir de raccourci autour d'elle.
  */
-import { NextResponse } from "next/server";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { parseDatabookId } from "@/lib/databooks-rules";
@@ -56,7 +55,7 @@ async function fichePubliee(id: number): Promise<boolean> {
 
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const id = parseDatabookId((await ctx.params).id);
-  if (id === null) return NextResponse.json({ error: "Fiche introuvable." }, { status: 404 });
+  if (id === null) return Response.json({ error: "Fiche introuvable." }, { status: 404 });
 
   const demandees = [
     ...new Set(
@@ -66,7 +65,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
         .filter((v) => Number.isSafeInteger(v) && v > 0),
     ),
   ].slice(0, MAX_PAGES);
-  if (demandees.length === 0) return NextResponse.json({ texts: {}, textes: {} });
+  if (demandees.length === 0) return Response.json({ texts: {}, textes: {} });
 
   // L'index Redis d'abord : il porte les mêmes transcriptions, tenues à jour à
   // chaque dépôt. Il rend `null` — jamais un lot partiel — dès qu'une planche
@@ -107,7 +106,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
 }
 
 function reponse(textes: Record<string, string>) {
-  return NextResponse.json(
+  return Response.json(
     // `textes`: former name of `texts`, deprecated until 1.4.0.
     { texts: textes, textes },
     {

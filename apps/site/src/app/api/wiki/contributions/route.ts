@@ -10,7 +10,6 @@
  * Auth requise. Rate-limit mémoire par utilisateur : une contribution demande
  * d'aller lire une source, personne n'en dépose dix en cinq minutes de bonne foi.
  */
-import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { getCurrentUser, isCurrentUserAdmin } from "@/lib/session";
 import {
@@ -49,17 +48,17 @@ const contributionRateLimit = createMemoryRateLimiter({
   namespace: "wiki-contributions",
 });
 
-function privateJson(body: unknown, init: ResponseInit = {}): NextResponse {
+function privateJson(body: unknown, init: ResponseInit = {}): Response {
   const headers = new Headers(init.headers);
   headers.set("Cache-Control", "private, no-store");
-  return NextResponse.json(body, { ...init, headers });
+  return Response.json(body, { ...init, headers });
 }
 
-function unavailable(error: string): NextResponse {
+function unavailable(error: string): Response {
   return privateJson({ ok: false, error }, { status: 503, headers: { "Retry-After": "30" } });
 }
 
-export async function POST(req: NextRequest): Promise<NextResponse> {
+export async function POST(req: Request): Promise<Response> {
   let session: Awaited<ReturnType<typeof getCurrentUser>>;
   try {
     session = await getCurrentUser();
@@ -138,7 +137,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
   }
 }
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+export async function GET(req: Request): Promise<Response> {
   let session: Awaited<ReturnType<typeof getCurrentUser>>;
   try {
     session = await getCurrentUser();
@@ -152,7 +151,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   if (!session?.user?.id) {
     return privateJson({ ok: false, error: "auth_required" }, { status: 401 });
   }
-  const parsed = parseContributionListQuery(req.nextUrl.searchParams, 20);
+  const parsed = parseContributionListQuery(new URL(req.url).searchParams, 20);
   if (!parsed.success) return privateJson({ ok: false, error: "bad_request" }, { status: 400 });
   try {
     const result = await listContributions({
@@ -169,7 +168,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   }
 }
 
-export async function DELETE(req: NextRequest): Promise<NextResponse> {
+export async function DELETE(req: Request): Promise<Response> {
   let session: Awaited<ReturnType<typeof getCurrentUser>>;
   try {
     session = await getCurrentUser();
@@ -180,7 +179,7 @@ export async function DELETE(req: NextRequest): Promise<NextResponse> {
   if (!session?.user?.id) {
     return privateJson({ ok: false, error: "auth_required" }, { status: 401 });
   }
-  const id = req.nextUrl.searchParams.get("id");
+  const id = new URL(req.url).searchParams.get("id");
   if (!id) return privateJson({ ok: false, error: "bad_request" }, { status: 400 });
   try {
     await withdrawContribution(id, session.user.id);

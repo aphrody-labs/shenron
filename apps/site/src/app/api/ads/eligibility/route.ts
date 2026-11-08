@@ -1,5 +1,4 @@
 import { and, eq, gt, inArray, isNull, or } from "drizzle-orm";
-import { NextResponse } from "next/server";
 import { baSubscription, sitePaypalSubscriptions } from "@/db/schema";
 import { db } from "@/lib/db";
 import { getSessionUser } from "@/lib/session";
@@ -14,7 +13,7 @@ const PRIVATE_HEADERS = {
 export async function GET() {
   try {
     const me = await getSessionUser();
-    if (!me) return NextResponse.json({ adsAllowed: true }, { headers: PRIVATE_HEADERS });
+    if (!me) return Response.json({ adsAllowed: true }, { headers: PRIVATE_HEADERS });
 
     const now = new Date();
     const [stripe, paypal] = await Promise.all([
@@ -44,12 +43,12 @@ export async function GET() {
         )
         .limit(1),
     ]);
-    return NextResponse.json(
+    return Response.json(
       { adsAllowed: stripe.length === 0 && paypal.length === 0 },
       { headers: PRIVATE_HEADERS },
     );
   } catch {
     // Fail closed if entitlement data is unavailable: never show ads to a possible paid member.
-    return NextResponse.json({ adsAllowed: false }, { headers: PRIVATE_HEADERS });
+    return Response.json({ adsAllowed: false }, { headers: PRIVATE_HEADERS });
   }
 }

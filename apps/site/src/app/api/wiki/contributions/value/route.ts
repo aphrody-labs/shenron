@@ -12,7 +12,6 @@
  * Réservé aux membres connectés : le contenu est public, mais l'endpoint sert
  * la contribution, pas la lecture — inutile d'en faire une surface d'aspiration.
  */
-import { NextResponse, type NextRequest } from "next/server";
 import { getCurrentUser } from "@/lib/session";
 import { getWikiRow } from "@/lib/wiki-admin";
 import { targetIsValid } from "@/lib/wiki-contributions";
@@ -22,29 +21,29 @@ import { estCibleStats, formatStats } from "@/lib/stats-personnage";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function GET(req: NextRequest): Promise<NextResponse> {
+export async function GET(req: Request): Promise<Response> {
   let session: Awaited<ReturnType<typeof getCurrentUser>>;
   try {
     session = await getCurrentUser();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       { ok: false, error: "auth_unavailable" },
       { status: 503, headers: { "Cache-Control": "private, no-store", "Retry-After": "30" } },
     );
   }
   if (!session?.user?.id) {
-    return NextResponse.json(
+    return Response.json(
       { ok: false, error: "auth_required" },
       { status: 401, headers: { "Cache-Control": "private, no-store" } },
     );
   }
 
-  const sp = req.nextUrl.searchParams;
+  const sp = new URL(req.url).searchParams;
   const table = sp.get("table") ?? "";
   const rowId = sp.get("rowId") ?? "";
   const column = sp.get("column") ?? "";
   if (!targetIsValid(table, column) || !rowId) {
-    return NextResponse.json(
+    return Response.json(
       { ok: false, error: "bad_target" },
       { status: 400, headers: { "Cache-Control": "private, no-store" } },
     );
@@ -57,12 +56,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     if (planche !== null) {
       const texte = await lireTranscription(rowId, planche);
       if (texte === null) {
-        return NextResponse.json(
+        return Response.json(
           { ok: false, error: "not_found" },
           { status: 404, headers: { "Cache-Control": "private, no-store" } },
         );
       }
-      return NextResponse.json(
+      return Response.json(
         { ok: true, value: texte },
         { headers: { "Cache-Control": "private, no-store" } },
       );
@@ -70,7 +69,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     const row = await getWikiRow(table, rowId);
     if (!row) {
-      return NextResponse.json(
+      return Response.json(
         { ok: false, error: "not_found" },
         { status: 404, headers: { "Cache-Control": "private, no-store" } },
       );
@@ -78,7 +77,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
 
     // Statistiques : un jsonb rendu en texte, une mesure par ligne.
     if (estCibleStats(table, column)) {
-      return NextResponse.json(
+      return Response.json(
         {
           ok: true,
           value: formatStats((row as Record<string, unknown>).stats),
@@ -88,13 +87,13 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
     }
 
     const v = (row as Record<string, unknown>)[column];
-    return NextResponse.json(
+    return Response.json(
       { ok: true, value: v == null ? "" : String(v) },
       { headers: { "Cache-Control": "private, no-store" } },
     );
   } catch (error) {
     console.error("[wiki/contributions/value] read failed", error);
-    return NextResponse.json(
+    return Response.json(
       { ok: false, error: "value_unavailable" },
       { status: 503, headers: { "Cache-Control": "private, no-store", "Retry-After": "30" } },
     );

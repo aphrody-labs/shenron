@@ -1,4 +1,3 @@
-import { NextResponse, type NextRequest } from "next/server";
 import { EXTERNAL_SOURCE_KINDS, searchExternalSources } from "@/lib/external-source-catalog";
 
 export const runtime = "nodejs";
@@ -11,8 +10,8 @@ export const dynamic = "force-dynamic";
  * consommateur peut filtrer par provenance mais aucun type de source n'est
  * exclu de l'index. Le canon concerne l'éditorial, pas la trouvabilité.
  */
-export async function GET(request: NextRequest) {
-  const params = request.nextUrl.searchParams;
+export async function GET(request: Request) {
+  const params = new URL(request.url).searchParams;
   const q = (params.get("q") ?? "").trim().slice(0, 120);
   const kind = params.get("kind") ?? "";
   const limit = Number(params.get("limit") ?? 24);
@@ -21,12 +20,12 @@ export async function GET(request: NextRequest) {
   try {
     payload = await searchExternalSources({ q, kind, limit, offset, strict: true });
   } catch {
-    return NextResponse.json(
+    return Response.json(
       { error: "sources_unavailable" },
       { status: 503, headers: { "cache-control": "no-store" } },
     );
   }
-  return NextResponse.json(
+  return Response.json(
     {
       ...payload,
       q,

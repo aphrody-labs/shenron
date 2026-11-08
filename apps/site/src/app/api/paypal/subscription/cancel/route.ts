@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from "next/server";
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { sitePaypalSubscriptions } from "@/db/schema";
@@ -6,16 +5,16 @@ import { getCurrentUser } from "@/lib/session";
 import { paypalRequest } from "@/lib/paypal";
 import { isSameOriginPaymentRequest } from "@/lib/payment-request";
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   if (!isSameOriginPaymentRequest(request)) {
-    return NextResponse.json(
+    return Response.json(
       { error: "invalid_origin", message: "Requête de paiement invalide" },
       { status: 403 },
     );
   }
   const user = await getCurrentUser();
   if (!user?.sessionUserId || user.sessionUserId === "token-admin") {
-    return NextResponse.json(
+    return Response.json(
       { error: "unauthenticated", message: "Authentification requise" },
       { status: 401 },
     );
@@ -23,7 +22,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   const subscriptionId = body?.subscriptionId;
   if (typeof subscriptionId !== "string" || !/^[A-Z0-9-]{8,64}$/.test(subscriptionId)) {
-    return NextResponse.json(
+    return Response.json(
       { error: "invalid_subscription", message: "Abonnement PayPal invalide" },
       { status: 400 },
     );
@@ -46,7 +45,7 @@ export async function POST(request: NextRequest) {
     )
     .limit(1);
   if (!subscription)
-    return NextResponse.json(
+    return Response.json(
       { error: "subscription_not_found", message: "Abonnement introuvable" },
       { status: 404 },
     );
@@ -60,9 +59,9 @@ export async function POST(request: NextRequest) {
       .update(sitePaypalSubscriptions)
       .set({ status: "CANCELLED", cancelledAt: new Date(), updatedAt: new Date() })
       .where(eq(sitePaypalSubscriptions.id, subscription.id));
-    return NextResponse.json({ status: "cancelled" });
+    return Response.json({ status: "cancelled" });
   } catch {
-    return NextResponse.json(
+    return Response.json(
       { error: "provider_unavailable", message: "Annulation PayPal indisponible" },
       { status: 503 },
     );

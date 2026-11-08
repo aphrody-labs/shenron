@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto";
 import { and, eq } from "drizzle-orm";
-import { NextResponse } from "next/server";
 import { db, schema } from "@/lib/db";
 import { sessionAuth } from "@/lib/host-auth";
 import {
@@ -16,7 +15,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 function finish(origin: string, result: "linked" | "error", cookieName: string) {
-  const response = NextResponse.redirect(new URL(`/settings?steam=${result}`, origin), 303);
+  const response = Response.redirect(new URL(`/settings?steam=${result}`, origin), 303);
   response.headers.set("Set-Cookie", clearSteamLinkCookieHeader(cookieName, origin));
   response.headers.set("Cache-Control", "no-store");
   response.headers.set("Referrer-Policy", "no-referrer");

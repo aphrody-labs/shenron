@@ -19,7 +19,6 @@
  * Chaque question posée est comptée dans `canon_verdicts` (la mémoire de
  * l'arbitre) ; l'échec de ce compteur n'empêche jamais la réponse.
  */
-import { NextRequest, NextResponse } from "next/server";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { canonPreuves } from "@/lib/canon-preuves";
@@ -40,7 +39,7 @@ const CORS = {
 };
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS });
+  return new Response(null, { status: 204, headers: CORS });
 }
 
 const QUESTION_MAX = 400;
@@ -61,9 +60,9 @@ async function compterQuestion(question: string, tier: string, score: number, or
   }
 }
 
-export async function GET(req: NextRequest) {
-  const q = (req.nextUrl.searchParams.get("q") ?? "").trim().slice(0, QUESTION_MAX);
-  const assessEvidence = req.nextUrl.searchParams.get("assessEvidence") === "1";
+export async function GET(req: Request) {
+  const q = (new URL(req.url).searchParams.get("q") ?? "").trim().slice(0, QUESTION_MAX);
+  const assessEvidence = new URL(req.url).searchParams.get("assessEvidence") === "1";
   const headers = {
     ...CORS,
     "Cache-Control": assessEvidence
@@ -75,7 +74,7 @@ export async function GET(req: NextRequest) {
     const [config, references] = await Promise.all([getCanonConfig(), getCanonReferences()]);
     const byProvenance: Record<string, number> = {};
     for (const r of references) byProvenance[r.provenance] = (byProvenance[r.provenance] ?? 0) + 1;
-    return NextResponse.json(
+    return Response.json(
       {
         intro: config.intro,
         tiers: config.tiers.map((tier) => ({
@@ -105,7 +104,7 @@ export async function GET(req: NextRequest) {
     );
   }
 
-  const requestedContinuity = req.nextUrl.searchParams.get("continuity");
+  const requestedContinuity = new URL(req.url).searchParams.get("continuity");
   const continuities = ["original_manga", "super", "anime", "gt", "daima", "unspecified"] as const;
   const continuity = continuities.includes(requestedContinuity as CanonContinuity)
     ? (requestedContinuity as CanonContinuity)
@@ -116,7 +115,7 @@ export async function GET(req: NextRequest) {
     ? await canonEvidenceDecision(q, verdict.references ?? [])
     : null;
   void compterQuestion(q, verdict.tier, verdict.score, verdict.origine);
-  return NextResponse.json(
+  return Response.json(
     {
       question: q,
       evidenceAssessmentEnabled: isCanonEvidenceEnabled(),

@@ -1,4 +1,3 @@
-import { NextResponse } from "next/server";
 import { readAccountData } from "@/lib/account-data";
 import { getShenronUserResult } from "@/lib/shenron";
 import { getSessionUser } from "@/lib/session";
@@ -10,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const me = await getSessionUser();
-  if (!me?.user) return NextResponse.json({ error: "Connexion requise" }, { status: 401 });
+  if (!me?.user) return Response.json({ error: "Connexion requise" }, { status: 401 });
   const [siteData, botProfile, steam] = await Promise.all([
     readAccountData({
       authUserId: me.sessionUserId,
@@ -29,7 +28,7 @@ export async function GET() {
       )
       .limit(1),
   ]);
-  return NextResponse.json(
+  return Response.json(
     {
       formatVersion: 1,
       exportedAt: new Date().toISOString(),

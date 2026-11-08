@@ -11,7 +11,6 @@
  *   - slug : slug de l'œuvre (ex: dragon-ball)
  *   - edition : tankobon | full_color | kanzenban | soshuuhen | etc.
  */
-import { NextRequest, NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 
 export const runtime = "nodejs";
@@ -25,11 +24,11 @@ const CORS = {
 };
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS });
+  return new Response(null, { status: 204, headers: CORS });
 }
 
-export async function GET(req: NextRequest) {
-  const url = req.nextUrl ?? new URL(req.url);
+export async function GET(req: Request) {
+  const url = new URL(req.url) ?? new URL(req.url);
   const kind = url.searchParams.get("kind") || undefined;
   const series = url.searchParams.get("series") || undefined;
   const slug = url.searchParams.get("slug") || undefined;
@@ -39,7 +38,7 @@ export async function GET(req: NextRequest) {
     // `null` = lecture PostgreSQL échouée (`safe`) : une panne, jamais un `[]` en 200.
     const works = await dbUniverse.mediaWorks({ kind, series, slug });
     if (works === null) {
-      return NextResponse.json(
+      return Response.json(
         { error: "Œuvres média momentanément indisponibles." },
         { status: 503, headers: { ...CORS, "Cache-Control": "no-store" } },
       );
@@ -55,7 +54,7 @@ export async function GET(req: NextRequest) {
       })
       .filter((w) => w.editions.length > 0 || !edition);
 
-    return NextResponse.json(
+    return Response.json(
       {
         data: filteredWorks,
         total: filteredWorks.length,
@@ -76,7 +75,7 @@ export async function GET(req: NextRequest) {
     );
   } catch (error) {
     console.error("[API_WIKI_MEDIA_ERROR]", error);
-    return NextResponse.json(
+    return Response.json(
       { error: "Erreur interne lors de la récupération des œuvres média." },
       { status: 500, headers: { ...CORS, "Cache-Control": "no-store" } },
     );

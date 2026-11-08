@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from "next/server";
 import { and, count, desc, eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { siteReports, wikiRevisions } from "@/db/schema";
@@ -11,12 +10,12 @@ export const dynamic = "force-dynamic";
  * GET /api/admin/reports — Liste les signalements avec filtres et compteurs par statut.
  * Les signalements supprimés logiquement (visible: false) sont toujours exclus.
  */
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   if (!(await isAdminOrToken(req))) {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    return Response.json({ error: "Non autorisé" }, { status: 401 });
   }
 
-  const url = req.nextUrl;
+  const url = new URL(req.url);
   const statusFilter = url.searchParams.get("status") ?? "open";
 
   const [allRows, countRows] = await Promise.all([
@@ -55,7 +54,7 @@ export async function GET(req: NextRequest) {
   }
   counts.all = grandTotal;
 
-  return NextResponse.json({
+  return Response.json({
     ok: true,
     items: allRows,
     counts,
@@ -67,16 +66,16 @@ export async function GET(req: NextRequest) {
  * - statut, note interne, résolution
  * - bascule de visibilité (suppression / restauration logique) avec historique wikiRevisions
  */
-export async function PATCH(req: NextRequest) {
+export async function PATCH(req: Request) {
   const { allowed, me } = await adminUserOrToken(req);
   if (!allowed) {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    return Response.json({ error: "Non autorisé" }, { status: 401 });
   }
 
   const body = await req.json();
   const id = String(body.id ?? "");
   if (!id) {
-    return NextResponse.json({ error: "Identifiant manquant" }, { status: 400 });
+    return Response.json({ error: "Identifiant manquant" }, { status: 400 });
   }
 
   if (typeof body.visible === "boolean") {
@@ -108,9 +107,9 @@ export async function PATCH(req: NextRequest) {
     });
 
     if (!updated) {
-      return NextResponse.json({ error: "Signalement introuvable" }, { status: 404 });
+      return Response.json({ error: "Signalement introuvable" }, { status: 404 });
     }
-    return NextResponse.json({ ok: true, report: updated });
+    return Response.json({ ok: true, report: updated });
   }
 
   const updatePayload: Record<string, unknown> = {
@@ -130,24 +129,24 @@ export async function PATCH(req: NextRequest) {
     .returning();
 
   if (!updated) {
-    return NextResponse.json({ error: "Signalement introuvable" }, { status: 404 });
+    return Response.json({ error: "Signalement introuvable" }, { status: 404 });
   }
-  return NextResponse.json({ ok: true, report: updated });
+  return Response.json({ ok: true, report: updated });
 }
 
 /**
  * DELETE /api/admin/reports?id=... — Suppression logique d'un signalement.
  * Ne supprime JAMAIS physiquement : passe visible à false et consigne dans wikiRevisions.
  */
-export async function DELETE(req: NextRequest) {
+export async function DELETE(req: Request) {
   const { allowed, me } = await adminUserOrToken(req);
   if (!allowed) {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    return Response.json({ error: "Non autorisé" }, { status: 401 });
   }
 
-  const id = req.nextUrl.searchParams.get("id");
+  const id = new URL(req.url).searchParams.get("id");
   if (!id) {
-    return NextResponse.json({ error: "Identifiant manquant" }, { status: 400 });
+    return Response.json({ error: "Identifiant manquant" }, { status: 400 });
   }
 
   const ok = await db.transaction(async (tx) => {
@@ -178,7 +177,7 @@ export async function DELETE(req: NextRequest) {
   });
 
   if (!ok) {
-    return NextResponse.json({ error: "Signalement introuvable" }, { status: 404 });
+    return Response.json({ error: "Signalement introuvable" }, { status: 404 });
   }
-  return NextResponse.json({ ok: true });
+  return Response.json({ ok: true });
 }

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-import { NextResponse } from "next/server";
 import { dbUniverse } from "@/lib/db-universe";
 import {
   CRUNCHYROLL_SERIES_BY_SHENRON,
@@ -27,13 +26,13 @@ const HEADERS = {
   "Cache-Control": "public, s-maxage=300, stale-while-revalidate=3600",
 };
 const reply = (body: unknown, status = 200) =>
-  NextResponse.json(body, {
+  Response.json(body, {
     status,
     headers: status === 200 ? HEADERS : { ...HEADERS, "Cache-Control": "no-store" },
   });
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: HEADERS });
+  return new Response(null, { status: 204, headers: HEADERS });
 }
 
 async function seriesRows(series: string): Promise<ShenronEpisodeRow[] | null> {

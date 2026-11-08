@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { SITE_URL } from "@/lib/config";
 import { db } from "@/lib/db";
@@ -20,16 +19,16 @@ type PayPalSubscription = {
 
 const PLAN_KEYS = ["vip_monthly", "vip_annual"] as const;
 
-export async function POST(request: NextRequest) {
+export async function POST(request: Request) {
   if (!isSameOriginPaymentRequest(request)) {
-    return NextResponse.json(
+    return Response.json(
       { error: "invalid_origin", message: "Requête de paiement invalide" },
       { status: 403 },
     );
   }
   const user = await getCurrentUser();
   if (!user?.sessionUserId || user.sessionUserId === "token-admin") {
-    return NextResponse.json(
+    return Response.json(
       { error: "unauthenticated", message: "Authentification requise" },
       { status: 401 },
     );
@@ -38,7 +37,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json().catch(() => null);
   const planKey = body?.plan;
   if (!PLAN_KEYS.includes(planKey)) {
-    return NextResponse.json(
+    return Response.json(
       { error: "unknown_plan", message: "Plan d'abonnement inconnu" },
       { status: 400 },
     );
@@ -49,7 +48,7 @@ export async function POST(request: NextRequest) {
     planId = paypalPlanId(planKey);
     await ensurePayPalReady();
   } catch {
-    return NextResponse.json(
+    return Response.json(
       { error: "provider_unavailable", message: "Paiement PayPal indisponible" },
       { status: 503 },
     );
@@ -61,7 +60,7 @@ export async function POST(request: NextRequest) {
     plan: planKey,
   });
   if (!reservationId) {
-    return NextResponse.json(
+    return Response.json(
       {
         error: "checkout_in_progress",
         message: "Un abonnement ou un paiement est déjà en cours pour ce compte.",
@@ -94,7 +93,7 @@ export async function POST(request: NextRequest) {
     const expectedOrigin =
       env.PAYPAL_ENV === "live" ? "https://www.paypal.com" : "https://www.sandbox.paypal.com";
     if (!approvalUrl || new URL(approvalUrl).origin !== expectedOrigin) {
-      return NextResponse.json(
+      return Response.json(
         { error: "checkout_failed", message: "Lien d'approbation PayPal invalide" },
         { status: 502 },
       );
@@ -113,7 +112,7 @@ export async function POST(request: NextRequest) {
         .where(eq(siteSubscriptionCheckoutReservations.userId, user.sessionUserId));
     });
 
-    return NextResponse.json({ url: approvalUrl });
+    return Response.json({ url: approvalUrl });
   } catch (error) {
     if (error instanceof PayPalApiError && error.status >= 400 && error.status < 500) {
       try {
@@ -126,7 +125,7 @@ export async function POST(request: NextRequest) {
         console.error("Failed to release rejected PayPal checkout reservation");
       }
     }
-    return NextResponse.json(
+    return Response.json(
       { error: "checkout_failed", message: "Création de l'abonnement PayPal indisponible" },
       { status: 503 },
     );

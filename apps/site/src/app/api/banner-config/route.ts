@@ -9,13 +9,12 @@ import { HostBannerError } from "@/lib/host-banner-error";
 import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
 import { getPageBanners, savePageBanners } from "@/lib/banner-config";
 import { revalidatePath } from "next/cache";
-import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const forbidden = () => NextResponse.json({ error: "Forbidden" }, { status: 403 });
-const badRequest = (msg: string) => NextResponse.json({ error: msg }, { status: 400 });
+const forbidden = () => Response.json({ error: "Forbidden" }, { status: 403 });
+const badRequest = (msg: string) => Response.json({ error: msg }, { status: 400 });
 
 /** Paths publics impactés par une bannière (ISR). */
 const REVALIDATE_PATHS = [
@@ -39,12 +38,12 @@ const REVALIDATE_PATHS = [
   "/games/2048",
 ];
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   if (!(await isAdminOrToken(req))) return forbidden();
-  return NextResponse.json({ banners: await getPageBanners() });
+  return Response.json({ banners: await getPageBanners() });
 }
 
-export async function PUT(req: NextRequest) {
+export async function PUT(req: Request) {
   const { allowed, me } = await adminUserOrToken(req);
   if (!allowed) return forbidden();
   let body: unknown;
@@ -73,10 +72,10 @@ export async function PUT(req: NextRequest) {
     } catch {
       /* best-effort */
     }
-    return NextResponse.json({ ok: true, banners });
+    return Response.json({ ok: true, banners });
   } catch (err) {
     if (err instanceof HostBannerError)
-      return NextResponse.json({ error: err.message }, { status: err.status });
+      return Response.json({ error: err.message }, { status: err.status });
     return badRequest(err instanceof Error ? err.message : "erreur");
   }
 }

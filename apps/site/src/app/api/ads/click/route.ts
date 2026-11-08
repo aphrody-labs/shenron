@@ -1,5 +1,4 @@
 import { and, eq, gt, gte, inArray, isNull, lte, or, sql } from "drizzle-orm";
-import { NextRequest, NextResponse } from "next/server";
 import {
   baSubscription,
   siteAdCampaigns,
@@ -17,13 +16,13 @@ import { allowsPublicAds } from "@/lib/public-ads";
 export const dynamic = "force-dynamic";
 
 function unavailable() {
-  return NextResponse.json({ error: "ad_unavailable" }, { status: 404 });
+  return Response.json({ error: "ad_unavailable" }, { status: 404 });
 }
 
-export async function GET(request: NextRequest) {
-  const creativeId = request.nextUrl.searchParams.get("creative") ?? "";
-  const placementKey = request.nextUrl.searchParams.get("placement") ?? "";
-  const pathname = request.nextUrl.searchParams.get("path") ?? "";
+export async function GET(request: Request) {
+  const creativeId = new URL(request.url).searchParams.get("creative") ?? "";
+  const placementKey = new URL(request.url).searchParams.get("placement") ?? "";
+  const pathname = new URL(request.url).searchParams.get("path") ?? "";
   if (
     !/^[a-z0-9_-]{3,80}$/.test(creativeId) ||
     !/^[a-z0-9][a-z0-9_-]{1,63}$/.test(placementKey) ||
@@ -111,7 +110,7 @@ export async function GET(request: NextRequest) {
           inArray(
             siteAdCreatives.locale,
             ["fr", "en", "ja"].filter(
-              (locale) => locale === (request.nextUrl.searchParams.get("locale") ?? "fr"),
+              (locale) => locale === (new URL(request.url).searchParams.get("locale") ?? "fr"),
             ),
           ),
           or(isNull(siteAdCampaigns.startsAt), lte(siteAdCampaigns.startsAt, now)),
@@ -142,7 +141,7 @@ export async function GET(request: NextRequest) {
         },
       });
 
-    return NextResponse.redirect(creative.destinationUrl, 302);
+    return Response.redirect(creative.destinationUrl, 302);
   } catch {
     return unavailable();
   }

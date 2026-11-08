@@ -9,7 +9,6 @@
  * écriture réservée au porteur du jeton. `PATCH` est un patch partiel — une clé
  * absente n'est pas touchée, `null` efface.
  */
-import { NextResponse } from "next/server";
 import { hasValidApiToken } from "@/lib/admin-guard";
 import { deleteDatabook, getDatabook, updateDatabook, type DatabookWrite } from "@/lib/databooks";
 import { databookView, parseDatabookId } from "@/lib/databooks-rules";
@@ -24,14 +23,14 @@ const CORS = {
 };
 
 export function OPTIONS() {
-  return new NextResponse(null, { status: 204, headers: CORS });
+  return new Response(null, { status: 204, headers: CORS });
 }
 
 const introuvable = () =>
-  NextResponse.json({ error: "Fiche introuvable." }, { status: 404, headers: CORS });
+  Response.json({ error: "Fiche introuvable." }, { status: 404, headers: CORS });
 
 const nonAutorise = () =>
-  NextResponse.json(
+  Response.json(
     { error: "Jeton porteur requis." },
     { status: 401, headers: { ...CORS, "WWW-Authenticate": "Bearer" } },
   );
@@ -43,7 +42,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     const rec = await getDatabook(id);
     // Une fiche masquée n'existe pas pour un appel non authentifié.
     if (!rec || (!rec.visible && !hasValidApiToken(req))) return introuvable();
-    return NextResponse.json(databookView(rec), {
+    return Response.json(databookView(rec), {
       headers: {
         ...CORS,
         // Une fiche masquée n'est servie qu'au porteur du jeton : elle ne doit
@@ -55,7 +54,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
     });
   } catch (e) {
     console.error("[api/databooks/:id] GET a échoué:", e);
-    return NextResponse.json({ error: "Lecture impossible." }, { status: 500, headers: CORS });
+    return Response.json({ error: "Lecture impossible." }, { status: 500, headers: CORS });
   }
 }
 
@@ -67,14 +66,14 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
   try {
     corps = (await req.json()) as DatabookWrite;
   } catch {
-    return NextResponse.json({ error: "Corps JSON invalide." }, { status: 400, headers: CORS });
+    return Response.json({ error: "Corps JSON invalide." }, { status: 400, headers: CORS });
   }
   try {
     const rec = await updateDatabook(id, corps);
-    return rec ? NextResponse.json(databookView(rec), { headers: CORS }) : introuvable();
+    return rec ? Response.json(databookView(rec), { headers: CORS }) : introuvable();
   } catch (e) {
     console.error("[api/databooks/:id] PATCH a échoué:", e);
-    return NextResponse.json({ error: "Mise à jour impossible." }, { status: 500, headers: CORS });
+    return Response.json({ error: "Mise à jour impossible." }, { status: 500, headers: CORS });
   }
 }
 
@@ -84,10 +83,10 @@ export async function DELETE(req: Request, ctx: { params: Promise<{ id: string }
   if (id === null) return introuvable();
   try {
     return (await deleteDatabook(id))
-      ? new NextResponse(null, { status: 204, headers: CORS })
+      ? new Response(null, { status: 204, headers: CORS })
       : introuvable();
   } catch (e) {
     console.error("[api/databooks/:id] DELETE a échoué:", e);
-    return NextResponse.json({ error: "Suppression impossible." }, { status: 500, headers: CORS });
+    return Response.json({ error: "Suppression impossible." }, { status: 500, headers: CORS });
   }
 }
