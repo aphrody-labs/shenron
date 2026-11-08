@@ -14,7 +14,7 @@ type Context = { params: Promise<{ id: string }> };
 
 export async function GET(request: Request, { params }: Context) {
   const { id } = await params;
-  if (!/^(875|876|877|878)$/.test(id))
+  if (!/^(875|876|877|878|879)$/.test(id))
     return Response.json(
       { error: "source_not_found" },
       { status: 404, headers: { "Cache-Control": "no-store" } },

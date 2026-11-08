@@ -21,7 +21,9 @@
     "./sha256": "./src/sha256.ts",
     "./video-plan": "./src/video-plan.ts",
     "./crunchyroll-mapping": "./src/crunchyroll-mapping.ts",
-    "./episode-playback": "./src/episode-playback.ts"
+    "./episode-playback": "./src/episode-playback.ts",
+    "./video-download": "./src/video-download.ts",
+    "./r2-sync": "./src/r2-sync.ts"
   },
   "publishConfig": {
     "access": "public",
@@ -50,7 +52,9 @@
       "./sha256": "pure",
       "./video-plan": "pure",
       "./crunchyroll-mapping": "pure",
-      "./episode-playback": "pure"
+      "./episode-playback": "pure",
+      "./video-download": "pure",
+      "./r2-sync": "pure"
     }
   }
 }

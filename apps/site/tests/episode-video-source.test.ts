@@ -7,14 +7,14 @@ const shenronSource = "https://cdn.dragonballfr.com/media/episodes/beerus-01/opt
 
 test("published Beerus sources use immutable episode-specific paths", () => {
   const hash = "a".repeat(64);
-  for (const id of [875, 876, 877, 878]) {
+  for (const id of [875, 876, 877, 878, 879]) {
     const url = `https://cdn.dragonballfr.com/media/episodes/${id}/${hash}/source.mp4`;
     expect(approvedEpisodeVideoURL(url)?.href).toBe(url);
     expect(nativeEpisodeVideoSource(url)).toBe(url);
     expect(approvedEpisodeVideoURL(url + "?token=private")).toBeNull();
   }
   for (const path of [
-    `879/${hash}/source.mp4`,
+    `880/${hash}/source.mp4`,
     "876/not-a-hash/source.mp4",
     `876/${hash}/other.mp4`,
   ])

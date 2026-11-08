@@ -4,6 +4,106 @@ import { CRUNCHYROLL_SERIES_BY_SHENRON } from "@aphrody/shenron-media/crunchyrol
 import { readFileSync } from "node:fs";
 import { importedCatalogue } from "./import-runtime";
 
+const CANONICAL_BEERUS_EPISODES: ReadonlyArray<
+  CrunchyrollEpisodeMeta & { readonly aliases: readonly string[] }
+> = [
+  {
+    id: "GE00389313JAJP",
+    aliases: ["1", "875"],
+    seriesId: "GT00389311",
+    seasonId: "G6MG189QW",
+    episodeNumber: 1,
+    title: "Le dieu de la Destruction",
+    slugTitle: "the-god-who-destroys",
+    durationMs: 1397000,
+    audioLocale: "ja-JP",
+    subtitleLocales: ["fr-FR"],
+    description:
+      "Quatre ans après la défaite de Majin Buu, Goku travaille comme fermier mais aspire à s'entraîner. Beerus se réveille.",
+    airDate: "2026-10-11T00:00:00Z",
+    isPremiumOnly: false,
+    watchUrl: "https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys",
+  },
+  {
+    id: "GE00389314JAJP",
+    aliases: ["2", "876"],
+    seriesId: "GT00389311",
+    seasonId: "G6MG189QW",
+    episodeNumber: 2,
+    title: "Le dieu de la Destruction se rend sur la planète de Kaïo",
+    slugTitle: "the-god-of-destruction-heads-to-the-planet-of-the-kai",
+    durationMs: 1397000,
+    audioLocale: "ja-JP",
+    subtitleLocales: ["fr-FR"],
+    description:
+      "Beerus arrive sur la planète de Kaïo du Nord à la recherche du Super Saiyan divin et affronte Goku.",
+    airDate: "2026-10-18T00:00:00Z",
+    isPremiumOnly: false,
+    watchUrl:
+      "https://www.crunchyroll.com/fr/watch/GE00389314JAJP/the-god-of-destruction-heads-to-the-planet-of-the-kai",
+  },
+  {
+    id: "GE00389315JAJP",
+    aliases: ["3", "877"],
+    seriesId: "GT00389311",
+    seasonId: "G6MG189QW",
+    episodeNumber: 3,
+    title: "Le dieu de la Destruction se dirige vers la Terre",
+    slugTitle: "the-god-of-destruction-heads-to-earth",
+    durationMs: 1397000,
+    audioLocale: "ja-JP",
+    subtitleLocales: ["fr-FR"],
+    description:
+      "Après avoir vaincu Goku, Beerus et Whis se dirigent vers la Terre où Vegeta tente désespérément d'éviter la colère du dieu de la Destruction.",
+    airDate: "2026-10-25T00:00:00Z",
+    isPremiumOnly: false,
+    watchUrl:
+      "https://www.crunchyroll.com/fr/watch/GE00389315JAJP/the-god-of-destruction-heads-to-earth",
+  },
+  {
+    id: "GE00389316JAJP",
+    aliases: ["4", "878"],
+    seriesId: "GT00389311",
+    seasonId: "G6MG189QW",
+    episodeNumber: 4,
+    title: "Le dieu des Saiyans",
+    slugTitle: "the-god-of-saiyans",
+    durationMs: 1397000,
+    audioLocale: "ja-JP",
+    subtitleLocales: ["fr-FR"],
+    description:
+      "Shenron révèle le secret du rituel du Super Saiyan divin, qui nécessite l'énergie de cinq Saiyans au cœur pur.",
+    airDate: "2026-11-01T00:00:00Z",
+    isPremiumOnly: false,
+    watchUrl: "https://www.crunchyroll.com/fr/watch/GE00389316JAJP/the-god-of-saiyans",
+  },
+  {
+    id: "GE00389317JAJP",
+    aliases: ["5", "879"],
+    seriesId: "GT00389311",
+    seasonId: "G6MG189QW",
+    episodeNumber: 5,
+    title: "Le dieu de la Destruction et Son Goku",
+    slugTitle: "the-god-of-destruction-and-son-goku",
+    durationMs: 1397000,
+    audioLocale: "ja-JP",
+    subtitleLocales: ["fr-FR"],
+    description:
+      "Grâce à l'aide de tous, Goku se transforme enfin en Super Saiyan divin. Le combat décisif pour l'avenir de la Terre oppose Goku à Beerus, le dieu de la Destruction.",
+    airDate: "2026-11-08T00:00:00Z",
+    isPremiumOnly: false,
+    watchUrl:
+      "https://www.crunchyroll.com/fr/watch/GE00389317JAJP/the-god-of-destruction-and-son-goku",
+  },
+];
+
+function stripAliases({
+  aliases: _aliases,
+  ...episode
+}: CrunchyrollEpisodeMeta & { readonly aliases: readonly string[] }): CrunchyrollEpisodeMeta {
+  return episode;
+}
+
 const BEARER_TOKEN = /^[A-Za-z0-9._~+/-]+=*$/;
 
 function validBearer(value: unknown): value is string {
@@ -151,25 +251,10 @@ export class CrunchyrollClient {
       (episode) => episode.id === episodeId,
     );
     if (imported) return imported;
-    if (episodeId === "GE00389313JAJP" || episodeId === "1" || episodeId === "875") {
-      return {
-        id: "GE00389313JAJP",
-        seriesId: "GT00389311",
-        seasonId: "G6MG189QW",
-        episodeNumber: 1,
-        title: "Le dieu de la Destruction",
-        slugTitle: "the-god-who-destroys",
-        durationMs: 1397000,
-        audioLocale: "ja-JP",
-        subtitleLocales: ["fr-FR"],
-        description:
-          "Quatre ans après la défaite de Majin Buu, Goku travaille comme fermier mais aspire à s'entraîner. Beerus se réveille.",
-        airDate: "2026-10-11T00:00:00Z",
-        isPremiumOnly: false,
-        watchUrl: "https://www.crunchyroll.com/fr/watch/GE00389313JAJP/the-god-who-destroys",
-      };
-    }
-    return null;
+    const canonical = CANONICAL_BEERUS_EPISODES.find(
+      (episode) => episode.id === episodeId || episode.aliases.includes(episodeId),
+    );
+    return canonical ? stripAliases(canonical) : null;
   }
 
   /**
@@ -189,11 +274,22 @@ export class CrunchyrollClient {
         results.push(episode);
     }
 
-    if (q.includes("beerus") || q.includes("super") || q.includes("dragon ball")) {
+    const matchesSeries = q.includes("beerus") || q.includes("super") || q.includes("dragon ball");
+    if (matchesSeries) {
       const series = await this.getKnownSeries("DBS_BEERUS");
       if (series) results.push(series);
-      const ep1 = await this.getEpisode("GE00389313JAJP");
-      if (ep1 && !results.some((result) => result.id === ep1.id)) results.push(ep1);
+    }
+
+    for (const canonical of CANONICAL_BEERUS_EPISODES) {
+      const episode = stripAliases(canonical);
+      if (
+        matchesSeries ||
+        [episode.id, episode.title, episode.slugTitle ?? "", episode.description ?? ""].some(
+          (value) => value.toLowerCase().includes(q),
+        )
+      ) {
+        if (!results.some((result) => result.id === episode.id)) results.push(episode);
+      }
     }
     return results;
   }

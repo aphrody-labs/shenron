@@ -151,3 +151,70 @@ describe("Crunchyroll private session credentials", () => {
     expect(inspect({ cookiesFile: await fixture("{broken", true) }).cookies).toBe(false);
   });
 });
+
+describe("Crunchyroll canonical DBS_BEERUS catalogue", () => {
+  test("resolves canonical episodes 1 through 5 by Crunchyroll ID, episode number, and Shenron ID", async () => {
+    const { CrunchyrollClient } = await import("./client");
+    const client = new CrunchyrollClient();
+    const expected = [
+      {
+        crunchyrollId: "GE00389313JAJP",
+        number: "1",
+        shenronId: "875",
+        slugTitle: "the-god-who-destroys",
+        title: "Le dieu de la Destruction",
+        airDate: "2026-10-11T00:00:00Z",
+      },
+      {
+        crunchyrollId: "GE00389314JAJP",
+        number: "2",
+        shenronId: "876",
+        slugTitle: "the-god-of-destruction-heads-to-the-planet-of-the-kai",
+        title: "Le dieu de la Destruction se rend sur la planète de Kaïo",
+        airDate: "2026-10-18T00:00:00Z",
+      },
+      {
+        crunchyrollId: "GE00389315JAJP",
+        number: "3",
+        shenronId: "877",
+        slugTitle: "the-god-of-destruction-heads-to-earth",
+        title: "Le dieu de la Destruction se dirige vers la Terre",
+        airDate: "2026-10-25T00:00:00Z",
+      },
+      {
+        crunchyrollId: "GE00389316JAJP",
+        number: "4",
+        shenronId: "878",
+        slugTitle: "the-god-of-saiyans",
+        title: "Le dieu des Saiyans",
+        airDate: "2026-11-01T00:00:00Z",
+      },
+      {
+        crunchyrollId: "GE00389317JAJP",
+        number: "5",
+        shenronId: "879",
+        slugTitle: "the-god-of-destruction-and-son-goku",
+        title: "Le dieu de la Destruction et Son Goku",
+        airDate: "2026-11-08T00:00:00Z",
+      },
+    ];
+    for (const item of expected) {
+      for (const query of [item.crunchyrollId, item.number, item.shenronId]) {
+        const ep = await client.getEpisode(query);
+        expect(ep).toMatchObject({
+          id: item.crunchyrollId,
+          seriesId: "GT00389311",
+          episodeNumber: Number(item.number),
+          title: item.title,
+          slugTitle: item.slugTitle,
+          airDate: item.airDate,
+          watchUrl: `https://www.crunchyroll.com/fr/watch/${item.crunchyrollId}/${item.slugTitle}`,
+        });
+      }
+    }
+    const searchResults = await client.search("beerus");
+    for (const item of expected) {
+      expect(searchResults.some((entry) => entry.id === item.crunchyrollId)).toBe(true);
+    }
+  });
+});

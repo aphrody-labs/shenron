@@ -83,7 +83,7 @@ function retainSource(path: string, id: number) {
 
 /** Only immutable, owner-published episode sources can enter the decoder. */
 export function episodeTimelineSource(id: number, players: readonly Player[] | null): URL | null {
-  if (id !== 875 && id !== 876 && id !== 877 && id !== 878) return null;
+  if (id !== 875 && id !== 876 && id !== 877 && id !== 878 && id !== 879) return null;
   for (const player of players ?? []) {
     if (!URL.canParse(player.embedUrl)) continue;
     const url = new URL(player.embedUrl);

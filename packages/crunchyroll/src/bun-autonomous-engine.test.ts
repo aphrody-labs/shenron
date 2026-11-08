@@ -20,6 +20,6 @@ describe("BunVideoAutonomousEngine", () => {
     const engine = new BunVideoAutonomousEngine();
     const probe = await engine.probeVideoPage("https://dragonballfr.com/wiki/episodes/875");
     expect(probe.status).toBe(200);
-    expect(probe.title).toContain("Le dieu de la Destruction");
+    expect(probe.title).toContain("Épisode 1 : Le dieu de la");
   });
 });
