@@ -57,8 +57,10 @@ const environment: Environment = {
 setDefaultTimeout(60_000);
 
 let repo = "";
+const GIT_BIN =
+  (process.platform === "win32" ? Bun.which("git.exe") : null) ?? Bun.which("git") ?? "git";
 const git = (...args: string[]) => {
-  const run = Bun.spawnSync(["git", "-C", repo, ...args], { stdout: "pipe", stderr: "pipe" });
+  const run = Bun.spawnSync([GIT_BIN, "-C", repo, ...args], { stdout: "pipe", stderr: "pipe" });
   if (run.exitCode !== 0) throw new Error(run.stderr.toString());
   return run.stdout.toString().trim();
 };

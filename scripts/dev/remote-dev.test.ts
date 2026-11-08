@@ -134,8 +134,8 @@ describe("build host selection", () => {
   });
 
   test("prefers the lowest load per core, not the lowest raw load", () => {
-    const ranked = rankHosts([host("vps", 6, 12), host("bunos", 4, 6)]);
-    expect(ranked.map((h) => h.host)).toEqual(["vps", "bunos"]);
+    const ranked = rankHosts([host("vps", 6, 12), host("cdn", 4, 6)]);
+    expect(ranked.map((h) => h.host)).toEqual(["vps", "cdn"]);
   });
 
   test("drops hosts short on memory or disk", () => {
@@ -148,9 +148,9 @@ describe("build host selection", () => {
   });
 
   test("parses the probe output and rejects garbage", () => {
-    const probe = parseProbe("bunos", "6\n0.49\n10485760\n73400320\n");
+    const probe = parseProbe("cdn", "6\n0.49\n10485760\n73400320\n");
     expect(probe).toEqual({
-      host: "bunos",
+      host: "cdn",
       cores: 6,
       load1: 0.49,
       memAvailableGiB: 10,

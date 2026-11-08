@@ -234,11 +234,13 @@ fi
 # Stable layers first, per-release binaries last (deploy/docker/Dockerfile): with unchanged lanes
 # every COPY layer is a cache hit, and a registry or delta ship only moves the changed tail.
 phase "image"
-"$ENGINE" build -q -f deploy/docker/Dockerfile --build-arg SHENRON_REVISION="$SHA" \
+DOCKER_BUILDKIT=1 "$ENGINE" build -q -f deploy/docker/Dockerfile --build-arg SHENRON_REVISION="$SHA" \
   --label "dev.shenron.image-key=$LANE_KEY_IMAGE" -t "$IMAGE:$SHA" -t "$IMAGE:local" .
-timeout 60 "$ENGINE" run --rm --network none "$IMAGE:$SHA" version
-timeout 60 "$ENGINE" run --rm --network none --entrypoint /usr/local/bin/shenron-bot "$IMAGE:$SHA" --smoke
-timeout 60 "$ENGINE" run --rm --network none --entrypoint /usr/local/bin/koharu-sdk "$IMAGE:$SHA" --help >/dev/null
+smoke_pids=()
+timeout 60 "$ENGINE" run --rm --network none "$IMAGE:$SHA" version & smoke_pids+=($!)
+timeout 60 "$ENGINE" run --rm --network none --entrypoint /usr/local/bin/shenron-bot "$IMAGE:$SHA" --smoke & smoke_pids+=($!)
+timeout 60 "$ENGINE" run --rm --network none --entrypoint /usr/local/bin/koharu-sdk "$IMAGE:$SHA" --help >/dev/null & smoke_pids+=($!)
+for pid in "${smoke_pids[@]}"; do wait "$pid"; done
 # Keep the current image plus the newest previous revisions; never touch volumes.
 "$ENGINE" image ls --format '{{.Repository}}:{{.Tag}}' "$IMAGE" \
   | grep -v -F -e "$IMAGE:$SHA" -e "$IMAGE:local" \

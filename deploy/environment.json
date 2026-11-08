@@ -1,8 +1,32 @@
 {
-  "$comment": "Single declarative definition of the Shenron build, deploy and production environment. Read by scripts/deploy/environment.ts (drift gate and emitters), scripts/deploy/lanes.ts (change detection) and deploy/activation/activate.sh (through --emit activation). Runbook: docs/operations/AUTO-DEPLOY.md. No secret, address or host name belongs here.",
+  "$comment": "Single declarative definition of the Shenron build, deploy and production environment across the canonical triad (vps, cdn/bunos, prod). Read by scripts/deploy/environment.ts (drift gate and emitters), scripts/deploy/lanes.ts (change detection) and deploy/activation/activate.sh (through --emit activation). Runbook: docs/operations/AUTO-DEPLOY.md.",
   "schema": 1,
   "primary": "native",
   "primaryReason": "The production host is also the build host: 8 CPU, 31 GiB, warm sccache, target/, Turbopack and Bun caches on local disk, one checkout and one node_modules. Nothing crosses the network, so shipping costs nothing. Dockerfile.build is the hermetic secondary path (other hosts, Windows cross builds, CI) and reads the same pins.",
+  "triad": {
+    "vps": {
+      "alias": "vps",
+      "meshIp": "10.200.77.1",
+      "publicIp": "51.77.147.152",
+      "role": "Build Hub & Mesh Coordinator"
+    },
+    "cdn": {
+      "alias": "cdn",
+      "legacyAlias": "bunos",
+      "meshIp": "10.200.77.3",
+      "publicIp": "51.255.162.6",
+      "role": "Cloudflare Edge Simulator (Pingora Gateway, Garage S3 R2, RQLite D1, Workerd, Mail/Auth)"
+    },
+    "prod": {
+      "alias": "prod",
+      "legacyAlias": "dbfr",
+      "meshIp": "10.200.77.5",
+      "publicIp": "72.60.186.43",
+      "os": "Arch Linux 7.2.11",
+      "domain": "dragonballfr.com",
+      "role": "Production Origin"
+    }
+  },
   "toolchain": {
     "rust": "1.99.1",
     "bun": "1.4.6",
@@ -223,6 +247,7 @@
       "CLAUDE.md",
       "Dockerfile.build",
       "Dockerfile.build.dockerignore",
+      "GEMINI.md",
       "GOAL.md",
       "LICENSE",
       "README.md",
@@ -235,11 +260,16 @@
       "docs",
       "install.ps1",
       "justfile",
+      "llms.txt",
       "replica",
+      "reports",
+      "research_notes",
+      "robots.txt",
       "rust-analyzer.toml",
       "rustfmt.toml",
       "scripts",
-      "themes"
+      "themes",
+      "turbo.json"
     ],
     "ignoreInKeys": [
       "**/test/**",

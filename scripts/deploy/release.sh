@@ -32,8 +32,20 @@ if [ "$mode" = auto ] || [ "$mode" = plan ]; then
   lanes() { bun "$HERE/lanes.ts" "$@"; }
   services=
   holds=
+  declare -A active_revs=()
+  declare -A pid_map=()
   for service in site bot; do
-    base=$(bash "$HERE/active-release.sh" "$service")
+    bash "$HERE/active-release.sh" "$service" > "/tmp/shenron-active-$service.$$" &
+    pid_map[$service]=$!
+  done
+  for service in site bot; do
+    wait "${pid_map[$service]}" || true
+    active_revs[$service]=$(cat "/tmp/shenron-active-$service.$$" 2>/dev/null || true)
+    rm -f "/tmp/shenron-active-$service.$$"
+  done
+  declare -A cached_plans=()
+  for service in site bot; do
+    base=${active_revs[$service]}
     if [ -z "$base" ]; then
       echo "== $service: no active revision found, full release"
       services="$services $service"
@@ -44,11 +56,22 @@ if [ "$mode" = auto ] || [ "$mode" = plan ]; then
       services="$services $service"
       continue
     }
-    plan=$(cd "$SOURCE" && lanes plan --base "$base" --head "$head" --format json)
+    if [ -z "${cached_plans[$base]:-}" ]; then
+      cached_plans[$base]=$(cd "$SOURCE" && lanes plan --base "$base" --head "$head" --format json)
+    fi
+    plan=${cached_plans[$base]}
     echo "== $service: $base -> $head"
-    (cd "$SOURCE" && lanes plan --base "$base" --head "$head" --format text) | sed 's/^/   /'
     PLAN="$plan" SERVICE="$service" bun -e '
       const plan = JSON.parse(process.env.PLAN);
+      const lines = [
+        `   base ${plan.base.slice(0, 12)} -> head ${plan.head.slice(0, 12)}, ${plan.changedFiles} files`,
+        `   rebuild: ${plan.rebuild.join(" ") || "nothing"}`,
+        `   restart: ${plan.services.join(" ") || "nothing"}`,
+        ...Object.entries(plan.holds).map(([hold, files]) => `   HOLD ${hold}: ${files.join(" ")}`),
+        ...(plan.infraNotices.length ? [`   Infra must apply: ${plan.infraNotices.join(" ")}`] : []),
+        ...(plan.unclassified.length ? [`   UNCLASSIFIED: ${plan.unclassified.join(" ")}`] : []),
+      ];
+      console.log(lines.join("\n"));
       if (plan.unclassified.length) process.exit(65);
     ' || { echo "Unclassified paths: classify them in deploy/environment.json" >&2; exit 65; }
     if PLAN="$plan" SERVICE="$service" bun -e 'process.exit(JSON.parse(process.env.PLAN).services.includes(process.env.SERVICE) ? 0 : 1)'; then

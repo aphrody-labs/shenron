@@ -118,38 +118,12 @@ if (mode === "aot" && !supportsAot(aotBun(mode))) {
 }
 if (choice.reason)
   console.error(JSON.stringify({ label: "bot-compile-mode", mode, reason: choice.reason }));
-if ((await compile(mode)) !== 0) {
-  if (mode !== "aot") throw new Error("bot compile failed");
-  // A dependency the AOT compiler rejects must not block a release: keep the bytecode build.
-  console.error(
-    JSON.stringify({ label: "bot-compile-mode", mode: "bytecode", reason: "aot failed" }),
-  );
-  mode = "bytecode";
-  if ((await compile(mode)) !== 0) throw new Error("bot compile failed");
-}
-// Bun's compiled loader keeps the napi binding as a relative native require.
-// Keep the platform package beside the binary so the sealed image can copy it
-// into the runtime filesystem; this is required by Bun 1.4.4 as well as Linux.
-copyRuntimeFile(canvasBinding, join(out, `skia.${canvasPlatform}.node`));
-// Skia shapes the letter-spaced lettering of the cards with ICU data read next to the binary:
-// without `icudtl.dat` the first card drawn aborts the process (render workers included).
-const icuData = join(dirname(canvasBinding), "icudtl.dat");
-if (existsSync(icuData)) copyRuntimeFile(icuData, join(out, "icudtl.dat"));
-// Migrations are read from disk by drizzle at boot: ship them beside the binary.
-const migrations = join(BOT, "src/db/migrations");
-if (existsSync(migrations)) copyRuntimeDirectory(migrations, join(out, "src/db/migrations"));
-// Canvas fonts and banners: the image has no source tree and Infra mounts /app/assets.
-const canvasAssets = Bun.spawn(
-  [process.execPath, "scripts/ship-canvas-assets.ts", join(out, "share")],
-  { cwd: BOT, stdio: ["inherit", "inherit", "inherit"] },
-);
-if ((await canvasAssets.exited) !== 0) throw new Error("canvas assets copy failed");
-// A release worktree's `.git` points outside the build container: the caller passes the commit.
-const sourceCommit = process.env.SHENRON_REVISION ?? (await gitHead());
-if (!/^[0-9a-f]{40}$/.test(sourceCommit)) throw Error("Cannot pin bot source revision");
+
+const GIT_BIN =
+  (process.platform === "win32" ? Bun.which("git.exe") : null) ?? Bun.which("git") ?? "git";
 
 async function gitHead(): Promise<string> {
-  const revision = Bun.spawn(["git", "rev-parse", "HEAD"], {
+  const revision = Bun.spawn([GIT_BIN, "rev-parse", "HEAD"], {
     cwd: ROOT,
     stdout: "pipe",
     stderr: "ignore",
@@ -158,11 +132,59 @@ async function gitHead(): Promise<string> {
   if ((await revision.exited) !== 0) throw Error("Cannot pin bot source revision");
   return head;
 }
-const pipeline = await buildSourcePipelineAsset(
-  join(ROOT, "scripts/ops/bun-source-pipeline.ts"),
-  out,
-  sourceCommit,
-);
+
+const compileBot = async () => {
+  if ((await compile(mode)) !== 0) {
+    if (mode !== "aot") throw new Error("bot compile failed");
+    // A dependency the AOT compiler rejects must not block a release: keep the bytecode build.
+    console.error(
+      JSON.stringify({ label: "bot-compile-mode", mode: "bytecode", reason: "aot failed" }),
+    );
+    mode = "bytecode";
+    if ((await compile(mode)) !== 0) throw new Error("bot compile failed");
+  }
+};
+
+const stageBotRuntimeAssets = async () => {
+  // Bun's compiled loader keeps the napi binding as a relative native require.
+  // Keep the platform package beside the binary so the sealed image can copy it
+  // into the runtime filesystem; this is required by Bun 1.4.4 as well as Linux.
+  copyRuntimeFile(canvasBinding, join(out, `skia.${canvasPlatform}.node`));
+  // Skia shapes the letter-spaced lettering of the cards with ICU data read next to the binary:
+  // without `icudtl.dat` the first card drawn aborts the process (render workers included).
+  const icuData = join(dirname(canvasBinding), "icudtl.dat");
+  if (existsSync(icuData)) copyRuntimeFile(icuData, join(out, "icudtl.dat"));
+  // Migrations are read from disk by drizzle at boot: ship them beside the binary.
+  const migrations = join(BOT, "src/db/migrations");
+  if (existsSync(migrations)) copyRuntimeDirectory(migrations, join(out, "src/db/migrations"));
+};
+
+const stageCanvasAssets = async () => {
+  // Canvas fonts and banners: the image has no source tree and Infra mounts /app/assets.
+  const canvasAssets = Bun.spawn(
+    [process.execPath, "scripts/ship-canvas-assets.ts", join(out, "share")],
+    { cwd: BOT, stdio: ["inherit", "inherit", "inherit"] },
+  );
+  if ((await canvasAssets.exited) !== 0) throw new Error("canvas assets copy failed");
+};
+
+const stagePipelineAsset = async () => {
+  // A release worktree's `.git` points outside the build container: the caller passes the commit.
+  const sourceCommit = process.env.SHENRON_REVISION ?? (await gitHead());
+  if (!/^[0-9a-f]{40}$/.test(sourceCommit)) throw Error("Cannot pin bot source revision");
+  return buildSourcePipelineAsset(
+    join(ROOT, "scripts/ops/bun-source-pipeline.ts"),
+    out,
+    sourceCommit,
+  );
+};
+
+const [, , , pipeline] = await Promise.all([
+  compileBot(),
+  stageBotRuntimeAssets(),
+  stageCanvasAssets(),
+  stagePipelineAsset(),
+]);
 console.log(
   JSON.stringify({
     target,

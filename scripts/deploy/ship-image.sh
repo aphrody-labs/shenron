@@ -5,9 +5,11 @@
 #   scripts/deploy/ship-image.sh [revision]        (default: HEAD of the build worktree)
 #
 # Targets (SHENRON_DEPLOY_TARGET):
-#   ssh:<host>   stream the image over SSH (zstd), then run SHENRON_DEPLOY_COMMAND there
-#                with `<sha> <image tar>`; default command: bash /root/deploy-shenron-image.sh
-#                (the Infra activation entry on prod, a link to /srv/shenron/bin/deploy-image.sh)
+#   ssh:<host>   stream the image over SSH (zstd -T0), then run SHENRON_DEPLOY_COMMAND there
+#                with `<sha> [image-tar]`; default command: bash /root/deploy-shenron-image.sh
+#                (the Infra activation entry on prod, a link to /srv/shenron/bin/deploy-image.sh).
+#                Supports the fleet triad: vps (10.200.77.1), cdn (10.200.77.3 / 51.255.162.6),
+#                and prod (10.200.77.5, Arch Linux 7.2.11).
 #   registry:<repository>   tag and push to a registry, then run SHENRON_DEPLOY_COMMAND
 #                locally with `<sha> <repository>:<sha>` when it is set
 #   local        Compose on this host: deploy/docker/compose.yaml with SHENRON_IMAGE_TAG=<sha>
@@ -33,9 +35,17 @@ W=${SHENRON_BUILD_REPO:-$HOME/build/shenron}
 IMAGE=${SHENRON_IMAGE:-localhost/shenron}
 ENGINE=${SHENRON_CONTAINER:-$(command -v docker >/dev/null 2>&1 && echo docker || echo podman)}
 TARGET=${SHENRON_DEPLOY_TARGET:-ssh:${SHENRON_DEPLOY_HOST:-prod}}
+resolve_host() {
+  case "$1" in
+    vps) echo "${SHENRON_VPS_HOST:-vps}" ;;
+    cdn | bunos) echo "${SHENRON_CDN_HOST:-cdn}" ;;
+    prod) echo "${SHENRON_PROD_HOST:-prod}" ;;
+    *) echo "$1" ;;
+  esac
+}
 SHA=$(git -C "$W" rev-parse --verify "${1:-HEAD}^{commit}")
 "$ENGINE" image inspect "$IMAGE:$SHA" >/dev/null
-SSH=(ssh -o ConnectTimeout=15 -o BatchMode=yes)
+SSH=(ssh -o ConnectTimeout=15 -o BatchMode=yes -o Compression=no)
 STARTED=$SECONDS
 SERVICES=${SHENRON_SERVICES:-site bot}
 case "$SERVICES" in *[!a-z\ ]* | "") echo "Invalid SHENRON_SERVICES: $SERVICES" >&2; exit 64 ;; esac
@@ -46,7 +56,9 @@ guard_rollback() {
   [ "${SHENRON_ALLOW_ROLLBACK:-0}" = 1 ] && return
   active=$(bash "$HERE/active-release.sh" site)
   [ -n "$active" ] || return 0
-  git -C "$W" fetch -q origin || true
+  if ! git -C "$W" cat-file -e "$active^{commit}" 2>/dev/null; then
+    git -C "$W" fetch -q origin || true
+  fi
   git -C "$W" merge-base --is-ancestor "$active" "$SHA" || {
     echo "Refusing to ship $SHA: the active release $active is not one of its ancestors (SHENRON_ALLOW_ROLLBACK=1 to override)" >&2
     exit 3
@@ -55,11 +67,16 @@ guard_rollback() {
 
 case "$TARGET" in
   ssh:*)
-    host=${TARGET#ssh:}
+    host=$(resolve_host "${TARGET#ssh:}")
     guard_rollback
     phase "transfer to $host"
     tar=/tmp/shenron-$SHA.tar
-    "$ENGINE" save "$IMAGE:$SHA" | zstd -q -T0 -1 | "${SSH[@]}" "$host" "zstd -q -d -o $tar"
+    if [ "${SHENRON_STREAM_LOAD:-0}" = 1 ]; then
+      "$ENGINE" save "$IMAGE:$SHA" | zstd -q -T0 -3 | "${SSH[@]}" "$host" "zstd -q -d -T0 | docker load -q"
+      tar=
+    else
+      "$ENGINE" save "$IMAGE:$SHA" | zstd -q -T0 -3 | "${SSH[@]}" "$host" "zstd -q -d -T0 -o $tar"
+    fi
     # Pending site migrations go first, after a dump, in one transaction each; a failure aborts the
     # release before it is activated. The script and the SQL come from the shipped revision itself.
     if [ "${SHENRON_REMOTE_MIGRATE:-0}" = 1 ] && git -C "$W" cat-file -e "$SHA:deploy/prod/apply-migrations.py" 2>/dev/null; then

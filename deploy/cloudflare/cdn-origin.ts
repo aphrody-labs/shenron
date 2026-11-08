@@ -69,7 +69,7 @@ export async function startCdnOrigin(configPath: string) {
   const config = await Bun.file(configPath).json();
   const codeSha256 = digest(await Bun.file(import.meta.path).bytes());
   if (
-    config.hostname !== "127.0.0.1" ||
+    !["127.0.0.1", "10.200.77.3", "10.200.77.5"].includes(config.hostname) ||
     config.port !== 9077 ||
     !/^[a-f0-9]{64}$/.test(config.inventorySha256)
   )

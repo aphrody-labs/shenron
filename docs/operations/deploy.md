@@ -1,31 +1,43 @@
-# Déploiement
+# Deploiement Zero-Downtime
 
-## Sur `main`
+## 1. Pipeline de Release (`bun run ship`)
 
-`scripts/deploy/release.sh` enchaîne `build-image.sh` puis `ship-image.sh`. Le raccourci est `bun run ship`.
+`scripts/deploy/release.sh` orchestre la construction sur `vps` et l'expedition vers `prod` :
 
 ```sh
-scripts/deploy/release.sh [revision]
-scripts/deploy/release.sh --build-only [revision]   # image localhost/shenron:<sha>, vérifiée
-scripts/deploy/release.sh --ship-only [revision]
+scripts/deploy/release.sh [revision]                # Build + Ship + Activation zero-downtime
+scripts/deploy/release.sh --plan [revision]         # Calcul de la lane (noop, site, bot, full, hold)
+scripts/deploy/release.sh --build-only [revision]   # Construction de localhost/shenron:<sha>
+scripts/deploy/release.sh --ship-only [revision]    # Transfert Zstd et activation sur prod
 ```
 
-- `build-image.sh` construit le site, le bot et les composants natifs dans un worktree réutilisable (`SHENRON_BUILD_REPO`, par défaut `$HOME/build/shenron`), puis l'image avec `deploy/docker/Dockerfile`. Il tourne sur Linux x64 avec Git, Bun, Rust et Docker ou Podman. Les variables sont listées dans son en-tête.
-- `ship-image.sh` envoie l'image vers la cible `SHENRON_DEPLOY_TARGET` (`ssh:<hôte>`, `registry:<dépôt>` ou `local`; défaut `ssh:prod`), puis lance `SHENRON_DEPLOY_COMMAND`.
-- Garde de retour arrière: le script refuse une révision qui ne descend pas de la release active, sauf `SHENRON_ALLOW_ROLLBACK=1`.
-- Par défaut, il applique les migrations du site en attente avant l'activation, après un dump, une transaction par migration (`deploy/prod/apply-migrations.py`). `SHENRON_REMOTE_MIGRATE=0` les saute.
-- Ne jamais copier de fichier dans une release scellée.
+### Etapes Automatisees et Reduction de Latence
+1. **Detection de Lane (`scripts/deploy/lanes.ts`)** : Analyse le diff Git entre la revision active sur `prod` et la revision cible :
+   - `noop` : Changement documentaire ou hors runtime -> aucun build ni redemarrage.
+   - `cdn` : Mise a jour du worker Cloudflare uniquement.
+   - `bot` : Reconstruit et ne redemarre que `shenron-bot`.
+   - `site` : Reconstruit et ne redemarre que `shenron-site`.
+   - `full` : Reconstruit et met a jour `shenron-site` et `shenron-bot`.
+   - `hold` : Bloque l'auto-deploy si une migration SQL destructive est detectee sans validation.
+2. **Build Cache BuildKit (`scripts/deploy/build-image.sh`)** :
+   - S'execute sur `vps` (`10.200.77.1`) dans un worktree dedie (`$HOME/build/shenron`).
+   - Utilise Docker BuildKit avec `--mount=type=cache` pour le store Bun et les artefacts Cargo.
+3. **Streaming Zstd Multi-Coeur (`scripts/deploy/ship-image.sh`)** :
+   - Transfere les couches de l'image Docker via `docker save | zstd -T0` sur le tunnel WireGuard directement vers `docker load` sur `prod` (`10.200.77.5`).
+4. **Migrations Transactionnelles (`deploy/prod/apply-migrations.py`)** :
+   - Avant activation, effectue un dump PostgreSQL verifie puis applique chaque migration SQL en attente dans sa propre transaction.
+5. **Activation Sans Coupure** :
+   - Met a jour uniquement les conteneurs cibles via `docker compose up -d --no-deps <services>` et verifie les healthchecks HTTP (`/api/health`). En cas d'echec, bascule automatiquement sur le tag precedent.
 
-Le build se lance depuis vps ou bunos. Le poste Windows ne construit pas.
+## 2. Commandes de Verification (`just`)
 
-## Voies de déploiement automatique
+```sh
+just deploy-check     # Verifie deploy/environment.json, les lanes et execute la suite de tests de deploiement
+just deploy-plan      # Affiche le plan de deploiement face a la revision en production
+just deploy-history   # Simule la classification des lanes sur les 30 derniers commits
+```
 
-Le dépôt contient les voies de build par lane, un activateur par service avec retour automatique au tag précédent, et `docs/operations/AUTO-DEPLOY.md`. Le workflow `server-artifact.yml` reste inerte tant que la variable de dépôt `AUTO_DEPLOY_ENABLED` n'est pas `true`. Commandes : `just deploy-plan`, `just deploy-history` et `just deploy-check`; un diff qui touche des migrations met la release en attente (HOLD).
+## 3. CDN Edge (`deploy/cloudflare` & `ssh cdn`)
 
-## Migrations manuelles
-
-Procédure: dry-run, sauvegarde vérifiée (`docs/operations/backup-recovery.md`), application, vérification. Les fichiers SQL ponctuels sont dans `deploy/sql/`, le script d'application dans `deploy/prod/apply-migrations.py`.
-
-## CDN
-
-Worker Cloudflare dans `deploy/cloudflare`. Test local: `bun test deploy/cloudflare/cdn-worker.test.ts`, puis `bun check -p deploy/cloudflare`.
+Le worker CDN (`deploy/cloudflare/cdn-worker.ts`) assure la distribution des assets medias depuis R2 (`shenron-cdn`) et le noeud `ssh cdn` (`10.200.77.3`, Garage S3 + Pingora + Workerd) :
+- Verification : `bun test deploy/cloudflare/cdn-worker.test.ts` et `bun check -p deploy/cloudflare`.

@@ -17,7 +17,7 @@ const BUILD_WASM = join(ROOT, "packages/koharu/scripts/build-wasm.ts");
 
 export function ensureKoharuWasm(): void {
   if (!Bun.which("cargo") && existsSync(KOHARU_WASM)) {
-    console.warn("⚠ cargo absent : WASM koharu-canvas existant utilisé sans contrôle de fraîcheur");
+    console.warn("cargo absent : WASM koharu-canvas existant utilise sans controle de fraicheur");
     return;
   }
   const build = Bun.spawnSync([process.execPath, BUILD_WASM], {

@@ -1,6 +1,7 @@
+# syntax=docker/dockerfile:1.7
 # SPDX-License-Identifier: Apache-2.0
 # Runtime packaging for owner-sealed `dist/server` and `dist/bot` artifacts.
-# Build from the repository root: podman build -f deploy/docker/Dockerfile .
+# Build from the repository root: DOCKER_BUILDKIT=1 docker build -f deploy/docker/Dockerfile .
 FROM ubuntu:26.10
 
 ENV SHENRON_HOME=/var/lib/shenron \
@@ -17,12 +18,15 @@ ENV SHENRON_HOME=/var/lib/shenron \
     NAPI_RS_NATIVE_LIBRARY_PATH=/usr/local/bin/skia.linux-x64-gnu.node \
     NEXT_TELEMETRY_DISABLED=1
 
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean \
+ && apt-get update \
  && apt-get install -y --no-install-recommends ca-certificates curl fonts-noto-color-emoji fonts-wqy-microhei jq libfontconfig1 libgcc-s1 libsqlite3-0 libvulkan1 mesa-vulkan-drivers \
- && rm -rf /var/lib/apt/lists/* \
+ && (id ubuntu >/dev/null 2>&1 && userdel -r ubuntu || true) \
  && groupadd --gid 10001 shenron \
  && useradd --uid 10001 --gid 10001 --home-dir /var/lib/shenron --no-create-home --shell /usr/sbin/nologin shenron \
- && install -d -o 10001 -g 10001 /app/data /app/assets /var/lib/shenron \
+ && install -d -o 10001 -g 10001 /app/data /app/assets /var/lib/shenron /usr/local/lib/shenron \
  && install -d -o 10001 -g 10001 /var/lib/shenron/config /var/lib/shenron/cache /var/lib/shenron/data /var/lib/shenron/logs
 
 # Revision metadata after the system layer, so that layer stays cached and identical across releases.

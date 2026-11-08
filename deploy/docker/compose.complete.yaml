@@ -22,11 +22,13 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U shenron -d shenron_site"]
+      test: ["CMD", "pg_isready", "-U", "shenron", "-d", "shenron_site"]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
+    mem_limit: 4g
+    memswap_limit: 4g
     networks:
       - shenron-net
 
@@ -54,6 +56,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    mem_limit: 512m
+    memswap_limit: 512m
     networks:
       - shenron-net
 
@@ -65,6 +69,7 @@ services:
     entrypoint: ["/usr/local/bin/shenron-server"]
     command: ["serve", "--host", "0.0.0.0", "--port", "5011"]
     restart: unless-stopped
+    init: true
     depends_on:
       postgres:
         condition: service_healthy
@@ -89,11 +94,13 @@ services:
       - "127.0.0.1:5011:5011"
       - "127.0.0.1:8790:8790"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://127.0.0.1:5011/api/local/health || exit 1"]
-      interval: 20s
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:5011/api/local/health"]
+      interval: 15s
       timeout: 5s
       retries: 3
       start_period: 30s
+    mem_limit: 4g
+    memswap_limit: 4g
     networks:
       - shenron-net
 
@@ -107,6 +114,7 @@ services:
     container_name: shenron-bot
     entrypoint: ["/usr/local/bin/shenron-bot"]
     restart: unless-stopped
+    init: true
     command: []
     depends_on:
       postgres:
@@ -117,6 +125,7 @@ services:
       - ${SHENRON_BOT_ENV_FILE:-./env/shenron-bot.env}
       - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-./env/shenron-compute-client.env}
     environment:
+      SHENRON_PROFILE: production
       API_HOST: 0.0.0.0
       API_PORT: "5006"
       DATABASE_URL: postgres://shenron:${POSTGRES_PASSWORD:?run just container-env first}@postgres:5432/shenron_site
@@ -127,11 +136,13 @@ services:
     ports:
       - "127.0.0.1:5006:5006"
     healthcheck:
-      test: ["CMD", "curl", "--fail", "--silent", "http://127.0.0.1:5006/health"]
-      interval: 20s
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1:5006/health"]
+      interval: 15s
       timeout: 5s
       retries: 3
       start_period: 20s
+    mem_limit: 2g
+    memswap_limit: 2g
     networks:
       - shenron-net
 
@@ -149,11 +160,13 @@ services:
     ports:
       - "80:80"
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://127.0.0.1/ || exit 1"]
-      interval: 20s
+      test: ["CMD", "curl", "-fsS", "http://127.0.0.1/"]
+      interval: 15s
       timeout: 5s
       retries: 3
       start_period: 15s
+    mem_limit: 512m
+    memswap_limit: 512m
     networks:
       - shenron-net
 

@@ -63,11 +63,14 @@ export function loadEnvironment(root = ROOT): Environment {
   return JSON.parse(readFileSync(join(root, "deploy/environment.json"), "utf8"));
 }
 
+const GIT_BIN =
+  (process.platform === "win32" ? Bun.which("git.exe") : null) ?? Bun.which("git") ?? "git";
+
 /** Run git and return its stdout; `null` when it fails and `optional` is set. */
 export function git(root: string, args: string[], optional?: false): string;
 export function git(root: string, args: string[], optional: true): string | null;
 export function git(root: string, args: string[], optional = false): string | null {
-  const run = Bun.spawnSync(["git", "-C", root, ...args], { stdout: "pipe", stderr: "pipe" });
+  const run = Bun.spawnSync([GIT_BIN, "-C", root, ...args], { stdout: "pipe", stderr: "pipe" });
   if (run.exitCode === 0) return run.stdout.toString();
   if (optional) return null;
   throw new Error(`git ${args.join(" ")}: ${run.stderr.toString().trim()}`);
@@ -83,7 +86,7 @@ export function objectIds(root: string, rev: string, paths: string[]): Map<strin
   const ids = new Map<string, string>();
   if (paths.length === 0) return ids;
   const run = Bun.spawnSync(
-    ["git", "-C", root, "cat-file", "--batch-check=%(objectname) %(objecttype)"],
+    [GIT_BIN, "-C", root, "cat-file", "--batch-check=%(objectname) %(objecttype)"],
     {
       stdin: Buffer.from(paths.map((path) => `${rev}:${path}\n`).join("")),
       stdout: "pipe",
@@ -152,7 +155,7 @@ export function inputDigests(
 
 /** Contents of blobs at a revision, in one process; a missing blob is absent from the map. */
 function blobs(root: string, rev: string, paths: string[]): Map<string, string> {
-  const run = Bun.spawnSync(["git", "-C", root, "cat-file", "--batch"], {
+  const run = Bun.spawnSync([GIT_BIN, "-C", root, "cat-file", "--batch"], {
     stdin: Buffer.from(paths.map((path) => `${rev}:${path}\n`).join("")),
     stdout: "pipe",
     stderr: "pipe",

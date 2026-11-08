@@ -14,6 +14,13 @@ const files = [
   "tools/config/scheduler-policy.json",
   "tools/config/production-topology.json",
 ];
+const host =
+  process.argv.includes("--host") && process.argv[process.argv.indexOf("--host") + 1]
+    ? process.argv[process.argv.indexOf("--host") + 1]!
+    : "prod";
+const legacyHost = "dbfr";
+const matchesHost = (value: string | undefined) => value === host || value === legacyHost;
+
 const serviceEntries = [
   {
     id: "shenron-cloudflared",
@@ -23,7 +30,7 @@ const serviceEntries = [
     unit: "shenron-cloudflared.service",
     health: "http://127.0.0.1:20243/ready",
     port: 20243,
-    host: "dbfr",
+    host,
     public: false,
     sourceRepo: "shenron",
     note: "Remote-managed tunnel f2ddf195-5d19-4321-8b12-259c7c57659b; token via systemd LoadCredential; no DNS cutover by this service.",
@@ -34,7 +41,7 @@ const serviceEntries = [
     kind: "read-only-audit",
     runtime: "bun",
     unit: "shenron-cloudflare-audit.service",
-    host: "dbfr",
+    host,
     public: false,
     sourceRepo: "shenron",
     note: "Daily RO reconciliation via shenron-cloudflare-audit.timer; unavailable auth is persisted as failed, never a successful sync.",
@@ -45,7 +52,7 @@ const serviceEntries = [
     kind: "credential-renewal",
     runtime: "bun",
     unit: "shenron-cloudflare-s3-renew.service",
-    host: "dbfr",
+    host,
     public: false,
     sourceRepo: "shenron",
     note: "Temporary one-hour R2 object credentials for shenron-cdn prefixes _objects/ and _migration/; no corpus, DNS or worker mutation.",
@@ -61,33 +68,35 @@ for (const name of files) {
       const existing = data.services.find((item: { id: string }) => item.id === entry.id);
       if (entry.id === "shenron-cloudflare-audit" && existing?.status === "on-demand")
         delete existing.status;
+      if (existing && matchesHost(existing.host)) existing.host = host;
       if (existing && JSON.stringify(existing) !== JSON.stringify(entry))
         throw new Error("Owned service contract diverged: " + entry.id);
       if (!existing) data.services.push(entry);
     }
     // The oneshot itself must not be enabled as a boot workload; its timer owns execution.
     const boot = {
-      host: "dbfr",
+      host,
       kind: "systemd",
       unit: "shenron-cloudflare-audit.service",
       hold: "oneshot driven by daily read-only timer",
     };
-    const timer = { host: "dbfr", kind: "systemd", unit: "shenron-cloudflare-audit.timer" };
+    const timer = { host, kind: "systemd", unit: "shenron-cloudflare-audit.timer" };
     for (const entry of [
       boot,
       timer,
       {
-        host: "dbfr",
+        host,
         kind: "systemd",
         unit: "shenron-cloudflare-s3-renew.service",
         hold: "oneshot driven by scoped credential renewal timer",
       },
-      { host: "dbfr", kind: "systemd", unit: "shenron-cloudflare-s3-renew.timer" },
+      { host, kind: "systemd", unit: "shenron-cloudflare-s3-renew.timer" },
     ]) {
       const existing = data.boot.entries.find(
         (item: { unit: string; host: string }) =>
-          item.unit === entry.unit && item.host === entry.host,
+          item.unit === entry.unit && matchesHost(item.host),
       );
+      if (existing && matchesHost(existing.host)) existing.host = host;
       if (existing && JSON.stringify(existing) !== JSON.stringify(entry))
         throw new Error("Boot entry diverged");
       if (!existing) data.boot.entries.push(entry);
@@ -112,12 +121,13 @@ for (const name of files) {
       throw new Error("Windows renewal boot contract diverged");
     if (!current) data.boot.entries.push(task);
   } else if (name.includes("production-topology")) {
-    const ports = data.hosts.dbfr.network.internalOnly;
+    const targetHost = data.hosts[host] ?? data.hosts[legacyHost];
+    const ports = targetHost.network.internalOnly;
     if (!ports.includes(20243)) ports.push(20243);
   } else {
     const entry = {
       id: "shenron-cloudflare-audit",
-      host: "dbfr",
+      host,
       cadence: "daily",
       priority: "low",
       unit: "shenron-cloudflare-audit.timer",
@@ -128,7 +138,7 @@ for (const name of files) {
       entry,
       {
         id: "shenron-cloudflare-s3-renew",
-        host: "dbfr",
+        host,
         cadence: "every-10-minutes",
         priority: "low",
         unit: "shenron-cloudflare-s3-renew.timer",
@@ -138,6 +148,7 @@ for (const name of files) {
       },
     ]) {
       const existing = data.timers.find((item: { id: string }) => item.id === scheduled.id);
+      if (existing && matchesHost(existing.host)) existing.host = host;
       if (existing && JSON.stringify(existing) !== JSON.stringify(scheduled))
         throw new Error("Scheduler entry diverged");
       if (!existing) data.timers.push(scheduled);

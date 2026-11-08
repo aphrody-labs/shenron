@@ -79,13 +79,18 @@ export function flattenStandaloneExternals(directory: string) {
   walk(root);
 
   const result = flattenStandalone(root);
+  const canonicals = new Map<string, string>();
   for (const alias of aliases) {
-    const canonical = realpathSync(join(root, "node_modules", alias.name));
-    if (!isInside(root, canonical))
-      throw new Error(`External package escapes standalone: ${alias.name}`);
-    const manifest = JSON.parse(readFileSync(join(canonical, "package.json"), "utf8"));
-    if (manifest.name !== alias.name || manifest.version !== alias.version) {
-      throw new Error(`External package identity changed while flattening: ${alias.request}`);
+    let canonical = canonicals.get(alias.name);
+    if (!canonical) {
+      canonical = realpathSync(join(root, "node_modules", alias.name));
+      if (!isInside(root, canonical))
+        throw new Error(`External package escapes standalone: ${alias.name}`);
+      const manifest = JSON.parse(readFileSync(join(canonical, "package.json"), "utf8"));
+      if (manifest.name !== alias.name || manifest.version !== alias.version) {
+        throw new Error(`External package identity changed while flattening: ${alias.request}`);
+      }
+      canonicals.set(alias.name, canonical);
     }
     // Copy only the already flattened package, not the store or dependency symlinks.
     if (lstatSync(alias.path, { throwIfNoEntry: false })?.isSymbolicLink())

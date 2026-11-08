@@ -19,7 +19,22 @@ import { join, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dir, "../..");
 
+export type TriadNode = {
+  alias: string;
+  legacyAlias?: string;
+  meshIp: string;
+  publicIp: string;
+  os?: string;
+  domain?: string;
+  role: string;
+};
+
 export type Definition = {
+  triad: {
+    vps: TriadNode;
+    cdn: TriadNode;
+    prod: TriadNode;
+  };
   toolchain: {
     rust: string;
     bun: string;
@@ -35,6 +50,23 @@ export type Definition = {
   >;
   activation: { order: string[]; keepImages: number; keepReleases: number };
 };
+
+const TRIAD_ALIASES: Record<string, keyof Definition["triad"]> = {
+  vps: "vps",
+  cdn: "cdn",
+  bunos: "cdn",
+  prod: "prod",
+  dbfr: "prod",
+};
+
+/** Resolve any canonical or legacy host alias (`bunos` -> `cdn`, `dbfr` -> `prod`) to its triad node. */
+export function resolveTriadNode(
+  host: string,
+  definition = loadDefinition(),
+): TriadNode | undefined {
+  const key = TRIAD_ALIASES[host];
+  return key ? definition.triad[key] : undefined;
+}
 
 export const loadDefinition = (root = ROOT): Definition =>
   JSON.parse(readFileSync(join(root, "deploy/environment.json"), "utf8"));
@@ -92,7 +124,26 @@ export function driftProblems(root = ROOT, definition = loadDefinition(root)): s
         `${label}: found ${JSON.stringify(actual)}, the definition says ${JSON.stringify(wanted)}`,
       );
   };
-  const { toolchain, runtime } = definition;
+  const { triad, toolchain, runtime } = definition;
+  expect("triad.vps meshIp", triad?.vps?.meshIp, "10.200.77.1");
+  expect("triad.vps publicIp", triad?.vps?.publicIp, "51.77.147.152");
+  expect("triad.cdn meshIp", triad?.cdn?.meshIp, "10.200.77.3");
+  expect("triad.cdn publicIp", triad?.cdn?.publicIp, "51.255.162.6");
+  expect("triad.cdn legacyAlias", triad?.cdn?.legacyAlias, "bunos");
+  expect("triad.prod meshIp", triad?.prod?.meshIp, "10.200.77.5");
+  expect("triad.prod publicIp", triad?.prod?.publicIp, "72.60.186.43");
+  expect("triad.prod os", triad?.prod?.os, "Arch Linux 7.2.11");
+  expect("triad.prod domain", triad?.prod?.domain, "dragonballfr.com");
+  const checkouts = JSON.parse(read(root, "deploy/checkouts.json")) as {
+    checkouts?: Array<{ name: string; paths: Record<string, string> }>;
+  };
+  for (const spec of checkouts.checkouts ?? []) {
+    if (spec.paths.bunos && spec.paths.cdn !== spec.paths.bunos) {
+      problems.push(
+        `deploy/checkouts.json ${spec.name}: cdn path ${JSON.stringify(spec.paths.cdn)} must match legacy bunos path ${JSON.stringify(spec.paths.bunos)}`,
+      );
+    }
+  }
   expect(
     "rust-toolchain.toml channel",
     read(root, "rust-toolchain.toml").match(/^channel = "(.+)"$/m)?.[1],

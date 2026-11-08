@@ -153,9 +153,15 @@ export function grant(bucket: string, parentAccessKeyId: string) {
     prefixes: ["_objects/", "_migration/"],
   };
 }
+export function allowedS3Endpoint(endpoint: string, accountId: string): boolean {
+  if (endpoint === `https://${accountId}.r2.cloudflarestorage.com`) return true;
+  return /^https?:\/\/(?:10\.200\.77\.(?:1|3|5)|51\.255\.162\.6|cdn\.dragonballfr\.com)(?::(?:3900|9077))?$/.test(
+    endpoint,
+  );
+}
 export function validateProfile(p: Profile, m: Manifest) {
   if (
-    p.endpoint !== `https://${m.accountId}.r2.cloudflarestorage.com` ||
+    !allowedS3Endpoint(p.endpoint, m.accountId) ||
     p.bucket !== m.bucket ||
     p.permission !== "object-read-write" ||
     JSON.stringify(p.prefixes) !== JSON.stringify(["_objects/", "_migration/"]) ||

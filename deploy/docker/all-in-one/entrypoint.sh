@@ -71,7 +71,7 @@ su - postgres -c "$PG_BIN/pg_ctl -D /var/lib/postgresql/data -l /var/log/postgre
 # Attente de la disponibilité de PostgreSQL
 for i in {1..30}; do
     if su - postgres -c "$PG_BIN/pg_isready -h 127.0.0.1 -p 5432" >/dev/null 2>&1; then
-        echo "✓ PostgreSQL est opérationnel."
+        echo "[OK] PostgreSQL est opérationnel."
         break
     fi
     sleep 1
@@ -90,7 +90,7 @@ redis-server --daemonize yes --protected-mode no --dir /var/lib/redis --logfile 
 
 for i in {1..15}; do
     if redis-cli ping >/dev/null 2>&1; then
-        echo "✓ Redis est opérationnel."
+        echo "[OK] Redis est opérationnel."
         break
     fi
     sleep 1

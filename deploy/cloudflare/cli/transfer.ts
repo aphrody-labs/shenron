@@ -136,15 +136,21 @@ export async function attestStagedObject(
   const target = new URL(url),
     parts = target.pathname.split("/"),
     bucket = parts[1],
-    key = "_objects/" + entry.sha256;
+    key = "_objects/" + entry.sha256,
+    isCloudflareR2 =
+      target.protocol === "https:" &&
+      !target.port &&
+      /^[a-f0-9]{32}\.r2\.cloudflarestorage\.com$/.test(target.hostname),
+    isTriadGarage =
+      (target.protocol === "http:" || target.protocol === "https:") &&
+      /^(?:10\.200\.77\.(?:1|3|5)|51\.255\.162\.6)$/.test(target.hostname) &&
+      (target.port === "" || target.port === "3900" || target.port === "9077");
   if (
-    target.protocol !== "https:" ||
-    !/^[a-f0-9]{32}\.r2\.cloudflarestorage\.com$/.test(target.hostname) ||
+    (!isCloudflareR2 && !isTriadGarage) ||
     target.username ||
     target.password ||
     target.search ||
     target.hash ||
-    target.port ||
     !/^[a-z0-9][a-z0-9-]{1,62}$/.test(bucket ?? "") ||
     target.pathname !== "/" + bucket + "/" + key ||
     !/^[a-f0-9]{64}$/.test(entry.sha256) ||

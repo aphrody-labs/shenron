@@ -33,10 +33,25 @@ const CSP_SCRIPT_SRC = [
   "https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.gstatic.com https://*.adtrafficquality.google https://*.google.com https://*.vercel-scripts.com",
 ].join(" ");
 
+// Telemetry is disabled globally across all Next.js phases (`next dev`, `next build`, `next start`).
+process.env.NEXT_TELEMETRY_DISABLED = "1";
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  // Native SDK loading is deferred to the Bun host, outside Next's server bundle.
-  serverExternalPackages: ["@aphrody/bun", "@aphrody/bun-runtime-sdk/yolo"],
+  // Native SDK, image decoders, and SQL/vector drivers are deferred to the Bun host outside Next's server bundle.
+  serverExternalPackages: [
+    "@aphrody/bun",
+    "@aphrody/bun-runtime-sdk/yolo",
+    "@aphrody/shenron-native",
+    "sharp",
+    "postgres",
+    "sqlite-vec",
+  ],
+  // Type-checking can be skipped during `next build` when already verified by `bun check` (`SHENRON_SKIP_NEXT_TYPECHECK=1`),
+  // while keeping `ignoreBuildErrors: false` as the safe default for direct builds.
+  typescript: {
+    ignoreBuildErrors: process.env.SHENRON_SKIP_NEXT_TYPECHECK === "1",
+  },
   // Repli documenté pour les VPS contraints : Webpack sans minification évite
   // le pic mémoire du minifieur lors d'un build à froid. L'option est activée
   // uniquement par la pipeline locale de secours et ne change pas les builds
@@ -86,11 +101,9 @@ const nextConfig: NextConfig = {
   // Au runtime, aucun slot ne pose la variable : `next start` lit bien `.next`.
   distDir: process.env.NEXT_DIST_DIR ?? ".next",
 
-  // `output: "standalone"` seulement pour le binaire autonome (`bun run build:server`,
-  // NEXT_OUTPUT=standalone) : le file tracing (nft) monte le build de ~8,1 à ~10,4 Gio
-  // de RSS (mesuré le 2026-08-14), trop pour le VPS de 11 Gio ; il est donc fait sur
-  // la machine de build. Le build classique (`next start`) reste inchangé.
-  ...(process.env.NEXT_OUTPUT === "standalone"
+  // `output: "standalone"` par défaut pour le binaire autonome (`bun run build:server`),
+  // désactivable avec `NEXT_OUTPUT=default` pour un build classique (`next start`).
+  ...(process.env.NEXT_OUTPUT !== "default"
     ? {
         output: "standalone" as const,
         // Dynamic fs access in shared packages must never drag the repository (sources, tests,
@@ -106,6 +119,8 @@ const nextConfig: NextConfig = {
             "../../scripts/**",
             "../../deploy/**",
             "../../apps/bot/**",
+            "../../apps/activity/**",
+            "../../packages/dbxv2/**",
             "../../packages/*/test/**",
             "../../packages/*/scripts/**",
             "./tests/**",
@@ -122,6 +137,7 @@ const nextConfig: NextConfig = {
             "**/*.env*",
             "**/*.tsbuildinfo",
             "**/*.map",
+            "**/*.d.ts",
           ],
         },
       }
@@ -148,10 +164,9 @@ const nextConfig: NextConfig = {
     ...(process.env.BUILD_STATIC_CONCURRENCY
       ? { staticGenerationMaxConcurrency: Number(process.env.BUILD_STATIC_CONCURRENCY) }
       : { staticGenerationMaxConcurrency: 2 }),
-    // Off by default: a build that never restores `<distDir>/cache` only pays the
-    // writes. The factory reuses one worktree and keeps that cache
-    // (`SHENRON_NEXT_BUILD_CACHE=1`, scripts/build/server.ts), so warm builds reuse it.
-    turbopackFileSystemCacheForBuild: process.env.SHENRON_NEXT_BUILD_CACHE === "1",
+    // Enabled by default (`SHENRON_NEXT_BUILD_CACHE=0` opts out): Turbopack incremental
+    // filesystem cache in `<distDir>/cache` accelerates rebuilds in reusable worktrees.
+    turbopackFileSystemCacheForBuild: process.env.SHENRON_NEXT_BUILD_CACHE !== "0",
     // Source maps serveur : 101,6 Mio sur 184,4 Mio de `.next-build`. Coupées par défaut ;
     // `SHENRON_SERVER_SOURCEMAPS=1` les rallume pour un build de diagnostic.
     serverSourceMaps: process.env.SHENRON_SERVER_SOURCEMAPS === "1",
@@ -163,6 +178,10 @@ const nextConfig: NextConfig = {
       "better-auth",
       "@tiptap/core",
       "@tiptap/react",
+      "@tiptap/starter-kit",
+      "@tiptap/extensions",
+      "@base-ui/react",
+      "@aphrody/shenron-ui",
     ],
   },
 

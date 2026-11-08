@@ -1,4 +1,4 @@
-# syntax=docker/dockerfile:1.14
+# syntax=docker/dockerfile:1.7
 # SPDX-License-Identifier: Apache-2.0
 #
 # Local build of every Shenron deliverable (Linux and Windows), on the owner workstation.
@@ -255,9 +255,11 @@ ENV SHENRON_HOME=/var/lib/shenron \
     SHENRON_STUDIO_HOME=/var/lib/shenron/data/studio \
     NAPI_RS_NATIVE_LIBRARY_PATH=/usr/local/bin/skia.linux-x64-gnu.node \
     NEXT_TELEMETRY_DISABLED=1
-RUN apt-get update \
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean \
+ && apt-get update \
  && apt-get install -y --no-install-recommends ca-certificates curl fonts-noto-color-emoji fonts-wqy-microhei jq libfontconfig1 libgcc-s1 libsqlite3-0 libvulkan1 mesa-vulkan-drivers \
- && rm -rf /var/lib/apt/lists/* \
  && (id ubuntu >/dev/null 2>&1 && userdel -r ubuntu || true) \
  && groupadd --gid 10001 shenron \
  && useradd --uid 10001 --gid 10001 --home-dir /var/lib/shenron --no-create-home --shell /usr/sbin/nologin shenron \

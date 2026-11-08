@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
 import {
+  clearManifestShardCache,
   handleCdn,
   manifestKey,
+  resolveCacheControl,
   type CdnBucket,
   type ManifestEntry,
   type StoredObject,
@@ -510,5 +512,53 @@ describe("CDN manifest and import", () => {
     );
     expect(conditional.status).toBe(304);
     expect(conditional.body).toBeNull();
+  });
+
+  test("maximal immutable cache control, Zero-Trust headers, isolate shard caching and Garage S3 fallback", async () => {
+    clearManifestShardCache();
+    expect(resolveCacheControl("/_next/static/chunks/app.js", "public, max-age=86400")).toBe(
+      "public, max-age=31536000, immutable",
+    );
+    expect(resolveCacheControl("/catalog/assets/index.json", "no-store")).toBe("no-store");
+
+    const bucket = new Bucket();
+    const prefix = "_migration/manifests/site-triad/";
+    const keyManifest = await manifestKey("/fonts/a.woff2", prefix);
+    bucket.objects.set(keyManifest, new TextEncoder().encode(JSON.stringify(bucket.entries)));
+
+    let garageCalls = 0;
+    const garageFetch: OriginFetch = async (url, init) => {
+      garageCalls++;
+      expect(url).toBe(`http://10.200.77.3:3900/shenron-cdn/_objects/${sha256}`);
+      return new Response(init.method === "HEAD" ? null : bytes, {
+        status: 200,
+        headers: { "x-amz-meta-sha256": sha256, "Content-Length": String(bytes.length) },
+      });
+    };
+
+    const env = {
+      CDN: bucket,
+      MANIFEST_PREFIX: prefix,
+      GARAGE_ORIGIN: "http://10.200.77.3:3900",
+    };
+
+    const first = await handleCdn(request("/fonts/a.woff2"), env, garageFetch);
+    expect(first.status).toBe(200);
+    expect(first.headers.get("Cache-Control")).toBe("public, max-age=31536000, immutable");
+    expect(first.headers.get("X-Content-Type-Options")).toBe("nosniff");
+    expect(first.headers.get("X-Frame-Options")).toBe("DENY");
+    expect(first.headers.get("Referrer-Policy")).toBe("strict-origin-when-cross-origin");
+    expect(first.headers.get("Cross-Origin-Resource-Policy")).toBe("cross-origin");
+    expect(first.headers.get("Strict-Transport-Security")).toContain("max-age=63072000");
+    expect(await first.text()).toBe("verified-font");
+    expect(garageCalls).toBe(1);
+
+    // Second request hits the isolate shard cache (only reads the object key, not the manifest shard again).
+    bucket.reads.length = 0;
+    bucket.objects.set(`_objects/${sha256}`, bytes);
+    const second = await handleCdn(request("/fonts/a.woff2"), env, garageFetch);
+    expect(second.status).toBe(200);
+    expect(bucket.reads).toEqual([`_objects/${sha256}`]);
+    expect(garageCalls).toBe(1);
   });
 });

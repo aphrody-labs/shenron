@@ -94,6 +94,9 @@ test("foreign bucket or broad scope cannot replace Shenron profile", () => {
     expiresAt: new Date(Date.now() + 3600000).toISOString(),
   };
   expect(() => validateProfile(p, m)).not.toThrow();
+  expect(() => validateProfile({ ...p, endpoint: "http://10.200.77.3:3900" }, m)).not.toThrow();
+  expect(() => validateProfile({ ...p, endpoint: "https://cdn.dragonballfr.com" }, m)).not.toThrow();
+  expect(() => validateProfile({ ...p, endpoint: "http://10.200.77.99:3900" }, m)).toThrow();
   expect(() => validateProfile({ ...p, bucket: "aphrody-assets" }, m)).toThrow();
   expect(() => validateProfile({ ...p, prefixes: [""] }, m)).toThrow();
 });

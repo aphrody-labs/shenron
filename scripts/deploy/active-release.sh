@@ -13,13 +13,21 @@ set -euo pipefail
 service=${1:-site}
 case "$service" in site | bot) ;; *) echo "unknown service: $service" >&2; exit 64 ;; esac
 TARGET=${SHENRON_DEPLOY_TARGET:-ssh:${SHENRON_DEPLOY_HOST:-prod}}
+resolve_host() {
+  case "$1" in
+    vps) echo "${SHENRON_VPS_HOST:-vps}" ;;
+    cdn | bunos) echo "${SHENRON_CDN_HOST:-cdn}" ;;
+    prod) echo "${SHENRON_PROD_HOST:-prod}" ;;
+    *) echo "$1" ;;
+  esac
+}
 upper=$(printf '%s' "$service" | tr a-z A-Z)
 probe="docker inspect -f '{{.Config.Image}}' shenron-$service 2>/dev/null | sed -n 's/.*://p'
 sed -n 's/^SHENRON_${upper}_TAG=//p; s/^SHENRON_IMAGE_TAG=//p' /srv/shenron/.env 2>/dev/null"
 command=${SHENRON_ACTIVE_COMMAND-$probe}
 [ -n "$command" ] || exit 0
 case "$TARGET" in
-  ssh:*) output=$(ssh -o ConnectTimeout=15 -o BatchMode=yes "${TARGET#ssh:}" "$command" || true) ;;
+  ssh:*) output=$(ssh -o ConnectTimeout=15 -o BatchMode=yes "$(resolve_host "${TARGET#ssh:}")" "$command" || true) ;;
   *) output=$(bash -c "$command" || true) ;;
 esac
 printf '%s\n' "$output" | grep -oE '^[0-9a-f]{40}$' | head -1 || true

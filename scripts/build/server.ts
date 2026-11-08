@@ -154,24 +154,31 @@ async function measured(
 }
 
 // 1. Front app, without the editorial database and without a platform image optimizer.
-await syncUiAssets(join(SITE, "public"));
-if (!flag("--skip-site")) {
-  ensureKoharuWasm();
-  resetDistDir(join(SITE, DIST_DIR), process.env.SHENRON_NEXT_BUILD_CACHE === "1");
+const keepNextCache = process.env.SHENRON_NEXT_BUILD_CACHE !== "0";
+if (flag("--skip-site")) {
+  await syncUiAssets(join(SITE, "public"));
+} else {
+  await Promise.all([
+    syncUiAssets(join(SITE, "public")),
+    Promise.resolve().then(() => ensureKoharuWasm()),
+    Promise.resolve().then(() => resetDistDir(join(SITE, DIST_DIR), keepNextCache)),
+  ]);
   // next-bun: Next and its Turbopack workers on this Bun (`node` on PATH is Bun).
   const siteBuild = nextCommand(
     ["build", "--turbopack", "--experimental-build-mode=compile"],
     SITE,
   );
   siteBuild.cmd.splice(1, 0, "--no-env-file");
+  const defaultBuildCpus = String(Math.min(8, Math.max(2, navigator.hardwareConcurrency || 4)));
   await measured("site-build-standalone", siteBuild.cmd, SITE, {
     PATH: siteBuild.env.PATH!,
     NEXT_OUTPUT: "standalone",
     NEXT_DIST_DIR: DIST_DIR,
     NEXT_TELEMETRY_DISABLED: "1",
     SHENRON_IMAGES_UNOPTIMIZED: "1",
-    BUILD_CPUS: process.env.BUILD_CPUS ?? "4",
-    SHENRON_NEXT_BUILD_CACHE: process.env.SHENRON_NEXT_BUILD_CACHE ?? "",
+    SHENRON_SKIP_NEXT_TYPECHECK: process.env.SHENRON_SKIP_NEXT_TYPECHECK ?? "1",
+    BUILD_CPUS: process.env.BUILD_CPUS ?? defaultBuildCpus,
+    SHENRON_NEXT_BUILD_CACHE: process.env.SHENRON_NEXT_BUILD_CACHE ?? (keepNextCache ? "1" : "0"),
     ...(flavor === "production"
       ? { NEXT_PUBLIC_CDN_URL: CDN_URL, NEXT_PUBLIC_SHENRON_ASSETS_URL: CDN_URL }
       : { NEXT_PUBLIC_CDN_URL: "", NEXT_PUBLIC_SHENRON_ASSETS_URL: "" }),
@@ -182,129 +189,173 @@ const standalone = join(SITE, DIST_DIR, "standalone");
 if (!existsSync(join(standalone, "apps/site/server.js")))
   throw new Error(`no standalone build in ${standalone}`);
 
-// 2. Release tree.
+// 2. Release tree & 3. Native, VFS, home, plugin, data, and CDN tree in parallel.
 rmSync(OUT, { recursive: true, force: true });
+mkdirSync(OUT, { recursive: true });
+const embed = !flag("--no-embed");
 const siteOut = join(OUT, "site");
-cpSync(standalone, siteOut, { recursive: true, verbatimSymlinks: true });
-// Bun's isolated store and its symlinks: the payload must not depend on symlinks (Windows).
-console.error(
-  JSON.stringify({ label: "flatten-node-modules", ...flattenStandaloneExternals(siteOut) }),
-);
-cpSync(join(SITE, "public"), join(siteOut, "apps/site/public"), {
-  recursive: true,
-  dereference: true,
-});
-stageVideoPublic(videoAssets, join(siteOut, "apps/site/public"));
-cpSync(join(SITE, DIST_DIR, "static"), join(siteOut, "apps/site", DIST_DIR, "static"), {
-  recursive: true,
-});
-// Server source maps only weigh the payload: drop them.
-for (const map of new Bun.Glob("**/*.map").scanSync({ cwd: siteOut, dot: true }))
-  rmSync(join(siteOut, map));
-// Next file tracing may copy the repository dist/ (staged VFS, earlier releases); the VFS ships separately.
-rmSync(join(siteOut, "dist"), { recursive: true, force: true });
-// The private DBXV2 package is loaded by a runtime path: file tracing copies its sources; never ship them.
-rmSync(join(siteOut, "packages/dbxv2"), { recursive: true, force: true });
-// Nothing private may ship: no database, env file or key.
-const leaks = privateFiles(siteOut);
-if (leaks.length)
-  throw new Error(`private files in the release tree: ${leaks.slice(0, 10).join(", ")}`);
-
-// 3. Native library of the target (optional; the local RAG API reports its absence).
-const libCandidate = [
-  join(ROOT, "target", spec.rust, "production", spec.lib),
-  join(ROOT, "target", spec.rust, "release", spec.lib),
-  join(ROOT, "target/production", spec.lib),
-  join(ROOT, "target/release", spec.lib),
-].find((path) => existsSync(path) && (target === "linux-x64" || path.includes(spec.rust)));
 const nativeOut = join(OUT, "native");
-if (libCandidate) {
-  mkdirSync(nativeOut, { recursive: true });
-  cpSync(libCandidate, join(nativeOut, spec.lib));
-}
-
-// 3b. Public VFS and agent home template (both public by construction, the VFS checked).
 const vfsOut = join(OUT, "vfs");
-let vfsShipped = false;
-if (!flag("--no-vfs")) {
+const homeOut = join(OUT, "home");
+const pluginOut = join(OUT, "plugin");
+const dataOut = join(OUT, "data");
+const cdn = join(ROOT, "dist/cdn");
+
+const stageSite = async () => {
+  cpSync(standalone, siteOut, { recursive: true, verbatimSymlinks: true });
+  // Bun's isolated store and its symlinks: the payload must not depend on symlinks (Windows).
+  console.error(
+    JSON.stringify({ label: "flatten-node-modules", ...flattenStandaloneExternals(siteOut) }),
+  );
+  cpSync(join(SITE, "public"), join(siteOut, "apps/site/public"), {
+    recursive: true,
+    dereference: true,
+  });
+  stageVideoPublic(videoAssets, join(siteOut, "apps/site/public"));
+  cpSync(join(SITE, DIST_DIR, "static"), join(siteOut, "apps/site", DIST_DIR, "static"), {
+    recursive: true,
+  });
+  // Server source maps and TypeScript declarations only weigh the payload: drop them.
+  for (const extra of new Bun.Glob("**/*.{map,d.ts,d.mts,d.cts}").scanSync({
+    cwd: siteOut,
+    dot: true,
+  })) {
+    rmSync(join(siteOut, extra), { force: true });
+  }
+  // Next file tracing may copy the repository dist/ (staged VFS, earlier releases); the VFS ships separately.
+  rmSync(join(siteOut, "dist"), { recursive: true, force: true });
+  // The private DBXV2 package is loaded by a runtime path: file tracing copies its sources; never ship them.
+  rmSync(join(siteOut, "packages/dbxv2"), { recursive: true, force: true });
+  // Nothing private may ship: no database, env file or key.
+  const leaks = privateFiles(siteOut);
+  if (leaks.length)
+    throw new Error(`private files in the release tree: ${leaks.slice(0, 10).join(", ")}`);
+};
+
+const stageNative = async (): Promise<string | undefined> => {
+  const libCandidate = [
+    join(ROOT, "target", spec.rust, "production", spec.lib),
+    join(ROOT, "target", spec.rust, "release", spec.lib),
+    join(ROOT, "target/production", spec.lib),
+    join(ROOT, "target/release", spec.lib),
+  ].find((path) => existsSync(path) && (target === "linux-x64" || path.includes(spec.rust)));
+  if (libCandidate && !embed) {
+    mkdirSync(nativeOut, { recursive: true });
+    cpSync(libCandidate, join(nativeOut, spec.lib));
+  }
+  return libCandidate;
+};
+
+const stageVfs = async (): Promise<boolean> => {
+  if (flag("--no-vfs")) return false;
   if (existsSync(vfsSource)) {
     const problems = publicVfsProblems(vfsSource);
     if (problems.length)
       throw new Error(`${vfsSource} cannot ship in a public payload: ${problems.join("; ")}`);
-    mkdirSync(vfsOut, { recursive: true });
-    cpSync(vfsSource, join(vfsOut, "shenron-vfs.sqlite"));
-    vfsShipped = true;
-  } else if (args.includes("--vfs")) {
-    throw new Error(`--vfs ${vfsSource} does not exist`);
-  } else {
-    console.error(
-      JSON.stringify({
-        label: "vfs",
-        missing: vfsSource,
-        hint: "bun scripts/data/build-vfs.ts --profile public (the API VFS groups stay disabled)",
-      }),
-    );
+    if (!embed) {
+      mkdirSync(vfsOut, { recursive: true });
+      cpSync(vfsSource, join(vfsOut, "shenron-vfs.sqlite"));
+    }
+    return true;
   }
-}
-const homeOut = join(OUT, "home");
-mkdirSync(homeOut, { recursive: true });
-const templateDir = join(ROOT, "templates/agent-home");
-const templateFiles: Record<string, string> = {};
-for (const name of AGENT_HOME_DOCUMENTS) {
-  cpSync(join(templateDir, name), join(homeOut, name));
-  templateFiles[name] = readFileSync(join(homeOut, name), "utf8");
-}
-const homeProblems = [
-  ...templateProblems(
-    templateFiles,
-    readdirSync(templateDir, { recursive: true }).map((entry) =>
-      String(entry).replaceAll("\\", "/"),
-    ),
-  ),
-  ...privateFiles(homeOut).map((file) => `private file ${file}`),
-];
-if (homeProblems.length)
-  throw new Error(
-    `templates/agent-home cannot ship in a public payload: ${homeProblems.join("; ")}`,
+  if (args.includes("--vfs")) {
+    throw new Error(`--vfs ${vfsSource} does not exist`);
+  }
+  console.error(
+    JSON.stringify({
+      label: "vfs",
+      missing: vfsSource,
+      hint: "bun scripts/data/build-vfs.ts --profile public (the API VFS groups stay disabled)",
+    }),
   );
+  return false;
+};
 
-// 3b. The public `shenron` plugin (its index joins every chat prompt, `/api/public/plugin*`).
-const pluginOut = join(OUT, "plugin");
-rmSync(pluginOut, { recursive: true, force: true });
-cpSync(join(ROOT, "plugin"), pluginOut, { recursive: true });
-const pluginLeaks = privateFiles(pluginOut);
-if (pluginLeaks.length)
-  throw new Error(`private files in plugin/: ${pluginLeaks.slice(0, 10).join(", ")}`);
+const stageHome = async () => {
+  mkdirSync(homeOut, { recursive: true });
+  const templateDir = join(ROOT, "templates/agent-home");
+  const templateFiles: Record<string, string> = {};
+  for (const name of AGENT_HOME_DOCUMENTS) {
+    const src = join(templateDir, name);
+    templateFiles[name] = readFileSync(src, "utf8");
+    cpSync(src, join(homeOut, name));
+  }
+  const homeProblems = [
+    ...templateProblems(
+      templateFiles,
+      readdirSync(templateDir, { recursive: true }).map((entry) =>
+        String(entry).replaceAll("\\", "/"),
+      ),
+    ),
+    ...privateFiles(homeOut).map((file) => `private file ${file}`),
+  ];
+  if (homeProblems.length)
+    throw new Error(
+      `templates/agent-home cannot ship in a public payload: ${homeProblems.join("; ")}`,
+    );
+};
+
+const stagePlugin = async (): Promise<string> => {
+  const pluginSrc = join(ROOT, "plugin");
+  const pluginLeaks = privateFiles(pluginSrc);
+  if (pluginLeaks.length)
+    throw new Error(`private files in plugin/: ${pluginLeaks.slice(0, 10).join(", ")}`);
+  if (!embed) {
+    rmSync(pluginOut, { recursive: true, force: true });
+    cpSync(pluginSrc, pluginOut, { recursive: true });
+    return pluginOut;
+  }
+  return pluginSrc;
+};
+
+const stageCdn = async (): Promise<string> => {
+  rmSync(cdn, { recursive: true, force: true });
+  cpSync(join(SITE, "public"), join(cdn, "site"), { recursive: true, dereference: true });
+  stageVideoPublic(videoAssets, join(cdn, "site"));
+  cpSync(join(SITE, DIST_DIR, "static"), join(cdn, "_next/static"), { recursive: true });
+  const id = readFileSync(join(SITE, DIST_DIR, "BUILD_ID"), "utf8").trim();
+  writeFileSync(join(cdn, "BUILD_ID"), `${id}\n`);
+  return id;
+};
+
+const [, libCandidate, vfsShipped, , pluginSource, dataShipped, buildId] = await Promise.all([
+  stageSite(),
+  stageNative(),
+  stageVfs(),
+  stageHome(),
+  stagePlugin(),
+  Promise.resolve().then(() => stagePublicData(ROOT, dataOut)),
+  stageCdn(),
+]);
 
 // DBXV2 is private (Bandai Namco / Dimps): no generated module, declaration or marker may ship.
-const dbxv2Leaks = findDbxv2Leaks(OUT);
+const dbxv2Leaks = [
+  ...findDbxv2Leaks(OUT),
+  ...(embed ? findDbxv2Leaks(pluginSource) : []),
+];
 if (dbxv2Leaks.length)
   throw new Error(
     `DBXV2 private modules in the release tree: ${dbxv2Leaks.slice(0, 10).join(", ")}`,
   );
 
-// 3c. Public editorial data: only the listed, checked files of data/ (never data/home/ or a base).
-const dataOut = join(OUT, "data");
-const dataShipped = stagePublicData(ROOT, dataOut);
-
 // 4. Binary.
 const buildDir = join(ROOT, "apps/server/.build");
 mkdirSync(buildDir, { recursive: true });
-const embed = !flag("--no-embed");
+const payloadFile = join(buildDir, "payload.pak.zst");
 if (embed) {
   const started = performance.now();
   const payload = pack(
     {
       site: siteOut,
-      ...(libCandidate ? { native: nativeOut } : {}),
-      ...(vfsShipped ? { vfs: vfsOut } : {}),
+      ...(libCandidate ? { [`native/${spec.lib}`]: libCandidate } : {}),
+      ...(vfsShipped ? { "vfs/shenron-vfs.sqlite": vfsSource } : {}),
       home: homeOut,
       data: dataOut,
-      plugin: pluginOut,
+      plugin: pluginSource,
     },
     payloadLevel(),
   );
-  writeFileSync(join(buildDir, "payload.pak.zst"), payload);
+  writeFileSync(payloadFile, payload);
   writeFileSync(
     join(buildDir, "entry.ts"),
     `// Generated by scripts/build/server.ts\nimport payload from "./payload.pak.zst" with { type: "file" };\nimport { main } from "../src/main";\n\nawait main(process.argv.slice(2), { embeddedPayload: payload });\n`,
@@ -316,6 +367,8 @@ if (embed) {
       ms: Math.round(performance.now() - started),
     }),
   );
+  for (const dir of [siteOut, nativeOut, vfsOut, homeOut, dataOut, pluginOut])
+    rmSync(dir, { recursive: true, force: true });
 } else {
   writeFileSync(
     join(buildDir, "entry.ts"),
@@ -368,6 +421,8 @@ try {
   );
   compileMode = "bytecode";
   await compileServer(compileMode);
+} finally {
+  if (embed) rmSync(payloadFile, { force: true });
 }
 const runtimeDir = join(OUT, "runtime");
 rmSync(runtimeDir, { recursive: true, force: true });
@@ -375,19 +430,6 @@ if (compileMode === "aot") {
   mkdirSync(runtimeDir, { recursive: true });
   cpSync(aotBun(compileMode), join(runtimeDir, target === "windows-x64" ? "bun.exe" : "bun"));
 }
-if (embed) {
-  for (const dir of [siteOut, nativeOut, vfsOut, homeOut, dataOut])
-    rmSync(dir, { recursive: true, force: true });
-}
-
-// 5. CDN tree for an external nginx (same paths as the binary serves).
-const cdn = join(ROOT, "dist/cdn");
-rmSync(cdn, { recursive: true, force: true });
-cpSync(join(SITE, "public"), join(cdn, "site"), { recursive: true, dereference: true });
-stageVideoPublic(videoAssets, join(cdn, "site"));
-cpSync(join(SITE, DIST_DIR, "static"), join(cdn, "_next/static"), { recursive: true });
-const buildId = readFileSync(join(SITE, DIST_DIR, "BUILD_ID"), "utf8").trim();
-writeFileSync(join(cdn, "BUILD_ID"), `${buildId}\n`);
 
 const size = statSync(join(OUT, spec.exe)).size;
 console.log(

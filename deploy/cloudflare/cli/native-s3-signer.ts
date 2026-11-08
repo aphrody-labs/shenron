@@ -51,16 +51,22 @@ export function nativeS3Signer(
 ): SignedClient {
   if (!provider?.available) throw failure("ERR_CURL_PROVIDER_UNAVAILABLE");
   const endpoint = new URL(credentials.endpoint),
-    prefix = "/" + credentials.bucket + "/";
+    prefix = "/" + credentials.bucket + "/",
+    isCloudflareR2 =
+      endpoint.protocol === "https:" &&
+      !endpoint.port &&
+      /^[a-f0-9]{32}\.r2\.cloudflarestorage\.com$/.test(endpoint.hostname),
+    isTriadGarage =
+      (endpoint.protocol === "http:" || endpoint.protocol === "https:") &&
+      /^(?:10\.200\.77\.(?:1|3|5)|51\.255\.162\.6)$/.test(endpoint.hostname) &&
+      (endpoint.port === "" || endpoint.port === "3900" || endpoint.port === "9077");
   if (
-    endpoint.protocol !== "https:" ||
+    (!isCloudflareR2 && !isTriadGarage) ||
     endpoint.username ||
     endpoint.password ||
     endpoint.search ||
     endpoint.hash ||
     endpoint.pathname !== "/" ||
-    !/^[a-f0-9]{32}\.r2\.cloudflarestorage\.com$/.test(endpoint.hostname) ||
-    endpoint.port ||
     !/^[a-z0-9][a-z0-9-]{1,62}$/.test(credentials.bucket) ||
     [credentials.accessKeyId, credentials.secretAccessKey, credentials.sessionToken].some(
       (value) => !value || /[\r\n\0]/.test(value),

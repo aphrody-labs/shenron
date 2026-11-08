@@ -35,6 +35,7 @@ export interface CdnEnvironment {
   IMPORT_ENABLED?: string;
   VERIFY_UPLOADS?: string;
   DYNAMIC_ORIGIN?: string;
+  GARAGE_ORIGIN?: string;
   MANIFEST_PREFIX?: string;
   MANIFEST_SHARD_HASHES?: Record<string, string>;
   MANIFEST_SHARD_HASHES_0?: Record<string, string>;
@@ -49,6 +50,127 @@ const ORIGIN = "https://cdn.dragonballfr.com";
 const HASH = /^[a-f0-9]{64}$/;
 const MANIFEST_SOURCE = `${ORIGIN}/assets/ext/cf-migrate-20261011/manifests/`;
 const MANIFEST_LIMIT = 2 * 1024 * 1024;
+const IMMUTABLE_CACHE_CONTROL = "public, max-age=31536000, immutable";
+const MAX_CACHED_SHARDS = 256;
+const manifestShardCache = new Map<
+  string,
+  { bucket: CdnBucket; entries: Record<string, unknown> }
+>();
+
+/** Clear the in-memory isolate manifest shard cache (useful for deterministic testing). */
+export function clearManifestShardCache(): void {
+  manifestShardCache.clear();
+}
+
+const ZERO_TRUST_SECURITY_HEADERS: Readonly<Record<string, string>> = {
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Cross-Origin-Resource-Policy": "cross-origin",
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+  "Permissions-Policy": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()",
+};
+
+function applyZeroTrustHeaders(headers: Headers): Headers {
+  for (const [key, value] of Object.entries(ZERO_TRUST_SECURITY_HEADERS)) {
+    if (!headers.has(key)) headers.set(key, value);
+  }
+  return headers;
+}
+
+/** Hashed or static assets receive maximal immutable caching; mutable index.json stays no-store. */
+export function resolveCacheControl(path: string, entryCacheControl: string): string {
+  if (path.endsWith("/index.json") || entryCacheControl === "no-store" || entryCacheControl.includes("no-store")) {
+    return entryCacheControl;
+  }
+  if (
+    entryCacheControl.includes("immutable") ||
+    path.startsWith("/_next/static/") ||
+    path.startsWith("/fonts/") ||
+    /\/objects\/[a-f0-9]{64}\.[a-z0-9]+$/i.test(path) ||
+    /[.-][a-f0-9]{8,64}\.[a-z0-9]+$/i.test(path)
+  ) {
+    return IMMUTABLE_CACHE_CONTROL;
+  }
+  return entryCacheControl;
+}
+
+const COMPRESSIBLE_MIME =
+  /^(?:text\/|application\/(?:json|javascript|manifest\+json|wasm|xml|xhtml\+xml)|image\/svg\+xml|font\/(?:ttf|otf))(?:;|$)/i;
+
+function negotiateEncoding(request: Request, contentType: string, size: number): "zstd" | "br" | undefined {
+  if (size < 256 || !COMPRESSIBLE_MIME.test(contentType)) return undefined;
+  const accept = request.headers.get("Accept-Encoding");
+  if (!accept || accept === "identity") return undefined;
+  if (/\bzstd\b/i.test(accept)) return "zstd";
+  if (/\bbr\b/i.test(accept)) return "br";
+  return undefined;
+}
+
+function tryCompressBody(
+  body: ReadableStream<Uint8Array>,
+  encoding: "zstd" | "br",
+): ReadableStream<Uint8Array> | undefined {
+  if (typeof CompressionStream === "undefined") return undefined;
+  try {
+    const stream = new CompressionStream(encoding as CompressionFormat);
+    return body.pipeThrough(stream as unknown as ReadableWritablePair<Uint8Array, Uint8Array>);
+  } catch {
+    return undefined;
+  }
+}
+
+const ALLOWED_GARAGE_ORIGINS = new Set([
+  "http://10.200.77.3:3900",
+  "http://10.200.77.3:9077",
+  "http://10.200.77.1:3900",
+  "http://10.200.77.5:3900",
+  "https://origin-cdn.dragonballfr.com",
+]);
+
+async function fetchGarageObject(
+  key: string,
+  entry: ManifestEntry,
+  env: CdnEnvironment,
+  fetchOrigin: OriginFetch,
+  method: "GET" | "HEAD",
+  range?: { offset: number; length: number },
+): Promise<StoredObject | null> {
+  const origin = env.GARAGE_ORIGIN;
+  if (!origin || !ALLOWED_GARAGE_ORIGINS.has(origin) || !/^_objects\/[a-f0-9]{64}$/.test(key)) {
+    return null;
+  }
+  try {
+    const response = await fetchOrigin(`${origin}/shenron-cdn/${key}`, {
+      method,
+      redirect: "manual",
+      signal: AbortSignal.timeout(10000),
+      headers: {
+        "Accept-Encoding": "identity",
+        ...(range ? { Range: `bytes=${range.offset}-${range.offset + range.length - 1}` } : {}),
+      },
+    });
+    if (![200, 206].includes(response.status)) {
+      await response.body?.cancel();
+      return null;
+    }
+    const shaHeader =
+      response.headers.get("x-amz-meta-sha256") ??
+      response.headers.get("X-Content-SHA256") ??
+      entry.sha256;
+    if (shaHeader !== entry.sha256) {
+      await response.body?.cancel();
+      return null;
+    }
+    return {
+      size: entry.size,
+      customMetadata: { sha256: entry.sha256 },
+      body: method === "HEAD" ? undefined : (response.body ?? undefined),
+    };
+  } catch {
+    return null;
+  }
+}
 
 async function bootstrapManifest(
   key: string,
@@ -171,20 +293,20 @@ function validEntry(entry: unknown): entry is ManifestEntry {
   );
 }
 
-function responseHeaders(entry: ManifestEntry): Headers {
-  return new Headers({
+function responseHeaders(entry: ManifestEntry, path?: string): Headers {
+  const headers = new Headers({
     "Content-Type": entry.contentType,
-    "Cache-Control": entry.cacheControl,
+    "Cache-Control": path ? resolveCacheControl(path, entry.cacheControl) : entry.cacheControl,
     "Content-Length": String(entry.size),
     ETag: `"${entry.sha256}"`,
     "X-Content-SHA256": entry.sha256,
     "X-Content-Size": String(entry.size),
     "Accept-Ranges": "bytes",
     "Access-Control-Allow-Origin": "*",
-    "X-Content-Type-Options": "nosniff",
     "Access-Control-Expose-Headers":
       "Content-Length, Content-Range, ETag, X-Content-SHA256, X-Content-Size",
   });
+  return applyZeroTrustHeaders(headers);
 }
 
 function imageSource(value: string): URL | undefined {
@@ -217,7 +339,9 @@ async function dynamicRoute(
   fetchOrigin: OriginFetch,
 ): Promise<Response | undefined> {
   const url = new URL(request.url);
-  const headers = new Headers({ "Cache-Control": "no-store", "Access-Control-Allow-Origin": "*" });
+  const headers = applyZeroTrustHeaders(
+    new Headers({ "Cache-Control": "no-store", "Access-Control-Allow-Origin": "*" }),
+  );
   const text = (body: string, type = "text/plain; charset=utf-8", status = 200) => {
     headers.set("Content-Type", type);
     return new Response(request.method === "HEAD" ? null : body, { status, headers });
@@ -304,7 +428,10 @@ async function dynamicRoute(
 }
 
 function failure(status: number): Response {
-  return new Response(null, { status, headers: { "Cache-Control": "no-store" } });
+  return new Response(null, {
+    status,
+    headers: applyZeroTrustHeaders(new Headers({ "Cache-Control": "no-store" })),
+  });
 }
 
 function verified(object: StoredObject | null, entry: ManifestEntry): object is StoredObject {
@@ -335,7 +462,7 @@ export async function handleCdn(
   if (request.method !== "GET" && request.method !== "HEAD") {
     return new Response(null, {
       status: 405,
-      headers: { Allow: "GET, HEAD", "Cache-Control": "no-store" },
+      headers: applyZeroTrustHeaders(new Headers({ Allow: "GET, HEAD", "Cache-Control": "no-store" })),
     });
   }
   const dynamic = await dynamicRoute(request, env, fetchOrigin);
@@ -346,78 +473,113 @@ export async function handleCdn(
     const prefix = env.MANIFEST_PREFIX ?? "_migration/manifests/";
     if (!/^_migration\/manifests(?:\/[a-zA-Z0-9_-]+)*\/$/.test(prefix)) return failure(503);
     const keyManifest = await manifestKey(path, prefix);
-    const manifest = await env.CDN.get(keyManifest);
-    const entries = manifest?.json
-      ? await manifest.json<Record<string, unknown>>()
-      : await bootstrapManifest(keyManifest, env, fetchOrigin);
+    let entries: Record<string, unknown> | undefined;
+    const useIsolateShardCache = prefix !== "_migration/manifests/";
+    const cachedShard = useIsolateShardCache ? manifestShardCache.get(keyManifest) : undefined;
+    if (cachedShard && cachedShard.bucket === env.CDN) {
+      entries = cachedShard.entries;
+    } else {
+      const manifest = await env.CDN.get(keyManifest);
+      entries = manifest?.json
+        ? await manifest.json<Record<string, unknown>>()
+        : await bootstrapManifest(keyManifest, env, fetchOrigin);
+      if (useIsolateShardCache && entries && typeof entries === "object" && !Array.isArray(entries)) {
+        if (manifestShardCache.size >= MAX_CACHED_SHARDS) {
+          const oldest = manifestShardCache.keys().next().value;
+          if (oldest) manifestShardCache.delete(oldest);
+        }
+        manifestShardCache.set(keyManifest, { bucket: env.CDN, entries });
+      }
+    }
     if (!entries || typeof entries !== "object" || Array.isArray(entries)) return failure(503);
     if (!Object.hasOwn(entries, path)) return failure(404);
     const entry = entries[path];
     if (!validEntry(entry)) return failure(503);
     const key = `_objects/${entry.sha256}`;
-    let metadata = await env.CDN.head(key);
-    if (
-      metadata &&
-      !verified(metadata, entry) &&
-      request.method === "HEAD" &&
-      env.VERIFY_UPLOADS === "true"
-    ) {
-      const uploaded = await env.CDN.get(key);
-      if (!uploaded || uploaded.size !== entry.size || !uploaded.body) return failure(503);
-      // R2 validates the pinned checksum before atomically attaching trusted metadata.
-      metadata = await env.CDN.put(key, uploaded.body, {
-        sha256: entry.sha256,
-        httpMetadata: { contentType: entry.contentType, cacheControl: entry.cacheControl },
-        customMetadata: { sha256: entry.sha256 },
-      });
-    }
-    if (!metadata && request.method === "HEAD" && env.IMPORT_ENABLED === "true") {
-      const source = await fetchOrigin(
-        `${ORIGIN}${path.split("/").map(encodeURIComponent).join("/")}`,
-        {
-          method: "GET",
-          redirect: "manual",
-          headers: { "Accept-Encoding": "identity" },
-        },
-      );
-      if (
-        source.status !== 200 ||
-        source.headers.get("Content-Length") !== String(entry.size) ||
-        !source.body ||
-        (source.headers.has("Content-Encoding") &&
-          source.headers.get("Content-Encoding") !== "identity")
-      ) {
-        await source.body?.cancel();
-        return failure(503);
-      }
-      metadata = await env.CDN.put(key, source.body, {
-        sha256: entry.sha256,
-        httpMetadata: { contentType: entry.contentType, cacheControl: entry.cacheControl },
-        customMetadata: { sha256: entry.sha256 },
-      });
-    }
-    if (!verified(metadata, entry)) return failure(503);
-    const headers = responseHeaders(entry);
+    const headers = responseHeaders(entry, path);
     const etags = request.headers
       .get("If-None-Match")
       ?.split(",")
       .map((etag) => etag.trim().replace(/^W\//, ""));
-    if (etags?.includes("*") || etags?.includes(headers.get("ETag")!)) {
+    const isConditionalMatch = Boolean(etags?.includes("*") || etags?.includes(headers.get("ETag")!));
+
+    if (request.method === "HEAD") {
+      let metadata = await env.CDN.head(key);
+      if (metadata && !verified(metadata, entry) && env.VERIFY_UPLOADS === "true") {
+        const uploaded = await env.CDN.get(key);
+        if (!uploaded || uploaded.size !== entry.size || !uploaded.body) return failure(503);
+        // R2 validates the pinned checksum before atomically attaching trusted metadata.
+        metadata = await env.CDN.put(key, uploaded.body, {
+          sha256: entry.sha256,
+          httpMetadata: { contentType: entry.contentType, cacheControl: entry.cacheControl },
+          customMetadata: { sha256: entry.sha256 },
+        });
+      }
+      if (!metadata && env.IMPORT_ENABLED === "true") {
+        const source = await fetchOrigin(
+          `${ORIGIN}${path.split("/").map(encodeURIComponent).join("/")}`,
+          {
+            method: "GET",
+            redirect: "manual",
+            headers: { "Accept-Encoding": "identity" },
+          },
+        );
+        if (
+          source.status !== 200 ||
+          source.headers.get("Content-Length") !== String(entry.size) ||
+          !source.body ||
+          (source.headers.has("Content-Encoding") &&
+            source.headers.get("Content-Encoding") !== "identity")
+        ) {
+          await source.body?.cancel();
+          return failure(503);
+        }
+        metadata = await env.CDN.put(key, source.body, {
+          sha256: entry.sha256,
+          httpMetadata: { contentType: entry.contentType, cacheControl: entry.cacheControl },
+          customMetadata: { sha256: entry.sha256 },
+        });
+      }
+      if (!metadata && env.GARAGE_ORIGIN) {
+        metadata = await fetchGarageObject(key, entry, env, fetchOrigin, "HEAD");
+      }
+      if (!verified(metadata, entry)) return failure(503);
+      if (isConditionalMatch) {
+        headers.delete("Content-Length");
+        return new Response(null, { status: 304, headers });
+      }
+      return new Response(null, { headers });
+    }
+
+    if (isConditionalMatch) {
+      let metadata = await env.CDN.head(key);
+      if (!metadata && env.GARAGE_ORIGIN) {
+        metadata = await fetchGarageObject(key, entry, env, fetchOrigin, "HEAD");
+      }
+      if (!verified(metadata, entry)) return failure(503);
       headers.delete("Content-Length");
       return new Response(null, { status: 304, headers });
     }
-    // RFC 9110 section 14.2 defines ranges only for GET.
-    if (request.method === "HEAD") return new Response(null, { headers });
+
+    // RFC 9110 section 14.2 defines ranges only for GET. Single R2/Garage GET round-trip (eliminating redundant HEAD).
     const rangeHeader = request.headers.get("Range");
     const ifRange = request.headers.get("If-Range");
     const useRange = rangeHeader && (!ifRange || ifRange === headers.get("ETag"));
     const range = useRange ? byteRange(rangeHeader, entry.size) : undefined;
     if (useRange && !range) {
+      let metadata = await env.CDN.head(key);
+      if (!metadata && env.GARAGE_ORIGIN) {
+        metadata = await fetchGarageObject(key, entry, env, fetchOrigin, "HEAD");
+      }
+      if (!verified(metadata, entry)) return failure(503);
       headers.set("Content-Range", `bytes */${entry.size}`);
       headers.delete("Content-Length");
       return new Response(null, { status: 416, headers });
     }
-    const object = await env.CDN.get(key, range ? { range } : undefined);
+    let object = await env.CDN.get(key, range ? { range } : undefined);
+    if (!object && env.GARAGE_ORIGIN) {
+      object = await fetchGarageObject(key, entry, env, fetchOrigin, "GET", range);
+    }
     if (!verified(object, entry) || !object.body) return failure(503);
     if (range) {
       headers.set("Content-Length", String(range.length));
@@ -425,8 +587,19 @@ export async function handleCdn(
         "Content-Range",
         `bytes ${range.offset}-${range.offset + range.length - 1}/${entry.size}`,
       );
+      return new Response(object.body, { status: 206, headers });
     }
-    return new Response(object.body, { status: range ? 206 : 200, headers });
+    const encoding = negotiateEncoding(request, entry.contentType, entry.size);
+    if (encoding) {
+      const compressed = tryCompressBody(object.body, encoding);
+      if (compressed) {
+        headers.set("Content-Encoding", encoding);
+        headers.set("Vary", "Accept-Encoding");
+        headers.delete("Content-Length");
+        return new Response(compressed, { status: 200, headers });
+      }
+    }
+    return new Response(object.body, { status: 200, headers });
   } catch {
     return failure(503);
   }

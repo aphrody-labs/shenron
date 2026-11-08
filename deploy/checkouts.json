@@ -10,7 +10,7 @@
       "enabled": true,
       "paths": {
         "vps": "~/src/shenron",
-        "bunos": "~/src/shenron",
+        "cdn": "~/src/shenron",
         "windows": "C:/src/shenron",
         "prod": "/srv/shenron/build/source"
       }
@@ -40,7 +40,7 @@
       "submodules": "initialized",
       "mode": "ff-only",
       "enabled": true,
-      "paths": { "vps": "~/src/bun-os", "bunos": "~/src/bun-os" }
+      "paths": { "vps": "~/src/bun-os", "cdn": "~/src/bun-os" }
     },
     {
       "name": "yolo-web",

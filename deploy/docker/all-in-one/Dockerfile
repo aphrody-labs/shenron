@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.7
 # SPDX-License-Identifier: Apache-2.0
 # Complete all-in-one container for Shenron (dragonballfr.com).
 # Houses:
@@ -12,7 +13,7 @@ FROM ubuntu:26.10
 
 ARG SHENRON_REVISION=unknown
 # Bun runtime: release of the aphrody-labs/bun fork (package.json#packageManager).
-ARG BUN_VERSION=1.4.3-aphrody.2
+ARG BUN_VERSION=1.4.6
 
 LABEL org.opencontainers.image.title="Shenron Complete" \
       org.opencontainers.image.description="All-in-one container for Dragon Ball FR (Site, Bot, Studio, DB, Redis, Nginx)" \
@@ -31,10 +32,14 @@ ENV DEBIAN_FRONTEND=noninteractive \
     DATABASE_PATH=/app/data/bot.db \
     REDIS_URL=redis://127.0.0.1:6379 \
     SHENRON_FFI_LIB=/usr/local/lib/libshenron_ffi.so \
+    BUN_INSTALL_CACHE_DIR=/root/.bun/install/cache \
     NEXT_TELEMETRY_DISABLED=1
 
-# Install system dependencies, PostgreSQL, Redis, Nginx and utilities
-RUN apt-get update && apt-get install -y --no-install-recommends \
+# Install system dependencies, PostgreSQL, Redis, Nginx, Bun and create shenron user in a consolidated layer
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean \
+ && apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     jq \
@@ -48,39 +53,36 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     redis-tools \
     postgresql \
     postgresql-contrib \
- && rm -rf /var/lib/apt/lists/*
-
-# Install Bun (aphrody-labs/bun fork)
-RUN arch="$(uname -m)"; case "$arch" in x86_64) asset=bun-linux-x64 ;; aarch64) asset=bun-linux-aarch64 ;; *) exit 1 ;; esac \
- && curl -fsSL -o /tmp/bun.zip "https://github.com/aphrody-labs/bun/releases/download/aphrody-v${BUN_VERSION}/${asset}.zip" \
- && unzip -q /tmp/bun.zip -d /tmp/bun \
- && install -m 0755 "/tmp/bun/${asset}/bun" /usr/local/bin/bun \
+ && arch="$(uname -m)"; case "$arch" in x86_64) asset=bun-linux-x64 ;; aarch64) asset=bun-linux-aarch64 ;; *) exit 1 ;; esac \
+ && curl -fsSL -o /tmp/bun.tar.gz "https://github.com/aphrody-labs/bun/releases/download/bun-v${BUN_VERSION}/${asset}.tar.gz" \
+ && mkdir -p /tmp/bun \
+ && tar xzf /tmp/bun.tar.gz -C /tmp/bun \
+ && install -m 0755 "$(find /tmp/bun -type f -name bun | head -1)" /usr/local/bin/bun \
  && ln -sf bun /usr/local/bin/bunx \
- && rm -rf /tmp/bun /tmp/bun.zip \
- && bun --revision
-
-# Create shenron user and directories
-RUN groupadd --gid 10001 shenron \
- && useradd --uid 10001 --gid 10001 --home-dir /var/lib/shenron --no-create-home --shell /bin/bash shenron \
+ && rm -rf /tmp/bun /tmp/bun.tar.gz \
+ && bun --revision \
+ && (id ubuntu >/dev/null 2>&1 && userdel -r ubuntu || true) \
+ && groupadd --gid 10001 shenron \
+ && useradd --uid 10001 --gid 10001 --home-dir /var/lib/shenron --no-create-home --shell /usr/sbin/nologin shenron \
  && install -d -m 0755 -o shenron -g shenron /app /app/data /app/assets /var/lib/shenron \
  && install -d -m 0755 -o shenron -g shenron /var/lib/shenron/config /var/lib/shenron/cache /var/lib/shenron/data /var/lib/shenron/logs \
  && install -d -m 0755 /srv/shenron-cdn /srv/shenron-cdn/site /srv/shenron-cdn/assets /srv/shenron-cdn/wiki /srv/shenron-cdn/site-extra
 
 WORKDIR /app
 
-# Copy application configuration and migrations
+# Copy Nginx config and entrypoint script (stable infrastructure layer)
+COPY deploy/docker/all-in-one/nginx.conf /etc/nginx/nginx.conf
+COPY --chmod=755 deploy/docker/all-in-one/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# Copy workspace manifests first to maximize BuildKit cache hits on dependency installation
+COPY --chown=shenron:shenron package.json bun.lock* bunfig.toml tsconfig.json* /app/
+RUN --mount=type=cache,target=/root/.bun/install/cache,sharing=locked \
+    bun install --frozen-lockfile --ignore-scripts || true
+
+# Copy application configuration, migrations and sources
 COPY apps/site/src/db/migrations /app/site-migrations
 COPY apps/bot/src/db/migrations /app/src/db/migrations
 COPY scripts/ops /app/scripts/ops
-
-# Copy Nginx config and entrypoint script
-COPY deploy/docker/all-in-one/nginx.conf /etc/nginx/nginx.conf
-COPY deploy/docker/all-in-one/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-# Copy binaries if available from release build
-# (Fallback to source execution via Bun if binary is not pre-packaged)
-COPY --chown=shenron:shenron package.json bunfig.toml tsconfig.json* /app/
 COPY --chown=shenron:shenron apps /app/apps
 COPY --chown=shenron:shenron packages /app/packages
 COPY --chown=shenron:shenron data /app/data-canonique

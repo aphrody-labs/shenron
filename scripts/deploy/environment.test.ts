@@ -1,9 +1,41 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { activationEnv, driftProblems, loadDefinition, shellExports } from "./environment.ts";
+import {
+  activationEnv,
+  driftProblems,
+  loadDefinition,
+  resolveTriadNode,
+  shellExports,
+} from "./environment.ts";
 
 test("every consumer of this repository matches deploy/environment.json", () => {
   expect(driftProblems()).toEqual([]);
+});
+
+test("canonical triad nodes and legacy aliases resolve accurately", () => {
+  const definition = loadDefinition();
+  expect(resolveTriadNode("vps", definition)).toMatchObject({
+    alias: "vps",
+    meshIp: "10.200.77.1",
+    publicIp: "51.77.147.152",
+  });
+  expect(resolveTriadNode("cdn", definition)).toMatchObject({
+    alias: "cdn",
+    legacyAlias: "bunos",
+    meshIp: "10.200.77.3",
+    publicIp: "51.255.162.6",
+  });
+  expect(resolveTriadNode("bunos", definition)).toEqual(resolveTriadNode("cdn", definition));
+  expect(resolveTriadNode("prod", definition)).toMatchObject({
+    alias: "prod",
+    legacyAlias: "dbfr",
+    meshIp: "10.200.77.5",
+    publicIp: "72.60.186.43",
+    os: "Arch Linux 7.2.11",
+    domain: "dragonballfr.com",
+  });
+  expect(resolveTriadNode("dbfr", definition)).toEqual(resolveTriadNode("prod", definition));
+  expect(resolveTriadNode("unknown", definition)).toBeUndefined();
 });
 
 test("a pin changed in the definition alone is reported", () => {

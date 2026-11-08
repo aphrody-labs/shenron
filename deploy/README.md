@@ -1,12 +1,20 @@
 # deploy
 
 - `docker/`: image de production (`Dockerfile`), fichiers compose, configuration nginx de la gateway.
-- `cloudflare/`: Worker CDN sur le bucket R2 `shenron-cdn` et outils d'inventaire.
+- `cloudflare/`: Worker CDN sur le bucket R2 / Garage S3 `shenron-cdn`, origine locale et outils d'inventaire.
 - `sql/`: migrations SQL ponctuelles avec leur retour arrière.
 - `prod/apply-migrations.py`: applique les migrations du site, une transaction chacune.
 - `privoxy/`: configuration du proxy média.
 
 Procédure de déploiement: `docs/operations/deploy.md`.
+
+## Topologie Canonique de la Triade (`10.200.77.0/24`)
+
+| Nœud | Alias Hérité | IP Publique / Mesh WireGuard | Système | Rôle Canonique |
+| :--- | :--- | :--- | :--- | :--- |
+| **`vps`** | - | `51.77.147.152` / `10.200.77.1` | Ubuntu 7.3.0 | Build Hub & Mesh Coordinator |
+| **`cdn`** | `bunos` | `51.255.162.6` / `10.200.77.3` | Ubuntu 7.3.0 | Simulateur Cloudflare Edge (Pingora Gateway, Garage S3 R2, RQLite D1, Workerd, Mail/Auth) |
+| **`prod`** | `dbfr` | `72.60.186.43` / `10.200.77.5` | Arch Linux 7.2.11 | Production Origin (`dragonballfr.com`) |
 
 - catalogue des services et unités : `aphrody-infra/config/service-catalog.json`,
   `aphrody-infra/systemd/shenron-*.{service,timer}` ;
@@ -19,12 +27,9 @@ Procédure de déploiement: `docs/operations/deploy.md`.
 Ce dépôt construit et livre l'image : `scripts/deploy/release.sh` (voir
 [`../docs/operations/AUTO-DEPLOY.md`](../docs/operations/AUTO-DEPLOY.md)) ;
 l'activation sur l'hôte reste celle d'`aphrody-infra`, qui installe les gabarits d'ici :
-`environment.json` (environnement unique de build, livraison et prod), `prod/compose.yaml`
+`environment.json` (environnement unique de build, livraison et prod incluant la triade), `prod/compose.yaml`
 (pile de Prod sans secret), `activation/activate.sh` (bascule par service). Les chemins
 `aphrody-infra` ci-dessus étaient absents du checkout relu le 2026-11-05 (audit E1).
-
-Aucune adresse, aucun hôte ni port de production n'est décrit ici : les lire
-dans le catalogue `aphrody-infra`.
 
 ## Contenu restant
 
