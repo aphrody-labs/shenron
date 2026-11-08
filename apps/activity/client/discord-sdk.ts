@@ -12,6 +12,7 @@ export function createDiscordSdk(clientId: string, apiBase: string): ActivitySdk
     kind: "discord",
     instanceId: sdk.instanceId,
     guildId: sdk.guildId,
+    channelId: sdk.channelId ?? null,
     apiBase,
     async ready() {
       await sdk.ready();

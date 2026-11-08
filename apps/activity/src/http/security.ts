@@ -49,7 +49,21 @@ export function contentSecurityPolicy(options: CspOptions = {}): string {
     // React sets some `style` attributes (bar widths); stylesheets themselves stay same-origin.
     ["style-src", ["'self'"]],
     ["style-src-attr", ["'unsafe-inline'"]],
-    ["img-src", ["'self'", "data:", "https://cdn.discordapp.com", "https://media.discordapp.net"]],
+    [
+      "img-src",
+      [
+        "'self'",
+        "data:",
+        "https://cdn.discordapp.com",
+        "https://media.discordapp.net",
+        "https://cdn.dragonballfr.com",
+        "https://dragonballfr.com",
+      ],
+    ],
+    [
+      "media-src",
+      ["'self'", "https://cdn.dragonballfr.com", "https://origin-cdn.dragonballfr.com", "blob:"],
+    ],
     ["font-src", ["'self'"]],
     ["connect-src", connect],
     ["worker-src", ["'none'"]],

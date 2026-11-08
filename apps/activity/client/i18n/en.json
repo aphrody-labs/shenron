@@ -66,5 +66,19 @@
   "score.points": "{score} pts",
   "announce.lobby": "Back in the waiting room.",
   "announce.round": "The round begins.",
-  "announce.results": "Round over: here are the results."
+  "announce.results": "Round over: here are the results.",
+  "watch.title": "Shenron Player & Studio",
+  "watch.modeQuiz": "Quiz Mode",
+  "watch.modeWatch": "Watch Together",
+  "watch.mediaSelect": "Choose media",
+  "watch.typeEpisode": "Episodes",
+  "watch.typeMovie": "Movies",
+  "watch.typeManga": "Manga",
+  "watch.typeDatabook": "Databooks",
+  "watch.play": "Synchronized Play",
+  "watch.pause": "Synchronized Pause",
+  "watch.syncNotice": "Synchronized with room",
+  "watch.pageCounter": "Page {current} of {total}",
+  "watch.prevPage": "Previous page",
+  "watch.nextPage": "Next page"
 }

@@ -13,6 +13,7 @@ export interface ActivitySdk {
   /** Discord `instance_id`: the key of the shared room. */
   readonly instanceId: string;
   readonly guildId: string | null;
+  readonly channelId: string | null;
   /** Prefix of the requests to the Activity host: `/.proxy` inside Discord, nothing elsewhere. */
   readonly apiBase: string;
   /** Mock only: which character the window plays, how many simulated opponents join, how fast they answer. */

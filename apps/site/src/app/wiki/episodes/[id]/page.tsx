@@ -95,6 +95,7 @@ export async function generateMetadata({
       title: `${ep.title} — ${SERIES_LABELS[ep.series] ?? ep.series}`,
       description,
       image: ep.image ? assetUrl(ep.image) : undefined,
+      video: ep.video_url || ep.stream_url || undefined,
       type: "video.episode",
       canonical: `/wiki/episodes/${ep.id}`,
     }),
@@ -278,6 +279,21 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
       name: seriesLabel,
     },
     datePublished: ep.air_date ? new Date(ep.air_date * 1000).toISOString() : undefined,
+    ...(ep.video_url || ep.stream_url
+      ? {
+          video: {
+            "@type": "VideoObject" as const,
+            name: ep.title,
+            description: excerpt(ep.synopsis) || undefined,
+            thumbnailUrl: ep.image ? assetUrl(ep.image) : undefined,
+            contentUrl: ep.video_url || ep.stream_url,
+            uploadDate: ep.air_date ? new Date(ep.air_date * 1000).toISOString() : undefined,
+            duration: ep.duration_sec
+              ? `PT${Math.floor(ep.duration_sec / 60)}M${ep.duration_sec % 60}S`
+              : undefined,
+          },
+        }
+      : {}),
   };
 
   return (

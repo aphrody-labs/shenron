@@ -25,6 +25,7 @@ export function createFakeSdk(params: URLSearchParams, apiBase: string): Activit
     kind: "mock",
     instanceId: instance || "mock-instance",
     guildId: null,
+    channelId: "mock-channel",
     apiBase,
     mock: { slot, bots, fast: params.get("fast") === "1" },
     async ready() {

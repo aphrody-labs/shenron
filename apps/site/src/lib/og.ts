@@ -15,12 +15,14 @@ export function ogMeta({
   title,
   description,
   image,
+  video,
   type = "article",
   canonical,
 }: {
   title: string;
   description?: string;
   image?: string | null;
+  video?: string | null;
   type?: "article" | "website" | "video.episode" | "video.movie";
   /**
    * URL canonique auto-référente de la page (chemin relatif, ex. `/wiki/sagas`,
@@ -28,7 +30,7 @@ export function ogMeta({
    * une canonical globale pointerait à tort toutes les pages vers la home.
    */
   canonical?: string;
-}): Pick<Metadata, "openGraph" | "twitter" | "alternates"> {
+}): Pick<Metadata, "openGraph" | "twitter" | "alternates" | "other"> {
   // Sans image propre, on pointe EXPLICITEMENT la carte de marque.
   //
   // Le commentaire d'origine affirmait que la page « hérite alors de l'OG image
@@ -47,20 +49,72 @@ export function ogMeta({
   const src = image ?? fallback;
   const images = { images: [{ url: src, alt: title }] };
   const twitterImages = { images: [src] };
+  const isVideo = Boolean(video && (type === "video.episode" || type === "video.movie"));
+  const videoEntries =
+    isVideo && video
+      ? {
+          videos: [
+            {
+              url: video,
+              secureUrl: video,
+              type: "video/mp4",
+              width: 1920,
+              height: 1080,
+            },
+          ],
+        }
+      : {};
+  const twitterPlayer =
+    isVideo && video
+      ? {
+          player: {
+            url: video,
+            width: 1920,
+            height: 1080,
+            streamUrl: video,
+          },
+        }
+      : {};
+
+  const fullCanonical = canonical
+    ? `${SITE_URL}${canonical.startsWith("/") ? "" : "/"}${canonical}`
+    : SITE_URL;
   return {
-    ...(canonical ? { alternates: { canonical } } : {}),
+    alternates: {
+      ...(canonical ? { canonical } : {}),
+      types: {
+        "application/json+oembed": `${SITE_URL}/api/oembed?url=${encodeURIComponent(fullCanonical)}&format=json`,
+      },
+    },
     openGraph: {
+      siteName: "Dragon Ball FR · Shenron",
+      locale: "fr_FR",
+      alternateLocale: ["ja_JP", "en_US"],
       title,
       description,
       type: type === "video.episode" || type === "video.movie" ? "video.other" : type,
       ...(canonical ? { url: canonical } : {}),
       ...images,
+      ...videoEntries,
     },
     twitter: {
-      card: "summary_large_image",
+      card: isVideo ? "player" : "summary_large_image",
+      site: "@dragonballfr",
+      creator: "@dragonballfr",
       title,
       description,
       ...twitterImages,
+      ...twitterPlayer,
+    },
+    other: {
+      "theme-color": "#e65100",
+      ...(isVideo && video
+        ? {
+            "og:video:type": "video/mp4",
+            "og:video:width": "1920",
+            "og:video:height": "1080",
+          }
+        : {}),
     },
   };
 }

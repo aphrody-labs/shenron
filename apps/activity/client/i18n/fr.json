@@ -66,5 +66,19 @@
   "score.points": "{score} pts",
   "announce.lobby": "Retour à la salle d'attente.",
   "announce.round": "La manche commence.",
-  "announce.results": "Manche terminée : voici les résultats."
+  "announce.results": "Manche terminée : voici les résultats.",
+  "watch.title": "Lecteur & Studio Shenron",
+  "watch.modeQuiz": "Mode Quiz",
+  "watch.modeWatch": "Watch Together",
+  "watch.mediaSelect": "Choisir un média",
+  "watch.typeEpisode": "Épisodes",
+  "watch.typeMovie": "Films",
+  "watch.typeManga": "Manga",
+  "watch.typeDatabook": "Databooks",
+  "watch.play": "Lecture synchronisée",
+  "watch.pause": "Pause synchronisée",
+  "watch.syncNotice": "Synchronisé avec le salon",
+  "watch.pageCounter": "Page {current} sur {total}",
+  "watch.prevPage": "Page précédente",
+  "watch.nextPage": "Page suivante"
 }

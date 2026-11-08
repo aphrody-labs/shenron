@@ -87,6 +87,7 @@ export async function generateMetadata({
       title: `${m.title} — DBFR`,
       description,
       image: m.poster ? assetUrl(m.poster) : undefined,
+      video: m.video_url || m.stream_url || undefined,
       type: "video.movie",
       canonical: `/wiki/movies/${slug}`,
     }),

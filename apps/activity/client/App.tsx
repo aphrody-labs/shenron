@@ -4,6 +4,7 @@ import { BootScreen } from "./screens/Boot";
 import { LobbyScreen } from "./screens/Lobby";
 import { ResultsScreen } from "./screens/Results";
 import { RoundScreen } from "./screens/Round";
+import { WatchTogetherScreen } from "./screens/WatchTogether";
 import { errorLabel, translator } from "./i18n";
 import { Backdrop, Live } from "./ui";
 import { useGame } from "./use-game";
@@ -21,6 +22,7 @@ function Game({ restart }: { restart: () => void }) {
   const room = state.room;
   const phase = room?.phase ?? null;
   const mock = game.sdk?.kind === "mock";
+  const [inWatchTogether, setInWatchTogether] = useState(false);
 
   useEffect(() => {
     document.title = translator(locale)("app.title");
@@ -53,6 +55,16 @@ function Game({ restart }: { restart: () => void }) {
   let screen;
   if (state.connection === "failed" || !room || !state.you) {
     screen = <BootScreen state={state} locale={locale} onRetry={restart} mock={mock} />;
+  } else if (inWatchTogether) {
+    screen = (
+      <WatchTogetherScreen
+        state={state}
+        locale={locale}
+        instanceId={game.sdk?.instanceId ?? room.instanceId}
+        channelId={game.sdk?.channelId ?? null}
+        onExit={() => setInWatchTogether(false)}
+      />
+    );
   } else if (room.phase === "round" && room.question) {
     screen = <RoundScreen state={state} locale={locale} onAnswer={game.answer} />;
   } else if (room.phase === "results") {
@@ -66,6 +78,7 @@ function Game({ restart }: { restart: () => void }) {
         onStart={game.start}
         onKick={game.kick}
         onInvite={game.invite}
+        onWatchTogether={() => setInWatchTogether(true)}
       />
     );
   }

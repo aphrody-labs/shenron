@@ -70,11 +70,15 @@ describe("response headers", () => {
     });
   }
 
-  test("the CSP names the Activity socket and the Discord CDN for avatars", () => {
+  test("the CSP names the Activity socket, media sources, and the CDNs", () => {
     const csp = contentSecurityPolicy({ publicUrl: "https://activity.dragonballfr.com" });
     expect(csp).toContain("connect-src 'self' https://discord.com wss://*.discordsays.com");
     expect(csp).toContain("wss://activity.dragonballfr.com");
     expect(csp).toContain("img-src 'self' data: https://cdn.discordapp.com");
+    expect(csp).toContain("https://cdn.dragonballfr.com");
+    expect(csp).toContain(
+      "media-src 'self' https://cdn.dragonballfr.com https://origin-cdn.dragonballfr.com blob:",
+    );
     expect(csp).not.toContain("ws://localhost");
     expect(contentSecurityPolicy({ development: true })).toContain("ws://localhost:*");
   });

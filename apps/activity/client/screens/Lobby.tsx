@@ -16,6 +16,7 @@ interface LobbyProps {
   onStart: () => void;
   onKick: (userId: string) => void;
   onInvite: () => void;
+  onWatchTogether?: () => void;
 }
 
 function statusLabel(t: Translate, player: PlayerPublic): string | null {
@@ -64,7 +65,15 @@ function PlayerRow({
   );
 }
 
-export function LobbyScreen({ state, locale, onConfigure, onStart, onKick, onInvite }: LobbyProps) {
+export function LobbyScreen({
+  state,
+  locale,
+  onConfigure,
+  onStart,
+  onKick,
+  onInvite,
+  onWatchTogether,
+}: LobbyProps) {
   const t = translator(locale);
   const room = state.room!;
   const host = isHost(state);
@@ -86,9 +95,16 @@ export function LobbyScreen({ state, locale, onConfigure, onStart, onKick, onInv
       <Header
         locale={locale}
         aside={
-          <button type="button" className="btn btn--ghost" onClick={onInvite}>
-            {t("lobby.invite")}
-          </button>
+          <div className="lobby__actions">
+            {onWatchTogether && (
+              <button type="button" className="btn btn--ghost" onClick={onWatchTogether}>
+                {t("watch.modeWatch")}
+              </button>
+            )}
+            <button type="button" className="btn btn--ghost" onClick={onInvite}>
+              {t("lobby.invite")}
+            </button>
+          </div>
         }
       />
       <h2 id="lobby-title" className="sr-only">
