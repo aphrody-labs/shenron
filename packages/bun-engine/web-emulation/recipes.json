@@ -6,7 +6,12 @@
     { "id": "dust-nds", "kind": "rust", "build": ["rust", "dust-nds"], "smoke": true },
     { "id": "zakuro-3ds", "kind": "rust", "build": ["rust", "zakuro-3ds"], "smoke": true },
     { "id": "tetanes-nes", "kind": "rust", "build": ["rust", "tetanes-nes"], "smoke": true },
-    { "id": "rustboyadvance-gba", "kind": "rust", "build": ["rust", "rustboyadvance-gba"], "smoke": true },
+    {
+      "id": "rustboyadvance-gba",
+      "kind": "rust",
+      "build": ["rust", "rustboyadvance-gba"],
+      "smoke": true
+    },
     { "id": "starpsx-psx", "kind": "rust", "build": ["rust", "starpsx-psx"], "smoke": true },
     {
       "id": "melonds",

@@ -57,13 +57,17 @@ function script(url) {
 
 export default async function init({ module_or_path } = {}) {
   if (!globalThis.crossOriginIsolated) {
-    throw new Error("melonDS needs SharedArrayBuffer: serve the page with COOP same-origin and COEP");
+    throw new Error(
+      "melonDS needs SharedArrayBuffer: serve the page with COOP same-origin and COEP",
+    );
   }
   const wasm = module_or_path ?? new URL("melonDS.wasm", base);
   const [module] = await Promise.all([
     wasm instanceof WebAssembly.Module ? wasm : WebAssembly.compileStreaming(fetch(wasm)),
     globalThis.qtLoad ? null : script(new URL("qtloader.js", base)),
-    globalThis.melonDS_entry || globalThis.createQtAppInstance ? null : script(new URL("melonDS.js", base)),
+    globalThis.melonDS_entry || globalThis.createQtAppInstance
+      ? null
+      : script(new URL("melonDS.js", base)),
   ]);
   compiled = module;
 }
@@ -128,7 +132,7 @@ class Handle {
   /** Every element under the container, descending into Qt's (nested) shadow roots. */
   #all(selector) {
     const found = [];
-    const visit = root => {
+    const visit = (root) => {
       found.push(...root.querySelectorAll(selector));
       for (const el of root.querySelectorAll("*")) if (el.shadowRoot) visit(el.shadowRoot);
     };
@@ -232,7 +236,8 @@ class Handle {
   get lit() {
     const data = this.#pixels();
     if (!data) return false;
-    for (let i = 0; i < data.length; i += 4) if (data[i] > 16 || data[i + 1] > 16 || data[i + 2] > 16) return true;
+    for (let i = 0; i < data.length; i += 4)
+      if (data[i] > 16 || data[i + 1] > 16 || data[i + 2] > 16) return true;
     return false;
   }
 
@@ -261,7 +266,8 @@ class Handle {
  * @param {{ system?: string }} [options]
  */
 export async function start(canvas, rom, { system = "nds" } = {}) {
-  if (system !== "nds" && system !== "nintendo-ds") throw new Error(`melonDS boots nds images, not ${system}`);
+  if (system !== "nds" && system !== "nintendo-ds")
+    throw new Error(`melonDS boots nds images, not ${system}`);
   if (!compiled) await init();
   const container = document.createElement("div");
   const box = canvas.getBoundingClientRect();
@@ -280,10 +286,10 @@ export async function start(canvas, rom, { system = "nds" } = {}) {
       module: compiled,
       entryFunction: entry,
       containerElements: [container],
-      onExit: status => console.warn(`melonDS exited (${status?.code ?? status?.text ?? ""})`),
+      onExit: (status) => console.warn(`melonDS exited (${status?.code ?? status?.text ?? ""})`),
     },
     preRun: [
-      module => {
+      (module) => {
         const fs = module.FS;
         mkdirs(fs, "/rom");
         fs.writeFile("/rom/game.nds", rom);

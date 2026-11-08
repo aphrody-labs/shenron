@@ -105,7 +105,7 @@ export async function waitForDocker(what: string) {
         .split(/\s+/)
         .filter(Boolean)
         .map(Number)
-        .some(n => n > 0)
+        .some((n) => n > 0)
     )
       return;
     if (!announced) log(`waiting for another docker build before ${what}`);
@@ -150,7 +150,8 @@ async function tool(name: "wasm-bindgen" | "binaryen", exe: string): Promise<str
   if (!response.ok) throw new Error(`${name}: download failed (${response.status})`);
   const bytes = await response.bytes();
   const digest = new Bun.CryptoHasher("sha256").update(bytes).digest("hex");
-  if (digest !== pin.sha256) throw new Error(`${name}: sha256 ${digest} does not match the lock (${pin.sha256})`);
+  if (digest !== pin.sha256)
+    throw new Error(`${name}: sha256 ${digest} does not match the lock (${pin.sha256})`);
   await new Bun.Archive(bytes).extract(dir);
   const path = findFile(dir, exe);
   if (!path) throw new Error(`${name}: ${exe} not found in the archive`);
@@ -182,8 +183,10 @@ function sizes(path: string) {
 async function buildRust(id: string, core: RustCore, threads: boolean) {
   const variant = threads ? "threads" : "single";
   const features = ["web", ...core.features];
-  const targetFeatures = threads ? [...baseFeatures, ...lock.rust.targetFeatures.threads] : baseFeatures;
-  const rustflags = [`-Ctarget-feature=${targetFeatures.map(f => `+${f}`).join(",")}`];
+  const targetFeatures = threads
+    ? [...baseFeatures, ...lock.rust.targetFeatures.threads]
+    : baseFeatures;
+  const rustflags = [`-Ctarget-feature=${targetFeatures.map((f) => `+${f}`).join(",")}`];
   const cargo = [
     "build",
     "--locked",
@@ -227,7 +230,10 @@ async function buildRust(id: string, core: RustCore, threads: boolean) {
   const raw = join(root, "target", "wasm32-unknown-unknown", lock.rust.profile, "bun_engine.wasm");
   const out = join(work, "out", id, variant, crypto.randomUUID());
   mkdirSync(out, { recursive: true });
-  const bindgen = await tool("wasm-bindgen", process.platform === "win32" ? "wasm-bindgen.exe" : "wasm-bindgen");
+  const bindgen = await tool(
+    "wasm-bindgen",
+    process.platform === "win32" ? "wasm-bindgen.exe" : "wasm-bindgen",
+  );
   const bindgenSeconds = await run([
     bindgen,
     "--target",
@@ -239,10 +245,13 @@ async function buildRust(id: string, core: RustCore, threads: boolean) {
     "--no-typescript",
     raw,
   ]);
-  const wasmOpt = await tool("binaryen", process.platform === "win32" ? "wasm-opt.exe" : "wasm-opt");
+  const wasmOpt = await tool(
+    "binaryen",
+    process.platform === "win32" ? "wasm-opt.exe" : "wasm-opt",
+  );
   const bound = join(out, "bun_engine_bg.wasm");
   const optimized = join(out, "bun_engine_opt.wasm");
-  const enable = targetFeatures.map(f =>
+  const enable = targetFeatures.map((f) =>
     f === "atomics"
       ? "--enable-threads"
       : f === "nontrapping-fptoint"
@@ -272,7 +281,7 @@ async function buildRust(id: string, core: RustCore, threads: boolean) {
   mkdirSync(target, { recursive: true });
   await Bun.write(join(target, "bun_engine_bg.wasm"), Bun.file(optimized));
   await Bun.write(join(target, "bun_engine.js"), Bun.file(join(out, "bun_engine.js")));
-  for (const extra of readdirSync(out).filter(f => f.startsWith("snippets"))) {
+  for (const extra of readdirSync(out).filter((f) => f.startsWith("snippets"))) {
     await run(["cp", "-r", join(out, extra), target]);
   }
   return {
@@ -330,9 +339,9 @@ async function rust(ids: string[], threads: boolean) {
         engine: "bevy",
         firmware: core.firmware,
         license: core.license,
-        version: (await Bun.file(join(root, "crates", "bun-engine-core", "Cargo.toml")).text()).match(
-          /^version = "([^"]+)"/m,
-        )?.[1],
+        version: (
+          await Bun.file(join(root, "crates", "bun-engine-core", "Cargo.toml")).text()
+        ).match(/^version = "([^"]+)"/m)?.[1],
         sha256: single.sha256,
         variants: multi
           ? {
@@ -408,8 +417,12 @@ async function attempt(id: string, image: string) {
   } catch {
     ok = false;
   }
-  const logText = existsSync(join(out, "build.log")) ? await Bun.file(join(out, "build.log")).text() : "";
-  const blockers = [...new Set(logText.split("\n").filter(l => /error:|CMake Error|FAILED:/.test(l)))].slice(0, 40);
+  const logText = existsSync(join(out, "build.log"))
+    ? await Bun.file(join(out, "build.log")).text()
+    : "";
+  const blockers = [
+    ...new Set(logText.split("\n").filter((l) => /error:|CMake Error|FAILED:/.test(l))),
+  ].slice(0, 40);
   return {
     kind: "qt",
     ok: ok && existsSync(join(out, "build.json")),
@@ -438,15 +451,16 @@ async function qt(ids: string[], publishOnly = false) {
     rmSync(join(dist, "melonds"), { recursive: true, force: true });
     const target = join(dist, "melonds", hash);
     mkdirSync(target, { recursive: true });
-    for (const file of readdirSync(out)) await Bun.write(join(target, file), Bun.file(join(out, file)));
+    for (const file of readdirSync(out))
+      await Bun.write(join(target, file), Bun.file(join(out, file)));
     // index.js: "melonds.js" would collide with melonDS.js on case-insensitive file systems.
     await Bun.write(join(target, "index.js"), Bun.file(join(here, "runtime", "melonds.js")));
     const build = await Bun.file(join(out, "build.json")).json();
     const files = Object.fromEntries(
       await Promise.all(
         readdirSync(target)
-          .filter(f => /\.(wasm|js)$/.test(f))
-          .map(async f => [
+          .filter((f) => /\.(wasm|js)$/.test(f))
+          .map(async (f) => [
             f,
             {
               ...sizes(join(target, f)),
@@ -492,7 +506,9 @@ async function index() {
   const registry = await Bun.file(
     join(root, "packages", "bun-engine", "plugins", "consoles", "free-firmware.json"),
   ).json();
-  const mirrors = await Bun.file(join(root, "packages", "bun-engine", "plugins", "consoles", "mirrors.json")).json();
+  const mirrors = await Bun.file(
+    join(root, "packages", "bun-engine", "plugins", "consoles", "mirrors.json"),
+  ).json();
   const firmware: Record<string, unknown> = {};
   mkdirSync(join(dist, "firmware"), { recursive: true });
   for (const [id, entry] of Object.entries<any>(registry.firmware)) {
@@ -502,8 +518,11 @@ async function index() {
       if (response.ok) await Bun.write(source, await response.bytes());
     }
     if (!existsSync(source)) continue;
-    const digest = new Bun.CryptoHasher("sha512").update(await Bun.file(source).bytes()).digest("hex");
-    if (entry.sha512 && digest !== entry.sha512) throw new Error(`${id}: sha512 mismatch; refusing to publish it`);
+    const digest = new Bun.CryptoHasher("sha512")
+      .update(await Bun.file(source).bytes())
+      .digest("hex");
+    if (entry.sha512 && digest !== entry.sha512)
+      throw new Error(`${id}: sha512 mismatch; refusing to publish it`);
     await Bun.write(join(dist, "firmware", entry.file), Bun.file(source));
     const service = entry.mirror ? mirrors.services[entry.mirror.service] : undefined;
     firmware[id] = {
@@ -548,14 +567,19 @@ async function index() {
     join(dist, "index.json"),
     `${JSON.stringify({ schemaVersion: 1, cores: manifests, pending }, null, 2)}\n`,
   );
-  log(`index: ${manifests.map(m => m.id).join(", ") || "no cores"}`);
+  log(`index: ${manifests.map((m) => m.id).join(", ") || "no cores"}`);
 }
 
 if (import.meta.main) {
   const [command = "index", ...rest] = Bun.argv.slice(2);
-  const args = rest.filter(a => !a.startsWith("--"));
-  if (command === "rust") await rust(args.length ? args : Object.keys(rustCores), rest.includes("--threads"));
-  else if (command === "qt") await qt(args.length ? args : ["melonds"], rest.includes("--publish-only"));
+  const args = rest.filter((a) => !a.startsWith("--"));
+  if (command === "rust")
+    await rust(args.length ? args : Object.keys(rustCores), rest.includes("--threads"));
+  else if (command === "qt")
+    await qt(args.length ? args : ["melonds"], rest.includes("--publish-only"));
   else if (command === "index") await index();
-  else throw new Error("usage: build.ts rust [core...] [--threads] | qt [melonds|azahar] [--publish-only] | index");
+  else
+    throw new Error(
+      "usage: build.ts rust [core...] [--threads] | qt [melonds|azahar] [--publish-only] | index",
+    );
 }

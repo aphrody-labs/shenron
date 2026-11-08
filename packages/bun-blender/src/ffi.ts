@@ -30,7 +30,8 @@ export async function openPython(path?: string): Promise<BlenderPython> {
 }
 
 export function exec(py: BlenderPython, code: string): void {
-  if (py.symbols.PyRun_SimpleString(Buffer.from(`${code}\0`)) !== 0) throw new Error("python execution failed");
+  if (py.symbols.PyRun_SimpleString(Buffer.from(`${code}\0`)) !== 0)
+    throw new Error("python execution failed");
 }
 
 export function pythonVersion(py: BlenderPython): string {

@@ -30,7 +30,7 @@ async function safeDirectories(root: string, directory: string, create: boolean)
     current = join(current, component);
     let stat = await maybeStat(current);
     if (!stat && create) {
-      await mkdir(current).catch(error => {
+      await mkdir(current).catch((error) => {
         if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
       });
       stat = await maybeStat(current);
@@ -72,7 +72,12 @@ async function collect(
 }
 
 /** Caller supplies known core ids; every core is verified before the object store changes. */
-export async function publishQualifiedCores(dist: string, objectsPath: string, cores: string[], root: string) {
+export async function publishQualifiedCores(
+  dist: string,
+  objectsPath: string,
+  cores: string[],
+  root: string,
+) {
   const ids = [...new Set(cores)];
   if (!ids.length) return [];
   const firmware = new Set<string>();
@@ -80,7 +85,8 @@ export async function publishQualifiedCores(dist: string, objectsPath: string, c
     if (!/^[a-z0-9][a-z0-9-]*$/.test(core)) throw new Error(`Invalid core: ${core}`);
     const receipt = await verifyQualification(dist, core, { root });
     for (const fixture of receipt.fixtures) {
-      if (fixture.path.startsWith("firmware/")) firmware.add(fixture.path.slice("firmware/".length));
+      if (fixture.path.startsWith("firmware/"))
+        firmware.add(fixture.path.slice("firmware/".length));
     }
   }
   await mkdir(objectsPath, { recursive: true });
@@ -89,7 +95,9 @@ export async function publishQualifiedCores(dist: string, objectsPath: string, c
   files.push(...(await collect(join(dist, "runtime"), "runtime", objects)));
   if (firmware.size) {
     firmware.add("firmware.json");
-    files.push(...(await collect(join(dist, "firmware"), "firmware", objects, undefined, firmware)));
+    files.push(
+      ...(await collect(join(dist, "firmware"), "firmware", objects, undefined, firmware)),
+    );
   }
   for (const core of ids) files.push(...(await collect(join(dist, core), core, objects, core)));
   // Refuse to overwrite immutable assets or shared files that another core may still use.
@@ -102,7 +110,8 @@ export async function publishQualifiedCores(dist: string, objectsPath: string, c
       throw new Error(`Publication would overwrite an existing asset: ${file.destination}`);
   }
   // Copy assets first; replace the small core pointers only after every asset is present.
-  const rank = (file: PlannedFile) => (!file.replace ? 0 : file.destination.endsWith(`${sep}manifest.json`) ? 2 : 1);
+  const rank = (file: PlannedFile) =>
+    !file.replace ? 0 : file.destination.endsWith(`${sep}manifest.json`) ? 2 : 1;
   files.sort((a, b) => rank(a) - rank(b));
   let reverified = false;
   for (const file of files) {
@@ -120,16 +129,21 @@ export async function publishQualifiedCores(dist: string, objectsPath: string, c
         if ((error as NodeJS.ErrnoException).code !== "EEXIST") throw error;
       }
       const stat = await lstat(file.destination);
-      if (!stat.isFile() || stat.isSymbolicLink() || (await qualificationSHA256(file.destination)) !== file.digest)
+      if (
+        !stat.isFile() ||
+        stat.isSymbolicLink() ||
+        (await qualificationSHA256(file.destination)) !== file.digest
+      )
         throw new Error(`Publication asset changed: ${file.destination}`);
     } else {
       const tmp = `${file.destination}.${crypto.randomUUID()}.tmp`;
       try {
         await copyFile(file.source, tmp, constants.COPYFILE_EXCL);
-        if ((await qualificationSHA256(tmp)) !== file.digest) throw new Error("Publication source changed during copy");
+        if ((await qualificationSHA256(tmp)) !== file.digest)
+          throw new Error("Publication source changed during copy");
         await rename(tmp, file.destination);
       } finally {
-        await unlink(tmp).catch(error => {
+        await unlink(tmp).catch((error) => {
           if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
         });
       }

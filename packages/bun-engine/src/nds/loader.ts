@@ -27,7 +27,7 @@ async function loadImage(path: string, expectedBytes: number): Promise<FirmwareI
     throw new Error(`${path} must contain exactly ${expectedBytes} bytes, got ${file.size}`);
   }
   const data = await file.bytes();
-  if (data.every(byte => byte === 0) || data.every(byte => byte === 0xff)) {
+  if (data.every((byte) => byte === 0) || data.every((byte) => byte === 0xff)) {
     throw new Error(`${path} contains no usable firmware data`);
   }
   const sha256 = new Bun.CryptoHasher("sha256").update(data).digest("hex");
@@ -96,7 +96,13 @@ export class NintendoDsFirmware {
     };
   }
 
-  private readMapped(data: Uint8Array, base: number, address: number, length: number, label: string): Uint8Array {
+  private readMapped(
+    data: Uint8Array,
+    base: number,
+    address: number,
+    length: number,
+    label: string,
+  ): Uint8Array {
     if (!Number.isSafeInteger(address) || !Number.isSafeInteger(length) || length < 0) {
       throw new RangeError(`${label} address and length must be non-negative integers`);
     }

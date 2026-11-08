@@ -118,9 +118,15 @@ layout();
 // ---------------------------------------------------------------------------------------------
 let presenter: WebGpuPresenter | null = null;
 try {
-  presenter = await WebGpuPresenter.create(canvas, state.upscale, Number(query.get("sharpness") ?? 0.2));
+  presenter = await WebGpuPresenter.create(
+    canvas,
+    state.upscale,
+    Number(query.get("sharpness") ?? 0.2),
+  );
   state.adapter = presenter.adapterInfo;
-  console.log(`[gamestream] WebGPU adapter: ${presenter.adapterInfo || "unknown"} (${presenter.canvasFormat})`);
+  console.log(
+    `[gamestream] WebGPU adapter: ${presenter.adapterInfo || "unknown"} (${presenter.canvasFormat})`,
+  );
 } catch (error) {
   console.warn(`[gamestream] WebGPU unavailable, using <video>: ${String(error)}`);
 }
@@ -168,7 +174,8 @@ function present(track: MediaStreamTrack, stream: MediaStream): void {
     return;
   }
   state.phase = state.source === "test" ? "diagnostic" : "playing";
-  status.textContent = state.source === "test" ? "Diagnostic test pattern · no game session" : "Live remote session";
+  status.textContent =
+    state.source === "test" ? "Diagnostic test pattern · no game session" : "Live remote session";
   track.addEventListener(
     "ended",
     () => {
@@ -186,7 +193,7 @@ function present(track: MediaStreamTrack, stream: MediaStream): void {
   }
   if (typeof MediaStreamTrackProcessor === "function" && query.get("source") !== "video") {
     state.path = "webgpu-trackprocessor";
-    void pumpTrackProcessor(track, presenter).catch(error =>
+    void pumpTrackProcessor(track, presenter).catch((error) =>
       unavailable(`Remote frame presentation stopped: ${String(error)}`),
     );
   } else {
@@ -201,7 +208,9 @@ function present(track: MediaStreamTrack, stream: MediaStream): void {
 // ---------------------------------------------------------------------------------------------
 // Signalling and WebRTC
 // ---------------------------------------------------------------------------------------------
-const socket = new WebSocket(`${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`);
+const socket = new WebSocket(
+  `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`,
+);
 const pc = new RTCPeerConnection({
   iceServers: [],
   bundlePolicy: "max-bundle",
@@ -218,7 +227,7 @@ function unavailable(message: string): void {
   pc.close();
   for (const element of [video, audio]) {
     const stream = element.srcObject;
-    if (stream instanceof MediaStream) stream.getTracks().forEach(track => track.stop());
+    if (stream instanceof MediaStream) stream.getTracks().forEach((track) => track.stop());
     element.pause();
     element.srcObject = null;
   }
@@ -233,7 +242,7 @@ const sendInput = (message: InputMessage) => {
   if (channel?.readyState === "open") channel.send(JSON.stringify(message));
 };
 
-pc.ontrack = event => {
+pc.ontrack = (event) => {
   if (halted) {
     event.track.stop();
     return;
@@ -252,18 +261,18 @@ pc.ontrack = event => {
     void audio.play().catch(() => undefined);
   }
 };
-pc.ondatachannel = event => {
+pc.ondatachannel = (event) => {
   channel = event.channel;
   channel.onopen = () => {
     console.log("[gamestream] input channel open");
     counters ??= captureInput(stage, pictureElement, sendInput);
   };
-  channel.onmessage = event => {
+  channel.onmessage = (event) => {
     const message = JSON.parse(String(event.data)) as { t: string; ts: number };
     if (message.t === "pong") state.rttMs = Math.round((performance.now() - message.ts) * 10) / 10;
   };
 };
-pc.onicecandidate = event => {
+pc.onicecandidate = (event) => {
   if (event.candidate?.candidate && socket.readyState === WebSocket.OPEN) {
     socket.send(
       JSON.stringify({
@@ -282,7 +291,8 @@ pc.oniceconnectionstatechange = () => {
 
 /** Local qualification without a streaming host: same presentation and input paths. */
 function startTestSource(): void {
-  if (query.get("source") !== "test") throw new Error("Diagnostic test source requires explicit ?source=test");
+  if (query.get("source") !== "test")
+    throw new Error("Diagnostic test source requires explicit ?source=test");
   state.source = "test";
   state.phase = "diagnostic";
   state.sender = {
@@ -298,16 +308,18 @@ function startTestSource(): void {
   document.title = "Gamestream diagnostics · synthetic test pattern";
   const test = createTestSource();
   present(test.track, test.stream);
-  counters = captureInput(stage, pictureElement, message => {
+  counters = captureInput(stage, pictureElement, (message) => {
     const values = Object.entries(message)
       .filter(([key]) => key !== "t")
-      .map(([, value]) => (typeof value === "number" ? Math.round(value * 1000) / 1000 : String(value)));
+      .map(([, value]) =>
+        typeof value === "number" ? Math.round(value * 1000) / 1000 : String(value),
+      );
     if (message.t !== "ping") test.note(`${message.t} ${values.join(" ")}`);
   });
   console.log("[gamestream] local test source active");
 }
 
-socket.onmessage = async event => {
+socket.onmessage = async (event) => {
   try {
     const message = JSON.parse(String(event.data)) as ServerMessage;
     if (state.source === "test") return;
@@ -353,9 +365,11 @@ socket.onmessage = async event => {
     unavailable(`Streaming negotiation failed: ${String(error)}`);
   }
 };
-socket.onclose = event => {
+socket.onclose = (event) => {
   if (state.source !== "test" && state.phase !== "unavailable")
-    unavailable(`Streaming signalling closed (${event.code} ${event.reason}). Reload to reconnect.`);
+    unavailable(
+      `Streaming signalling closed (${event.code} ${event.reason}). Reload to reconnect.`,
+    );
 };
 socket.onerror = () => {
   if (state.source !== "test") unavailable("The streaming signalling service is unavailable.");
@@ -375,7 +389,7 @@ let previous: {
 } | null = null;
 let showHud = query.get("hud") === "1";
 let ticks = 0;
-window.addEventListener("keydown", event => {
+window.addEventListener("keydown", (event) => {
   if (event.code === "F8") showHud = !showHud;
 });
 
@@ -385,7 +399,7 @@ setInterval(async () => {
   lastPresented = state.framesPresented;
   state.inputSent = counters?.sent ?? 0;
   const report = await pc.getStats().catch(() => new Map());
-  report.forEach(entry => {
+  report.forEach((entry) => {
     if (entry.type === "inbound-rtp" && entry.kind === "video") {
       const current = {
         decode: entry.totalDecodeTime ?? 0,
@@ -396,8 +410,10 @@ setInterval(async () => {
       if (previous) {
         const frames = Math.max(1, current.frames - previous.frames);
         const emitted = Math.max(1, current.emitted - previous.emitted);
-        state.receiver.decodeMs = Math.round(((current.decode - previous.decode) / frames) * 10000) / 10;
-        state.receiver.jitterBufferMs = Math.round(((current.jitter - previous.jitter) / emitted) * 10000) / 10;
+        state.receiver.decodeMs =
+          Math.round(((current.decode - previous.decode) / frames) * 10000) / 10;
+        state.receiver.jitterBufferMs =
+          Math.round(((current.jitter - previous.jitter) / emitted) * 10000) / 10;
       }
       previous = current;
       state.receiver.fps = entry.framesPerSecond ?? 0;
@@ -417,7 +433,9 @@ setInterval(async () => {
   const decode = Number(state.receiver.decodeMs ?? 0);
   const frameMs = state.sender ? 1000 / state.sender.fps : 16.7;
   // capture wait (half a frame) + encode + one-way network + jitter buffer + decode + present (half a refresh)
-  state.receiver.estimatedLatencyMs = Math.round(frameMs / 2 + encode + network + jitter + decode + 8.3);
+  state.receiver.estimatedLatencyMs = Math.round(
+    frameMs / 2 + encode + network + jitter + decode + 8.3,
+  );
   hud.hidden = !showHud;
   hud.textContent = [
     `path      ${state.phase} ${state.source} ${state.path} / ${state.upscale}  ${state.frameSize} -> ${state.canvasSize}`,

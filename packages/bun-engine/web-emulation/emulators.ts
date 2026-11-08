@@ -212,9 +212,21 @@ export const EMULATORS: Emulator[] = [
         "32X boot ROM bytes match retail Sega BIOS hashes: not publishable until resolved",
       ],
       ["gopher64", "Gopher64 (Nintendo 64)", ["n64"], "vendor/gopher64", "Vulkan and dynarec core"],
-      ["retroboy", "RetroBoy (Game Boy)", ["gb"], "vendor/retroboy", "no recipe in web-emulation yet"],
+      [
+        "retroboy",
+        "RetroBoy (Game Boy)",
+        ["gb"],
+        "vendor/retroboy",
+        "no recipe in web-emulation yet",
+      ],
       ["mame", "MAME (arcade)", ["arcade"], "vendor/mame", "very large C++ code base"],
-      ["ares", "ares (multi-system)", ["snes", "n64", "saturn"], "vendor/ares", "native C++ frontend"],
+      [
+        "ares",
+        "ares (multi-system)",
+        ["snes", "n64", "saturn"],
+        "vendor/ares",
+        "native C++ frontend",
+      ],
       ["pcsx2", "PCSX2 (PlayStation 2)", ["ps2"], "vendor/pcsx2", "x86 JIT and GPU backends"],
       [
         "duckstation",
@@ -269,7 +281,12 @@ export const SESSION: Record<string, SessionLaunch> = {
     rom: "tetanes-test-roms/spritecans.nes",
   },
   // GodMode9i is a file manager without sound: melonDS opens no PipeWire stream for it.
-  "melonds-native": { package: "melonds", app: "melonDS", rom: "godmode9i/GodMode9i.nds", silent: true },
+  "melonds-native": {
+    package: "melonds",
+    app: "melonDS",
+    rom: "godmode9i/GodMode9i.nds",
+    silent: true,
+  },
   "azahar-native": { package: "azahar", app: "azahar", rom: "fbi/FBI.3dsx" },
   "tetanes-native": { package: "tetanes", app: "tetanes", rom: "tetanes-test-roms/spritecans.nes" },
   mgba: { package: "mgba-qt", app: "mgba-qt", rom: "gba-tests/hello.gba" },
@@ -285,14 +302,33 @@ export const SESSION: Record<string, SessionLaunch> = {
     blocker: "PlayStation 2 needs the user's own BIOS; no open replacement exists",
   },
   cemu: { package: "cemu", app: "Cemu", blocker: "Wii U titles need the user's keys" },
-  rpcs3: { package: "rpcs3", app: "rpcs3", blocker: "PlayStation 3 needs the user's firmware (PS3UPDAT.PUP)" },
+  rpcs3: {
+    package: "rpcs3",
+    app: "rpcs3",
+    blocker: "PlayStation 3 needs the user's firmware (PS3UPDAT.PUP)",
+  },
   xemu: { package: "xemu", app: "xemu", blocker: "Xbox needs the user's MCPX boot ROM and BIOS" },
   flycast: { package: "flycast", app: "flycast", rom: "kos-2ndmix/2ndmix.elf" },
-  vita3k: { package: "vita3k", app: "Vita3K", blocker: "PlayStation Vita needs the user's firmware" },
-  shadps4: { package: "shadps4", app: "shadps4", blocker: "no free PlayStation 4 homebrew fixture pinned yet" },
+  vita3k: {
+    package: "vita3k",
+    app: "Vita3K",
+    blocker: "PlayStation Vita needs the user's firmware",
+  },
+  shadps4: {
+    package: "shadps4",
+    app: "shadps4",
+    blocker: "no free PlayStation 4 homebrew fixture pinned yet",
+  },
   ppsspp: { package: "ppsspp", app: "PPSSPPSDL", rom: "pspsdk-cube/EBOOT.PBP" },
-  gopher64: { package: "gopher64", app: "gopher64", rom: "peterlemon-n64/Mandelbrot32BPP320X240.N64" },
-  mame: { package: "mame", app: "mame -rompath /roms/mamedev-gridlee -skip_gameinfo -video bgfx -sound pipewire gridlee" },
+  gopher64: {
+    package: "gopher64",
+    app: "gopher64",
+    rom: "peterlemon-n64/Mandelbrot32BPP320X240.N64",
+  },
+  mame: {
+    package: "mame",
+    app: "mame -rompath /roms/mamedev-gridlee -skip_gameinfo -video bgfx -sound pipewire gridlee",
+  },
   wine: { package: "wine", app: "wine notepad", silent: true },
   proton: {
     package: "proton-bunos",
@@ -303,7 +339,12 @@ for (const [id, name, systems, owner] of [
   ["melonds-native", "melonDS (native, Gamescope session)", ["nds"], "vendor/melonds"],
   ["azahar-native", "Azahar (native, Gamescope session)", ["3ds"], "vendor/azahar"],
   ["tetanes-native", "TetaNES (native, Gamescope session)", ["nes"], "vendor/tetanes"],
-  ["wine", "Wine (Windows applications, Gamescope session)", ["windows"], "factory/images/bunos-gaming/session"],
+  [
+    "wine",
+    "Wine (Windows applications, Gamescope session)",
+    ["windows"],
+    "factory/images/bunos-gaming/session",
+  ],
   ["proton", "Proton (Windows games, Gamescope session)", ["windows"], "vendor/proton"],
 ] as [string, string, string[], string][])
   EMULATORS.push({ id, name, systems, mode: "session", owner });

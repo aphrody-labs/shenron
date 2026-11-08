@@ -15,7 +15,19 @@ export async function runNative(args: string[]): Promise<number> {
       stderr: "inherit",
     }).exited;
   const child = Bun.spawn(
-    [process.execPath, cargoSerial, "--msvc", "run", "-q", "-p", "bun-engine", "--bin", "bun-engine", "--", ...args],
+    [
+      process.execPath,
+      cargoSerial,
+      "--msvc",
+      "run",
+      "-q",
+      "-p",
+      "bun-engine",
+      "--bin",
+      "bun-engine",
+      "--",
+      ...args,
+    ],
     {
       cwd: root,
       env: { ...process.env, RUSTC_BOOTSTRAP: "1" },

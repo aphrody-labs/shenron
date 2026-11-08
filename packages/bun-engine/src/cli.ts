@@ -10,7 +10,13 @@ import { runNative } from "./nds/cli";
 import { engineWorkspaceRoot } from "./nds/engine-path";
 import { probeHost } from "./probe";
 import { runShell } from "./shell";
-import { buildWorkspace, compileWorkspace, isCompileTarget, serveWorkspace, testWorkspace } from "./workspace";
+import {
+  buildWorkspace,
+  compileWorkspace,
+  isCompileTarget,
+  serveWorkspace,
+  testWorkspace,
+} from "./workspace";
 
 async function serveRetroArchCli(args: string[]): Promise<void> {
   const { parseArgs } = await import("node:util");
@@ -31,7 +37,8 @@ async function serveRetroArchCli(args: string[]): Promise<void> {
   if (core && core === basename(core)) {
     const { coreSettings, libretroDir } = await import("./libretro");
     config = await coreSettings(core);
-    const ext = process.platform === "win32" ? "dll" : process.platform === "darwin" ? "dylib" : "so";
+    const ext =
+      process.platform === "win32" ? "dll" : process.platform === "darwin" ? "dylib" : "so";
     core = join(libretroDir(), `${core}_libretro.${ext}`);
   }
   if (values.frames) {
@@ -89,7 +96,10 @@ async function main(): Promise<void> {
     // CIA management on top of our Azahar fork; keys come from the owner, never bundled.
     const { ciaMain } = await import("./ctr/cia");
     process.exitCode = await ciaMain(process.argv.slice(4));
-  } else if (command === "3ds" && (appId === "patches" || appId === "addons" || appId === "homebrew")) {
+  } else if (
+    command === "3ds" &&
+    (appId === "patches" || appId === "addons" || appId === "homebrew")
+  ) {
     const { communityMain } = await import("./ctr/community");
     process.exitCode = await communityMain(appId, process.argv.slice(4));
   } else if (command === "nds:info" && appId)
@@ -102,7 +112,9 @@ async function main(): Promise<void> {
     const root = engineWorkspaceRoot();
     const sourceCli = join(root, "packages", "re", "scripts", "rea.mjs");
     if (!re && !existsSync(sourceCli))
-      throw new Error("`recompile` is provided by the REA CLI. Install `re` or run from a Bun OS checkout.");
+      throw new Error(
+        "`recompile` is provided by the REA CLI. Install `re` or run from a Bun OS checkout.",
+      );
     const child = re
       ? Bun.spawn([re, "recompile", ...process.argv.slice(3)], {
           stdin: "inherit",

@@ -41,13 +41,17 @@ export interface LaunchResult {
 
 function coreFile(core: string): string | undefined {
   return ["dll", "so", "dylib"]
-    .map(ext => join(libretroDir(), `${core}_libretro.${ext}`))
-    .find(path => existsSync(path));
+    .map((ext) => join(libretroDir(), `${core}_libretro.${ext}`))
+    .find((path) => existsSync(path));
 }
 
 async function installedExecutables(): Promise<Map<string, string>> {
   const rows = await listInstalled();
-  return new Map(rows.map(row => [row.id, join(usrRoot(), row.exe)] as const).filter(([, exe]) => existsSync(exe)));
+  return new Map(
+    rows
+      .map((row) => [row.id, join(usrRoot(), row.exe)] as const)
+      .filter(([, exe]) => existsSync(exe)),
+  );
 }
 
 /** The BIOS the native machine boots: a firmware-store image for the system's console. */
@@ -55,7 +59,10 @@ async function nativeBios(system: SystemDefinition): Promise<string | undefined>
   const bios = system.native?.bios;
   if (!bios) return undefined;
   const images = await listFirmware(bios.console).catch(() => []);
-  const wanted = system.native!.machine === "psx" ? images.filter(image => image.bytes === 512 * 1024) : images;
+  const wanted =
+    system.native!.machine === "psx"
+      ? images.filter((image) => image.bytes === 512 * 1024)
+      : images;
   const image = wanted[0];
   return image && join(defaultFirmwareStore(), image.console, image.file);
 }
@@ -133,26 +140,28 @@ export async function chooseRoute(game: Game, requested?: string): Promise<Route
   const routes = await routesFor(game.system);
   for (const id of [requested, game.route, defaultRoute(game.system)]) {
     if (!id) continue;
-    const route = routes.find(item => item.id === id);
+    const route = routes.find((item) => item.id === id);
     if (!route) {
       if (id === requested) throw new Error(`${game.system} has no route ${id}`);
       continue;
     }
     if (route.available && accepts(route, game)) return route;
     if (id === requested)
-      throw new Error(`${id} cannot launch ${basename(game.path)}: ${route.reason ?? "unsupported format"}`);
+      throw new Error(
+        `${id} cannot launch ${basename(game.path)}: ${route.reason ?? "unsupported format"}`,
+      );
   }
-  const route = routes.find(item => item.available && accepts(item, game));
+  const route = routes.find((item) => item.available && accepts(item, game));
   if (!route) {
     throw new Error(
-      `no available route for ${game.system}: ${routes.map(item => `${item.id} (${item.reason ?? "format"})`).join("; ") || "none defined"}`,
+      `no available route for ${game.system}: ${routes.map((item) => `${item.id} (${item.reason ?? "format"})`).join("; ") || "none defined"}`,
     );
   }
   return route;
 }
 
 function substitute(args: string[], values: Record<string, string>): string[] {
-  return args.map(arg => arg.replaceAll(/\{(\w+)\}/g, (_, key: string) => values[key] ?? ""));
+  return args.map((arg) => arg.replaceAll(/\{(\w+)\}/g, (_, key: string) => values[key] ?? ""));
 }
 
 async function retroarchConfig(core: string): Promise<string> {
@@ -199,7 +208,9 @@ export async function commandFor(
       "retroarch",
       "--core",
       id,
-      ...(check ? ["--frames", String(frames)] : ["--port", String(port), ...(profile ? ["--profile", profile] : [])]),
+      ...(check
+        ? ["--frames", String(frames)]
+        : ["--port", String(port), ...(profile ? ["--profile", profile] : [])]),
       game.path,
     ];
   }
@@ -242,7 +253,12 @@ export function spawnTracked(
   entry: { game: number; app?: string; route: string },
 ): number {
   const child = Bun.spawn(command, { cwd, stdin: "ignore", stdout: "ignore", stderr: "ignore" });
-  running.set(child.pid, { pid: child.pid, startedAt: new Date().toISOString(), ...entry, process: child });
+  running.set(child.pid, {
+    pid: child.pid,
+    startedAt: new Date().toISOString(),
+    ...entry,
+    process: child,
+  });
   void child.exited.then(() => running.delete(child.pid));
   return child.pid;
 }
@@ -301,8 +317,17 @@ export async function launchGame(
   }
   // the profile that plays keeps its own save states and screenshots (saves.ts); an unknown name plays as default
   const profile =
-    options.profile && listPlayers().some(player => player.name === options.profile) ? options.profile : undefined;
-  const command = await commandFor(route, game, Boolean(options.check), options.frames ?? 120, port, profile);
+    options.profile && listPlayers().some((player) => player.name === options.profile)
+      ? options.profile
+      : undefined;
+  const command = await commandFor(
+    route,
+    game,
+    Boolean(options.check),
+    options.frames ?? 120,
+    port,
+    profile,
+  );
   const cwd = dirname(command[0]!);
   if (!options.check) {
     const pid = spawnTracked(command, cwd, { game: game.id, route: route.id });
@@ -319,7 +344,10 @@ export async function launchGame(
     };
   }
   const timeoutMs = options.timeoutMs ?? (route.kind === "bin" ? 30_000 : 120_000);
-  const probeExit = route.kind === "bin" ? ((await loadSystems()).emulators[route.id.slice(4)]?.probeExit ?? [0]) : [0];
+  const probeExit =
+    route.kind === "bin"
+      ? ((await loadSystems()).emulators[route.id.slice(4)]?.probeExit ?? [0])
+      : [0];
   const child = Bun.spawn(command, {
     cwd,
     stdin: "ignore",
@@ -337,7 +365,8 @@ export async function launchGame(
     child.exited,
   ]);
   clearTimeout(timer);
-  const ok = route.kind === "bin" ? probeExit.includes(exitCode) || alive : exitCode === 0 && !alive;
+  const ok =
+    route.kind === "bin" ? probeExit.includes(exitCode) || alive : exitCode === 0 && !alive;
   return {
     ok,
     game: game.id,

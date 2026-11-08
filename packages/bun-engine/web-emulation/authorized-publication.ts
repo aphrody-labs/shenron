@@ -3,7 +3,9 @@ import { join, relative, resolve } from "node:path";
 import catalog from "./authorized-content.json";
 import { qualificationSHA256, verifyQualification } from "./qualification";
 
-export const authorizedGame = catalog.content.find(entry => entry.id === "inazuma-eleven-2-tempete-de-glace-fr")!;
+export const authorizedGame = catalog.content.find(
+  (entry) => entry.id === "inazuma-eleven-2-tempete-de-glace-fr",
+)!;
 export function authorizedPaths(root: string) {
   const directory = join(root, "build/web-emulation/authorized-content");
   return {
@@ -38,9 +40,14 @@ export async function verifyAuthorizedInputs(root: string, privateReport: string
   const dist = join(root, "dist/web-emulation");
   const qualification = await verifyQualification(dist, "dust-nds", { root });
   const reportPath = resolve(root, privateReport);
-  const reportRelative = relative(resolve(root, "build/web-emulation/private"), reportPath).replaceAll("\\", "/");
+  const reportRelative = relative(
+    resolve(root, "build/web-emulation/private"),
+    reportPath,
+  ).replaceAll("\\", "/");
   if (!/^[a-f0-9-]+\/smoke\.json$/.test(reportRelative))
-    throw new Error("Select an existing private GPU report from build/web-emulation/private/<run>/smoke.json.");
+    throw new Error(
+      "Select an existing private GPU report from build/web-emulation/private/<run>/smoke.json.",
+    );
   const report = await Bun.file(reportPath).json();
   const result = report[`dust-nds${qualification.variant === "threads" ? ":threads" : ""}`];
   if (
@@ -69,12 +76,18 @@ export async function verifyAuthorizedInputs(root: string, privateReport: string
     );
   const manifest = await Bun.file(join(dist, "dust-nds/manifest.json")).json();
   const selected = qualification.variant === "threads" ? manifest.variants?.threads : manifest;
-  for (const path of ["dust-nds/manifest.json", `dust-nds/${selected.module}`, `dust-nds/${selected.wasm}`]) {
+  for (const path of [
+    "dust-nds/manifest.json",
+    `dust-nds/${selected.module}`,
+    `dust-nds/${selected.wasm}`,
+  ]) {
     if (
       result.artifacts?.[path] !== qualification.files[path] ||
       result.artifacts?.[path] !== (await qualificationSHA256(join(dist, path)))
     )
-      throw new Error("Authorized game GPU report does not match the currently qualified Dust artifacts.");
+      throw new Error(
+        "Authorized game GPU report does not match the currently qualified Dust artifacts.",
+      );
   }
   return {
     paths,

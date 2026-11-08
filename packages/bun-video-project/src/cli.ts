@@ -40,7 +40,10 @@ interface Arguments {
 }
 
 function usage(): never {
-  throw new VideoLibraryError("INVALID_OPTIONS", "Invalid video arguments. Run aphrody-video help.");
+  throw new VideoLibraryError(
+    "INVALID_OPTIONS",
+    "Invalid video arguments. Run aphrody-video help.",
+  );
 }
 
 function parse(args: string[]): Arguments {
@@ -90,7 +93,7 @@ function allowed(args: Arguments, extra: string[], minimum: number, maximum = mi
   if (
     args.positional.length < minimum ||
     args.positional.length > maximum ||
-    [...args.values.keys()].some(key => !options.has(key))
+    [...args.values.keys()].some((key) => !options.has(key))
   )
     usage();
 }

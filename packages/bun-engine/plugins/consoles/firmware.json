@@ -368,7 +368,15 @@
         {
           "id": "snes-coprocessor-hle",
           "name": "High-level DSP-1/2/3/4, ST010/011, CX4 implementations (snes9x, older bsnes)",
-          "replaces": ["dsp1*.rom", "dsp2*.rom", "dsp3*.rom", "dsp4*.rom", "st010*.rom", "st011*.rom", "cx4.data.rom"],
+          "replaces": [
+            "dsp1*.rom",
+            "dsp2*.rom",
+            "dsp3*.rom",
+            "dsp4*.rom",
+            "st010*.rom",
+            "st011*.rom",
+            "cx4.data.rom"
+          ],
           "kind": "hle",
           "license": "snes9x non-commercial license / GPL-3.0 (bsnes historic) - check per implementation",
           "source": "https://github.com/snes9xgit/snes9x",
@@ -1205,7 +1213,13 @@
         {
           "id": "ruzu-system-archive",
           "name": "ruzu/yuzu synthesized system archives",
-          "replaces": ["shared font titles", "Mii model", "NG word list", "time zone binary", "system version"],
+          "replaces": [
+            "shared font titles",
+            "Mii model",
+            "NG word list",
+            "time zone binary",
+            "system version"
+          ],
           "kind": "open-system-archive",
           "license": "GPL-2.0-or-later / GPL-3.0-or-later (per-file SPDX)",
           "source": "crates/ruzu-core/src/file_sys/system_archive (ported from yuzu core/file_sys/system_archive)",

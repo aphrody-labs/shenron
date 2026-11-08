@@ -19,7 +19,11 @@ async function run(command: string[], timeoutMs = 2500): Promise<Ran> {
   const program = Bun.which(command[0]!);
   if (!program) return { ok: false, out: "", err: `${command[0]} not found` };
   try {
-    const child = Bun.spawn([program, ...command.slice(1)], { stdin: "ignore", stdout: "pipe", stderr: "pipe" });
+    const child = Bun.spawn([program, ...command.slice(1)], {
+      stdin: "ignore",
+      stdout: "pipe",
+      stderr: "pipe",
+    });
     const timer = setTimeout(() => child.kill(), timeoutMs);
     const [out, err, code] = await Promise.all([
       new Response(child.stdout).text(),
@@ -33,7 +37,9 @@ async function run(command: string[], timeoutMs = 2500): Promise<Ran> {
   }
 }
 
-export type Section<T> = ({ available: true; source: string } & T) | { available: false; reason: string };
+export type Section<T> =
+  | ({ available: true; source: string } & T)
+  | { available: false; reason: string };
 
 // ---- display ------------------------------------------------------------------------------------
 
@@ -63,10 +69,10 @@ async function swayOutputs(): Promise<Output[] | undefined> {
     current_mode?: { width: number; height: number; refresh: number };
   }>;
   return rows
-    .filter(row => row.active && row.current_mode)
-    .map(row => ({
+    .filter((row) => row.active && row.current_mode)
+    .map((row) => ({
       name: row.name,
-      model: [row.make, row.model].filter(part => part && part !== "Unknown").join(" ") || null,
+      model: [row.make, row.model].filter((part) => part && part !== "Unknown").join(" ") || null,
       width: row.current_mode!.width,
       height: row.current_mode!.height,
       refresh: row.current_mode!.refresh ? Math.round(row.current_mode!.refresh / 10) / 100 : null,
@@ -111,7 +117,9 @@ function drmOutputs(): Output[] | undefined {
     if (!/^card\d+-/.test(entry)) continue;
     try {
       if (readFileSync(join(base, entry, "status"), "utf8").trim() !== "connected") continue;
-      const mode = /^(\d+)x(\d+)/.exec(readFileSync(join(base, entry, "modes"), "utf8").split("\n")[0] ?? "");
+      const mode = /^(\d+)x(\d+)/.exec(
+        readFileSync(join(base, entry, "modes"), "utf8").split("\n")[0] ?? "",
+      );
       if (mode)
         outputs.push({
           name: entry.replace(/^card\d+-/, ""),
@@ -170,7 +178,7 @@ async function pactlSinks(): Promise<Sink[] | { error: string } | undefined> {
     volume?: Record<string, { value_percent?: string }>;
   }>;
   const fallback = defaultSink.out.trim();
-  return rows.map(row => {
+  return rows.map((row) => {
     const percent = Object.values(row.volume ?? {})[0]?.value_percent;
     return {
       id: row.name,
@@ -193,9 +201,15 @@ async function wpctlSinks(): Promise<Sink[] | { error: string } | undefined> {
       inSinks = true;
       continue;
     }
-    if (inSinks && /(Sink endpoints|Sources|Source endpoints|Filters|Streams|Video|Settings):?\s*$/.test(line)) break;
+    if (
+      inSinks &&
+      /(Sink endpoints|Sources|Source endpoints|Filters|Streams|Video|Settings):?\s*$/.test(line)
+    )
+      break;
     if (!inSinks) continue;
-    const row = /^[\s│├└─]*(\*)?\s*(\d+)\.\s+(.+?)(?:\s+\[vol:\s*([\d.]+)(\s+MUTED)?\])?\s*$/.exec(line);
+    const row = /^[\s│├└─]*(\*)?\s*(\d+)\.\s+(.+?)(?:\s+\[vol:\s*([\d.]+)(\s+MUTED)?\])?\s*$/.exec(
+      line,
+    );
     if (row)
       sinks.push({
         id: row[2]!,
@@ -244,7 +258,9 @@ export interface Interface {
   virtual: boolean;
 }
 
-async function networkSection(): Promise<Section<{ interfaces: Interface[]; gateway: string | null }>> {
+async function networkSection(): Promise<
+  Section<{ interfaces: Interface[]; gateway: string | null }>
+> {
   let source = "ip";
   let interfaces: Interface[] = [];
   let gateway: string | null = null;
@@ -257,15 +273,15 @@ async function networkSection(): Promise<Section<{ interfaces: Interface[]; gate
       addr_info?: Array<{ local: string; prefixlen: number; scope: string }>;
     }>;
     interfaces = rows
-      .filter(row => row.link_type !== "loopback")
-      .map(row => ({
+      .filter((row) => row.link_type !== "loopback")
+      .map((row) => ({
         name: row.ifname,
         state: row.operstate.toLowerCase(),
         kind: null,
         connection: null,
         addresses: (row.addr_info ?? [])
-          .filter(info => info.scope === "global")
-          .map(info => `${info.local}/${info.prefixlen}`),
+          .filter((info) => info.scope === "global")
+          .map((info) => `${info.local}/${info.prefixlen}`),
         gateway: false,
         virtual: !existsSync(join("/sys/class/net", row.ifname, "device")),
       }));
@@ -278,8 +294,8 @@ async function networkSection(): Promise<Section<{ interfaces: Interface[]; gate
   } else if (existsSync("/sys/class/net")) {
     source = "sysfs";
     interfaces = readdirSync("/sys/class/net")
-      .filter(name => name !== "lo")
-      .map(name => {
+      .filter((name) => name !== "lo")
+      .map((name) => {
         let state = "unknown";
         try {
           state = readFileSync(join("/sys/class/net", name, "operstate"), "utf8").trim();
@@ -297,15 +313,25 @@ async function networkSection(): Promise<Section<{ interfaces: Interface[]; gate
         };
       });
   } else {
-    return { available: false, reason: "Neither the ip tool nor /sys/class/net is available on this device." };
+    return {
+      available: false,
+      reason: "Neither the ip tool nor /sys/class/net is available on this device.",
+    };
   }
   // NetworkManager adds the device type and the connection profile name when it runs here
-  const manager = await run(["nmcli", "-t", "-f", "DEVICE,TYPE,STATE,CONNECTION", "device", "status"]);
+  const manager = await run([
+    "nmcli",
+    "-t",
+    "-f",
+    "DEVICE,TYPE,STATE,CONNECTION",
+    "device",
+    "status",
+  ]);
   if (manager.ok) {
     source += "+nmcli";
     for (const line of manager.out.trim().split("\n")) {
       const [device, kind, , connection] = line.split(":");
-      const item = interfaces.find(candidate => candidate.name === device);
+      const item = interfaces.find((candidate) => candidate.name === device);
       if (item) {
         item.kind = kind || null;
         item.connection = connection && connection !== "--" ? connection : null;
@@ -348,7 +374,12 @@ function walkBytes(path: string, budget = { files: 50_000 }): { bytes: number; f
 
 function storageSection(): Section<{
   volumes: Volume[];
-  saves: { path: string; bytes: number; files: number; profiles: Array<{ profile: string; bytes: number }> };
+  saves: {
+    path: string;
+    bytes: number;
+    files: number;
+    profiles: Array<{ profile: string; bytes: number }>;
+  };
 }> {
   const places: Array<[string, string]> = [
     ["Library", projectDir()],
@@ -356,8 +387,8 @@ function storageSection(): Section<{
     ["Engine data", usrRoot()],
     ["Saves", retroarchHome()],
     ...listSources()
-      .filter(source => source.kind === "folder")
-      .map(source => ["Game folder", source.path] as [string, string]),
+      .filter((source) => source.kind === "folder")
+      .map((source) => ["Game folder", source.path] as [string, string]),
   ];
   const volumes = new Map<number, Volume>();
   for (const [label, path] of places) {
@@ -379,13 +410,19 @@ function storageSection(): Section<{
     }
   }
   if (!volumes.size)
-    return { available: false, reason: "None of the library, game or save folders exists yet on this device." };
+    return {
+      available: false,
+      reason: "None of the library, game or save folders exists yet on this device.",
+    };
   const saves = retroarchHome();
   const total = walkBytes(saves);
   const profiles = existsSync(join(saves, "profiles"))
     ? readdirSync(join(saves, "profiles"), { withFileTypes: true })
-        .filter(entry => entry.isDirectory())
-        .map(entry => ({ profile: entry.name, bytes: walkBytes(join(saves, "profiles", entry.name)).bytes }))
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => ({
+          profile: entry.name,
+          bytes: walkBytes(join(saves, "profiles", entry.name)).bytes,
+        }))
     : [];
   return {
     available: true,
@@ -396,8 +433,19 @@ function storageSection(): Section<{
 }
 
 export async function hostState() {
-  const [display, audio, network] = await Promise.all([displaySection(), audioSection(), networkSection()]);
-  return { display, audio, network, storage: storageSection(), sleep: await sleepSupport(), asleep };
+  const [display, audio, network] = await Promise.all([
+    displaySection(),
+    audioSection(),
+    networkSection(),
+  ]);
+  return {
+    display,
+    audio,
+    network,
+    storage: storageSection(),
+    sleep: await sleepSupport(),
+    asleep,
+  };
 }
 
 // ---- display sleep ------------------------------------------------------------------------------
@@ -413,7 +461,11 @@ function mechanism(): SleepMechanism | undefined {
   return undefined;
 }
 
-export async function sleepSupport(): Promise<{ available: boolean; mechanism?: SleepMechanism; reason?: string }> {
+export async function sleepSupport(): Promise<{
+  available: boolean;
+  mechanism?: SleepMechanism;
+  reason?: string;
+}> {
   const how = mechanism();
   if (how) return { available: true, mechanism: how };
   return {
@@ -429,8 +481,10 @@ async function displaysOn(how: SleepMechanism): Promise<boolean | undefined> {
   if (how === "sway") {
     const result = await run(["swaymsg", "-t", "get_outputs", "-r"]);
     if (!result.ok) return undefined;
-    const rows = (JSON.parse(result.out) as Array<{ active?: boolean; power?: boolean }>).filter(row => row.active);
-    return rows.length ? rows.some(row => row.power !== false) : undefined;
+    const rows = (JSON.parse(result.out) as Array<{ active?: boolean; power?: boolean }>).filter(
+      (row) => row.active,
+    );
+    return rows.length ? rows.some((row) => row.power !== false) : undefined;
   }
   const result = await run(["xset", "q"]);
   if (!result.ok) return undefined;
@@ -438,27 +492,42 @@ async function displaysOn(how: SleepMechanism): Promise<boolean | undefined> {
 }
 
 /** Powers the display off and checks with the same tool that it really is off; never reports unverified success. */
-export async function sleepDisplay(): Promise<{ ok: boolean; mechanism?: SleepMechanism; error?: string }> {
+export async function sleepDisplay(): Promise<{
+  ok: boolean;
+  mechanism?: SleepMechanism;
+  error?: string;
+}> {
   const how = mechanism();
   if (!how) return { ok: false, error: (await sleepSupport()).reason };
-  const command = how === "sway" ? ["swaymsg", "output * power off"] : ["xset", "dpms", "force", "off"];
+  const command =
+    how === "sway" ? ["swaymsg", "output * power off"] : ["xset", "dpms", "force", "off"];
   const result = await run(command);
   if (!result.ok) return { ok: false, mechanism: how, error: result.err || `${command[0]} failed` };
   await Bun.sleep(150);
   if ((await displaysOn(how)) !== false)
-    return { ok: false, mechanism: how, error: `${command[0]} ran but the display still reports on` };
+    return {
+      ok: false,
+      mechanism: how,
+      error: `${command[0]} ran but the display still reports on`,
+    };
   asleep = true;
   return { ok: true, mechanism: how };
 }
 
-export async function wakeDisplay(): Promise<{ ok: boolean; mechanism?: SleepMechanism; error?: string }> {
+export async function wakeDisplay(): Promise<{
+  ok: boolean;
+  mechanism?: SleepMechanism;
+  error?: string;
+}> {
   const how = mechanism();
   if (!how) return { ok: false, error: (await sleepSupport()).reason };
-  const command = how === "sway" ? ["swaymsg", "output * power on"] : ["xset", "dpms", "force", "on"];
+  const command =
+    how === "sway" ? ["swaymsg", "output * power on"] : ["xset", "dpms", "force", "on"];
   const result = await run(command);
   if (!result.ok) return { ok: false, mechanism: how, error: result.err || `${command[0]} failed` };
   await Bun.sleep(150);
-  if ((await displaysOn(how)) === false) return { ok: false, mechanism: how, error: "the display still reports off" };
+  if ((await displaysOn(how)) === false)
+    return { ok: false, mechanism: how, error: "the display still reports off" };
   asleep = false;
   return { ok: true, mechanism: how };
 }

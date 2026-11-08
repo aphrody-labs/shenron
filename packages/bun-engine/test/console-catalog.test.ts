@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { loadConsoleCatalog, validateConsoleCatalog, type ConsoleCatalog } from "../src/console/catalog";
+import {
+  loadConsoleCatalog,
+  validateConsoleCatalog,
+  type ConsoleCatalog,
+} from "../src/console/catalog";
 
 describe("console plugin catalog", () => {
   test("validates every local owner and pinned submodule", async () => {

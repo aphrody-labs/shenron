@@ -39,9 +39,11 @@ export function listAppEntries(): AppEntry[] {
   try {
     return (
       db
-        .query("SELECT id, title, command, icon, position FROM apps ORDER BY position, title COLLATE NOCASE")
+        .query(
+          "SELECT id, title, command, icon, position FROM apps ORDER BY position, title COLLATE NOCASE",
+        )
         .all() as Array<Omit<AppEntry, "command"> & { command: string }>
-    ).map(row => ({ ...row, command: JSON.parse(row.command) as string[] }));
+    ).map((row) => ({ ...row, command: JSON.parse(row.command) as string[] }));
   } finally {
     db.close();
   }
@@ -52,21 +54,28 @@ function resolveProgram(program: string): string | undefined {
   return Bun.which(program) ?? undefined;
 }
 
-export function addApp(id: string, title: string, command: string[], icon = "app-window"): AppEntry {
+export function addApp(
+  id: string,
+  title: string,
+  command: string[],
+  icon = "app-window",
+): AppEntry {
   if (!/^[a-z0-9][a-z0-9._-]{0,31}$/.test(id))
     throw new Error("an app id is 1 to 32 lowercase letters, digits, dots, dashes or underscores");
   if (!title.trim()) throw new Error("an app needs a title");
   if (!command.length || !command[0]) throw new Error("an app needs a command");
   const db = open();
   try {
-    const position = (db.query("SELECT coalesce(max(position), 0) + 1 AS n FROM apps").get() as { n: number }).n;
+    const position = (
+      db.query("SELECT coalesce(max(position), 0) + 1 AS n FROM apps").get() as { n: number }
+    ).n;
     db.query(
       "INSERT INTO apps (id, title, command, icon, position) VALUES (?1, ?2, ?3, ?4, ?5) ON CONFLICT(id) DO UPDATE SET title = excluded.title, command = excluded.command, icon = excluded.icon",
     ).run(id, title.trim().slice(0, 48), JSON.stringify(command), icon, position);
   } finally {
     db.close();
   }
-  return listAppEntries().find(app => app.id === id)!;
+  return listAppEntries().find((app) => app.id === id)!;
 }
 
 export function removeApp(id: string): boolean {
@@ -80,13 +89,13 @@ export function removeApp(id: string): boolean {
 
 /** Every declared app with whether its program exists on this host and whether it runs now. */
 export function listApps(running: Array<{ pid: number; app?: string }>): AppRow[] {
-  return listAppEntries().map(app => {
+  return listAppEntries().map((app) => {
     const program = resolveProgram(app.command[0]!);
     return {
       ...app,
       available: Boolean(program),
       reason: program ? undefined : `${app.command[0]} is not installed on this device`,
-      pid: running.find(item => item.app === app.id)?.pid,
+      pid: running.find((item) => item.app === app.id)?.pid,
     };
   });
 }
@@ -96,11 +105,11 @@ export function launchApp(
   id: string,
   running: Array<{ pid: number; app?: string }>,
 ): { ok: true; app: string; pid: number; command: string[] } {
-  const app = listAppEntries().find(item => item.id === id);
+  const app = listAppEntries().find((item) => item.id === id);
   if (!app) throw new Error(`no app ${id}`);
   const program = resolveProgram(app.command[0]!);
   if (!program) throw new Error(`${app.command[0]} is not installed on this device`);
-  if (running.some(item => item.app === id)) throw new Error(`${app.title} is already running`);
+  if (running.some((item) => item.app === id)) throw new Error(`${app.title} is already running`);
   const command = [program, ...app.command.slice(1)];
   const pid = spawnTracked(command, process.cwd(), { game: 0, app: id, route: `app:${id}` });
   return { ok: true, app: id, pid, command };

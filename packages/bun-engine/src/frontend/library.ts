@@ -7,7 +7,13 @@ import { basename, dirname, join, relative, resolve } from "node:path";
 import { defaultFirmwareStore, type FirmwareManifest } from "../firmware/import";
 import * as pm from "../pm";
 import { repoRoot, usrRoot } from "../usr";
-import { detectSystem, extensionOf, loadSystems, type SystemDefinition, systemsForConsole } from "./systems";
+import {
+  detectSystem,
+  extensionOf,
+  loadSystems,
+  type SystemDefinition,
+  systemsForConsole,
+} from "./systems";
 
 const maxHashBytes = 256 * 1024 * 1024;
 export const databaseDir = join(repoRoot, "vendor", "libretro-database");
@@ -100,7 +106,7 @@ export function db(): Database {
     !database
       .query<{ name: string }, []>("PRAGMA table_info(games)")
       .all()
-      .some(column => column.name === "cover")
+      .some((column) => column.name === "cover")
   )
     database.run("ALTER TABLE games ADD COLUMN cover TEXT");
   database.run("CREATE INDEX IF NOT EXISTS games_system ON games (system)");
@@ -112,11 +118,15 @@ export function db(): Database {
     year TEXT, region TEXT, serial TEXT)`);
   database.run("CREATE INDEX IF NOT EXISTS dat_roms_crc ON dat_roms (crc)");
   database.run("CREATE INDEX IF NOT EXISTS dat_roms_md5 ON dat_roms (md5)");
-  database.run("CREATE TABLE IF NOT EXISTS defaults (system TEXT PRIMARY KEY, route TEXT NOT NULL)");
+  database.run(
+    "CREATE TABLE IF NOT EXISTS defaults (system TEXT PRIMARY KEY, route TEXT NOT NULL)",
+  );
   // Profiles (additive, nothing existing is altered): one row per launch with the profile that played,
   // seeded once from the legacy games.lastPlayed so the default profile keeps its history.
   const hadPlays = database
-    .query<{ n: number }, []>("SELECT count(*) AS n FROM sqlite_master WHERE type = 'table' AND name = 'plays'")
+    .query<{ n: number }, []>(
+      "SELECT count(*) AS n FROM sqlite_master WHERE type = 'table' AND name = 'plays'",
+    )
     .get()!.n;
   database.run(
     "CREATE TABLE IF NOT EXISTS players (name TEXT PRIMARY KEY, created TEXT NOT NULL DEFAULT (datetime('now')))",
@@ -132,7 +142,9 @@ export function db(): Database {
     );
   const seeded = database.query<{ n: number }, []>("SELECT count(*) AS n FROM sources").get()!.n;
   if (!seeded) {
-    database.query("INSERT INTO sources (kind, path) VALUES ('bep', ''), ('store', ''), ('free', '*')").run();
+    database
+      .query("INSERT INTO sources (kind, path) VALUES ('bep', ''), ('store', ''), ('free', '*')")
+      .run();
   }
   return database;
 }
@@ -143,15 +155,18 @@ export function listSources(): Source[] {
 
 export async function addFolder(path: string, system?: string): Promise<Source> {
   const dir = resolve(path);
-  if (!existsSync(dir) || !statSync(dir).isDirectory()) throw new Error(`${dir} is not a directory`);
-  if (system && !(await loadSystems()).systems.some(item => item.id === system))
+  if (!existsSync(dir) || !statSync(dir).isDirectory())
+    throw new Error(`${dir} is not a directory`);
+  if (system && !(await loadSystems()).systems.some((item) => item.id === system))
     throw new Error(`unknown system ${system}`);
   db()
     .query(
       "INSERT INTO sources (kind, path, system) VALUES ('folder', ?1, ?2) ON CONFLICT (kind, path) DO UPDATE SET system = ?2",
     )
     .run(dir, system ?? null);
-  return db().query<Source, [string]>("SELECT * FROM sources WHERE kind = 'folder' AND path = ?").get(dir)!;
+  return db()
+    .query<Source, [string]>("SELECT * FROM sources WHERE kind = 'folder' AND path = ?")
+    .get(dir)!;
 }
 
 export function removeSource(id: number): void {
@@ -161,7 +176,8 @@ export function removeSource(id: number): void {
 /** Tokenizes a clrmamepro DAT: parentheses, quoted strings and bare words. */
 function* tokens(text: string): Generator<string> {
   const re = /"((?:[^"\\]|\\.)*)"|([()])|([^\s()"]+)/g;
-  for (let match = re.exec(text); match; match = re.exec(text)) yield match[1] ?? match[2] ?? match[3]!;
+  for (let match = re.exec(text); match; match = re.exec(text))
+    yield match[1] ?? match[2] ?? match[3]!;
 }
 
 type DatNode = Map<string, Array<string | DatNode>>;
@@ -190,7 +206,9 @@ async function importDat(relativeDat: string): Promise<number> {
   if (!existsSync(path)) return 0;
   const mtime = Math.trunc(statSync(path).mtimeMs);
   const known = db()
-    .query<{ mtime: number; entries: number }, [string]>("SELECT mtime, entries FROM dat_files WHERE path = ?")
+    .query<{ mtime: number; entries: number }, [string]>(
+      "SELECT mtime, entries FROM dat_files WHERE path = ?",
+    )
     .get(relativeDat);
   if (known?.mtime === mtime) return known.entries;
   const stream = tokens(await Bun.file(path).text());
@@ -222,7 +240,9 @@ async function importDat(relativeDat: string): Promise<number> {
         entries++;
       }
     }
-    db().query("INSERT OR REPLACE INTO dat_files VALUES (?, ?, ?)").run(relativeDat, mtime, entries);
+    db()
+      .query("INSERT OR REPLACE INTO dat_files VALUES (?, ?, ?)")
+      .run(relativeDat, mtime, entries);
   })();
   return entries;
 }
@@ -255,7 +275,16 @@ export function ensureDatabase(): boolean {
     .stdout.toString()
     .trim();
   if (!url) return false;
-  const clone = Bun.spawnSync(["git", "clone", "--depth", "1", "--filter=blob:none", "--sparse", url, databaseDir]);
+  const clone = Bun.spawnSync([
+    "git",
+    "clone",
+    "--depth",
+    "1",
+    "--filter=blob:none",
+    "--sparse",
+    url,
+    databaseDir,
+  ]);
   if (!clone.success) return false;
   Bun.spawnSync([
     "git",
@@ -276,7 +305,11 @@ interface Hashes {
   headerless?: string;
 }
 
-async function hashFile(path: string, ext: string, system: SystemDefinition): Promise<Hashes | undefined> {
+async function hashFile(
+  path: string,
+  ext: string,
+  system: SystemDefinition,
+): Promise<Hashes | undefined> {
   const file = Bun.file(path);
   if (file.size === 0 || file.size > maxHashBytes) return undefined;
   const bytes = await file.bytes();
@@ -286,7 +319,8 @@ async function hashFile(path: string, ext: string, system: SystemDefinition): Pr
     md5: new Bun.CryptoHasher("md5").update(bytes).digest("hex"),
   };
   const header = system.headerBytes?.[ext];
-  if (header && bytes.length > header) hashes.headerless = hex(Bun.hash.crc32(bytes.subarray(header)));
+  if (header && bytes.length > header)
+    hashes.headerless = hex(Bun.hash.crc32(bytes.subarray(header)));
   return hashes;
 }
 
@@ -341,7 +375,9 @@ export async function verifyDump(
       .get({ crc: dump.crc, md5: dump.md5, size: dump.size, dats }) ??
     (dump.headerless
       ? db()
-          .query<DatRow, { crc: string; dats: string }>(`SELECT * FROM dat_roms WHERE ${scoped} AND crc = $crc LIMIT 1`)
+          .query<DatRow, { crc: string; dats: string }>(
+            `SELECT * FROM dat_roms WHERE ${scoped} AND crc = $crc LIMIT 1`,
+          )
           .get({ crc: dump.headerless, dats })
       : null);
   const serial = dump.serial?.trim()
@@ -364,7 +400,11 @@ async function sidecarNote(path: string): Promise<string | null> {
 /** The cover of a game: an image named like the game file, next to it. */
 function coverFor(path: string): string | null {
   const stem = path.replace(/\.[^.\\/]+$/, "");
-  return ["png", "webp", "jpg", "jpeg"].map(ext => `${stem}.${ext}`).find(file => existsSync(file)) ?? null;
+  return (
+    ["png", "webp", "jpg", "jpeg"]
+      .map((ext) => `${stem}.${ext}`)
+      .find((file) => existsSync(file)) ?? null
+  );
 }
 
 interface Candidate {
@@ -412,7 +452,7 @@ async function* candidates(): AsyncGenerator<Candidate> {
         // Owned dumps of systems without a catalog console are filed under the system id.
         const system =
           (await systemsForConsole(rom.console))[0] ??
-          (await loadSystems()).systems.find(item => item.id === rom.console);
+          (await loadSystems()).systems.find((item) => item.id === rom.console);
         const candidate = {
           path: join(dirname(path), rom.file),
           system: system!,
@@ -498,7 +538,13 @@ export async function scanLibrary(): Promise<ScanSummary> {
     const ext = extensionOf(path);
     const previous = existing.get(path);
     let hashes: Hashes | undefined;
-    if (previous && previous.size === stat.size && previous.mtime === mtime && previous.crc && previous.md5) {
+    if (
+      previous &&
+      previous.size === stat.size &&
+      previous.mtime === mtime &&
+      previous.crc &&
+      previous.md5
+    ) {
       hashes = { crc: previous.crc, md5: previous.md5 };
       const header = candidate.system.headerBytes?.[ext];
       if (header) hashes = await hashFile(path, ext, candidate.system);
@@ -543,7 +589,11 @@ export function gamesFor(system?: string): Game[] {
           "SELECT * FROM games WHERE system = ? ORDER BY favorite DESC, coalesce(title, name) COLLATE NOCASE",
         )
         .all(system)
-    : db().query<Game, []>("SELECT * FROM games ORDER BY system, coalesce(title, name) COLLATE NOCASE").all();
+    : db()
+        .query<Game, []>(
+          "SELECT * FROM games ORDER BY system, coalesce(title, name) COLLATE NOCASE",
+        )
+        .all();
 }
 
 export function gameById(id: number): Game {
@@ -583,9 +633,11 @@ export function totalGames(): number {
 
 export function systemCounts(): Record<string, number> {
   const rows = db()
-    .query<{ system: string; n: number }, []>("SELECT system, count(*) AS n FROM games GROUP BY system")
+    .query<{ system: string; n: number }, []>(
+      "SELECT system, count(*) AS n FROM games GROUP BY system",
+    )
     .all();
-  return Object.fromEntries(rows.map(row => [row.system, row.n]));
+  return Object.fromEntries(rows.map((row) => [row.system, row.n]));
 }
 
 /** Per system, the id of the first game that has a cover (the system card shows it). */
@@ -595,7 +647,7 @@ export function systemCovers(): Record<string, number> {
       "SELECT system, min(id) AS id FROM games WHERE cover IS NOT NULL GROUP BY system",
     )
     .all();
-  return Object.fromEntries(rows.map(row => [row.system, row.id]));
+  return Object.fromEntries(rows.map((row) => [row.system, row.id]));
 }
 
 export function setFavorite(id: number, favorite: boolean): void {
@@ -610,9 +662,13 @@ export function setGameRoute(id: number, route: string | null): void {
 
 export function recordPlay(id: number, profile = "default"): void {
   const now = new Date().toISOString();
-  const known = db().query<{ name: string }, [string]>("SELECT name FROM players WHERE name = ?").get(profile);
+  const known = db()
+    .query<{ name: string }, [string]>("SELECT name FROM players WHERE name = ?")
+    .get(profile);
   db().transaction(() => {
-    db().query("UPDATE games SET playCount = playCount + 1, lastPlayed = ? WHERE id = ?").run(now, id);
+    db()
+      .query("UPDATE games SET playCount = playCount + 1, lastPlayed = ? WHERE id = ?")
+      .run(now, id);
     db()
       .query("INSERT INTO plays (game, profile, at) VALUES (?1, ?2, ?3)")
       .run(id, known ? profile : "default", now);
@@ -637,7 +693,7 @@ export function addPlayer(name: string): Player {
   if (!/^[\p{L}\p{N}][\p{L}\p{N} ._-]{0,23}$/u.test(clean))
     throw new Error("a profile name has 1 to 24 letters or digits");
   db().query("INSERT OR IGNORE INTO players (name) VALUES (?)").run(clean);
-  return listPlayers().find(player => player.name === clean)!;
+  return listPlayers().find((player) => player.name === clean)!;
 }
 
 /** The games a profile played last, newest first, with that profile's own play count and date. */
@@ -685,7 +741,7 @@ export function searchGames(query: string, limit = 60): Game[] {
     (_, i) =>
       `(lower(coalesce(title, name)) LIKE ?${i + 1} ESCAPE '!' OR lower(name) LIKE ?${i + 1} ESCAPE '!' OR lower(coalesce(developer, '')) LIKE ?${i + 1} ESCAPE '!' OR system LIKE ?${i + 1} ESCAPE '!')`,
   );
-  const patterns = words.map(word => `%${word.replace(/[!%_]/g, "!$&")}%`);
+  const patterns = words.map((word) => `%${word.replace(/[!%_]/g, "!$&")}%`);
   return db()
     .query<Game, string[]>(
       `SELECT * FROM games WHERE ${clauses.join(" AND ")} ORDER BY favorite DESC, coalesce(title, name) COLLATE NOCASE LIMIT ${Math.trunc(limit)}`,
@@ -695,7 +751,9 @@ export function searchGames(query: string, limit = 60): Game[] {
 
 export function defaultRoute(system: string): string | null {
   return (
-    db().query<{ route: string }, [string]>("SELECT route FROM defaults WHERE system = ?").get(system)?.route ?? null
+    db()
+      .query<{ route: string }, [string]>("SELECT route FROM defaults WHERE system = ?")
+      .get(system)?.route ?? null
   );
 }
 

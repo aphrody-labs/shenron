@@ -43,7 +43,10 @@ async function seed(): Promise<Record<string, Service>> {
 }
 
 async function text(url: string): Promise<string> {
-  const response = await fetch(url, { headers: { "user-agent": "bep" }, signal: AbortSignal.timeout(20_000) });
+  const response = await fetch(url, {
+    headers: { "user-agent": "bep" },
+    signal: AbortSignal.timeout(20_000),
+  });
   return response.ok ? response.text() : "";
 }
 
@@ -52,16 +55,23 @@ async function discovered(service: string, entry: Service): Promise<string[]> {
   if (!entry.list) return [];
   const body = await text(entry.list).catch(() => "");
   if (service === "archlinux" && body) {
-    const json = JSON.parse(body) as { urls: Array<{ url: string; protocol: string; active: boolean }> };
-    return json.urls.filter(m => m.protocol === "https" && m.active).map(m => m.url.replace(/\/$/, ""));
+    const json = JSON.parse(body) as {
+      urls: Array<{ url: string; protocol: string; active: boolean }>;
+    };
+    return json.urls
+      .filter((m) => m.protocol === "https" && m.active)
+      .map((m) => m.url.replace(/\/$/, ""));
   }
-  if (service === "cachyos") return [...body.matchAll(/^#?\s*Server\s*=\s*(https:\/\/\S+?)\/repo\//gm)].map(m => m[1]!);
+  if (service === "cachyos")
+    return [...body.matchAll(/^#?\s*Server\s*=\s*(https:\/\/\S+?)\/repo\//gm)].map((m) => m[1]!);
   if (service === "libreboot")
     return [
       ...new Set(
-        [...body.matchAll(/https:\/\/[A-Za-z0-9.-]+\/[^"<\s]*libreboot\/?/g)].map(m => m[0].replace(/\/$/, "")),
+        [...body.matchAll(/https:\/\/[A-Za-z0-9.-]+\/[^"<\s]*libreboot\/?/g)].map((m) =>
+          m[0].replace(/\/$/, ""),
+        ),
       ),
-    ].filter(url => !url.includes("codeberg.org") && !url.includes("spi-inc.org"));
+    ].filter((url) => !url.includes("codeberg.org") && !url.includes("spi-inc.org"));
   return [];
 }
 
@@ -74,8 +84,8 @@ export async function indexMirrors(): Promise<Record<string, number>> {
   const counts: Record<string, number> = {};
   for (const [service, entry] of Object.entries(services)) {
     const urls = [
-      ...entry.urls.map(url => ({ url, origin: "seed" })),
-      ...(await discovered(service, entry)).map(url => ({ url, origin: entry.list! })),
+      ...entry.urls.map((url) => ({ url, origin: "seed" })),
+      ...(await discovered(service, entry)).map((url) => ({ url, origin: entry.list! })),
     ];
     for (const { url, origin } of urls) insert.run({ service, kind: entry.kind, url, origin });
     counts[service] = urls.length;
@@ -126,7 +136,9 @@ export async function probeMirrors(service?: string, concurrency = 16): Promise<
     }
   }
   await Promise.all(Array.from({ length: Math.min(concurrency, rows.length) }, worker));
-  return rows.sort((a, b) => (b.ok ?? 0) - (a.ok ?? 0) || (a.latencyMs ?? 1e9) - (b.latencyMs ?? 1e9));
+  return rows.sort(
+    (a, b) => (b.ok ?? 0) - (a.ok ?? 0) || (a.latencyMs ?? 1e9) - (b.latencyMs ?? 1e9),
+  );
 }
 
 /** Healthy endpoints of a service, fastest first (seed order when never probed). */
@@ -136,7 +148,7 @@ export function bestMirrors(service: string): string[] {
       "SELECT * FROM endpoints WHERE service = ? ORDER BY ok DESC, latencyMs IS NULL, latencyMs",
     )
     .all(service);
-  return rows.filter(row => row.ok !== 0).map(row => row.url);
+  return rows.filter((row) => row.ok !== 0).map((row) => row.url);
 }
 
 export function listMirrors(service?: string): Endpoint[] {

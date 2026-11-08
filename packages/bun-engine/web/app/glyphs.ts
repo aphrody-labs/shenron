@@ -40,7 +40,12 @@ const shapes = {
 /** The face button at a physical position (south, east, west, north) for this pad's labelling. */
 function face(position: "south" | "east" | "west" | "north", kind: PadKind): string {
   if (kind === "playstation") {
-    const shape = { south: shapes.cross, east: shapes.circle, west: shapes.square, north: shapes.triangle }[position];
+    const shape = {
+      south: shapes.cross,
+      east: shapes.circle,
+      west: shapes.square,
+      north: shapes.triangle,
+    }[position];
     return ring + shape;
   }
   // Nintendo labels the same four positions B, A, Y, X; Xbox and unknown pads A, B, X, Y.
@@ -51,8 +56,10 @@ function face(position: "south" | "east" | "west" | "north", kind: PadKind): str
   return ring + letter(names[position]);
 }
 
-const menuGlyph = '<rect x="2.5" y="6" width="19" height="12" rx="6"/><path d="M8.5 10h7M8.5 12h7M8.5 14h7"/>';
-const viewGlyph = '<rect x="3" y="6" width="13" height="10" rx="2"/><rect x="8" y="9" width="13" height="9" rx="2"/>';
+const menuGlyph =
+  '<rect x="2.5" y="6" width="19" height="12" rx="6"/><path d="M8.5 10h7M8.5 12h7M8.5 14h7"/>';
+const viewGlyph =
+  '<rect x="3" y="6" width="13" height="10" rx="2"/><rect x="8" y="9" width="13" height="9" rx="2"/>';
 const dpad = '<path d="M9 3h6v6h6v6h-6v6H9v-6H3V9h6z"/>';
 
 function pill(label: string): string {
@@ -82,7 +89,8 @@ export function glyph(token: Token, kind: PadKind, keyLabel?: string): string {
     case "view":
       return svg(viewGlyph);
     case "tabs": {
-      const [left, right] = kind === "playstation" ? ["L1", "R1"] : kind === "nintendo" ? ["L", "R"] : ["LB", "RB"];
+      const [left, right] =
+        kind === "playstation" ? ["L1", "R1"] : kind === "nintendo" ? ["L", "R"] : ["LB", "RB"];
       return pill(left!) + pill(right!);
     }
   }

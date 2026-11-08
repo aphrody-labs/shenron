@@ -57,7 +57,8 @@ export async function testWorkspace(): Promise<number> {
 }
 
 export async function compileWorkspace(options: CompileWorkspaceOptions = {}): Promise<number> {
-  const extension = options.target?.startsWith("bun-windows-") || process.platform === "win32" ? ".exe" : "";
+  const extension =
+    options.target?.startsWith("bun-windows-") || process.platform === "win32" ? ".exe" : "";
   const outfile = join(root, options.outfile ?? join("build", "bin", `bun-engine${extension}`));
   await Bun.$`mkdir -p ${dirname(outfile)}`.quiet();
 
@@ -66,7 +67,10 @@ export async function compileWorkspace(options: CompileWorkspaceOptions = {}): P
     compile: {
       ...(options.target ? { target: options.target as never } : {}),
       outfile,
-      assets: [join(root, "packages", "bun-engine", "web", "app"), join(root, "packages", "bun-engine", "config")],
+      assets: [
+        join(root, "packages", "bun-engine", "web", "app"),
+        join(root, "packages", "bun-engine", "config"),
+      ],
       execArgv: ["--smol"],
       autoloadTsconfig: false,
       autoloadPackageJson: false,
@@ -89,7 +93,9 @@ export async function compileWorkspace(options: CompileWorkspaceOptions = {}): P
   return 0;
 }
 
-export async function compilePackageManager(outfile = join("build", "bin", "bep.exe")): Promise<number> {
+export async function compilePackageManager(
+  outfile = join("build", "bin", "bep.exe"),
+): Promise<number> {
   const output = join(root, outfile);
   await Bun.$`mkdir -p ${dirname(output)}`.quiet();
   const result = await Bun.build({

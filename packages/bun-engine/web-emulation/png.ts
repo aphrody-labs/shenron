@@ -3,8 +3,15 @@
 import { inflateSync } from "node:zlib";
 
 /** Decode a bounded non-interlaced 8-bit Chrome screenshot to RGBA8. */
-export function decodeScreenshotPng(png: Uint8Array): { width: number; height: number; data: Uint8Array } {
-  if (png.length < 8 || ![137, 80, 78, 71, 13, 10, 26, 10].every((byte, index) => png[index] === byte))
+export function decodeScreenshotPng(png: Uint8Array): {
+  width: number;
+  height: number;
+  data: Uint8Array;
+} {
+  if (
+    png.length < 8 ||
+    ![137, 80, 78, 71, 13, 10, 26, 10].every((byte, index) => png[index] === byte)
+  )
     throw new Error("invalid PNG signature");
   const view = new DataView(png.buffer, png.byteOffset, png.byteLength);
   let offset = 8;
@@ -22,7 +29,8 @@ export function decodeScreenshotPng(png: Uint8Array): { width: number; height: n
       if (length !== 13 || channels) throw new Error("invalid PNG header");
       width = view.getUint32(offset + 8);
       height = view.getUint32(offset + 12);
-      if (body[8] !== 8 || body[12] !== 0) throw new Error("unsupported PNG (need 8-bit, non-interlaced)");
+      if (body[8] !== 8 || body[12] !== 0)
+        throw new Error("unsupported PNG (need 8-bit, non-interlaced)");
       channels = body[9] === 6 ? 4 : body[9] === 2 ? 3 : body[9] === 0 ? 1 : 0;
       if (!channels) throw new Error("unsupported PNG color type");
     } else if (type === "IDAT") data.push(body);
@@ -72,7 +80,8 @@ export function decodeScreenshotPng(png: Uint8Array): { width: number; height: n
 /** Report whether any decoded RGB channel exceeds 16. */
 export function pngHasLitPixel(png: Uint8Array): boolean {
   const { data } = decodeScreenshotPng(png);
-  for (let i = 0; i < data.length; i += 4) if (data[i]! > 16 || data[i + 1]! > 16 || data[i + 2]! > 16) return true;
+  for (let i = 0; i < data.length; i += 4)
+    if (data[i]! > 16 || data[i + 1]! > 16 || data[i + 2]! > 16) return true;
   return false;
 }
 function paeth(a: number, b: number, c: number) {

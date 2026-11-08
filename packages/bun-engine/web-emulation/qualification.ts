@@ -52,10 +52,19 @@ export function qualificationHarnessRevision(root: string, baseline = "HEAD"): s
   const type = Bun.spawnSync(["git", "-C", root, "cat-file", "-t", value]);
   if (type.exitCode !== 0 || type.stdout.toString().trim() !== "commit")
     throw new Error("Qualification harness baseline is not a commit");
-  const tracked = Bun.spawnSync(["git", "-C", root, "ls-files", "--error-unmatch", "--", ...harnessPaths]);
+  const tracked = Bun.spawnSync([
+    "git",
+    "-C",
+    root,
+    "ls-files",
+    "--error-unmatch",
+    "--",
+    ...harnessPaths,
+  ]);
   if (tracked.exitCode !== 0) throw new Error("Qualification harness files are not all tracked");
   const diff = Bun.spawnSync(["git", "-C", root, "diff", "--quiet", value, "--", ...harnessPaths]);
-  if (diff.exitCode !== 0) throw new Error("Qualification harness has uncommitted changes or cannot be checked");
+  if (diff.exitCode !== 0)
+    throw new Error("Qualification harness has uncommitted changes or cannot be checked");
   return value;
 }
 function safePath(path: string): string {
@@ -64,7 +73,7 @@ function safePath(path: string): string {
     path.includes("\\") ||
     path.includes(":") ||
     path.startsWith("/") ||
-    path.split("/").some(p => !p || p === "." || p === "..")
+    path.split("/").some((p) => !p || p === "." || p === "..")
   )
     throw new Error(`Unsafe qualification path: ${path}`);
   return path;
@@ -73,12 +82,14 @@ function safeCore(core: string) {
   if (!/^[a-z0-9][a-z0-9-]*$/.test(core)) throw new Error(`Invalid core: ${core}`);
 }
 function selectedVariant(manifest: any, variant: "single" | "threads") {
-  if (variant !== "single" && variant !== "threads") throw new Error("Invalid qualification variant");
+  if (variant !== "single" && variant !== "threads")
+    throw new Error("Invalid qualification variant");
   const selected = variant === "threads" ? manifest.variants?.threads : manifest;
   if (!selected || (variant === "threads" && selected.threads !== true))
     throw new Error("Requested threaded WASM variant is not built");
   for (const path of [selected.module, selected.wasm]) {
-    if (typeof path !== "string" || /[%?#]/.test(path)) throw new Error("Invalid qualified module path");
+    if (typeof path !== "string" || /[%?#]/.test(path))
+      throw new Error("Invalid qualified module path");
     safePath(path);
   }
   return selected;
@@ -101,19 +112,32 @@ async function snapshotFiles(dist: string, core: string, fixtures: Qualification
       if (relative !== `${core}/qualification.json`) paths.add(safePath(relative));
     }
   }
-  if (!paths.has(`${core}/manifest.json`) || ![...paths].some(p => p.startsWith(`${core}/`) && p.endsWith(".wasm")))
+  if (
+    !paths.has(`${core}/manifest.json`) ||
+    ![...paths].some((p) => p.startsWith(`${core}/`) && p.endsWith(".wasm"))
+  )
     throw new Error(`${core}: missing core manifest or WASM artifact`);
-  if (![...paths].some(p => p.startsWith("runtime/"))) throw new Error("Missing shared WASM runtime files");
+  if (![...paths].some((p) => p.startsWith("runtime/")))
+    throw new Error("Missing shared WASM runtime files");
   for (const fixture of fixtures) paths.add(safePath(fixture.path));
   const files: Record<string, string> = {};
   for (const path of [...paths].sort()) files[path] = await qualificationSHA256(join(dist, path));
   return files;
 }
-async function checkFixtures(dist: string, fixtures: QualificationFixture[], root: string, systems: string[]) {
+async function checkFixtures(
+  dist: string,
+  fixtures: QualificationFixture[],
+  root: string,
+  systems: string[],
+) {
   if (!Array.isArray(fixtures) || !fixtures.length)
     throw new Error("Qualification requires a pinned open-source fixture");
-  const lock = await Bun.file(join(root, "packages/bun-engine/web-emulation/web-emulation.lock.json")).json();
-  const registry = await Bun.file(join(root, "packages/bun-engine/plugins/consoles/free-firmware.json")).json();
+  const lock = await Bun.file(
+    join(root, "packages/bun-engine/web-emulation/web-emulation.lock.json"),
+  ).json();
+  const registry = await Bun.file(
+    join(root, "packages/bun-engine/plugins/consoles/free-firmware.json"),
+  ).json();
   const roms = await Bun.file(join(root, "packages/bun-engine/plugins/consoles/roms.json")).json();
   let hasROM = false;
   for (const fixture of fixtures) {
@@ -137,12 +161,14 @@ async function checkFixtures(dist: string, fixtures: QualificationFixture[], roo
         pin.source === fixture.source &&
         pin.license === fixture.license,
     );
-    if (!rom && !firmware) throw new Error(`Fixture is not pinned by the open-source registries: ${fixture.path}`);
+    if (!rom && !firmware)
+      throw new Error(`Fixture is not pinned by the open-source registries: ${fixture.path}`);
     if (rom) hasROM = true;
     if ((await qualificationSHA256(join(dist, fixture.path))) !== fixture.sha256)
       throw new Error(`Fixture digest mismatch: ${fixture.path}`);
   }
-  if (!hasROM) throw new Error("Qualification requires a pinned open-source ROM, not firmware alone");
+  if (!hasROM)
+    throw new Error("Qualification requires a pinned open-source ROM, not firmware alone");
 }
 function checkResult(result: QualificationResult) {
   if (
@@ -158,7 +184,9 @@ function checkResult(result: QualificationResult) {
   if (
     typeof result.renderer !== "string" ||
     !result.renderer ||
-    ![result.gpu2d_submitted_frames, result.gpu3d_submitted_frames].every(n => Number.isSafeInteger(n) && n >= 0)
+    ![result.gpu2d_submitted_frames, result.gpu3d_submitted_frames].every(
+      (n) => Number.isSafeInteger(n) && n >= 0,
+    )
   )
     throw new Error("Qualification is missing actual renderer/submission evidence");
   if (result.renderer === "wgpu30-dust" && result.gpu2d_submitted_frames < 1)
@@ -175,18 +203,23 @@ export async function createQualificationSnapshot(
   const variant = options.variant ?? "single";
   const selected = selectedVariant(manifest, variant);
   await checkFixtures(dist, fixtures, root, manifest.systems ?? []);
-  const registry = await Bun.file(join(root, "packages/bun-engine/plugins/consoles/free-firmware.json")).json();
+  const registry = await Bun.file(
+    join(root, "packages/bun-engine/plugins/consoles/free-firmware.json"),
+  ).json();
   for (const id of manifest.firmware ?? []) {
     const pin = registry.firmware[id];
-    if (!pin || !fixtures.some(f => f.path === `firmware/${pin.file}` && f.sha256 === pin.sha256))
+    if (!pin || !fixtures.some((f) => f.path === `firmware/${pin.file}` && f.sha256 === pin.sha256))
       throw new Error(`${core}: qualification is missing required firmware ${id}`);
   }
   const sourceRevision = qualificationHarnessRevision(root);
   const files = await snapshotFiles(dist, core, fixtures);
   for (const path of [selected.module, selected.wasm])
-    if (!files[`${core}/${path}`]) throw new Error(`${core}: selected variant input is not in qualification files`);
+    if (!files[`${core}/${path}`])
+      throw new Error(`${core}: selected variant input is not in qualification files`);
   if (manifest.firmware?.length)
-    files["firmware/firmware.json"] = await qualificationSHA256(join(dist, "firmware/firmware.json"));
+    files["firmware/firmware.json"] = await qualificationSHA256(
+      join(dist, "firmware/firmware.json"),
+    );
   qualificationHarnessRevision(root, sourceRevision);
   return {
     schemaVersion: 2,
@@ -194,7 +227,9 @@ export async function createQualificationSnapshot(
     core,
     variant,
     sourceRevision,
-    lockSHA256: await qualificationSHA256(join(root, "packages/bun-engine/web-emulation/web-emulation.lock.json")),
+    lockSHA256: await qualificationSHA256(
+      join(root, "packages/bun-engine/web-emulation/web-emulation.lock.json"),
+    ),
     files,
     fixtures,
   };
@@ -212,12 +247,21 @@ export async function writeQualification(
   qualificationHarnessRevision(root, snapshot.sourceRevision);
   const current = await snapshotFiles(dist, snapshot.core, snapshot.fixtures);
   if (snapshot.files["firmware/firmware.json"])
-    current["firmware/firmware.json"] = await qualificationSHA256(join(dist, "firmware/firmware.json"));
+    current["firmware/firmware.json"] = await qualificationSHA256(
+      join(dist, "firmware/firmware.json"),
+    );
   if (JSON.stringify(current) !== JSON.stringify(snapshot.files))
     throw new Error("WASM qualification inputs changed during browser run");
   qualificationHarnessRevision(root, snapshot.sourceRevision);
-  const receipt: WasmQualificationReceipt = { ...snapshot, testedAt: new Date().toISOString(), result };
-  await Bun.write(join(dist, snapshot.core, "qualification.json"), `${JSON.stringify(receipt, null, 2)}\n`);
+  const receipt: WasmQualificationReceipt = {
+    ...snapshot,
+    testedAt: new Date().toISOString(),
+    result,
+  };
+  await Bun.write(
+    join(dist, snapshot.core, "qualification.json"),
+    `${JSON.stringify(receipt, null, 2)}\n`,
+  );
   return receipt;
 }
 export async function verifyQualification(
@@ -227,7 +271,9 @@ export async function verifyQualification(
 ): Promise<WasmQualificationReceipt> {
   safeCore(core);
   const root = options.root ?? defaultRoot;
-  const receipt = (await Bun.file(join(dist, core, "qualification.json")).json()) as WasmQualificationReceipt;
+  const receipt = (await Bun.file(
+    join(dist, core, "qualification.json"),
+  ).json()) as WasmQualificationReceipt;
   if (
     receipt.schemaVersion !== 2 ||
     receipt.kind !== "bun-engine-wasm-qualification" ||
@@ -241,29 +287,42 @@ export async function verifyQualification(
     throw new Error("Dust distribution qualification must exercise its GPU renderer");
   if (
     receipt.lockSHA256 !==
-    (await qualificationSHA256(join(root, "packages/bun-engine/web-emulation/web-emulation.lock.json")))
+    (await qualificationSHA256(
+      join(root, "packages/bun-engine/web-emulation/web-emulation.lock.json"),
+    ))
   )
     throw new Error(`${core}: stale qualification lock`);
   const manifest = await Bun.file(join(dist, core, "manifest.json")).json();
   const selected = selectedVariant(manifest, receipt.variant);
   await checkFixtures(dist, receipt.fixtures, root, manifest.systems ?? []);
-  const registry = await Bun.file(join(root, "packages/bun-engine/plugins/consoles/free-firmware.json")).json();
+  const registry = await Bun.file(
+    join(root, "packages/bun-engine/plugins/consoles/free-firmware.json"),
+  ).json();
   for (const id of manifest.firmware ?? []) {
     const pin = registry.firmware[id];
-    if (!pin || !receipt.fixtures.some(f => f.path === `firmware/${pin.file}` && f.sha256 === pin.sha256))
+    if (
+      !pin ||
+      !receipt.fixtures.some((f) => f.path === `firmware/${pin.file}` && f.sha256 === pin.sha256)
+    )
       throw new Error(`${core}: qualification is missing required firmware ${id}`);
   }
   for (const [path, hash] of Object.entries(receipt.files))
-    if (!safePath(path) || !digestPattern.test(hash)) throw new Error("Invalid qualification file digest");
+    if (!safePath(path) || !digestPattern.test(hash))
+      throw new Error("Invalid qualification file digest");
   const current = await snapshotFiles(dist, core, receipt.fixtures);
   for (const path of [selected.module, selected.wasm])
     if (!current[`${core}/${path}`] || !receipt.files[`${core}/${path}`])
       throw new Error(`${core}: selected variant input is not in qualification files`);
   if (manifest.firmware?.length)
-    current["firmware/firmware.json"] = await qualificationSHA256(join(dist, "firmware/firmware.json"));
+    current["firmware/firmware.json"] = await qualificationSHA256(
+      join(dist, "firmware/firmware.json"),
+    );
   for (const [path, digest] of Object.entries(receipt.files))
-    if (current[path] !== digest) throw new Error(`${core}: qualification artifact set or digests changed`);
-  const selectedDirectories = new Set([selected.module, selected.wasm].map((path: string) => path.split("/")[0]));
+    if (current[path] !== digest)
+      throw new Error(`${core}: qualification artifact set or digests changed`);
+  const selectedDirectories = new Set(
+    [selected.module, selected.wasm].map((path: string) => path.split("/")[0]),
+  );
   for (const path of Object.keys(current)) {
     if (receipt.files[path]) continue;
     const match = new RegExp(`^${core}/([a-f0-9]{12})/`).exec(path);

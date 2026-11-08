@@ -1,5 +1,9 @@
 export const sourceKinds = ["rust-crate", "c-source-tree", "cpp-source-tree", "free-sdk"] as const;
-export const firmwarePolicies = ["not-required", "caller-supplied-only", "redistributable-only"] as const;
+export const firmwarePolicies = [
+  "not-required",
+  "caller-supplied-only",
+  "redistributable-only",
+] as const;
 export const publicationGates = ["deferred-review", "approved"] as const;
 export const integrations = ["local-plugin", "submodule"] as const;
 
@@ -72,12 +76,15 @@ export async function validateConsoleCatalog(
     if (ids.has(component.id)) errors.push(`${at}.id must be unique`);
     ids.add(component.id);
     if (!token.test(component.console)) errors.push(`${at}.console must be a token`);
-    if (!Array.isArray(component.cpu) || component.cpu.some(cpu => !token.test(cpu)))
+    if (!Array.isArray(component.cpu) || component.cpu.some((cpu) => !token.test(cpu)))
       errors.push(`${at}.cpu must contain tokens`);
     if (!token.test(component.runtime)) errors.push(`${at}.runtime must be a token`);
-    if (!firmwarePolicies.includes(component.firmwarePolicy)) errors.push(`${at}.firmwarePolicy is invalid`);
-    if (typeof component.license !== "string" || component.license.length < 3) errors.push(`${at}.license is required`);
-    if (!publicationGates.includes(component.publicationGate)) errors.push(`${at}.publicationGate is invalid`);
+    if (!firmwarePolicies.includes(component.firmwarePolicy))
+      errors.push(`${at}.firmwarePolicy is invalid`);
+    if (typeof component.license !== "string" || component.license.length < 3)
+      errors.push(`${at}.license is required`);
+    if (!publicationGates.includes(component.publicationGate))
+      errors.push(`${at}.publicationGate is invalid`);
     if (!integrations.includes(component.integration)) errors.push(`${at}.integration is invalid`);
     if (!revision.test(component.sourceRev)) errors.push(`${at}.sourceRev must be a full git SHA`);
     if (typeof component.buildOwner !== "string" || !component.buildOwner.includes("#"))
@@ -92,10 +99,20 @@ export async function validateConsoleCatalog(
       if (!safeSourcePath(source.path)) errors.push(`${sourceAt}.path escapes owned source roots`);
       else if (component.integration === "submodule") {
         // The pinned gitlink is the source of truth; the submodule need not be checked out.
-        const pinned = Bun.spawnSync(["git", "-C", root, "ls-files", "-s", "--", source.path]).stdout.toString();
+        const pinned = Bun.spawnSync([
+          "git",
+          "-C",
+          root,
+          "ls-files",
+          "-s",
+          "--",
+          source.path,
+        ]).stdout.toString();
         const [mode, sha] = pinned.split(/\s+/);
-        if (mode !== "160000") errors.push(`${sourceAt}.path is not a pinned submodule: ${source.path}`);
-        else if (sha !== component.sourceRev) errors.push(`${sourceAt}.revision does not match sourceRev`);
+        if (mode !== "160000")
+          errors.push(`${sourceAt}.path is not a pinned submodule: ${source.path}`);
+        else if (sha !== component.sourceRev)
+          errors.push(`${sourceAt}.revision does not match sourceRev`);
       } else if (!(await sourceExists(source.path, root)))
         errors.push(`${sourceAt}.path does not exist: ${source.path}`);
     }

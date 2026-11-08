@@ -5,10 +5,7 @@ structured arguments and exact JSON. Rust owns project loading, migrations,
 editing, codecs, rendering and export.
 
 ```ts
-import {
-  createVideoLibrary,
-  ticksFromDecimalSeconds,
-} from "@aphrody/bun-video-project";
+import { createVideoLibrary, ticksFromDecimalSeconds } from "@aphrody/bun-video-project";
 
 const controller = new AbortController();
 const video = await createVideoLibrary({ signal: controller.signal });

@@ -67,7 +67,8 @@ export function serve(
       const url = new URL(request.url);
       let response: Response;
       if (options.privateROM && url.pathname === `/private-rom/${options.privateROM.token}`) {
-        if (request.method !== "GET") response = new Response("method not allowed", { status: 405 });
+        if (request.method !== "GET")
+          response = new Response("method not allowed", { status: 405 });
         else
           response = new Response(Bun.file(options.privateROM.path), {
             headers: {
@@ -82,7 +83,8 @@ export function serve(
         response = await file(contained(dist, url.pathname.slice("/emulation/".length)));
       else if (url.pathname.startsWith("/roms/"))
         response = await file(contained(roms, url.pathname.slice("/roms/".length)));
-      else if (url.pathname === "/smoke/" || url.pathname === "/") response = await file(join(here, "smoke.html"));
+      else if (url.pathname === "/smoke/" || url.pathname === "/")
+        response = await file(join(here, "smoke.html"));
       else response = new Response("not found", { status: 404 });
       response.headers.set("cross-origin-opener-policy", "same-origin");
       response.headers.set("cross-origin-embedder-policy", "credentialless");

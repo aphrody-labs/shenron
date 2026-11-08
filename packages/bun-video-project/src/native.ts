@@ -26,12 +26,15 @@ export async function probeVideo(path: string): Promise<Record<string, unknown>>
   }
   const { ffprobe, reason } = nativeVideoCapabilities();
   if (!ffprobe) throw new Error(reason);
-  const child = Bun.spawn([ffprobe, "-v", "error", "-print_format", "json", "-show_format", "-show_streams", path], {
-    stdin: "ignore",
-    stdout: "pipe",
-    stderr: "pipe",
-    windowsHide: true,
-  });
+  const child = Bun.spawn(
+    [ffprobe, "-v", "error", "-print_format", "json", "-show_format", "-show_streams", path],
+    {
+      stdin: "ignore",
+      stdout: "pipe",
+      stderr: "pipe",
+      windowsHide: true,
+    },
+  );
   const [out, err, code] = await Promise.all([
     new Response(child.stdout).text(),
     new Response(child.stderr).text(),

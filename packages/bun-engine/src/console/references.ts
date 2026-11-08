@@ -1,4 +1,9 @@
-export const referenceCategories = ["documentation", "sdk", "3ds-reference", "sister-project"] as const;
+export const referenceCategories = [
+  "documentation",
+  "sdk",
+  "3ds-reference",
+  "sister-project",
+] as const;
 
 export type ReferenceCategory = (typeof referenceCategories)[number];
 
@@ -40,8 +45,10 @@ export async function validateConsoleReferences(
     if (ids.has(reference.id)) errors.push(`${at}.id must be unique`);
     ids.add(reference.id);
     if (!referenceCategories.includes(reference.category)) errors.push(`${at}.category is invalid`);
-    if (typeof reference.name !== "string" || reference.name.length === 0) errors.push(`${at}.name is required`);
-    if (typeof reference.role !== "string" || reference.role.length === 0) errors.push(`${at}.role is required`);
+    if (typeof reference.name !== "string" || reference.name.length === 0)
+      errors.push(`${at}.name is required`);
+    if (typeof reference.role !== "string" || reference.role.length === 0)
+      errors.push(`${at}.role is required`);
     try {
       const url = new URL(reference.url);
       if (url.protocol !== "https:") errors.push(`${at}.url must use HTTPS`);

@@ -32,7 +32,10 @@ function safeName(name: string): string {
   return clean;
 }
 
-type Handler = (request: Bun.BunRequest, server?: Bun.Server<unknown>) => Response | Promise<Response>;
+type Handler = (
+  request: Bun.BunRequest,
+  server?: Bun.Server<unknown>,
+) => Response | Promise<Response>;
 
 function safe(handler: Handler): Handler {
   return async (request, server) => {
@@ -61,15 +64,18 @@ export function ownedRoutes(): Record<string, Record<string, Handler>> {
     "/api/owned/drop.js": {
       GET: () =>
         new Response(dropScript, {
-          headers: { "content-type": "text/javascript; charset=utf-8", "cache-control": "no-store" },
+          headers: {
+            "content-type": "text/javascript; charset=utf-8",
+            "cache-control": "no-store",
+          },
         }),
     },
     "/api/owned/upload/:id": {
-      GET: safe(request => {
+      GET: safe((request) => {
         const path = uploadPath((request.params as { id: string }).id);
         return json({ received: existsSync(path) ? statSync(path).size : 0 });
       }),
-      PUT: safe(async request => {
+      PUT: safe(async (request) => {
         const path = uploadPath((request.params as { id: string }).id);
         const offset = Number(new URL(request.url).searchParams.get("offset") ?? "0");
         const received = existsSync(path) ? statSync(path).size : 0;
@@ -95,8 +101,13 @@ export function ownedRoutes(): Record<string, Record<string, Handler>> {
         server?.timeout(request, 0);
         const id = (request.params as { id: string }).id;
         const path = uploadPath(id);
-        const { name, size, system } = (await request.json()) as { name: string; size: number; system?: string };
-        if (!existsSync(path) || statSync(path).size !== size) return json({ error: "upload incomplete" }, 409);
+        const { name, size, system } = (await request.json()) as {
+          name: string;
+          size: number;
+          system?: string;
+        };
+        if (!existsSync(path) || statSync(path).size !== size)
+          return json({ error: "upload incomplete" }, 409);
         const folder = join(inboxDir(), ".uploads", id);
         await mkdir(folder, { recursive: true });
         const file = join(folder, safeName(name));
@@ -114,8 +125,14 @@ export function ownedRoutes(): Record<string, Record<string, Handler>> {
 // The generated Aphrody brand roles (packages/app-ui/src/brand.css, product seed), switched by the system scheme
 // because this page loads no script before first paint.
 const brandRoles = (brandSheet as string)
-  .replace(/:root\.light,\s*\.light\s*\{([^}]*)\}/g, "@media (prefers-color-scheme: light) {\n:root {$1}\n}")
-  .replace(/:root,\s*\.dark\s*\{([^}]*)\}/g, "@media (prefers-color-scheme: dark) {\n:root {$1}\n}");
+  .replace(
+    /:root\.light,\s*\.light\s*\{([^}]*)\}/g,
+    "@media (prefers-color-scheme: light) {\n:root {$1}\n}",
+  )
+  .replace(
+    /:root,\s*\.dark\s*\{([^}]*)\}/g,
+    "@media (prefers-color-scheme: dark) {\n:root {$1}\n}",
+  );
 
 const dropPage = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">

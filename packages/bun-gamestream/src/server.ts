@@ -74,7 +74,7 @@ function spawnSender(): void {
   });
   sender = child;
   void readSender(child.stdout);
-  void child.exited.then(code => {
+  void child.exited.then((code) => {
     console.error(`[gamestream] sender exited (${code}); restarting`);
     sender = null;
     senderInfo = null;

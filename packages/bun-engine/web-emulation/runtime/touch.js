@@ -28,12 +28,12 @@ export function bottomScreenPoint(canvas, event, system) {
 /** Wire pointer events on `canvas` to `handle.set_touch(x, y, down)`. Returns an unbind function. */
 export function bindTouch(canvas, handle, system) {
   let down = false;
-  const move = event => {
+  const move = (event) => {
     const point = bottomScreenPoint(canvas, event, system);
     if (down && point) handle.set_touch(point.x, point.y, true);
     else if (down && !point) handle.set_touch(0, 0, false);
   };
-  const press = event => {
+  const press = (event) => {
     down = true;
     canvas.setPointerCapture?.(event.pointerId);
     move(event);

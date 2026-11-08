@@ -1,5 +1,9 @@
 import { describe, expect, test } from "bun:test";
-import { fetchFirmwareCatalog, parseFirmwareCatalogHtml, parseFirmwareDetailHtml } from "../src/firmware/catalog";
+import {
+  fetchFirmwareCatalog,
+  parseFirmwareCatalogHtml,
+  parseFirmwareDetailHtml,
+} from "../src/firmware/catalog";
 
 describe("firmware metadata catalog", () => {
   test("keeps detail pages and rejects direct payload links", async () => {

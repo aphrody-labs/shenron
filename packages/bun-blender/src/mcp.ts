@@ -15,7 +15,9 @@ async function ensureLive(blend?: string): Promise<void> {
     await Bun.sleep(500);
     if (await liveAvailable()) return;
   }
-  throw new Error("headless Blender bridge did not start (blender_mcp add-on missing? set BLENDER_MCP_ADDON)");
+  throw new Error(
+    "headless Blender bridge did not start (blender_mcp add-on missing? set BLENDER_MCP_ADDON)",
+  );
 }
 
 process.on("exit", () => session?.kill());
@@ -32,7 +34,8 @@ const tools = [
   },
   {
     name: "blender_info",
-    description: "Scenes, objects, meshes, materials and collections of a .blend (factory scene when omitted).",
+    description:
+      "Scenes, objects, meshes, materials and collections of a .blend (factory scene when omitted).",
     inputSchema: {
       type: "object",
       properties: { blend: str("Path to a .blend file") },
@@ -83,7 +86,8 @@ const tools = [
   },
   {
     name: "blender_export",
-    description: "Export a .blend to glb/gltf/fbx/obj/stl/ply/usd/abc (format from the output extension).",
+    description:
+      "Export a .blend to glb/gltf/fbx/obj/stl/ply/usd/abc (format from the output extension).",
     inputSchema: {
       type: "object",
       properties: {
@@ -142,7 +146,8 @@ const LIVE: Record<string, { command: string; description: string; inputSchema: 
   },
   blender_live_export: {
     command: "export_scene",
-    description: "Live session: export the scene or named objects (glb, gltf, fbx, obj, usd, stl, ply).",
+    description:
+      "Live session: export the scene or named objects (glb, gltf, fbx, obj, usd, stl, ply).",
     inputSchema: obj(
       {
         filepath: str("Output path"),
@@ -156,7 +161,9 @@ const LIVE: Record<string, { command: string; description: string; inputSchema: 
   blender_live_node_type: {
     command: "describe_node_type",
     description: "Live session: describe a node type's sockets and properties.",
-    inputSchema: obj({ bl_idname: str("Node bl_idname, e.g. ShaderNodeBsdfPrincipled") }, ["bl_idname"]),
+    inputSchema: obj({ bl_idname: str("Node bl_idname, e.g. ShaderNodeBsdfPrincipled") }, [
+      "bl_idname",
+    ]),
   },
   blender_live_api: {
     command: "bpy_api_lookup",
@@ -173,7 +180,10 @@ const LIVE: Record<string, { command: string; description: string; inputSchema: 
 // Keys come from the add-on preferences or BLENDERMCP_SKETCHFAB_API_KEY, BLENDERMCP_HYPER3D_API_KEY,
 // BLENDERMCP_HUNYUAN3D_SECRET_ID / _SECRET_KEY in the environment.
 const integer = { type: "integer" };
-const ASSETS: Record<string, { command: string; flag: string; description: string; inputSchema: Json }> = {
+const ASSETS: Record<
+  string,
+  { command: string; flag: string; description: string; inputSchema: Json }
+> = {
   blender_polyhaven_categories: {
     command: "get_polyhaven_categories",
     flag: "blendermcp_use_polyhaven",
@@ -194,7 +204,8 @@ const ASSETS: Record<string, { command: string; flag: string; description: strin
   blender_polyhaven_download: {
     command: "download_polyhaven_asset",
     flag: "blendermcp_use_polyhaven",
-    description: "Download and import a Poly Haven asset (HDRI as world, texture as material, model into the scene).",
+    description:
+      "Download and import a Poly Haven asset (HDRI as world, texture as material, model into the scene).",
     inputSchema: obj(
       {
         asset_id: str("Poly Haven id"),
@@ -301,7 +312,10 @@ const ASSETS: Record<string, { command: string; flag: string; description: strin
     command: "import_generated_asset_hunyuan",
     flag: "blendermcp_use_hunyuan3d",
     description: "Import a finished Hunyuan3D asset.",
-    inputSchema: obj({ name: str("Object name"), zip_file_url: str("Result URL") }, ["name", "zip_file_url"]),
+    inputSchema: obj({ name: str("Object name"), zip_file_url: str("Result URL") }, [
+      "name",
+      "zip_file_url",
+    ]),
   },
 };
 Object.assign(LIVE, ASSETS);
@@ -347,7 +361,7 @@ async function call(name: string, a: Json): Promise<unknown> {
         format: a.format as string | undefined,
       });
       if (res.exitCode !== 0) throw new Error(res.stderr || res.stdout);
-      return res.stdout.split(/\r?\n/).filter(l => l.startsWith("Saved:") || l.includes("Time:"));
+      return res.stdout.split(/\r?\n/).filter((l) => l.startsWith("Saved:") || l.includes("Time:"));
     }
     case "blender_import": {
       const code = `${PY_IO}
@@ -367,7 +381,8 @@ ${jsonPython(`{"exported": ${py(a.output)}}`)}`;
       const live = LIVE[name];
       if (!live) throw new Error(`unknown tool ${name}`);
       await ensureLive(blend);
-      if (name === "blender_live_command") return sendLive(a.type as string, (a.params ?? {}) as Json);
+      if (name === "blender_live_command")
+        return sendLive(a.type as string, (a.params ?? {}) as Json);
       const flag = ASSETS[name]?.flag;
       if (flag)
         await sendLive("execute_code", {
@@ -437,7 +452,7 @@ for await (const chunk of Bun.stdin.stream()) {
     const line = buffer.slice(0, nl).trim();
     buffer = buffer.slice(nl + 1);
     if (!line) continue;
-    void handle(JSON.parse(line) as Json).then(reply => {
+    void handle(JSON.parse(line) as Json).then((reply) => {
       if (reply) void Bun.write(Bun.stdout, `${JSON.stringify(reply)}\n`);
     });
   }

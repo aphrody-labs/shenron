@@ -36,20 +36,22 @@ function option(args: string[], name: string): string | undefined {
 /** A Chromium-family browser for the app window: the Bun Chromium build, Edge, then Chrome. */
 function appBrowser(): string | undefined {
   const local = Bun.env.LOCALAPPDATA ?? "";
-  const programs = [Bun.env.ProgramFiles, Bun.env["ProgramFiles(x86)"], local].filter(Boolean) as string[];
+  const programs = [Bun.env.ProgramFiles, Bun.env["ProgramFiles(x86)"], local].filter(
+    Boolean,
+  ) as string[];
   const candidates = [
     Bun.env.BUN_CHROME_PATH,
-    ...programs.flatMap(base => [
+    ...programs.flatMap((base) => [
       join(base, "BunChromium", "Application", "chrome.exe"),
       join(base, "Microsoft", "Edge", "Application", "msedge.exe"),
       join(base, "Google", "Chrome", "Application", "chrome.exe"),
       join(base, "Chromium", "Application", "chrome.exe"),
     ]),
     ...["msedge", "microsoft-edge", "chromium", "chromium-browser", "google-chrome", "chrome"].map(
-      name => Bun.which(name) ?? undefined,
+      (name) => Bun.which(name) ?? undefined,
     ),
   ];
-  return candidates.find(path => path && existsSync(path));
+  return candidates.find((path) => path && existsSync(path));
 }
 
 export { underGamescope };
@@ -83,9 +85,10 @@ export async function runFrontend(args: string[]): Promise<number> {
   const browser = args.includes("--no-window") ? undefined : appBrowser();
   // `exit` (power menu) ends the session: the window closes, the server stops, gamescope follows.
   let leave: (() => void) | undefined;
-  const left = new Promise<void>(resolve => (leave = resolve));
+  const left = new Promise<void>((resolve) => (leave = resolve));
   if (!browser) {
-    if (!args.includes("--no-window")) console.log("no Chromium-family browser found; open the URL above");
+    if (!args.includes("--no-window"))
+      console.log("no Chromium-family browser found; open the URL above");
     setSessionHooks({ window: false, exit: () => leave?.(), restart() {} });
     await left;
     setSessionHooks(undefined);
@@ -204,7 +207,7 @@ export async function runLibrary(args: string[]): Promise<number> {
         rows.push({
           system: system.id,
           games: counts[system.id] ?? 0,
-          routes: routes.map(route => `${route.available ? "+" : "-"}${route.id}`).join(" "),
+          routes: routes.map((route) => `${route.available ? "+" : "-"}${route.id}`).join(" "),
         });
       }
       console.table(rows);
@@ -212,7 +215,7 @@ export async function runLibrary(args: string[]): Promise<number> {
     }
     case "games":
       return print(
-        gamesFor(rest[0]).map(game => ({
+        gamesFor(rest[0]).map((game) => ({
           id: game.id,
           system: game.system,
           name: game.title ?? game.name,
@@ -274,7 +277,9 @@ export async function runLibrary(args: string[]): Promise<number> {
       if (action === "remove" && id) return print({ removed: removeApp(id) });
       const split = rest.indexOf("--");
       if (action === "add" && id && title && split > 0 && rest[split + 1])
-        return print(addApp(id, title, rest.slice(split + 1), option(rest.slice(0, split), "--icon")));
+        return print(
+          addApp(id, title, rest.slice(split + 1), option(rest.slice(0, split), "--icon")),
+        );
       break;
     }
     case "profile":
@@ -290,7 +295,9 @@ export async function runLibrary(args: string[]): Promise<number> {
         for (const route of await routesFor(system.id)) {
           if (!route.available) continue;
           const found = games.find(
-            item => !route.extensions || route.extensions.includes(item.path.split(".").pop()!.toLowerCase()),
+            (item) =>
+              !route.extensions ||
+              route.extensions.includes(item.path.split(".").pop()!.toLowerCase()),
           );
           // Release emulators are probed with help/version arguments, so they need no game.
           const game = found ?? (route.kind === "bin" ? placeholder(system.id) : undefined);
@@ -307,7 +314,11 @@ export async function runLibrary(args: string[]): Promise<number> {
             ok: result.ok,
             exit: result.alive ? "alive (stopped)" : (result.exitCode ?? result.error),
             ms: result.ms,
-            output: (result.output ?? result.error ?? "").split("\n").slice(-2).join(" | ").slice(0, 160),
+            output: (result.output ?? result.error ?? "")
+              .split("\n")
+              .slice(-2)
+              .join(" | ")
+              .slice(0, 160),
           });
           console.error(
             `${result.ok ? "ok  " : "FAIL"} ${system.id} ${route.id} ${game.title ?? game.name} (${result.ms} ms)`,
@@ -315,7 +326,7 @@ export async function runLibrary(args: string[]): Promise<number> {
         }
       }
       print(rows);
-      return rows.every(row => row.ok) ? 0 : 1;
+      return rows.every((row) => row.ok) ? 0 : 1;
     }
   }
   console.error(usage);

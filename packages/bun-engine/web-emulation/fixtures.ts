@@ -8,10 +8,17 @@ import { EMULATORS, SESSION, type EmulatorFixture } from "./emulators";
 
 const root = resolve(import.meta.dir, "../../..");
 
-const word = (value: number) => [value & 255, (value >>> 8) & 255, (value >>> 16) & 255, (value >>> 24) & 255];
+const word = (value: number) => [
+  value & 255,
+  (value >>> 8) & 255,
+  (value >>> 16) & 255,
+  (value >>> 24) & 255,
+];
 const lui = (rt: number, imm: number) => 0x3c000000 | (rt << 16) | (imm & 0xffff);
-const ori = (rt: number, rs: number, imm: number) => 0x34000000 | (rs << 21) | (rt << 16) | (imm & 0xffff);
-const sw = (rt: number, offset: number, rs: number) => 0xac000000 | (rs << 21) | (rt << 16) | (offset & 0xffff);
+const ori = (rt: number, rs: number, imm: number) =>
+  0x34000000 | (rs << 21) | (rt << 16) | (imm & 0xffff);
+const sw = (rt: number, offset: number, rs: number) =>
+  0xac000000 | (rs << 21) | (rt << 16) | (offset & 0xffff);
 
 /** PS-EXE that configures a 320x240 display and fills two rectangles with GP0 command 0x02. */
 export function psxGp0FillExe(): Uint8Array {
@@ -48,7 +55,10 @@ export function psxGp0FillExe(): Uint8Array {
   header.set(word(base), 0x18); // load address
   header.set(word(body.length), 0x1c); // size
   header.set(word(0x801fff00), 0x30); // stack
-  header.set(new TextEncoder().encode("Sony Computer Entertainment Inc. for North America area"), 0x4c);
+  header.set(
+    new TextEncoder().encode("Sony Computer Entertainment Inc. for North America area"),
+    0x4c,
+  );
   const out = new Uint8Array(header.length + body.length);
   out.set(header);
   out.set(body, header.length);
@@ -106,7 +116,7 @@ export async function writeCatalog(objects: string) {
   await Bun.write(
     join(objects, "emulators/emulators.json"),
     `${JSON.stringify(
-      EMULATORS.map(e => ({ ...e, ...(SESSION[e.id] ? { session: SESSION[e.id] } : {}) })),
+      EMULATORS.map((e) => ({ ...e, ...(SESSION[e.id] ? { session: SESSION[e.id] } : {}) })),
       null,
       2,
     )}
@@ -121,7 +131,14 @@ export async function writeCatalog(objects: string) {
  */
 export const SESSION_FIXTURES: Record<
   string,
-  { file: string; url: string; sha256: string; license: string; member?: string; memberSha256?: string }
+  {
+    file: string;
+    url: string;
+    sha256: string;
+    license: string;
+    member?: string;
+    memberSha256?: string;
+  }
 > = {
   "swiss-gc": {
     file: "swiss_r2119.dol",
@@ -190,7 +207,8 @@ export const BUILT_FIXTURES: Record<
   },
   "kos-2ndmix": {
     file: "2ndmix.elf",
-    image: "kallistios/dc-kos-toolchain@sha256:759066b3bc0d162d7e1fec4f20107446f5df255f57a8c6b80d10b44723107b56",
+    image:
+      "kallistios/dc-kos-toolchain@sha256:759066b3bc0d162d7e1fec4f20107446f5df255f57a8c6b80d10b44723107b56",
     script:
       'cp -r "$KOS_BASE/examples/dreamcast/2ndmix" /tmp/m && make -C /tmp/m >/dev/null && cp /tmp/m/2ndmix.elf /out/ && cp "$KOS_BASE/doc/license/LICENSE.KOS" /out/LICENSE.KOS 2>/dev/null || cp "$KOS_BASE/doc/LICENSE.md" /out/LICENSE.md',
     license: "KOS License (BSD-like, KallistiOS); attribution: KallistiOS developers",
@@ -226,7 +244,10 @@ export async function stageBuiltFixtures(objects: string): Promise<Record<string
     await Bun.write(join(objects, "emulation/fixtures", pack, f.file), bytes);
     for (const extra of ["LICENSE", "LICENSE.KOS", "LICENSE.md"])
       if (await Bun.file(join(cache, extra)).exists())
-        await Bun.write(join(objects, "emulation/fixtures", pack, extra), Bun.file(join(cache, extra)));
+        await Bun.write(
+          join(objects, "emulation/fixtures", pack, extra),
+          Bun.file(join(cache, extra)),
+        );
   }
   return out;
 }

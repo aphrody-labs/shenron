@@ -44,11 +44,16 @@ async function probeTcp(host: string): Promise<NativeProbe["network"]["tcp443"]>
 /** Windows facts through bun:ffi (kernel32, shell32) and node:os: no fork module. */
 async function probeWindows(): Promise<Record<string, unknown>> {
   const { dlopen, FFIType } = await import("bun:ffi");
-  const kernel32 = dlopen("kernel32.dll", { GetLogicalDrives: { args: [], returns: FFIType.u32 } }).symbols;
-  const shell32 = dlopen("shell32.dll", { IsUserAnAdmin: { args: [], returns: FFIType.bool } }).symbols;
+  const kernel32 = dlopen("kernel32.dll", {
+    GetLogicalDrives: { args: [], returns: FFIType.u32 },
+  }).symbols;
+  const shell32 = dlopen("shell32.dll", {
+    IsUserAnAdmin: { args: [], returns: FFIType.bool },
+  }).symbols;
   const mask = kernel32.GetLogicalDrives();
   const drives: string[] = [];
-  for (let i = 0; i < 26; i++) if (mask & (1 << i)) drives.push(`${String.fromCharCode(65 + i)}:\\`);
+  for (let i = 0; i < 26; i++)
+    if (mask & (1 << i)) drives.push(`${String.fromCharCode(65 + i)}:\\`);
   return {
     api: "node:os+bun:ffi",
     supported: true,
@@ -76,7 +81,7 @@ async function probeLinux(): Promise<Record<string, unknown>> {
   };
   const disabled = await Bun.file("/proc/sys/kernel/io_uring_disabled")
     .text()
-    .then(value => Number.parseInt(value.trim(), 10))
+    .then((value) => Number.parseInt(value.trim(), 10))
     .catch(() => null);
   return {
     api: "procfs",
@@ -106,7 +111,12 @@ export async function probeNativeCapabilities(host = "www.retrostic.com"): Promi
   const winget = Bun.which("winget");
   const ffprobe = Bun.which("ffprobe");
   return {
-    runtime: { version: Bun.version, revision: Bun.revision, platform: process.platform, arch: process.arch },
+    runtime: {
+      version: Bun.version,
+      revision: Bun.revision,
+      platform: process.platform,
+      arch: process.arch,
+    },
     network: { host, dns, dnsCache: Bun.dns.getCacheStats(), tcp443 },
     media: {
       image: {
@@ -122,10 +132,13 @@ export async function probeNativeCapabilities(host = "www.retrostic.com"): Promi
 
 /** Video metadata through the ffprobe executable (upstream Bun has no video decoder). */
 async function probeVideo(path: string, ffprobe: string): Promise<Record<string, unknown>> {
-  const child = Bun.spawn([ffprobe, "-v", "error", "-print_format", "json", "-show_format", "-show_streams", path], {
-    stdout: "pipe",
-    stderr: "pipe",
-  });
+  const child = Bun.spawn(
+    [ffprobe, "-v", "error", "-print_format", "json", "-show_format", "-show_streams", path],
+    {
+      stdout: "pipe",
+      stderr: "pipe",
+    },
+  );
   const [out, err, code] = await Promise.all([
     new Response(child.stdout).text(),
     new Response(child.stderr).text(),

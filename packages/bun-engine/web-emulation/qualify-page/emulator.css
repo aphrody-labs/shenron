@@ -426,7 +426,10 @@ body {
   height: 100%;
   background: var(--md-sys-color-background);
   color: var(--md-sys-color-on-surface);
-  font: 14px/1.4 "Google Sans Flex", "Roboto Flex", sans-serif;
+  font:
+    14px/1.4 "Google Sans Flex",
+    "Roboto Flex",
+    sans-serif;
 }
 body {
   display: grid;
@@ -503,10 +506,18 @@ body {
   font: inherit;
 }
 #pad button:hover {
-  background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, var(--md-sys-color-surface-container-highest));
+  background: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) 8%,
+    var(--md-sys-color-surface-container-highest)
+  );
 }
 #pad button:active {
-  background: color-mix(in srgb, var(--md-sys-color-on-surface) 10%, var(--md-sys-color-surface-container-highest));
+  background: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) 10%,
+    var(--md-sys-color-surface-container-highest)
+  );
 }
 #pad button.on {
   background: var(--md-sys-color-primary);

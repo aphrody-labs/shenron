@@ -54,7 +54,12 @@ function chunk(type: string, data: Uint8Array): Uint8Array {
 }
 
 /** P6 PPM (what `bun-engine run --out` writes) to an 8-bit RGB PNG; `blank` when every pixel matches. */
-export function ppmToPng(ppm: Uint8Array): { png: Uint8Array; width: number; height: number; blank: boolean } {
+export function ppmToPng(ppm: Uint8Array): {
+  png: Uint8Array;
+  width: number;
+  height: number;
+  blank: boolean;
+} {
   const head = new TextDecoder("latin1").decode(ppm.subarray(0, 64));
   const match = /^P6\s+(\d+)\s+(\d+)\s+255\s/.exec(head);
   if (!match) throw new Error("not a P6 PPM");
@@ -116,7 +121,17 @@ async function runNative(
   const engine = nativeEngine();
   if (!engine) return { status: "skipped", detail: "native bun-engine is not built", ms: 0 };
   const screens = join(out, `${stem}.screens`);
-  const command = [engine, "run", machine, image, "--headless", "--frames", String(frames), "--out", screens];
+  const command = [
+    engine,
+    "run",
+    machine,
+    image,
+    "--headless",
+    "--frames",
+    String(frames),
+    "--out",
+    screens,
+  ];
   if (bios) command.push("--bios", bios);
   const started = performance.now();
   const child = Bun.spawn(command, { stdin: "ignore", stdout: "pipe", stderr: "pipe" });
@@ -143,7 +158,8 @@ async function runNative(
     frames: ran ? Number(ran[1]) : 0,
     ...(screenCount ? { frameHash: hasher.digest("hex") } : {}),
     ms,
-    detail: `${stdout}\n${stderr}`.split(/\r?\n/).filter(Boolean).slice(-4).join(" | ") || undefined,
+    detail:
+      `${stdout}\n${stderr}`.split(/\r?\n/).filter(Boolean).slice(-4).join(" | ") || undefined,
   };
   const ppm = join(screens, "screen0.ppm");
   if (existsSync(ppm)) {
@@ -151,7 +167,10 @@ async function runNative(
     result.screenshot = join(out, `${stem}.png`);
     result.thumbnail = join(out, `${stem}.thumb.png`);
     await Bun.write(result.screenshot, png);
-    await new Bun.Image(png).resize(160, 160, { fit: "inside", filter: "nearest" }).png().write(result.thumbnail);
+    await new Bun.Image(png)
+      .resize(160, 160, { fit: "inside", filter: "nearest" })
+      .png()
+      .write(result.thumbnail);
     if (blank && result.status === "pass") result.status = "blank";
   }
   await rm(screens, { recursive: true, force: true });
@@ -159,18 +178,22 @@ async function runNative(
 }
 
 /** The owner's BIOS for a native machine, else the free replacement in the firmware store. */
-async function biosFor(system: SystemDefinition): Promise<{ path: string; owned: boolean } | undefined> {
+async function biosFor(
+  system: SystemDefinition,
+): Promise<{ path: string; owned: boolean } | undefined> {
   const wanted = system.native?.bios;
   if (!wanted) return undefined;
   const fits = (bytes: number) => system.native!.machine !== "psx" || bytes === 512 * 1024;
   const owned = listOwned({ kind: "firmware" }).find(
-    dump => dump.console === wanted.console && dump.status !== "bad-dump" && fits(dump.size),
+    (dump) => dump.console === wanted.console && dump.status !== "bad-dump" && fits(dump.size),
   );
   if (owned) return { path: storePath(owned), owned: true };
   const free = (await listFirmware(wanted.console).catch(() => [])).find(
-    image => fits(image.bytes) && (image as { origin?: string }).origin !== "owned",
+    (image) => fits(image.bytes) && (image as { origin?: string }).origin !== "owned",
   );
-  return free ? { path: join(defaultFirmwareStore(), free.console, free.file), owned: false } : undefined;
+  return free
+    ? { path: join(defaultFirmwareStore(), free.console, free.file), owned: false }
+    : undefined;
 }
 
 function label(dump: OwnedDump): string {
@@ -187,14 +210,20 @@ export async function testOwned(
   const out = join(ownedPaths().reports, run);
   await mkdir(out, { recursive: true });
   const { systems } = await loadSystems();
-  const systemById = new Map(systems.map(system => [system.id, system]));
+  const systemById = new Map(systems.map((system) => [system.id, system]));
   const selected = (dump: OwnedDump) =>
     (!options.system || dump.system === options.system) &&
-    (!options.only?.length || options.only.some(sha => dump.sha256.startsWith(sha.toLowerCase())));
+    (!options.only?.length ||
+      options.only.some((sha) => dump.sha256.startsWith(sha.toLowerCase())));
   const results: OwnedTestResult[] = [];
 
   for (const dump of options.roms === false ? [] : listOwned({ kind: "rom" }).filter(selected)) {
-    const base = { sha256: dump.sha256, name: label(dump), mode: "rom" as const, system: dump.system };
+    const base = {
+      sha256: dump.sha256,
+      name: label(dump),
+      mode: "rom" as const,
+      system: dump.system,
+    };
     const system = dump.system ? systemById.get(dump.system) : undefined;
     if (!system) {
       results.push({
@@ -220,9 +249,19 @@ export async function testOwned(
           out,
           `${dump.sha256.slice(0, 12)}-rom`,
         );
-        results.push({ ...base, route: route.id, ...result, ...(bios ? { bios: bios.owned ? "owned" : "free" } : {}) });
+        results.push({
+          ...base,
+          route: route.id,
+          ...result,
+          ...(bios ? { bios: bios.owned ? "owned" : "free" } : {}),
+        });
       } else {
-        const launched = await launchGame(game, { route: route.id, check: true, frames, timeoutMs });
+        const launched = await launchGame(game, {
+          route: route.id,
+          check: true,
+          frames,
+          timeoutMs,
+        });
         results.push({
           ...base,
           route: route.id,
@@ -242,8 +281,10 @@ export async function testOwned(
     }
   }
 
-  for (const dump of options.bios === false ? [] : listOwned({ kind: "firmware" }).filter(selected)) {
-    const system = systems.find(item => item.native?.bios?.console === dump.console);
+  for (const dump of options.bios === false
+    ? []
+    : listOwned({ kind: "firmware" }).filter(selected)) {
+    const system = systems.find((item) => item.native?.bios?.console === dump.console);
     const base = { sha256: dump.sha256, name: label(dump), system: system?.id ?? dump.system };
     if (!system?.native) {
       results.push({
@@ -260,8 +301,8 @@ export async function testOwned(
     let media = join(out, "empty.bin");
     if (system.native.machine === "psx") await Bun.write(media, new Uint8Array());
     else {
-      const free = (await pm.freeRoms(dump.console)).find(rom =>
-        system.native!.extensions.some(ext => rom.path.endsWith(`.${ext}`)),
+      const free = (await pm.freeRoms(dump.console)).find((rom) =>
+        system.native!.extensions.some((ext) => rom.path.endsWith(`.${ext}`)),
       );
       if (!free) {
         results.push({
@@ -288,7 +329,7 @@ export async function testOwned(
     );
     results.push({ ...base, mode: "bios", route: `native:${machine}`, bios: "owned", ...owned });
     const free = (await listFirmware(dump.console).catch(() => [])).find(
-      image => image.sha256 !== dump.sha256 && (image as { origin?: string }).origin !== "owned",
+      (image) => image.sha256 !== dump.sha256 && (image as { origin?: string }).origin !== "owned",
     );
     if (free) {
       const reference = await runNative(
@@ -300,7 +341,13 @@ export async function testOwned(
         out,
         `${dump.sha256.slice(0, 12)}-bios-free`,
       );
-      results.push({ ...base, mode: "bios-free", route: `native:${machine}`, bios: free.file, ...reference });
+      results.push({
+        ...base,
+        mode: "bios-free",
+        route: `native:${machine}`,
+        bios: free.file,
+        ...reference,
+      });
     }
   }
 

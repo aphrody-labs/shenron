@@ -29,7 +29,11 @@ export function serveRetroArch(options: ServeOptions = {}) {
     saves
       ? {
           ...options,
-          config: { ...options.config, savestate_directory: saves.states, screenshot_directory: saves.screenshots },
+          config: {
+            ...options.config,
+            savestate_directory: saves.states,
+            screenshot_directory: saves.screenshots,
+          },
         }
       : options,
   );
@@ -78,9 +82,21 @@ export function serveRetroArch(options: ServeOptions = {}) {
         else if (message.type === "command") {
           const line = message.line.trim().toUpperCase();
           const since = Date.now() - 50;
-          const sub = line === "SAVE_STATE" ? "states" : line === "SCREENSHOT" ? "screenshots" : undefined;
-          if (line === "LOAD_STATE" && !new Bun.Glob("**/*").scanSync({ cwd: folders.states }).next().value) {
-            _ws.send(JSON.stringify({ type: "result", id: message.id, line, ok: false, text: "no saved state yet" }));
+          const sub =
+            line === "SAVE_STATE" ? "states" : line === "SCREENSHOT" ? "screenshots" : undefined;
+          if (
+            line === "LOAD_STATE" &&
+            !new Bun.Glob("**/*").scanSync({ cwd: folders.states }).next().value
+          ) {
+            _ws.send(
+              JSON.stringify({
+                type: "result",
+                id: message.id,
+                line,
+                ok: false,
+                text: "no saved state yet",
+              }),
+            );
             return;
           }
           ra.command(message.line);
@@ -88,7 +104,14 @@ export function serveRetroArch(options: ServeOptions = {}) {
           setTimeout(
             () => {
               if (!running) return;
-              _ws.send(JSON.stringify({ type: "reply", id: message.id, line: message.line, text: ra.replies() }));
+              _ws.send(
+                JSON.stringify({
+                  type: "reply",
+                  id: message.id,
+                  line: message.line,
+                  text: ra.replies(),
+                }),
+              );
               if (sub) {
                 const file = written(sub, since);
                 _ws.send(
@@ -101,14 +124,26 @@ export function serveRetroArch(options: ServeOptions = {}) {
                   }),
                 );
               } else if (line === "LOAD_STATE")
-                _ws.send(JSON.stringify({ type: "result", id: message.id, line, ok: true, text: "state loaded" }));
+                _ws.send(
+                  JSON.stringify({
+                    type: "result",
+                    id: message.id,
+                    line,
+                    ok: true,
+                    text: "state loaded",
+                  }),
+                );
             },
             sub ? 600 : 150,
           );
         } else if (message.type === "pause") {
           if (message.paused !== ra.status().paused) ra.command("PAUSE_TOGGLE");
           // report what RetroArch says after it applied the toggle, not what was asked
-          setTimeout(() => running && _ws.send(JSON.stringify({ type: "paused", paused: ra.status().paused })), 120);
+          setTimeout(
+            () =>
+              running && _ws.send(JSON.stringify({ type: "paused", paused: ra.status().paused })),
+            120,
+          );
         }
       },
     },
@@ -117,7 +152,8 @@ export function serveRetroArch(options: ServeOptions = {}) {
   // a client that falls behind drops frames instead of queueing them
   const BACKLOG = 4 << 20;
   function send(bytes: Uint8Array, droppable = false) {
-    for (const ws of clients) if (!droppable || ws.getBufferedAmount() < BACKLOG) ws.sendBinary(bytes, true);
+    for (const ws of clients)
+      if (!droppable || ws.getBufferedAmount() < BACKLOG) ws.sendBinary(bytes, true);
   }
 
   function step() {

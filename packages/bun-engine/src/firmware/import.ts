@@ -66,11 +66,20 @@ export async function importFirmware(
 }
 
 /** Firmware imported into the store, optionally for one console. */
-export async function listFirmware(consoleName?: string, store = defaultFirmwareStore()): Promise<FirmwareManifest[]> {
+export async function listFirmware(
+  consoleName?: string,
+  store = defaultFirmwareStore(),
+): Promise<FirmwareManifest[]> {
   const pattern = consoleName ? `${safeConsoleName(consoleName)}/*.json` : "*/*.json";
   const manifests: FirmwareManifest[] = [];
-  for await (const path of new Bun.Glob(pattern).scan({ cwd: resolve(store), absolute: true, onlyFiles: true })) {
+  for await (const path of new Bun.Glob(pattern).scan({
+    cwd: resolve(store),
+    absolute: true,
+    onlyFiles: true,
+  })) {
     manifests.push(await Bun.file(path).json());
   }
-  return manifests.sort((a, b) => a.console.localeCompare(b.console) || a.importedAt.localeCompare(b.importedAt));
+  return manifests.sort(
+    (a, b) => a.console.localeCompare(b.console) || a.importedAt.localeCompare(b.importedAt),
+  );
 }

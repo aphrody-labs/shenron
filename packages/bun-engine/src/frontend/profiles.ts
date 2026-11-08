@@ -84,7 +84,10 @@ export function parseAssignments(args: string[]): Partial<Omit<Profile, "key" | 
     const name = arg.slice(0, at);
     const raw = arg.slice(at + 1);
     if (!fields.has(name)) throw new Error(`unknown profile field ${name}`);
-    values[name] = name === "title" || name === "scaler" ? raw : Number(raw === "on" ? 1 : raw === "off" ? 0 : raw);
+    values[name] =
+      name === "title" || name === "scaler"
+        ? raw
+        : Number(raw === "on" ? 1 : raw === "off" ? 0 : raw);
   }
   return values;
 }
@@ -102,8 +105,11 @@ export type ShellSetting = keyof typeof shellSettings;
 export function readShellSettings(): Record<ShellSetting, string> {
   const db = openProfiles();
   try {
-    const rows = db.query("SELECT name, value FROM settings").all() as Array<{ name: string; value: string }>;
-    const stored = new Map(rows.map(row => [row.name, row.value]));
+    const rows = db.query("SELECT name, value FROM settings").all() as Array<{
+      name: string;
+      value: string;
+    }>;
+    const stored = new Map(rows.map((row) => [row.name, row.value]));
     return {
       hud: stored.get("hud") ?? shellSettings.hud.fallback,
       motion: stored.get("motion") ?? shellSettings.motion.fallback,

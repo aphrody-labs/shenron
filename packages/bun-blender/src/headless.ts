@@ -37,9 +37,16 @@ export function jsonPython(expr: string): string {
 }
 
 export async function evalPython<T = unknown>(code: string, blend?: string): Promise<T> {
-  const res = await runBlender([...(blend ? [blend] : []), "--python-exit-code", "1", "--python-expr", code]);
-  const line = res.stdout.split(/\r?\n/).find(l => l.startsWith(MARK));
-  if (res.exitCode !== 0 || !line) throw new Error(`blender failed (${res.exitCode}): ${res.stderr || res.stdout}`);
+  const res = await runBlender([
+    ...(blend ? [blend] : []),
+    "--python-exit-code",
+    "1",
+    "--python-expr",
+    code,
+  ]);
+  const line = res.stdout.split(/\r?\n/).find((l) => l.startsWith(MARK));
+  if (res.exitCode !== 0 || !line)
+    throw new Error(`blender failed (${res.exitCode}): ${res.stderr || res.stdout}`);
   return JSON.parse(line.slice(MARK.length)) as T;
 }
 
@@ -47,8 +54,20 @@ export function info(blend?: string): Promise<BlendScene> {
   return evalPython<BlendScene>(jsonPython(INFO_EXPR), blend);
 }
 
-export function runScript(script: string, blend?: string, extra: string[] = []): Promise<RunResult> {
-  return runBlender([...(blend ? [blend] : []), "--python-exit-code", "1", "--python", script, "--", ...extra]);
+export function runScript(
+  script: string,
+  blend?: string,
+  extra: string[] = [],
+): Promise<RunResult> {
+  return runBlender([
+    ...(blend ? [blend] : []),
+    "--python-exit-code",
+    "1",
+    "--python",
+    script,
+    "--",
+    ...extra,
+  ]);
 }
 
 export function render(blend: string, opts: RenderOptions = {}): Promise<RunResult> {
@@ -81,7 +100,14 @@ except ValueError:
     pass
 mod.BlenderMCPServer(port=${port}).serve_forever()`;
   return Bun.spawn(
-    [executable, "--background", "--factory-startup", ...(blend ? [blend] : []), "--python-expr", code],
+    [
+      executable,
+      "--background",
+      "--factory-startup",
+      ...(blend ? [blend] : []),
+      "--python-expr",
+      code,
+    ],
     {
       // stdout stays off the MCP stdio channel unless asked (CLI serve).
       stdout: verbose ? "inherit" : "ignore",

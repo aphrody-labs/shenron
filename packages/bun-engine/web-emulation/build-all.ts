@@ -11,18 +11,21 @@ const here = import.meta.dir;
 const root = resolve(here, "../../..");
 const argv = Bun.argv.slice(2);
 
-if (process.platform !== "linux") throw new Error("Run the emulator WebAssembly builds on the VPS (Linux)");
+if (process.platform !== "linux")
+  throw new Error("Run the emulator WebAssembly builds on the VPS (Linux)");
 
 if (argv.includes("--tmux")) {
   const rest = argv
-    .filter(a => a !== "--tmux")
-    .map(a => `'${a}'`)
+    .filter((a) => a !== "--tmux")
+    .map((a) => `'${a}'`)
     .join(" ");
   const log = join(root, "build/web-emulation/build-all.log");
   const cmd = `mkdir -p '${join(root, "build/web-emulation")}' && cd '${root}' && '${process.execPath}' '${join(here, "build-all.ts")}' ${rest} 2>&1 | tee '${log}'`;
   const result = Bun.spawnSync(["tmux", "new-session", "-d", "-s", "web-emulation", cmd]);
   if (result.exitCode) throw new Error(`tmux failed: ${result.stderr.toString().trim()}`);
-  console.log(`started tmux session web-emulation; follow with: tmux attach -t web-emulation (log: ${log})`);
+  console.log(
+    `started tmux session web-emulation; follow with: tmux attach -t web-emulation (log: ${log})`,
+  );
   process.exit(0);
 }
 
@@ -38,17 +41,19 @@ interface Recipe {
 const file = (await Bun.file(join(here, "recipes.json")).json()) as { recipes: Recipe[] };
 const onlyArg = argv.indexOf("--only");
 const only = onlyArg >= 0 ? new Set(argv[onlyArg + 1]?.split(",")) : undefined;
-const recipes = file.recipes.filter(r => !only || only.has(r.id));
+const recipes = file.recipes.filter((r) => !only || only.has(r.id));
 
 // Every Rust core of build.ts needs a recipe so none is silently left out.
 for (const id of Object.keys(rustCores))
-  if (!file.recipes.some(r => r.id === id)) throw new Error(`rust core ${id} has no recipe in recipes.json`);
+  if (!file.recipes.some((r) => r.id === id))
+    throw new Error(`rust core ${id} has no recipe in recipes.json`);
 
 async function waitForCapacity() {
   // cargo already queues on the buncc build slot; this only avoids piling a Docker/Qt build onto a saturated host.
   const limit = cpus().length * 12;
   for (let waited = 0; loadavg()[0] > limit; waited += 30) {
-    if (waited > 3600) throw new Error(`load stayed above ${limit} for an hour; not starting a build`);
+    if (waited > 3600)
+      throw new Error(`load stayed above ${limit} for an hour; not starting a build`);
     console.log(`load ${loadavg()[0].toFixed(1)} > ${limit}; waiting`);
     await Bun.sleep(30_000);
   }
@@ -71,8 +76,12 @@ for (const recipe of recipes) {
 }
 await run("index", [process.execPath, join(here, "build.ts"), "index"]);
 if (!argv.includes("--no-smoke")) {
-  for (const recipe of recipes.filter(r => r.smoke && report[r.id]?.built)) {
-    const smoke = await run(`${recipe.id} smoke`, [process.execPath, join(here, "smoke.ts"), recipe.id]);
+  for (const recipe of recipes.filter((r) => r.smoke && report[r.id]?.built)) {
+    const smoke = await run(`${recipe.id} smoke`, [
+      process.execPath,
+      join(here, "smoke.ts"),
+      recipe.id,
+    ]);
     report[recipe.id]!.smoke = smoke.code === 0;
   }
   await run("index (qualified)", [process.execPath, join(here, "build.ts"), "index"]);
@@ -80,7 +89,11 @@ if (!argv.includes("--no-smoke")) {
 // Publish the cores and free test ROMs to the WebOS objects directory; --qualify then boots each one inside the
 // running WebOS (needs the deployed shell with /emulator.html): bun apps/webos/package.json qualify:emulators.
 await run("webos publish", [process.execPath, join(here, "qualify-webos.ts"), "--no-run"]);
-if (argv.includes("--qualify")) await run("webos qualification", [process.execPath, join(here, "qualify-webos.ts")]);
-await Bun.write(join(root, "build/web-emulation/recipes-report.json"), `${JSON.stringify(report, null, 2)}\n`);
+if (argv.includes("--qualify"))
+  await run("webos qualification", [process.execPath, join(here, "qualify-webos.ts")]);
+await Bun.write(
+  join(root, "build/web-emulation/recipes-report.json"),
+  `${JSON.stringify(report, null, 2)}\n`,
+);
 console.log(JSON.stringify(report, null, 2));
-if (Object.values(report).some(r => !r.built)) process.exitCode = 1;
+if (Object.values(report).some((r) => !r.built)) process.exitCode = 1;

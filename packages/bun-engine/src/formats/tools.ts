@@ -28,7 +28,7 @@ export function workspaceRoot(): string | undefined {
   if (cachedRoot !== undefined) return cachedRoot ?? undefined;
   const fromSource = resolve(import.meta.dir, "..", "..", "..", "..");
   const found =
-    [Bun.env.BUN_OS_ROOT, Bun.env.BUN_ENGINE_HOME].find(path => path && isRoot(path)) ??
+    [Bun.env.BUN_OS_ROOT, Bun.env.BUN_ENGINE_HOME].find((path) => path && isRoot(path)) ??
     (isRoot(fromSource) ? fromSource : undefined) ??
     walkUp(process.cwd()) ??
     walkUp(dirname(process.execPath));
@@ -61,13 +61,19 @@ export function nativeEngine(): string | undefined {
 /** A MAME tool (`unidasm`, `chdman`) from the bep-installed usr/lib/mame, or PATH. */
 export function mameTool(name: "unidasm" | "chdman"): string | undefined {
   const usr = usrDirectory();
-  return firstFile([usr && join(usr, "lib", "mame", `${name}${exe}`)]) ?? Bun.which(name) ?? undefined;
+  return (
+    firstFile([usr && join(usr, "lib", "mame", `${name}${exe}`)]) ?? Bun.which(name) ?? undefined
+  );
 }
 
 export function llvmObjdump(): string | undefined {
   return (
     Bun.which("llvm-objdump") ??
-    firstFile([Bun.env.ProgramFiles ? join(Bun.env.ProgramFiles, "LLVM", "bin", "llvm-objdump.exe") : undefined])
+    firstFile([
+      Bun.env.ProgramFiles
+        ? join(Bun.env.ProgramFiles, "LLVM", "bin", "llvm-objdump.exe")
+        : undefined,
+    ])
   );
 }
 

@@ -12,11 +12,14 @@ import { cp, mkdir, rm, symlink } from "node:fs/promises";
 import { basename, join, relative, resolve } from "node:path";
 
 export const repoRoot = resolve(import.meta.dir, "..", "..", "..");
-const sevenZip = ["7z", ...(Bun.env.ProgramFiles ? [join(Bun.env.ProgramFiles, "7-Zip", "7z.exe")] : [])];
+const sevenZip = [
+  "7z",
+  ...(Bun.env.ProgramFiles ? [join(Bun.env.ProgramFiles, "7-Zip", "7z.exe")] : []),
+];
 
 /** The 7-Zip executable bep unpacks 7z/rar/xz archives with, when one is installed. */
 export function sevenZipTool(): string | undefined {
-  return sevenZip.find(tool => Bun.which(tool) || existsSync(tool));
+  return sevenZip.find((tool) => Bun.which(tool) || existsSync(tool));
 }
 
 export function usrRoot(): string {
@@ -65,7 +68,10 @@ function githubToken(): string | undefined {
 }
 
 async function github<T>(path: string): Promise<T> {
-  const headers: Record<string, string> = { accept: "application/vnd.github+json", "user-agent": "bep" };
+  const headers: Record<string, string> = {
+    accept: "application/vnd.github+json",
+    "user-agent": "bep",
+  };
   const auth = githubToken();
   if (auth) headers.authorization = `Bearer ${auth}`;
   const response = await fetch(`https://api.github.com/${path}`, { headers });
@@ -81,9 +87,10 @@ export async function resolveRelease(
   const pkg = (await releaseCatalog())[id];
   if (!pkg) throw new Error(`no release package ${id}; see bep search`);
   const platform = platformKey();
-  const release = await github<{ tag_name: string; assets: Array<{ name: string; browser_download_url: string }> }>(
-    `repos/${pkg.repo}/releases/${tag ? `tags/${encodeURIComponent(tag)}` : "latest"}`,
-  );
+  const release = await github<{
+    tag_name: string;
+    assets: Array<{ name: string; browser_download_url: string }>;
+  }>(`repos/${pkg.repo}/releases/${tag ? `tags/${encodeURIComponent(tag)}` : "latest"}`);
   const template = pkg.url?.[platform];
   if (template) {
     const url = template.replaceAll("{version}", release.tag_name.replace(/^v/, ""));
@@ -91,7 +98,7 @@ export async function resolveRelease(
   }
   const pattern = pkg.asset?.[platform];
   if (!pattern) throw new Error(`${id} has no ${platform} release`);
-  const match = release.assets.find(asset => new RegExp(pattern, "i").test(asset.name));
+  const match = release.assets.find((asset) => new RegExp(pattern, "i").test(asset.name));
   if (!match) throw new Error(`${id} ${release.tag_name}: no asset matches ${pattern}`);
   return { version: release.tag_name, asset: match.name, url: match.browser_download_url };
 }
@@ -111,7 +118,10 @@ async function unpack(archive: string, into: string, pkg: ReleasePackage): Promi
   const name = basename(archive).toLowerCase();
   const sevenZ = sevenZipTool();
   if (pkg.selfExtracting) {
-    if (!run([archive, `-o${into}`, "-y"]) && !(sevenZ && run([sevenZ, "x", "-y", `-o${into}`, archive])))
+    if (
+      !run([archive, `-o${into}`, "-y"]) &&
+      !(sevenZ && run([sevenZ, "x", "-y", `-o${into}`, archive]))
+    )
       throw new Error(`could not unpack ${name}`);
   } else if (/\.(zip|7z|tar\.gz|tgz|tar\.xz|tar\.zst)$/.test(name)) {
     if (
@@ -129,7 +139,11 @@ async function unpack(archive: string, into: string, pkg: ReleasePackage): Promi
 /** Windows Installer packages are unpacked with an administrative install: files only, no registration. */
 async function unpackInstallers(dir: string): Promise<void> {
   if (process.platform !== "win32") return;
-  for await (const path of new Bun.Glob("**/*.msi").scan({ cwd: dir, onlyFiles: true, absolute: true })) {
+  for await (const path of new Bun.Glob("**/*.msi").scan({
+    cwd: dir,
+    onlyFiles: true,
+    absolute: true,
+  })) {
     if (!run(["msiexec", "/a", path, "/qn", `TARGETDIR=${join(dir, basename(path, ".msi"))}`]))
       throw new Error(`could not unpack ${basename(path)}`);
   }
@@ -141,7 +155,8 @@ async function findExecutable(dir: string, exe: string, asset: string): Promise<
   for await (const path of new Bun.Glob("**/*").scan({ cwd: dir, onlyFiles: true })) {
     const file = basename(path).toLowerCase();
     if (wanted.has(file)) return join(dir, path);
-    if (/\.(exe|appimage)$/.test(file) || file === basename(asset).toLowerCase()) candidates.push(path);
+    if (/\.(exe|appimage)$/.test(file) || file === basename(asset).toLowerCase())
+      candidates.push(path);
   }
   const fallback = candidates.sort((a, b) => a.length - b.length)[0];
   if (!fallback) throw new Error(`no ${exe} executable in ${dir}`);
@@ -154,7 +169,10 @@ async function writeLauncher(id: string, exe: string): Promise<void> {
   if (process.platform === "win32") {
     await Bun.write(join(bin, `${id}.cmd`), `@echo off\r\n"%~dp0${relative(bin, exe)}" %*\r\n`);
   } else {
-    await Bun.write(join(bin, id), `#!/bin/sh\nexec "$(dirname "$0")/${relative(bin, exe)}" "$@"\n`);
+    await Bun.write(
+      join(bin, id),
+      `#!/bin/sh\nexec "$(dirname "$0")/${relative(bin, exe)}" "$@"\n`,
+    );
     run(["chmod", "+x", join(bin, id)]);
   }
 }
@@ -170,7 +188,9 @@ async function linkSource(id: string, source: string | undefined): Promise<void>
 
 async function copyLicenses(id: string, dir: string): Promise<void> {
   const into = join(usrRoot(), "share", "licenses", id);
-  for await (const path of new Bun.Glob("**/{LICENSE,LICENSE.*,COPYING,COPYING.*,license.txt}").scan({
+  for await (const path of new Bun.Glob(
+    "**/{LICENSE,LICENSE.*,COPYING,COPYING.*,license.txt}",
+  ).scan({
     cwd: dir,
     onlyFiles: true,
   })) {
@@ -192,7 +212,10 @@ function db(): Database {
 }
 
 export async function installedRelease(id: string): Promise<InstalledRelease | undefined> {
-  return db().query<InstalledRelease, [string]>("SELECT * FROM packages WHERE id = ?").get(id) ?? undefined;
+  return (
+    db().query<InstalledRelease, [string]>("SELECT * FROM packages WHERE id = ?").get(id) ??
+    undefined
+  );
 }
 
 export async function listInstalled(): Promise<InstalledRelease[]> {
@@ -210,20 +233,29 @@ export async function installRelease(
   const pkg = (await releaseCatalog())[id];
   if (!pkg) throw new Error(`no release package ${id}`);
   const current = await installedRelease(id);
-  if (current && expected && current.version === expected.version && current.sha256 === expected.sha256) return current;
+  if (
+    current &&
+    expected &&
+    current.version === expected.version &&
+    current.sha256 === expected.sha256
+  )
+    return current;
   const release = await resolveRelease(id, expected?.version);
   const cache = join(usrRoot(), "var", "cache", "bep");
   await mkdir(cache, { recursive: true });
   const archive = join(cache, release.asset);
   if (!existsSync(archive)) {
     const response = await fetch(release.url, { headers: { "user-agent": "bep" } });
-    if (!response.ok) throw new Error(`${id}: download ${release.url} failed with ${response.status}`);
+    if (!response.ok)
+      throw new Error(`${id}: download ${release.url} failed with ${response.status}`);
     await Bun.write(archive, response);
   }
   const digest = await sha256(archive);
   if (expected && expected.sha256 !== digest) {
     await rm(archive, { force: true });
-    throw new Error(`${id} ${release.version}: sha256 ${digest} does not match bep.lock ${expected.sha256}`);
+    throw new Error(
+      `${id} ${release.version}: sha256 ${digest} does not match bep.lock ${expected.sha256}`,
+    );
   }
   const lib = join(usrRoot(), "lib", id);
   await rm(lib, { recursive: true, force: true });
@@ -246,7 +278,9 @@ export async function installRelease(
     installedAt: new Date().toISOString(),
   };
   db()
-    .query("INSERT OR REPLACE INTO packages VALUES ($id, $version, $url, $asset, $sha256, $exe, $files, $installedAt)")
+    .query(
+      "INSERT OR REPLACE INTO packages VALUES ($id, $version, $url, $asset, $sha256, $exe, $files, $installedAt)",
+    )
     .run({ ...record });
   return record;
 }
@@ -258,7 +292,8 @@ export async function uninstallRelease(id: string): Promise<boolean> {
   db().query("DELETE FROM packages WHERE id = ?").run(id);
   for (const path of [join(root, "lib", id), join(root, "share", "licenses", id)])
     await rm(path, { recursive: true, force: true });
-  for (const launcher of [join(root, "bin", id), join(root, "bin", `${id}.cmd`)]) await rm(launcher, { force: true });
+  for (const launcher of [join(root, "bin", id), join(root, "bin", `${id}.cmd`)])
+    await rm(launcher, { force: true });
   await rm(join(root, "src", id), { force: true }).catch(() => {});
   return true;
 }

@@ -1,11 +1,10 @@
-import { type NextRequest, NextResponse } from "next/server";
 import { SITE_URL } from "@/lib/config";
 import { dbUniverse } from "@/lib/universe";
 import { assetUrl } from "@/lib/assets";
 
 export const revalidate = 3600;
 
-export async function GET(request: NextRequest) {
+export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const targetUrl = searchParams.get("url");
   const format = searchParams.get("format") ?? "json";
@@ -13,18 +12,18 @@ export async function GET(request: NextRequest) {
   const maxHeight = Number(searchParams.get("maxheight")) || 720;
 
   if (!targetUrl) {
-    return NextResponse.json({ error: "Missing 'url' parameter" }, { status: 400 });
+    return Response.json({ error: "Missing 'url' parameter" }, { status: 400 });
   }
 
   if (format !== "json") {
-    return NextResponse.json({ error: "Only json format is supported" }, { status: 501 });
+    return Response.json({ error: "Only json format is supported" }, { status: 501 });
   }
 
   let parsed: URL;
   try {
     parsed = new URL(targetUrl, SITE_URL);
   } catch {
-    return NextResponse.json({ error: "Invalid target URL" }, { status: 400 });
+    return Response.json({ error: "Invalid target URL" }, { status: 400 });
   }
 
   const pathname = parsed.pathname;
@@ -35,14 +34,14 @@ export async function GET(request: NextRequest) {
     const episodeId = Number(episodeMatch[1]);
     const ep = await dbUniverse.episode(episodeId);
     if (!ep) {
-      return NextResponse.json({ error: "Episode not found" }, { status: 404 });
+      return Response.json({ error: "Episode not found" }, { status: 404 });
     }
 
     const title = `${ep.title} — ${ep.series}`;
     const thumbnail = ep.image ? assetUrl(ep.image) : `${SITE_URL}/opengraph-image`;
     const embedUrl = `${SITE_URL}/embed/episodes/${ep.id}`;
 
-    return NextResponse.json(
+    return Response.json(
       {
         version: "1.0",
         type: "video",
@@ -76,14 +75,14 @@ export async function GET(request: NextRequest) {
     const slug = movieMatch[1];
     const m = await dbUniverse.movie(slug);
     if (!m) {
-      return NextResponse.json({ error: "Movie not found" }, { status: 404 });
+      return Response.json({ error: "Movie not found" }, { status: 404 });
     }
 
     const title = `${m.title} — Dragon Ball`;
     const thumbnail = m.poster ? assetUrl(m.poster) : `${SITE_URL}/opengraph-image`;
     const embedUrl = `${SITE_URL}/wiki/movies/${m.slug}`;
 
-    return NextResponse.json(
+    return Response.json(
       {
         version: "1.0",
         type: "video",
@@ -112,7 +111,7 @@ export async function GET(request: NextRequest) {
   }
 
   // 3. Fallback rich oEmbed
-  return NextResponse.json(
+  return Response.json(
     {
       version: "1.0",
       type: "rich",

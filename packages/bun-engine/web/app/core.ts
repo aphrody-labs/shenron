@@ -69,7 +69,16 @@ export interface LaunchResult {
   player?: string;
 }
 
-export type Tab = "home" | "systems" | "games" | "game" | "search" | "settings" | "bios" | "installer" | "sources";
+export type Tab =
+  | "home"
+  | "systems"
+  | "games"
+  | "game"
+  | "search"
+  | "settings"
+  | "bios"
+  | "installer"
+  | "sources";
 
 /** A declared non-game app (home page tile), as /api/apps reports it. */
 export interface AppRow {
@@ -117,7 +126,7 @@ export const state: {
 export const h = (value: unknown) =>
   String(value ?? "").replace(
     /[&<>"']/g,
-    c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!,
+    (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!,
   );
 
 /** A request that never reached the service (as opposed to one it answered with an error). */
@@ -174,7 +183,10 @@ export const currentHints = () => shown;
 
 export function renderHints(): void {
   hints.innerHTML = shown
-    .map(([token, label, key]) => `<span class="hint">${glyph(token, state.pad, key)}<span>${h(label)}</span></span>`)
+    .map(
+      ([token, label, key]) =>
+        `<span class="hint">${glyph(token, state.pad, key)}<span>${h(label)}</span></span>`,
+    )
     .join("");
 }
 
@@ -205,7 +217,12 @@ export function ago(iso: string | null): string {
 export function markTab(active: Tab = state.tab): void {
   // a game page belongs to the page it was opened from
   const base: Tab = active === "game" ? (state.from === "game" ? "home" : state.from) : active;
-  const group: Tab = base === "games" ? "systems" : ["bios", "installer", "sources"].includes(base) ? "settings" : base;
+  const group: Tab =
+    base === "games"
+      ? "systems"
+      : ["bios", "installer", "sources"].includes(base)
+        ? "settings"
+        : base;
   for (const button of document.querySelectorAll<HTMLElement>("[data-tab]")) {
     const on = button.dataset.tab === group;
     button.classList.toggle("active", on);
@@ -225,7 +242,12 @@ export function motionReduced(): boolean {
 export function reveal(element: HTMLElement): void {
   const behavior: ScrollBehavior = motionReduced() ? "auto" : "smooth";
   if (element.closest(".hero")) document.querySelector("#view")?.scrollTo({ top: 0, behavior });
-  else element.scrollIntoView({ block: "nearest", inline: element.closest(".shelf") ? "center" : "nearest", behavior });
+  else
+    element.scrollIntoView({
+      block: "nearest",
+      inline: element.closest(".shelf") ? "center" : "nearest",
+      behavior,
+    });
 }
 
 /** Open overlays, the last one on top: the pad and Tab only reach the top one. */
@@ -233,7 +255,8 @@ export const overlayStack: HTMLElement[] = [];
 
 export function focusFirst(selector: string): void {
   const scope: ParentNode = overlayStack.at(-1) ?? document;
-  const element = scope.querySelector<HTMLElement>(selector) ?? focusable().find(item => !item.closest("#top"));
+  const element =
+    scope.querySelector<HTMLElement>(selector) ?? focusable().find((item) => !item.closest("#top"));
   element?.focus({ preventScroll: true });
   if (element) reveal(element);
 }
@@ -242,6 +265,6 @@ export function focusFirst(selector: string): void {
 export function focusable(): HTMLElement[] {
   const scope: ParentNode = overlayStack.at(-1) ?? document;
   return [...scope.querySelectorAll<HTMLElement>("[data-nav]")].filter(
-    element => element.offsetParent !== null && !element.closest("[inert]"),
+    (element) => element.offsetParent !== null && !element.closest("[inert]"),
   );
 }

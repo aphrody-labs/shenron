@@ -50,7 +50,10 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 function resultOk(result, cmd) {
-  assert(result?.result === 0, `WebX cmd 0x${cmd.toString(16)} failed (${result?.result}): ${decode(result?.data)}`);
+  assert(
+    result?.result === 0,
+    `WebX cmd 0x${cmd.toString(16)} failed (${result?.result}): ${decode(result?.data)}`,
+  );
 }
 function decode(bytes) {
   return bytes ? new TextDecoder().decode(bytes) : "";
@@ -76,16 +79,21 @@ async function withValidation(device, label, operation) {
   const scopeError = await device.popErrorScope();
   const freshUncaptured = uncaptured.slice(uncapturedStart);
   assert(!scopeError, `${label} WebGPU validation: ${scopeError?.message}`);
-  assert(freshUncaptured.length === 0, `${label} uncaptured WebGPU error: ${freshUncaptured.join(" | ")}`);
+  assert(
+    freshUncaptured.length === 0,
+    `${label} uncaptured WebGPU error: ${freshUncaptured.join(" | ")}`,
+  );
   return value;
 }
 
 async function dispatch(plugin, device, cmd, payload, { gpu = true } = {}) {
   const sequence = seq++;
   const run = () => plugin.dispatch(cmd, sequence, payload);
-  const result = gpu ? await withValidation(device, `dispatch 0x${cmd.toString(16)}`, run) : await run();
+  const result = gpu
+    ? await withValidation(device, `dispatch 0x${cmd.toString(16)}`, run)
+    : await run();
   if (captureWireTrace) {
-    const base64 = bytes => {
+    const base64 = (bytes) => {
       let text = "";
       for (let i = 0; i < bytes.length; i += 8192) {
         text += String.fromCharCode(...bytes.subarray(i, i + 8192));
@@ -105,10 +113,15 @@ async function dispatch(plugin, device, cmd, payload, { gpu = true } = {}) {
 }
 
 function packetSpirv(deviceHandle, moduleHandle, words) {
-  return new Writer().u64(deviceHandle).u64(moduleHandle).u32(words.byteLength).raw(words.buffer).finish();
+  return new Writer()
+    .u64(deviceHandle)
+    .u64(moduleHandle)
+    .u32(words.byteLength)
+    .raw(words.buffer)
+    .finish();
 }
 function resourceBytes(url) {
-  return fetch(url).then(response => {
+  return fetch(url).then((response) => {
     assert(response.ok, `Could not fetch ${url}: HTTP ${response.status}`);
     return response.arrayBuffer();
   });
@@ -119,7 +132,7 @@ function wordsFrom(buffer) {
 }
 async function sha256(buffer) {
   const digest = await crypto.subtle.digest("SHA-256", buffer);
-  return Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, "0")).join("");
+  return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, "0")).join("");
 }
 
 async function readCanvasPixels(plugin) {
@@ -135,9 +148,15 @@ async function run() {
   const adapterBridge = await import(new URL(adapterUrl, location.href));
   const wasmBytes = await resourceBytes(new URL("../pkg/gpu_bg.wasm", import.meta.url));
   const wasmSha256 = await sha256(wasmBytes);
-  assert(wasmSha256 === expectedNagaWasmSha256, `Unexpected Naga WASM artifact digest: ${wasmSha256}`);
+  assert(
+    wasmSha256 === expectedNagaWasmSha256,
+    `Unexpected Naga WASM artifact digest: ${wasmSha256}`,
+  );
   if (typeof binding.default === "function") await binding.default();
-  assert(typeof binding.spirv_to_wgsl === "function", "WASM binding lacks the real spirv_to_wgsl export");
+  assert(
+    typeof binding.spirv_to_wgsl === "function",
+    "WASM binding lacks the real spirv_to_wgsl export",
+  );
   assert(
     typeof adapterBridge.createWebXShaderTranslator === "function",
     "Built bun-engine adapter lacks createWebXShaderTranslator",
@@ -145,13 +164,17 @@ async function run() {
   const adapter = await navigator.gpu.requestAdapter();
   assert(adapter, "No WebGPU adapter available");
   const device = await adapter.requestDevice();
-  device.addEventListener("uncapturederror", event => uncaptured.push(event.error?.message ?? String(event.error)));
+  device.addEventListener("uncapturederror", (event) =>
+    uncaptured.push(event.error?.message ?? String(event.error)),
+  );
   const shaderTranslator = adapterBridge.createWebXShaderTranslator(binding);
   const plugin = await pluginModule.loadPlugin({
     shaderTranslator,
     capturePresentedFrames: true,
   });
-  await withValidation(device, "plugin initialization", () => plugin.initialize(adapter, device, canvas));
+  await withValidation(device, "plugin initialization", () =>
+    plugin.initialize(adapter, device, canvas),
+  );
 
   const vertexBytes = await resourceBytes(new URL("./triangle.vert.spv", import.meta.url));
   const fragmentBytes = await resourceBytes(new URL("./triangle.frag.spv", import.meta.url));
@@ -250,7 +273,12 @@ async function run() {
     .u32(1)
     .finish();
   await dispatch(plugin, device, 0x0059, framebuffer);
-  await dispatch(plugin, device, 0x0052, new Writer().u64(deviceHandle).u64(layoutHandle).u32(0).u32(0).finish());
+  await dispatch(
+    plugin,
+    device,
+    0x0052,
+    new Writer().u64(deviceHandle).u64(layoutHandle).u32(0).u32(0).finish(),
+  );
 
   const vertHandle = 30n;
   const fragHandle = 31n;
@@ -281,13 +309,28 @@ async function run() {
   new DataView(raster.buffer).setUint32(28, 0, true); // fill mode
   new DataView(raster.buffer).setUint32(32, 0, true); // no culling
   new DataView(raster.buffer).setUint32(36, 0, true); // counter-clockwise
-  pipelineWriter.raw(raster).raw(new Uint8Array(104)).u32(1).u32(0).u32(1).u32(0).u32(0).u32(1).u32(0).u32(0).u32(15);
+  pipelineWriter
+    .raw(raster)
+    .raw(new Uint8Array(104))
+    .u32(1)
+    .u32(0)
+    .u32(1)
+    .u32(0)
+    .u32(0)
+    .u32(1)
+    .u32(0)
+    .u32(0)
+    .u32(15);
   await dispatch(plugin, device, 0x0054, pipelineWriter.finish());
 
   await dispatch(plugin, device, 0x0023, new Uint8Array());
-  await dispatch(plugin, device, 0x0075, new Writer().u64(commandBufferHandle).u32(0).finish(), { gpu: false });
+  await dispatch(plugin, device, 0x0075, new Writer().u64(commandBufferHandle).u32(0).finish(), {
+    gpu: false,
+  });
   const record = async (opcode, payload) =>
-    dispatch(plugin, device, opcode, new Writer().u64(commandBufferHandle).raw(payload).finish(), { gpu: false });
+    dispatch(plugin, device, opcode, new Writer().u64(commandBufferHandle).raw(payload).finish(), {
+      gpu: false,
+    });
   await record(
     0x0080,
     new Writer()
@@ -305,24 +348,38 @@ async function run() {
       .finish(),
   );
   await record(0x0085, new Writer().u32(0).u64(pipelineHandle).finish());
-  await record(0x0090, new Writer().u32(0).u32(1).f32(0).f32(0).f32(width).f32(height).f32(0).f32(1).finish());
+  await record(
+    0x0090,
+    new Writer().u32(0).u32(1).f32(0).f32(0).f32(width).f32(height).f32(0).f32(1).finish(),
+  );
   await record(0x0091, new Writer().u32(0).u32(1).i32(0).i32(0).u32(width).u32(height).finish());
   await record(0x008a, new Writer().u32(3).u32(1).u32(0).u32(0).finish());
   await record(0x0081, new Uint8Array());
-  await dispatch(plugin, device, 0x0076, new Writer().u64(commandBufferHandle).finish(), { gpu: false });
+  await dispatch(plugin, device, 0x0076, new Writer().u64(commandBufferHandle).finish(), {
+    gpu: false,
+  });
   const submit = new Writer().u64(2n).u64(0n).u32(1).u32(1).u64(commandBufferHandle).finish();
   await dispatch(plugin, device, 0x00b0, submit);
   await withValidation(device, "queue completion", () => device.queue.onSubmittedWorkDone());
   await dispatch(plugin, device, 0x0024, new Writer().u64(swapchainHandle).u32(0).finish());
   await withValidation(device, "present completion", () => device.queue.onSubmittedWorkDone());
 
-  const pixels = await withValidation(device, "presented GPU pixel readback", () => readCanvasPixels(plugin));
-  const centerOffset = (Math.floor(pixels.height / 2) * pixels.width + Math.floor(pixels.width / 2)) * 4;
+  const pixels = await withValidation(device, "presented GPU pixel readback", () =>
+    readCanvasPixels(plugin),
+  );
+  const centerOffset =
+    (Math.floor(pixels.height / 2) * pixels.width + Math.floor(pixels.width / 2)) * 4;
   const cornerOffset = 4 * 4;
   const center = Array.from(pixels.data.slice(centerOffset, centerOffset + 4));
   const corner = Array.from(pixels.data.slice(cornerOffset, cornerOffset + 4));
-  assert(center[0] > 180 && center[1] < 80 && center[2] < 80, `Expected red triangle center pixel, got ${center}`);
-  assert(corner[0] < 40 && corner[1] < 40 && corner[2] < 40, `Expected black clear pixel, got ${corner}`);
+  assert(
+    center[0] > 180 && center[1] < 80 && center[2] < 80,
+    `Expected red triangle center pixel, got ${center}`,
+  );
+  assert(
+    corner[0] < 40 && corner[1] < 40 && corner[2] < 40,
+    `Expected black clear pixel, got ${corner}`,
+  );
   assert(uncaptured.length === 0, `Uncaptured WebGPU errors: ${uncaptured.join(" | ")}`);
 
   const receipt = {
@@ -364,7 +421,7 @@ async function run() {
   plugin.destroy();
 }
 
-run().catch(error => {
+run().catch((error) => {
   const receipt = {
     status: "failed",
     qualification: "webx-wire-spirv-webgpu-triangle",
@@ -378,6 +435,6 @@ run().catch(error => {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify(receipt),
-  }).catch(postError => console.error("Could not post failed qualification receipt", postError));
+  }).catch((postError) => console.error("Could not post failed qualification receipt", postError));
   console.error(error);
 });

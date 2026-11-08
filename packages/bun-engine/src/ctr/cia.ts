@@ -134,7 +134,8 @@ export async function readCiaInfo(file: string): Promise<CiaInfo> {
   const tikOffset = align(certOffset + certSize);
   const tmdOffset = align(tikOffset + tikSize);
   const contentOffset = align(tmdOffset + tmdSize);
-  if (contentOffset + contentSize > fileSize) throw new Error("not a CIA: content area exceeds the file");
+  if (contentOffset + contentSize > fileSize)
+    throw new Error("not a CIA: content area exceeds the file");
 
   const tik = await readRange(file, tikOffset, tikOffset + tikSize);
   const tikBody = signatureBodyOffset[tik.getUint32(0)];
@@ -185,8 +186,8 @@ export async function readCiaInfo(file: string): Promise<CiaInfo> {
     contents.push(content);
   }
 
-  const present = contents.filter(content => content.present);
-  const ncchKnown = present.every(content => content.ncchEncrypted !== undefined);
+  const present = contents.filter((content) => content.present);
+  const ncchKnown = present.every((content) => content.ncchEncrypted !== undefined);
   const info: CiaInfo = {
     file,
     fileSize,
@@ -196,8 +197,8 @@ export async function readCiaInfo(file: string): Promise<CiaInfo> {
     versionString: `${version >> 10}.${(version >> 4) & 0x3f}.${version & 0xf}`,
     contentCount: count,
     presentCount: present.length,
-    encrypted: present.some(content => content.encrypted),
-    ncchEncrypted: ncchKnown ? present.some(content => content.ncchEncrypted) : undefined,
+    encrypted: present.some((content) => content.encrypted),
+    ncchEncrypted: ncchKnown ? present.some((content) => content.ncchEncrypted) : undefined,
     tmdSignatureType: tmdType,
     ticket: {
       titleId: hex(tik.getBigUint64(tikBody + 0x9c)),
@@ -235,7 +236,8 @@ export function requiredKeys(info: CiaInfo): KeyEntry[] {
     const slot = secondary[content.ncchSecondarySlot ?? 0];
     if (slot) add(keys, slotEntry(slot), why);
     add(keys, "generatorConstant", why);
-    if (content.ncchSeed) add(`sysdata/${keyFiles.seeds}`, `seed for program ${content.programId}`, why);
+    if (content.ncchSeed)
+      add(`sysdata/${keyFiles.seeds}`, `seed for program ${content.programId}`, why);
   }
   return [...out.values()];
 }
@@ -258,8 +260,10 @@ export function installedKeyNames(userDir = ciaUserDir()): Set<string> {
 /** The entries from `required` that the user directory does not provide. */
 export function missingKeys(required: KeyEntry[], userDir = ciaUserDir()): KeyEntry[] {
   const names = installedKeyNames(userDir);
-  return required.filter(key =>
-    key.file.endsWith(keyFiles.seeds) ? !existsSync(join(userDir, "sysdata", keyFiles.seeds)) : !names.has(key.entry),
+  return required.filter((key) =>
+    key.file.endsWith(keyFiles.seeds)
+      ? !existsSync(join(userDir, "sysdata", keyFiles.seeds))
+      : !names.has(key.entry),
   );
 }
 
@@ -316,7 +320,11 @@ function missingReport(missing: KeyEntry[], userDir: string): Record<string, unk
     ok: false,
     error: "missing-keys",
     message: `required key material is absent; place it under ${join(userDir, "sysdata")}`,
-    missing: missing.map(key => ({ file: key.file, entry: key.entry, needed_for: key.neededFor })),
+    missing: missing.map((key) => ({
+      file: key.file,
+      entry: key.entry,
+      needed_for: key.neededFor,
+    })),
   };
 }
 
@@ -330,7 +338,11 @@ export async function ciaMain(argv: string[]): Promise<number> {
     print(ciaStatus());
     return 0;
   }
-  if (!file || !["info", "verify", "decrypt", "install"].includes(action ?? "") || (action === "decrypt" && !out)) {
+  if (
+    !file ||
+    !["info", "verify", "decrypt", "install"].includes(action ?? "") ||
+    (action === "decrypt" && !out)
+  ) {
     console.error(usage);
     return 2;
   }
@@ -347,6 +359,8 @@ export async function ciaMain(argv: string[]): Promise<number> {
     return 3;
   }
   const result = await runCiaTool(action === "decrypt" ? [action, file, out!] : [action, file]);
-  print(result.json ?? { ok: false, error: "tool-failed", stderr: result.stderr.trim().slice(-2000) });
+  print(
+    result.json ?? { ok: false, error: "tool-failed", stderr: result.stderr.trim().slice(-2000) },
+  );
   return result.exitCode;
 }

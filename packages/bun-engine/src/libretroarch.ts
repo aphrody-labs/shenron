@@ -100,7 +100,7 @@ export function libretroarchLibrary(): string | undefined {
     join(repoRoot, "vendor", "retroarch", name),
     // the bun-engine package installs it system-wide
     ...(process.platform === "win32" ? [] : [join("/usr/lib", name)]),
-  ].find(path => path && existsSync(path));
+  ].find((path) => path && existsSync(path));
 }
 
 function cfgValue(value: string | number | boolean): string {
@@ -142,14 +142,16 @@ function lut(format: PixelFormat.RGB565 | PixelFormat.RGBA4444): Uint32Array {
  */
 export function toRGBA(frame: Frame, out?: Uint8Array): Uint8Array {
   const { width, height, pitch, format, data } = frame;
-  const target = out && out.byteLength >= width * height * 4 ? out : new Uint8Array(width * height * 4);
+  const target =
+    out && out.byteLength >= width * height * 4 ? out : new Uint8Array(width * height * 4);
   const dst = new Uint32Array(target.buffer, target.byteOffset, width * height);
   if (format === PixelFormat.XRGB8888) {
     for (let y = 0; y < height; y++) {
       const row = new Uint32Array(data.buffer, data.byteOffset + y * pitch, width);
       for (let x = 0; x < width; x++) {
         const p = row[x]!;
-        dst[y * width + x] = (0xff000000 | ((p & 0xff) << 16) | (p & 0xff00) | ((p >> 16) & 0xff)) >>> 0;
+        dst[y * width + x] =
+          (0xff000000 | ((p & 0xff) << 16) | (p & 0xff00) | ((p >> 16) & 0xff)) >>> 0;
       }
     }
     return target;
@@ -180,7 +182,9 @@ export class RetroArch implements Disposable {
   static open(options: OpenOptions = {}): RetroArch {
     const path = options.library ?? libretroarchLibrary();
     if (!path)
-      throw new Error("libretroarch is not built: ./configure --enable-libretroarch && make in vendor/retroarch");
+      throw new Error(
+        "libretroarch is not built: ./configure --enable-libretroarch && make in vendor/retroarch",
+      );
     const lib = dlopen(path, symbols);
     const abi = lib.symbols.libretroarch_api_version();
     if (abi !== ABI_VERSION) {
@@ -217,11 +221,14 @@ export class RetroArch implements Disposable {
       cheat_database_path: share("cht"),
       content_database_path: share("rdb"),
       cursor_directory: share("cursors"),
-      libretro_info_path: [join(repoRoot, "vendor", "libretro-core-info"), "/usr/share/libretro/info"],
+      libretro_info_path: [
+        join(repoRoot, "vendor", "libretro-core-info"),
+        "/usr/share/libretro/info",
+      ],
     };
     const forks: Record<string, string> = {};
     for (const [key, dirs] of Object.entries(candidates)) {
-      const found = dirs.find(dir => existsSync(dir));
+      const found = dirs.find((dir) => existsSync(dir));
       if (found) forks[key] = found;
     }
     const settings: Record<string, string | number | boolean> = {
@@ -253,7 +260,7 @@ export class RetroArch implements Disposable {
     if (options.content) argv.push(options.content);
     else if (!options.core) argv.push("--menu");
 
-    const strings = argv.map(arg => Buffer.from(`${arg}\0`));
+    const strings = argv.map((arg) => Buffer.from(`${arg}\0`));
     const pointers = new BigUint64Array(strings.length + 1);
     strings.forEach((bytes, i) => (pointers[i] = BigInt(ptr(bytes))));
     if (lib.symbols.libretroarch_init(argv.length, ptr(pointers)) !== 0) {
@@ -301,7 +308,9 @@ export class RetroArch implements Disposable {
 
   /** Interleaved stereo float frames at {@link Status.audioRate}, as an AudioWorklet takes them. */
   audio(out = new Float32Array(8192)): Float32Array {
-    const frames = Number(this.#lib.symbols.libretroarch_audio_read(ptr(out), BigInt(out.length >> 1)));
+    const frames = Number(
+      this.#lib.symbols.libretroarch_audio_read(ptr(out), BigInt(out.length >> 1)),
+    );
     return out.subarray(0, frames * 2);
   }
 
@@ -322,7 +331,9 @@ export class RetroArch implements Disposable {
   /** Replies to earlier commands, as they came. */
   replies(): string {
     const at = ptr(this.#reply);
-    const length = Number(this.#lib.symbols.libretroarch_command_reply(at, BigInt(this.#reply.length)));
+    const length = Number(
+      this.#lib.symbols.libretroarch_command_reply(at, BigInt(this.#reply.length)),
+    );
     return length ? new CString(at, 0, length).toString() : "";
   }
 

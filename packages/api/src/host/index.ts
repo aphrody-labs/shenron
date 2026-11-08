@@ -65,6 +65,7 @@ import { createHostAuth } from "./auth";
 import { createDesktopLinkHandler } from "./desktop-link";
 import { DESKTOP_LINK } from "@aphrody/shenron-db/agent-homes/types";
 import { createHostWikiLaunch } from "./wiki-launch";
+import { createHostWikiRead } from "./wiki";
 import { createHostChronology } from "./chronology";
 import { createHostPageBanners } from "./page-banners";
 import { createHostHome } from "./home";
@@ -635,7 +636,8 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   });
 
   const chat = backends.length > 0 ? engine : null;
-  const wiki = opened && options.wiki !== false ? opened.wiki : null;
+  const pgWiki = options.wiki !== false && !opened ? createHostWikiRead(env) : null;
+  const wiki = options.wiki !== false ? (opened?.wiki ?? pgWiki?.port ?? null) : null;
   const assetsDir = envString(env, "SHENRON_ASSETS_DIR") ?? null;
   const mcpUrl = envString(env, "SHENRON_MCP_URL");
   const authBuilt =
@@ -809,6 +811,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
       } as unknown as Bun.Serve.Options<ChatSocketData>;
     },
     async close() {
+      await pgWiki?.close();
       await wikiLaunch?.close();
       await chronology?.close();
       await pageBanners?.close();

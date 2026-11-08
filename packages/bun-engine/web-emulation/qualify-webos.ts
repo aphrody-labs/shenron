@@ -28,7 +28,7 @@ const args = Bun.argv.slice(2);
 const flag = (name: string) => args.includes(name);
 const value = (name: string) => {
   const i = args.indexOf(name);
-  return i >= 0 ? args[i + 1] : args.find(a => a.startsWith(`${name}=`))?.slice(name.length + 1);
+  return i >= 0 ? args[i + 1] : args.find((a) => a.startsWith(`${name}=`))?.slice(name.length + 1);
 };
 const base = (value("--base") ?? Bun.env.WEBOS_URL ?? "http://127.0.0.1:8790").replace(/\/$/, "");
 const objects = resolve(Bun.env.WEBOS_OBJECTS ?? join(Bun.env.HOME ?? root, "apps/webos/objects"));
@@ -57,7 +57,9 @@ function cleanSourceCommit() {
     "packages/bun-engine/plugins/consoles/roms.json",
     "packages/bun-engine/plugins/consoles/free-firmware.json",
   ];
-  const tracked = Bun.spawnSync(["git", "ls-files", "--error-unmatch", "--", ...paths], { cwd: root });
+  const tracked = Bun.spawnSync(["git", "ls-files", "--error-unmatch", "--", ...paths], {
+    cwd: root,
+  });
   const changed = Bun.spawnSync(["git", "diff", "--quiet", "HEAD", "--", ...paths], { cwd: root });
   return tracked.exitCode === 0 && changed.exitCode === 0 ? git("rev-parse", "HEAD") : undefined;
 }
@@ -134,10 +136,20 @@ async function launch() {
   };
 }
 
-async function qualify(cdp: Cdp, id: string, fixtureSha: string | undefined): Promise<QualificationEntry> {
-  const emulator = EMULATORS.find(e => e.id === id)!;
+async function qualify(
+  cdp: Cdp,
+  id: string,
+  fixtureSha: string | undefined,
+): Promise<QualificationEntry> {
+  const emulator = EMULATORS.find((e) => e.id === id)!;
   const url = `${pageOrigin}/emulator.html?core=${id}&autotest=1&frames=${frames}&timeout=${timeoutMs}`;
-  const entry: QualificationEntry = { id, status: "fail", errors: [], url, testedAt: new Date().toISOString() };
+  const entry: QualificationEntry = {
+    id,
+    status: "fail",
+    errors: [],
+    url,
+    testedAt: new Date().toISOString(),
+  };
   if (emulator.fixture)
     entry.fixture = {
       file: emulator.fixture.file,
@@ -151,15 +163,20 @@ async function qualify(cdp: Cdp, id: string, fixtureSha: string | undefined): Pr
   const listener = (m: any) => {
     if (m.sessionId !== sessionId) return;
     if (m.method === "Runtime.exceptionThrown")
-      logs.push(`exception: ${m.params.exceptionDetails?.exception?.description ?? m.params.exceptionDetails?.text}`);
+      logs.push(
+        `exception: ${m.params.exceptionDetails?.exception?.description ?? m.params.exceptionDetails?.text}`,
+      );
     if (m.method === "Runtime.consoleAPICalled" && m.params.type === "error")
-      logs.push(`console.error: ${m.params.args.map((a: any) => a.value ?? a.description).join(" ")}`);
+      logs.push(
+        `console.error: ${m.params.args.map((a: any) => a.value ?? a.description).join(" ")}`,
+      );
     if (m.method === "Log.entryAdded" && m.params.entry.level === "error")
       logs.push(`log: ${m.params.entry.text} ${m.params.entry.url ?? ""}`);
   };
   cdp.listeners.push(listener);
   try {
-    for (const method of ["Runtime.enable", "Log.enable", "Page.enable"]) await cdp.send(method, {}, sessionId);
+    for (const method of ["Runtime.enable", "Log.enable", "Page.enable"])
+      await cdp.send(method, {}, sessionId);
     await cdp.send("Page.bringToFront", {}, sessionId);
     await cdp.send("Page.navigate", { url }, sessionId);
     const started = performance.now();
@@ -222,7 +239,8 @@ async function qualify(cdp: Cdp, id: string, fixtureSha: string | undefined): Pr
     entry.errors = [...(result.errors ?? []), ...logs];
     const problems: string[] = [];
     if (result.error) problems.push(result.error);
-    if ((result.frames ?? 0) < frames) problems.push(`only ${result.frames ?? 0} of ${frames} frames`);
+    if ((result.frames ?? 0) < frames)
+      problems.push(`only ${result.frames ?? 0} of ${frames} frames`);
     problems.push(...presentationProblems(id, screenshotLit, result.renderer, result.gpu2d));
     if (!result.audioProbe?.contexts) problems.push("no Web Audio context was created");
     if (result.saveState === "fail") problems.push("save state failed");
@@ -247,21 +265,24 @@ if (flag("--watch")) {
   const modified = (core: string) => {
     const manifest = join(dist, core, "manifest.json");
     const receipt = join(dist, core, "qualification.json");
-    return Math.max(Bun.file(manifest).lastModified, existsSync(receipt) ? Bun.file(receipt).lastModified : 0);
+    return Math.max(
+      Bun.file(manifest).lastModified,
+      existsSync(receipt) ? Bun.file(receipt).lastModified : 0,
+    );
   };
   for (;;) {
-    const changed = EMULATORS.filter(e => {
+    const changed = EMULATORS.filter((e) => {
       const manifest = e.core && join(dist, e.core, "manifest.json");
       return manifest && existsSync(manifest) && modified(e.core!) > (seen.get(e.id) ?? 0);
     });
     if (changed.length) {
-      const stamp = Object.fromEntries(changed.map(e => [e.id, modified(e.core!)]));
+      const stamp = Object.fromEntries(changed.map((e) => [e.id, modified(e.core!)]));
       const child = Bun.spawn(
         [
           process.execPath,
           import.meta.path,
           "--only",
-          changed.map(e => e.id).join(","),
+          changed.map((e) => e.id).join(","),
           "--base",
           base,
           "--timeout-ms",
@@ -269,7 +290,8 @@ if (flag("--watch")) {
         ],
         { stdout: "inherit", stderr: "inherit" },
       );
-      if ((await child.exited) === 0) for (const [id, time] of Object.entries(stamp)) seen.set(id, time);
+      if ((await child.exited) === 0)
+        for (const [id, time] of Object.entries(stamp)) seen.set(id, time);
     }
     await Bun.sleep(300_000);
   }
@@ -297,7 +319,10 @@ const report: QualificationReport = {
 // The test page (qualify-page/) is served here; every other request (/emulation/, /api/emulators, /vm/) is proxied to
 // the WebOS origin under test, so the cores, fixtures and API are the ones WebOS serves.
 const pageDir = join(import.meta.dir, "qualify-page");
-const isolation = { "cross-origin-opener-policy": "same-origin", "cross-origin-embedder-policy": "credentialless" };
+const isolation = {
+  "cross-origin-opener-policy": "same-origin",
+  "cross-origin-embedder-policy": "credentialless",
+};
 const pageServer = Bun.serve({
   hostname: "127.0.0.1",
   port: 0,
@@ -305,17 +330,21 @@ const pageServer = Bun.serve({
     const url = new URL(request.url);
     const local = /^\/(emulator(?:-probe)?\.(?:html|js|css))$/.exec(url.pathname)?.[1];
     if (local)
-      return new Response(Bun.file(join(pageDir, local)), { headers: { ...isolation, "cache-control": "no-store" } });
+      return new Response(Bun.file(join(pageDir, local)), {
+        headers: { ...isolation, "cache-control": "no-store" },
+      });
     if (url.pathname === "/favicon.ico") return new Response(null, { status: 204 });
     // The catalog and the published cores come from this checkout and the objects directory directly: the WebOS
     // server no longer hosts the browser emulators (ADR-003), only the report written below.
-    if (url.pathname === "/api/emulators") return Response.json({ emulators: EMULATORS }, { headers: isolation });
+    if (url.pathname === "/api/emulators")
+      return Response.json({ emulators: EMULATORS }, { headers: isolation });
     const published = /^\/emulation\/(.+)$/.exec(url.pathname)?.[1];
     if (published) {
-      if (published.split("/").some(part => !part || part === "." || part === ".."))
+      if (published.split("/").some((part) => !part || part === "." || part === ".."))
         return new Response("bad path", { status: 400 });
       const file = Bun.file(join(objects, "emulation", published));
-      if (!(await file.exists())) return new Response("not found", { status: 404, headers: isolation });
+      if (!(await file.exists()))
+        return new Response("not found", { status: 404, headers: isolation });
       const type = published.endsWith(".wasm")
         ? "application/wasm"
         : published.endsWith(".js")
@@ -323,7 +352,9 @@ const pageServer = Bun.serve({
           : file.type;
       return new Response(file, { headers: { ...isolation, "content-type": type } });
     }
-    const upstream = await fetch(`${base}${url.pathname}${url.search}`, { headers: request.headers });
+    const upstream = await fetch(`${base}${url.pathname}${url.search}`, {
+      headers: request.headers,
+    });
     const headers = new Headers(upstream.headers);
     for (const [k, v] of Object.entries(isolation)) headers.set(k, v);
     headers.delete("content-encoding");
@@ -399,9 +430,16 @@ try {
   await browser.close();
   pageServer.stop(true);
 }
-await Bun.write(join(root, "build/web-emulation/webos-qualification.json"), `${JSON.stringify(report, null, 2)}\n`);
-const failing = Object.values(report.entries).filter(e => e.status === "fail");
+await Bun.write(
+  join(root, "build/web-emulation/webos-qualification.json"),
+  `${JSON.stringify(report, null, 2)}\n`,
+);
+const failing = Object.values(report.entries).filter((e) => e.status === "fail");
 console.log(
-  JSON.stringify(Object.fromEntries(Object.entries(report.entries).map(([id, e]) => [id, e.status])), null, 2),
+  JSON.stringify(
+    Object.fromEntries(Object.entries(report.entries).map(([id, e]) => [id, e.status])),
+    null,
+    2,
+  ),
 );
 if (failing.length) process.exitCode = 1;

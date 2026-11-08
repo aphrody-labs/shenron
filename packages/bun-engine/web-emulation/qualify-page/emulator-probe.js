@@ -13,6 +13,6 @@
   }
   globalThis.__audioProbe = () => ({
     contexts: created.length,
-    running: created.filter(c => c.state === "running").length,
+    running: created.filter((c) => c.state === "running").length,
   });
 })();

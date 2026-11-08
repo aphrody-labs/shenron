@@ -17,7 +17,8 @@ function screenshot(filter: number): Uint8Array {
   header[8] = 8;
   header[9] = 6;
   // Two RGBA pixels, using the PNG Sub filter when requested.
-  const row = filter === 1 ? [1, 20, 2, 3, 255, 10, 3, 4, 0] : [filter, 20, 2, 3, 255, 30, 5, 7, 255];
+  const row =
+    filter === 1 ? [1, 20, 2, 3, 255, 10, 3, 4, 0] : [filter, 20, 2, 3, 255, 30, 5, 7, 255];
   return Buffer.concat([
     Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
     chunk("IHDR", header),

@@ -49,7 +49,7 @@ function inside(child: string, parent: string): boolean {
 /** True when `path` is (or resolves into) a private store. */
 export function isPrivatePath(path: string): boolean {
   const target = canonical(path);
-  return privateRoots().some(root => inside(target, canonical(root)));
+  return privateRoots().some((root) => inside(target, canonical(root)));
 }
 
 /** Refuses a directory that would publish a private store: inside one, or containing one. */
@@ -78,7 +78,12 @@ const blockedNames =
   /^(prod|title|dev)\.keys$|^aes_keys\.txt$|^(seeddb|boot9|boot11|otp|keys|secret_sector|nand|nand_dsi|bios7|bios9|dsi_bios7|dsi_bios9|firmware|dsi_firmware|gba_bios|sgb_bios|gb_bios|gbc_bios|dmg_boot|cgb_boot|scph\d+[a-z]?|ps[12x]?_?bios[^/]*|psxonpsp660|mcpx_1\.0|complex_4627|sega_101|bios_cd_[uej]|bios_e|bios_j|bios_u|dc_boot|dc_flash|neogeo|pgm|syscard\d|disksys|kick\d+[^/]*|lynxboot|5200|7800 bios[^/]*)\.(bin|rom|img|nvm)$|^movable\.sed$|^neogeo\.zip$/i;
 
 /** Path segments of the private stores relative to the repository. */
-const blockedPaths = [/^usr\//i, /(^|\/)games\/private\//i, /(^|\/)var\/inbox\//i, /(^|\/)owned-tests\//i];
+const blockedPaths = [
+  /^usr\//i,
+  /(^|\/)games\/private\//i,
+  /(^|\/)var\/inbox\//i,
+  /(^|\/)owned-tests\//i,
+];
 
 export interface Rejection {
   path: string;
@@ -88,7 +93,7 @@ export interface Rejection {
 /** Why `path` (repository-relative, forward slashes) may not be committed, if it may not. */
 export function rejectPath(path: string): string | undefined {
   const name = path.split("/").pop() ?? path;
-  if (blockedPaths.some(pattern => pattern.test(path))) return "inside a private dump store";
+  if (blockedPaths.some((pattern) => pattern.test(path))) return "inside a private dump store";
   if (blockedNames.test(name)) return "console BIOS, firmware or key file name";
   const ext = /\.([a-z0-9]+)$/i.exec(name)?.[1]?.toLowerCase();
   if (ext && blockedExtensions.has(ext)) return `.${ext} is a ROM, disc image or key extension`;
@@ -100,14 +105,16 @@ function ownedBlobs(blobs: string[]): Set<string> {
   if (!blobs.length || !existsSync(path)) return new Set();
   const db = new Database(path, { readonly: true });
   try {
-    const table = db.query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'owned'").get();
+    const table = db
+      .query("SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'owned'")
+      .get();
     if (!table) return new Set();
     const rows = db
       .query<{ gitBlob: string }, [string]>(
         "SELECT gitBlob FROM owned WHERE gitBlob IN (SELECT value FROM json_each(?))",
       )
       .all(JSON.stringify(blobs));
-    return new Set(rows.map(row => row.gitBlob));
+    return new Set(rows.map((row) => row.gitBlob));
   } finally {
     db.close();
   }
@@ -119,7 +126,18 @@ function ownedBlobs(blobs: string[]): Set<string> {
  */
 export function checkStaged(cwd = repoRoot): Rejection[] {
   const out = Bun.spawnSync(
-    ["git", "-C", cwd, "diff", "--cached", "--raw", "--no-abbrev", "-z", "--no-renames", "--diff-filter=ACMR"],
+    [
+      "git",
+      "-C",
+      cwd,
+      "diff",
+      "--cached",
+      "--raw",
+      "--no-abbrev",
+      "-z",
+      "--no-renames",
+      "--diff-filter=ACMR",
+    ],
     {
       stderr: "pipe",
     },
@@ -137,22 +155,24 @@ export function checkStaged(cwd = repoRoot): Rejection[] {
     const why = rejectPath(entry.path);
     if (why) rejections.push({ path: entry.path, why });
   }
-  const owned = ownedBlobs(entries.map(entry => entry.blob));
+  const owned = ownedBlobs(entries.map((entry) => entry.blob));
   for (const entry of entries)
-    if (owned.has(entry.blob) && !rejections.some(item => item.path === entry.path))
+    if (owned.has(entry.blob) && !rejections.some((item) => item.path === entry.path))
       rejections.push({ path: entry.path, why: "content is an owned dump from the private store" });
   return rejections;
 }
 
 /** Installs (or keeps) the pre-commit hook of this checkout; existing hooks are chained, not replaced. */
 export async function installHook(cwd = repoRoot): Promise<string> {
-  const hooks = Bun.spawnSync(["git", "-C", cwd, "rev-parse", "--git-path", "hooks"]).stdout.toString().trim();
+  const hooks = Bun.spawnSync(["git", "-C", cwd, "rev-parse", "--git-path", "hooks"])
+    .stdout.toString()
+    .trim();
   const file = resolve(cwd, hooks, "pre-commit");
   const line = `${marker}\nbun "packages/bun-engine/src/owned/guard.ts" --staged || exit 1\n`;
   const current = (await Bun.file(file).exists()) ? await Bun.file(file).text() : "";
   if (current.includes(marker)) return file;
   const next = current
-    ? current.replace(/^(#![^\n]*\n)?/, shebang => `${shebang || "#!/bin/sh\n"}${line}`)
+    ? current.replace(/^(#![^\n]*\n)?/, (shebang) => `${shebang || "#!/bin/sh\n"}${line}`)
     : `#!/bin/sh\n${line}`;
   await Bun.write(file, next);
   if (process.platform !== "win32") chmodSync(file, 0o755);
@@ -164,7 +184,9 @@ if (import.meta.main) {
   if (rejections.length) {
     console.error("bep owned guard: private dumps must not be committed:");
     for (const item of rejections) console.error(`  ${item.path}: ${item.why}`);
-    console.error("Unstage them (git restore --staged <path>); owned dumps live in usr/share/bun-engine.");
+    console.error(
+      "Unstage them (git restore --staged <path>); owned dumps live in usr/share/bun-engine.",
+    );
     process.exit(1);
   }
 }

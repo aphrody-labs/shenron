@@ -12,7 +12,8 @@ export interface ProbeResult {
 }
 
 async function commandPath(name: string): Promise<string | null> {
-  const finder = process.platform === "win32" ? ["where.exe", name] : ["sh", "-lc", "command -v " + name];
+  const finder =
+    process.platform === "win32" ? ["where.exe", name] : ["sh", "-lc", "command -v " + name];
   const result = Bun.spawnSync({
     cmd: finder,
     stdout: "pipe",

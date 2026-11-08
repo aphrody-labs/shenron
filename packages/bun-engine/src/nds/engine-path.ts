@@ -6,7 +6,10 @@ import { findWorkspaceRoot } from "@aphrody/paths";
 const HERE = import.meta.dir;
 
 /** Resolve the workspace owning this engine, independent of the caller's working directory. */
-export function engineWorkspaceRoot(from = HERE, env: Record<string, string | undefined> = process.env): string {
+export function engineWorkspaceRoot(
+  from = HERE,
+  env: Record<string, string | undefined> = process.env,
+): string {
   const bunOsRoot = env.BUN_OS_ROOT?.trim();
   if (bunOsRoot && existsSync(bunOsRoot)) return bunOsRoot;
   const configured = env.APHRODY_WORKSPACE_ROOT?.trim() || env.APHRODY_ROOT?.trim();
@@ -19,7 +22,10 @@ export function engineWorkspaceRoot(from = HERE, env: Record<string, string | un
 }
 
 /** Locate the native engine built for this checkout, including BunCC's isolated worker slots. */
-export function findEngine(from = HERE, env: Record<string, string | undefined> = process.env): string | undefined {
+export function findEngine(
+  from = HERE,
+  env: Record<string, string | undefined> = process.env,
+): string | undefined {
   const name = "bun-engine";
   const override = env.BUN_ENGINE_NATIVE;
   if (override && existsSync(override)) return override;

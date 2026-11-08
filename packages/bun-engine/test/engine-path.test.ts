@@ -16,7 +16,13 @@ describe("findEngine", () => {
     writeFileSync(join(root, "Cargo.toml"), "[workspace]\n");
     writeFileSync(join(root, "package.json"), "{}\n");
     writeFileSync(join(root, "rust-toolchain.toml"), "[toolchain]\nchannel = 'stable'\n");
-    const binary = join(root, "target", "slot-7", "release", `bun-engine${process.platform === "win32" ? ".exe" : ""}`);
+    const binary = join(
+      root,
+      "target",
+      "slot-7",
+      "release",
+      `bun-engine${process.platform === "win32" ? ".exe" : ""}`,
+    );
     mkdirSync(join(root, "target", "slot-7", "release"), { recursive: true });
     writeFileSync(binary, "native executable placeholder");
 

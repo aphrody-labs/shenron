@@ -47,8 +47,18 @@ function vaultKeys(): Promise<Keys> {
       secret = Buffer.from(crypto.getRandomValues(new Uint8Array(32))).toString("base64");
       await Bun.secrets.set({ service: secretService, name: keySecret, value: secret });
     }
-    const master = await crypto.subtle.importKey("raw", Buffer.from(secret, "base64"), "HKDF", false, ["deriveKey"]);
-    const derive = (info: string, algorithm: AesKeyGenParams | HmacKeyGenParams, usages: KeyUsage[]) =>
+    const master = await crypto.subtle.importKey(
+      "raw",
+      Buffer.from(secret, "base64"),
+      "HKDF",
+      false,
+      ["deriveKey"],
+    );
+    const derive = (
+      info: string,
+      algorithm: AesKeyGenParams | HmacKeyGenParams,
+      usages: KeyUsage[],
+    ) =>
       crypto.subtle.deriveKey(
         { name: "HKDF", hash: "SHA-256", salt: new Uint8Array(32), info: encoder.encode(info) },
         master,
@@ -57,9 +67,16 @@ function vaultKeys(): Promise<Keys> {
         usages,
       );
     return {
-      seal: await derive("bep owned v1 seal", { name: "AES-GCM", length: 256 }, ["encrypt", "decrypt"]),
-      names: await derive("bep owned v1 names", { name: "HMAC", hash: "SHA-256", length: 256 }, ["sign"]),
-      ivs: await derive("bep owned v1 ivs", { name: "HMAC", hash: "SHA-256", length: 256 }, ["sign"]),
+      seal: await derive("bep owned v1 seal", { name: "AES-GCM", length: 256 }, [
+        "encrypt",
+        "decrypt",
+      ]),
+      names: await derive("bep owned v1 names", { name: "HMAC", hash: "SHA-256", length: 256 }, [
+        "sign",
+      ]),
+      ivs: await derive("bep owned v1 ivs", { name: "HMAC", hash: "SHA-256", length: 256 }, [
+        "sign",
+      ]),
     };
   })();
   return cachedKeys;
@@ -74,16 +91,30 @@ export async function objectId(sha256: string): Promise<string> {
   return hex(await hmac((await vaultKeys()).names, sha256));
 }
 
-async function sealPart(bytes: Uint8Array, sha256: string, index: number, aad: string): Promise<Uint8Array> {
+async function sealPart(
+  bytes: Uint8Array,
+  sha256: string,
+  index: number,
+  aad: string,
+): Promise<Uint8Array> {
   const keys = await vaultKeys();
   const iv = view((await hmac(keys.ivs, `${sha256}:${index}`)).subarray(0, 12));
   const packed = await Bun.zstdCompress(bytes, { level: 3 });
   return new Uint8Array(
-    await crypto.subtle.encrypt({ name: "AES-GCM", iv, additionalData: encoder.encode(aad) }, keys.seal, view(packed)),
+    await crypto.subtle.encrypt(
+      { name: "AES-GCM", iv, additionalData: encoder.encode(aad) },
+      keys.seal,
+      view(packed),
+    ),
   );
 }
 
-async function openPart(sealed: Uint8Array, sha256: string, index: number, aad: string): Promise<Uint8Array> {
+async function openPart(
+  sealed: Uint8Array,
+  sha256: string,
+  index: number,
+  aad: string,
+): Promise<Uint8Array> {
   const keys = await vaultKeys();
   const iv = view((await hmac(keys.ivs, `${sha256}:${index}`)).subarray(0, 12));
   const packed = await crypto.subtle.decrypt(
@@ -121,7 +152,7 @@ async function openManifest<T>(sealed: Uint8Array, aad: string): Promise<T> {
 
 // ---- targets ----------------------------------------------------------------------------------
 
-const sleep = (ms: number) => new Promise(done => setTimeout(done, ms));
+const sleep = (ms: number) => new Promise((done) => setTimeout(done, ms));
 
 /** Local directory target for tests, throttled like the bucket. */
 function fileTarget(root: string, bandwidth = 0): ObjectTarget {
@@ -144,7 +175,10 @@ function fileTarget(root: string, bandwidth = 0): ObjectTarget {
     async stat(key) {
       const file = Bun.file(at(key));
       if (!(await file.exists())) return null;
-      return { size: file.size, etag: new Bun.CryptoHasher("md5").update(await file.bytes()).digest("hex") };
+      return {
+        size: file.size,
+        etag: new Bun.CryptoHasher("md5").update(await file.bytes()).digest("hex"),
+      };
     },
     async get(key) {
       const bytes = await Bun.file(at(key)).bytes();
@@ -173,7 +207,11 @@ export async function openTarget(spec = defaultTarget, bandwidth = 0): Promise<O
 }
 
 /** A part already stored remotely: same size, and the same MD5 when the store reports a plain ETag. */
-function sameObject(remote: { size: number; etag?: string } | null, size: number, md5: string): boolean {
+function sameObject(
+  remote: { size: number; etag?: string } | null,
+  size: number,
+  md5: string,
+): boolean {
   if (!remote || remote.size !== size) return false;
   const etag = remote.etag?.replaceAll('"', "").toLowerCase();
   return !etag || !/^[0-9a-f]{32}$/.test(etag) || etag === md5;
@@ -211,9 +249,14 @@ export interface PushResult {
 }
 
 /** Seals and uploads one dump; an interrupted push resumes at the first missing part. */
-export async function pushDump(dump: OwnedDump, target: ObjectTarget, options: PushOptions = {}): Promise<PushResult> {
+export async function pushDump(
+  dump: OwnedDump,
+  target: ObjectTarget,
+  options: PushOptions = {},
+): Promise<PushResult> {
   const file = Bun.file(storePath(dump));
-  if (!(await file.exists())) throw new Error(`${dump.sha256.slice(0, 12)} is missing from the store`);
+  if (!(await file.exists()))
+    throw new Error(`${dump.sha256.slice(0, 12)} is missing from the store`);
   const object = await objectId(dump.sha256);
   const state = ownedDb()
     .query<{ partBytes: number; done: number; state: string }, [string, string]>(
@@ -232,12 +275,15 @@ export async function pushDump(dump: OwnedDump, target: ObjectTarget, options: P
   for (let index = 0; index < count; index++) {
     const key = `${object}/part-${String(index).padStart(5, "0")}`;
     const aad = `bep-owned-v1:${object}:${index}:${count}`;
-    const plain = await file.slice(index * partBytes, Math.min(dump.size, (index + 1) * partBytes)).bytes();
+    const plain = await file
+      .slice(index * partBytes, Math.min(dump.size, (index + 1) * partBytes))
+      .bytes();
     const sealed = await sealPart(plain, dump.sha256, index, aad);
     const digest = new Bun.CryptoHasher("sha256").update(sealed).digest("hex");
     const md5 = new Bun.CryptoHasher("md5").update(sealed).digest("hex");
     parts.push({ bytes: sealed.length, sha256: digest });
-    const remote = index < (state?.done ?? 0) || state?.state === "done" ? await target.stat(key) : null;
+    const remote =
+      index < (state?.done ?? 0) || state?.state === "done" ? await target.stat(key) : null;
     if (sameObject(remote, sealed.length, md5)) {
       skipped++;
       continue;
@@ -256,7 +302,9 @@ export async function pushDump(dump: OwnedDump, target: ObjectTarget, options: P
     }
     await target.put(key, sealed);
     if (!sameObject(await target.stat(key), sealed.length, md5))
-      throw new Error(`part ${index} of ${dump.sha256.slice(0, 12)} failed its integrity check after upload`);
+      throw new Error(
+        `part ${index} of ${dump.sha256.slice(0, 12)} failed its integrity check after upload`,
+      );
     uploaded++;
     bytes += sealed.length;
     record.run({
@@ -280,7 +328,10 @@ export async function pushDump(dump: OwnedDump, target: ObjectTarget, options: P
     file: dump.file.split("/").pop()!,
     parts,
   };
-  await target.put(`${object}/manifest`, await sealManifest(manifest, `bep-owned-v1:${object}:manifest`));
+  await target.put(
+    `${object}/manifest`,
+    await sealManifest(manifest, `bep-owned-v1:${object}:manifest`),
+  );
   record.run({
     sha256: dump.sha256,
     target: target.id,
@@ -290,7 +341,16 @@ export async function pushDump(dump: OwnedDump, target: ObjectTarget, options: P
     bytes,
     updatedAt: new Date().toISOString(),
   });
-  return { sha256: dump.sha256, target: target.id, object, parts: count, uploaded, skipped, bytes, complete: true };
+  return {
+    sha256: dump.sha256,
+    target: target.id,
+    object,
+    parts: count,
+    uploaded,
+    skipped,
+    bytes,
+    complete: true,
+  };
 }
 
 /** Downloads, verifies and decrypts one dump into `destination` (a file path). */
@@ -313,9 +373,17 @@ export async function pullDump(
   try {
     for (const [index, part] of manifest.parts.entries()) {
       const sealed = await target.get(`${object}/part-${String(index).padStart(5, "0")}`);
-      if (sealed.length !== part.bytes || new Bun.CryptoHasher("sha256").update(sealed).digest("hex") !== part.sha256)
+      if (
+        sealed.length !== part.bytes ||
+        new Bun.CryptoHasher("sha256").update(sealed).digest("hex") !== part.sha256
+      )
         throw new Error(`part ${index} is corrupt or was replaced`);
-      const plain = await openPart(sealed, sha256, index, `bep-owned-v1:${object}:${index}:${manifest.parts.length}`);
+      const plain = await openPart(
+        sealed,
+        sha256,
+        index,
+        `bep-owned-v1:${object}:${index}:${manifest.parts.length}`,
+      );
       whole.update(plain);
       sink.write(plain);
       bytes += plain.length;

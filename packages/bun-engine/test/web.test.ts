@@ -17,17 +17,19 @@ function chromeAvailable(): boolean {
     "brave",
     "msedge",
   ];
-  if (names.some(name => Bun.which(name))) return true;
-  const roots = [process.env.ProgramFiles, process.env["ProgramFiles(x86)"], process.env.LOCALAPPDATA].filter(
-    Boolean,
-  ) as string[];
+  if (names.some((name) => Bun.which(name))) return true;
+  const roots = [
+    process.env.ProgramFiles,
+    process.env["ProgramFiles(x86)"],
+    process.env.LOCALAPPDATA,
+  ].filter(Boolean) as string[];
   const relative = [
     "Google/Chrome/Application/chrome.exe",
     "Microsoft/Edge/Application/msedge.exe",
     "BraveSoftware/Brave-Browser/Application/brave.exe",
   ];
   return (
-    roots.some(root => relative.some(path => existsSync(join(root, path)))) ||
+    roots.some((root) => relative.some((path) => existsSync(join(root, path)))) ||
     existsSync("/usr/bin/google-chrome") ||
     existsSync("/Applications/Google Chrome.app")
   );
@@ -62,7 +64,9 @@ describe("Bun Engine web", () => {
   });
 
   test("rejects an invalid configured port before starting a listener", () => {
-    expect(() => createWorkspaceServer({ port: Number.NaN })).toThrow(/invalid Bun Engine web port/);
+    expect(() => createWorkspaceServer({ port: Number.NaN })).toThrow(
+      /invalid Bun Engine web port/,
+    );
     expect(() => createWorkspaceServer({ port: 65_536 })).toThrow(/invalid Bun Engine web port/);
   });
 

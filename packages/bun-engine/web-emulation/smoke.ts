@@ -23,21 +23,25 @@ const dist = join(root, "dist", "web-emulation");
 const shots = join(root, "build", "web-emulation", "screens");
 
 /** Only source-licensed release fixtures with exact binary pins are admitted. */
-const cases: Record<string, { system: string; pack: string; firmware?: string; frames?: number }> = {
-  "dust-nds": { system: "nds", pack: "godmode9i" },
-  melonds: { system: "nds", pack: "godmode9i" },
-  "zakuro-3ds": { system: "3ds", pack: "fbi" },
-};
+const cases: Record<string, { system: string; pack: string; firmware?: string; frames?: number }> =
+  {
+    "dust-nds": { system: "nds", pack: "godmode9i" },
+    melonds: { system: "nds", pack: "godmode9i" },
+    "zakuro-3ds": { system: "3ds", pack: "fbi" },
+  };
 
 async function stageFixture(packID: string): Promise<QualificationFixture> {
   const lock = await Bun.file(join(import.meta.dir, "web-emulation.lock.json")).json();
-  const catalog = await Bun.file(join(root, "packages/bun-engine/plugins/consoles/roms.json")).json();
+  const catalog = await Bun.file(
+    join(root, "packages/bun-engine/plugins/consoles/roms.json"),
+  ).json();
   const pin = lock.testContent[packID];
   const pack = catalog.packs.find((p: any) => p.id === packID);
   if (!pin || !pack?.url || pack.sha256 !== pin.sha256)
     throw new Error(`${packID}: missing matching open-source fixture pins`);
   const source = join(root, "usr/var/cache/bep/roms", packID, pin.file);
-  if ((await qualificationSHA256(source)) !== pin.sha256) throw new Error(`${packID}: cached ROM digest mismatch`);
+  if ((await qualificationSHA256(source)) !== pin.sha256)
+    throw new Error(`${packID}: cached ROM digest mismatch`);
   const path = `fixtures/${packID}/${pin.file}`;
   await Bun.write(join(dist, path), Bun.file(source));
   return { path, sha256: pin.sha256, license: pack.license, source: pack.url };
@@ -51,7 +55,7 @@ export function chromePath() {
     "/usr/bin/google-chrome",
     "/usr/bin/chromium",
   ];
-  return candidates.find(p => p && Bun.file(p).size > 0);
+  return candidates.find((p) => p && Bun.file(p).size > 0);
 }
 
 export class Cdp {
@@ -61,7 +65,7 @@ export class Cdp {
   listeners: Array<(message: any) => void> = [];
   constructor(ws: WebSocket) {
     this.#ws = ws;
-    ws.onmessage = event => {
+    ws.onmessage = (event) => {
       const message = JSON.parse(String(event.data));
       if (message.id && this.#pending.has(message.id)) {
         this.#pending.get(message.id)!(message);
@@ -81,7 +85,9 @@ export class Cdp {
     const id = ++this.#id;
     this.#ws.send(JSON.stringify({ id, method, params, sessionId }));
     return new Promise((ok, fail) =>
-      this.#pending.set(id, m => (m.error ? fail(new Error(`${method}: ${m.error.message}`)) : ok(m.result))),
+      this.#pending.set(id, (m) =>
+        m.error ? fail(new Error(`${method}: ${m.error.message}`)) : ok(m.result),
+      ),
     );
   }
   close() {
@@ -96,32 +102,45 @@ export async function smoke(
   options: { rom?: string; renderer?: "gpu" | "software" } = {},
 ) {
   const comparison = options.renderer === "software";
-  if (!options.rom && !comparison && resolve(import.meta.path) !== join(root, "packages/bun-engine/web-emulation/smoke.ts"))
+  if (
+    !options.rom &&
+    !comparison &&
+    resolve(import.meta.path) !== join(root, "packages/bun-engine/web-emulation/smoke.ts")
+  )
     throw new Error("Distribution qualification must run the checked-in smoke harness");
   if (!Number.isInteger(timeoutMs) || timeoutMs < 30_000 || timeoutMs > 900_000)
     throw new Error("Smoke timeout must be 30000..900000 milliseconds");
   // Invalidate old claims before setup too: missing browser/content must not retain qualification.
   for (const core of cores) {
     if (!/^[a-z0-9][a-z0-9-]*$/.test(core)) throw new Error(`Invalid core: ${core}`);
-    if (!options.rom && !comparison) rmSync(join(dist, core, "qualification.json"), { force: true });
+    if (!options.rom && !comparison)
+      rmSync(join(dist, core, "qualification.json"), { force: true });
   }
   if (options.rom && !isAbsolute(options.rom))
     throw new Error("--rom must be an absolute path to an explicitly supplied local image");
   const privateROM = options.rom
-    ? { path: options.rom, token: crypto.randomUUID(), sha256: await qualificationSHA256(options.rom) }
+    ? {
+        path: options.rom,
+        token: crypto.randomUUID(),
+        sha256: await qualificationSHA256(options.rom),
+      }
     : undefined;
   const reportDir =
     privateROM || comparison
       ? join(root, "build/web-emulation", privateROM ? "private" : "reference", crypto.randomUUID())
       : dist;
-  if (privateROM || comparison) console.log(`Local qualification report: ${join(reportDir, "smoke.json")}`);
+  if (privateROM || comparison)
+    console.log(`Local qualification report: ${join(reportDir, "smoke.json")}`);
   const chrome = chromePath();
   if (!chrome) throw new Error("no Chrome/Chromium found (set CHROME)");
   const profileRoot = resolve(root, "build/web-emulation");
   const profile = join(profileRoot, `chrome-profile-${crypto.randomUUID()}`);
   const browserStderrPath = join(profileRoot, "browser-logs", `${crypto.randomUUID()}.stderr.log`);
   const profileName = profile.slice(profileRoot.length + 1);
-  if (!/^chrome-profile-[a-f0-9-]+$/.test(profileName) || resolve(profile) !== join(profileRoot, profileName))
+  if (
+    !/^chrome-profile-[a-f0-9-]+$/.test(profileName) ||
+    resolve(profile) !== join(profileRoot, profileName)
+  )
     throw new Error("Unsafe browser profile cleanup path");
   mkdirSync(join(profileRoot, "browser-logs"), { recursive: true });
   console.log(`Browser stderr: ${browserStderrPath}`);
@@ -140,7 +159,9 @@ export async function smoke(
     Bun.write(
       browserStderrPath,
       Buffer.concat([
-        Buffer.from(stderrTruncated ? "[Earlier browser stderr omitted; retaining the last 1 MiB]\n" : ""),
+        Buffer.from(
+          stderrTruncated ? "[Earlier browser stderr omitted; retaining the last 1 MiB]\n" : "",
+        ),
         stderrTail,
       ]),
     );
@@ -219,17 +240,27 @@ export async function smoke(
       const test = cases[core];
       const renderer = options.renderer ?? (core === "dust-nds" ? "gpu" : undefined);
       if (!test)
-        throw new Error(`no pinned open-source smoke case for ${core}; freeware and placeholder images cannot qualify`);
+        throw new Error(
+          `no pinned open-source smoke case for ${core}; freeware and placeholder images cannot qualify`,
+        );
       const fixture = privateROM ? undefined : await stageFixture(test.pack);
       const fixtures = fixture ? [fixture] : [];
       if (test.firmware) {
-        const registry = await Bun.file(join(root, "packages/bun-engine/plugins/consoles/free-firmware.json")).json();
+        const registry = await Bun.file(
+          join(root, "packages/bun-engine/plugins/consoles/free-firmware.json"),
+        ).json();
         const pin = registry.firmware[test.firmware];
         if (!pin) throw new Error(`No free firmware pin: ${test.firmware}`);
-        fixtures.push({ path: `firmware/${pin.file}`, sha256: pin.sha256, license: pin.license, source: pin.source });
+        fixtures.push({
+          path: `firmware/${pin.file}`,
+          sha256: pin.sha256,
+          license: pin.license,
+          source: pin.source,
+        });
       }
       const manifest = await Bun.file(join(dist, core, "manifest.json")).json();
-      if (threads && !manifest.variants?.threads) throw new Error("Requested threaded WASM variant is not built");
+      if (threads && !manifest.variants?.threads)
+        throw new Error("Requested threaded WASM variant is not built");
       const selectedVariant = threads ? manifest.variants.threads : manifest;
       const privateArtifacts: Record<string, string> = {};
       if (privateROM) {
@@ -238,7 +269,10 @@ export async function smoke(
           `${core}/${selectedVariant.module}`,
           `${core}/${selectedVariant.wasm}`,
         ]) {
-          if (/[\\%:?#]/.test(path) || path.split("/").some(part => !part || part === "." || part === ".."))
+          if (
+            /[\\%:?#]/.test(path) ||
+            path.split("/").some((part) => !part || part === "." || part === "..")
+          )
             throw new Error("Unsafe private qualification artifact path");
           privateArtifacts[path] = await qualificationSHA256(join(dist, path));
         }
@@ -246,7 +280,9 @@ export async function smoke(
       const snapshot =
         privateROM || comparison
           ? undefined
-          : await createQualificationSnapshot(dist, core, fixtures, { variant: threads ? "threads" : "single" });
+          : await createQualificationSnapshot(dist, core, fixtures, {
+              variant: threads ? "threads" : "single",
+            });
       const query = new URLSearchParams({
         core,
         system: test.system,
@@ -273,9 +309,15 @@ export async function smoke(
           logs.push(
             `exception: ${m.params.exceptionDetails?.exception?.description ?? m.params.exceptionDetails?.text}`,
           );
-        if (m.method === "Runtime.consoleAPICalled" && (m.params.type === "error" || m.params.type === "warning"))
-          logs.push(`${m.params.type}: ${m.params.args.map((a: any) => a.value ?? a.description).join(" ")}`);
-        if (m.method === "Log.entryAdded" && m.params.entry.level === "error") logs.push(`log: ${m.params.entry.text}`);
+        if (
+          m.method === "Runtime.consoleAPICalled" &&
+          (m.params.type === "error" || m.params.type === "warning")
+        )
+          logs.push(
+            `${m.params.type}: ${m.params.args.map((a: any) => a.value ?? a.description).join(" ")}`,
+          );
+        if (m.method === "Log.entryAdded" && m.params.entry.level === "error")
+          logs.push(`log: ${m.params.entry.text}`);
       };
       cdp.listeners.push(listener);
       await cdp.send("Runtime.enable", {}, sessionId);
@@ -308,7 +350,8 @@ export async function smoke(
         sessionId,
       );
       const clip = JSON.parse(canvasBox.value);
-      if (!(clip.width > 0 && clip.height > 0)) throw new Error("Emulator canvas has no visible screenshot region");
+      if (!(clip.width > 0 && clip.height > 0))
+        throw new Error("Emulator canvas has no visible screenshot region");
       const shot = await cdp.send("Page.captureScreenshot", { format: "png", clip }, sessionId);
       const shotPath = join(screenshotDir, `${core}${threads ? "-threads" : ""}.png`);
       const png = Buffer.from(shot.data, "base64");
@@ -396,18 +439,24 @@ export async function smoke(
 
 if (import.meta.main) {
   const args = Bun.argv.slice(2);
-  const cores = args.filter(a => !a.startsWith("--"));
+  const cores = args.filter((a) => !a.startsWith("--"));
   const selected = cores.length ? cores : ["dust-nds"];
-  const timeoutArg = args.find(arg => arg.startsWith("--timeout-ms="));
-  const rom = args.find(arg => arg.startsWith("--rom="))?.slice("--rom=".length);
-  const renderer = args.find(arg => arg.startsWith("--renderer="))?.slice("--renderer=".length);
-  if (renderer && renderer !== "gpu" && renderer !== "software") throw new Error("--renderer supports gpu or software");
+  const timeoutArg = args.find((arg) => arg.startsWith("--timeout-ms="));
+  const rom = args.find((arg) => arg.startsWith("--rom="))?.slice("--rom=".length);
+  const renderer = args.find((arg) => arg.startsWith("--renderer="))?.slice("--renderer=".length);
+  if (renderer && renderer !== "gpu" && renderer !== "software")
+    throw new Error("--renderer supports gpu or software");
   const results = await smoke(
     selected,
     args.includes("--threads"),
     timeoutArg ? Number(timeoutArg.split("=")[1]) : 90_000,
     { rom, renderer: renderer as "gpu" | "software" | undefined },
   );
-  if (selected.some(core => (results[`${core}${args.includes("--threads") ? ":threads" : ""}`] as any)?.ok !== true))
+  if (
+    selected.some(
+      (core) =>
+        (results[`${core}${args.includes("--threads") ? ":threads" : ""}`] as any)?.ok !== true,
+    )
+  )
     process.exitCode = 1;
 }

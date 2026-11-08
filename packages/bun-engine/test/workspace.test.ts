@@ -23,7 +23,9 @@ describe("canonical workspace", () => {
   });
 
   test("has one entry point for every build surface", async () => {
-    const workspace: Workspace = await Bun.file(`${root}/packages/bun-engine/config/workspace.json`).json();
+    const workspace: Workspace = await Bun.file(
+      `${root}/packages/bun-engine/config/workspace.json`,
+    ).json();
     expect(workspace.schema).toBe(1);
     for (const path of [
       workspace.cli,
@@ -38,7 +40,9 @@ describe("canonical workspace", () => {
   });
 
   test("pins every declared source owner as a local path", async () => {
-    const workspace: Workspace = await Bun.file(`${root}/packages/bun-engine/config/workspace.json`).json();
+    const workspace: Workspace = await Bun.file(
+      `${root}/packages/bun-engine/config/workspace.json`,
+    ).json();
     for (const value of Object.values(workspace.owners).flat()) {
       let found = false;
       for await (const _entry of new Bun.Glob("*").scan({ cwd: `${root}/${value}`, dot: true })) {

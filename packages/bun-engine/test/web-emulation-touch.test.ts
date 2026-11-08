@@ -4,7 +4,9 @@ import { expect, test } from "bun:test";
 import { bottomScreenPoint } from "../web-emulation/runtime/touch.js";
 
 function point(width: number, height: number, x: number, y: number, system: string) {
-  const canvas = { getBoundingClientRect: () => ({ left: 0, top: 0, width, height }) } as HTMLCanvasElement;
+  const canvas = {
+    getBoundingClientRect: () => ({ left: 0, top: 0, width, height }),
+  } as HTMLCanvasElement;
   const event = { clientX: x, clientY: y } as PointerEvent;
   return bottomScreenPoint(canvas, event, system);
 }

@@ -2,7 +2,7 @@
 
 **2 517 images, 327 Mo** moissonnées le 2026-08-27 sur le site officiel Dragon Ball
 via l'API CMS du site (`cmsapi-frontend.dragon-ball-official.com`) : les
-**266 chroniques « Weekly ☆ Character Showcase »**, une par personnage, avec
+**266 chroniques « Weekly Character Showcase »**, une par personnage, avec
 leur artwork couleur de Toriyama, leur illustration de référence et leurs
 extraits (planches manga pour l'ère Toriyama, images d'épisode pour Super).
 `manifest.json` porte, pour chaque image, son URL source, son rôle et

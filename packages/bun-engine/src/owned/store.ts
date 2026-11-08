@@ -115,10 +115,19 @@ export function ownedDb() {
   return database;
 }
 
-type Row = Omit<OwnedDump, "names" | "keyNames" | "header"> & { names: string; keyNames: string; header: string };
+type Row = Omit<OwnedDump, "names" | "keyNames" | "header"> & {
+  names: string;
+  keyNames: string;
+  header: string;
+};
 
 function fromRow(row: Row): OwnedDump {
-  return { ...row, names: JSON.parse(row.names), keyNames: JSON.parse(row.keyNames), header: JSON.parse(row.header) };
+  return {
+    ...row,
+    names: JSON.parse(row.names),
+    keyNames: JSON.parse(row.keyNames),
+    header: JSON.parse(row.header),
+  };
 }
 
 export function listOwned(filter: { kind?: OwnedKind; system?: string } = {}): OwnedDump[] {
@@ -193,7 +202,11 @@ const keyFileNames =
 
 function keyConsole(name: string): string {
   if (/\.keys$/i.test(name)) return "nintendo-switch";
-  if (/^(aes_keys\.txt|seeddb\.bin|boot9\.bin|boot11\.bin|secret_sector\.bin|movable\.sed)$/i.test(name))
+  if (
+    /^(aes_keys\.txt|seeddb\.bin|boot9\.bin|boot11\.bin|secret_sector\.bin|movable\.sed)$/i.test(
+      name,
+    )
+  )
     return "nintendo-3ds";
   if (/^(otp|keys)\.bin$/i.test(name)) return "nintendo-wii-gamecube";
   return "unknown";
@@ -207,13 +220,16 @@ async function keyNamesOf(path: string, name: string): Promise<string[] | undefi
   const file = Bun.file(path);
   if (file.size === 0 || file.size > maxKeyFileBytes) return undefined;
   const bytes = await file.bytes();
-  const text = bytes.includes(0) ? undefined : new TextDecoder("utf-8", { fatal: false }).decode(bytes);
+  const text = bytes.includes(0)
+    ? undefined
+    : new TextDecoder("utf-8", { fatal: false }).decode(bytes);
   if (text) {
-    const lines = text.split(/\r?\n/).filter(line => line.trim() && !/^\s*[#;[]/.test(line));
+    const lines = text.split(/\r?\n/).filter((line) => line.trim() && !/^\s*[#;[]/.test(line));
     const names = lines
-      .map(line => /^\s*([A-Za-z0-9_.-]{2,64})\s*[=:]\s*[0-9A-Fa-f]{16,}\s*$/.exec(line)?.[1])
+      .map((line) => /^\s*([A-Za-z0-9_.-]{2,64})\s*[=:]\s*[0-9A-Fa-f]{16,}\s*$/.exec(line)?.[1])
       .filter((key): key is string => Boolean(key));
-    if (names.length && (names.length >= lines.length * 0.6 || keyFileNames.test(name))) return names;
+    if (names.length && (names.length >= lines.length * 0.6 || keyFileNames.test(name)))
+      return names;
   }
   return keyFileNames.test(name) ? [name] : undefined;
 }
@@ -258,15 +274,20 @@ const firmwareFormats: Partial<Record<FormatId, { console: string; system: strin
   "psx-bios": { console: "sony-playstation", system: "psx" },
 };
 
-let coreBios: Promise<Map<string, Array<{ core: string; file: string; system: string }>>> | undefined;
+let coreBios:
+  | Promise<Map<string, Array<{ core: string; file: string; system: string }>>>
+  | undefined;
 /** libretro-core-info BIOS requirements by MD5. */
 function coreBiosByMd5() {
-  coreBios ??= libretroCatalog().then(cores => {
+  coreBios ??= libretroCatalog().then((cores) => {
     const map = new Map<string, Array<{ core: string; file: string; system: string }>>();
     for (const core of cores)
       for (const fw of core.firmware)
         if (fw.md5)
-          map.set(fw.md5, [...(map.get(fw.md5) ?? []), { core: core.id, file: fw.path, system: core.systemId }]);
+          map.set(fw.md5, [
+            ...(map.get(fw.md5) ?? []),
+            { core: core.id, file: fw.path, system: core.systemId },
+          ]);
     return map;
   });
   return coreBios;
@@ -286,8 +307,16 @@ function headerFailures(header: Record<string, unknown>): string[] {
 function storeExtension(name: string, format: string): string {
   const ext = extname(name).slice(1).toLowerCase();
   if (/^[a-z0-9]{1,8}$/.test(ext)) return ext;
-  const byFormat: Record<string, string> = { n64: "z64", "gamecube-disc": "gcm", "wii-disc": "iso", genesis: "md" };
-  return byFormat[format] ?? (format !== "unknown" ? format.replace(/[^a-z0-9]/g, "").slice(0, 8) : "bin");
+  const byFormat: Record<string, string> = {
+    n64: "z64",
+    "gamecube-disc": "gcm",
+    "wii-disc": "iso",
+    genesis: "md",
+  };
+  return (
+    byFormat[format] ??
+    (format !== "unknown" ? format.replace(/[^a-z0-9]/g, "").slice(0, 8) : "bin")
+  );
 }
 
 interface Classification {
@@ -306,7 +335,12 @@ interface Classification {
   keyNames: string[];
 }
 
-async function classify(path: string, name: string, digest: Digest, options: IngestOptions): Promise<Classification> {
+async function classify(
+  path: string,
+  name: string,
+  digest: Digest,
+  options: IngestOptions,
+): Promise<Classification> {
   const keyNames = await keyNamesOf(path, name);
   if (keyNames) {
     return {
@@ -326,7 +360,7 @@ async function classify(path: string, name: string, digest: Digest, options: Ing
     };
   }
   const { systems } = await loadSystems();
-  const systemById = new Map(systems.map(system => [system.id, system]));
+  const systemById = new Map(systems.map((system) => [system.id, system]));
   const forced = options.system ? systemById.get(options.system) : undefined;
   if (options.system && !forced) throw new Error(`unknown system ${options.system}`);
 
@@ -348,7 +382,10 @@ async function classify(path: string, name: string, digest: Digest, options: Ing
   if (known.length || core.length || structural) {
     const consoleId = known[0]?.console ?? structural?.console ?? "unknown";
     const system =
-      structural?.system ?? systems.find(item => item.consoles.includes(consoleId))?.id ?? forced?.id ?? null;
+      structural?.system ??
+      systems.find((item) => item.consoles.includes(consoleId))?.id ??
+      forced?.id ??
+      null;
     const verified = known.length > 0 || core.length > 0;
     return {
       kind: "firmware",
@@ -362,11 +399,15 @@ async function classify(path: string, name: string, digest: Digest, options: Ing
       status: verified ? "verified" : "unverified-good-dump",
       reason: verified
         ? [
-            ...known.map(item => `firmware.json ${item.console}/${item.file}`),
-            ...core.map(item => `core-info ${item.core}: ${item.file}`),
+            ...known.map((item) => `firmware.json ${item.console}/${item.file}`),
+            ...core.map((item) => `core-info ${item.core}: ${item.file}`),
           ].join("; ")
         : "structure matches a BIOS layout; hash not in the public BIOS tables",
-      dat: known.length ? "plugins/consoles/firmware.json" : core.length ? "vendor/libretro-core-info" : null,
+      dat: known.length
+        ? "plugins/consoles/firmware.json"
+        : core.length
+          ? "vendor/libretro-core-info"
+          : null,
       header: structural ? header : {},
       keyNames: [],
     };
@@ -377,8 +418,12 @@ async function classify(path: string, name: string, digest: Digest, options: Ing
   const candidates: SystemDefinition[] = forced
     ? [forced]
     : [
-        ...(formatSystems[format as FormatId] ?? []).map(id => systemById.get(id)!).filter(Boolean),
-        ...systems.filter(system => format === "unknown" && system.extensions.includes(extension)),
+        ...(formatSystems[format as FormatId] ?? [])
+          .map((id) => systemById.get(id)!)
+          .filter(Boolean),
+        ...systems.filter(
+          (system) => format === "unknown" && system.extensions.includes(extension),
+        ),
       ];
   const serial = text(header.gameCode) ?? text(header.serial);
   const failures = headerFailures(header);
@@ -389,7 +434,9 @@ async function classify(path: string, name: string, digest: Digest, options: Ing
   for (const system of candidates) {
     const headerBytes = system.headerBytes?.[storeExtension(name, format)] ?? 0;
     const headerless =
-      headerBytes && digest.size < 64 * 1024 * 1024 ? (await hashDump(path, headerBytes)).headerless : undefined;
+      headerBytes && digest.size < 64 * 1024 * 1024
+        ? (await hashDump(path, headerBytes)).headerless
+        : undefined;
     const result = await verifyDump(system, {
       crc: digest.crc32,
       md5: digest.md5,
@@ -418,7 +465,7 @@ async function classify(path: string, name: string, digest: Digest, options: Ing
   } else if (failures.length) {
     status = "bad-dump";
     reason = `header check failed: ${failures.join(", ")}`;
-  } else if (serialRows.length && serialRows.every(row => row.size && row.size !== digest.size)) {
+  } else if (serialRows.length && serialRows.every((row) => row.size && row.size !== digest.size)) {
     status = "bad-dump";
     reason = `serial ${serial} is ${serialRows[0]!.size} bytes in the DAT, the dump is ${digest.size} (trimmed or overdumped)`;
   } else if (!chosen) {
@@ -510,9 +557,11 @@ async function ensureKeysRoot(): Promise<string> {
 // ---- archives ---------------------------------------------------------------------------------
 
 function archiveKind(head: Uint8Array): "bun" | "7z" | undefined {
-  const at = (offset: number, bytes: number[]) => bytes.every((byte, index) => head[offset + index] === byte);
+  const at = (offset: number, bytes: number[]) =>
+    bytes.every((byte, index) => head[offset + index] === byte);
   if (at(0, [0x50, 0x4b, 0x03, 0x04]) || at(0, [0x1f, 0x8b])) return "bun"; // zip, gzip (tar.gz)
-  if (head.length > 262 && new TextDecoder().decode(head.subarray(257, 262)) === "ustar") return "bun";
+  if (head.length > 262 && new TextDecoder().decode(head.subarray(257, 262)) === "ustar")
+    return "bun";
   if (
     at(0, [0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c]) ||
     at(0, [0x52, 0x61, 0x72, 0x21, 0x1a, 0x07]) ||
@@ -531,7 +580,10 @@ async function unpack(path: string, kind: "bun" | "7z"): Promise<string> {
   }
   const tool = sevenZipTool();
   if (!tool) throw new Error("7z/rar/xz archives need 7-Zip (7z on PATH)");
-  const result = Bun.spawnSync([tool, "x", "-y", "-bd", `-o${dir}`, path], { stdout: "ignore", stderr: "pipe" });
+  const result = Bun.spawnSync([tool, "x", "-y", "-bd", `-o${dir}`, path], {
+    stdout: "ignore",
+    stderr: "pipe",
+  });
   if (!result.success) throw new Error(`7-Zip could not unpack ${basename(path)}`);
   return dir;
 }
@@ -592,7 +644,12 @@ async function storeFile(
   return { file, duplicate: false };
 }
 
-async function ingestFile(path: string, label: string, options: IngestOptions, results: IngestResult[]): Promise<void> {
+async function ingestFile(
+  path: string,
+  label: string,
+  options: IngestOptions,
+  results: IngestResult[],
+): Promise<void> {
   const name = basename(label);
   const file = Bun.file(path);
   if (file.size === 0) {
@@ -604,18 +661,27 @@ async function ingestFile(path: string, label: string, options: IngestOptions, r
     const dir = await unpack(path, kind);
     try {
       for (const member of walk(dir))
-        await ingestFile(member, `${label}/${relative(dir, member).replaceAll("\\", "/")}`, options, results);
+        await ingestFile(
+          member,
+          `${label}/${relative(dir, member).replaceAll("\\", "/")}`,
+          options,
+          results,
+        );
     } finally {
       await rm(dir, { recursive: true, force: true });
     }
     return;
   }
   const digest = await hashDump(path);
-  const known = ownedDb().query<Row, [string]>("SELECT * FROM owned WHERE sha256 = ?").get(digest.sha256);
+  const known = ownedDb()
+    .query<Row, [string]>("SELECT * FROM owned WHERE sha256 = ?")
+    .get(digest.sha256);
   const supplied = options.via ? `${options.via}:${name}` : name;
   if (known && existsSync(storePath(known))) {
     const names = [...new Set([...JSON.parse(known.names), supplied])];
-    ownedDb().query("UPDATE owned SET names = ? WHERE sha256 = ?").run(JSON.stringify(names), digest.sha256);
+    ownedDb()
+      .query("UPDATE owned SET names = ? WHERE sha256 = ?")
+      .run(JSON.stringify(names), digest.sha256);
     results.push(summary(label, fromRow({ ...known, names: JSON.stringify(names) }), true));
     return;
   }
@@ -645,7 +711,11 @@ async function ingestFile(path: string, label: string, options: IngestOptions, r
     header:
       classification.kind === "keys"
         ? {}
-        : JSON.parse(JSON.stringify(classification.header, (_, v) => (typeof v === "bigint" ? v.toString() : v))),
+        : JSON.parse(
+            JSON.stringify(classification.header, (_, v) =>
+              typeof v === "bigint" ? v.toString() : v,
+            ),
+          ),
     importedAt: new Date().toISOString(),
   };
   ownedDb()
@@ -679,7 +749,10 @@ function summary(input: string, dump: OwnedDump, duplicate: boolean): IngestResu
 }
 
 /** Ingests files, directories and archives the owner supplies; one failing file never stops the rest. */
-export async function ingestPaths(inputs: string[], options: IngestOptions = {}): Promise<IngestResult[]> {
+export async function ingestPaths(
+  inputs: string[],
+  options: IngestOptions = {},
+): Promise<IngestResult[]> {
   const results: IngestResult[] = [];
   mkdirSync(ownedPaths().work, { recursive: true });
   for (const input of inputs) {
@@ -689,12 +762,16 @@ export async function ingestPaths(inputs: string[], options: IngestOptions = {})
       continue;
     }
     for (const path of walk(full)) {
-      const label = full === path ? input : `${input}/${relative(full, path).replaceAll("\\", "/")}`;
+      const label =
+        full === path ? input : `${input}/${relative(full, path).replaceAll("\\", "/")}`;
       try {
         await ingestFile(path, label, options, results);
       } catch (error) {
         // Messages name the input only; key material never reaches an error.
-        results.push({ input: label, error: error instanceof Error ? error.message : String(error) });
+        results.push({
+          input: label,
+          error: error instanceof Error ? error.message : String(error),
+        });
       }
     }
   }

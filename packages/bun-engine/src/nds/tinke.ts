@@ -53,7 +53,10 @@ export function loadTinkeAot(path = tinkeAotLibrary) {
       transform(bytes, blockSize, false);
     },
     pacCount(bytes: Uint8Array): number {
-      const count = library.symbols.bun_engine_nds_tinke_pac_count(pointer(bytes), bytes.byteLength);
+      const count = library.symbols.bun_engine_nds_tinke_pac_count(
+        pointer(bytes),
+        bytes.byteLength,
+      );
       if (count < 0) throw new Error(`invalid Tinke PAC buffer (${count})`);
       return count;
     },

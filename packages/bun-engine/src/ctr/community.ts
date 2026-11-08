@@ -5,7 +5,15 @@
 // cheats/<TID>.txt, sdmc/3ds/<name>/<name>.3dsx and scripts/. Nothing is downloaded: add-ons are
 // pinned by SHA-256 against sources already vendored in this repository.
 import { createHash } from "node:crypto";
-import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readFileSync,
+  readdirSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { basename, dirname, extname, join, resolve } from "node:path";
 import { repoRoot } from "../usr";
 import { ciaUserDir } from "./cia";
@@ -40,7 +48,7 @@ export function loadCatalog(): Catalog {
 }
 
 export function pinHash(file: string): string {
-  const bytes = readFileSync(file).filter(byte => byte !== 13);
+  const bytes = readFileSync(file).filter((byte) => byte !== 13);
   return createHash("sha256").update(bytes).digest("hex");
 }
 
@@ -53,7 +61,7 @@ function titleId(value: string | undefined): string {
 
 function walk(dir: string): string[] {
   if (!existsSync(dir)) return [];
-  return readdirSync(dir, { withFileTypes: true }).flatMap(entry =>
+  return readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
     entry.isDirectory() ? walk(join(dir, entry.name)) : [join(dir, entry.name)],
   );
 }
@@ -67,11 +75,11 @@ export function classifyPatch(file: string): PatchKind {
   if (head === "PATCH") return "ips";
   if (head.startsWith("BPS1")) return "bps";
   const text = new TextDecoder().decode(bytes);
-  const lines = text.split(/\r?\n/).filter(line => line.trim() && !line.startsWith("*"));
+  const lines = text.split(/\r?\n/).filter((line) => line.trim() && !line.startsWith("*"));
   const hexLine = /^[0-9A-Fa-f]{8} [0-9A-Fa-f]{8}$/;
   if (
-    lines.some(line => line.startsWith("[")) &&
-    lines.every(line => line.startsWith("[") || hexLine.test(line.trim()))
+    lines.some((line) => line.startsWith("[")) &&
+    lines.every((line) => line.startsWith("[") || hexLine.test(line.trim()))
   )
     return "cheat";
   throw new Error(`${file}: not an IPS, BPS or Gateway cheat file`);
@@ -85,7 +93,11 @@ function readLock(): Record<string, { source: string; sha256: string; kind: stri
 }
 function record(dest: string, source: string, kind: string) {
   const lock = readLock();
-  lock[dest.slice(ciaUserDir().length + 1).replaceAll("\\", "/")] = { source, sha256: fileHash(dest), kind };
+  lock[dest.slice(ciaUserDir().length + 1).replaceAll("\\", "/")] = {
+    source,
+    sha256: fileHash(dest),
+    kind,
+  };
   writeFileSync(lockPath(), `${JSON.stringify(lock, null, 2)}\n`);
 }
 function place(source: string, dest: string, kind: string, force: boolean) {
@@ -101,16 +113,19 @@ export function patchesList(tid?: string) {
   const filter = tid ? titleId(tid) : undefined;
   const rel = (file: string) => file.slice(user.length + 1).replaceAll("\\", "/");
   const entries = [
-    ...walk(join(user, "load", "mods")).map(file => ({ area: "mods", file })),
-    ...walk(join(user, "load", "textures")).map(file => ({ area: "textures", file })),
-    ...walk(join(user, "cheats")).map(file => ({ area: "cheats", file })),
+    ...walk(join(user, "load", "mods")).map((file) => ({ area: "mods", file })),
+    ...walk(join(user, "load", "textures")).map((file) => ({ area: "textures", file })),
+    ...walk(join(user, "cheats")).map((file) => ({ area: "cheats", file })),
   ]
     .map(({ area, file }) => {
       const path = rel(file);
-      const id = area === "cheats" ? basename(file, ".txt").toUpperCase() : path.split("/")[2]?.toUpperCase();
+      const id =
+        area === "cheats"
+          ? basename(file, ".txt").toUpperCase()
+          : path.split("/")[2]?.toUpperCase();
       return { area, titleId: id, path, size: statSync(file).size, sha256: fileHash(file) };
     })
-    .filter(entry => !filter || entry.titleId === filter);
+    .filter((entry) => !filter || entry.titleId === filter);
   return { userDir: user, entries };
 }
 
@@ -128,13 +143,17 @@ export function patchApply(
   if (kind === "cheat") {
     const dest = join(user, "cheats", `${id}.txt`);
     if (existsSync(dest) && options.append) {
-      writeFileSync(dest, `${readFileSync(dest, "utf8").trimEnd()}\n\n${readFileSync(source, "utf8").trimStart()}`);
+      writeFileSync(
+        dest,
+        `${readFileSync(dest, "utf8").trimEnd()}\n\n${readFileSync(source, "utf8").trimStart()}`,
+      );
       record(dest, source, "cheat");
       return { kind, dest };
     }
     return { kind, dest: place(source, dest, kind, !!options.force) };
   }
-  if (options.romfsPath?.split(/[/\\]/).includes("..")) throw new Error("romfs path must stay inside the RomFS");
+  if (options.romfsPath?.split(/[/\\]/).includes(".."))
+    throw new Error("romfs path must stay inside the RomFS");
   const mods = join(user, "load", "mods", id);
   const dest = options.romfsPath
     ? join(mods, "romfs", `${options.romfsPath.replace(/^[/\\]+/, "")}.${kind}`)
@@ -147,7 +166,7 @@ export function addonsList() {
   const user = ciaUserDir();
   return {
     userDir: user,
-    addons: catalog.addons.map(addon => {
+    addons: catalog.addons.map((addon) => {
       const source = join(repoRoot, addon.source);
       const dest = join(user, addon.dest);
       return {
@@ -162,7 +181,7 @@ export function addonsList() {
         installedMatchesPin: existsSync(dest) && pinHash(dest) === addon.sha256,
       };
     }),
-    homebrew: catalog.homebrew.map(entry => ({
+    homebrew: catalog.homebrew.map((entry) => ({
       ...entry,
       present: existsSync(join(repoRoot, entry.path, "Makefile")),
     })),
@@ -171,18 +190,22 @@ export function addonsList() {
 }
 
 export function addonInstall(id: string | undefined, force: boolean) {
-  const addon = loadCatalog().addons.find(entry => entry.id === id);
+  const addon = loadCatalog().addons.find((entry) => entry.id === id);
   if (!addon) throw new Error(`unknown add-on: ${id}`);
   const source = join(repoRoot, addon.source);
-  if (!existsSync(source)) throw new Error(`source missing, initialise the submodule: ${addon.source}`);
+  if (!existsSync(source))
+    throw new Error(`source missing, initialise the submodule: ${addon.source}`);
   if (pinHash(source) !== addon.sha256)
-    throw new Error(`${addon.id}: source does not match its pin, review and update plugins/3ds/community.json`);
+    throw new Error(
+      `${addon.id}: source does not match its pin, review and update plugins/3ds/community.json`,
+    );
   return { id: addon.id, dest: place(source, join(ciaUserDir(), addon.dest), "addon", force) };
 }
 
 function devkitpro(): Record<string, string> {
   const root = Bun.env.DEVKITPRO ?? (existsSync("/opt/devkitpro") ? "/opt/devkitpro" : "");
-  if (!root) throw new Error("devkitPro not found: set DEVKITPRO (3ds-dev with libctru and devkitARM)");
+  if (!root)
+    throw new Error("devkitPro not found: set DEVKITPRO (3ds-dev with libctru and devkitARM)");
   return {
     DEVKITPRO: root,
     DEVKITARM: Bun.env.DEVKITARM ?? `${root}/devkitARM`,
@@ -207,7 +230,7 @@ export async function homebrewBuild(dir = defaultHomebrew) {
     new Response(child.stderr).text(),
     child.exited,
   ]);
-  const outputs = walk(project).filter(file => [".3dsx", ".cia"].includes(extname(file)));
+  const outputs = walk(project).filter((file) => [".3dsx", ".cia"].includes(extname(file)));
   return { ok: code === 0, outputs, log: `${out}${err}`.trim().split("\n").slice(-20).join("\n") };
 }
 
@@ -222,7 +245,7 @@ export function homebrewInstall(file: string | undefined) {
 
 function azaharFrontend(): string | undefined {
   const lib = join(repoRoot, "usr", "lib", "azahar");
-  const found = walk(lib).find(file => /(^|[\\/])azahar(\.exe)?$/.test(file));
+  const found = walk(lib).find((file) => /(^|[\\/])azahar(\.exe)?$/.test(file));
   return Bun.env.AZAHAR ?? found ?? Bun.which("azahar") ?? undefined;
 }
 
@@ -236,14 +259,24 @@ export async function homebrewRun(file: string | undefined, extra: string[]): Pr
     return Bun.spawn([frontend, image], { stdio: ["inherit", "inherit", "inherit"] }).exited;
   }
   const { runNative } = await import("../nds/cli");
-  return runNative(["run", "3ds", image, ...(extra.length ? extra : ["--headless", "--frames", "60"])]);
+  return runNative([
+    "run",
+    "3ds",
+    image,
+    ...(extra.length ? extra : ["--headless", "--frames", "60"]),
+  ]);
 }
 
-export async function communityMain(group: "patches" | "addons" | "homebrew", argv: string[]): Promise<number> {
+export async function communityMain(
+  group: "patches" | "addons" | "homebrew",
+  argv: string[],
+): Promise<number> {
   const print = (value: unknown) => console.log(JSON.stringify(value, null, 2));
   const flag = (name: string) => argv.includes(name);
   const option = (name: string) => argv[argv.indexOf(name) + 1];
-  const positional = argv.filter((arg, index) => !arg.startsWith("--") && argv[index - 1] !== "--romfs");
+  const positional = argv.filter(
+    (arg, index) => !arg.startsWith("--") && argv[index - 1] !== "--romfs",
+  );
   const [action, a, b] = positional;
   try {
     if (group === "patches" && action === "list") print(patchesList(a));

@@ -64,13 +64,13 @@ export function startJob(title: string, work: () => Promise<unknown>): Job {
   jobs.unshift(job);
   jobs.splice(50);
   void work().then(
-    result =>
+    (result) =>
       Object.assign(job, {
         status: "done",
         result,
         endedAt: new Date().toISOString(),
       }),
-    error =>
+    (error) =>
       Object.assign(job, {
         status: "failed",
         error: error instanceof Error ? error.message : String(error),
@@ -85,7 +85,7 @@ export async function systemsOverview(): Promise<unknown[]> {
   const covers = systemCovers();
   const { systems } = await loadSystems();
   return Promise.all(
-    systems.map(async system => {
+    systems.map(async (system) => {
       const routes = await routesFor(system.id);
       return {
         id: system.id,
@@ -106,7 +106,9 @@ export async function systemsOverview(): Promise<unknown[]> {
 function installedCoreIds(wanted: string[]): Set<string> {
   const dir = join(pm.cacheDirectories().usr, "lib", "libretro");
   return new Set(
-    wanted.filter(id => ["dll", "so", "dylib"].some(ext => existsSync(join(dir, `${id}_libretro.${ext}`)))),
+    wanted.filter((id) =>
+      ["dll", "so", "dylib"].some((ext) => existsSync(join(dir, `${id}_libretro.${ext}`))),
+    ),
   );
 }
 
@@ -130,7 +132,7 @@ export async function biosOverview(): Promise<unknown> {
       required: bios.required,
       freeFirmware: bios.freeFirmware,
       license: free[bios.freeFirmware]?.license,
-      images: images.map(image => ({
+      images: images.map((image) => ({
         sha256: image.sha256,
         bytes: image.bytes,
         file: image.file,
@@ -138,9 +140,9 @@ export async function biosOverview(): Promise<unknown> {
       status: images.length ? "present" : bios.required ? "missing" : "optional",
     });
   }
-  const installedCores = installedCoreIds(systems.flatMap(system => system.libretro));
-  const wanted = new Set(systems.flatMap(system => system.libretro));
-  const ids = [...wanted].filter(id => installedCores.has(id));
+  const installedCores = installedCoreIds(systems.flatMap((system) => system.libretro));
+  const wanted = new Set(systems.flatMap((system) => system.libretro));
+  const ids = [...wanted].filter((id) => installedCores.has(id));
   const libretro = ids.length ? await biosReport(ids) : [];
   return {
     native,
@@ -168,14 +170,16 @@ export async function settingsOverview(): Promise<unknown> {
     }>,
     loadSystems(),
   ]);
-  const installedCores = installedCoreIds(definitions.flatMap(system => system.libretro));
-  const cores = [...new Set(definitions.flatMap(system => system.libretro))].sort().map(id => ({
+  const installedCores = installedCoreIds(definitions.flatMap((system) => system.libretro));
+  const cores = [...new Set(definitions.flatMap((system) => system.libretro))].sort().map((id) => ({
     id,
     installed: installedCores.has(id),
-    systems: definitions.filter(system => system.libretro.includes(id)).map(system => system.id),
+    systems: definitions
+      .filter((system) => system.libretro.includes(id))
+      .map((system) => system.id),
     bios: bios.libretro
-      .filter(row => row.core === id)
-      .map(row => ({ file: row.file, status: row.status, optional: row.optional })),
+      .filter((row) => row.core === id)
+      .map((row) => ({ file: row.file, status: row.status, optional: row.optional })),
   }));
   const hooks = sessionHooks();
   const packageJson = (await Bun.file(join(import.meta.dir, "..", "..", "package.json"))
@@ -186,7 +190,8 @@ export async function settingsOverview(): Promise<unknown> {
   return {
     session: {
       gamescope: underGamescope(),
-      display: Bun.env.GAMESCOPE_WAYLAND_DISPLAY ?? Bun.env.WAYLAND_DISPLAY ?? Bun.env.DISPLAY ?? null,
+      display:
+        Bun.env.GAMESCOPE_WAYLAND_DISPLAY ?? Bun.env.WAYLAND_DISPLAY ?? Bun.env.DISPLAY ?? null,
       desktop: Bun.env.XDG_CURRENT_DESKTOP ?? null,
       window: hooks?.window ?? false,
       power: Boolean(hooks),
@@ -197,12 +202,12 @@ export async function settingsOverview(): Promise<unknown> {
       games: totalGames(),
       sources: listSources(),
     },
-    systems: systems.map(system => ({
+    systems: systems.map((system) => ({
       id: system.id,
       name: system.name,
       games: system.games,
       defaultRoute: system.defaultRoute,
-      routes: system.routes.map(route => ({
+      routes: system.routes.map((route) => ({
         id: route.id,
         kind: route.kind,
         available: route.available,
@@ -228,11 +233,11 @@ export async function installerOverview(): Promise<unknown> {
     libretroCatalog(),
     loadSystems(),
   ]);
-  const byId = new Map(installed.map(row => [row.id, row]));
+  const byId = new Map(installed.map((row) => [row.id, row]));
   const usedBy = (predicate: (system: (typeof systems)[number]) => boolean) =>
-    systems.filter(predicate).map(system => system.id);
+    systems.filter(predicate).map((system) => system.id);
   const libretroDir = join(pm.cacheDirectories().usr, "lib", "libretro");
-  const wanted = [...new Set(systems.flatMap(system => system.libretro))].sort();
+  const wanted = [...new Set(systems.flatMap((system) => system.libretro))].sort();
   const mirrors = listMirrors();
   const services = new Map<
     string,
@@ -264,18 +269,23 @@ export async function installerOverview(): Promise<unknown> {
       id,
       console: pkg.console,
       repo: pkg.repo,
-      systems: usedBy(system => system.binaries.includes(id) || (id === "retroarch" && system.libretro.length > 0)),
+      systems: usedBy(
+        (system) =>
+          system.binaries.includes(id) || (id === "retroarch" && system.libretro.length > 0),
+      ),
       installed: byId.get(id) ?? null,
     })),
-    libretro: wanted.map(id => {
-      const core = cores.find(item => item.id === id);
+    libretro: wanted.map((id) => {
+      const core = cores.find((item) => item.id === id);
       return {
         id,
         name: core?.name ?? id,
         system: core?.system ?? "",
         license: core?.license ?? "",
-        systems: usedBy(system => system.libretro.includes(id)),
-        installed: ["dll", "so", "dylib"].some(ext => Bun.file(join(libretroDir, `${id}_libretro.${ext}`)).size > 0),
+        systems: usedBy((system) => system.libretro.includes(id)),
+        installed: ["dll", "so", "dylib"].some(
+          (ext) => Bun.file(join(libretroDir, `${id}_libretro.${ext}`)).size > 0,
+        ),
       };
     }),
     mirrors: [...services.values()],
@@ -290,7 +300,9 @@ async function body<T>(request: Request): Promise<T> {
   return (await request.json().catch(() => ({}))) as T;
 }
 
-function guard(handler: (request: Bun.BunRequest, server: Bun.Server<undefined>) => Promise<Response> | Response) {
+function guard(
+  handler: (request: Bun.BunRequest, server: Bun.Server<undefined>) => Promise<Response> | Response,
+) {
   return async (request: Bun.BunRequest, server: Bun.Server<undefined>) => {
     try {
       return await handler(request, server);
@@ -305,13 +317,13 @@ export function frontendRoutes() {
   return {
     "/api/systems": { GET: guard(async () => json(await systemsOverview())) },
     "/api/systems/:id/games": {
-      GET: guard(request => json(gamesFor((request.params as { id: string }).id))),
+      GET: guard((request) => json(gamesFor((request.params as { id: string }).id))),
     },
     "/api/systems/:id/routes": {
-      GET: guard(async request => json(await routesFor((request.params as { id: string }).id))),
+      GET: guard(async (request) => json(await routesFor((request.params as { id: string }).id))),
     },
     "/api/systems/:id/default": {
-      PUT: guard(async request => {
+      PUT: guard(async (request) => {
         const { id } = request.params as { id: string };
         await systemById(id);
         const { route } = await body<{ route: string | null }>(request);
@@ -320,7 +332,7 @@ export function frontendRoutes() {
       }),
     },
     "/api/games/:id": {
-      GET: guard(async request => {
+      GET: guard(async (request) => {
         const game = gameById(Number((request.params as { id: string }).id));
         return json({
           ...game,
@@ -330,7 +342,7 @@ export function frontendRoutes() {
       }),
     },
     "/api/games/:id/page": {
-      GET: guard(async request => {
+      GET: guard(async (request) => {
         const url = new URL(request.url);
         const profile = url.searchParams.get("profile") ?? "default";
         const game = profileGame(Number((request.params as { id: string }).id), profile);
@@ -341,15 +353,15 @@ export function frontendRoutes() {
           defaultRoute: defaultRoute(game.system),
           sameSystem: relatedGames(game),
           recent: recentGames(profile, 13)
-            .filter(item => item.id !== game.id)
+            .filter((item) => item.id !== game.id)
             .slice(0, 12),
           saves: saveSummary(profile, stem),
-          running: runningGames().find(item => item.game === game.id) ?? null,
+          running: runningGames().find((item) => item.game === game.id) ?? null,
         });
       }),
     },
     "/api/games/:id/cover": {
-      GET: guard(async request => {
+      GET: guard(async (request) => {
         const cover = gameById(Number((request.params as { id: string }).id)).cover;
         const file = cover ? Bun.file(cover) : undefined;
         if (!file || !(await file.exists())) return new Response("no cover", { status: 404 });
@@ -370,7 +382,7 @@ export function frontendRoutes() {
       }),
     },
     "/api/games/:id/favorite": {
-      POST: guard(async request => {
+      POST: guard(async (request) => {
         const { id } = request.params as { id: string };
         const { favorite } = await body<{ favorite: boolean }>(request);
         setFavorite(Number(id), favorite);
@@ -378,7 +390,7 @@ export function frontendRoutes() {
       }),
     },
     "/api/games/:id/route": {
-      PUT: guard(async request => {
+      PUT: guard(async (request) => {
         const { id } = request.params as { id: string };
         const { route } = await body<{ route: string | null }>(request);
         setGameRoute(Number(id), route);
@@ -386,22 +398,27 @@ export function frontendRoutes() {
       }),
     },
     "/api/recent": {
-      GET: guard(request => {
+      GET: guard((request) => {
         const url = new URL(request.url);
         return json(
-          recentGames(url.searchParams.get("profile") ?? "default", Number(url.searchParams.get("limit") ?? 12)),
+          recentGames(
+            url.searchParams.get("profile") ?? "default",
+            Number(url.searchParams.get("limit") ?? 12),
+          ),
         );
       }),
     },
     "/api/search": {
-      GET: guard(request => {
+      GET: guard((request) => {
         const url = new URL(request.url);
         return json(searchGames(url.searchParams.get("q") ?? ""));
       }),
     },
     "/api/profiles": {
       GET: guard(() => json(listPlayers())),
-      POST: guard(async request => json(addPlayer((await body<{ name: string }>(request)).name ?? ""))),
+      POST: guard(async (request) =>
+        json(addPlayer((await body<{ name: string }>(request)).name ?? "")),
+      ),
     },
     "/api/session": {
       GET: guard(async () => {
@@ -419,25 +436,28 @@ export function frontendRoutes() {
     "/api/host": { GET: guard(async () => json(await hostState())) },
     "/api/apps": { GET: guard(() => json(listApps(runningGames()))) },
     "/api/apps/:id/launch": {
-      POST: guard(request => json(launchApp((request.params as { id: string }).id, runningGames()))),
+      POST: guard((request) =>
+        json(launchApp((request.params as { id: string }).id, runningGames())),
+      ),
     },
     "/api/settings": { GET: guard(async () => json(await settingsOverview())) },
     "/api/settings/:key": {
-      PUT: guard(async request => {
+      PUT: guard(async (request) => {
         const { key } = request.params as { key: string };
         const { value } = await body<{ value: string }>(request);
         return json(writeShellSetting(key, String(value)));
       }),
     },
     "/api/session/:action": {
-      POST: guard(async request => {
+      POST: guard(async (request) => {
         const { action } = request.params as { action: string };
         if (action === "sleep" || action === "wake") {
           // display power only: the answer says what the host tool reported, never an assumed success
           const result = await (action === "sleep" ? sleepDisplay() : wakeDisplay());
           return json({ action, ...result }, result.ok ? 200 : 409);
         }
-        if (action !== "exit" && action !== "restart") throw new Error(`unknown session action ${action}`);
+        if (action !== "exit" && action !== "restart")
+          throw new Error(`unknown session action ${action}`);
         if (displayAsleep()) await wakeDisplay();
         return json(sessionAction(action));
       }),
@@ -454,13 +474,13 @@ export function frontendRoutes() {
     },
     "/api/library/sources": {
       GET: () => json(listSources()),
-      POST: guard(async request => {
+      POST: guard(async (request) => {
         const { path, system } = await body<{ path: string; system?: string }>(request);
         return json(await addFolder(path, system || undefined));
       }),
     },
     "/api/library/sources/:id": {
-      DELETE: guard(request => {
+      DELETE: guard((request) => {
         removeSource(Number((request.params as { id: string }).id));
         return json({ removed: true });
       }),
@@ -470,12 +490,15 @@ export function frontendRoutes() {
       GET: guard(async () => json(await installerOverview())),
     },
     "/api/installer/:action": {
-      POST: guard(async request => {
+      POST: guard(async (request) => {
         const { action } = request.params as { action: string };
         const { id, service } = await body<{ id?: string; service?: string }>(request);
         const ids = id ? id.split(/[\s,]+/).filter(Boolean) : [];
         const work: Record<string, [string, () => Promise<unknown>]> = {
-          bin: [`bep add bin ${id}`, () => inProject(() => pm.add(["bin", ...ids]).then(() => pm.list()))],
+          bin: [
+            `bep add bin ${id}`,
+            () => inProject(() => pm.add(["bin", ...ids]).then(() => pm.list())),
+          ],
           libretro: [
             `bep add libretro ${id}`,
             () => inProject(() => pm.add(["libretro", ...ids]).then(() => pm.list())),
@@ -490,7 +513,7 @@ export function frontendRoutes() {
           "mirrors-index": ["bep mirrors index", indexMirrors],
           "mirrors-probe": [
             `bep mirrors probe ${service ?? ""}`.trim(),
-            async () => (await probeMirrors(service)).filter(row => row.ok).length,
+            async () => (await probeMirrors(service)).filter((row) => row.ok).length,
           ],
         };
         const entry = work[action];

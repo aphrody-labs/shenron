@@ -48,15 +48,18 @@ export function bunEngineArt(): Artwork {
 async function listing(playlist: string, kind: string, local?: string): Promise<string[]> {
   if (local) {
     const dir = join(local, playlist, kind);
-    return existsSync(dir) ? readdirSync(dir).filter(n => n.endsWith(".png")) : [];
+    return existsSync(dir) ? readdirSync(dir).filter((n) => n.endsWith(".png")) : [];
   }
   const cache = join(cacheRoot(), playlist, `${kind}.json`);
-  if (existsSync(cache) && Date.now() - statSync(cache).mtimeMs < LISTING_TTL_MS) return Bun.file(cache).json();
+  if (existsSync(cache) && Date.now() - statSync(cache).mtimeMs < LISTING_TTL_MS)
+    return Bun.file(cache).json();
   const res = await fetch(`${SERVER}/${encodeURIComponent(playlist)}/${kind}/`, {
     signal: AbortSignal.timeout(60_000),
   });
   if (!res.ok) return [];
-  const names = [...(await res.text()).matchAll(/href="([^"?/]+\.png)"/g)].map(m => decodeURIComponent(m[1]!));
+  const names = [...(await res.text()).matchAll(/href="([^"?/]+\.png)"/g)].map((m) =>
+    decodeURIComponent(m[1]!),
+  );
   mkdirSync(join(cacheRoot(), playlist), { recursive: true });
   await Bun.write(cache, JSON.stringify(names));
   return names;
@@ -70,11 +73,11 @@ export function matchThumbnail(title: string, names: string[]): string | undefin
   const exact = `${thumbnailName(title)}.png`;
   if (names.includes(exact)) return exact;
   const base = thumbnailName(title.split(" (")[0]!).trim();
-  const tags = [...title.matchAll(/\([^)]*\)/g)].map(m => m[0]);
+  const tags = [...title.matchAll(/\([^)]*\)/g)].map((m) => m[0]);
   let best: { name: string; score: number } | undefined;
   for (const name of names) {
     if (name !== `${base}.png` && !name.startsWith(`${base} (`)) continue;
-    const score = tags.filter(tag => name.includes(thumbnailName(tag))).length;
+    const score = tags.filter((tag) => name.includes(thumbnailName(tag))).length;
     if (!best || score > best.score) best = { name, score };
   }
   return best?.name;
@@ -89,9 +92,12 @@ async function fetchThumbnail(
   if (local) return join(local, playlist, kind, name);
   const path = join(cacheRoot(), playlist, kind, name);
   if (existsSync(path)) return path;
-  const res = await fetch(`${SERVER}/${encodeURIComponent(playlist)}/${kind}/${encodeURIComponent(name)}`, {
-    signal: AbortSignal.timeout(60_000),
-  });
+  const res = await fetch(
+    `${SERVER}/${encodeURIComponent(playlist)}/${kind}/${encodeURIComponent(name)}`,
+    {
+      signal: AbortSignal.timeout(60_000),
+    },
+  );
   if (!res.ok) return undefined;
   const bytes = new Uint8Array(await res.arrayBuffer());
   // Only real PNG files are kept.

@@ -25,7 +25,8 @@ export interface WebXShaderFailure {
 }
 
 export type WebXShaderModuleResult =
-  { ok: true; module: GPUShaderModule; wgsl: string } | { ok: false; error: WebXShaderFailure };
+  | { ok: true; module: GPUShaderModule; wgsl: string }
+  | { ok: false; error: WebXShaderFailure };
 
 export type WebXShaderTranslator = (
   device: GPUDevice,
@@ -90,7 +91,10 @@ export async function createWebXShaderModule(
       ok: false,
       error: {
         code: "webgpu_error_scope_failed",
-        message: structuredErrorMessage(cause, "WebGPU validation error scope could not be opened."),
+        message: structuredErrorMessage(
+          cause,
+          "WebGPU validation error scope could not be opened.",
+        ),
         cause,
       },
     };
@@ -108,7 +112,10 @@ export async function createWebXShaderModule(
         ok: false,
         error: {
           code: "webgpu_error_scope_failed",
-          message: structuredErrorMessage(scopeCause, "WebGPU validation error scope could not be closed."),
+          message: structuredErrorMessage(
+            scopeCause,
+            "WebGPU validation error scope could not be closed.",
+          ),
           cause: { creationError: cause, scopeError: scopeCause },
         },
       };
@@ -117,7 +124,9 @@ export async function createWebXShaderModule(
       ok: false,
       error: {
         code: "webgpu_shader_creation_failed",
-        message: scopeError?.message ?? structuredErrorMessage(cause, "WebGPU rejected shader-module creation."),
+        message:
+          scopeError?.message ??
+          structuredErrorMessage(cause, "WebGPU rejected shader-module creation."),
         cause: scopeError ?? cause,
       },
     };
@@ -131,7 +140,10 @@ export async function createWebXShaderModule(
       ok: false,
       error: {
         code: "webgpu_error_scope_failed",
-        message: structuredErrorMessage(scopeResult.reason, "WebGPU validation error scope could not be closed."),
+        message: structuredErrorMessage(
+          scopeResult.reason,
+          "WebGPU validation error scope could not be closed.",
+        ),
         cause: scopeResult.reason,
       },
     };
@@ -154,14 +166,14 @@ export async function createWebXShaderModule(
   const scopeError = scopeResult.value;
 
   const diagnostics = info.messages
-    .filter(message => message.type === "error")
+    .filter((message) => message.type === "error")
     .map(({ message, lineNum, linePos }) => ({ message, lineNum, linePos }));
   if (scopeError || diagnostics.length > 0) {
     return {
       ok: false,
       error: {
         code: "wgsl_compilation_failed",
-        message: scopeError?.message ?? diagnostics.map(item => item.message).join("\n"),
+        message: scopeError?.message ?? diagnostics.map((item) => item.message).join("\n"),
         diagnostics,
         cause: scopeError ?? undefined,
       },

@@ -62,7 +62,8 @@ export class CdReader {
   async read(lba: number, bytes: number): Promise<Uint8Array> {
     const count = Math.ceil(bytes / 2048);
     const out = new Uint8Array(count * 2048);
-    for (let index = 0; index < count; index++) out.set(await this.sector(lba + index), index * 2048);
+    for (let index = 0; index < count; index++)
+      out.set(await this.sector(lba + index), index * 2048);
     return out.subarray(0, bytes);
   }
 
@@ -139,12 +140,14 @@ export async function parseCdImage({ source, head }: ParseContext): Promise<Pars
     volume: root?.volume,
   };
   let entry: number | undefined;
-  const cnf = root?.entries.find(file => file.path.toUpperCase() === "SYSTEM.CNF");
+  const cnf = root?.entries.find((file) => file.path.toUpperCase() === "SYSTEM.CNF");
   if (cnf && root) {
-    const text = new TextDecoder("latin1").decode(await reader.read(cnf.lba, Math.min(cnf.size, 2048)));
+    const text = new TextDecoder("latin1").decode(
+      await reader.read(cnf.lba, Math.min(cnf.size, 2048)),
+    );
     const boot = /^\s*(BOOT2?)\s*=\s*cdrom0?:\\?([^;\r\n]+)/im.exec(text);
     header.systemCnf = Object.fromEntries(
-      text.split(/\r?\n/).flatMap(line => {
+      text.split(/\r?\n/).flatMap((line) => {
         const match = /^\s*([A-Z0-9_]+)\s*=\s*(.+?)\s*$/i.exec(line);
         return match ? [[match[1], match[2]]] : [];
       }),
@@ -155,7 +158,7 @@ export async function parseCdImage({ source, head }: ParseContext): Promise<Pars
       header.platform = ps2 ? "PlayStation 2" : "PlayStation";
       header.boot = bootName;
       header.serial = bootName.replace(/[._]/g, "-").replace(/-(\d{3})-(\d{2})$/, "-$1$2");
-      const exe = root.entries.find(file => file.path.toUpperCase() === bootName);
+      const exe = root.entries.find((file) => file.path.toUpperCase() === bootName);
       if (exe && !ps2) {
         const exeHeader = new BinaryView(await reader.read(exe.lba, 0x800));
         if (exeHeader.equals(0, "PS-X EXE")) {
@@ -185,7 +188,11 @@ export async function parseCdImage({ source, head }: ParseContext): Promise<Pars
 export async function cdFiles(source: BinarySource, head: Uint8Array): Promise<FileEntry[]> {
   const raw = cdSync.every((byte, index) => head[index] === byte);
   return (
-    (await new CdReader(source, raw).root())?.entries.map(({ path, offset, size }) => ({ path, offset, size })) ?? []
+    (await new CdReader(source, raw).root())?.entries.map(({ path, offset, size }) => ({
+      path,
+      offset,
+      size,
+    })) ?? []
   );
 }
 
@@ -240,15 +247,15 @@ export async function parseCue({ source, path }: ParseContext): Promise<ParsedIm
       last.sector = (Number(index[1]) * 60 + Number(index[2])) * 75 + Number(index[3]);
     }
   }
-  const sections: Section[] = tracks.map(track => ({
+  const sections: Section[] = tracks.map((track) => ({
     name: `track ${String(track.number).padStart(2, "0")} ${track.type} (${track.file})`,
     offset: (track.sector ?? 0) * (sectorBytes[track.type] ?? 2352),
     size: 0,
     kind: "track",
   }));
-  const data = tracks.find(track => track.type !== "AUDIO");
+  const data = tracks.find((track) => track.type !== "AUDIO");
   let disc: ParsedImage | undefined;
-  if (data && files.find(file => file.name === data.file)?.exists) {
+  if (data && files.find((file) => file.name === data.file)?.exists) {
     const dataSource = BinarySource.open(resolve(base, data.file));
     disc = await parseCdImage({
       source: dataSource,
@@ -265,7 +272,9 @@ export async function parseCue({ source, path }: ParseContext): Promise<ParsedIm
 }
 
 const fourcc = (value: number) =>
-  value ? String.fromCharCode(value >>> 24, (value >>> 16) & 0xff, (value >>> 8) & 0xff, value & 0xff) : "none";
+  value
+    ? String.fromCharCode(value >>> 24, (value >>> 16) & 0xff, (value >>> 8) & 0xff, value & 0xff)
+    : "none";
 
 /** MAME CHD (v3-v5) header plus CD/GD track metadata. */
 export async function parseChd({ source, head }: ParseContext): Promise<ParsedImage> {
@@ -277,7 +286,7 @@ export async function parseChd({ source, head }: ParseContext): Promise<ParsedIm
   if (version >= 5) {
     metaOffset = view.u64(0x30);
     header = {
-      compressors: [0, 1, 2, 3].map(index => fourcc(view.u32(0x10 + index * 4))),
+      compressors: [0, 1, 2, 3].map((index) => fourcc(view.u32(0x10 + index * 4))),
       logicalBytes: view.u64(0x20),
       hunkBytes: view.u32(0x38),
       unitBytes: view.u32(0x3c),
@@ -296,7 +305,9 @@ export async function parseChd({ source, head }: ParseContext): Promise<ParsedIm
       sha1: version === 4 ? view.hex(0x30, 20) : view.hex(0x50, 20),
     };
   }
-  const sections: Section[] = [{ name: "chd-header", offset: 0, size: headerBytes, kind: "header" }];
+  const sections: Section[] = [
+    { name: "chd-header", offset: 0, size: headerBytes, kind: "header" },
+  ];
   const tracks: string[] = [];
   for (let at = metaOffset, guard = 0; at && at < source.size && guard < 256; guard++) {
     const entry = await source.view(at, 16, "be");
@@ -310,7 +321,9 @@ export async function parseChd({ source, head }: ParseContext): Promise<ParsedIm
       kind: "metadata",
     });
     if (/^CH(T2|TR|GD)$/.test(tag))
-      tracks.push(new TextDecoder("latin1").decode(await source.read(at + 16, length)).replace(/\0+$/, ""));
+      tracks.push(
+        new TextDecoder("latin1").decode(await source.read(at + 16, length)).replace(/\0+$/, ""),
+      );
     at = entry.u64(8);
   }
   return {
@@ -327,7 +340,16 @@ export async function parseChd({ source, head }: ParseContext): Promise<ParsedIm
 /** PBP container (PSP EBOOT / PS1 classics) with PARAM.SFO decoding. */
 export async function parsePbp({ source, head }: ParseContext): Promise<ParsedImage> {
   const view = new BinaryView(head);
-  const names = ["PARAM.SFO", "ICON0.PNG", "ICON1.PMF", "PIC0.PNG", "PIC1.PNG", "SND0.AT3", "DATA.PSP", "DATA.PSAR"];
+  const names = [
+    "PARAM.SFO",
+    "ICON0.PNG",
+    "ICON1.PMF",
+    "PIC0.PNG",
+    "PIC1.PNG",
+    "SND0.AT3",
+    "DATA.PSP",
+    "DATA.PSAR",
+  ];
   const offsets = names.map((_, index) => view.u32(8 + index * 4));
   const sections: Section[] = names.map((name, index) => ({
     name,
@@ -351,6 +373,6 @@ export async function parsePbp({ source, head }: ParseContext): Promise<ParsedIm
   }
   return {
     header: { version: hex32(view.u32(4)), param },
-    sections: sections.filter(section => section.size > 0),
+    sections: sections.filter((section) => section.size > 0),
   };
 }

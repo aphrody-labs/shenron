@@ -3,16 +3,59 @@
 // format tables is read until an accessor asks for it.
 import { basename, resolve } from "node:path";
 import { detect } from "./detect.js";
-import { disassembleBytes, maxInstructionBytes, type Backend, type DisasmResult } from "./disasm/index.js";
-import { parsePsxExe, parseCdImage, parseChd, parseCue, parsePbp, cdFiles } from "./parsers/playstation.js";
-import { exefsFiles, parseNcch, parseNcsd, parseNro, parseNsp, parseXci, partitionFs } from "./parsers/ctr-switch.js";
+import {
+  disassembleBytes,
+  maxInstructionBytes,
+  type Backend,
+  type DisasmResult,
+} from "./disasm/index.js";
+import {
+  parsePsxExe,
+  parseCdImage,
+  parseChd,
+  parseCue,
+  parsePbp,
+  cdFiles,
+} from "./parsers/playstation.js";
+import {
+  exefsFiles,
+  parseNcch,
+  parseNcsd,
+  parseNro,
+  parseNsp,
+  parseXci,
+  partitionFs,
+} from "./parsers/ctr-switch.js";
 import { parseElf } from "./parsers/elf.js";
 import { biosParser } from "./parsers/firmware.js";
-import { ndsFiles, parseFds, parseGameBoy, parseGba, parseNds, parseNes } from "./parsers/handheld.js";
+import {
+  ndsFiles,
+  parseFds,
+  parseGameBoy,
+  parseGba,
+  parseNds,
+  parseNes,
+} from "./parsers/handheld.js";
 import { parseGenesis } from "./parsers/sega.js";
-import { gameCubeFiles, parseDisc, parseDol, parseN64, parseWbfs, parseWia, toZ64 } from "./parsers/home.js";
+import {
+  gameCubeFiles,
+  parseDisc,
+  parseDol,
+  parseN64,
+  parseWbfs,
+  parseWia,
+  toZ64,
+} from "./parsers/home.js";
 import { BinarySource, digestSource, type Chunk, type StreamDigest } from "./stream.js";
-import type { Arch, Detection, FileEntry, FormatId, FormatParser, ParsedImage, Section } from "./types.js";
+import type {
+  Arch,
+  Detection,
+  FileEntry,
+  FormatId,
+  FormatParser,
+  ParsedImage,
+  Section,
+} from "./types.js";
 
 const parsers: Record<FormatId, FormatParser | undefined> = {
   nes: parseNes,
@@ -131,7 +174,7 @@ export class BinaryImage<H extends object = Record<string, unknown>> implements 
   }
 
   section(name: string): Section | undefined {
-    return this.sections.find(section => section.name === name);
+    return this.sections.find((section) => section.name === name);
   }
 
   read(offset: number, length: number): Promise<Uint8Array> {
@@ -175,9 +218,9 @@ export class BinaryImage<H extends object = Record<string, unknown>> implements 
       case "xci": {
         const nested = await Promise.all(
           this.sections
-            .filter(section => section.kind === "partition")
-            .map(async section =>
-              (await partitionFs(this.source, section.offset)).map(file => ({
+            .filter((section) => section.kind === "partition")
+            .map(async (section) =>
+              (await partitionFs(this.source, section.offset)).map((file) => ({
                 ...file,
                 path: `${section.name}/${file.path}`,
               })),
@@ -193,13 +236,14 @@ export class BinaryImage<H extends object = Record<string, unknown>> implements 
   /** Maps a guest address to the code section that contains it. */
   locate(address: number, arch?: Arch): { section: Section; offset: number } | undefined {
     const candidates = this.sections.filter(
-      section =>
+      (section) =>
         section.address !== undefined &&
         section.kind === "code" &&
         address >= section.address &&
         address < section.address + section.size,
     );
-    const section = candidates.find(candidate => !arch || candidate.arch === arch) ?? candidates[0];
+    const section =
+      candidates.find((candidate) => !arch || candidate.arch === arch) ?? candidates[0];
     return section ? { section, offset: section.offset + (address - section.address!) } : undefined;
   }
 
@@ -213,7 +257,7 @@ export class BinaryImage<H extends object = Record<string, unknown>> implements 
     if (options.offset !== undefined) {
       offset = options.offset;
       section = this.sections.find(
-        candidate =>
+        (candidate) =>
           candidate.kind === "code" &&
           offset >= candidate.offset &&
           offset < candidate.offset + candidate.size &&
@@ -224,7 +268,9 @@ export class BinaryImage<H extends object = Record<string, unknown>> implements 
       address =
         options.at ??
         this.entry ??
-        this.sections.find(candidate => candidate.kind === "code" && candidate.address !== undefined)?.address ??
+        this.sections.find(
+          (candidate) => candidate.kind === "code" && candidate.address !== undefined,
+        )?.address ??
         0;
       const located = this.locate(address, options.arch);
       if (!located)
@@ -234,7 +280,8 @@ export class BinaryImage<H extends object = Record<string, unknown>> implements 
       ({ offset, section } = located);
     }
     const arch = options.arch ?? section?.arch ?? this.arch;
-    if (!arch) throw new Error(`${this.name}: no instruction set known for ${this.format}; pass --arch`);
+    if (!arch)
+      throw new Error(`${this.name}: no instruction set known for ${this.format}; pass --arch`);
     let length = count * maxInstructionBytes(arch);
     if (section) length = Math.min(length, section.offset + section.size - offset);
     let bytes = await this.source.read(offset, length);
@@ -249,7 +296,8 @@ export class BinaryImage<H extends object = Record<string, unknown>> implements 
   }
 
   toJSON(): ImageSummary<H> {
-    const { path, name, size, format, platform, detection, arch, entry, header, sections, owners } = this;
+    const { path, name, size, format, platform, detection, arch, entry, header, sections, owners } =
+      this;
     return {
       path,
       name,

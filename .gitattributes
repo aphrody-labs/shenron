@@ -1,0 +1,58 @@
+# Auto detect text files and perform LF normalization (Kernel.org / GitHub standard)
+* text=auto eol=lf
+
+# Explicit text files
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.mjs text eol=lf
+*.json text eol=lf
+*.jsonc text eol=lf
+*.rs text eol=lf
+*.toml text eol=lf
+*.md text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.html text eol=lf
+*.sh text eol=lf
+*.bash text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.sql text eol=lf
+*.svg text eol=lf
+*.txt text eol=lf
+*.py text eol=lf
+
+# Windows specific scripts
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files (prevent git diff corruption)
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.mp4 binary
+*.webm binary
+*.mkv binary
+*.zip binary
+*.tar.gz binary
+*.tgz binary
+*.zst binary
+*.db binary
+*.sqlite binary
+*.wasm binary
+*.glb binary
+*.gltf binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+*.otf binary
+*.dll binary
+*.so binary
+*.dylib binary

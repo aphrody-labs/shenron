@@ -64,13 +64,17 @@ export function hasArmVectors(view: BinaryView): boolean {
 /** Classifies a 16 KiB ARM BIOS from its file name, defaulting to the GBA layout. */
 export function armBiosFormat(path: string, size: number): FormatId {
   if (size === 0x1000) return "nds-arm9-bios";
-  return /nds|7|arm7/i.test(basename(path)) && !/gba|agb/i.test(basename(path)) ? "nds-arm7-bios" : "gba-bios";
+  return /nds|7|arm7/i.test(basename(path)) && !/gba|agb/i.test(basename(path))
+    ? "nds-arm7-bios"
+    : "gba-bios";
 }
 
 /** DS firmware: the user-settings block (two copies) at the end carries a CRC-16. */
 export function looksLikeNdsFirmware(tail: BinaryView): boolean {
   if (tail.length < 0x200) return false;
-  return [0, 0x100].some(at => tail.u16(at) === 5 && crc16(tail.slice(at, 0x70)) === tail.u16(at + 0x72));
+  return [0, 0x100].some(
+    (at) => tail.u16(at) === 5 && crc16(tail.slice(at, 0x70)) === tail.u16(at + 0x72),
+  );
 }
 
 export function biosParser(format: FormatId) {
@@ -86,10 +90,14 @@ export function biosParser(format: FormatId) {
     };
     if (format === "nds-firmware") {
       const tail = await source.view(source.size - 0x200, 0x200);
-      const settings = [0, 0x100].find(at => tail.u16(at) === 5 && crc16(tail.slice(at, 0x70)) === tail.u16(at + 0x72));
+      const settings = [0, 0x100].find(
+        (at) => tail.u16(at) === 5 && crc16(tail.slice(at, 0x70)) === tail.u16(at + 0x72),
+      );
       const user = settings === undefined ? undefined : tail.slice(settings, 0x100);
       const nickname = user
-        ? new TextDecoder("utf-16le").decode(user.subarray(6, 6 + new BinaryView(user).u8(0x1a) * 2))
+        ? new TextDecoder("utf-16le").decode(
+            user.subarray(6, 6 + new BinaryView(user).u8(0x1a) * 2),
+          )
         : undefined;
       return {
         header: {
@@ -121,7 +129,8 @@ export function biosParser(format: FormatId) {
       };
     }
     const layout = layouts[format]!;
-    const reset = layout.arch === "arm" ? armBranchTarget(view.u32(0), layout.address) : layout.address;
+    const reset =
+      layout.arch === "arm" ? armBranchTarget(view.u32(0), layout.address) : layout.address;
     return {
       header: {
         console: layout.console,

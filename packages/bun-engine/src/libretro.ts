@@ -76,7 +76,9 @@ export async function libretroCatalog(): Promise<LibretroCore[]> {
     ]);
   const cores: LibretroCore[] = [];
   for await (const file of new Bun.Glob("*_libretro.info").scan({ cwd: infoDir })) {
-    cores.push(parseInfo(file.replace(/_libretro\.info$/, ""), await Bun.file(join(infoDir, file)).text()));
+    cores.push(
+      parseInfo(file.replace(/_libretro\.info$/, ""), await Bun.file(join(infoDir, file)).text()),
+    );
   }
   return cores.sort((a, b) => a.id.localeCompare(b.id));
 }
@@ -117,7 +119,8 @@ export async function installCore(
 }
 
 export async function removeCore(id: string): Promise<void> {
-  for (const ext of ["dll", "so", "dylib"]) await rm(join(libretroDir(), `${id}_libretro.${ext}`), { force: true });
+  for (const ext of ["dll", "so", "dylib"])
+    await rm(join(libretroDir(), `${id}_libretro.${ext}`), { force: true });
 }
 
 /**
@@ -127,24 +130,34 @@ export async function removeCore(id: string): Promise<void> {
 export async function linkCoreBios(core: string): Promise<string> {
   const system = join(usrRoot(), "share", "bun-engine", "system");
   mkdirSync(system, { recursive: true });
-  const info = (await libretroCatalog()).find(item => item.id === core);
-  const wanted = new Map((info?.firmware ?? []).filter(fw => fw.md5).map(fw => [fw.md5!, fw.path]));
+  const info = (await libretroCatalog()).find((item) => item.id === core);
+  const wanted = new Map(
+    (info?.firmware ?? []).filter((fw) => fw.md5).map((fw) => [fw.md5!, fw.path]),
+  );
   if (wanted.size) {
     const store = defaultFirmwareStore();
-    for await (const path of new Bun.Glob("*/*").scan({ cwd: store, absolute: true, onlyFiles: true })) {
+    for await (const path of new Bun.Glob("*/*").scan({
+      cwd: store,
+      absolute: true,
+      onlyFiles: true,
+    })) {
       if (path.endsWith(".json")) continue;
       const md5 = new Bun.CryptoHasher("md5").update(await Bun.file(path).bytes()).digest("hex");
       const target = wanted.get(md5);
       if (!target || existsSync(join(system, target))) continue;
       mkdirSync(dirname(join(system, target)), { recursive: true });
-      await link(path, join(system, target)).catch(() => Bun.write(join(system, target), Bun.file(path)));
+      await link(path, join(system, target)).catch(() =>
+        Bun.write(join(system, target), Bun.file(path)),
+      );
     }
   }
   return system;
 }
 
 /** The retroarch.cfg keys that point RetroArch at bep's cores and BIOS for one core. */
-export async function coreSettings(core: string): Promise<{ system_directory: string; libretro_directory: string }> {
+export async function coreSettings(
+  core: string,
+): Promise<{ system_directory: string; libretro_directory: string }> {
   return { system_directory: await linkCoreBios(core), libretro_directory: libretroDir() };
 }
 
@@ -159,11 +172,15 @@ export async function biosReport(ids: string[]): Promise<
     status: "present" | "missing" | "unverifiable";
   }>
 > {
-  const catalog = new Map((await libretroCatalog()).map(core => [core.id, core]));
+  const catalog = new Map((await libretroCatalog()).map((core) => [core.id, core]));
   const storeMd5 = new Set<string>();
   const store = defaultFirmwareStore();
   if (existsSync(store)) {
-    for await (const path of new Bun.Glob("*/*").scan({ cwd: store, onlyFiles: true, absolute: true })) {
+    for await (const path of new Bun.Glob("*/*").scan({
+      cwd: store,
+      onlyFiles: true,
+      absolute: true,
+    })) {
       if (path.endsWith(".json")) continue;
       storeMd5.add(new Bun.CryptoHasher("md5").update(await Bun.file(path).bytes()).digest("hex"));
     }
@@ -174,7 +191,14 @@ export async function biosReport(ids: string[]): Promise<
     if (!core) throw new Error(`unknown libretro core ${id}; see bep search`);
     for (const fw of core.firmware) {
       const status = !fw.md5 ? "unverifiable" : storeMd5.has(fw.md5) ? "present" : "missing";
-      rows.push({ core: id, file: fw.path, desc: fw.desc, optional: fw.optional, md5: fw.md5, status } as const);
+      rows.push({
+        core: id,
+        file: fw.path,
+        desc: fw.desc,
+        optional: fw.optional,
+        md5: fw.md5,
+        status,
+      } as const);
     }
   }
   return rows;

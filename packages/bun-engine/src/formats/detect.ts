@@ -100,8 +100,10 @@ function magic(view: BinaryView, path: string): FormatId | undefined {
   if (view.equals(0x100, "SEGA") || view.equals(0x101, "SEGA")) return "genesis";
   if (view.has(0, 0x20) && view.u32(0x1c, "be") === 0xc2339f3d) return "gamecube-disc";
   if (view.has(0, 0x20) && view.u32(0x18, "be") === 0x5d1c9ea3) return "wii-disc";
-  if (view.has(0, 0x200) && crc16(view.slice(0xc0, 0x9c)) === 0xcf56 && view.u16(0x15c) === 0xcf56) return "nds";
-  if (view.has(0, 0xc0) && view.u8(0xb2) === 0x96 && crc16(view.slice(0x04, 0x9c)) === 0xcf56) return "gba";
+  if (view.has(0, 0x200) && crc16(view.slice(0xc0, 0x9c)) === 0xcf56 && view.u16(0x15c) === 0xcf56)
+    return "nds";
+  if (view.has(0, 0xc0) && view.u8(0xb2) === 0x96 && crc16(view.slice(0x04, 0x9c)) === 0xcf56)
+    return "gba";
   if (view.equals(0x104, gbLogoPrefix)) return view.u8(0x143) & 0x80 ? "gbc" : "gb";
   if (cdSync.every((byte, index) => view.bytes[index] === byte)) return "psx-disc";
   if (view.equals(0x8001, "CD001")) return "iso9660";
@@ -127,7 +129,11 @@ function looksLikePsxReset(view: BinaryView): boolean {
   );
 }
 
-async function heuristic(view: BinaryView, path: string, source: BinarySource): Promise<FormatId | undefined> {
+async function heuristic(
+  view: BinaryView,
+  path: string,
+  source: BinarySource,
+): Promise<FormatId | undefined> {
   const size = source.size;
   if (looksLikeDol(view.with("be"), size)) return "dol";
   if (looksLikeNds(view, size)) return "nds";
@@ -139,7 +145,10 @@ async function heuristic(view: BinaryView, path: string, source: BinarySource): 
       /Sony Computer Entertainment/.test(new TextDecoder("latin1").decode(view.slice(0x100, 0x80))))
   )
     return "psx-bios";
-  if ([0x20000, 0x40000, 0x80000].includes(size) && looksLikeNdsFirmware(await source.view(size - 0x200, 0x200)))
+  if (
+    [0x20000, 0x40000, 0x80000].includes(size) &&
+    looksLikeNdsFirmware(await source.view(size - 0x200, 0x200))
+  )
     return "nds-firmware";
   return undefined;
 }
@@ -165,7 +174,8 @@ export async function detect(
     confidence = 0.3;
   }
   const catalog = await catalogFormats(view.bytes, path);
-  const magika = options.magika || (!format && !catalog.length) ? await magikaIdentify(path) : undefined;
+  const magika =
+    options.magika || (!format && !catalog.length) ? await magikaIdentify(path) : undefined;
   let platform = format ? platforms[format] : "unknown";
   if (!format) {
     format = "unknown";

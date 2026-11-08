@@ -4,7 +4,15 @@
 // plays, its folders start as a copy of them (reflink where the file system has it), so every old save
 // stays loadable from every profile and the shared copy stays readable. Battery saves (SRAM) are not
 // split: they stay under `<home>/saves`.
-import { constants, copyFileSync, existsSync, mkdirSync, readdirSync, statSync, writeFileSync } from "node:fs";
+import {
+  constants,
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  statSync,
+  writeFileSync,
+} from "node:fs";
 import { join } from "node:path";
 import { usrRoot } from "../usr";
 
@@ -58,8 +66,12 @@ export function prepareProfileSaves(home: string, profile: string): SaveDirs {
   mkdirSync(screenshots, { recursive: true });
   let imported = 0;
   if (!existsSync(join(root, marker))) {
-    imported = copyTree(join(home, "states"), states) + copyTree(join(home, "screenshots"), screenshots);
-    writeFileSync(join(root, marker), `${JSON.stringify({ at: new Date().toISOString(), files: imported })}\n`);
+    imported =
+      copyTree(join(home, "states"), states) + copyTree(join(home, "screenshots"), screenshots);
+    writeFileSync(
+      join(root, marker),
+      `${JSON.stringify({ at: new Date().toISOString(), files: imported })}\n`,
+    );
   }
   return { profile: slug, states, screenshots, imported };
 }
@@ -99,8 +111,15 @@ export function saveSummary(profile: string, stem: string): SaveSummary {
   const root = join(home, "profiles", slug);
   const shared = !existsSync(join(root, marker));
   const states = filesOf(shared ? join(home, "states") : join(root, "states"), stem, true);
-  const screenshots = filesOf(shared ? join(home, "screenshots") : join(root, "screenshots"), stem, false);
-  const newest = [...states, ...screenshots].reduce((best, file) => Math.max(best, statSync(file).mtimeMs), 0);
+  const screenshots = filesOf(
+    shared ? join(home, "screenshots") : join(root, "screenshots"),
+    stem,
+    false,
+  );
+  const newest = [...states, ...screenshots].reduce(
+    (best, file) => Math.max(best, statSync(file).mtimeMs),
+    0,
+  );
   return {
     profile: slug,
     states: states.length,

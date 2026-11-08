@@ -48,23 +48,26 @@ async function parseTableRows(html: string, base: string): Promise<TableRow[]> {
       },
     });
   await rewriter.transform(new Response(html)).text();
-  return rows.map(item => ({
+  return rows.map((item) => ({
     ...item,
-    cells: item.cells.map(value => value.replace(/\s+/g, " ").trim()),
+    cells: item.cells.map((value) => value.replace(/\s+/g, " ").trim()),
   }));
 }
 
-export async function parseFirmwareCatalogHtml(html: string, base = catalogUrl): Promise<FirmwareCatalogEntry[]> {
+export async function parseFirmwareCatalogHtml(
+  html: string,
+  base = catalogUrl,
+): Promise<FirmwareCatalogEntry[]> {
   const entries = (await parseTableRows(html, base))
-    .filter(row => row.href && /^\/fr\/bios\/[^/]+\/?$/.test(new URL(row.href).pathname))
-    .map(row => ({
+    .filter((row) => row.href && /^\/fr\/bios\/[^/]+\/?$/.test(new URL(row.href).pathname))
+    .map((row) => ({
       name: row.cells[0] ?? "",
       page: row.href!,
       downloads: /^\d+$/.test(row.cells[1] ?? "") ? Number(row.cells[1]) : undefined,
       updatedAt: row.cells[2] || undefined,
     }))
-    .filter(entry => entry.name);
-  return [...new Map(entries.map(entry => [entry.page, entry])).values()];
+    .filter((entry) => entry.name);
+  return [...new Map(entries.map((entry) => [entry.page, entry])).values()];
 }
 
 export async function parseFirmwareDetailHtml(
@@ -73,7 +76,8 @@ export async function parseFirmwareDetailHtml(
 ): Promise<FirmwareCatalogEntry> {
   const fields = new Map<string, string>();
   for (const row of await parseTableRows(html, entry.page)) {
-    if (row.cells.length >= 2) fields.set(row.cells[0]!.replace(/:$/, "").toLowerCase(), row.cells[1]!);
+    if (row.cells.length >= 2)
+      fields.set(row.cells[0]!.replace(/:$/, "").toLowerCase(), row.cells[1]!);
   }
   const downloads = fields.get("descargas");
   return {
@@ -128,7 +132,7 @@ async function fetchHtml(url: string): Promise<{ html: string; url: string }> {
 export async function fetchFirmwareCatalog(url = catalogUrl): Promise<FirmwareCatalogEntry[]> {
   const catalog = await fetchHtml(url);
   const entries = await parseFirmwareCatalogHtml(catalog.html, catalog.url);
-  const detailed = entries.map(entry => ({ ...entry }));
+  const detailed = entries.map((entry) => ({ ...entry }));
   let cursor = 0;
   await Promise.all(
     Array.from({ length: Math.min(4, entries.length) }, async () => {
@@ -140,7 +144,9 @@ export async function fetchFirmwareCatalog(url = catalogUrl): Promise<FirmwareCa
           detailed[index] = await parseFirmwareDetailHtml(detail.html, entry);
         } catch (error) {
           detailed[index] = { ...entry };
-          console.error(`metadata warning: ${error instanceof Error ? error.message : String(error)}`);
+          console.error(
+            `metadata warning: ${error instanceof Error ? error.message : String(error)}`,
+          );
         }
       }
     }),

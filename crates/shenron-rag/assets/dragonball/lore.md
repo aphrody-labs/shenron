@@ -10,7 +10,7 @@ fiches), la source de vérité reste `dragonballfr.com` (RAG + wiki).**
   **le canon de référence**. Animes : _Dragon Ball_ (enfance de Goku) puis
   _Dragon Ball Z_ (2ᵉ moitié, dès l'arc Saiyan) ; _Dragon Ball Kai_ = remaster de DBZ.
 - **Dragon Ball Super** (manga 2015–, Toyotarō supervisé par Toriyama ; anime
-  2015–2018) = suite **canon** après Boo. ⚠️ manga et anime Super **divergent**
+  2015–2018) = suite **canon** après Boo. ️ manga et anime Super **divergent**
   par endroits (arc Trunks du futur, arc Survie).
 - **Dragon Ball Daima** (anime 2024, conçu par Toriyama) — Goku & co rajeunis,
   Royaume Démoniaque. Canon léger.

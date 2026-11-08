@@ -11,7 +11,10 @@ interface JSONSourceContext {
 }
 
 interface ExactJSON {
-  parse(text: string, reviver: (key: string, value: unknown, context?: JSONSourceContext) => unknown): unknown;
+  parse(
+    text: string,
+    reviver: (key: string, value: unknown, context?: JSONSourceContext) => unknown,
+  ): unknown;
   rawJSON(text: string): object;
 }
 
@@ -24,7 +27,10 @@ export function parseNativeJSON<T = NativeJSON>(text: string): T {
     return exactJSON.parse(text, (_key, value, context) => {
       if (typeof value !== "number") return value;
       if (!Number.isFinite(value) || !context?.source) {
-        throw new VideoLibraryError("INVALID_NATIVE_JSON", "Native JSON requires finite numbers and source context.");
+        throw new VideoLibraryError(
+          "INVALID_NATIVE_JSON",
+          "Native JSON requires finite numbers and source context.",
+        );
       }
       if (/^-?\d+$/.test(context.source)) {
         const integer = BigInt(context.source);
@@ -50,26 +56,37 @@ export function stringifyNativeJSON(value: unknown, space?: number): string {
       (_key, entry: unknown) => {
         if (typeof entry === "bigint") {
           if (typeof exactJSON.rawJSON !== "function") {
-            throw new VideoLibraryError("INVALID_JSON_VALUE", "Exact JSON integers require the Aphrody Bun runtime.");
+            throw new VideoLibraryError(
+              "INVALID_JSON_VALUE",
+              "Exact JSON integers require the Aphrody Bun runtime.",
+            );
           }
           return exactJSON.rawJSON(entry.toString());
         }
         if (
           (typeof entry === "number" &&
-            (!Number.isFinite(entry) || (Number.isInteger(entry) && !Number.isSafeInteger(entry)))) ||
+            (!Number.isFinite(entry) ||
+              (Number.isInteger(entry) && !Number.isSafeInteger(entry)))) ||
           typeof entry === "function" ||
           typeof entry === "symbol"
         ) {
-          throw new VideoLibraryError("INVALID_JSON_VALUE", "Use finite JSON values and bigint for large integers.");
+          throw new VideoLibraryError(
+            "INVALID_JSON_VALUE",
+            "Use finite JSON values and bigint for large integers.",
+          );
         }
         return entry;
       },
       space,
     );
-    if (text === undefined) throw new VideoLibraryError("INVALID_JSON_VALUE", "A JSON value is required.");
+    if (text === undefined)
+      throw new VideoLibraryError("INVALID_JSON_VALUE", "A JSON value is required.");
     return text;
   } catch (error) {
     if (error instanceof VideoLibraryError) throw error;
-    throw new VideoLibraryError("INVALID_JSON_VALUE", "The value cannot be serialized as native JSON.");
+    throw new VideoLibraryError(
+      "INVALID_JSON_VALUE",
+      "The value cannot be serialized as native JSON.",
+    );
   }
 }

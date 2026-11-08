@@ -1,7 +1,13 @@
 /// <reference types="@webgpu/types" />
 // Page side of libretroarch-serve: presents frames with WebGPU, plays audio through an
 // AudioWorklet and sends the standard gamepad (or the keyboard) as RetroPad bits.
-import { decodeFrame, Message, AUDIO_HEADER, RetroArchPresenter, type PresentableFrame } from "../libretroarch-gpu";
+import {
+  decodeFrame,
+  Message,
+  AUDIO_HEADER,
+  RetroArchPresenter,
+  type PresentableFrame,
+} from "../libretroarch-gpu";
 
 const canvas = document.querySelector<HTMLCanvasElement>("#screen")!;
 const adapter = await navigator.gpu?.requestAdapter();
@@ -12,8 +18,10 @@ const adapter = await navigator.gpu?.requestAdapter();
 // a 2D canvas, whose pixels every compositor can show; a hardware adapter keeps WebGPU. `?renderer=webgpu`
 // or `?renderer=2d` forces one.
 const wanted = new URLSearchParams(location.search).get("renderer");
-const software = !adapter || (adapter.info as { isFallbackAdapter?: boolean }).isFallbackAdapter === true;
-const renderer: "webgpu" | "2d" = wanted === "webgpu" || wanted === "2d" ? wanted : software ? "2d" : "webgpu";
+const software =
+  !adapter || (adapter.info as { isFallbackAdapter?: boolean }).isFallbackAdapter === true;
+const renderer: "webgpu" | "2d" =
+  wanted === "webgpu" || wanted === "2d" ? wanted : software ? "2d" : "webgpu";
 if (renderer === "webgpu" && !adapter) throw new Error("WebGPU unavailable");
 let presenter: RetroArchPresenter | undefined;
 let context: GPUCanvasContext | undefined;
@@ -58,7 +66,11 @@ function upload2d(frame: PresentableFrame): void {
         const r = (value >> 11) & 31;
         const g = (value >> 5) & 63;
         const b = value & 31;
-        out[d] = 0xff000000 | (((b << 3) | (b >> 2)) << 16) | (((g << 2) | (g >> 4)) << 8) | ((r << 3) | (r >> 2));
+        out[d] =
+          0xff000000 |
+          (((b << 3) | (b >> 2)) << 16) |
+          (((g << 2) | (g >> 4)) << 8) |
+          ((r << 3) | (r >> 2));
       }
   }
   surface.getContext("2d")!.putImageData(surfaceImage!, 0, 0);
@@ -130,7 +142,8 @@ ws.binaryType = "arraybuffer";
 // requests (F1, pad Guide, Select+R3) and carries out its actions over the RetroArch socket.
 const embedded = window.parent !== window;
 let menuOpen = false;
-const toParent = (message: object) => embedded && window.parent.postMessage({ bunos: true, ...message }, "*");
+const toParent = (message: object) =>
+  embedded && window.parent.postMessage({ bunos: true, ...message }, "*");
 ws.onmessage = ({ data }) => {
   if (typeof data === "string") {
     const reply = JSON.parse(data) as {
@@ -190,7 +203,7 @@ const KEYS: Record<string, number> = {
   ArrowRight: 1 << 7,
 };
 let keys = 0;
-window.addEventListener("keydown", e => {
+window.addEventListener("keydown", (e) => {
   // embedded in the frontend: Escape returns to the library, F1 opens the quick menu
   if (e.code === "Escape" && embedded) window.parent.postMessage("retroarch-exit", "*");
   if (e.code === "F1" && embedded) {
@@ -199,7 +212,7 @@ window.addEventListener("keydown", e => {
   }
   if (!menuOpen) keys |= KEYS[e.code] ?? 0;
 });
-window.addEventListener("keyup", e => (keys &= ~(KEYS[e.code] ?? 0)));
+window.addEventListener("keyup", (e) => (keys &= ~(KEYS[e.code] ?? 0)));
 
 const sent = new Map<number, string>();
 let menuHeld = false;
@@ -207,7 +220,9 @@ function pollInput() {
   if (ws.readyState !== WebSocket.OPEN) return;
   const pads = navigator.getGamepads();
   // Guide / Home (button 16) or Select + R3 asks the frontend for its quick menu
-  const asking = pads.some(pad => pad?.buttons[16]?.pressed || (pad?.buttons[8]?.pressed && pad.buttons[11]?.pressed));
+  const asking = pads.some(
+    (pad) => pad?.buttons[16]?.pressed || (pad?.buttons[8]?.pressed && pad.buttons[11]?.pressed),
+  );
   if (asking && !menuHeld && !menuOpen) toParent({ type: "menu" });
   menuHeld = asking;
   for (let port = 0; port < Math.max(1, pads.length); port++) {
@@ -217,7 +232,10 @@ function pollInput() {
     if (pad?.mapping === "standard" && !menuOpen) {
       pad.buttons.forEach((b, i) => b.pressed && (buttons |= STANDARD[i] ?? 0));
       for (let i = 0; i < 4; i++) axes.push(Math.round((pad.axes[i] ?? 0) * 0x7fff));
-      axes.push(Math.round((pad.buttons[6]?.value ?? 0) * 0x7fff), Math.round((pad.buttons[7]?.value ?? 0) * 0x7fff));
+      axes.push(
+        Math.round((pad.buttons[6]?.value ?? 0) * 0x7fff),
+        Math.round((pad.buttons[7]?.value ?? 0) * 0x7fff),
+      );
     }
     const state = `${buttons}:${axes}`;
     if (sent.get(port) === state) continue;
@@ -249,7 +267,8 @@ requestAnimationFrame(render);
 // Quick-menu requests from the frontend window (checked against our parent in the handler).
 window.addEventListener("message", ({ source, data }) => {
   if (source !== window.parent || !data?.bunos) return;
-  const send = (message: object) => ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify(message));
+  const send = (message: object) =>
+    ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify(message));
   switch (data.action) {
     case "open": // pause the core and stop feeding it input while the menu is up
       menuOpen = true;
@@ -284,7 +303,10 @@ Object.assign(globalThis, {
     renderer,
     frames: () => frames,
     command: (line: string) => ws.send(JSON.stringify({ type: "command", line })),
-    async capture(width = presenter?.width ?? surface?.width ?? 0, height = presenter?.height ?? surface?.height ?? 0) {
+    async capture(
+      width = presenter?.width ?? surface?.width ?? 0,
+      height = presenter?.height ?? surface?.height ?? 0,
+    ) {
       if (!presenter) {
         // the 2D path keeps the converted frame: count its lit pixels and distinct colours
         const words = new Uint32Array(surfaceImage?.data.buffer ?? new ArrayBuffer(0));
@@ -294,7 +316,12 @@ Object.assign(globalThis, {
           if (word & 0xffffff) litPixels++;
           distinct.add(word);
         }
-        return { width: surface?.width ?? 0, height: surface?.height ?? 0, lit: litPixels, colors: distinct.size };
+        return {
+          width: surface?.width ?? 0,
+          height: surface?.height ?? 0,
+          lit: litPixels,
+          colors: distinct.size,
+        };
       }
       const rgba = await presenter.capture(width, height);
       const colors = new Set<number>();

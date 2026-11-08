@@ -16,7 +16,12 @@ import { tmpdir } from "node:os";
 import { statSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { EMULATORS, SESSION, type QualificationEntry, type QualificationReport } from "./emulators";
-import { stageBuiltFixtures, stageFixtures, stageSessionFixtures, writeCatalog } from "./fixtures.ts";
+import {
+  stageBuiltFixtures,
+  stageFixtures,
+  stageSessionFixtures,
+  writeCatalog,
+} from "./fixtures.ts";
 import { pngHasLitPixel } from "./png.ts";
 
 const root = resolve(import.meta.dir, "../../..");
@@ -34,7 +39,10 @@ const objects = resolve(Bun.env.WEBOS_OBJECTS ?? join(Bun.env.HOME ?? root, "app
 async function sh(cmd: string[], timeoutMs = 120_000) {
   const proc = Bun.spawn(cmd, { stdout: "pipe", stderr: "pipe" });
   const timer = setTimeout(() => proc.kill(), timeoutMs);
-  const [out, err] = await Promise.all([new Response(proc.stdout).text(), new Response(proc.stderr).text()]);
+  const [out, err] = await Promise.all([
+    new Response(proc.stdout).text(),
+    new Response(proc.stderr).text(),
+  ]);
   clearTimeout(timer);
   return { code: await proc.exited, out, err };
 }
@@ -43,7 +51,8 @@ async function sh(cmd: string[], timeoutMs = 120_000) {
 function peak(pcm: Uint8Array) {
   const view = new DataView(pcm.buffer, pcm.byteOffset, pcm.byteLength - (pcm.byteLength % 2));
   let max = 0;
-  for (let i = 0; i < view.byteLength; i += 2) max = Math.max(max, Math.abs(view.getInt16(i, true)));
+  for (let i = 0; i < view.byteLength; i += 2)
+    max = Math.max(max, Math.abs(view.getInt16(i, true)));
   return max / 32768;
 }
 
@@ -51,7 +60,12 @@ async function qualify(id: string, fixtures: string): Promise<QualificationEntry
   const launch = SESSION[id]!;
   const name = `bunos-q-${id}-${process.pid}`;
   const runtime = await mkdtemp(join(tmpdir(), "bunos-session-"));
-  const entry: QualificationEntry = { id, status: "fail", errors: [], testedAt: new Date().toISOString() };
+  const entry: QualificationEntry = {
+    id,
+    status: "fail",
+    errors: [],
+    testedAt: new Date().toISOString(),
+  };
   const rom = launch.rom ? `/roms/${launch.rom}` : "";
   const command = launch.app.includes("{rom}")
     ? launch.app.replace("{rom}", rom)
@@ -107,10 +121,11 @@ async function qualify(id: string, fixtures: string): Promise<QualificationEntry
       await Bun.sleep(3000);
       const copy = join(runtime, `q${n}.png`);
       await sh(["docker", "cp", `${name}:/tmp/q${n}.png`, copy]);
-      if (await Bun.file(copy).exists()) shots.push(new Uint8Array(await Bun.file(copy).arrayBuffer()));
+      if (await Bun.file(copy).exists())
+        shots.push(new Uint8Array(await Bun.file(copy).arrayBuffer()));
       if (n === 1) await Bun.sleep(4000);
     }
-    const lit = shots.some(png => pngHasLitPixel(png));
+    const lit = shots.some((png) => pngHasLitPixel(png));
     const moving =
       shots.length === 2 &&
       new Bun.CryptoHasher("sha256").update(shots[0]!).digest("hex") !==
@@ -133,7 +148,9 @@ async function qualify(id: string, fixtures: string): Promise<QualificationEntry
           info?: { props?: Record<string, unknown> };
         }[];
         const node = objectsList.find(
-          o => o.type === "PipeWire:Interface:Node" && o.info?.props?.["media.class"] === "Stream/Output/Audio",
+          (o) =>
+            o.type === "PipeWire:Interface:Node" &&
+            o.info?.props?.["media.class"] === "Stream/Output/Audio",
         );
         if (node) stream = { id: node.id, props: node.info!.props! };
       } catch {
@@ -164,9 +181,14 @@ async function qualify(id: string, fixtures: string): Promise<QualificationEntry
       : "no output stream";
     entry.renderer = "gamescope headless (lavapipe)";
     const logs = await sh(["docker", "logs", "--tail", "40", name]);
-    const crashed = !(await sh(["docker", "inspect", "-f", "{{.State.Running}}", name])).out.includes("true");
+    const crashed = !(
+      await sh(["docker", "inspect", "-f", "{{.State.Running}}", name])
+    ).out.includes("true");
     const problems: string[] = [];
-    if (crashed) problems.push(`session exited: ${(logs.out + logs.err).trim().split("\n").slice(-3).join(" | ")}`);
+    if (crashed)
+      problems.push(
+        `session exited: ${(logs.out + logs.err).trim().split("\n").slice(-3).join(" | ")}`,
+      );
     if (!shots.length) problems.push("no gamescope screenshot");
     else if (!lit) problems.push("the screen stayed black");
     if (!stream && !launch.silent) problems.push("no PipeWire output stream");
@@ -187,7 +209,9 @@ async function qualify(id: string, fixtures: string): Promise<QualificationEntry
 }
 
 if ((await sh(["docker", "image", "inspect", image])).code)
-  throw new Error(`session image ${image} is not built (bun factory image build bunos-gaming --target session)`);
+  throw new Error(
+    `session image ${image} is not built (bun factory image build bunos-gaming --target session)`,
+  );
 await stageFixtures(objects);
 await stageSessionFixtures(objects);
 await stageBuiltFixtures(objects);
@@ -197,12 +221,14 @@ const reportPath = join(objects, "emulators/qualification.json");
 const previous: QualificationReport | undefined = (await Bun.file(reportPath).exists())
   ? await Bun.file(reportPath).json()
   : undefined;
-const ids = Object.keys(SESSION).filter(id => (!only || only.includes(id)) && EMULATORS.some(e => e.id === id));
+const ids = Object.keys(SESSION).filter(
+  (id) => (!only || only.includes(id)) && EMULATORS.some((e) => e.id === id),
+);
 const results: Record<string, QualificationEntry> = {};
 for (let i = 0; i < ids.length; i += jobs) {
   const batch = ids.slice(i, i + jobs);
   for (const entry of await Promise.all(
-    batch.map(id =>
+    batch.map((id) =>
       qualify(id, fixtures).catch((e): QualificationEntry => ({
         id,
         status: "fail",
@@ -223,4 +249,4 @@ for (let i = 0; i < ids.length; i += jobs) {
   await mkdir(join(objects, "emulators"), { recursive: true });
   await Bun.write(reportPath, `${JSON.stringify(current, null, 2)}\n`);
 }
-if (Object.values(results).some(e => e.status === "fail")) process.exitCode = 1;
+if (Object.values(results).some((e) => e.status === "fail")) process.exitCode = 1;

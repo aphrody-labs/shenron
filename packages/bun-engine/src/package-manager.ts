@@ -50,9 +50,16 @@ export async function runEnginePackageManager(args: string[]): Promise<number> {
   if (args[0] === "consoles") {
     const catalog = await loadConsoleCatalog();
     const firmware = await listFirmware().catch(() => []);
-    const consoles = new Map<string, { cores: string[]; firmwarePolicy: Set<string>; firmware: number }>();
+    const consoles = new Map<
+      string,
+      { cores: string[]; firmwarePolicy: Set<string>; firmware: number }
+    >();
     for (const component of catalog.components) {
-      const entry = consoles.get(component.console) ?? { cores: [], firmwarePolicy: new Set(), firmware: 0 };
+      const entry = consoles.get(component.console) ?? {
+        cores: [],
+        firmwarePolicy: new Set(),
+        firmware: 0,
+      };
       entry.cores.push(component.id);
       entry.firmwarePolicy.add(component.firmwarePolicy);
       consoles.set(component.console, entry);
@@ -85,8 +92,11 @@ export async function runEnginePackageManager(args: string[]): Promise<number> {
     if (!consoleName || !sourcePath) {
       throw new Error("usage: bep firmware:import <console> <local-dump> [--store <directory>]");
     }
-    const known = new Set((await loadConsoleCatalog()).components.map(component => component.console));
-    if (!known.has(consoleName)) throw new Error(`unknown console ${consoleName}; see bep consoles`);
+    const known = new Set(
+      (await loadConsoleCatalog()).components.map((component) => component.console),
+    );
+    if (!known.has(consoleName))
+      throw new Error(`unknown console ${consoleName}; see bep consoles`);
     const storeAt = options.indexOf("--store");
     const store = storeAt >= 0 ? options[storeAt + 1] : undefined;
     if (storeAt >= 0 && !store) throw new Error("--store requires a directory");
@@ -104,7 +114,10 @@ export async function runEnginePackageManager(args: string[]): Promise<number> {
     case "install":
     case "i":
       return print(
-        await pm.install({ frozen: rest.includes("--frozen-lockfile"), sources: rest.includes("--sources") }),
+        await pm.install({
+          frozen: rest.includes("--frozen-lockfile"),
+          sources: rest.includes("--sources"),
+        }),
       );
     case "add":
     case "a":
@@ -152,7 +165,9 @@ export async function runEnginePackageManager(args: string[]): Promise<number> {
     case "usr":
       return print(await listInstalled());
     case "cache":
-      return print(rest[0] === "prune" ? await pm.pruneCache(rest.slice(1)) : pm.cacheDirectories());
+      return print(
+        rest[0] === "prune" ? await pm.pruneCache(rest.slice(1)) : pm.cacheDirectories(),
+      );
     case "bun":
       break;
     default:

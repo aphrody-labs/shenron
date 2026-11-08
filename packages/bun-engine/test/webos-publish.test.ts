@@ -22,14 +22,27 @@ test("WebOS publication requires a receipt and preserves existing assets", async
     await write(join(dist, core, module), "module fixture");
     await write(join(dist, "runtime/touch.js"), "runtime fixture");
     await write(join(dist, fixturePath), "rom fixture");
-    await write(join(dist, core, "manifest.json"), JSON.stringify({ systems: ["nds"], module, wasm, firmware: [] }));
+    await write(
+      join(dist, core, "manifest.json"),
+      JSON.stringify({ systems: ["nds"], module, wasm, firmware: [] }),
+    );
     const fixtureSHA = await qualificationSHA256(join(dist, fixturePath));
-    const fixture = { path: fixturePath, sha256: fixtureSHA, source: "fixture-source", license: "fixture-license" };
+    const fixture = {
+      path: fixturePath,
+      sha256: fixtureSHA,
+      source: "fixture-source",
+      license: "fixture-license",
+    };
     const lockPath = join(root, "packages/bun-engine/web-emulation/web-emulation.lock.json");
-    await write(lockPath, JSON.stringify({ testContent: { test: { system: "nds", sha256: fixtureSHA } } }));
+    await write(
+      lockPath,
+      JSON.stringify({ testContent: { test: { system: "nds", sha256: fixtureSHA } } }),
+    );
     await write(
       join(root, "packages/bun-engine/plugins/consoles/roms.json"),
-      JSON.stringify({ packs: [{ id: "test", sha256: fixtureSHA, url: fixture.source, license: fixture.license }] }),
+      JSON.stringify({
+        packs: [{ id: "test", sha256: fixtureSHA, url: fixture.source, license: fixture.license }],
+      }),
     );
     await write(
       join(root, "packages/bun-engine/plugins/consoles/free-firmware.json"),
@@ -37,7 +50,13 @@ test("WebOS publication requires a receipt and preserves existing assets", async
     );
     await expect(publishQualifiedCores(dist, objects, [core], root)).rejects.toThrow();
     expect(await Bun.file(join(objects, "emulation", core, "manifest.json")).exists()).toBe(false);
-    const paths = [`${core}/${module}`, `${core}/${wasm}`, `${core}/manifest.json`, fixturePath, "runtime/touch.js"];
+    const paths = [
+      `${core}/${module}`,
+      `${core}/${wasm}`,
+      `${core}/manifest.json`,
+      fixturePath,
+      "runtime/touch.js",
+    ];
     const files: Record<string, string> = {};
     for (const path of paths.sort()) files[path] = await qualificationSHA256(join(dist, path));
     await write(
@@ -79,15 +98,27 @@ test("WebOS publication requires a receipt and preserves existing assets", async
     await unlink(unexpected);
     const manifest = await readFile(join(objects, "emulation", core, "manifest.json"), "utf8");
     await write(join(objects, "emulation/runtime/touch.js"), "different shared runtime");
-    await expect(publishQualifiedCores(dist, objects, [core], root)).rejects.toThrow("overwrite an existing asset");
+    await expect(publishQualifiedCores(dist, objects, [core], root)).rejects.toThrow(
+      "overwrite an existing asset",
+    );
     expect(await readFile(old, "utf8")).toBe("keep old version");
-    expect(await readFile(join(objects, "emulation/runtime/touch.js"), "utf8")).toBe("different shared runtime");
-    expect(await readFile(join(objects, "emulation", core, "manifest.json"), "utf8")).toBe(manifest);
+    expect(await readFile(join(objects, "emulation/runtime/touch.js"), "utf8")).toBe(
+      "different shared runtime",
+    );
+    expect(await readFile(join(objects, "emulation", core, "manifest.json"), "utf8")).toBe(
+      manifest,
+    );
     await write(join(objects, "emulation/runtime/touch.js"), "runtime fixture");
     await write(join(objects, "emulation", core, wasm), "different immutable asset");
-    await expect(publishQualifiedCores(dist, objects, [core], root)).rejects.toThrow("overwrite an existing asset");
-    expect(await readFile(join(objects, "emulation", core, wasm), "utf8")).toBe("different immutable asset");
-    expect(await readFile(join(objects, "emulation", core, "manifest.json"), "utf8")).toBe(manifest);
+    await expect(publishQualifiedCores(dist, objects, [core], root)).rejects.toThrow(
+      "overwrite an existing asset",
+    );
+    expect(await readFile(join(objects, "emulation", core, wasm), "utf8")).toBe(
+      "different immutable asset",
+    );
+    expect(await readFile(join(objects, "emulation", core, "manifest.json"), "utf8")).toBe(
+      manifest,
+    );
   } finally {
     await rm(root, { recursive: true, force: true });
   }

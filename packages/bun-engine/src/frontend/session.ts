@@ -31,8 +31,12 @@ export function underGamescope(): boolean {
  * Stops every running game, then runs the session action after the response is out.
  * `reload` tells the page to reload itself (restart without an app window of ours).
  */
-export function sessionAction(action: SessionAction): { action: SessionAction; stopped: number; reload: boolean } {
-  const stopped = runningGames().filter(game => stopGame(game.pid)).length;
+export function sessionAction(action: SessionAction): {
+  action: SessionAction;
+  stopped: number;
+  reload: boolean;
+} {
+  const stopped = runningGames().filter((game) => stopGame(game.pid)).length;
   const reload = action === "restart" && !hooks?.window;
   if (action === "exit" && !hooks) throw new Error("this server has no session window to close");
   setTimeout(() => {

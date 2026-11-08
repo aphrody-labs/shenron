@@ -14,7 +14,7 @@ const CACHE_DIR = "bun-engine-firmware";
 
 async function sha512Hex(bytes) {
   const digest = new Uint8Array(await crypto.subtle.digest("SHA-512", bytes));
-  return Array.from(digest, b => b.toString(16).padStart(2, "0")).join("");
+  return Array.from(digest, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 async function opfsDir() {
@@ -48,7 +48,7 @@ async function cacheGet(key) {
   }
   try {
     const db = await idb();
-    return await new Promise(resolve => {
+    return await new Promise((resolve) => {
       const get = db.transaction("files").objectStore("files").get(key);
       get.onsuccess = () => resolve(get.result ? new Uint8Array(get.result) : null);
       get.onerror = () => resolve(null);
@@ -74,7 +74,10 @@ async function cachePut(key, bytes) {
     const db = await idb();
     await new Promise((resolve, reject) => {
       const tx = db.transaction("files", "readwrite");
-      tx.objectStore("files").put(bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength), key);
+      tx.objectStore("files").put(
+        bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength),
+        key,
+      );
       tx.oncomplete = resolve;
       tx.onerror = () => reject(tx.error);
     });
@@ -91,7 +94,8 @@ async function verify(bytes, entry, id, Verifier) {
     return verifier.finish();
   }
   const digest = await sha512Hex(bytes);
-  if (digest !== entry.sha512) throw new Error(`firmware \`${id}\`: sha512 ${digest} does not match the registry`);
+  if (digest !== entry.sha512)
+    throw new Error(`firmware \`${id}\`: sha512 ${digest} does not match the registry`);
   return bytes;
 }
 
@@ -102,8 +106,13 @@ async function verify(bytes, entry, id, Verifier) {
  *   Verifier: the FirmwareVerifier class exported by a Rust core module.
  * @returns {Promise<{ bytes: Uint8Array, source: string, cache: string | null }>}
  */
-export async function loadFreeFirmware(id, { base = new URL("../", import.meta.url).href, Verifier } = {}) {
-  const registry = await (await fetch(new URL("firmware/firmware.json", base), { cache: "no-cache" })).json();
+export async function loadFreeFirmware(
+  id,
+  { base = new URL("../", import.meta.url).href, Verifier } = {},
+) {
+  const registry = await (
+    await fetch(new URL("firmware/firmware.json", base), { cache: "no-cache" })
+  ).json();
   const entry = registry.firmware?.[id];
   if (!entry) throw new Error(`firmware \`${id}\` is not an open-source registry component`);
   const key = entry.sha512;
@@ -166,11 +175,11 @@ export function acceptUserFirmware(element, onFile, options) {
     hidden: true,
   });
   element.after(input);
-  const take = async file => file && onFile(await readUserFirmware(file, options), file.name);
+  const take = async (file) => file && onFile(await readUserFirmware(file, options), file.name);
   input.addEventListener("change", () => take(input.files?.[0]));
   element.addEventListener("click", () => input.click());
-  element.addEventListener("dragover", event => event.preventDefault());
-  element.addEventListener("drop", event => {
+  element.addEventListener("dragover", (event) => event.preventDefault());
+  element.addEventListener("drop", (event) => {
     event.preventDefault();
     take(event.dataTransfer?.files?.[0]);
   });

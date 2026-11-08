@@ -51,7 +51,7 @@ async function run(host: string, script: string): Promise<string> {
   return out;
 }
 
-const sleep = (ms: number) => new Promise(done => setTimeout(done, ms));
+const sleep = (ms: number) => new Promise((done) => setTimeout(done, ms));
 
 /** Remote path of a dump: <root>/<kind dir>/<console>/<sha256>.<ext>, mirroring the local store. */
 function remotePath(root: string, dump: OwnedDump): string {
@@ -123,9 +123,10 @@ export async function syncVps(options: VpsOptions = {}): Promise<VpsResult> {
     if (at > 0) remote.set(line.slice(0, at), Number(line.slice(at + 1)));
   }
   const dumps = listOwned({ system: options.system }).filter(
-    dump =>
+    (dump) =>
       (options.keys || dump.kind !== "keys") &&
-      (!options.only?.length || options.only.some(sha => dump.sha256.startsWith(sha.toLowerCase()))),
+      (!options.only?.length ||
+        options.only.some((sha) => dump.sha256.startsWith(sha.toLowerCase()))),
   );
   const result: VpsResult = { host, root, sent: [], present: 0, pruned: [] };
   for (const dump of dumps) {
@@ -136,8 +137,8 @@ export async function syncVps(options: VpsOptions = {}): Promise<VpsResult> {
     result.sent.push(await send(host, root, dump, remote.get(`${dump.file}.part`) ?? 0, limit));
   }
   if (options.prune) {
-    const local = new Set(listOwned().map(dump => dump.file));
-    const stale = [...remote.keys()].filter(file => !local.has(file.replace(/\.part$/, "")));
+    const local = new Set(listOwned().map((dump) => dump.file));
+    const stale = [...remote.keys()].filter((file) => !local.has(file.replace(/\.part$/, "")));
     if (stale.length) await run(host, `cd ${quote(root)} && rm -f ${stale.map(quote).join(" ")}`);
     result.pruned = stale;
   }

@@ -377,7 +377,11 @@ button.big {
   padding: 2rem 2.5rem;
   border-radius: 1.5rem;
   overflow: hidden;
-  background: color-mix(in oklab, oklch(from var(--md-sys-color-primary-container) l c var(--tint, h)) 45%, var(--panel));
+  background: color-mix(
+    in oklab,
+    oklch(from var(--md-sys-color-primary-container) l c var(--tint, h)) 45%,
+    var(--panel)
+  );
 }
 .hero.empty {
   grid-template-columns: 1fr;
@@ -454,7 +458,11 @@ button.big {
   overflow: hidden;
   aspect-ratio: 4 / 3;
   border-radius: 0.9rem;
-  background: color-mix(in oklab, oklch(from var(--md-sys-color-primary-container) l c var(--tint, h)) 70%, var(--panel));
+  background: color-mix(
+    in oklab,
+    oklch(from var(--md-sys-color-primary-container) l c var(--tint, h)) 70%,
+    var(--panel)
+  );
 }
 .art img {
   display: block;
@@ -558,7 +566,11 @@ button.big {
   border-radius: 1.1rem;
   overflow: hidden;
   scroll-snap-align: center;
-  background: color-mix(in oklab, oklch(from var(--md-sys-color-primary-container) l c var(--tint, h)) 30%, var(--panel));
+  background: color-mix(
+    in oklab,
+    oklch(from var(--md-sys-color-primary-container) l c var(--tint, h)) 30%,
+    var(--panel)
+  );
   transition: transform var(--dur) var(--app-motion-spring-fast-spatial);
 }
 .systems .system {
@@ -579,14 +591,21 @@ button.big {
   position: absolute;
   inset: 0 0 auto 0;
   height: 4.6rem;
-  background: color-mix(in oklab, oklch(from var(--md-sys-color-primary-container) l c var(--tint, h)) 55%, var(--panel));
+  background: color-mix(
+    in oklab,
+    oklch(from var(--md-sys-color-primary-container) l c var(--tint, h)) 55%,
+    var(--panel)
+  );
 }
 .system .banner img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: top;
-  mask-image: linear-gradient(black 70%, transparent); /* design:content - alpha mask over cover art */
+  mask-image: linear-gradient(
+    black 70%,
+    transparent
+  ); /* design:content - alpha mask over cover art */
 }
 .system.dim {
   border-style: dashed;

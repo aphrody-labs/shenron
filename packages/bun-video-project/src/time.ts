@@ -13,15 +13,25 @@ function checkedTick(ticks: bigint): bigint {
 
 /** Convert plain decimal seconds exactly. Reject values between native ticks. */
 export function ticksFromDecimalSeconds(seconds: string): bigint {
-  if (typeof seconds !== "string" || seconds.length > 64 || !/^-?(?:0|[1-9]\d*)(?:\.\d{1,12})?$/.test(seconds)) {
-    throw new VideoLibraryError("INVALID_TIME", "Use plain decimal seconds with at most 12 fractional digits.");
+  if (
+    typeof seconds !== "string" ||
+    seconds.length > 64 ||
+    !/^-?(?:0|[1-9]\d*)(?:\.\d{1,12})?$/.test(seconds)
+  ) {
+    throw new VideoLibraryError(
+      "INVALID_TIME",
+      "Use plain decimal seconds with at most 12 fractional digits.",
+    );
   }
   const negative = seconds.startsWith("-");
   const [whole, fraction = ""] = (negative ? seconds.slice(1) : seconds).split(".");
   const denominator = 10n ** BigInt(fraction.length);
   const numerator = BigInt(`${whole}${fraction}`) * TICKS_PER_SECOND;
   if (numerator % denominator !== 0n) {
-    throw new VideoLibraryError("INVALID_TIME", "The supplied seconds do not fall on an exact native tick.");
+    throw new VideoLibraryError(
+      "INVALID_TIME",
+      "The supplied seconds do not fall on an exact native tick.",
+    );
   }
   return checkedTick((negative ? -numerator : numerator) / denominator);
 }

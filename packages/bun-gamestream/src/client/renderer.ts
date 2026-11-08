@@ -38,7 +38,11 @@ export class WebGpuPresenter {
     });
   }
 
-  static async create(canvas: HTMLCanvasElement, mode: UpscaleMode, sharpness: number): Promise<WebGpuPresenter> {
+  static async create(
+    canvas: HTMLCanvasElement,
+    mode: UpscaleMode,
+    sharpness: number,
+  ): Promise<WebGpuPresenter> {
     if (!("gpu" in navigator)) throw new Error("WebGPU unavailable");
     const adapter = await navigator.gpu.requestAdapter({
       powerPreference: "high-performance",

@@ -6,7 +6,8 @@ import { loadConfig } from "@aphrody/bun-workspace";
 import { authorizedGame, verifyAuthorizedInputs } from "./authorized-publication";
 
 export async function publishAuthorizedContent(privateReport: string) {
-  if (process.platform !== "linux") throw new Error("Authorized content publication runs on the VPS only.");
+  if (process.platform !== "linux")
+    throw new Error("Authorized content publication runs on the VPS only.");
   const root = resolve(import.meta.dir, "../../..");
   // Perform all qualification gates before constructing a credentialed client.
   const verified = await verifyAuthorizedInputs(root, privateReport);
@@ -14,7 +15,10 @@ export async function publishAuthorizedContent(privateReport: string) {
   if (!config.deployment) throw new Error("Root deployment settings are missing.");
   const assetConfig = {
     ...config,
-    deployment: { ...config.deployment, assets: { bucket: "aphrody-assets", url: "https://assets.aphrody.app" } },
+    deployment: {
+      ...config.deployment,
+      assets: { bucket: "aphrody-assets", url: "https://assets.aphrody.app" },
+    },
   };
   const reference = await publishContentObject(
     assetClient(assetConfig),
@@ -26,7 +30,7 @@ export async function publishAuthorizedContent(privateReport: string) {
   const current = await verifyAuthorizedInputs(root, privateReport);
   if (
     ["preparationSHA256", "qualificationSHA256", "privateReportSHA256"].some(
-      key => current[key as keyof typeof current] !== verified[key as keyof typeof verified],
+      (key) => current[key as keyof typeof current] !== verified[key as keyof typeof verified],
     )
   )
     throw new Error("Qualification inputs changed during publication.");

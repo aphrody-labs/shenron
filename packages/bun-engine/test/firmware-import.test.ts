@@ -19,7 +19,9 @@ describe("local firmware proof of concept", () => {
       expect(await Bun.file(join(store, "nintendo-ds", manifest.file)).bytes()).toEqual(
         new Uint8Array([0x42, 0x55, 0x4e]),
       );
-      expect(await Bun.file(join(store, "nintendo-ds", `${manifest.sha256}.json`)).json()).toMatchObject({
+      expect(
+        await Bun.file(join(store, "nintendo-ds", `${manifest.sha256}.json`)).json(),
+      ).toMatchObject({
         sha256: manifest.sha256,
         bytes: 3,
       });

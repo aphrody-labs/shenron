@@ -47,7 +47,9 @@ function parse(args: string[]): { positional: string[]; flags: Map<string, strin
 export function parseBytes(value: string): number {
   const match = /^(\d+(?:\.\d+)?)\s*([kmg]?)i?b?$/i.exec(value.trim());
   if (!match) throw new Error(`not a size: ${value}`);
-  const scale = { "": 1, k: 1024, m: 1024 ** 2, g: 1024 ** 3 }[match[2]!.toLowerCase() as "" | "k" | "m" | "g"];
+  const scale = { "": 1, k: 1024, m: 1024 ** 2, g: 1024 ** 3 }[
+    match[2]!.toLowerCase() as "" | "k" | "m" | "g"
+  ];
   return Math.round(Number(match[1]) * scale);
 }
 
@@ -71,7 +73,7 @@ export async function runImport(args: string[]): Promise<number> {
   if (!positional.length) throw new Error(`usage: ${ownedUsage[0]}`);
   const results = await ingestPaths(positional, { system: text(flags, "--system"), via: "cli" });
   print(results);
-  return results.some(result => result.error) ? 1 : 0;
+  return results.some((result) => result.error) ? 1 : 0;
 }
 
 export async function runTestOwned(args: string[]): Promise<number> {
@@ -88,9 +90,12 @@ export async function runTestOwned(args: string[]): Promise<number> {
   });
   print({
     report,
-    results: results.map(({ detail, ...rest }) => ({ ...rest, ...(detail ? { detail: detail.slice(0, 240) } : {}) })),
+    results: results.map(({ detail, ...rest }) => ({
+      ...rest,
+      ...(detail ? { detail: detail.slice(0, 240) } : {}),
+    })),
   });
-  return results.some(result => result.status === "fail" || result.status === "timeout") ? 1 : 0;
+  return results.some((result) => result.status === "fail" || result.status === "timeout") ? 1 : 0;
 }
 
 export async function runOwned(args: string[]): Promise<number> {
@@ -100,9 +105,10 @@ export async function runOwned(args: string[]): Promise<number> {
     case "ls":
     case "list":
       return print(
-        listOwned({ kind: text(flags, "--kind") as OwnedKind | undefined, system: text(flags, "--system") }).map(
-          describe,
-        ),
+        listOwned({
+          kind: text(flags, "--kind") as OwnedKind | undefined,
+          system: text(flags, "--system"),
+        }).map(describe),
       );
     case "rm":
     case "remove": {
@@ -116,7 +122,9 @@ export async function runOwned(args: string[]): Promise<number> {
         await runInbox({
           system: text(flags, "--system"),
           watch: flags.has("--watch"),
-          report: flags.has("--watch") ? results => console.log(JSON.stringify(results)) : undefined,
+          report: flags.has("--watch")
+            ? (results) => console.log(JSON.stringify(results))
+            : undefined,
         }),
       );
     case "push": {
@@ -124,7 +132,7 @@ export async function runOwned(args: string[]): Promise<number> {
       const dumps =
         flags.has("--all") || !positional.length
           ? listOwned()
-          : positional.map(sha => {
+          : positional.map((sha) => {
               const dump = ownedBySha(sha);
               if (!dump) throw new Error(`no owned dump ${sha}`);
               return dump;
@@ -133,7 +141,9 @@ export async function runOwned(args: string[]): Promise<number> {
       for (const dump of dumps)
         results.push(
           await pushDump(dump, target, {
-            partBytes: text(flags, "--part-size") ? parseBytes(text(flags, "--part-size")!) : undefined,
+            partBytes: text(flags, "--part-size")
+              ? parseBytes(text(flags, "--part-size")!)
+              : undefined,
           }),
         );
       return print(results);

@@ -329,10 +329,7 @@ const [, libCandidate, vfsShipped, , pluginSource, dataShipped, buildId] = await
 ]);
 
 // DBXV2 is private (Bandai Namco / Dimps): no generated module, declaration or marker may ship.
-const dbxv2Leaks = [
-  ...findDbxv2Leaks(OUT),
-  ...(embed ? findDbxv2Leaks(pluginSource) : []),
-];
+const dbxv2Leaks = [...findDbxv2Leaks(OUT), ...(embed ? findDbxv2Leaks(pluginSource) : [])];
 if (dbxv2Leaks.length)
   throw new Error(
     `DBXV2 private modules in the release tree: ${dbxv2Leaks.slice(0, 10).join(", ")}`,
