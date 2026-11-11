@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: Apache-2.0
 import type { CrunchyrollSeriesMeta, CrunchyrollEpisodeMeta } from "./types";
 import { CRUNCHYROLL_SERIES_BY_SHENRON } from "@aphrody/shenron-media/crunchyroll-mapping";
 import { readFileSync } from "node:fs";

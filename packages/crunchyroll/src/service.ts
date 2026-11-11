@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: Apache-2.0
 import { CrunchyrollClient } from "./client";
 import { join } from "node:path";
 import { homedir } from "node:os";

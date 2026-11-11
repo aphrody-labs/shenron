@@ -1,4 +1,4 @@
-﻿// SPDX-License-Identifier: Apache-2.0
+// SPDX-License-Identifier: Apache-2.0
 import { promisify } from "node:util";
 import { exec as execCb } from "node:child_process";
 import { join } from "node:path";
