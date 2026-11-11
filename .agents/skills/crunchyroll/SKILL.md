@@ -1,4 +1,4 @@
-﻿---
+---
 name: crunchyroll
 description: Headless Crunchyroll CLI, MCP server, and anime catalogue resolver for Shenron. Use when the user asks to query Crunchyroll, search anime, resolve episodes, or integrate official Crunchyroll watch URLs.
 ---
