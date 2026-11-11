@@ -222,12 +222,12 @@ describe("fetchCachedImage : delais", () => {
 describe("aucun en-tete amont relaye", () => {
   test("CachedImage ne porte que status/body/type/expires", async () => {
     const r = await fetchCachedImage(`${base}/ok1`, opts);
-    expect(Object.keys(r).sort()).toEqual(["body", "expires", "status", "type"]);
+    expect(Object.keys(r).toSorted()).toEqual(["body", "expires", "status", "type"]);
     expect(r.status).toBe(200);
   });
   test("la reponse HTTP n'a ni Set-Cookie, ni Location, ni en-tetes amont", async () => {
     const res = imageResponse(await fetchCachedImage(`${base}/ok2`, opts), 604_800);
-    expect([...res.headers.keys()].sort()).toEqual([
+    expect([...res.headers.keys()].toSorted()).toEqual([
       "cache-control",
       "content-type",
       "cross-origin-resource-policy",

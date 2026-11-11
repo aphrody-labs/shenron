@@ -18,7 +18,7 @@
  * `--remote <ssh host>` re-runs this script inside the host checkout (default ~/shenron-fix, after
  * `git pull`), so checks, cargo and the agent SDK never run on the local machine.
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 
 export type Tool = "oxlint" | "oxfmt" | "tsc" | "rustfmt" | "clippy";
@@ -299,12 +299,16 @@ const PATH_PREFIX =
 export type Run = { code: number; out: string; err: string };
 
 export async function sh(command: string, cwd: string, timeoutMs = 1_200_000): Promise<Run> {
-  const child = Bun.spawn(["bash", "-c", `${PATH_PREFIX} ${command}`], {
+  const isWin = process.platform === "win32";
+  const cmd = isWin
+    ? ["cmd.exe", "/d", "/s", "/c", command]
+    : ["bash", "-c", `${PATH_PREFIX} ${command}`];
+  const child = Bun.spawn(cmd, {
     cwd,
     stdout: "pipe",
     stderr: "pipe",
     stdin: "ignore",
-    env: { ...process.env, CARGO_TERM_COLOR: "never", NO_COLOR: "1" },
+    env: { ...process.env, CARGO_TERM_COLOR: "never", NO_COLOR: "1", NEXT_TELEMETRY_DISABLED: "1" },
   });
   const timer = setTimeout(() => child.kill(), timeoutMs);
   const [out, err, code] = await Promise.all([
@@ -316,7 +320,10 @@ export async function sh(command: string, cwd: string, timeoutMs = 1_200_000): P
   return { code, out, err };
 }
 
-const q = (s: string) => `'${s.replaceAll("'", `'\\''`)}'`;
+const q = (s: string) =>
+  process.platform === "win32"
+    ? `"${s.replaceAll('"', '\\"')}"`
+    : `'${s.replaceAll("'", `'\\''`)}'`;
 
 // ---------------------------------------------------------------- checks
 
@@ -380,8 +387,9 @@ export type Member = {
 
 /** Crates found from tracked Cargo.toml files (works when path dependencies are missing, unlike `cargo metadata`). */
 export async function rustMembers(root: string): Promise<Member[]> {
-  const tracked = (await sh("git ls-files -- '*Cargo.toml' '*.rs'", root)).out
+  const tracked = (await git(root, ["ls-files", "--", "*Cargo.toml", "*.rs"])).out
     .split("\n")
+    .map((s) => s.trim().replaceAll("\\", "/"))
     .filter(Boolean);
   const manifests = tracked.filter((f) => f.endsWith("Cargo.toml"));
   const rootToml = existsSync(join(root, "Cargo.toml"))
@@ -709,7 +717,26 @@ type Options = {
   model?: string;
 };
 
-const git = (root: string, args: string) => sh(`git ${args}`, root);
+export async function git(root: string, args: string[] | string): Promise<Run> {
+  const parts = Array.isArray(args)
+    ? args
+    : (args.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) ?? []).map((p) =>
+        p.replace(/^["']|["']$/g, ""),
+      );
+  const child = Bun.spawn(["git", ...parts], {
+    cwd: root,
+    stdout: "pipe",
+    stderr: "pipe",
+    stdin: "ignore",
+    env: { ...process.env, CARGO_TERM_COLOR: "never", NO_COLOR: "1" },
+  });
+  const [out, err, code] = await Promise.all([
+    new Response(child.stdout).text(),
+    new Response(child.stderr).text(),
+    child.exited,
+  ]);
+  return { code, out, err };
+}
 
 /** Dirty files (modified or untracked) with their current content, so an agent batch can be undone without losing earlier mechanical fixes. */
 export async function worktreeSnapshot(root: string): Promise<Map<string, string>> {
@@ -734,9 +761,12 @@ export async function restoreSnapshot(root: string, snap: Map<string, string>, f
   for (const f of files) {
     const before = snap.get(f);
     if (before !== undefined) writeFileSync(join(root, f), before);
-    else if ((await git(root, `ls-files --error-unmatch -- ${q(f)}`)).code === 0)
-      await git(root, `checkout -- ${q(f)}`);
-    else await sh(`rm -f ${q(f)}`, root);
+    else if ((await git(root, ["ls-files", "--error-unmatch", "--", f])).code === 0)
+      await git(root, ["checkout", "--", f]);
+    else {
+      const full = join(root, f);
+      if (existsSync(full)) rmSync(full, { force: true });
+    }
   }
 }
 

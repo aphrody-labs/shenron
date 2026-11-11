@@ -1,6 +1,5 @@
 "use server";
 
-import { createId } from "@paralleldrive/cuid2";
 import { eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -71,7 +70,7 @@ export async function saveCardCatalogEntry(form: FormData) {
   if (!["series", "set", "card", "valuation"].includes(kind))
     redirect("/admin/cards?status=invalid");
   const suppliedId = text(form, "id");
-  const id = suppliedId || createId();
+  const id = suppliedId || crypto.randomUUID();
   const actor = revisionActorOf(await getCurrentUser());
 
   try {

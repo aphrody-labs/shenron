@@ -58,7 +58,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
  && mkdir -p /tmp/bun \
  && tar xzf /tmp/bun.tar.gz -C /tmp/bun \
  && install -m 0755 "$(find /tmp/bun -type f -name bun | head -1)" /usr/local/bin/bun \
- && ln -sf bun /usr/local/bin/bunx \
  && rm -rf /tmp/bun /tmp/bun.tar.gz \
  && bun --revision \
  && (id ubuntu >/dev/null 2>&1 && userdel -r ubuntu || true) \

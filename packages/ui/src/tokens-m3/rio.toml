@@ -1,0 +1,17 @@
+# Rio Terminal Configuration (Google Design Parity)
+[colors]
+background = "#1a110e"
+foreground = "#f1dfd9"
+cursor = "#ffb599"
+selection-background = "#71361d"
+selection-foreground = "#ffdbce"
+
+[colors.normal]
+black = "#140c09"
+red = "#ffb4ab"
+green = "#d4c78e"
+yellow = "#F4B400"
+blue = "#ffb599"
+magenta = "#e7beaf"
+cyan = "#00ACC1"
+white = "#f1dfd9"

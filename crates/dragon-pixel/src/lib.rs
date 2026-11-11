@@ -11,6 +11,7 @@ pub mod roster;
 #[cfg(feature = "server")]
 pub mod server;
 pub mod session;
+pub mod sprite_manifest;
 pub mod types;
 pub mod wasm;
 
@@ -29,6 +30,7 @@ pub use render_packet::{
     ProjectileRenderData, UiOverlayData, WebGpuRenderPacket,
 };
 pub use roster::{FighterDefinition, StoryChapter, get_fighter_def, get_story_chapters};
+pub use sprite_manifest::*;
 pub use types::{
     ArenaId, AudioEvent, AuraType, FighterId, FighterStyle, GameMode, HapticEvent, Hitbox, Hurtbox,
     Rect,

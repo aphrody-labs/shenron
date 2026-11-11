@@ -1,5 +1,7 @@
+// SPDX-License-Identifier: Apache-2.0
 "use client";
-import { useCallback, useState } from "react";
+/* oxlint-disable react/exhaustive-effect-dependencies, react/set-state-in-effect -- reviewed: legacy reader page sync */
+import { useCallback, useEffect, useState } from "react";
 import { StudioSourceLink } from "@/components/studio/StudioSourceLink";
 import {
   DatabookReader as BaseDatabookReader,
@@ -23,6 +25,30 @@ export function DatabookReader({ pages, title, bookId }: DatabookReaderProps) {
   const canvasWarmup = useKoharuCanvasWarmup();
   const { prechargement } = useReglages();
   const [currentPage, setCurrentPage] = useState(Number(pages[0]?.number) || 1);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const requested = Number(query.get("page") ?? query.get("planche"));
+    if (Number.isFinite(requested) && requested >= 1) {
+      setCurrentPage(Math.trunc(requested));
+    }
+    setReady(true);
+  }, [bookId]);
+
+  const onPageChange = useCallback(
+    (page: number) => {
+      setCurrentPage(page);
+      if (!ready || bookId == null) return;
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("page") === String(page) && !url.searchParams.has("planche")) return;
+      url.searchParams.delete("planche");
+      url.searchParams.set("page", String(page));
+      window.history.replaceState(null, "", url.toString());
+    },
+    [bookId, ready],
+  );
+
   const resolveAssetUrl = useCallback(
     (url: string) => readerAssetUrl(url, [CDN_ORIGIN, API_ORIGIN, SITE_URL]),
     [],
@@ -52,7 +78,7 @@ export function DatabookReader({ pages, title, bookId }: DatabookReaderProps) {
     <div className="m3-reader--dragon-ball" data-koharu-canvas={canvasWarmup}>
       {bookId != null && <StudioSourceLink kind="databook" id={bookId} page={currentPage} />}
       <BaseDatabookReader
-        key={bookId ?? title}
+        key={`${bookId ?? title}-${ready ? "ready" : "init"}`}
         pages={pages}
         title={title}
         resolveAssetUrl={resolveAssetUrl}
@@ -61,7 +87,7 @@ export function DatabookReader({ pages, title, bookId }: DatabookReaderProps) {
         loadTranscriptions={bookId == null ? undefined : loadTranscriptions}
         renderTranscription={renderTranscription}
         preloadCount={prechargement}
-        onPageChange={setCurrentPage}
+        onPageChange={onPageChange}
       />
     </div>
   );

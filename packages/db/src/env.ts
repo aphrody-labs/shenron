@@ -8,11 +8,37 @@
  * `resolveDatabaseUrl` and is never logged nor echoed in a failure reason.
  */
 import { readFileSync } from "node:fs";
-import { lastAssignment } from "@aphrody/sql/env";
 import { type EnvSource, resolveDatabaseUrl } from "./config";
+/** Last active `NAME=value` of a dotenv text; pure Bun implementation. */
+export function lastAssignment(text: string, name: string): string | undefined {
+  const lines = text.split(/\r?\n/);
+  let result: string | undefined = undefined;
+  const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`^(?:export\\s+)?${escapedName}\\s*=\\s*(.*)$`);
 
-/** Last active `NAME=value` of a dotenv text; shared parser of `@aphrody/sql/env`. */
-export { lastAssignment };
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed.startsWith("#")) continue;
+    const match = trimmed.match(regex);
+    if (!match) continue;
+
+    let val = match[1]!.trim();
+    if (val.startsWith('"')) {
+      const closing = val.indexOf('"', 1);
+      val = closing !== -1 ? val.slice(1, closing) : val.slice(1);
+    } else if (val.startsWith("'")) {
+      const closing = val.indexOf("'", 1);
+      val = closing !== -1 ? val.slice(1, closing) : val.slice(1);
+    } else {
+      const commentIdx = val.indexOf("#");
+      if (commentIdx !== -1) {
+        val = val.slice(0, commentIdx).trim();
+      }
+    }
+    result = val;
+  }
+  return result;
+}
 
 export type DatabaseUrlSource =
   | { kind: "env"; name: string }
@@ -61,7 +87,7 @@ export function loadDatabaseUrl(options: LoadDatabaseUrlOptions = {}): LoadDatab
     const names = file.varName ? [file.varName] : varNames;
     for (const varName of names) {
       const raw = lastAssignment(text, varName);
-      if (raw === undefined || raw === "") continue;
+      if (!raw) continue;
       const url = validate(raw);
       if (url) return { ok: true, url, source: { kind: "file", path: file.path, varName } };
       rejected.push(`${file.path}:${varName} invalide`);

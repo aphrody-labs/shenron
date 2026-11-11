@@ -16,6 +16,7 @@ import { useTranslations } from "next-intl";
 import type { LocalHealthResponse } from "@aphrody/shenron-api/contract";
 import { isTauri } from "@aphrody/shenron-ui/studio/tauri-bridge";
 import { SignInDiscord } from "@/components/SignInDiscord";
+import { ShenronWebStudio, type StudioSource } from "@/components/studio/ShenronWebStudio";
 
 const StudioDesktop = dynamic(() => import("./StudioDesktop"), { ssr: false });
 
@@ -37,7 +38,13 @@ async function localEngine(signal: AbortSignal): Promise<boolean> {
   }
 }
 
-export function StudioEditor({ fallback }: { fallback: ReactNode }) {
+export function StudioEditor({
+  fallback,
+  source = null,
+}: {
+  fallback: ReactNode;
+  source?: StudioSource | null;
+}) {
   // The server and the hydration pass render the presentation; the client snapshot then
   // switches to the editor inside Tauri. Being in Tauri never changes during a session.
   const desktop = useSyncExternalStore(noSubscription, isTauri, notDesktop);
@@ -136,10 +143,11 @@ export function StudioEditor({ fallback }: { fallback: ReactNode }) {
   return bridge ? (
     <StudioDesktop embedded />
   ) : (
-    <>
+    <div className="flex flex-col gap-6">
+      <ShenronWebStudio source={source} />
       {webStatus && <WebAccess status={webStatus} />}
       {fallback}
-    </>
+    </div>
   );
 }
 

@@ -21,7 +21,7 @@
 
 ARG BASE_IMAGE=ubuntu:26.10
 ARG RUST_VERSION=1.99.1
-ARG BUN_VERSION=1.4.6
+ARG BUN_VERSION=1.4.4
 ARG BUN_LINUX_SHA256=247bd13f96cb10404a416291415a35690c4d76e3187f7bb9183c1c8784d314f6
 # Windows base of `bun build --compile --target windows-x64`: the fork publishes no Windows asset
 # for BUN_VERSION yet, so this stays on the newest published runtime.

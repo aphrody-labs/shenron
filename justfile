@@ -38,6 +38,12 @@ test: bun-test test-scripts rust-test
 [group('all')]
 format-check: bun-format-check rust-fmt-check
 
+# Format everything: native bun fmt, then rustfmt
+[group('all')]
+fmt:
+    bun fmt apps packages scripts
+    cargo fmt --all
+
 # Generated files are up to date (OpenAPI, UI tokens, AI contracts, Cargo workspace dependencies)
 [group('all')]
 drift: deps-check
@@ -84,6 +90,11 @@ test-live:
 [group('bun')]
 bun-format-check:
     bun run format:check
+
+# Dragon Ball Ultimate Games Package Manager (SteamDB, Libretro, R2, SteamCMD)
+[group('games')]
+db-games *args="help":
+    bun scripts/ops/dragon-ball-games-manager.ts {{args}}
 
 # Next dev server of the site
 [group('bun')]
@@ -292,9 +303,31 @@ deploy-plan revision="origin/main":
 deploy-history count="30":
     bun scripts/deploy/lanes.ts history --count {{ count }}
 
-# Deploy definition gates: pins, classification, tests of scripts/deploy
+# Deploy definition gates: pins, classification, tests of scripts/deploy, and real-browser video playback proof
 [group('deploy')]
 deploy-check:
     bun scripts/deploy/environment.ts --check
     bun scripts/deploy/lanes.ts --check
     bun test scripts/deploy
+    bun scripts/ops/verify-player-deployment-gate.ts --episode 875
+    bun scripts/ops/verify-player-deployment-gate.ts --episode 1
+
+# Dragon Ball FighterZ: full dump, asset conversion, Zstd compression, and R2 CDN sync
+[group('games')]
+dbfz-pipeline *args="":
+    bun scripts/ops/dbfz-full-dump-converter.ts {{ args }}
+
+# Benchmark compression, decompression, and asset conversion suite
+[group('games')]
+compression-bench:
+    bun scripts/ops/compression-benchmark.ts
+
+# Run Turborepo cached task across workspace
+[group('turbo')]
+turbo *args="build":
+    bun x turbo run {{ args }}
+
+# Build site using full Vercel compatibility pipeline
+[group('vercel')]
+vercel-build:
+    bun run build:site

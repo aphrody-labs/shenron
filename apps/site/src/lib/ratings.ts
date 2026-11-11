@@ -11,7 +11,6 @@
  */
 import "server-only";
 import { and, avg, count, desc, eq, inArray, sql } from "drizzle-orm";
-import { createId } from "@paralleldrive/cuid2";
 import { db } from "@/lib/db";
 import { siteRatings, users, type RatingTargetType, type SiteRating } from "@/db/schema";
 
@@ -265,7 +264,7 @@ export async function upsertRating(opts: {
   await db
     .insert(siteRatings)
     .values({
-      id: createId(),
+      id: crypto.randomUUID(),
       targetType: opts.targetType,
       targetId,
       userId: opts.userId,

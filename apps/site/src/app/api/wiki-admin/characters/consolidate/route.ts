@@ -32,10 +32,7 @@ export async function POST(request: Request): Promise<Response> {
       return Response.json({ error: "forbidden" }, { status: 403, headers });
     const parsed = requestSchema.safeParse(await request.json().catch(() => null));
     if (!parsed.success)
-      return Response.json(
-        { error: "invalid_consolidation_request" },
-        { status: 400, headers },
-      );
+      return Response.json({ error: "invalid_consolidation_request" }, { status: 400, headers });
     const result = await consolidateWikiCharacters({
       ...parsed.data,
       actor: revisionActorOf(user),
@@ -49,10 +46,7 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ ok: true, ...result }, { headers });
   } catch (error) {
     if (error instanceof CharacterConsolidationConflict)
-      return Response.json(
-        { error: error.message, plan: error.plan },
-        { status: 409, headers },
-      );
+      return Response.json({ error: error.message, plan: error.plan }, { status: 409, headers });
     console.error("[wiki-character-consolidation] request failed", error);
     return Response.json(
       { error: "character_consolidation_unavailable" },

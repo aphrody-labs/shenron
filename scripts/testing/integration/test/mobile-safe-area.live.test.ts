@@ -1,8 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
 import { join } from "node:path";
-import { startEngine } from "@aphrody/agent-browser/engine";
-import { TestPage } from "@aphrody/web-test";
+import { chromium, type BunBrowser, type BunBrowserPage } from "../../bun-browser";
 
 test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
   "shared mobile safe-area CSS keeps the Discord control above the navigation",
@@ -22,21 +21,18 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
           { headers: { "content-type": "text/html" } },
         ),
     });
-    let engine: Awaited<ReturnType<typeof startEngine>> | undefined;
-    let page: TestPage | undefined;
+    let browser: BunBrowser | undefined;
+    let page: BunBrowserPage | undefined;
     try {
-      engine = await startEngine({
-        binary: process.env.YOLO_WEB_BIN ?? Bun.which("yolo-browser") ?? undefined,
-        allowPrivateNetwork: true,
-      });
-      page = await TestPage.create({ cdpUrl: engine.endpoint, baseURL: server.url.href });
-      await page.raw.cdp("Emulation.setDeviceMetricsOverride", {
+      browser = await chromium.launch({ headless: true });
+      page = await browser.newPage({ baseURL: server.url.href });
+      await page.setViewport({
         width: 390,
         height: 844,
         deviceScaleFactor: 1,
         mobile: true,
       });
-      await page.goto("/");
+      await page.goto(server.url.href);
       const geometry = await page.raw.evaluate<{
         inviteTop: number;
         inviteBottom: number;
@@ -59,7 +55,7 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
         await page?.close();
       } finally {
         try {
-          await engine?.stop();
+          await browser?.close();
         } finally {
           await server.stop(true);
         }

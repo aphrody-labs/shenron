@@ -1,4 +1,3 @@
-import { createId } from "@paralleldrive/cuid2";
 import { relations, sql } from "drizzle-orm";
 import type { AgentScope } from "./constants";
 import {
@@ -20,7 +19,7 @@ import {
 const cuid = () =>
   text("id")
     .primaryKey()
-    .$defaultFn(() => createId());
+    .$defaultFn(() => crypto.randomUUID());
 
 // --- Core App Tables ---
 
@@ -529,7 +528,7 @@ export const siteSubscriptionCheckoutReservations = pgTable(
   {
     id: text("id")
       .notNull()
-      .$defaultFn(() => createId()),
+      .$defaultFn(() => crypto.randomUUID()),
     userId: text("user_id")
       .primaryKey()
       .references(() => baUser.id, { onDelete: "cascade" }),

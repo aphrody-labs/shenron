@@ -1,8 +1,8 @@
 {
-  "title": "Play Xenoverse 2",
-  "stream": "Open in Bun OS Play",
-  "description": "The PC game runs on a remote host and is played through streaming. Bun OS Play checks game availability and session access.",
+  "title": "Dragon Ball Xenoverse 2 (Steam & SteamCMD)",
+  "stream": "Launch via Steam (steam://run/454650)",
+  "description": "Dragon Ball Xenoverse 2 (Steam App ID 454650) runs natively via Steam or can be headlessly synchronized using SteamCMD for depot inspection and CPK archive extraction.",
   "wasm": "Local WebAssembly analysis",
-  "wasmDescription": "The explorer below analyses your files in the browser. It does not run the PC game.",
+  "wasmDescription": "The explorer below analyses your CPK archives and 3D models directly in the browser.",
   "details": "Open the game and explorer"
 }

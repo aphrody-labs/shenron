@@ -32,9 +32,11 @@ pub use formats::{
     cms::{CmsEntry, CmsFile},
     cus::{CusFile, CusSkill, SkillCategory},
     ean::{EanAnimation, EanFile, LocalPose},
+    ema::{EmaAnimation, EmaCommand, EmaFile, EmaKeyframe, EmaKind},
     emb::{EmbFile, EmbRgbaTexture, EmbTextureEntry, TexturePixelFormat},
     emd::{EmdFile, EmdMesh, EmdModelPart, EmdSubmesh, EmdVertex},
     emm::{EmmFile, EmmMaterial, EmmParameter},
+    emo::{EmgMesh, EmgSampler, EmgSubmesh, EmoFile, EmoNode, EmoPart},
     esk::{EskBone, EskFile},
     model_assemble::{AssembledCharacterModel, ModelPrimitive},
     moveset::{CharacterMoveset, MoveFrameData},
@@ -44,9 +46,21 @@ pub use formats::{
 };
 pub use fs::{
     cpk::{CpkArchive, CpkEntry},
+    cpk_stream::{
+        CRI_VIOLA_FIXED_KEY, CpkExtraction, CpkFileRecord, CpkStreamReader, cri_key_from_filename,
+        dbxv2_cpk_rank, decrypt_cri_block, decrypt_utf_table, entry_output_path,
+    },
     crilayla::{compress_crilayla_mock, decompress_crilayla, decompress_crilayla_raw},
+    eac::{
+        EAC_MODULES_CDN_BASE_URL, EAC_PLATFORMS, EacCheckSite, EacCompiledPattern,
+        EacGameModuleConfig, EacInstallInspection, EacScanReport, decrypt_eac_payload,
+        encrypt_eac_payload, inspect_eac_install, is_eac_payload_encrypted, parse_bootstrapper_ini,
+        scan_eac_sites,
+    },
     vfs::{CacheCpkStats, XenoverseVfs, XenoverseVfsEntry},
 };
+#[cfg(not(target_arch = "wasm32"))]
+pub use fs::cpk_stream::{extract_cpk_stream, open_cpk_stream};
 pub use live::aob::AobPattern;
 pub use steam::{
     Dbxv2Install, STEAM_APP_ID_DB_FIGHTERZ, STEAM_APP_ID_DB_KAKAROT, STEAM_APP_ID_DB_SPARKING_ZERO,

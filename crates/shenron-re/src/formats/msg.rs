@@ -3,7 +3,7 @@
 //!
 //! Stores official strings, names, character dialogue lines, quest text, and skill descriptions.
 //! Uses the 0x20-byte header and absolute string/table offsets of the canonical
-//! Bun RE MSG reader (`bun-os/crates/re/src/game/formats/msg.rs`). The flags at
+//! Shenron RE MSG reader (`crates/shenron-re/src/formats/msg.rs`). The flags at
 //! 0x04/0x06 select Unicode names/values; they are not an endian marker/version.
 //! Unknown encodings, malformed strings and out-of-range tables are rejected.
 

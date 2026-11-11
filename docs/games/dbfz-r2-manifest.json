@@ -1,0 +1,580 @@
+{
+  "schemaVersion": 1,
+  "game": "DRAGON BALL FighterZ",
+  "sourceRoot": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ",
+  "generatedAt": "2026-11-11T10:02:14.407Z",
+  "totalFiles": 63,
+  "totalBytes": 6951922626,
+  "totalBytesFormatted": "6.474 GB",
+  "cdnPrefix": "https://cdn.dragonballfr.com/games/dbfz",
+  "r2Bucket": "shenron-cdn",
+  "files": [
+    {
+      "relativePath": "DBFighterZ.exe",
+      "sizeBytes": 1518192,
+      "sha256": "2e4efe2ad5342e19a7c42f0164cba3d8da15c001197b8365353e556884a75033",
+      "r2ObjectKey": "_objects/2e4efe2ad5342e19a7c42f0164cba3d8da15c001197b8365353e556884a75033",
+      "cdnPath": "/games/dbfz/DBFighterZ.exe",
+      "contentType": "application/vnd.microsoft.portable-executable",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Certificates/game.bin",
+      "sizeBytes": 81754,
+      "sha256": "199666526be5ae297a9c38fdf53f012c406d465630055fad87181d20a6232548",
+      "r2ObjectKey": "_objects/199666526be5ae297a9c38fdf53f012c406d465630055fad87181d20a6232548",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Certificates/game.bin",
+      "contentType": "application/octet-stream",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Certificates/game.cer",
+      "sizeBytes": 1365,
+      "sha256": "c7af8e740a15956c4d156c0baf6a6e83ebc5a03139de67c657fd43bb3c645a64",
+      "r2ObjectKey": "_objects/c7af8e740a15956c4d156c0baf6a6e83ebc5a03139de67c657fd43bb3c645a64",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Certificates/game.cer",
+      "contentType": "application/octet-stream",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/EasyAntiCheat_Setup.exe",
+      "sizeBytes": 803440,
+      "sha256": "4850245c2200c43981bdda3ea0396b89915eb1709d78a1f468b5af2d1935be7d",
+      "r2ObjectKey": "_objects/4850245c2200c43981bdda3ea0396b89915eb1709d78a1f468b5af2d1935be7d",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/EasyAntiCheat_Setup.exe",
+      "contentType": "application/vnd.microsoft.portable-executable",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/EasyAntiCheat_x64.dll",
+      "sizeBytes": 796784,
+      "sha256": "bcaa0bbd5fa1e4813f8fc59466131f3ebf6cfe123de84440f673db6b827eff11",
+      "r2ObjectKey": "_objects/bcaa0bbd5fa1e4813f8fc59466131f3ebf6cfe123de84440f673db6b827eff11",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/EasyAntiCheat_x64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/EasyAntiCheat_x86.dll",
+      "sizeBytes": 680560,
+      "sha256": "a5cecff37a8557b724e7c15d0de7de81ea13992505a518a7a1e46a8871ab67f7",
+      "r2ObjectKey": "_objects/a5cecff37a8557b724e7c15d0de7de81ea13992505a518a7a1e46a8871ab67f7",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/EasyAntiCheat_x86.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Launcher/Settings.json",
+      "sizeBytes": 381,
+      "sha256": "51526f9c511a6b334ff19dc9cb1291300acef26f957eb2e88a6e2023409ad051",
+      "r2ObjectKey": "_objects/51526f9c511a6b334ff19dc9cb1291300acef26f957eb2e88a6e2023409ad051",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Launcher/Settings.json",
+      "contentType": "application/json",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Launcher/SplashScreen.png",
+      "sizeBytes": 564454,
+      "sha256": "b21b6d073cae6945f6ea6772f98ad2885deffb6ebdddd40e478ceb4d334c59ca",
+      "r2ObjectKey": "_objects/b21b6d073cae6945f6ea6772f98ad2885deffb6ebdddd40e478ceb4d334c59ca",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Launcher/SplashScreen.png",
+      "contentType": "image/png",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Licenses/Apache-2.0.txt",
+      "sizeBytes": 11560,
+      "sha256": "3ddf9be5c28fe27dad143a5dc76eea25222ad1dd68934a047064e56ed2fa40c5",
+      "r2ObjectKey": "_objects/3ddf9be5c28fe27dad143a5dc76eea25222ad1dd68934a047064e56ed2fa40c5",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Licenses/Apache-2.0.txt",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Licenses/CCO-1.0.txt",
+      "sizeBytes": 997,
+      "sha256": "21aba492d227dfa225af6b4d29afdb0ecb39685acf7b491cf3276bc9a17c550f",
+      "r2ObjectKey": "_objects/21aba492d227dfa225af6b4d29afdb0ecb39685acf7b491cf3276bc9a17c550f",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Licenses/CCO-1.0.txt",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Licenses/LGPL-2.1.txt",
+      "sizeBytes": 27032,
+      "sha256": "1e7e6bae5a5bde32f1ae5a7c37a082d1ab03cf89354f7f936ac40be9e39a6531",
+      "r2ObjectKey": "_objects/1e7e6bae5a5bde32f1ae5a7c37a082d1ab03cf89354f7f936ac40be9e39a6531",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Licenses/LGPL-2.1.txt",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Licenses/Licenses.txt",
+      "sizeBytes": 16174,
+      "sha256": "751f957223244ae9a4154cc1b012a0ba3e9500392931ec281333c4fbe70270bb",
+      "r2ObjectKey": "_objects/751f957223244ae9a4154cc1b012a0ba3e9500392931ec281333c4fbe70270bb",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Licenses/Licenses.txt",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Licenses/MIT.txt",
+      "sizeBytes": 1093,
+      "sha256": "54a8b5e9bb2e8575f09fadbd59eccd9db3a27331ff4b661b7b18578222fe82c9",
+      "r2ObjectKey": "_objects/54a8b5e9bb2e8575f09fadbd59eccd9db3a27331ff4b661b7b18578222fe82c9",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Licenses/MIT.txt",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/ar_sa.cfg",
+      "sizeBytes": 7481,
+      "sha256": "ef23496f03ddf6840d1cc54c260f484409f98f56e7bc2c80a934c84be8975558",
+      "r2ObjectKey": "_objects/ef23496f03ddf6840d1cc54c260f484409f98f56e7bc2c80a934c84be8975558",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/ar_sa.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/cs_cz.cfg",
+      "sizeBytes": 6747,
+      "sha256": "8cb567589071773097eceadcf5fa7e93a2a8a82c3a111a28e64eea1c078f2afa",
+      "r2ObjectKey": "_objects/8cb567589071773097eceadcf5fa7e93a2a8a82c3a111a28e64eea1c078f2afa",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/cs_cz.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/de_de.cfg",
+      "sizeBytes": 6593,
+      "sha256": "fa63567074ae5c712f23b838bfbb33fb9f1e882dd047f300995d3f2f9ea1f0dd",
+      "r2ObjectKey": "_objects/fa63567074ae5c712f23b838bfbb33fb9f1e882dd047f300995d3f2f9ea1f0dd",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/de_de.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/en_us.cfg",
+      "sizeBytes": 6093,
+      "sha256": "54079350b45966afceec496ec0118a975161ab6afabfd99be4fa76f9ff176976",
+      "r2ObjectKey": "_objects/54079350b45966afceec496ec0118a975161ab6afabfd99be4fa76f9ff176976",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/en_us.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/es_ar.cfg",
+      "sizeBytes": 6685,
+      "sha256": "011f4a973378061fa6d9743bdff254335e43deb88a71d8362bcd7f69d42ebffb",
+      "r2ObjectKey": "_objects/011f4a973378061fa6d9743bdff254335e43deb88a71d8362bcd7f69d42ebffb",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/es_ar.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/es_es.cfg",
+      "sizeBytes": 6735,
+      "sha256": "e7e0bd25fd6665993f32ca5694b402c7bbea5600c92059e20e35309c52e93803",
+      "r2ObjectKey": "_objects/e7e0bd25fd6665993f32ca5694b402c7bbea5600c92059e20e35309c52e93803",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/es_es.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/fr_fr.cfg",
+      "sizeBytes": 6761,
+      "sha256": "8703666acccffb604f2d0f9f627bb2b8443b3cbc991cbee5978b82dae2b4c472",
+      "r2ObjectKey": "_objects/8703666acccffb604f2d0f9f627bb2b8443b3cbc991cbee5978b82dae2b4c472",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/fr_fr.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/it_it.cfg",
+      "sizeBytes": 6343,
+      "sha256": "1f7793f51f9863ef406c94d234df4e2e4b2c7630f5efe02f58dff1e6e4f0b1dd",
+      "r2ObjectKey": "_objects/1f7793f51f9863ef406c94d234df4e2e4b2c7630f5efe02f58dff1e6e4f0b1dd",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/it_it.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/ja_ja.cfg",
+      "sizeBytes": 7799,
+      "sha256": "02f46edac7850f4e39b6df8aff866339bc9f46b23a95f40144d81f6e524dbbfd",
+      "r2ObjectKey": "_objects/02f46edac7850f4e39b6df8aff866339bc9f46b23a95f40144d81f6e524dbbfd",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/ja_ja.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/ko_kr.cfg",
+      "sizeBytes": 6985,
+      "sha256": "3e876e07fa33b396b3c76dbaf0d0b55926596a3342b6747be76c086a723f1c62",
+      "r2ObjectKey": "_objects/3e876e07fa33b396b3c76dbaf0d0b55926596a3342b6747be76c086a723f1c62",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/ko_kr.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/nl_nl.cfg",
+      "sizeBytes": 6342,
+      "sha256": "3a932adebcc6fb299b12398a75dc49d97acb6cc101cf5b1fe3c527f5307c18bf",
+      "r2ObjectKey": "_objects/3a932adebcc6fb299b12398a75dc49d97acb6cc101cf5b1fe3c527f5307c18bf",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/nl_nl.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/pl_pl.cfg",
+      "sizeBytes": 6778,
+      "sha256": "e91599f5401577ae1e096d4c16649a1209e60fdf6e81a84ccb879f67681811b3",
+      "r2ObjectKey": "_objects/e91599f5401577ae1e096d4c16649a1209e60fdf6e81a84ccb879f67681811b3",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/pl_pl.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/pt_br.cfg",
+      "sizeBytes": 6592,
+      "sha256": "7c2658040357693c72ddc202ae6f5eafecb35faf80e5aded81df1bae3ffaad5b",
+      "r2ObjectKey": "_objects/7c2658040357693c72ddc202ae6f5eafecb35faf80e5aded81df1bae3ffaad5b",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/pt_br.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/ru_ru.cfg",
+      "sizeBytes": 8826,
+      "sha256": "0fd4a20d6501c2f8a3b0256a5eaac3e8de8a37d5c56cfd9fe95cb86b5949d11c",
+      "r2ObjectKey": "_objects/0fd4a20d6501c2f8a3b0256a5eaac3e8de8a37d5c56cfd9fe95cb86b5949d11c",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/ru_ru.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/th_th.cfg",
+      "sizeBytes": 11003,
+      "sha256": "39ee5cab45d9319afc93cfc514f5304b8dd4c278482f9fb866421a6c646093be",
+      "r2ObjectKey": "_objects/39ee5cab45d9319afc93cfc514f5304b8dd4c278482f9fb866421a6c646093be",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/th_th.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/tr_tr.cfg",
+      "sizeBytes": 6236,
+      "sha256": "970de731ef4a830a944655f48d82ff85a5b26d578d2866586f95ecddc2f84e77",
+      "r2ObjectKey": "_objects/970de731ef4a830a944655f48d82ff85a5b26d578d2866586f95ecddc2f84e77",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/tr_tr.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/zh_cn.cfg",
+      "sizeBytes": 5699,
+      "sha256": "9b9f2be2e63033dc2969adfa33e9c951bd99d963429001e68ef37d710456ffd9",
+      "r2ObjectKey": "_objects/9b9f2be2e63033dc2969adfa33e9c951bd99d963429001e68ef37d710456ffd9",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/zh_cn.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/zh_tw.cfg",
+      "sizeBytes": 5682,
+      "sha256": "31ff487968ce9f5f828d6fdc1f27f0e36d03d028b0c7226ab0d514843d25e0e5",
+      "r2ObjectKey": "_objects/31ff487968ce9f5f828d6fdc1f27f0e36d03d028b0c7226ab0d514843d25e0e5",
+      "cdnPath": "/games/dbfz/EasyAntiCheat/Localization/zh_tw.cfg",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/NVIDIA/NVaftermath/Win64/GFSDK_Aftermath_Lib.dll",
+      "sizeBytes": 31744,
+      "sha256": "9e73beb10ae53c1f42cd035774f2e642b9d3982836def25a8c3a2f9e0f7830dd",
+      "r2ObjectKey": "_objects/9e73beb10ae53c1f42cd035774f2e642b9d3982836def25a8c3a2f9e0f7830dd",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/NVIDIA/NVaftermath/Win64/GFSDK_Aftermath_Lib.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/Ogg/Win64/VS2015/libogg_64.dll",
+      "sizeBytes": 49152,
+      "sha256": "284a6e70a6dce01f8a02d93e1bb78baf0efb6140459c587d8986d59fb6bd675b",
+      "r2ObjectKey": "_objects/284a6e70a6dce01f8a02d93e1bb78baf0efb6140459c587d8986d59fb6bd675b",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/Ogg/Win64/VS2015/libogg_64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/APEX_Clothing_x64.dll",
+      "sizeBytes": 1220096,
+      "sha256": "d04eeb80478f05fc87fe14fe75d514c9a057216529ffc79402838bdca666f68b",
+      "r2ObjectKey": "_objects/d04eeb80478f05fc87fe14fe75d514c9a057216529ffc79402838bdca666f68b",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/APEX_Clothing_x64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/APEX_Destructible_x64.dll",
+      "sizeBytes": 2010624,
+      "sha256": "62ece8bb0567d1a22b19c3ce9591a9693081f7a9474a17a0dcfba8c7900d2544",
+      "r2ObjectKey": "_objects/62ece8bb0567d1a22b19c3ce9591a9693081f7a9474a17a0dcfba8c7900d2544",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/APEX_Destructible_x64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/APEX_Legacy_x64.dll",
+      "sizeBytes": 3329536,
+      "sha256": "1705933ea8e7b50be98a5820bc51cbc37e28213ce4dbe78eaaddfd966c8cf531",
+      "r2ObjectKey": "_objects/1705933ea8e7b50be98a5820bc51cbc37e28213ce4dbe78eaaddfd966c8cf531",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/APEX_Legacy_x64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/ApexFramework_x64.dll",
+      "sizeBytes": 1044480,
+      "sha256": "6af991a58b258c5433c4c977ac859d560cd7114298356481077e503fd7eaa770",
+      "r2ObjectKey": "_objects/6af991a58b258c5433c4c977ac859d560cd7114298356481077e503fd7eaa770",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/ApexFramework_x64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/NvCloth_x64.dll",
+      "sizeBytes": 266240,
+      "sha256": "a70039a1cd7fce961141eb0c94393dab317983979a16ea92557b6f16eaf5910b",
+      "r2ObjectKey": "_objects/a70039a1cd7fce961141eb0c94393dab317983979a16ea92557b6f16eaf5910b",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/NvCloth_x64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PhysX3Common_x64.dll",
+      "sizeBytes": 1596416,
+      "sha256": "56bc2b93498b1c7be3226107d1dac14d6a4d0f40c9884a617cf827fadcff2db7",
+      "r2ObjectKey": "_objects/56bc2b93498b1c7be3226107d1dac14d6a4d0f40c9884a617cf827fadcff2db7",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PhysX3Common_x64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PhysX3Cooking_x64.dll",
+      "sizeBytes": 245760,
+      "sha256": "789ebdc7fc875bee09e0f5f7201863e818a2d6af54c4061e23b0a735615bbf92",
+      "r2ObjectKey": "_objects/789ebdc7fc875bee09e0f5f7201863e818a2d6af54c4061e23b0a735615bbf92",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PhysX3Cooking_x64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PhysX3_x64.dll",
+      "sizeBytes": 2069504,
+      "sha256": "c3c7bd6e13260ee5f850552b6e9a15f69e58e0b41cd4f4bcb48e1b419719b5a2",
+      "r2ObjectKey": "_objects/c3c7bd6e13260ee5f850552b6e9a15f69e58e0b41cd4f4bcb48e1b419719b5a2",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PhysX3_x64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PxFoundation_x64.dll",
+      "sizeBytes": 54784,
+      "sha256": "f6d434ac4803c32faf975acf9b51287a2d09b2e63966bae72c78d6734447bbed",
+      "r2ObjectKey": "_objects/f6d434ac4803c32faf975acf9b51287a2d09b2e63966bae72c78d6734447bbed",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PxFoundation_x64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PxPvdSDK_x64.dll",
+      "sizeBytes": 189440,
+      "sha256": "7f4306483b31f4e97a91c485e9f336b7b990554875a4585f6a560c66727fa8bd",
+      "r2ObjectKey": "_objects/7f4306483b31f4e97a91c485e9f336b7b990554875a4585f6a560c66727fa8bd",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PxPvdSDK_x64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/Steamworks/Steamv141/Win64/steam_api64.dll",
+      "sizeBytes": 249120,
+      "sha256": "2197363bfcf05fbdee84afd7dec6d58721587cb3dbf57c0f02b38e82c5cb5d41",
+      "r2ObjectKey": "_objects/2197363bfcf05fbdee84afd7dec6d58721587cb3dbf57c0f02b38e82c5cb5d41",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/Steamworks/Steamv141/Win64/steam_api64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbis_64.dll",
+      "sizeBytes": 1714176,
+      "sha256": "0f66dcb5837e9b59c499277fd272b862043356aa9145802cf0a63e00a1bcca59",
+      "r2ObjectKey": "_objects/0f66dcb5837e9b59c499277fd272b862043356aa9145802cf0a63e00a1bcca59",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbis_64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbisfile_64.dll",
+      "sizeBytes": 37888,
+      "sha256": "a9d6f5538f44011c1f65d7ace64216a237636717cb0c8c59f4f89cc08dd3d24f",
+      "r2ObjectKey": "_objects/a9d6f5538f44011c1f65d7ace64216a237636717cb0c8c59f4f89cc08dd3d24f",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbisfile_64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/WeGame/RailAPI1.9.11.0.3326/Win64/rail_api64.dll",
+      "sizeBytes": 1270448,
+      "sha256": "2b8d408791bdbfa8ceab3722dd11dba52ba8ae4473561005f9f95ffe67e57662",
+      "r2ObjectKey": "_objects/2b8d408791bdbfa8ceab3722dd11dba52ba8ae4473561005f9f95ffe67e57662",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/WeGame/RailAPI1.9.11.0.3326/Win64/rail_api64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/WeGame/RailAPI1.9.11.0.3326/Win64/rail_sdk64.dll",
+      "sizeBytes": 17052848,
+      "sha256": "31ec69558779dce1276be0d23376adc1c4c2e764a035fb2fdd06eec9988bf04b",
+      "r2ObjectKey": "_objects/31ec69558779dce1276be0d23376adc1c4c2e764a035fb2fdd06eec9988bf04b",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/WeGame/RailAPI1.9.11.0.3326/Win64/rail_sdk64.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/Windows/DirectX/x64/WinPixEventRuntime.dll",
+      "sizeBytes": 44752,
+      "sha256": "0afaa35527ac034861ffa5564e5f6bd9e4d54e79132b3283cdd98e41f5584d19",
+      "r2ObjectKey": "_objects/0afaa35527ac034861ffa5564e5f6bd9e4d54e79132b3283cdd98e41f5584d19",
+      "cdnPath": "/games/dbfz/Engine/Binaries/ThirdParty/Windows/DirectX/x64/WinPixEventRuntime.dll",
+      "contentType": "application/x-msdownload",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Config/controller.vdf",
+      "sizeBytes": 1528,
+      "sha256": "1e34e2164c2f5593b3c5863127e61cf101d45a27e42d3602b710b24c2d1cdc57",
+      "r2ObjectKey": "_objects/1e34e2164c2f5593b3c5863127e61cf101d45a27e42d3602b710b24c2d1cdc57",
+      "cdnPath": "/games/dbfz/Engine/Config/controller.vdf",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "Engine/Extras/Redist/en-us/UE4PrereqSetup_x64.exe",
+      "sizeBytes": 40025648,
+      "sha256": "4bd5846d2bd6ff5ba46d3263861262345c30e12dbe575707d1946295384e4ae0",
+      "r2ObjectKey": "_objects/4bd5846d2bd6ff5ba46d3263861262345c30e12dbe575707d1946295384e4ae0",
+      "cdnPath": "/games/dbfz/Engine/Extras/Redist/en-us/UE4PrereqSetup_x64.exe",
+      "contentType": "application/vnd.microsoft.portable-executable",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "RED/Binaries/Win64/RED-Win64-Shipping.exe",
+      "sizeBytes": 184261120,
+      "sha256": "fc8c87fd2f99e25d78bc229f28154add754a261712fd4687ed9526927fc044a4",
+      "r2ObjectKey": "_objects/fc8c87fd2f99e25d78bc229f28154add754a261712fd4687ed9526927fc044a4",
+      "cdnPath": "/games/dbfz/RED/Binaries/Win64/RED-Win64-Shipping.exe",
+      "contentType": "application/vnd.microsoft.portable-executable",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "RED/Binaries/Win64/steam_appid.txt",
+      "sizeBytes": 8,
+      "sha256": "142173b742dda82755a322c8ce794b91209274dcea320742b21da118724f60b8",
+      "r2ObjectKey": "_objects/142173b742dda82755a322c8ce794b91209274dcea320742b21da118724f60b8",
+      "cdnPath": "/games/dbfz/RED/Binaries/Win64/steam_appid.txt",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "RED/Content/Movies/mv_opening_jp_pakchunk1.mp4",
+      "sizeBytes": 144887352,
+      "sha256": "7c0fd639a3274ecb708615d7aff80cc8470faabee9e1c1220f5ad1ffb738ef7a",
+      "r2ObjectKey": "_objects/7c0fd639a3274ecb708615d7aff80cc8470faabee9e1c1220f5ad1ffb738ef7a",
+      "cdnPath": "/games/dbfz/RED/Content/Movies/mv_opening_jp_pakchunk1.mp4",
+      "contentType": "video/mp4",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "RED/Content/Movies/mv_opening_ww_pakchunk1.mp4",
+      "sizeBytes": 144874832,
+      "sha256": "0fdbec83a14c03c098c88bb1914846a25f1fd0f0c66e586870343228f99608f1",
+      "r2ObjectKey": "_objects/0fdbec83a14c03c098c88bb1914846a25f1fd0f0c66e586870343228f99608f1",
+      "cdnPath": "/games/dbfz/RED/Content/Movies/mv_opening_ww_pakchunk1.mp4",
+      "contentType": "video/mp4",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "RED/Content/Movies/mv_storyop_pakchunk1.mp4",
+      "sizeBytes": 102661510,
+      "sha256": "a3cdddf881f2f057e7644886c264cb0200eea75257feb37ab4beef77172927e1",
+      "r2ObjectKey": "_objects/a3cdddf881f2f057e7644886c264cb0200eea75257feb37ab4beef77172927e1",
+      "cdnPath": "/games/dbfz/RED/Content/Movies/mv_storyop_pakchunk1.mp4",
+      "contentType": "video/mp4",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "RED/Content/Paks/pakchunk0-WindowsNoEditor.pak",
+      "sizeBytes": 5414923132,
+      "sha256": "b688bc161566e15ee44e6c5425b32b1eff63c1c7939b0d4dfbbde84ccf325f00",
+      "r2ObjectKey": "_objects/b688bc161566e15ee44e6c5425b32b1eff63c1c7939b0d4dfbbde84ccf325f00",
+      "cdnPath": "/games/dbfz/RED/Content/Paks/pakchunk0-WindowsNoEditor.pak",
+      "contentType": "application/octet-stream",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "RED/Content/Paks/pakchunk0-WindowsNoEditor.sig",
+      "sizeBytes": 330572,
+      "sha256": "ec82ce3d80130d88fecf9f6c63ba65d55b744b3993e15fd714e41a82a80d773f",
+      "r2ObjectKey": "_objects/ec82ce3d80130d88fecf9f6c63ba65d55b744b3993e15fd714e41a82a80d773f",
+      "cdnPath": "/games/dbfz/RED/Content/Paks/pakchunk0-WindowsNoEditor.sig",
+      "contentType": "application/octet-stream",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "RED/Content/Paks/pakchunk1-WindowsNoEditor.pak",
+      "sizeBytes": 881949120,
+      "sha256": "84178e470837a4c1b862d8a3f6592d854a153cf1ffd631ae5597b86d4d659fe7",
+      "r2ObjectKey": "_objects/84178e470837a4c1b862d8a3f6592d854a153cf1ffd631ae5597b86d4d659fe7",
+      "cdnPath": "/games/dbfz/RED/Content/Paks/pakchunk1-WindowsNoEditor.pak",
+      "contentType": "application/octet-stream",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "RED/Content/Paks/pakchunk1-WindowsNoEditor.sig",
+      "sizeBytes": 53900,
+      "sha256": "5a7971e35273d873273fb9452f0a0f43db347132394ae5683a09665a43649530",
+      "r2ObjectKey": "_objects/5a7971e35273d873273fb9452f0a0f43db347132394ae5683a09665a43649530",
+      "cdnPath": "/games/dbfz/RED/Content/Paks/pakchunk1-WindowsNoEditor.sig",
+      "contentType": "application/octet-stream",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "RED/Content/Splash/Splash.bmp",
+      "sizeBytes": 360056,
+      "sha256": "b49dd38a82eafb4a5bfc6dd2c73808cdf5fe2afb5912a0ac0502212f6b12de21",
+      "r2ObjectKey": "_objects/b49dd38a82eafb4a5bfc6dd2c73808cdf5fe2afb5912a0ac0502212f6b12de21",
+      "cdnPath": "/games/dbfz/RED/Content/Splash/Splash.bmp",
+      "contentType": "image/bmp",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "installscript.vdf",
+      "sizeBytes": 722,
+      "sha256": "3df33183c6a6f95ebb1d3969842a6eb7470471d6b20695f9f0beba4377242915",
+      "r2ObjectKey": "_objects/3df33183c6a6f95ebb1d3969842a6eb7470471d6b20695f9f0beba4377242915",
+      "cdnPath": "/games/dbfz/installscript.vdf",
+      "contentType": "text/plain; charset=utf-8",
+      "cacheControl": "public, max-age=31536000, immutable"
+    },
+    {
+      "relativePath": "readme.docx",
+      "sizeBytes": 486952,
+      "sha256": "cdb92f3dff7bffae92e3e4c9a295edce1e5c9b3cf33ffb073e271a12b3675179",
+      "r2ObjectKey": "_objects/cdb92f3dff7bffae92e3e4c9a295edce1e5c9b3cf33ffb073e271a12b3675179",
+      "cdnPath": "/games/dbfz/readme.docx",
+      "contentType": "application/octet-stream",
+      "cacheControl": "public, max-age=31536000, immutable"
+    }
+  ]
+}

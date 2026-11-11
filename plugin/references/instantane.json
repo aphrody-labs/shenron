@@ -1,13 +1,13 @@
 {
   "_genere": "Généré par scripts/plugin/build-references.ts — ne pas éditer. Registre des instantanés hors ligne du plugin.",
-  "bun": "1.4.5",
+  "bun": "1.4.4",
   "sorties": {
     "plugin/skills/dragon-ball-canon/references/doctrine.md": {
       "revision": "aa6240b0",
       "date": "2026-10-15",
       "sources": {
         "apps/site/src/lib/canon-engine.ts": "64fe8f7f9092b4d46cd66c60d0e78a5c79a9676bb6d938b007cfdfa965ef5b5d",
-        "scripts/plugin/build-references.ts": "8737cd0200c810c9074f4a912e52b643c8dab6a3d820e180cdc0ca43e510a951"
+        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
       },
       "sha256": "3306d4d8fe78d1358edde4c0b725980fbddbd6483bb05eeb1e0ec68935d93281"
     },
@@ -26,7 +26,7 @@
       "date": "2026-10-05",
       "sources": {
         "data/lexicon/terms.json": "f9d3f37e15c1830b0224f0a876d8843b2b724f379138f9353356d99a50433cc3",
-        "scripts/plugin/build-references.ts": "8737cd0200c810c9074f4a912e52b643c8dab6a3d820e180cdc0ca43e510a951"
+        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
       },
       "sha256": "0141fad4003863fa6814d28d410b436bb3946f80865e916cf3ca478b5e1a4cec"
     },
@@ -35,7 +35,7 @@
       "date": "2026-10-05",
       "sources": {
         "data/lexicon/terms.json": "f9d3f37e15c1830b0224f0a876d8843b2b724f379138f9353356d99a50433cc3",
-        "scripts/plugin/build-references.ts": "8737cd0200c810c9074f4a912e52b643c8dab6a3d820e180cdc0ca43e510a951"
+        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
       },
       "sha256": "9a30ca6ec3af5eecb56168b8d9e4a276781d5b83f3d24f9b7827b043149cdfd6"
     },
@@ -88,47 +88,42 @@
       "sha256": "08c5eb3a01d139e4b1a340ff047f2a583545c3adbce0c344cbaec2190e2d76d2"
     },
     "plugin/skills/toriyama-svg/references/mesures/couverture-analyse-visuelle.md": {
-      "revision": "f4579c5",
-      "date": "2026-10-05",
+      "revision": "inconnue",
+      "date": "inconnue",
       "sources": {
-        "docs/reference/couverture-analyse-visuelle.md": "38a11f6bb5f98b508b99cce4cec9b3d66cb3792770c06f5358a84f3cd43f1a18",
-        "scripts/plugin/build-references.ts": "8737cd0200c810c9074f4a912e52b643c8dab6a3d820e180cdc0ca43e510a951"
+        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
       },
       "sha256": "70c654f6c570c920516ce53fae3f8d44b9103cd4789746fc6c8406ad387a77b7"
     },
     "plugin/skills/toriyama-svg/references/mesures/gohan-ultime-analyse-visuelle.md": {
-      "revision": "non commitée",
+      "revision": "inconnue",
       "date": "inconnue",
       "sources": {
-        "docs/reference/gohan-ultime-analyse-visuelle.md": "59f2d58cff13943744f7b1d1f45bb102c26cb76160c1ed453456874c5633ff13",
-        "scripts/plugin/build-references.ts": "8737cd0200c810c9074f4a912e52b643c8dab6a3d820e180cdc0ca43e510a951"
+        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
       },
       "sha256": "6e47924e33dce431342e2a0a48d77bbfed2fc059b8b7a9824efde25b6ef92554"
     },
     "plugin/skills/toriyama-svg/references/mesures/kinto-un-analyse-visuelle.md": {
-      "revision": "f4579c5",
-      "date": "2026-10-05",
+      "revision": "inconnue",
+      "date": "inconnue",
       "sources": {
-        "docs/reference/kinto-un-analyse-visuelle.md": "ccbe45c00633f411035eaf1ebba6b70b8588f82a4d7bf83bed3fd0565b1932a4",
-        "scripts/plugin/build-references.ts": "8737cd0200c810c9074f4a912e52b643c8dab6a3d820e180cdc0ca43e510a951"
+        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
       },
       "sha256": "be1e0e7b28237fdbfc936119281e6df2b43e49bbfa9a99498c174f58481b3f5b"
     },
     "plugin/skills/toriyama-svg/references/mesures/potara-analyse-visuelle.md": {
-      "revision": "non commitée",
+      "revision": "inconnue",
       "date": "inconnue",
       "sources": {
-        "docs/reference/potara-analyse-visuelle.md": "11aa4ed9fae38a4d8fbaff825e4707807ec71ed862e53e22b740b0370248a4a2",
-        "scripts/plugin/build-references.ts": "8737cd0200c810c9074f4a912e52b643c8dab6a3d820e180cdc0ca43e510a951"
+        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
       },
       "sha256": "44fecf92a42d341c404127de8a9341181a303fef22b8fbd003ec8ec11a0dcada"
     },
     "plugin/skills/toriyama-svg/references/mesures/senzu-analyse-visuelle.md": {
-      "revision": "non commitée",
+      "revision": "inconnue",
       "date": "inconnue",
       "sources": {
-        "docs/reference/senzu-analyse-visuelle.md": "d1c04fe8e8f1addf820f832caf95410a169f1a81fdf61ddbe9816455aa455c72",
-        "scripts/plugin/build-references.ts": "8737cd0200c810c9074f4a912e52b643c8dab6a3d820e180cdc0ca43e510a951"
+        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
       },
       "sha256": "808401eef60340c493e23af9380bd806e3f46528f5b0b492ec33a98ffb6969df"
     },

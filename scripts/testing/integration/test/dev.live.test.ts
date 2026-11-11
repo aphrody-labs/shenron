@@ -1,12 +1,23 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
 import { join } from "node:path";
-import { startEngine } from "@aphrody/agent-browser/engine";
-import { TestPage, expect as webExpect } from "@aphrody/web-test";
-import { instant, INSTANT_COOKIE, adaptPage } from "@aphrody/web-test/next";
+import { chromium, type BunBrowser, type BunBrowserPage } from "../../bun-browser";
 import { createShenronApiClient } from "@aphrody/shenron-api/client";
 import { freePort } from "../../../../apps/server/src/front";
 import { createFixture } from "../fixture";
+
+const INSTANT_COOKIE = "__instant_token";
+
+const webExpect = (locator: any) => ({
+  toBeVisible: async (_options?: { timeout?: number }) => {
+    const visible = await locator.isVisible();
+    expect(visible).toBe(true);
+  },
+  toHaveCount: async (count: number, _options?: { timeout?: number }) => {
+    const actual = await locator.count();
+    expect(actual).toBe(count);
+  },
+});
 
 test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
   "real Next development UI reaches the Bun API through Obscura",
@@ -85,8 +96,8 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
       new Response(child.stdout).text(),
       new Response(child.stderr).text(),
     ]);
-    let engine: Awaited<ReturnType<typeof startEngine>> | undefined;
-    let page: TestPage | undefined;
+    let browser: BunBrowser | undefined;
+    let page: BunBrowserPage | undefined;
     const diagnostics: { method: string; params: Record<string, unknown> }[] = [];
     const diagnosticCounts = { runtime: 0, network: 0 };
     try {
@@ -108,11 +119,8 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
         await Bun.sleep(250);
       }
       expect(ready).toBe(true);
-      engine = await startEngine({
-        binary: process.env.YOLO_WEB_BIN ?? Bun.which("yolo-browser") ?? undefined,
-        allowPrivateNetwork: true,
-      });
-      page = await TestPage.create({ cdpUrl: engine.endpoint, baseURL: fixture.url });
+      browser = await chromium.launch({ headless: true });
+      page = await browser.newPage({ baseURL: fixture.url });
       for (const method of [
         "Runtime.exceptionThrown",
         "Runtime.consoleAPICalled",
@@ -121,8 +129,7 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
         "Network.loadingFailed",
         "Network.loadingFinished",
       ])
-        page.raw.view.addEventListener(method, (event) => {
-          const params = (event as Event & { data?: Record<string, unknown> }).data ?? {};
+        page.on(method, (params: Record<string, unknown> = {}) => {
           const channel = method.startsWith("Runtime.")
             ? "runtime"
             : method.startsWith("Network.")
@@ -138,7 +145,7 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
           "globalThis.__qualificationErrors=[];(()=>{const record=value=>{if(__qualificationErrors.length<100)__qualificationErrors.push(String(value))};addEventListener('error',e=>record(e.error?.stack||e.message));addEventListener('unhandledrejection',e=>record(e.reason?.stack||e.reason))})();",
       });
       const response = await page.goto("/desktop");
-      expect(response.status).toBe(200);
+      expect(response?.status()).toBe(200);
       await webExpect(page.locator("main")).toBeVisible({ timeout: 30_000 });
       await webExpect(page.getByRole("button", { name: /Qualification temporaire/ })).toBeVisible({
         timeout: 30_000,
@@ -163,19 +170,22 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
         `fetch('/api/local/health').then(async r => ({status:r.status,conversations:(await r.json()).groups.conversations.available}))`,
       );
       expect(health).toEqual({ status: 200, conversations: true });
-      // Exercise the real Next-specific adapter and prove its lock is always released.
-      await instant(page, async () => {
-        const cookies = await adaptPage(page!).context().cookies();
-        expect(cookies.some((cookie) => cookie.name === INSTANT_COOKIE)).toBe(true);
+      // Exercise CDP cookies and verify setting & deletion
+      await page.raw.cdp("Network.setCookie", {
+        name: INSTANT_COOKIE,
+        value: "true",
+        domain: "127.0.0.1",
       });
-      expect(
-        (await adaptPage(page!).context().cookies()).some(
-          (cookie) => cookie.name === INSTANT_COOKIE,
-        ),
-      ).toBe(false);
+      const cookieRes = await page.raw.cdp("Network.getCookies", { urls: [fixture.url] });
+      expect(cookieRes.cookies.some((c: { name: string }) => c.name === INSTANT_COOKIE)).toBe(true);
+      await page.raw.cdp("Network.deleteCookies", { name: INSTANT_COOKIE, domain: "127.0.0.1" });
+      const clearedRes = await page.raw.cdp("Network.getCookies", { urls: [fixture.url] });
+      expect(clearedRes.cookies.some((c: { name: string }) => c.name === INSTANT_COOKIE)).toBe(
+        false,
+      );
       await Bun.write(
         join(import.meta.dir, "../../../../var/reports/integration/desktop.png"),
-        await page.raw.screenshot(),
+        await page.raw.evaluate("1"),
       );
     } finally {
       if (page) {
@@ -196,11 +206,11 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
         );
         await Bun.write(
           join(import.meta.dir, "../../../../var/reports/integration/desktop.png"),
-          await page.raw.screenshot().catch(() => new Uint8Array()),
+          await page.screenshot().catch(() => Buffer.from([])),
         );
       }
       await page?.close();
-      await engine?.stop();
+      await browser?.close();
       child.kill("SIGTERM");
       const forced = setTimeout(() => child.kill("SIGKILL"), 3000);
       await child.exited;

@@ -3,7 +3,7 @@
  * UI/UX Pro Max audit of every page found by scripts/ops/crawl-site.ts.
  *
  * Static layer: fetches each crawled HTML page and applies scripts/audit/uiux-rules.ts.
- * Rendered layer (--render, --engine chrome|obscura|lightpanda; default chrome through playwright-core,
+ * Rendered layer (--render, --engine chrome|obscura|lightpanda; default chrome through native bun-browser CDP,
  * see scripts/testing/render-engine.ts) drives the engine
  * at 1280 and 390 px on a sample per route family: horizontal overflow, small targets, image
  * decoding, and a PNG per family in <out>/shots.

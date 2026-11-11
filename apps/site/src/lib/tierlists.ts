@@ -1,5 +1,4 @@
 import "server-only";
-import { createId } from "@paralleldrive/cuid2";
 import { and, desc, eq, ilike, inArray, sql } from "drizzle-orm";
 import { slugify } from "@aphrody/shenron-config/slug";
 import { escapeLike } from "@aphrody/shenron-db/repos/wiki";
@@ -157,7 +156,7 @@ export interface CreateTierlistInput {
 
 export async function createTierlist(input: CreateTierlistInput): Promise<{ slug: string }> {
   const base = slugify(input.title, 48) || "tierlist";
-  const slug = `${base}-${createId().slice(0, 6)}`;
+  const slug = `${base}-${crypto.randomUUID().slice(0, 6)}`;
   await db.insert(tierlists).values({
     slug,
     title: input.title.slice(0, 120),

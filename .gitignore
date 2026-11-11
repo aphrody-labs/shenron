@@ -13,6 +13,7 @@ pkg/
 /apps/server/.build/
 /crates/shenron-desktop/binaries/
 /crates/shenron-desktop/tauri.bundle.json
+packages/crunchyroll/bin/
 .next/
 .next-build/
 .next-dev/
@@ -23,6 +24,9 @@ pkg/
 out/
 coverage/
 .turbo/
+.turbo-cache/
+.vercel/
+build/
 *.tsbuildinfo
 next-env.d.ts
 .cache/
@@ -104,6 +108,15 @@ apps/site/.next-ui-preview/
 # Reference screenshots of third-party originals (never shipped)
 /replica/screens/
 /replica/crunchyroll/screens/
+
+# Local non-versioned agent configurations and plugins (Claude Code, AGY, Codex, OpenCode, OpenClaw, Hermes)
+/.local-agents/
+/.claude/settings.local.json
+/.claude/worktrees/
+/.codex/local/
+/.opencode/local/
+/.openclaw/
+/.hermes/
 
 # Generated from packages/ui/assets by the host asset sync.
 /apps/site/public/techniques/

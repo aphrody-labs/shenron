@@ -24,8 +24,7 @@ description: Base UI (@base-ui/react) usage in the Shenron site — unstyled acc
    `data-[ending-style]`) — Base UI exposes state as attributes, not `data-state="open"`.
 4. Portal-based parts (Popover, Select, Menu, Dialog, Tooltip) need `*.Portal` + `*.Positioner`
    (or `Backdrop`/`Popup` for dialogs); keep them in client components (`"use client"`).
-5. New shadcn components: `cd apps/site && bunx shadcn@latest add <name>` (config
-   `components.json`, style `base-nova`). Never npm/pnpm/npx.
+5. Component scaffolding: use `@aphrody/google-design` (`gds`) tokens and native M3/Fluent primitives (`gds tokens`, semantic HTML/CSS). Do not invoke bunx or external npm generators.
 6. Design-system rule from `CLAUDE.md` still applies to anything user-facing: 1 px border,
    12 px radius, gold hover, no drop shadow, no hard-coded emoji.
 

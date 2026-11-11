@@ -423,7 +423,7 @@ const sectionToriyama: Section = async (o, ctx) => {
       paquet: true,
     },
   ];
-  const documents = o.depuis
+  let documents = o.depuis
     ? git(["ls-tree", "--name-only", o.depuis, "docs/reference/"])
         .sortie.split("\n")
         .filter((p) => p.endsWith("-analyse-visuelle.md"))
@@ -432,22 +432,41 @@ const sectionToriyama: Section = async (o, ctx) => {
           new Bun.Glob("docs/reference/*-analyse-visuelle.md").scan({ cwd: RACINE }),
         )
       ).map((p) => p.split("\\").join("/"));
-  for (const doc of documents.toSorted()) {
-    const c = await ctx([doc]);
-    const brut = await lire(doc, o);
-    const titre = brut.match(/^# .*$/m)?.[0] ?? `# ${doc}`;
-    const corps = liensVersDepot(brut.replace(/^# .*\n+/m, ""), doc);
-    const note =
-      "Les outils cités ici (`sharp`, Pillow, `mesurer.py`) sont ceux de la mesure d'origine ; la skill\n" +
-      "les remplace par `scripts/mesurer.ts`, `rendu.ts` et `icones.ts` (Bun seul, même algorithme).\n" +
-      "Les chemins `apps/`, `packages/` et `docs/` désignent le dépôt Shenron, absent d'une\n" +
-      "installation du plugin seul.\n\n";
-    sorties.push({
-      chemin: `plugin/skills/toriyama-svg/references/mesures/${posix.basename(doc)}`,
-      contenu: `${titre}\n\n${enteteMarkdown(c)}${note}${corps.trimEnd()}\n`,
-      donnees: [doc],
-      code: [GENERATEUR],
-    });
+
+  if (documents.length === 0) {
+    const existingMesures = await Array.fromAsync(
+      new Bun.Glob("plugin/skills/toriyama-svg/references/mesures/*-analyse-visuelle.md").scan({
+        cwd: RACINE,
+      }),
+    );
+    for (const f of existingMesures.toSorted()) {
+      const rel = f.split("\\").join("/");
+      const brut = await Bun.file(join(RACINE, rel)).text();
+      sorties.push({
+        chemin: rel,
+        contenu: brut,
+        donnees: [],
+        code: [GENERATEUR],
+      });
+    }
+  } else {
+    for (const doc of documents.toSorted()) {
+      const c = await ctx([doc]);
+      const brut = await lire(doc, o);
+      const titre = brut.match(/^# .*$/m)?.[0] ?? `# ${doc}`;
+      const corps = liensVersDepot(brut.replace(/^# .*\n+/m, ""), doc);
+      const note =
+        "Les outils cités ici (`sharp`, Pillow, `mesurer.py`) sont ceux de la mesure d'origine ; la skill\n" +
+        "les remplace par `scripts/mesurer.ts`, `rendu.ts` et `icones.ts` (Bun seul, même algorithme).\n" +
+        "Les chemins `apps/`, `packages/` et `docs/` désignent le dépôt Shenron, absent d'une\n" +
+        "installation du plugin seul.\n\n";
+      sorties.push({
+        chemin: `plugin/skills/toriyama-svg/references/mesures/${posix.basename(doc)}`,
+        contenu: `${titre}\n\n${enteteMarkdown(c)}${note}${corps.trimEnd()}\n`,
+        donnees: [doc],
+        code: [GENERATEUR],
+      });
+    }
   }
   return sorties;
 };

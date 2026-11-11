@@ -1,5 +1,5 @@
 import { SITE_URL } from "@/lib/config";
-import { dbUniverse } from "@/lib/universe";
+import { dbUniverse } from "@/lib/db-universe";
 import { assetUrl } from "@/lib/assets";
 
 export const revalidate = 3600;

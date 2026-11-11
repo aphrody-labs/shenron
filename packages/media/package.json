@@ -23,7 +23,9 @@
     "./crunchyroll-mapping": "./src/crunchyroll-mapping.ts",
     "./episode-playback": "./src/episode-playback.ts",
     "./video-download": "./src/video-download.ts",
-    "./r2-sync": "./src/r2-sync.ts"
+    "./r2-sync": "./src/r2-sync.ts",
+    "./hyperframes-stream": "./src/hyperframes-stream.ts",
+    "./remotion-engine": "./src/remotion-engine.ts"
   },
   "publishConfig": {
     "access": "public",
@@ -35,7 +37,10 @@
     "lint": "bun lint -c ../../.oxlintrc.json src"
   },
   "dependencies": {
+    "@aphrody/filmcraft": "workspace:*",
     "@aphrody/http": "catalog:",
+    "@aphrody/hyperframes": "workspace:*",
+    "@aphrody/remotion": "workspace:*",
     "mediabunny": "catalog:"
   },
   "devDependencies": {

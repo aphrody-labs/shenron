@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { startEngine } from "@aphrody/agent-browser/engine";
-import { TestPage } from "@aphrody/web-test";
+import { chromium, type BunBrowser, type BunBrowserPage } from "../../bun-browser";
 
 test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
   "Obscura exchanges real WebSocket messages through the browser SDK",
@@ -28,14 +27,11 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
         },
       },
     });
-    let engine: Awaited<ReturnType<typeof startEngine>> | undefined;
-    let page: TestPage | undefined;
+    let browser: BunBrowser | undefined;
+    let page: BunBrowserPage | undefined;
     try {
-      engine = await startEngine({
-        binary: process.env.YOLO_WEB_BIN ?? Bun.which("yolo-browser") ?? undefined,
-        allowPrivateNetwork: true,
-      });
-      page = await TestPage.create({ cdpUrl: engine.endpoint });
+      browser = await chromium.launch({ headless: true });
+      page = await browser.newPage();
       await page.goto(`http://127.0.0.1:${server.port}`);
       await page.raw.evaluate(`
         globalThis.__webSocketQualification = { status: "pending" };
@@ -61,7 +57,7 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
         await page?.close();
       } finally {
         try {
-          await engine?.stop();
+          await browser?.close();
         } finally {
           await server.stop(true);
         }

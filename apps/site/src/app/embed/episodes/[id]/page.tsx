@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { dbUniverse } from "@/lib/universe";
+import { dbUniverse } from "@/lib/db-universe";
 import { assetUrl } from "@/lib/assets";
 import { VideoPlayer } from "@/components/episodes/VideoPlayer";
-import { idDeFiche } from "@/lib/utils/format";
+import { idDeFiche } from "@/app/wiki/_id-fiche";
 
 export const dynamic = "force-dynamic";
 
@@ -35,7 +35,7 @@ export default async function EpisodeEmbedPage({ params }: { params: Promise<{ i
   const videoUrl =
     ep.video_url ||
     ep.stream_url ||
-    (ep.players ?? []).find((p) => p.embedUrl?.endsWith(".mp4"))?.embedUrl;
+    (ep.players ?? []).find((p: { embedUrl?: string }) => p.embedUrl?.endsWith(".mp4"))?.embedUrl;
 
   const poster = ep.image ? assetUrl(ep.image) : undefined;
 
@@ -44,11 +44,11 @@ export default async function EpisodeEmbedPage({ params }: { params: Promise<{ i
       {videoUrl ? (
         <div className="w-full h-full">
           <VideoPlayer
+            episodeId={ep.id}
             src={videoUrl}
             title={ep.title}
             poster={poster}
             subtitles={ep.subtitles ?? undefined}
-            autoPlay
           />
         </div>
       ) : (

@@ -4,7 +4,7 @@
 // Output: var/reports/click-through/ (ignored by Git).
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { chromium, type Page } from "playwright-core";
+import { chromium, type BunBrowserPage as Page } from "../testing/bun-browser";
 
 const origin = "https://dragonballfr.com";
 const out = "var/reports/click-through";
@@ -42,7 +42,7 @@ async function follow(name: string, href: string) {
     console.log(name, "MISSING", href);
     return;
   }
-  const before = page.url();
+  const before = await page.url();
   await Promise.all([
     page.waitForLoadState("load").catch(() => {}),
     link
@@ -51,7 +51,7 @@ async function follow(name: string, href: string) {
   ]);
   await page.waitForTimeout(1000);
   await page.screenshot({ path: join(out, `${name}.png`) });
-  console.log(name, before.replace(origin, ""), "→", page.url().replace(origin, ""));
+  console.log(name, before.replace(origin, ""), "→", (await page.url()).replace(origin, ""));
 }
 
 async function firstHref(path: string, pattern: RegExp): Promise<string | undefined> {

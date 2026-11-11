@@ -44,13 +44,14 @@ Toutes les transcriptions proviennent des parutions originales :
 1. Strict respect des kanjis et du sens originel.
 2. Zéro extrapolation : les citations sans source datée sont exclues du corpus RAG.
 3. Alignement avec le dictionnaire de termes \`packages/lexicon\`.
-`
+`,
   },
   {
     slug: "dragon-ball-manga-canon",
     title: "Canon Manga Dragon Ball & Dragon Ball Super",
     category: "manga",
-    summary: "Indexation des 42 volumes originaux et des arcs de Dragon Ball Super illustrés par Toyotarō.",
+    summary:
+      "Indexation des 42 volumes originaux et des arcs de Dragon Ball Super illustrés par Toyotarō.",
     content: `# Canon Manga Dragon Ball & Dragon Ball Super
 
 ## Structure des Volumes
@@ -62,13 +63,14 @@ Les planches originales sont traitées par le moteur de rendu Koharu (\`crates/k
 - Rasterisation vectorielle Vello / WGPU.
 - Préservation de la palette noir et blanc et des trames de Toriyama.
 - Alignement OCR bilingue japonais/français.
-`
+`,
   },
   {
     slug: "databooks-daizenshuu",
     title: "Corpus des Databooks Officiels",
     category: "databooks",
-    summary: "Spécifications techniques, fiches de personnages et puissances des Daizenshuu et Chōzenshū.",
+    summary:
+      "Spécifications techniques, fiches de personnages et puissances des Daizenshuu et Chōzenshū.",
     content: `# Corpus des Databooks Officiels
 
 Documentation des volumes encyclopédiques de référence :
@@ -80,13 +82,14 @@ Documentation des volumes encyclopédiques de référence :
 
 ## Intégration RAG & Modèles d'Embedding
 Chaque page transcrite fait l'objet d'un chunk vectoriel dans \`crates/shenron-rag\` pour alimentation des requêtes sémantiques et de l'agent Discord.
-`
+`,
   },
   {
     slug: "chronologie-unifiee",
     title: "Chronologie Officielle Unifiée de l'Univers Dragon Ball",
     category: "chronologie",
-    summary: "Repères temporels de l'An 737 à l'An 784, calibrés selon les archives de la Capsule Corporation.",
+    summary:
+      "Repères temporels de l'An 737 à l'An 784, calibrés selon les archives de la Capsule Corporation.",
     content: `# Chronologie Officielle Unifiée
 
 Calibrée d'après \`packages/config/chronology\` et les repères datés de l'œuvre.
@@ -102,14 +105,15 @@ Calibrée d'après \`packages/config/chronology\` et les repères datés de l'œ
 | **An 774** | Réveil et défaite de Majin Boo par le Genkidama | Majin Boo |
 | **An 778** | Éveil du Dieu de la Destruction Beerus | Battle of Gods / DBS_BEERUS |
 | **An 784** | 28e Tenkaichi Budokai et départ de Goku avec Oob | Fin du Manga (Épilogue) |
-`
+`,
   },
   {
     slug: "dbs-beerus-series",
     title: "Saga Beerus (Dragon Ball Super) - Dossier Streaming & Production",
     category: "anime",
     era: "super",
-    summary: "Fiche complète de la saga Beerus : épisodes 1 à 14, masters R2, lecteur YouTube pixel-perfect et intégration Crunchyroll.",
+    summary:
+      "Fiche complète de la saga Beerus : épisodes 1 à 14, masters R2, lecteur YouTube pixel-perfect et intégration Crunchyroll.",
     content: `# Saga Beerus (Dragon Ball Super)
 
 La saga du Dieu de la Destruction Beerus constitue l'arc introductif de *Dragon Ball Super*, diffusé à partir de juillet 2015.
@@ -126,8 +130,8 @@ Le lecteur développé sous \`apps/site/src/components/tv/TvPlayer.tsx\` intègr
 - Contrôles vidéo réactifs et raccourcis clavier standards YouTube (\`k\`, \`j\`, \`l\`, \`m\`, \`f\`, \`t\`).
 - Thème OLED 100% noir pour élimination de la fatigue visuelle.
 - Support du multi-source en direct (Miroir local haute performance et lien légal Crunchyroll).
-`
-  }
+`,
+  },
 ];
 
 for (const doc of docs) {

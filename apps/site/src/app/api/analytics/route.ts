@@ -23,10 +23,7 @@ export async function GET(req: Request): Promise<Response> {
 
   try {
     const overview = await getAnalyticsOverview(range);
-    return Response.json(
-      { ok: true, ...overview },
-      { headers: { "cache-control": "no-store" } },
-    );
+    return Response.json({ ok: true, ...overview }, { headers: { "cache-control": "no-store" } });
   } catch (err) {
     console.error("[analytics] query failed", err);
     return Response.json({ ok: false, error: "query_failed" }, { status: 500 });

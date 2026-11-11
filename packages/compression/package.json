@@ -1,0 +1,27 @@
+{
+  "name": "@aphrody/compression",
+  "version": "1.4.7",
+  "private": false,
+  "description": "Sovereign ultra-fast compression, decompression, and asset conversion suite for Bun v1.4.4+, WebGPU, and R2 CDN.",
+  "homepage": "https://dragonballfr.com",
+  "license": "Apache-2.0",
+  "bin": {
+    "compression-cli": "./src/cli.ts"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./engine": "./src/engine.ts",
+    "./texture": "./src/texture-converter.ts",
+    "./mesh": "./src/mesh-optimizer.ts",
+    "./pak": "./src/pak-extractor.ts"
+  },
+  "scripts": {
+    "typecheck": "bun check --project tsconfig.json",
+    "test": "bun test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  }
+}

@@ -1,5 +1,7 @@
 import { hasEditorialDatabase } from "@/lib/prerender";
 import { Xenoverse2Runtime } from "@/components/games/Xenoverse2Runtime";
+import { TenkaichiWasmPlayer } from "@/components/games/TenkaichiWasmPlayer";
+import { FighterZBrowserRuntime } from "@/components/games/FighterZBrowserRuntime";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { GameMediaGallery } from "@/components/wiki/GameMediaGallery";
@@ -159,6 +161,20 @@ export default async function GamePage({ params }: { params: Promise<{ slug: str
       }
     >
       {slug === "xenoverse-2" && <Xenoverse2Runtime wiki />}
+
+      {slug === "fighterz" && (
+        <section className="mb-10 space-y-4">
+          <FighterZBrowserRuntime />
+        </section>
+      )}
+
+      {(slug === "budokai-tenkaichi-3" ||
+        slug === "dragon-ball-z-budokai-tenkaichi-3" ||
+        slug.includes("tenkaichi")) && (
+        <section className="mb-10 space-y-4">
+          <TenkaichiWasmPlayer />
+        </section>
+      )}
 
       {g.description && (
         <section className="mb-12">

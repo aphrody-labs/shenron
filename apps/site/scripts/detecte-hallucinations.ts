@@ -374,6 +374,7 @@ const FAMILLES: Famille[] = [
     reference: 818,
     compte: (t) => {
       if (!JAPONAIS.test(t)) return 0; // ouvrage réellement non japonais
+      // oxlint-disable-next-line eslint/no-misleading-character-class
       return (t.match(/[Ѐ-ӿ؀-ۿͰ-Ͽ฀-๿ऀ-ॿ֐-׿가-힯]/g) ?? []).length;
     },
   },

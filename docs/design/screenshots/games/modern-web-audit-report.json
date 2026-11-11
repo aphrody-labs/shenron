@@ -1,0 +1,281 @@
+[
+  {
+    "route": "/wiki/games",
+    "url": "https://dragonballfr.com/wiki/games",
+    "desktop": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\wiki-games-desktop-1920x1080.png",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "scrollHeight": 7130,
+      "zeroOverflow": true,
+      "imagesCount": 29,
+      "imagesDecoded": 14,
+      "interactiveTargetsValid": true
+    },
+    "mobile": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\wiki-games-mobile-390x844.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 23218,
+      "zeroOverflow": true,
+      "imagesCount": 29,
+      "imagesDecoded": 8
+    },
+    "metadata": {
+      "title": "Jeux vidéo Dragon Ball — DBFR",
+      "description": "Catalogue des jeux vidéo Dragon Ball : Kakarot, Sparking! ZERO, Xenoverse, FighterZ, Dokkan Battle, Legends et classiques rétro.",
+      "hasJsonLd": true,
+      "hasOpenGraph": true
+    },
+    "durationMs": 6520,
+    "passed": true
+  },
+  {
+    "route": "/wiki/games/xenoverse-2",
+    "url": "https://dragonballfr.com/wiki/games/xenoverse-2",
+    "desktop": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\wiki-games-xenoverse-2-desktop-1920x1080.png",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "scrollHeight": 3250,
+      "zeroOverflow": true,
+      "imagesCount": 12,
+      "imagesDecoded": 12,
+      "interactiveTargetsValid": true
+    },
+    "mobile": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\wiki-games-xenoverse-2-mobile-390x844.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 3858,
+      "zeroOverflow": true,
+      "imagesCount": 12,
+      "imagesDecoded": 7
+    },
+    "metadata": {
+      "title": "Dragon Ball Xenoverse 2 — Jeu vidéo Dragon Ball — DBFR",
+      "description": "Dans Dragon Ball Xenoverse 2, le joueur crée un avatar et rejoint la Patrouille du Temps pour réparer des événements historiques altérés. Développé par Dimps et édité par Bandai Namco Entertainment, le jeu se déroule notamment à Conton City, où l’avatar peut s’entraîner auprès de personnages de la série et personnaliser ses techniques. Les modes en ligne proposent des affrontements et des raids coopératifs.\n",
+      "hasJsonLd": true,
+      "hasOpenGraph": true
+    },
+    "durationMs": 6125,
+    "passed": true
+  },
+  {
+    "route": "/wiki/games/dragon-ball-z-budokai-tenkaichi-3",
+    "url": "https://dragonballfr.com/wiki/games/dragon-ball-z-budokai-tenkaichi-3",
+    "desktop": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\wiki-games-dragon-ball-z-budokai-tenkaichi-3-desktop-1920x1080.png",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "scrollHeight": 1208,
+      "zeroOverflow": true,
+      "imagesCount": 2,
+      "imagesDecoded": 2,
+      "interactiveTargetsValid": true
+    },
+    "mobile": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\wiki-games-dragon-ball-z-budokai-tenkaichi-3-mobile-390x844.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 1504,
+      "zeroOverflow": true,
+      "imagesCount": 2,
+      "imagesDecoded": 2
+    },
+    "metadata": {
+      "title": "DBFR — Dragon Ball France",
+      "description": "Un voyage à travers l'univers Dragon Ball en français : personnages, sagas, planètes, films, jeux et actualités anime + manga.",
+      "hasJsonLd": true,
+      "hasOpenGraph": true
+    },
+    "durationMs": 4246,
+    "passed": true
+  },
+  {
+    "route": "/wiki/games/dragon-ball-fighterz",
+    "url": "https://dragonballfr.com/wiki/games/dragon-ball-fighterz",
+    "desktop": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\wiki-games-dragon-ball-fighterz-desktop-1920x1080.png",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "scrollHeight": 1208,
+      "zeroOverflow": true,
+      "imagesCount": 2,
+      "imagesDecoded": 2,
+      "interactiveTargetsValid": true
+    },
+    "mobile": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\wiki-games-dragon-ball-fighterz-mobile-390x844.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 1504,
+      "zeroOverflow": true,
+      "imagesCount": 2,
+      "imagesDecoded": 2
+    },
+    "metadata": {
+      "title": "DBFR — Dragon Ball France",
+      "description": "Un voyage à travers l'univers Dragon Ball en français : personnages, sagas, planètes, films, jeux et actualités anime + manga.",
+      "hasJsonLd": true,
+      "hasOpenGraph": true
+    },
+    "durationMs": 3724,
+    "passed": true
+  },
+  {
+    "route": "/wiki/games/dragon-ball-z-kakarot",
+    "url": "https://dragonballfr.com/wiki/games/dragon-ball-z-kakarot",
+    "desktop": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\wiki-games-dragon-ball-z-kakarot-desktop-1920x1080.png",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "scrollHeight": 1208,
+      "zeroOverflow": true,
+      "imagesCount": 2,
+      "imagesDecoded": 2,
+      "interactiveTargetsValid": true
+    },
+    "mobile": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\wiki-games-dragon-ball-z-kakarot-mobile-390x844.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 1504,
+      "zeroOverflow": true,
+      "imagesCount": 2,
+      "imagesDecoded": 2
+    },
+    "metadata": {
+      "title": "DBFR — Dragon Ball France",
+      "description": "Un voyage à travers l'univers Dragon Ball en français : personnages, sagas, planètes, films, jeux et actualités anime + manga.",
+      "hasJsonLd": true,
+      "hasOpenGraph": true
+    },
+    "durationMs": 4347,
+    "passed": true
+  },
+  {
+    "route": "/games",
+    "url": "https://dragonballfr.com/games",
+    "desktop": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\games-desktop-1920x1080.png",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "scrollHeight": 2238,
+      "zeroOverflow": true,
+      "imagesCount": 2,
+      "imagesDecoded": 2,
+      "interactiveTargetsValid": true
+    },
+    "mobile": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\games-mobile-390x844.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 4087,
+      "zeroOverflow": true,
+      "imagesCount": 2,
+      "imagesDecoded": 2
+    },
+    "metadata": {
+      "title": "Jeux Dragon Ball — DBFR",
+      "description": "Ki Merge, Morpion, Pierre-Feuille-Ciseaux, Bingo, jeux Discord et explorateurs Dragon Ball.",
+      "hasJsonLd": true,
+      "hasOpenGraph": true
+    },
+    "durationMs": 3809,
+    "passed": true
+  },
+  {
+    "route": "/games/xenoverse-2",
+    "url": "https://dragonballfr.com/games/xenoverse-2",
+    "desktop": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\games-xenoverse-2-desktop-1920x1080.png",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "scrollHeight": 1095,
+      "zeroOverflow": true,
+      "imagesCount": 2,
+      "imagesDecoded": 2,
+      "interactiveTargetsValid": true
+    },
+    "mobile": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\games-xenoverse-2-mobile-390x844.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 1554,
+      "zeroOverflow": true,
+      "imagesCount": 2,
+      "imagesDecoded": 2
+    },
+    "metadata": {
+      "title": "Dragon Ball Xenoverse 2 — Jeux — DBFR",
+      "description": "Analyse localement les fichiers extraits de Dragon Ball Xenoverse 2 avec le moteur Shenron RE en WebAssembly.",
+      "hasJsonLd": true,
+      "hasOpenGraph": true
+    },
+    "durationMs": 3521,
+    "passed": true
+  },
+  {
+    "route": "/games/budokai-tenkaichi-3",
+    "url": "https://dragonballfr.com/games/budokai-tenkaichi-3",
+    "desktop": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\games-budokai-tenkaichi-3-desktop-1920x1080.png",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "scrollHeight": 1080,
+      "zeroOverflow": true,
+      "imagesCount": 3,
+      "imagesDecoded": 3,
+      "interactiveTargetsValid": false
+    },
+    "mobile": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\games-budokai-tenkaichi-3-mobile-390x844.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 1000,
+      "zeroOverflow": true,
+      "imagesCount": 3,
+      "imagesDecoded": 3
+    },
+    "metadata": {
+      "title": "Dragon Ball Z : Budokai Tenkaichi 3 — Plein écran — DBFR",
+      "description": "Joue à Dragon Ball Z : Budokai Tenkaichi 3 dans ton navigateur en plein écran WebGPU.",
+      "hasJsonLd": true,
+      "hasOpenGraph": true
+    },
+    "durationMs": 3503,
+    "passed": true
+  },
+  {
+    "route": "/wiki/episodes/875/watch",
+    "url": "https://dragonballfr.com/wiki/episodes/875/watch",
+    "desktop": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\wiki-episodes-875-watch-desktop-1920x1080.png",
+      "width": 1920,
+      "scrollWidth": 1920,
+      "scrollHeight": 1208,
+      "zeroOverflow": true,
+      "imagesCount": 2,
+      "imagesDecoded": 2,
+      "interactiveTargetsValid": true
+    },
+    "mobile": {
+      "file": "C:\\src\\apps\\shenron\\docs\\design\\screenshots\\games\\wiki-episodes-875-watch-mobile-390x844.png",
+      "width": 390,
+      "scrollWidth": 390,
+      "scrollHeight": 1504,
+      "zeroOverflow": true,
+      "imagesCount": 2,
+      "imagesDecoded": 2
+    },
+    "metadata": {
+      "title": "DBFR — Dragon Ball France",
+      "description": "Un voyage à travers l'univers Dragon Ball en français : personnages, sagas, planètes, films, jeux et actualités anime + manga.",
+      "hasJsonLd": true,
+      "hasOpenGraph": true
+    },
+    "durationMs": 6243,
+    "passed": true
+  }
+]

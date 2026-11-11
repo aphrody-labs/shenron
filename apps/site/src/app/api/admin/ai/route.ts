@@ -178,10 +178,7 @@ export async function POST(req: Request) {
         : [];
       const gold = GoldCaseBody.safeParse({ q, expect, ...author });
       if (!q || expect.length === 0 || !gold.success) {
-        return Response.json(
-          { error: "Question et mots-clés attendus requis." },
-          { status: 400 },
-        );
+        return Response.json({ error: "Question et mots-clés attendus requis." }, { status: 400 });
       }
       await botCockpit.addGold(gold.data);
       return Response.json({ ok: true, q, expect, notice: MIRROR_NOTICE });
@@ -232,8 +229,7 @@ export async function POST(req: Request) {
         description: description || title,
         ...author,
       });
-      if (!goal.success)
-        return Response.json({ error: "Paramètres invalides." }, { status: 400 });
+      if (!goal.success) return Response.json({ error: "Paramètres invalides." }, { status: 400 });
       const result = await botCockpit.createGoal(goal.data);
       return Response.json({ ok: true, goal: result.goal ?? null, notice: MIRROR_NOTICE });
     }

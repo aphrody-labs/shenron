@@ -83,14 +83,50 @@ export function UnifiedVolumeReader({
     ],
     [chapters, formatChapterTitle, t, ui, volume.series],
   );
-  const initialEdition =
+  const initialEditionRequested =
     colorisationDemandee(searchParams?.get("edition")) === "couleur" ? "color" : "nb";
-  const initialChapterNumber = Number(searchParams?.get("chapter"));
-  const initialChapter = chapters.find(
+  const hasColorChapters = chapters.some(
     (chapter) =>
-      (initialEdition === "color" ? chapter.series === "DBFC" : chapter.series !== "DBFC") &&
-      chapter.chapter_number === initialChapterNumber,
-  )?.id;
+      (chapter.series === "DBFC" || volume.series === "DBFC") && (chapter.pages?.length ?? 0) > 0,
+  );
+  const hasNbChapters = chapters.some(
+    (chapter) => chapter.series !== "DBFC" && (chapter.pages?.length ?? 0) > 0,
+  );
+  const initialEdition =
+    initialEditionRequested === "color" && hasColorChapters
+      ? "color"
+      : !hasNbChapters && hasColorChapters
+        ? "color"
+        : "nb";
+
+  const targetChapters = useMemo(() => {
+    if (initialEdition === "color") {
+      const col = chapters.filter(
+        (chapter) =>
+          (chapter.series === "DBFC" || volume.series === "DBFC") &&
+          (chapter.pages?.length ?? 0) > 0,
+      );
+      return col.length > 0 ? col : chapters;
+    }
+    const nb = chapters.filter(
+      (chapter) => chapter.series !== "DBFC" && (chapter.pages?.length ?? 0) > 0,
+    );
+    return nb.length > 0 ? nb : chapters;
+  }, [chapters, initialEdition, volume.series]);
+
+  const initialChapterNumber = Number(searchParams?.get("chapter"));
+  const initialChapter = useMemo(() => {
+    if (Number.isFinite(initialChapterNumber) && initialChapterNumber > 0) {
+      const matchByNum = targetChapters.find(
+        (chapter) => chapter.chapter_number === initialChapterNumber,
+      );
+      if (matchByNum) return matchByNum.id;
+      if (targetChapters[initialChapterNumber - 1]) {
+        return targetChapters[initialChapterNumber - 1].id;
+      }
+    }
+    return targetChapters[0]?.id;
+  }, [targetChapters, initialChapterNumber]);
   const onSelectionChange = useCallback(
     (edition: ReaderCollectionEdition, selected: { id: string | number }) => {
       const chapter = chapters.find((item) => item.id === selected.id);

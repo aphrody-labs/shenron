@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { useEffect, useRef, useState } from "react";
 import type { Locale } from "@aphrody/shenron-activity/protocol";
-import { formatNumber, translator, type Translate } from "../i18n";
+import { formatNumber, translator } from "../i18n";
 import {
   MEDIA_CATALOG,
   WATCH_STORAGE_KEY_PREFIX,
@@ -122,7 +122,7 @@ export function WatchTogetherScreen({
     }
   };
 
-  const onSeek = (time: number) => {
+  const _onSeek = (time: number) => {
     const video = videoRef.current;
     if (video) video.currentTime = time;
     broadcastState({ currentTime: time });
@@ -239,7 +239,9 @@ export function WatchTogetherScreen({
                   })
                 }
                 onSeeked={() => broadcastState({ currentTime: videoRef.current?.currentTime ?? 0 })}
-              />
+              >
+                <track kind="captions" srcLang="fr" label="Français (auto)" />
+              </video>
               <div className="watch-together__controls">
                 <button type="button" className="btn btn--primary" onClick={togglePlay}>
                   {watchState.isPlaying ? t("watch.pause") : t("watch.play")}

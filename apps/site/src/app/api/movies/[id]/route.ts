@@ -28,10 +28,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
 
     const movie = await dbUniverse.movie(id.trim());
     if (!movie) {
-      return Response.json(
-        { error: "Film introuvable" },
-        { status: 404, headers: CORS_HEADERS },
-      );
+      return Response.json({ error: "Film introuvable" }, { status: 404, headers: CORS_HEADERS });
     }
 
     const nav = await dbUniverse.movieNav(movie.series, movie.id).catch(() => ({

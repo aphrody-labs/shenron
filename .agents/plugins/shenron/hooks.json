@@ -1,0 +1,16 @@
+{
+  "shenron-plugin-safety": {
+    "PreToolUse": [
+      {
+        "matcher": "run_command",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bun run hooks/guard.ts",
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  }
+}

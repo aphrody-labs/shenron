@@ -12,4 +12,5 @@ export * from "./proxy";
 export * from "./refs";
 export * from "./runtime";
 export * from "./schemas";
+export * from "./steamcmd";
 export * from "./texture";

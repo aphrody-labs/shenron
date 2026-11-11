@@ -1,8 +1,8 @@
 {
-  "title": "ゼノバース2をプレイ",
-  "stream": "Bun OS Playで開く",
-  "description": "PC版ゲームをリモートホストで実行し、ストリーミングでプレイします。ゲームの利用可否とセッションへのアクセスはBun OS Playで確認されます。",
-  "wasm": "WebAssemblyによるローカル解析",
-  "wasmDescription": "以下のエクスプローラーはブラウザー内でファイルを解析します。PC版ゲームを実行するものではありません。",
+  "title": "Dragon Ball Xenoverse 2 (Steam & SteamCMD)",
+  "stream": "Steamで起動 (steam://run/454650)",
+  "description": "Dragon Ball Xenoverse 2（Steam App ID 454650）はSteamクライアント経由でネイティブ実行するか、SteamCMDで自動同期してCPKアーカイブを検査します。",
+  "wasm": "WebAssemblyローカル解析",
+  "wasmDescription": "ブラウザ内でCPKアーカイブと3Dモデルを直接解析します。",
   "details": "ゲームとエクスプローラーを開く"
 }

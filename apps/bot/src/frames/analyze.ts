@@ -496,13 +496,30 @@ export async function decodeFrame(
   bytes: Uint8Array,
   width: number = ANALYSIS_WIDTH,
 ): Promise<DecodedFrame> {
-  const meta = await new Bun.Image(bytes).metadata();
+  const image = new Bun.Image(bytes);
+  const meta = await image.metadata();
   const height = Math.max(1, Math.round((width * meta.height) / meta.width));
-  const out = await (new Bun.Image(bytes).resize(width, height) as unknown as WithRgba).rgba();
+  const resized = image.resize(width, height);
+  if (typeof (resized as any).rgba === "function") {
+    const out = await (resized as unknown as WithRgba).rgba();
+    return {
+      width: out.width,
+      height: out.height,
+      data: out.data,
+      sourceWidth: meta.width,
+      sourceHeight: meta.height,
+    };
+  }
+  const { default: sharp } = await import("sharp");
+  const { data, info } = await sharp(bytes, { failOn: "none", limitInputPixels: false })
+    .resize(width, height)
+    .ensureAlpha()
+    .raw()
+    .toBuffer({ resolveWithObject: true });
   return {
-    width: out.width,
-    height: out.height,
-    data: out.data,
+    width: info.width,
+    height: info.height,
+    data: new Uint8Array(data.buffer, data.byteOffset, data.byteLength),
     sourceWidth: meta.width,
     sourceHeight: meta.height,
   };

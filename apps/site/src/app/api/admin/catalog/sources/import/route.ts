@@ -11,8 +11,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request): Promise<Response> {
-  if (!(await isCurrentUserAdmin()))
-    return Response.json({ error: "Forbidden" }, { status: 403 });
+  if (!(await isCurrentUserAdmin())) return Response.json({ error: "Forbidden" }, { status: 403 });
   const user = await getCurrentUser();
   const actor = revisionActorOf(user);
   if (!actor?.id) return Response.json({ error: "Forbidden" }, { status: 403 });
@@ -48,8 +47,7 @@ export async function POST(request: Request): Promise<Response> {
     const parsed = externalSourceImportSchema.safeParse(
       JSON.parse(new TextDecoder("utf-8", { fatal: true }).decode(buffer)),
     );
-    if (!parsed.success)
-      return Response.json({ error: "invalid_source_import" }, { status: 400 });
+    if (!parsed.success) return Response.json({ error: "invalid_source_import" }, { status: 400 });
     try {
       const result = await importExternalSources(
         parsed.data,

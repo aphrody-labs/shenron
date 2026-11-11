@@ -99,11 +99,11 @@ const nextConfig: NextConfig = {
   //      2026-08-14 : à froid ~8,1 Gio de RSS, en incrémental (cache Turbopack
   //      déjà présent) ~10,5 Gio → OOM killer sur ce VPS de 11 Gio.
   // Au runtime, aucun slot ne pose la variable : `next start` lit bien `.next`.
-  distDir: process.env.NEXT_DIST_DIR ?? ".next",
+  distDir: process.env.VERCEL ? ".next" : (process.env.NEXT_DIST_DIR ?? ".next"),
 
   // `output: "standalone"` par défaut pour le binaire autonome (`bun run build:server`),
-  // désactivable avec `NEXT_OUTPUT=default` pour un build classique (`next start`).
-  ...(process.env.NEXT_OUTPUT !== "default"
+  // désactivable avec `NEXT_OUTPUT=default` pour un build classique (`next start`), ou automatiquement sous Vercel.
+  ...(!process.env.VERCEL && process.env.NEXT_OUTPUT !== "default"
     ? {
         output: "standalone" as const,
         // Dynamic fs access in shared packages must never drag the repository (sources, tests,
@@ -460,6 +460,15 @@ const nextConfig: NextConfig = {
             key: "Cache-Control",
             value: "public, max-age=86400, stale-while-revalidate=2592000",
           },
+        ],
+      },
+      {
+        // Chromium low-level features: crossOriginIsolated for SharedArrayBuffer, WebAssembly SIMD/threads, and WebGPU
+        source: "/wiki/games/:path*",
+        headers: [
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+          { key: "Cross-Origin-Embedder-Policy", value: "credentialless" },
+          { key: "Cross-Origin-Resource-Policy", value: "cross-origin" },
         ],
       },
       {

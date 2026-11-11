@@ -7,7 +7,7 @@
 [workspace]
 resolver = "3"
 members = ["crates/*"]
-exclude = ["crates/shenron-video", "crates/bun-engine-core"]
+exclude = ["crates/shenron-video"]
 
 [workspace.package]
 version = "1.4.5"
@@ -16,7 +16,7 @@ rust-version = "1.97"
 license = "Apache-2.0"
 authors = ["aphrody-dev <contact@aphrody.com>"]
 homepage = "https://dragonballfr.com"
-repository = "https://github.com/aphrody-labs/shenron"
+repository = "https://github.com/aphrody-dev/shenron"
 
 [workspace.dependencies]
 # Jev decision protocol, published by Bun (aphrody-labs/bun) on crates.io: no git fetch of the Bun tree.

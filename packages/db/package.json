@@ -71,8 +71,6 @@
   },
   "dependencies": {
     "@aphrody/shenron-config": "workspace:*",
-    "@aphrody/sql": "catalog:",
-    "@paralleldrive/cuid2": "catalog:",
     "drizzle-orm": "catalog:",
     "postgres": "catalog:"
   },

@@ -2,8 +2,7 @@
 import { expect, test } from "bun:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import { startEngine } from "@aphrody/agent-browser/engine";
-import { TestPage } from "@aphrody/web-test";
+import { chromium, type BunBrowser, type BunBrowserPage } from "../../bun-browser";
 import { SectionNavigation } from "@aphrody/shenron-ui/public/SectionNavigation";
 
 test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
@@ -28,22 +27,19 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
           { headers: { "content-type": "text/html" } },
         ),
     });
-    let engine: Awaited<ReturnType<typeof startEngine>> | undefined;
-    let page: TestPage | undefined;
+    let browser: BunBrowser | undefined;
+    let page: BunBrowserPage | undefined;
     try {
-      engine = await startEngine({
-        binary: process.env.YOLO_WEB_BIN ?? Bun.which("yolo-browser") ?? undefined,
-        allowPrivateNetwork: true,
-      });
-      page = await TestPage.create({ cdpUrl: engine.endpoint, baseURL: server.url.href });
+      browser = await chromium.launch({ headless: true });
+      page = await browser.newPage({ baseURL: server.url.href });
       for (const width of [1440, 390]) {
-        await page.raw.cdp("Emulation.setDeviceMetricsOverride", {
+        await page.setViewport({
           width,
           height: 900,
           deviceScaleFactor: 1,
           mobile: width === 390,
         });
-        await page.goto("/");
+        await page.goto(server.url.href);
         await page.getByRole("link", { name: "Games", exact: true }).click();
         const state = await page.raw.evaluate<{
           hash: string;
@@ -63,7 +59,7 @@ test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
         await page?.close();
       } finally {
         try {
-          await engine?.stop();
+          await browser?.close();
         } finally {
           await server.stop(true);
         }

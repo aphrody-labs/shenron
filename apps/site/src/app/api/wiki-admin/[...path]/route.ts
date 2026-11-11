@@ -112,10 +112,7 @@ async function readJson(req: Request): Promise<Record<string, unknown> | null> {
   }
 }
 
-function databookPagesFreezeError(
-  table: string,
-  body: Record<string, unknown>,
-): Response | null {
+function databookPagesFreezeError(table: string, body: Record<string, unknown>): Response | null {
   if (writesDatabookPages(table, body)) {
     const freeze = databooksFreeze();
     if (freeze) {

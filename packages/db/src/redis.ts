@@ -9,7 +9,6 @@
  * while no live client may be built (the dead window) reject with an explicit
  * error — never a silent no-op. Clients are built by `@aphrody/sql/redis`.
  */
-import { createRedisClient } from "@aphrody/sql/redis";
 
 export interface RedisLike {
   send(command: string, args: string[]): Promise<unknown>;
@@ -52,10 +51,10 @@ export class RedisUnavailableError extends Error {
 }
 
 async function defaultFactory(url: string): Promise<RedisLike> {
-  return createRedisClient(url, {
+  const { RedisClient } = await import("bun");
+  return new RedisClient(url, {
     autoReconnect: true,
     maxRetries: 20,
-    enableOfflineQueue: true,
   }) as unknown as RedisLike;
 }
 

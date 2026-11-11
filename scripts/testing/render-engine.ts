@@ -1,14 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * One page interface over the three rendering engines the site is checked with:
- *  - chrome     real Chromium through playwright-core (pixel-accurate; the reference for visual calls)
+ *  - chrome     real Chromium through native bun-browser CDP (pixel-accurate; the reference for visual calls)
  *  - obscura    `yolo-browser serve` (YOLO WEB engine; layout is approximate, fonts and transforms differ)
  *  - lightpanda var/tools/lightpanda/lightpanda serve (DOM/JS only, no screenshots)
- * Chromium comes from `bun node_modules/playwright-core/cli.js install chromium-headless-shell`
- * (cache ~/.cache/ms-playwright; libnss3/libnspr4 must be installed).
  */
 import { join } from "node:path";
-import { chromium } from "playwright-core";
+import { chromium } from "./bun-browser";
 import { setViewport, VIEWPORTS, withCdpServer, withObscura, type ObscuraSession } from "./obscura";
 
 export type EngineName = "chrome" | "obscura" | "lightpanda";
@@ -74,20 +72,30 @@ export async function withEngine<T>(
       (session) => run(cdpEngine("lightpanda", false)(session)),
     );
   }
-  const browser = await chromium.launch();
+  const browser = await chromium
+    .launch({
+      args: ["--no-sandbox", "--disable-dev-shm-usage"],
+    })
+    .catch(() => chromium.launch());
   try {
     return await run({
       engine: "chrome",
       async open(baseURL, viewport) {
         const page = await browser.newPage({
           baseURL,
-          viewport: { width: viewport.width, height: viewport.height },
-          isMobile: viewport.mobile,
-          deviceScaleFactor: 1,
+          viewport: {
+            width: viewport.width,
+            height: viewport.height,
+            mobile: viewport.mobile,
+            deviceScaleFactor: 1,
+          },
         });
         return {
           async goto(path) {
-            await page.goto(path, { waitUntil: "load" });
+            const url = path.startsWith("http")
+              ? path
+              : `${baseURL}${path.startsWith("/") ? "" : "/"}${path}`;
+            await page.goto(url, { waitUntil: "load" });
           },
           evaluate: (expression) => page.evaluate(expression),
           screenshot: () => page.screenshot(),

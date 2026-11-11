@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "shenron": {
+      "command": "bun",
+      "args": ["run", "scripts/mcp-server.ts"],
+      "env": {
+        "SHENRON_WORKSPACE": "C:/src/apps/shenron"
+      }
+    }
+  }
+}

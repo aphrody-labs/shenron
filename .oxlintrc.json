@@ -1,14 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": [
-    "typescript",
-    "unicorn",
-    "oxc",
-    "promise",
-    "import",
-    "react",
-    "jsx-a11y"
-  ],
+  "plugins": ["typescript", "unicorn", "oxc", "promise", "import", "react", "jsx-a11y"],
   "categories": {
     "correctness": "error",
     "suspicious": "warn",
@@ -100,13 +92,7 @@
   ],
   "overrides": [
     {
-      "files": [
-        "**/*.test.ts",
-        "**/*.test.tsx",
-        "**/*.spec.ts",
-        "**/*.test.js",
-        "test/**"
-      ],
+      "files": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts", "**/*.test.js", "test/**"],
       "rules": {
         "@typescript-eslint/no-explicit-any": "off",
         "no-console": "off"

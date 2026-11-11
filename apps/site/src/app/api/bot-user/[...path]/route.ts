@@ -24,10 +24,7 @@ async function proxy(req: Request, ctx: { params: Promise<{ path: string[] }> })
     return Response.json({ error: "Login requis" }, { status: 401 });
   }
   if (!USER_SECRET) {
-    return Response.json(
-      { error: "SHENRON_USER_SECRET non configuré côté site" },
-      { status: 500 },
-    );
+    return Response.json({ error: "SHENRON_USER_SECRET non configuré côté site" }, { status: 500 });
   }
 
   const { path } = await ctx.params;

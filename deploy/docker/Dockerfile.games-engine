@@ -1,0 +1,50 @@
+# SPDX-License-Identifier: Apache-2.0
+# Multi-stage Dockerfile for Dragon Ball Ultimate Games Manager & Engine
+# Runtime: Bun v1.4.4 + SteamCMD + Libretro
+
+FROM oven/bun:1.4.4-debian AS base
+
+# Install SteamCMD runtime prerequisites (i386 libc & libstdc++)
+RUN dpkg --add-architecture i386 && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
+        lib32gcc-s1 \
+        lib32stdc++6 \
+        locales \
+        tar \
+        zstd \
+        unzip && \
+    locale-gen en_US.UTF-8 && \
+    rm -rf /var/lib/apt/lists/*
+
+# Install SteamCMD in /usr/lib/games/steamcmd
+RUN mkdir -p /usr/lib/games/steamcmd && \
+    curl -fsSL "https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz" | \
+    tar -xzC /usr/lib/games/steamcmd && \
+    ln -s /usr/lib/games/steamcmd/steamcmd.sh /usr/local/bin/steamcmd
+
+WORKDIR /app
+
+# Copy root workspace manifests
+COPY package.json bun.lock tsconfig.json ./
+COPY packages/ packages/
+COPY scripts/ scripts/
+
+# Install workspace dependencies
+RUN bun install --frozen-lockfile
+
+# Volumes for game dumps and Steam depots
+RUN mkdir -p /srv/games/cache /srv/games/steam /srv/games/saves
+
+EXPOSE 3030
+
+ENV NODE_ENV=production
+ENV R2_GAMES_BUCKET=shenron-games
+ENV PORT=3030
+
+HEALTHCHECK --interval=15s --timeout=3s --retries=3 \
+    CMD curl -f http://localhost:3030/healthz || exit 1
+
+ENTRYPOINT ["bun", "scripts/ops/dragon-ball-games-manager.ts", "serve", "--port", "3030"]

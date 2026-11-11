@@ -286,7 +286,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
             name: ep.title,
             description: excerpt(ep.synopsis) || undefined,
             thumbnailUrl: ep.image ? assetUrl(ep.image) : undefined,
-            contentUrl: ep.video_url || ep.stream_url,
+            contentUrl: (ep.video_url || ep.stream_url) ?? undefined,
             uploadDate: ep.air_date ? new Date(ep.air_date * 1000).toISOString() : undefined,
             duration: ep.duration_sec
               ? `PT${Math.floor(ep.duration_sec / 60)}M${ep.duration_sec % 60}S`
@@ -332,6 +332,28 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
               poster={ep.image ? assetUrl(ep.image) : undefined}
             />
           )}
+          <div className="flex items-center justify-between mt-2.5 px-1">
+            <Link
+              href={`/wiki/episodes/${ep.id}/watch`}
+              className="inline-flex items-center gap-2 text-xs font-semibold px-3 py-1.5 rounded-lg bg-rose-600/15 text-rose-400 hover:bg-rose-600 hover:text-white border border-rose-500/30 transition-all shadow-sm group"
+              title="Ouvrir dans le lecteur TV haute fidélité"
+            >
+              <svg
+                className="w-4 h-4 text-rose-500 group-hover:text-white transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                />
+              </svg>
+              <span>Mode Cinéma / TV Watch</span>
+            </Link>
+          </div>
         </WatchStage>
         <WikiEditBar table="db_episodes" id={ep.id} indexHref="/wiki/episodes" label={ep.title} />
         <WatchColumns

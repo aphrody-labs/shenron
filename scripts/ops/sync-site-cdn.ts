@@ -1,20 +1,19 @@
 import { readdir } from "node:fs/promises";
 import { join, relative } from "node:path";
 import { createHash } from "node:crypto";
-import { AwsClient } from "/srv/shenron/config/cloudflare/sdk/node_modules/aws4fetch/dist/aws4fetch.esm.js";
 
 const creds = await Bun.file("/srv/shenron/config/cloudflare/shenron-s3.json").json();
 const manifest = await Bun.file("/srv/shenron/config/cloudflare/manifest.json").json();
 const token = (await Bun.file("/srv/shenron/config/cloudflare/api-token").text()).trim();
 
-const client = new AwsClient({
+const s3 = new Bun.S3Client({
   accessKeyId: creds.accessKeyId,
   secretAccessKey: creds.secretAccessKey,
   sessionToken: creds.sessionToken,
-  service: "s3",
+  bucket: creds.bucket,
+  endpoint: creds.endpoint,
   region: creds.region || "auto",
 });
-const endpoint = creds.endpoint.replace(/\/+$/, "");
 
 function getMimeType(filePath: string): string {
   const ext = filePath.split(".").pop()?.toLowerCase();
@@ -152,9 +151,8 @@ for (let i = 0; i < allObjects.length; i += CHECK_CONCURRENCY) {
   const batch = allObjects.slice(i, i + CHECK_CONCURRENCY);
   await Promise.all(
     batch.map(async (obj) => {
-      const url = `${endpoint}/${creds.bucket}/_objects/${obj.sha}`;
-      const res = await client.fetch(url, { method: "HEAD" });
-      if (!res.ok) {
+      const exists = await s3.exists(`_objects/${obj.sha}`);
+      if (!exists) {
         missingObjects.push(obj);
       }
     }),
@@ -170,20 +168,10 @@ for (let i = 0; i < missingObjects.length; i += UPLOAD_CONCURRENCY) {
   const batch = missingObjects.slice(i, i + UPLOAD_CONCURRENCY);
   await Promise.all(
     batch.map(async (obj) => {
-      const url = `${endpoint}/${creds.bucket}/_objects/${obj.sha}`;
       const body = await Bun.file(obj.file).arrayBuffer();
-      const res = await client.fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": obj.contentType,
-          "Cache-Control": obj.cacheControl,
-          "x-amz-meta-sha256": obj.sha,
-        },
-        body,
+      await s3.write(`_objects/${obj.sha}`, body, {
+        type: obj.contentType,
       });
-      if (!res.ok) {
-        throw new Error(`Upload failed for ${obj.sha}: ${res.status} ${await res.text()}`);
-      }
       uploadedCount++;
     }),
   );
@@ -233,19 +221,9 @@ for (let i = 0; i < 256; i += SHARD_CONCURRENCY) {
       const shardSha = createHash("sha256").update(shardContent).digest("hex");
       shardHashes[shardHex] = shardSha;
 
-      const url = `${endpoint}/${creds.bucket}/${prefix}${shardHex}.json`;
-      const res = await client.fetch(url, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "private, no-store",
-          "x-amz-meta-sha256": shardSha,
-        },
-        body: shardContent,
+      await s3.write(`${prefix}${shardHex}.json`, shardContent, {
+        type: "application/json",
       });
-      if (!res.ok) {
-        throw new Error(`Failed to upload shard ${shardHex}: ${res.status} ${await res.text()}`);
-      }
     }),
   );
 }

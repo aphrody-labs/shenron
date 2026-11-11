@@ -28,7 +28,7 @@ export function OPTIONS() {
 }
 
 export async function GET(req: Request) {
-  const url = new URL(req.url) ?? new URL(req.url);
+  const url = new URL(req.url);
   const kind = url.searchParams.get("kind") || undefined;
   const series = url.searchParams.get("series") || undefined;
   const slug = url.searchParams.get("slug") || undefined;

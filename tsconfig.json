@@ -29,6 +29,9 @@
       "path": "packages/auth/tsconfig.json"
     },
     {
+      "path": "packages/compression/tsconfig.json"
+    },
+    {
       "path": "packages/config/tsconfig.json"
     },
     {
@@ -42,6 +45,12 @@
     },
     {
       "path": "packages/engine/tsconfig.json"
+    },
+    {
+      "path": "packages/filmcraft/tsconfig.json"
+    },
+    {
+      "path": "packages/hyperframes/tsconfig.json"
     },
     {
       "path": "packages/images/tsconfig.json"
@@ -63,6 +72,9 @@
     },
     {
       "path": "packages/pipeline/tsconfig.scripts.json"
+    },
+    {
+      "path": "packages/remotion/tsconfig.json"
     },
     {
       "path": "packages/ui/tsconfig.json"

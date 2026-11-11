@@ -1,7 +1,6 @@
 "use server";
 
 import { and, eq, inArray, or } from "drizzle-orm";
-import { createId } from "@paralleldrive/cuid2";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db, schema } from "@/lib/db";
@@ -282,7 +281,7 @@ export async function importCardCatalogBatch(
       const frontImageUrl = row.frontImageUrl ?? before?.frontImageUrl ?? null;
       const dimensionsMatchExisting = before?.frontImageUrl === frontImageUrl;
       await db.transaction(async (tx) => {
-        const id = before?.id ?? createId();
+        const id = before?.id ?? crypto.randomUUID();
         const afterFields = {
           setId: row.setId,
           slug: before?.slug ?? `${slugify(`${row.cardNumber}-${row.name}`)}-${id.slice(0, 8)}`,

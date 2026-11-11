@@ -336,6 +336,7 @@ export interface Intrusion {
  * cerclées en sont exclues aussi — elles ne sont pas une intrusion d'écriture
  * mais un débordement de compteur, corrigé par `corrigerEnumerationHangul`.
  */
+// oxlint-disable-next-line eslint/no-misleading-character-class
 const ECRITURE_ETRANGERE = /[Ͱ-ϿЀ-ӿ֐-׿؀-ۿऀ-ॿ฀-๿ᄀ-ᇿ가-힣]+/g;
 
 /** Un texte japonais contient au moins un kana ou un kanji. */

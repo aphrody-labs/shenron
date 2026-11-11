@@ -1,0 +1,26 @@
+{
+  "name": "@aphrody/filmcraft",
+  "version": "1.4.7",
+  "private": false,
+  "description": "Aphrody's vendorized FilmCraft NLE video editing automation engine, CLI, and MCP tool suite.",
+  "homepage": "https://dragonballfr.com",
+  "license": "Apache-2.0",
+  "bin": {
+    "filmcraft-cli": "./src/cli.ts"
+  },
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./timeline": "./src/timeline.ts",
+    "./engine": "./src/engine.ts",
+    "./mcp": "./src/mcp.ts"
+  },
+  "scripts": {
+    "typecheck": "bun check --project tsconfig.json",
+    "test": "bun test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  }
+}

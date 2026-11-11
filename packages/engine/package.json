@@ -23,7 +23,8 @@
     "./glb-scene": "./src/glb-scene.ts",
     "./xv2-character": "./src/xv2-character.ts",
     "./sprite-atlas": "./src/sprite-atlas.ts",
-    "./combat-atlas": "./src/combat-atlas.ts"
+    "./combat-atlas": "./src/combat-atlas.ts",
+    "./games": "./src/games/index.ts"
   },
   "publishConfig": {
     "access": "public",
@@ -35,7 +36,9 @@
     "typecheck": "bun check --project tsconfig.json",
     "build:wasm": "bun scripts/build-wasm.ts"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@aphrody/compression": "workspace:*"
+  },
   "devDependencies": {
     "@types/bun": "catalog:"
   },

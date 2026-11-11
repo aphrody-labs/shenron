@@ -37,6 +37,8 @@ export const PUBLIC_ROUTE_RENAMES: readonly RouteRename[] = [
   { from: "/wiki/objets", to: "/wiki/items" },
   { from: "/wiki/evenements", to: "/wiki/events" },
   { from: "/wiki/musiques", to: "/wiki/music" },
+  { from: "/wiki/musics", to: "/wiki/music" },
+  { from: "/wiki/games/dragon-ball-xenoverse-2", to: "/wiki/games/xenoverse-2" },
   { from: "/wiki/puissances", to: "/wiki/power-levels" },
   { from: "/wiki/chronologie", to: "/wiki/timeline" },
   { from: "/wiki/jeux", to: "/wiki/games" },

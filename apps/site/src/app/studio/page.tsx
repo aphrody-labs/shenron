@@ -109,5 +109,5 @@ export default async function StudioPage({
   searchParams: Promise<{ chapter?: string; databook?: string; page?: string }>;
 }) {
   const source = studioSource(await searchParams);
-  return <StudioEditor fallback={<StudioPresentation source={source} />} />;
+  return <StudioEditor source={source} fallback={<StudioPresentation source={source} />} />;
 }

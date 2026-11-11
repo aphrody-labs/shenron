@@ -32,10 +32,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string; n: 
 
   const planche = await plancheApi(id, n);
   if (!planche) {
-    return Response.json(
-      { error: "Planche introuvable." },
-      { status: 404, headers: CORS_MANGA },
-    );
+    return Response.json({ error: "Planche introuvable." }, { status: 404, headers: CORS_MANGA });
   }
 
   const cache = { ...CORS_MANGA, "Cache-Control": "public, max-age=600, s-maxage=86400" };
@@ -45,7 +42,11 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string; n: 
   // le CDN) à son adresse d'origine ; la relayer doublerait la bande passante
   // pour un octet identique.
   if (format === "image") {
-    return Response.redirect(planche.image, { status: 302, headers: cache });
+    const redirectResponse = Response.redirect(planche.image, 302);
+    for (const [headerKey, headerVal] of Object.entries(cache)) {
+      redirectResponse.headers.set(headerKey, headerVal);
+    }
+    return redirectResponse;
   }
 
   if (format === "text") {

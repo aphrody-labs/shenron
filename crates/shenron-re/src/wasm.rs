@@ -6,11 +6,12 @@
 
 use crate::catalog::get_dragon_ball_catalog;
 use crate::formats::{
-    bac::BacFile, bdm::BdmFile, cms::CmsFile, cus::CusFile, emb_archive::EmbArchive, msg::MsgFile,
-    pup::PupFile,
+    bac::BacFile, bdm::BdmFile, cms::CmsFile, cus::CusFile, ema::EmaFile, emb_archive::EmbArchive,
+    emo::EmoFile, msg::MsgFile, pup::PupFile,
 };
 use crate::fs::cpk::{CpkArchive, CpkEntry};
 use crate::fs::crilayla::{decompress_crilayla, decompress_crilayla_raw};
+use crate::fs::eac::{decrypt_eac_payload, scan_eac_sites};
 use crate::live::aob::AobPattern;
 use crate::text::extract_msg_text;
 use crate::world::xenoverse3::xenoverse3_prototype_map;
@@ -120,6 +121,33 @@ pub fn wasm_parse_msg(msg_bytes: &[u8]) -> Result<JsValue, JsValue> {
 pub fn wasm_parse_emb(emb_bytes: &[u8]) -> Result<JsValue, JsValue> {
     let emb = EmbArchive::parse(emb_bytes).map_err(to_js_err)?;
     serde_wasm_bindgen::to_value(&emb).map_err(to_js_err)
+}
+
+/// Parse a DBXV2 EMO (Effect Model Object) binary file and return its parts, EMG meshes, and node tree.
+#[wasm_bindgen]
+pub fn wasm_parse_emo(emo_bytes: &[u8]) -> Result<JsValue, JsValue> {
+    let emo = EmoFile::parse(emo_bytes).map_err(to_js_err)?;
+    serde_wasm_bindgen::to_value(&emo).map_err(to_js_err)
+}
+
+/// Parse a DBXV2 EMA (Effect Motion Animation) binary file and return its animations and node skeleton.
+#[wasm_bindgen]
+pub fn wasm_parse_ema(ema_bytes: &[u8]) -> Result<JsValue, JsValue> {
+    let ema = EmaFile::parse(ema_bytes).map_err(to_js_err)?;
+    serde_wasm_bindgen::to_value(&ema).map_err(to_js_err)
+}
+
+/// Scan an executable or binary buffer for Easy Anti-Cheat (EAC) check-site signatures without mutation.
+#[wasm_bindgen]
+pub fn wasm_scan_eac(data: &[u8]) -> Result<JsValue, JsValue> {
+    let report = scan_eac_sites(data).map_err(to_js_err)?;
+    serde_wasm_bindgen::to_value(&report).map_err(to_js_err)
+}
+
+/// Decrypt an Easy Anti-Cheat (EAC) module payload buffer using the pure-Rust chain cipher.
+#[wasm_bindgen]
+pub fn wasm_decrypt_eac_payload(encrypted: &[u8]) -> Vec<u8> {
+    decrypt_eac_payload(encrypted)
 }
 
 /// Extract printable UTF-16LE text runs from one MSG buffer without parsing its table layout.

@@ -3,6 +3,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { type SubtitleTrack, VideoPlayer } from "@/components/episodes/VideoPlayer";
+import { HyperFramesPlayer } from "@/components/episodes/HyperFramesPlayer";
 import { track } from "@/lib/telemetry";
 import { probePlayerNetwork } from "@/lib/player-network";
 import { isShenronEpisodeVideoURL } from "@/lib/episode-video-source";
@@ -164,6 +165,7 @@ export function VideoLecteurs({
   const [failedVoSource, setFailedVoSource] = useState<string | null>(null);
   const networkFailure = useRef<string | null>(null);
   const [probeAttempt, setProbeAttempt] = useState(0);
+  const [useHyperFrames, setUseHyperFrames] = useState(false);
 
   // Remembered version: applied once after hydration (the server render keeps the default so
   // cached HTML never diverges), and only when this item really offers it.
@@ -356,11 +358,47 @@ export function VideoLecteurs({
         </div>
       )}
 
+      {/* Moteur de lecture: Lecteur Standard vs HyperFrames Remotion */}
+      {(enVo || nativeSource) && (
+        <div className="flex items-center gap-2 pt-1 text-xs font-medium">
+          <button
+            type="button"
+            onClick={() => setUseHyperFrames(false)}
+            className={`px-3 py-1 rounded-full border transition-all ${
+              !useHyperFrames
+                ? "bg-amber-600/20 border-amber-500 text-amber-300"
+                : "bg-slate-800/60 border-slate-700 text-slate-400"
+            }`}
+          >
+            Lecteur Standard
+          </button>
+          <button
+            type="button"
+            onClick={() => setUseHyperFrames(true)}
+            className={`px-3 py-1 rounded-full border transition-all ${
+              useHyperFrames
+                ? "bg-amber-600/20 border-amber-500 text-amber-300"
+                : "bg-slate-800/60 border-slate-700 text-slate-400"
+            }`}
+          >
+            HyperFrames Remotion
+          </button>
+        </div>
+      )}
+
       {enVo && vo ? (
         voEchec ? (
           <div className="shenron-video flex aspect-video w-full items-center justify-center p-6 text-center text-sm">
             {t("voUnavailable")}
           </div>
+        ) : useHyperFrames ? (
+          <HyperFramesPlayer
+            key={`hf-${vo.src}`}
+            src={vo.src}
+            title={vo.title}
+            poster={vo.poster}
+            subtitles={vo.subtitles}
+          />
         ) : (
           <VideoPlayer
             key={vo.src}
@@ -372,19 +410,29 @@ export function VideoLecteurs({
           />
         )
       ) : nativeSource && status !== "failed" ? (
-        <VideoPlayer
-          episodeId={entityType === "episode" ? entityId : undefined}
-          key={nativeSource}
-          src={nativeSource}
-          title={title ?? cleanName(current.name)}
-          subtitles={subtitles}
-          poster={poster}
-          onError={() => {
-            const next = nextPlayerIndex(safeActive, list.length);
-            if (next !== null) setActive(next);
-            else setStatus("failed");
-          }}
-        />
+        useHyperFrames ? (
+          <HyperFramesPlayer
+            key={`hf-${nativeSource}`}
+            src={nativeSource}
+            title={title ?? cleanName(current.name)}
+            subtitles={subtitles}
+            poster={poster}
+          />
+        ) : (
+          <VideoPlayer
+            episodeId={entityType === "episode" ? entityId : undefined}
+            key={nativeSource}
+            src={nativeSource}
+            title={title ?? cleanName(current.name)}
+            subtitles={subtitles}
+            poster={poster}
+            onError={() => {
+              const next = nextPlayerIndex(safeActive, list.length);
+              if (next !== null) setActive(next);
+              else setStatus("failed");
+            }}
+          />
+        )
       ) : officialURL ? (
         <div className="shenron-video flex aspect-video w-full flex-col items-center justify-center gap-4 p-6 text-center">
           <p className="text-sm">{ui("officialProviderNote")}</p>

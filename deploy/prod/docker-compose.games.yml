@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: Apache-2.0
+# Autonomous Production Stack: Dragon Ball Ultimate Games Engine & Edge Cache
+# Integrates SteamDB / SteamCMD, RetroArch Libretro cores, and Cloudflare R2
+
+services:
+  shenron-games-api:
+    build:
+      context: ../..
+      dockerfile: deploy/docker/Dockerfile.games-engine
+    image: localhost/shenron-games-api:latest
+    container_name: shenron-games-api
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3030
+      - R2_ENDPOINT=${R2_ENDPOINT:-https://cf-r2.shenron.internal}
+      - R2_GAMES_BUCKET=${R2_GAMES_BUCKET:-shenron-games}
+      - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
+      - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
+      - NEXT_PUBLIC_CDN_URL=https://cdn.dragonballfr.com
+    volumes:
+      - games-cache:/srv/games/cache
+      - games-steam:/srv/games/steam
+      - games-saves:/srv/games/saves
+    networks:
+      - shenron-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3030/healthz"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+
+  shenron-games-edge:
+    image: nginx:alpine-slim
+    container_name: shenron-games-edge
+    restart: unless-stopped
+    ports:
+      - "8085:80"
+    volumes:
+      - ../docker/nginx-games.conf:/etc/nginx/conf.d/default.conf:ro
+      - games-edge-cache:/var/cache/nginx/games
+    depends_on:
+      shenron-games-api:
+        condition: service_healthy
+    networks:
+      - shenron-net
+    security_opt:
+      - no-new-privileges:true
+
+networks:
+  shenron-net:
+    external: true
+
+volumes:
+  games-cache:
+  games-steam:
+  games-saves:
+  games-edge-cache:

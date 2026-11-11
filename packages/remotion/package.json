@@ -1,0 +1,24 @@
+{
+  "name": "@aphrody/remotion",
+  "version": "1.4.7",
+  "private": false,
+  "description": "Aphrody's vendorized, zero-overhead Remotion composition and timeline engine, optimized for Bun and streaming video.",
+  "homepage": "https://dragonballfr.com",
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./timeline": "./src/timeline.ts",
+    "./waveform": "./src/waveform.ts",
+    "./subtitles": "./src/subtitles.ts"
+  },
+  "scripts": {
+    "typecheck": "bun check --project tsconfig.json",
+    "test": "bun test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "catalog:",
+    "@types/react": "catalog:"
+  }
+}

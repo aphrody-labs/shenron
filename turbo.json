@@ -1,30 +1,56 @@
 {
-   : https://turbo.build/schema.json,
-  ui: stream,
-  globalDependencies: [bunfig.toml, tsconfig.json],
-  tasks: {
-    build: {
-      dependsOn: [^build],
-      outputs: [dist/**, build/**],
-      cache: true
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "stream",
+  "globalDependencies": [
+    "bunfig.toml",
+    "tsconfig.json",
+    ".oxlintrc.json",
+    ".oxfmtrc.json"
+  ],
+  "globalEnv": [
+    "NODE_ENV",
+    "VERCEL",
+    "SHENRON_*",
+    "NEXT_PUBLIC_*",
+    "DATABASE_URL"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "dist/**",
+        "build/**",
+        "pkg/**"
+      ],
+      "cache": true
     },
-    check: {
-      dependsOn: [^build],
-      cache: true
+    "build:standalone": {
+      "dependsOn": ["^build"],
+      "outputs": [
+        ".next-build/**",
+        "dist/**"
+      ],
+      "cache": true
     },
-    typecheck: {
-      dependsOn: [^build],
-      cache: true
+    "check": {
+      "dependsOn": ["^build"],
+      "cache": true
     },
-    lint: {
-      cache: true
+    "typecheck": {
+      "dependsOn": ["^build"],
+      "cache": true
     },
-    test: {
-      cache: true
+    "lint": {
+      "cache": true
     },
-    dev: {
-      cache: false,
-      persistent: true
+    "test": {
+      "cache": true
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
     }
   }
 }

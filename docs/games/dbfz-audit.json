@@ -1,0 +1,159 @@
+{
+  "scannedAt": "2026-11-11T09:47:58.386Z",
+  "gameRoot": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ",
+  "binaries": [
+    {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\DBFighterZ.exe",
+      "name": "DBFighterZ.exe",
+      "sizeBytes": 1518192,
+      "format": "PE (64-bit: false)",
+      "is64Bit": false,
+      "entryPoint": "0x1903D",
+      "sectionsCount": 5,
+      "exportsCount": 0,
+      "importsCount": 189,
+      "topImports": [
+        "\u001b[1m\u001b[36m--- Depot RE Engine: C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\DBFighterZ.exe ---\u001b[0m\u001b[0m",
+        "  Sections: 5 found",
+        "  Exports: 0 | Imports: 189",
+        "  REA Markers: dwarf=false rea_sig=false",
+        "  Total symbols: 0"
+      ]
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\RED\\Binaries\\Win64\\RED-Win64-Shipping.exe",
+      "name": "RED-Win64-Shipping.exe",
+      "sizeBytes": 184261120,
+      "format": "PE (Protected/Overlay) (64-bit: true)",
+      "is64Bit": true,
+      "entryPoint": "0xB762000",
+      "sectionsCount": 12,
+      "exportsCount": 0,
+      "importsCount": 0,
+      "topImports": [
+        "\u001b[1m\u001b[36m--- Depot RE Engine: C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\RED\\Binaries\\Win64\\RED-Win64-Shipping.exe ---\u001b[0m\u001b[0m",
+        "  Sections: 12 found",
+        "  Exports: 0 | Imports: 0",
+        "  REA Markers: dwarf=false rea_sig=false",
+        "  Total symbols: 0"
+      ]
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\Engine\\Binaries\\ThirdParty\\Steamworks\\Steamv141\\Win64\\steam_api64.dll",
+      "name": "steam_api64.dll",
+      "sizeBytes": 249120,
+      "format": "PE (64-bit: true)",
+      "is64Bit": true,
+      "entryPoint": "0xB5A8",
+      "sectionsCount": 6,
+      "exportsCount": 842,
+      "importsCount": 83,
+      "topImports": [
+        "\u001b[1m\u001b[36m--- Depot RE Engine: C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\Engine\\Binaries\\ThirdParty\\Steamworks\\Steamv141\\Win64\\steam_api64.dll ---\u001b[0m\u001b[0m",
+        "  Sections: 6 found",
+        "  Exports: 842 | Imports: 83",
+        "  REA Markers: dwarf=false rea_sig=false",
+        "  Total symbols: 842"
+      ]
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\Engine\\Binaries\\ThirdParty\\PhysX\\Win64\\VS2015\\PhysX3_x64.dll",
+      "name": "PhysX3_x64.dll",
+      "sizeBytes": 2069504,
+      "format": "PE (64-bit: true)",
+      "is64Bit": true,
+      "entryPoint": "0x137108",
+      "sectionsCount": 7,
+      "exportsCount": 152,
+      "importsCount": 256,
+      "topImports": [
+        "\u001b[1m\u001b[36m--- Depot RE Engine: C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\Engine\\Binaries\\ThirdParty\\PhysX\\Win64\\VS2015\\PhysX3_x64.dll ---\u001b[0m\u001b[0m",
+        "  Sections: 7 found",
+        "  Exports: 152 | Imports: 256",
+        "  REA Markers: dwarf=false rea_sig=false",
+        "  Total symbols: 152"
+      ]
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.dll",
+      "name": "GFSDK_Aftermath_Lib.dll",
+      "sizeBytes": 31744,
+      "format": "PE (64-bit: true)",
+      "is64Bit": true,
+      "entryPoint": "0x4B30",
+      "sectionsCount": 7,
+      "exportsCount": 6,
+      "importsCount": 48,
+      "topImports": [
+        "\u001b[1m\u001b[36m--- Depot RE Engine: C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\Engine\\Binaries\\ThirdParty\\NVIDIA\\NVaftermath\\Win64\\GFSDK_Aftermath_Lib.dll ---\u001b[0m\u001b[0m",
+        "  Sections: 7 found",
+        "  Exports: 6 | Imports: 48",
+        "  REA Markers: dwarf=false rea_sig=false",
+        "  Total symbols: 6"
+      ]
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\EasyAntiCheat\\EasyAntiCheat_x64.dll",
+      "name": "EasyAntiCheat_x64.dll",
+      "sizeBytes": 796784,
+      "format": "PE (64-bit: true)",
+      "is64Bit": true,
+      "entryPoint": "0x5C0D0",
+      "sectionsCount": 6,
+      "exportsCount": 52,
+      "importsCount": 188,
+      "topImports": [
+        "\u001b[1m\u001b[36m--- Depot RE Engine: C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\EasyAntiCheat\\EasyAntiCheat_x64.dll ---\u001b[0m\u001b[0m",
+        "  Sections: 6 found",
+        "  Exports: 52 | Imports: 188",
+        "  REA Markers: dwarf=false rea_sig=false",
+        "  Total symbols: 52"
+      ]
+    }
+  ],
+  "astConfigs": [
+    {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\EasyAntiCheat\\Launcher\\Settings.json",
+      "language": "json",
+      "lines": 11,
+      "symbols": 9,
+      "parseErrors": 0
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\installscript.vdf",
+      "language": "text",
+      "lines": 0,
+      "symbols": 0,
+      "parseErrors": 0
+    },
+    {
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\RED\\Binaries\\Win64\\steam_appid.txt",
+      "language": "text",
+      "lines": 0,
+      "symbols": 0,
+      "parseErrors": 0
+    }
+  ],
+  "paks": [
+    {
+      "name": "pakchunk0-WindowsNoEditor.pak",
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\RED\\Content\\Paks\\pakchunk0-WindowsNoEditor.pak",
+      "sizeBytes": 5414923132,
+      "magic": "0x5A6F12E1",
+      "version": 4,
+      "indexOffset": "5371632735",
+      "indexSize": "43290352",
+      "isEncrypted": true
+    },
+    {
+      "name": "pakchunk1-WindowsNoEditor.pak",
+      "path": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\RED\\Content\\Paks\\pakchunk1-WindowsNoEditor.pak",
+      "sizeBytes": 881949120,
+      "magic": "0x5A6F12E1",
+      "version": 4,
+      "indexOffset": "871446435",
+      "indexSize": "10502640",
+      "isEncrypted": true
+    }
+  ]
+}

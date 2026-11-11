@@ -1,0 +1,249 @@
+{
+  "$schema": "https://shenron.dragonballfr.com/schemas/sprite-manifest-v1.json",
+  "version": "1.0.0",
+  "asset_base_url": "/sprites/catalog",
+  "meta": {
+    "engine": "dragon-pixel",
+    "target_fps": 60,
+    "pixel_ratio": 1.0,
+    "texture_format": "image/webp"
+  },
+  "roster": {
+    "goku": {
+      "id": "goku",
+      "name": "Son Goku",
+      "name_ja": "孫悟空",
+      "style": "balanced",
+      "base_hp": 100.0,
+      "base_ki": 100.0,
+      "base_power_level": 8200,
+      "emblem": "/sprites/emblems/kame.svg",
+      "forms": [
+        {
+          "level": 0,
+          "id": "base",
+          "name": "Base",
+          "name_ja": "通常形態",
+          "power_multiplier": 1.0,
+          "power_level": 8200,
+          "aura_type": "white",
+          "aura_color": [1.0, 1.0, 1.0, 0.45],
+          "atlas": "characters/goku/goku_base_atlas.json",
+          "texture": "characters/goku/goku_base_atlas.webp",
+          "texture_sha256": "4a7d6e8b4c2a5e9f1d0b3c8e7a6d5f4c3b2a1e0d9f8e7c6b5a4d3e2f1c0b9a8e"
+        },
+        {
+          "level": 1,
+          "id": "ssj",
+          "name": "Super Saiyan",
+          "name_ja": "超サイヤ人",
+          "power_multiplier": 50.0,
+          "power_level": 150000000,
+          "aura_type": "super_saiyan",
+          "aura_color": [1.0, 0.85, 0.2, 0.85],
+          "atlas": "characters/goku/goku_ssj_atlas.json",
+          "texture": "characters/goku/goku_ssj_atlas.webp",
+          "texture_sha256": "8f3e2b1c4a0d9e8f7a6c5b4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f"
+        }
+      ],
+      "actions": {
+        "idle": {
+          "kind": "idle",
+          "frame_start": 0,
+          "frame_count": 8,
+          "loop": true,
+          "fps": 12,
+          "pivot": [64, 118],
+          "hurtbox": [-24, -110, 48, 110]
+        },
+        "walk_forward": {
+          "kind": "walk",
+          "frame_start": 8,
+          "frame_count": 6,
+          "loop": true,
+          "fps": 14,
+          "pivot": [64, 118],
+          "hurtbox": [-26, -110, 52, 110]
+        },
+        "light_jab": {
+          "kind": "light_jab",
+          "frame_start": 14,
+          "frame_count": 14,
+          "loop": false,
+          "fps": 60,
+          "startup_frames": 4,
+          "active_frames": 3,
+          "recovery_frames": 7,
+          "pivot": [64, 118],
+          "hurtbox": [-24, -110, 48, 110],
+          "hitbox": [22, -88, 38, 26],
+          "damage": 5.0,
+          "ki_gain": 8.0,
+          "hitstun_frames": 14,
+          "blockstun_frames": 10,
+          "hitspark": "hitspark_light",
+          "sfx": "sfx_punch_light"
+        },
+        "beam_special": {
+          "kind": "beam_special",
+          "frame_start": 28,
+          "frame_count": 48,
+          "loop": false,
+          "fps": 60,
+          "startup_frames": 18,
+          "active_frames": 22,
+          "recovery_frames": 8,
+          "pivot": [64, 118],
+          "ki_cost": 25.0,
+          "damage": 28.0,
+          "is_beam": true,
+          "beam_id": "kamehameha",
+          "sfx": "sfx_kamehameha_fire"
+        }
+      }
+    },
+    "vegeta": {
+      "id": "vegeta",
+      "name": "Vegeta",
+      "name_ja": "ベジータ",
+      "style": "power",
+      "base_hp": 100.0,
+      "base_ki": 100.0,
+      "base_power_level": 18000,
+      "emblem": "/sprites/emblems/saiyan_royal.svg",
+      "forms": [
+        {
+          "level": 0,
+          "id": "base",
+          "name": "Base",
+          "name_ja": "通常形態",
+          "power_multiplier": 1.0,
+          "power_level": 18000,
+          "aura_type": "white",
+          "aura_color": [1.0, 1.0, 1.0, 0.45],
+          "atlas": "characters/vegeta/vegeta_base_atlas.json",
+          "texture": "characters/vegeta/vegeta_base_atlas.webp",
+          "texture_sha256": "5c6b7a8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b"
+        }
+      ],
+      "actions": {
+        "idle": {
+          "kind": "idle",
+          "frame_start": 0,
+          "frame_count": 8,
+          "loop": true,
+          "fps": 12,
+          "pivot": [64, 114],
+          "hurtbox": [-22, -106, 44, 106]
+        },
+        "beam_special": {
+          "kind": "beam_special",
+          "frame_start": 24,
+          "frame_count": 46,
+          "loop": false,
+          "fps": 60,
+          "startup_frames": 19,
+          "active_frames": 20,
+          "recovery_frames": 7,
+          "pivot": [64, 114],
+          "ki_cost": 25.0,
+          "damage": 30.0,
+          "is_beam": true,
+          "beam_id": "galick_gun",
+          "sfx": "sfx_galick_gun_fire"
+        }
+      }
+    }
+  },
+  "vfx": {
+    "hitsparks": {
+      "hitspark_light": {
+        "atlas": "vfx/hitsparks/hitsparks_atlas.json",
+        "texture": "vfx/hitsparks/hitsparks_atlas.webp",
+        "frame_start": 0,
+        "frame_count": 6,
+        "fps": 60,
+        "scale": 1.0,
+        "blend_mode": "additive"
+      },
+      "hitspark_medium": {
+        "atlas": "vfx/hitsparks/hitsparks_atlas.json",
+        "texture": "vfx/hitsparks/hitsparks_atlas.webp",
+        "frame_start": 6,
+        "frame_count": 10,
+        "fps": 60,
+        "scale": 1.2,
+        "blend_mode": "additive"
+      },
+      "hitspark_heavy": {
+        "atlas": "vfx/hitsparks/hitsparks_atlas.json",
+        "texture": "vfx/hitsparks/hitsparks_atlas.webp",
+        "frame_start": 16,
+        "frame_count": 16,
+        "fps": 60,
+        "scale": 1.6,
+        "blend_mode": "additive"
+      }
+    },
+    "beams": {
+      "kamehameha": {
+        "color": [0.2, 0.7, 1.0, 1.0],
+        "glow_radius": 24.0,
+        "charge_atlas": "vfx/beams/kamehameha_charge_atlas.json",
+        "beam_texture": "vfx/beams/kamehameha_beam_repeat.webp",
+        "impact_atlas": "vfx/beams/kamehameha_impact_atlas.json"
+      },
+      "galick_gun": {
+        "color": [0.85, 0.2, 0.95, 1.0],
+        "glow_radius": 24.0,
+        "charge_atlas": "vfx/beams/galick_charge_atlas.json",
+        "beam_texture": "vfx/beams/galick_beam_repeat.webp",
+        "impact_atlas": "vfx/beams/galick_impact_atlas.json"
+      }
+    },
+    "auras": {
+      "super_saiyan": {
+        "atlas": "vfx/auras/ssj_aura_atlas.json",
+        "texture": "vfx/auras/ssj_aura_atlas.webp",
+        "frame_count": 16,
+        "fps": 30,
+        "loop": true,
+        "blend_mode": "screen"
+      },
+      "kaioken": {
+        "atlas": "vfx/auras/kaioken_aura_atlas.json",
+        "texture": "vfx/auras/kaioken_aura_atlas.webp",
+        "frame_count": 12,
+        "fps": 30,
+        "loop": true,
+        "blend_mode": "screen"
+      }
+    }
+  },
+  "ui": {
+    "hud": {
+      "hp_bar_frame": "/sprites/ui/hud/hp_bar_frame.svg",
+      "ki_bar_frame": "/sprites/ui/hud/ki_bar_frame.svg",
+      "dragon_radar": "/sprites/ui/hud/dragon_radar.svg",
+      "dragon_balls_atlas": "/sprites/ui/hud/dragon_balls_atlas.webp",
+      "combo_font_atlas": "/sprites/ui/hud/combo_font_atlas.webp"
+    },
+    "chibi_avatars": {
+      "atlas": "ui/avatars/dbfz_chibi_avatars_atlas.json",
+      "texture": "ui/avatars/dbfz_chibi_avatars_atlas.webp",
+      "tile_size": [64, 64],
+      "characters": [
+        "goku", "vegeta", "gohan", "piccolo", "trunks", "frieza", "cell", "buu", "beerus", "whis"
+      ]
+    },
+    "stamps": {
+      "directory": "/sprites/ui/stamps",
+      "items": [
+        { "id": "goku_thumbs_up", "file": "stamp_goku_thumbs_up.webp", "character": "goku" },
+        { "id": "vegeta_angry", "file": "stamp_vegeta_angry.webp", "character": "vegeta" },
+        { "id": "yamcha_defeated", "file": "stamp_yamcha_defeated.webp", "character": "yamcha" },
+        { "id": "frieza_smirk", "file": "stamp_frieza_smirk.webp", "character": "frieza" }
+      ]
+    }
+  }
+}

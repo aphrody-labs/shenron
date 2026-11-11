@@ -83,8 +83,8 @@ export default function ActivitePage() {
               Activité du site
             </h1>
             <p className="mt-2 text-white/60 text-sm leading-relaxed max-w-xl">
-              Audience web (télémétrie first-party, anonymisée &amp; RGPD). Distinct des stats du bot.
-              Compteur public non-sensible sur{" "}
+              Audience web (télémétrie first-party, anonymisée &amp; RGPD). Distinct des stats du
+              bot. Compteur public non-sensible sur{" "}
               <Link href="/stats" className="text-dbz-orange hover:underline">
                 /stats
               </Link>

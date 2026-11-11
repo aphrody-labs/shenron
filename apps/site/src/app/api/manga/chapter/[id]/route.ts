@@ -19,17 +19,11 @@ export function OPTIONS() {
 export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }) {
   const id = Number((await ctx.params).id);
   if (!Number.isSafeInteger(id) || id <= 0) {
-    return Response.json(
-      { error: "Identifiant invalide." },
-      { status: 400, headers: CORS_MANGA },
-    );
+    return Response.json({ error: "Identifiant invalide." }, { status: 400, headers: CORS_MANGA });
   }
   const chapitre = await chapitreApi(id);
   if (!chapitre) {
-    return Response.json(
-      { error: "Chapitre introuvable." },
-      { status: 404, headers: CORS_MANGA },
-    );
+    return Response.json({ error: "Chapitre introuvable." }, { status: 404, headers: CORS_MANGA });
   }
 
   const cache = { ...CORS_MANGA, "Cache-Control": "public, max-age=300, s-maxage=3600" };

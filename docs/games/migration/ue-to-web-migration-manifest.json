@@ -1,0 +1,607 @@
+{
+  "schemaVersion": 1,
+  "migratedAt": "2026-11-11T10:10:38.853Z",
+  "engineSource": "Unreal Engine 4.17.2 (ArcSys RED Engine)",
+  "webTarget": "WebGPU 30 + Bevy ECS + Taffy + Google Design System",
+  "vfsMountRoot": "../../../RED/Content/",
+  "totalAssets": 63,
+  "totalBytes": 6951922626,
+  "shaderPipeline": {
+    "language": "WGSL",
+    "normalSteering": true,
+    "invertedHullOutlines": true,
+    "ilmTextureChannels": {
+      "r": "specular_intensity",
+      "g": "ambient_occlusion_and_ramp_bias",
+      "b": "detail_ink_line_mask",
+      "a": "glossiness_and_outline_tint"
+    }
+  },
+  "netcode": {
+    "protocol": "WebRTC DataChannel (Unreliable / Ordered) + WebSocket Signaling",
+    "rollbackEngine": "GGPO WASM Core (7 Frames Prediction Buffer)",
+    "steamworksBridge": "ISteamUser + ISteamNetworking -> WebRTC RTCPeerConnection"
+  },
+  "chromiumFeatures": [
+    "navigator.gpu (WebGPU 30)",
+    "WebGPU Subgroups (subgroups)",
+    "WebCodecs VideoDecoder (mv_opening.mp4)",
+    "WebAssembly SIMD & Threads (SharedArrayBuffer)",
+    "Gamepad API + Haptics (GamepadHapticActuator)",
+    "Pointer Lock & Keyboard Lock APIs"
+  ],
+  "triadNodes": {
+    "vps": "10.200.77.1 (12-Core Build & RE Hub)",
+    "cdn": "10.200.77.3 (Nginx 8MB Slice VFS Gateway)",
+    "prod": "10.200.77.5 (Next.js 16 Standalone)"
+  },
+  "assets": [
+    {
+      "relativePath": "DBFighterZ.exe",
+      "sizeBytes": 1518192,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Certificates/game.bin",
+      "sizeBytes": 81754,
+      "magikaType": "application/octet-stream",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Certificates/game.cer",
+      "sizeBytes": 1365,
+      "magikaType": "application/octet-stream",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/EasyAntiCheat_Setup.exe",
+      "sizeBytes": 803440,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/EasyAntiCheat_x64.dll",
+      "sizeBytes": 796784,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/EasyAntiCheat_x86.dll",
+      "sizeBytes": 680560,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Launcher/Settings.json",
+      "sizeBytes": 381,
+      "magikaType": "application/octet-stream",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Launcher/SplashScreen.png",
+      "sizeBytes": 564454,
+      "magikaType": "image/png",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Licenses/Apache-2.0.txt",
+      "sizeBytes": 11560,
+      "magikaType": "application/octet-stream",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Licenses/CCO-1.0.txt",
+      "sizeBytes": 997,
+      "magikaType": "application/octet-stream",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Licenses/LGPL-2.1.txt",
+      "sizeBytes": 27032,
+      "magikaType": "application/octet-stream",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Licenses/Licenses.txt",
+      "sizeBytes": 16174,
+      "magikaType": "application/octet-stream",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Licenses/MIT.txt",
+      "sizeBytes": 1093,
+      "magikaType": "application/octet-stream",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/ar_sa.cfg",
+      "sizeBytes": 7481,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/cs_cz.cfg",
+      "sizeBytes": 6747,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/de_de.cfg",
+      "sizeBytes": 6593,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/en_us.cfg",
+      "sizeBytes": 6093,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/es_ar.cfg",
+      "sizeBytes": 6685,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/es_es.cfg",
+      "sizeBytes": 6735,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/fr_fr.cfg",
+      "sizeBytes": 6761,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/it_it.cfg",
+      "sizeBytes": 6343,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/ja_ja.cfg",
+      "sizeBytes": 7799,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/ko_kr.cfg",
+      "sizeBytes": 6985,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/nl_nl.cfg",
+      "sizeBytes": 6342,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/pl_pl.cfg",
+      "sizeBytes": 6778,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/pt_br.cfg",
+      "sizeBytes": 6592,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/ru_ru.cfg",
+      "sizeBytes": 8826,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/th_th.cfg",
+      "sizeBytes": 11003,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/tr_tr.cfg",
+      "sizeBytes": 6236,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/zh_cn.cfg",
+      "sizeBytes": 5699,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "EasyAntiCheat/Localization/zh_tw.cfg",
+      "sizeBytes": 5682,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/NVIDIA/NVaftermath/Win64/GFSDK_Aftermath_Lib.dll",
+      "sizeBytes": 31744,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/Ogg/Win64/VS2015/libogg_64.dll",
+      "sizeBytes": 49152,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/ApexFramework_x64.dll",
+      "sizeBytes": 1044480,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/APEX_Clothing_x64.dll",
+      "sizeBytes": 1220096,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/APEX_Destructible_x64.dll",
+      "sizeBytes": 2010624,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/APEX_Legacy_x64.dll",
+      "sizeBytes": 3329536,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/NvCloth_x64.dll",
+      "sizeBytes": 266240,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PhysX3Common_x64.dll",
+      "sizeBytes": 1596416,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PhysX3Cooking_x64.dll",
+      "sizeBytes": 245760,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PhysX3_x64.dll",
+      "sizeBytes": 2069504,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PxFoundation_x64.dll",
+      "sizeBytes": 54784,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/PhysX/Win64/VS2015/PxPvdSDK_x64.dll",
+      "sizeBytes": 189440,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/Steamworks/Steamv141/Win64/steam_api64.dll",
+      "sizeBytes": 249120,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbisfile_64.dll",
+      "sizeBytes": 37888,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/Vorbis/Win64/VS2015/libvorbis_64.dll",
+      "sizeBytes": 1714176,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/WeGame/RailAPI1.9.11.0.3326/Win64/rail_api64.dll",
+      "sizeBytes": 1270448,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/WeGame/RailAPI1.9.11.0.3326/Win64/rail_sdk64.dll",
+      "sizeBytes": 17052848,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Binaries/ThirdParty/Windows/DirectX/x64/WinPixEventRuntime.dll",
+      "sizeBytes": 44752,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Config/controller.vdf",
+      "sizeBytes": 1528,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "Engine/Extras/Redist/en-us/UE4PrereqSetup_x64.exe",
+      "sizeBytes": 40025648,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "installscript.vdf",
+      "sizeBytes": 722,
+      "magikaType": "text/plain",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "readme.docx",
+      "sizeBytes": 486952,
+      "magikaType": "application/octet-stream",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "RED/Binaries/Win64/RED-Win64-Shipping.exe",
+      "sizeBytes": 184261120,
+      "magikaType": "application/vnd.microsoft.portable-executable",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "RED/Binaries/Win64/steam_appid.txt",
+      "sizeBytes": 8,
+      "magikaType": "application/octet-stream",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "RED/Content/Movies/mv_opening_jp_pakchunk1.mp4",
+      "sizeBytes": 144887352,
+      "magikaType": "video/mp4",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "RED/Content/Movies/mv_opening_ww_pakchunk1.mp4",
+      "sizeBytes": 144874832,
+      "magikaType": "video/mp4",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "RED/Content/Movies/mv_storyop_pakchunk1.mp4",
+      "sizeBytes": 102661510,
+      "magikaType": "video/mp4",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "RED/Content/Paks/pakchunk0-WindowsNoEditor.pak",
+      "sizeBytes": 5414923132,
+      "magikaType": "application/x-unreal-pak",
+      "isUAsset": false,
+      "isPak": true,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "RED/Content/Paks/pakchunk0-WindowsNoEditor.sig",
+      "sizeBytes": 330572,
+      "magikaType": "application/x-unreal-sig",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "RED/Content/Paks/pakchunk1-WindowsNoEditor.pak",
+      "sizeBytes": 881949120,
+      "magikaType": "application/x-unreal-pak",
+      "isUAsset": false,
+      "isPak": true,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "RED/Content/Paks/pakchunk1-WindowsNoEditor.sig",
+      "sizeBytes": 53900,
+      "magikaType": "application/x-unreal-sig",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    },
+    {
+      "relativePath": "RED/Content/Splash/Splash.bmp",
+      "sizeBytes": 360056,
+      "magikaType": "application/octet-stream",
+      "isUAsset": false,
+      "isPak": false,
+      "isShader": false,
+      "isAudio": false
+    }
+  ]
+}

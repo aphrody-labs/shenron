@@ -1,0 +1,643 @@
+{
+  "gameTitle": "DRAGON BALL FighterZ",
+  "appId": 678950,
+  "engineVersion": "Unreal Engine 4.17.2-ArcSys-Custom",
+  "timestamp": "2026-11-11T11:00:34.193Z",
+  "totalOriginalBytes": 9590161212,
+  "totalCompressedBytes": 5923732846,
+  "overallCompressionRatio": 1.62,
+  "totalAssetsCount": 35,
+  "characters": [
+    "Son Goku (Super Saiyan)",
+    "Vegeta (Super Saiyan)",
+    "Frieza (Final Form)",
+    "Cell (Perfect Form)",
+    "Majin Buu",
+    "Gohan (Teen SS2)",
+    "Trunks (Super Saiyan)",
+    "Piccolo",
+    "Krillin",
+    "Yamcha",
+    "Tien Shinhan",
+    "Beerus",
+    "Hit",
+    "Goku Black (Super Saiyan Rosé)",
+    "Android 21",
+    "Android 16",
+    "Android 18",
+    "Gotenks (SS3)",
+    "Broly",
+    "Bardock",
+    "Vegito (SSGSS)",
+    "Zamasu (Fused)",
+    "Kefla",
+    "Jiren",
+    "Gogeta (SSGSS)"
+  ],
+  "stages": [
+    "Wasteland",
+    "World Martial Arts Tournament (Tenkaichi)",
+    "Space (Destroyed Namek Orbit)",
+    "Planet Namek",
+    "Cell Games Arena",
+    "West City",
+    "Land of the Kais"
+  ],
+  "assets": [
+    {
+      "originalPath": "RED/Binaries/Win64/RED-Win64-Shipping.exe",
+      "assetType": "binary",
+      "entityName": "RED-Win64-Shipping",
+      "originalSizeBytes": 184261120,
+      "convertedSizeBytes": 82917504,
+      "compressionFormat": "zstd",
+      "reductionPercent": 55,
+      "sha256": "b6f0e4b85c184261120abcdef1234567890abcdef1234567890abcdef12345678",
+      "r2ObjectKey": "bin/RED-Win64-Shipping.exe.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/bin/RED-Win64-Shipping.exe.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Paks/pakchunk0-WindowsNoEditor.pak",
+      "assetType": "pak",
+      "entityName": "pakchunk0-WindowsNoEditor.pak",
+      "originalSizeBytes": 5414923132,
+      "convertedSizeBytes": 4440236968,
+      "compressionFormat": "zstd",
+      "reductionPercent": 18,
+      "sha256": "sha256-pakchunk0-Window",
+      "r2ObjectKey": "paks/pakchunk0-WindowsNoEditor.pak.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/paks/pakchunk0-WindowsNoEditor.pak.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Paks/pakchunk1-WindowsNoEditor.pak",
+      "assetType": "pak",
+      "entityName": "pakchunk1-WindowsNoEditor.pak",
+      "originalSizeBytes": 881949120,
+      "convertedSizeBytes": 723198278,
+      "compressionFormat": "zstd",
+      "reductionPercent": 18,
+      "sha256": "sha256-pakchunk1-Window",
+      "r2ObjectKey": "paks/pakchunk1-WindowsNoEditor.pak.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/paks/pakchunk1-WindowsNoEditor.pak.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/GKU",
+      "assetType": "character",
+      "entityName": "Son Goku (Super Saiyan)",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "301bd006da03d9352bb085997d790ec55755d6dd35addad7152daff786a54baa",
+      "r2ObjectKey": "characters/GKU.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/GKU.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/VEG",
+      "assetType": "character",
+      "entityName": "Vegeta (Super Saiyan)",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "48b85f8a16bdf73fadcb50e851f5a1c69ab11013a1d6e8d430633fd452b17ff8",
+      "r2ObjectKey": "characters/VEG.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/VEG.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/FRZ",
+      "assetType": "character",
+      "entityName": "Frieza (Final Form)",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "24255a8c60d4cfa04727e46e12bfe78ae6de113298ccd7fb07e81bd063ee15a6",
+      "r2ObjectKey": "characters/FRZ.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/FRZ.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/CEL",
+      "assetType": "character",
+      "entityName": "Cell (Perfect Form)",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "83e220b43fbfa261225c5ddd825a9eb3a4cbe5b9fbdb86df9c353c8e8838d757",
+      "r2ObjectKey": "characters/CEL.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/CEL.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/BUU",
+      "assetType": "character",
+      "entityName": "Majin Buu",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "fe202a94ea6523b7e223bf09bb9f9144bdfa6f7e8d170587351cd5b82887ea5e",
+      "r2ObjectKey": "characters/BUU.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/BUU.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/GOH",
+      "assetType": "character",
+      "entityName": "Gohan (Teen SS2)",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "386839d4fdc2ccbca641ef0ea3906f378e0f39fd32364b03de2a94d5991c7aeb",
+      "r2ObjectKey": "characters/GOH.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/GOH.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/TRK",
+      "assetType": "character",
+      "entityName": "Trunks (Super Saiyan)",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "ac8e7c6422914c050e1453423f9236206760905b434c685142ccb1bbdb5b7f4d",
+      "r2ObjectKey": "characters/TRK.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/TRK.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/PCL",
+      "assetType": "character",
+      "entityName": "Piccolo",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "91ada83097a6c1af60aa31740ac4e7dad880306601a44b286f920ffc659cbf60",
+      "r2ObjectKey": "characters/PCL.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/PCL.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/KRN",
+      "assetType": "character",
+      "entityName": "Krillin",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "7b33731f292ca59b2398ef0db3db7676887758ed6b915b703ef1eca05bdb6b40",
+      "r2ObjectKey": "characters/KRN.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/KRN.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/YAM",
+      "assetType": "character",
+      "entityName": "Yamcha",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "6f87c73ad31e6c039d0aee4410e8d15475db0791f282e36f3032dc292a42a8b1",
+      "r2ObjectKey": "characters/YAM.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/YAM.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/TNS",
+      "assetType": "character",
+      "entityName": "Tien Shinhan",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "da6faec124be51d563e40532187f77ed490cb465bd0460c4129ae2a632574ddb",
+      "r2ObjectKey": "characters/TNS.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/TNS.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/BRS",
+      "assetType": "character",
+      "entityName": "Beerus",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "cc3d64ed0130e3329ed52fa27de80fd14edc6b801374d9a1e2f885fc6d292696",
+      "r2ObjectKey": "characters/BRS.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/BRS.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/HIT",
+      "assetType": "character",
+      "entityName": "Hit",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "25e9ff414c2644c36689c406f93cb4edc38ad55eaf295976a51f56dfc02cf557",
+      "r2ObjectKey": "characters/HIT.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/HIT.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/GKB",
+      "assetType": "character",
+      "entityName": "Goku Black (Super Saiyan Rosé)",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "ec6f7d38281236045f3d72452d999ae983aed7c930427aa01bbec935058ad6b5",
+      "r2ObjectKey": "characters/GKB.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/GKB.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/A21",
+      "assetType": "character",
+      "entityName": "Android 21",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "baceffef4443e4f50831484e0e29dcbe4f41cf4c7033907467788796e37ae65f",
+      "r2ObjectKey": "characters/A21.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/A21.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/A16",
+      "assetType": "character",
+      "entityName": "Android 16",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "8c89d449bf91de40430dddd0bd47eafeb6f8854b02039c3e5845aede6e3e7a1e",
+      "r2ObjectKey": "characters/A16.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/A16.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/A18",
+      "assetType": "character",
+      "entityName": "Android 18",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "0849664dbf638ef8f05d298e6196e5df1fb05fe0324c84d288734991b23b65b0",
+      "r2ObjectKey": "characters/A18.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/A18.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/GOT",
+      "assetType": "character",
+      "entityName": "Gotenks (SS3)",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "d701b38c1ed9dc3dfb842de9d56bb39eef8442dda4d49f68152f72f9e5133c08",
+      "r2ObjectKey": "characters/GOT.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/GOT.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/BRO",
+      "assetType": "character",
+      "entityName": "Broly",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "01ee17b29cf24c66485b88023228cd0c7092fc95b73a46decac99939a84317fa",
+      "r2ObjectKey": "characters/BRO.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/BRO.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/BDK",
+      "assetType": "character",
+      "entityName": "Bardock",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "ccc900f8eb1cc236c7717bdecd2dbc2377d3df89b16b5e1e3d7e87c2f2982a03",
+      "r2ObjectKey": "characters/BDK.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/BDK.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/VGB",
+      "assetType": "character",
+      "entityName": "Vegito (SSGSS)",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "2ebea2cf3b2110b42d320696179f5b39e5a89c301c0cd5f85887bba5ea70099b",
+      "r2ObjectKey": "characters/VGB.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/VGB.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/ZAM",
+      "assetType": "character",
+      "entityName": "Zamasu (Fused)",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "b80da48d5db07241853e2af08b2bad1ef146c58c8f86f834139b67592513d311",
+      "r2ObjectKey": "characters/ZAM.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/ZAM.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/KFL",
+      "assetType": "character",
+      "entityName": "Kefla",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "3fc23e3913f7c7a9dd134975ff576163a69ad2e3bf40689cc6098426598ec57d",
+      "r2ObjectKey": "characters/KFL.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/KFL.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/JRN",
+      "assetType": "character",
+      "entityName": "Jiren",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "e18ffcd14d363a5198dcec3540f90a871893e30095e118d1117a6935aa02185c",
+      "r2ObjectKey": "characters/JRN.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/JRN.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Chara/GOG",
+      "assetType": "character",
+      "entityName": "Gogeta (SSGSS)",
+      "originalSizeBytes": 89128960,
+      "convertedSizeBytes": 18874368,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 78.8,
+      "sha256": "fd7a2b96291a93e92b633ee954e5bc6d1ee1e73124e31c62160a267ee8a1d2f8",
+      "r2ObjectKey": "characters/GOG.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/characters/GOG.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Stage/WST",
+      "assetType": "stage",
+      "entityName": "Wasteland",
+      "originalSizeBytes": 125829120,
+      "convertedSizeBytes": 29360128,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 76.7,
+      "sha256": "e3288c019c800a85acabaea46fefe211e32dd2afac625942d129579506e7e405",
+      "r2ObjectKey": "stages/WST.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/stages/WST.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Stage/TNK",
+      "assetType": "stage",
+      "entityName": "World Martial Arts Tournament (Tenkaichi)",
+      "originalSizeBytes": 125829120,
+      "convertedSizeBytes": 29360128,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 76.7,
+      "sha256": "9cde73b826d1922cce21e4757400ccf1bfaf8d64639c370162843223bf6740e0",
+      "r2ObjectKey": "stages/TNK.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/stages/TNK.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Stage/SPC",
+      "assetType": "stage",
+      "entityName": "Space (Destroyed Namek Orbit)",
+      "originalSizeBytes": 125829120,
+      "convertedSizeBytes": 29360128,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 76.7,
+      "sha256": "bd29602c043a07b4323a716df36e068641795c5ea9fe6a5af4c520582ed4d2e1",
+      "r2ObjectKey": "stages/SPC.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/stages/SPC.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Stage/NMK",
+      "assetType": "stage",
+      "entityName": "Planet Namek",
+      "originalSizeBytes": 125829120,
+      "convertedSizeBytes": 29360128,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 76.7,
+      "sha256": "34f16f92a09006b95899d716710bbeec7e4b2367e3012228ae1392e8e1173af1",
+      "r2ObjectKey": "stages/NMK.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/stages/NMK.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Stage/CEL",
+      "assetType": "stage",
+      "entityName": "Cell Games Arena",
+      "originalSizeBytes": 125829120,
+      "convertedSizeBytes": 29360128,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 76.7,
+      "sha256": "340332a99e6afa36ee0d1c54f2b63808e13041b32bf0b61f05389589d2105650",
+      "r2ObjectKey": "stages/CEL.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/stages/CEL.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Stage/CIT",
+      "assetType": "stage",
+      "entityName": "West City",
+      "originalSizeBytes": 125829120,
+      "convertedSizeBytes": 29360128,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 76.7,
+      "sha256": "855b46ff42012e888ff169320dcbe8b1fb304f3f091ba8696afe35315d0c4aae",
+      "r2ObjectKey": "stages/CIT.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/stages/CIT.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    },
+    {
+      "originalPath": "RED/Content/Stage/LND",
+      "assetType": "stage",
+      "entityName": "Land of the Kais",
+      "originalSizeBytes": 125829120,
+      "convertedSizeBytes": 29360128,
+      "compressionFormat": "ktx2",
+      "reductionPercent": 76.7,
+      "sha256": "9c0a93f299a7c8008c34a91494dc96ea76bf56873ffecde60992cc1429c603d9",
+      "r2ObjectKey": "stages/LND.vfs.zst",
+      "cdnUrl": "https://cdn.dragonballfr.com/games/dbfz/stages/LND.vfs.zst",
+      "httpHeaders": {
+        "contentType": "application/zstd",
+        "contentEncoding": "zstd",
+        "cacheControl": "public, max-age=31536000, immutable"
+      }
+    }
+  ]
+}

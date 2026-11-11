@@ -1,0 +1,975 @@
+{
+  "$schema": "https://design-tokens.github.io/community-group/format/",
+  "name": "Google Material 3 Sovereign Design Tokens",
+  "version": "1.0.0",
+  "meta": {
+    "seed": "#ea580c",
+    "variant": "tonal_spot",
+    "contrastLevel": 0,
+    "generatedBy": "google-design-gds v1.0.0 (Bun v1.4.4)"
+  },
+  "color": {
+    "light": {
+      "primary": {
+        "$value": "#8e4c32",
+        "$type": "color",
+        "$description": "Material 3 primary color token"
+      },
+      "on-primary": {
+        "$value": "#ffffff",
+        "$type": "color",
+        "$description": "Material 3 on-primary color token"
+      },
+      "primary-container": {
+        "$value": "#ffdbce",
+        "$type": "color",
+        "$description": "Material 3 primary-container color token"
+      },
+      "on-primary-container": {
+        "$value": "#71361d",
+        "$type": "color",
+        "$description": "Material 3 on-primary-container color token"
+      },
+      "secondary": {
+        "$value": "#77574b",
+        "$type": "color",
+        "$description": "Material 3 secondary color token"
+      },
+      "on-secondary": {
+        "$value": "#ffffff",
+        "$type": "color",
+        "$description": "Material 3 on-secondary color token"
+      },
+      "secondary-container": {
+        "$value": "#ffdbce",
+        "$type": "color",
+        "$description": "Material 3 secondary-container color token"
+      },
+      "on-secondary-container": {
+        "$value": "#5d4035",
+        "$type": "color",
+        "$description": "Material 3 on-secondary-container color token"
+      },
+      "tertiary": {
+        "$value": "#685e30",
+        "$type": "color",
+        "$description": "Material 3 tertiary color token"
+      },
+      "on-tertiary": {
+        "$value": "#ffffff",
+        "$type": "color",
+        "$description": "Material 3 on-tertiary color token"
+      },
+      "tertiary-container": {
+        "$value": "#f1e3a8",
+        "$type": "color",
+        "$description": "Material 3 tertiary-container color token"
+      },
+      "on-tertiary-container": {
+        "$value": "#50471a",
+        "$type": "color",
+        "$description": "Material 3 on-tertiary-container color token"
+      },
+      "error": {
+        "$value": "#ba1a1a",
+        "$type": "color",
+        "$description": "Material 3 error color token"
+      },
+      "on-error": {
+        "$value": "#ffffff",
+        "$type": "color",
+        "$description": "Material 3 on-error color token"
+      },
+      "error-container": {
+        "$value": "#ffdad6",
+        "$type": "color",
+        "$description": "Material 3 error-container color token"
+      },
+      "on-error-container": {
+        "$value": "#93000a",
+        "$type": "color",
+        "$description": "Material 3 on-error-container color token"
+      },
+      "background": {
+        "$value": "#fff8f6",
+        "$type": "color",
+        "$description": "Material 3 background color token"
+      },
+      "on-background": {
+        "$value": "#231a16",
+        "$type": "color",
+        "$description": "Material 3 on-background color token"
+      },
+      "surface": {
+        "$value": "#fff8f6",
+        "$type": "color",
+        "$description": "Material 3 surface color token"
+      },
+      "on-surface": {
+        "$value": "#231a16",
+        "$type": "color",
+        "$description": "Material 3 on-surface color token"
+      },
+      "surface-variant": {
+        "$value": "#f5ded6",
+        "$type": "color",
+        "$description": "Material 3 surface-variant color token"
+      },
+      "on-surface-variant": {
+        "$value": "#53433e",
+        "$type": "color",
+        "$description": "Material 3 on-surface-variant color token"
+      },
+      "surface-container-lowest": {
+        "$value": "#ffffff",
+        "$type": "color",
+        "$description": "Material 3 surface-container-lowest color token"
+      },
+      "surface-container-low": {
+        "$value": "#fff1ec",
+        "$type": "color",
+        "$description": "Material 3 surface-container-low color token"
+      },
+      "surface-container": {
+        "$value": "#fceae4",
+        "$type": "color",
+        "$description": "Material 3 surface-container color token"
+      },
+      "surface-container-high": {
+        "$value": "#f7e4df",
+        "$type": "color",
+        "$description": "Material 3 surface-container-high color token"
+      },
+      "surface-container-highest": {
+        "$value": "#f1dfd9",
+        "$type": "color",
+        "$description": "Material 3 surface-container-highest color token"
+      },
+      "outline": {
+        "$value": "#85736d",
+        "$type": "color",
+        "$description": "Material 3 outline color token"
+      },
+      "outline-variant": {
+        "$value": "#d8c2bb",
+        "$type": "color",
+        "$description": "Material 3 outline-variant color token"
+      },
+      "shadow": {
+        "$value": "#000000",
+        "$type": "color",
+        "$description": "Material 3 shadow color token"
+      },
+      "scrim": {
+        "$value": "#000000",
+        "$type": "color",
+        "$description": "Material 3 scrim color token"
+      },
+      "inverse-surface": {
+        "$value": "#392e2a",
+        "$type": "color",
+        "$description": "Material 3 inverse-surface color token"
+      },
+      "inverse-on-surface": {
+        "$value": "#ffede7",
+        "$type": "color",
+        "$description": "Material 3 inverse-on-surface color token"
+      },
+      "inverse-primary": {
+        "$value": "#ffb599",
+        "$type": "color",
+        "$description": "Material 3 inverse-primary color token"
+      }
+    },
+    "dark": {
+      "primary": {
+        "$value": "#ffb599",
+        "$type": "color",
+        "$description": "Material 3 primary color token"
+      },
+      "on-primary": {
+        "$value": "#552009",
+        "$type": "color",
+        "$description": "Material 3 on-primary color token"
+      },
+      "primary-container": {
+        "$value": "#71361d",
+        "$type": "color",
+        "$description": "Material 3 primary-container color token"
+      },
+      "on-primary-container": {
+        "$value": "#ffdbce",
+        "$type": "color",
+        "$description": "Material 3 on-primary-container color token"
+      },
+      "secondary": {
+        "$value": "#e7beaf",
+        "$type": "color",
+        "$description": "Material 3 secondary color token"
+      },
+      "on-secondary": {
+        "$value": "#442a20",
+        "$type": "color",
+        "$description": "Material 3 on-secondary color token"
+      },
+      "secondary-container": {
+        "$value": "#5d4035",
+        "$type": "color",
+        "$description": "Material 3 secondary-container color token"
+      },
+      "on-secondary-container": {
+        "$value": "#ffdbce",
+        "$type": "color",
+        "$description": "Material 3 on-secondary-container color token"
+      },
+      "tertiary": {
+        "$value": "#d4c78e",
+        "$type": "color",
+        "$description": "Material 3 tertiary color token"
+      },
+      "on-tertiary": {
+        "$value": "#383006",
+        "$type": "color",
+        "$description": "Material 3 on-tertiary color token"
+      },
+      "tertiary-container": {
+        "$value": "#50471a",
+        "$type": "color",
+        "$description": "Material 3 tertiary-container color token"
+      },
+      "on-tertiary-container": {
+        "$value": "#f1e3a8",
+        "$type": "color",
+        "$description": "Material 3 on-tertiary-container color token"
+      },
+      "error": {
+        "$value": "#ffb4ab",
+        "$type": "color",
+        "$description": "Material 3 error color token"
+      },
+      "on-error": {
+        "$value": "#690005",
+        "$type": "color",
+        "$description": "Material 3 on-error color token"
+      },
+      "error-container": {
+        "$value": "#93000a",
+        "$type": "color",
+        "$description": "Material 3 error-container color token"
+      },
+      "on-error-container": {
+        "$value": "#ffdad6",
+        "$type": "color",
+        "$description": "Material 3 on-error-container color token"
+      },
+      "background": {
+        "$value": "#1a110e",
+        "$type": "color",
+        "$description": "Material 3 background color token"
+      },
+      "on-background": {
+        "$value": "#f1dfd9",
+        "$type": "color",
+        "$description": "Material 3 on-background color token"
+      },
+      "surface": {
+        "$value": "#1a110e",
+        "$type": "color",
+        "$description": "Material 3 surface color token"
+      },
+      "on-surface": {
+        "$value": "#f1dfd9",
+        "$type": "color",
+        "$description": "Material 3 on-surface color token"
+      },
+      "surface-variant": {
+        "$value": "#53433e",
+        "$type": "color",
+        "$description": "Material 3 surface-variant color token"
+      },
+      "on-surface-variant": {
+        "$value": "#d8c2bb",
+        "$type": "color",
+        "$description": "Material 3 on-surface-variant color token"
+      },
+      "surface-container-lowest": {
+        "$value": "#140c09",
+        "$type": "color",
+        "$description": "Material 3 surface-container-lowest color token"
+      },
+      "surface-container-low": {
+        "$value": "#231a16",
+        "$type": "color",
+        "$description": "Material 3 surface-container-low color token"
+      },
+      "surface-container": {
+        "$value": "#271e1a",
+        "$type": "color",
+        "$description": "Material 3 surface-container color token"
+      },
+      "surface-container-high": {
+        "$value": "#322824",
+        "$type": "color",
+        "$description": "Material 3 surface-container-high color token"
+      },
+      "surface-container-highest": {
+        "$value": "#3d322f",
+        "$type": "color",
+        "$description": "Material 3 surface-container-highest color token"
+      },
+      "outline": {
+        "$value": "#a08d86",
+        "$type": "color",
+        "$description": "Material 3 outline color token"
+      },
+      "outline-variant": {
+        "$value": "#53433e",
+        "$type": "color",
+        "$description": "Material 3 outline-variant color token"
+      },
+      "shadow": {
+        "$value": "#000000",
+        "$type": "color",
+        "$description": "Material 3 shadow color token"
+      },
+      "scrim": {
+        "$value": "#000000",
+        "$type": "color",
+        "$description": "Material 3 scrim color token"
+      },
+      "inverse-surface": {
+        "$value": "#f1dfd9",
+        "$type": "color",
+        "$description": "Material 3 inverse-surface color token"
+      },
+      "inverse-on-surface": {
+        "$value": "#392e2a",
+        "$type": "color",
+        "$description": "Material 3 inverse-on-surface color token"
+      },
+      "inverse-primary": {
+        "$value": "#8e4c32",
+        "$type": "color",
+        "$description": "Material 3 inverse-primary color token"
+      }
+    },
+    "palettes": {
+      "primary": {
+        "tone-0": {
+          "$value": "#000000",
+          "$type": "color"
+        },
+        "tone-4": {
+          "$value": "#210600",
+          "$type": "color"
+        },
+        "tone-6": {
+          "$value": "#2a0800",
+          "$type": "color"
+        },
+        "tone-10": {
+          "$value": "#370e00",
+          "$type": "color"
+        },
+        "tone-12": {
+          "$value": "#3e1000",
+          "$type": "color"
+        },
+        "tone-17": {
+          "$value": "#4f1700",
+          "$type": "color"
+        },
+        "tone-20": {
+          "$value": "#5a1c00",
+          "$type": "color"
+        },
+        "tone-22": {
+          "$value": "#611f00",
+          "$type": "color"
+        },
+        "tone-24": {
+          "$value": "#692200",
+          "$type": "color"
+        },
+        "tone-30": {
+          "$value": "#7f2b00",
+          "$type": "color"
+        },
+        "tone-40": {
+          "$value": "#a73a00",
+          "$type": "color"
+        },
+        "tone-50": {
+          "$value": "#d04b00",
+          "$type": "color"
+        },
+        "tone-60": {
+          "$value": "#f66018",
+          "$type": "color"
+        },
+        "tone-70": {
+          "$value": "#ff8c5d",
+          "$type": "color"
+        },
+        "tone-80": {
+          "$value": "#ffb599",
+          "$type": "color"
+        },
+        "tone-87": {
+          "$value": "#ffd0bf",
+          "$type": "color"
+        },
+        "tone-90": {
+          "$value": "#ffdbce",
+          "$type": "color"
+        },
+        "tone-92": {
+          "$value": "#ffe2d8",
+          "$type": "color"
+        },
+        "tone-94": {
+          "$value": "#ffe9e2",
+          "$type": "color"
+        },
+        "tone-95": {
+          "$value": "#ffede7",
+          "$type": "color"
+        },
+        "tone-96": {
+          "$value": "#fff1ec",
+          "$type": "color"
+        },
+        "tone-98": {
+          "$value": "#fff8f6",
+          "$type": "color"
+        },
+        "tone-99": {
+          "$value": "#fffbff",
+          "$type": "color"
+        },
+        "tone-100": {
+          "$value": "#ffffff",
+          "$type": "color"
+        }
+      },
+      "secondary": {
+        "tone-0": {
+          "$value": "#000000",
+          "$type": "color"
+        },
+        "tone-4": {
+          "$value": "#1c0903",
+          "$type": "color"
+        },
+        "tone-6": {
+          "$value": "#220e06",
+          "$type": "color"
+        },
+        "tone-10": {
+          "$value": "#2c160d",
+          "$type": "color"
+        },
+        "tone-12": {
+          "$value": "#311a11",
+          "$type": "color"
+        },
+        "tone-17": {
+          "$value": "#3d241a",
+          "$type": "color"
+        },
+        "tone-20": {
+          "$value": "#442a20",
+          "$type": "color"
+        },
+        "tone-22": {
+          "$value": "#492e24",
+          "$type": "color"
+        },
+        "tone-24": {
+          "$value": "#4e3328",
+          "$type": "color"
+        },
+        "tone-30": {
+          "$value": "#5d4035",
+          "$type": "color"
+        },
+        "tone-40": {
+          "$value": "#77574b",
+          "$type": "color"
+        },
+        "tone-50": {
+          "$value": "#926f63",
+          "$type": "color"
+        },
+        "tone-60": {
+          "$value": "#ad897b",
+          "$type": "color"
+        },
+        "tone-70": {
+          "$value": "#caa395",
+          "$type": "color"
+        },
+        "tone-80": {
+          "$value": "#e7beaf",
+          "$type": "color"
+        },
+        "tone-87": {
+          "$value": "#fbd1c2",
+          "$type": "color"
+        },
+        "tone-90": {
+          "$value": "#ffdbce",
+          "$type": "color"
+        },
+        "tone-92": {
+          "$value": "#ffe2d8",
+          "$type": "color"
+        },
+        "tone-94": {
+          "$value": "#ffe9e2",
+          "$type": "color"
+        },
+        "tone-95": {
+          "$value": "#ffede7",
+          "$type": "color"
+        },
+        "tone-96": {
+          "$value": "#fff1ec",
+          "$type": "color"
+        },
+        "tone-98": {
+          "$value": "#fff8f6",
+          "$type": "color"
+        },
+        "tone-99": {
+          "$value": "#fffbff",
+          "$type": "color"
+        },
+        "tone-100": {
+          "$value": "#ffffff",
+          "$type": "color"
+        }
+      },
+      "tertiary": {
+        "tone-0": {
+          "$value": "#000000",
+          "$type": "color"
+        },
+        "tone-4": {
+          "$value": "#120e00",
+          "$type": "color"
+        },
+        "tone-6": {
+          "$value": "#181300",
+          "$type": "color"
+        },
+        "tone-10": {
+          "$value": "#211b00",
+          "$type": "color"
+        },
+        "tone-12": {
+          "$value": "#261f00",
+          "$type": "color"
+        },
+        "tone-17": {
+          "$value": "#312a01",
+          "$type": "color"
+        },
+        "tone-20": {
+          "$value": "#383006",
+          "$type": "color"
+        },
+        "tone-22": {
+          "$value": "#3d3509",
+          "$type": "color"
+        },
+        "tone-24": {
+          "$value": "#41390e",
+          "$type": "color"
+        },
+        "tone-30": {
+          "$value": "#50471a",
+          "$type": "color"
+        },
+        "tone-40": {
+          "$value": "#685e30",
+          "$type": "color"
+        },
+        "tone-50": {
+          "$value": "#827746",
+          "$type": "color"
+        },
+        "tone-60": {
+          "$value": "#9d915d",
+          "$type": "color"
+        },
+        "tone-70": {
+          "$value": "#b8ab75",
+          "$type": "color"
+        },
+        "tone-80": {
+          "$value": "#d4c78e",
+          "$type": "color"
+        },
+        "tone-87": {
+          "$value": "#e8daa0",
+          "$type": "color"
+        },
+        "tone-90": {
+          "$value": "#f1e3a8",
+          "$type": "color"
+        },
+        "tone-92": {
+          "$value": "#f7e8ad",
+          "$type": "color"
+        },
+        "tone-94": {
+          "$value": "#fdeeb2",
+          "$type": "color"
+        },
+        "tone-95": {
+          "$value": "#fff1b9",
+          "$type": "color"
+        },
+        "tone-96": {
+          "$value": "#fff4cb",
+          "$type": "color"
+        },
+        "tone-98": {
+          "$value": "#fff9ed",
+          "$type": "color"
+        },
+        "tone-99": {
+          "$value": "#fffbff",
+          "$type": "color"
+        },
+        "tone-100": {
+          "$value": "#ffffff",
+          "$type": "color"
+        }
+      },
+      "neutral": {
+        "tone-0": {
+          "$value": "#000000",
+          "$type": "color"
+        },
+        "tone-4": {
+          "$value": "#120d0b",
+          "$type": "color"
+        },
+        "tone-6": {
+          "$value": "#181210",
+          "$type": "color"
+        },
+        "tone-10": {
+          "$value": "#201a18",
+          "$type": "color"
+        },
+        "tone-12": {
+          "$value": "#251e1c",
+          "$type": "color"
+        },
+        "tone-17": {
+          "$value": "#2f2826",
+          "$type": "color"
+        },
+        "tone-20": {
+          "$value": "#362f2c",
+          "$type": "color"
+        },
+        "tone-22": {
+          "$value": "#3b3331",
+          "$type": "color"
+        },
+        "tone-24": {
+          "$value": "#3f3835",
+          "$type": "color"
+        },
+        "tone-30": {
+          "$value": "#4d4542",
+          "$type": "color"
+        },
+        "tone-40": {
+          "$value": "#655c5a",
+          "$type": "color"
+        },
+        "tone-50": {
+          "$value": "#7f7572",
+          "$type": "color"
+        },
+        "tone-60": {
+          "$value": "#998e8b",
+          "$type": "color"
+        },
+        "tone-70": {
+          "$value": "#b4a9a5",
+          "$type": "color"
+        },
+        "tone-80": {
+          "$value": "#d0c4c0",
+          "$type": "color"
+        },
+        "tone-87": {
+          "$value": "#e4d7d3",
+          "$type": "color"
+        },
+        "tone-90": {
+          "$value": "#ede0dc",
+          "$type": "color"
+        },
+        "tone-92": {
+          "$value": "#f3e5e1",
+          "$type": "color"
+        },
+        "tone-94": {
+          "$value": "#f8ebe7",
+          "$type": "color"
+        },
+        "tone-95": {
+          "$value": "#fbeeea",
+          "$type": "color"
+        },
+        "tone-96": {
+          "$value": "#fef1ed",
+          "$type": "color"
+        },
+        "tone-98": {
+          "$value": "#fff8f6",
+          "$type": "color"
+        },
+        "tone-99": {
+          "$value": "#fffbff",
+          "$type": "color"
+        },
+        "tone-100": {
+          "$value": "#ffffff",
+          "$type": "color"
+        }
+      },
+      "neutralVariant": {
+        "tone-0": {
+          "$value": "#000000",
+          "$type": "color"
+        },
+        "tone-4": {
+          "$value": "#160c08",
+          "$type": "color"
+        },
+        "tone-6": {
+          "$value": "#1c110d",
+          "$type": "color"
+        },
+        "tone-10": {
+          "$value": "#251914",
+          "$type": "color"
+        },
+        "tone-12": {
+          "$value": "#291d18",
+          "$type": "color"
+        },
+        "tone-17": {
+          "$value": "#342722",
+          "$type": "color"
+        },
+        "tone-20": {
+          "$value": "#3b2d28",
+          "$type": "color"
+        },
+        "tone-22": {
+          "$value": "#40322d",
+          "$type": "color"
+        },
+        "tone-24": {
+          "$value": "#443631",
+          "$type": "color"
+        },
+        "tone-30": {
+          "$value": "#53433e",
+          "$type": "color"
+        },
+        "tone-40": {
+          "$value": "#6b5b55",
+          "$type": "color"
+        },
+        "tone-50": {
+          "$value": "#85736d",
+          "$type": "color"
+        },
+        "tone-60": {
+          "$value": "#a08d86",
+          "$type": "color"
+        },
+        "tone-70": {
+          "$value": "#bba7a0",
+          "$type": "color"
+        },
+        "tone-80": {
+          "$value": "#d8c2bb",
+          "$type": "color"
+        },
+        "tone-87": {
+          "$value": "#ecd5ce",
+          "$type": "color"
+        },
+        "tone-90": {
+          "$value": "#f5ded6",
+          "$type": "color"
+        },
+        "tone-92": {
+          "$value": "#fbe3dc",
+          "$type": "color"
+        },
+        "tone-94": {
+          "$value": "#ffe9e2",
+          "$type": "color"
+        },
+        "tone-95": {
+          "$value": "#ffede7",
+          "$type": "color"
+        },
+        "tone-96": {
+          "$value": "#fff1ec",
+          "$type": "color"
+        },
+        "tone-98": {
+          "$value": "#fff8f6",
+          "$type": "color"
+        },
+        "tone-99": {
+          "$value": "#fffbff",
+          "$type": "color"
+        },
+        "tone-100": {
+          "$value": "#ffffff",
+          "$type": "color"
+        }
+      },
+      "error": {
+        "tone-0": {
+          "$value": "#000000",
+          "$type": "color"
+        },
+        "tone-4": {
+          "$value": "#280001",
+          "$type": "color"
+        },
+        "tone-6": {
+          "$value": "#310001",
+          "$type": "color"
+        },
+        "tone-10": {
+          "$value": "#410002",
+          "$type": "color"
+        },
+        "tone-12": {
+          "$value": "#490002",
+          "$type": "color"
+        },
+        "tone-17": {
+          "$value": "#5c0004",
+          "$type": "color"
+        },
+        "tone-20": {
+          "$value": "#690005",
+          "$type": "color"
+        },
+        "tone-22": {
+          "$value": "#710005",
+          "$type": "color"
+        },
+        "tone-24": {
+          "$value": "#790006",
+          "$type": "color"
+        },
+        "tone-30": {
+          "$value": "#93000a",
+          "$type": "color"
+        },
+        "tone-40": {
+          "$value": "#ba1a1a",
+          "$type": "color"
+        },
+        "tone-50": {
+          "$value": "#de3730",
+          "$type": "color"
+        },
+        "tone-60": {
+          "$value": "#ff5449",
+          "$type": "color"
+        },
+        "tone-70": {
+          "$value": "#ff897d",
+          "$type": "color"
+        },
+        "tone-80": {
+          "$value": "#ffb4ab",
+          "$type": "color"
+        },
+        "tone-87": {
+          "$value": "#ffcfc9",
+          "$type": "color"
+        },
+        "tone-90": {
+          "$value": "#ffdad6",
+          "$type": "color"
+        },
+        "tone-92": {
+          "$value": "#ffe2de",
+          "$type": "color"
+        },
+        "tone-94": {
+          "$value": "#ffe9e6",
+          "$type": "color"
+        },
+        "tone-95": {
+          "$value": "#ffedea",
+          "$type": "color"
+        },
+        "tone-96": {
+          "$value": "#fff0ee",
+          "$type": "color"
+        },
+        "tone-98": {
+          "$value": "#fff8f7",
+          "$type": "color"
+        },
+        "tone-99": {
+          "$value": "#fffbff",
+          "$type": "color"
+        },
+        "tone-100": {
+          "$value": "#ffffff",
+          "$type": "color"
+        }
+      }
+    }
+  },
+  "codeConnect": {
+    "components": {
+      "Button": {
+        "figmaNodeUrl": "https://figma.com/@google/material-3?node-id=button",
+        "import": "import { MdFilledButton, MdOutlinedButton } from '@material/web/button/filled-button.js';",
+        "props": {
+          "variant": {
+            "filled": "<md-filled-button>{label}</md-filled-button>",
+            "outlined": "<md-outlined-button>{label}</md-outlined-button>",
+            "elevated": "<md-elevated-button>{label}</md-elevated-button>",
+            "tonal": "<md-filled-tonal-button>{label}</md-filled-tonal-button>",
+            "text": "<md-text-button>{label}</md-text-button>"
+          }
+        }
+      },
+      "Card": {
+        "figmaNodeUrl": "https://figma.com/@google/material-3?node-id=card",
+        "import": "import { MdElevatedCard, MdOutlinedCard } from '@material/web/labs/card/elevated-card.js';",
+        "props": {
+          "variant": {
+            "elevated": "<md-elevated-card>{children}</md-elevated-card>",
+            "filled": "<md-filled-card>{children}</md-filled-card>",
+            "outlined": "<md-outlined-card>{children}</md-outlined-card>"
+          }
+        }
+      }
+    }
+  }
+}

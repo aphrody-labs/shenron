@@ -1,0 +1,23 @@
+{
+  "name": "@aphrody/hyperframes",
+  "version": "1.4.7",
+  "private": false,
+  "description": "Aphrody's vendorized HyperFrames engine: zero-download byte-range streaming, ISOBMFF atom parsing, and on-demand frame decoding.",
+  "homepage": "https://dragonballfr.com",
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./stream": "./src/stream.ts",
+    "./decoder": "./src/decoder.ts",
+    "./dragonball": "./src/dragonball.ts"
+  },
+  "scripts": {
+    "typecheck": "bun check --project tsconfig.json",
+    "test": "bun test"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  }
+}

@@ -55,7 +55,11 @@ export function ToolBar() {
   const hasBrush = isBrushTool(active);
 
   return (
-    <aside className="absolute right-3 bottom-3 left-3 z-20 flex min-w-0 flex-row overflow-x-auto rounded-2xl border border-border bg-[var(--surface-floating)] p-1 shadow-[var(--shadow-toolrail)] lg:top-3 lg:right-auto lg:bottom-auto lg:w-11 lg:flex-col lg:overflow-visible [&_button]:min-h-11 [&_button]:min-w-11 lg:[&_button]:min-h-8 lg:[&_button]:min-w-8">
+    <aside
+      role="toolbar"
+      aria-label={t("tools.toolbar") || "Barre d'outils"}
+      className="absolute right-3 bottom-3 left-3 z-20 flex min-w-0 flex-row overflow-x-auto rounded-2xl border border-border bg-[var(--surface-floating)] p-1 shadow-[var(--shadow-toolrail)] lg:top-3 lg:right-auto lg:bottom-auto lg:w-11 lg:flex-col lg:overflow-visible [&_button]:min-h-11 [&_button]:min-w-11 lg:[&_button]:min-h-9 lg:[&_button]:min-w-9"
+    >
       <div className="flex shrink-0 flex-row items-center py-0.5 lg:flex-col">
         {tools.map(([tool, Icon], index) => (
           <div key={tool} className="contents">
