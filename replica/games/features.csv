@@ -1,0 +1,29 @@
+id,feature,category,priority,effort,screens,flow
+F001,Moteur de combat déterministe 60 FPS WebGPU,engine,must,M,S03,F01
+F002,Shaders de cel-shading ArcSys Toon et contour inverted hull en WGSL,graphics,must,M,S03,F01
+F003,Barre de vie FighterZ inclinée à 15° avec jauge récupérable,ui,must,S,S03,F01
+F004,Dragon Radar avec collecte de 7 sphères et invocation Shenron,ui,must,S,S03,F01 F05
+F005,Scénario canonique généré depuis les 42 tomes manga et Daizenshuu,story,must,M,S01 S06,F01
+F006,Liens profonds vers lecteur manga et streaming anime épisode,story,must,S,S06,F01
+F007,Affrontement de rayons simultanés (Beam Clash) avec mashing de touches,gameplay,must,S,S04,F01
+F008,Dramatic Finish cinématique lors du coup final canonique,gameplay,must,S,S07,F01
+F009,Catalogue des 25 combattants jouables et formes canoniques,roster,must,M,S02,F01 F02
+F010,Mode Tournoi Tenkaichi Budōkai avec règle de Ring-Out,gameplay,must,M,S08,F02
+F011,Salle de l'Esprit et du Temps (Laboratoire de Frame Data et Hitboxes),training,must,M,S09,F03
+F012,Synchronisation des frames via backend souverain Axum 0.8 / Bevy,netcode,must,L,S10,F04
+F013,Synthèse audio Web Audio API (Kikōha, aura hum, impacts lourds),audio,must,S,S03,F01
+F014,Bulles de dialogues manga bilingues (Kanji/Kana originaux et français),story,must,S,S06,F01
+F015,Onomatopées Katakana flottantes dynamiques en combat,ui,should,S,S03,F01
+F016,Mode double vue commutable (2.5D WebGPU et 2D Pixel Perfect),engine,should,M,S01 S03,F01
+F017,Stockage R2 CDN des packages de textures KTX2 et maillages optimisés,infra,must,M,S03,F01
+F018,Support complet des manettes physiques (Standard Gamepad API),input,must,S,S03,F01
+F019,Quête des 7 Dragon Balls à travers les arènes du globe,gameplay,should,M,S01 S05,F05
+F020,Mode multijoueur rollback P2P avec compensation de latence,netcode,should,L,S10,F04
+F021,Classement compétitif en ligne et Battle Points (BP),ranking,should,S,S10,F04
+F022,Tableau des ratios de scouteur Daizenshuu 7 interactif,lore,should,S,S01,F01
+F023,Déchiffrement automatique AES-256 des paks de jeu locaux,tooling,must,M,S01,F01
+F024,Extraction des tables de texte .locres vers JSON structuré,tooling,must,S,S06,F01
+F025,Replay des derniers inputs et enregistreur de séquences de combo,training,could,M,S09,F03
+F026,Effets météo dynamiques dans les arènes (Destruction Namek, Pluie Cell),graphics,could,M,S03,F01
+F027,Bouton de partage de carte de victoire canonique sur les réseaux,social,could,S,S07,F01
+F028,Accessibilité WCAG AAA et navigation 100% au clavier,a11y,must,S,S01-S10,F01-F05
