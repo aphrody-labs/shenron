@@ -1,0 +1,578 @@
+{
+  "$schema": "https://shenron.dragonballfr.com/schemas/canon-story-v1.json",
+  "version": "1.0.0",
+  "generated_at": "2026-11-11T13:15:00Z",
+  "source_author": "Akira Toriyama",
+  "curation": "Shenron Sovereign Wiki & Databooks OCR Triad",
+  "sagas": [
+    {
+      "id": "pilaf",
+      "name": "Saga Pilaf & Débuts",
+      "name_ja": "ピラフ編",
+      "tomes": [1, 2, 3],
+      "era": "Âge 749"
+    },
+    {
+      "id": "tenkaichi_21",
+      "name": "21e Tenkaichi Budōkai",
+      "name_ja": "第21回天下一武道会",
+      "tomes": [3, 4, 5],
+      "era": "Âge 750"
+    },
+    {
+      "id": "red_ribbon",
+      "name": "L'Armée du Ruban Rouge",
+      "name_ja": "レッドリボン軍編",
+      "tomes": [5, 6, 7, 8, 9],
+      "era": "Âge 750"
+    },
+    {
+      "id": "tenkaichi_22",
+      "name": "22e Tenkaichi Budōkai",
+      "name_ja": "第22回天下一武道会",
+      "tomes": [10, 11, 12],
+      "era": "Âge 753"
+    },
+    {
+      "id": "piccolo_daimao",
+      "name": "Le Roi Démon Piccolo",
+      "name_ja": "ピッコロ大魔王編",
+      "tomes": [12, 13, 14, 15],
+      "era": "Âge 753"
+    },
+    {
+      "id": "tenkaichi_23",
+      "name": "23e Tenkaichi Budōkai",
+      "name_ja": "第23回天下一武道会",
+      "tomes": [15, 16, 17],
+      "era": "Âge 756"
+    },
+    {
+      "id": "saiyans",
+      "name": "Saga des Saiyans",
+      "name_ja": "サイヤ人編",
+      "tomes": [17, 18, 19, 20, 21],
+      "era": "Âge 761 - 762"
+    },
+    {
+      "id": "namek_frieza",
+      "name": "Planète Namek & Freezer",
+      "name_ja": "ナメック星・フリーザ編",
+      "tomes": [21, 22, 23, 24, 25, 26, 27, 28],
+      "era": "Âge 762"
+    },
+    {
+      "id": "androids_cell",
+      "name": "Les Cyborgs & Cell Games",
+      "name_ja": "人造人間・セル編",
+      "tomes": [28, 29, 30, 31, 32, 33, 34, 35],
+      "era": "Âge 764 - 767"
+    },
+    {
+      "id": "majin_buu",
+      "name": "Saga Majin Buu",
+      "name_ja": "魔人ブウ編",
+      "tomes": [36, 37, 38, 39, 40, 41, 42],
+      "era": "Âge 774"
+    },
+    {
+      "id": "super_beerus",
+      "name": "Dieu de la Destruction Beerus",
+      "name_ja": "破壊神ビルス編",
+      "tomes": [43],
+      "era": "Âge 778"
+    }
+  ],
+  "chapters": [
+    {
+      "id": 1,
+      "saga_id": "pilaf",
+      "tome": 1,
+      "manga_chapter": 8,
+      "page_start": 4,
+      "title": "Le Voleur du Désert : Yamcha",
+      "title_ja": "荒野の大悪党・ヤムチャ見参！",
+      "arena_id": "desert",
+      "arena_name": "Désert de Diablo",
+      "player": {
+        "id": "goku",
+        "name": "Son Goku (Enfant)",
+        "name_ja": "孫悟空（少年期）",
+        "power_level": 10,
+        "style": "balanced",
+        "wiki_slug": "son-goku"
+      },
+      "enemy": {
+        "id": "yamcha",
+        "name": "Yamcha",
+        "name_ja": "ヤムチャ",
+        "power_level": 8,
+        "style": "rush",
+        "boss_hp": 90.0,
+        "wiki_slug": "yamcha"
+      },
+      "canon_refs": {
+        "manga_url": "/wiki/manga/volume/1?chapter=8&edition=color&page=4",
+        "episode_id": 5,
+        "episode_url": "/wiki/episodes/5",
+        "wiki_arc_url": "/wiki/arcs/pilaf",
+        "technique_slug": "roga-fufuken",
+        "daizenshuu": "Daizenshuu 7 : Le Rōga Fūfū-ken développé par Yamcha dans le désert.",
+        "databook_lot": "databooks-lot-001"
+      },
+      "dialogue_intro": [
+        { "speaker": "Yamcha", "speaker_ja": "ヤムチャ", "text": "Si vous tenez à vos vies, laissez-moi tout votre argent et vos capsules !", "text_ja": "命が惜しければ、金とホイポイカプセルを置いていきな！" },
+        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Pas question ! Grand-père m'a appris à ne jamais me laisser faire !", "text_ja": "オラ、じっちゃんから悪いヤツには負けるなって教わったぞ！" }
+      ],
+      "dialogue_victory": [
+        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Tu es fort avec tes poings de loup, mais mon Nyoï-bō tape plus dur !", "text_ja": "おめえの狼牙風風拳すげえけど、オラの如意棒のほうがつええぞ！" }
+      ],
+      "objective": "Neutralisez Yamcha avec les attaques de base du Nyoï-bō.",
+      "dramatic_finish": {
+        "move": "nyoibo_strike",
+        "anim_cutscene": "yamcha_tooth_break"
+      }
+    },
+    {
+      "id": 2,
+      "saga_id": "tenkaichi_21",
+      "tome": 4,
+      "manga_chapter": 47,
+      "page_start": 1,
+      "title": "Finale du 21e Tenkaichi : Jackie Chun",
+      "title_ja": "天下一武道会決勝！ジャッキー・チュン",
+      "arena_id": "tenkaichi",
+      "arena_name": "Arène du Tenkaichi Budōkai",
+      "player": {
+        "id": "goku",
+        "name": "Son Goku (Enfant)",
+        "name_ja": "孫悟空（少年期）",
+        "power_level": 120,
+        "style": "balanced",
+        "wiki_slug": "son-goku"
+      },
+      "enemy": {
+        "id": "jackie_chun",
+        "name": "Jackie Chun (Kame Sennin)",
+        "name_ja": "ジャッキー・チュン",
+        "power_level": 139,
+        "style": "trickster",
+        "boss_hp": 120.0,
+        "wiki_slug": "kame-sennin"
+      },
+      "canon_refs": {
+        "manga_url": "/wiki/manga/volume/4?chapter=47&edition=color&page=1",
+        "episode_id": 27,
+        "episode_url": "/wiki/episodes/27",
+        "wiki_arc_url": "/wiki/arcs/21e-tenkaichi-budokai",
+        "technique_slug": "kamehameha",
+        "daizenshuu": "Daizenshuu 7 : Kame Sennin max power 139 contre Goku enfant 120 (forme Ōzaru stoppée par la destruction de la Lune).",
+        "databook_lot": "databooks-lot-002"
+      },
+      "dialogue_intro": [
+        { "speaker": "Jackie Chun", "speaker_ja": "ジャッキー・チュン", "text": "Montre-moi les fruits de l'entraînement de Kame Sennin, mon garçon !", "text_ja": "カメハウスでの修業の成果を見せてみよ、悟空！" },
+        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Papy Chun, je vais donner tout ce que j'ai ! KA-ME-HA-ME-HA !", "text_ja": "おじいちゃん、オラぜったい勝つぞ！か・め・は・め・波ーーッ！" }
+      ],
+      "dialogue_victory": [
+        { "speaker": "Jackie Chun", "speaker_ja": "ジャッキー・チュン", "text": "Le monde est vaste... Il y aura toujours plus fort que toi, Goku.", "text_ja": "世の中は広い。上には上がおるんじゃ、悟空よ。" }
+      ],
+      "objective": "Remportez la finale en évitant le Ring Out.",
+      "dramatic_finish": {
+        "move": "double_kick",
+        "anim_cutscene": "tenkaichi_sunset_clash"
+      }
+    },
+    {
+      "id": 3,
+      "saga_id": "tenkaichi_22",
+      "tome": 11,
+      "manga_chapter": 133,
+      "page_start": 3,
+      "title": "Finale du 22e Tenkaichi : Tenshinhan",
+      "title_ja": "激突！孫悟空対天津飯",
+      "arena_id": "tenkaichi",
+      "arena_name": "Arène du Tenkaichi Budōkai",
+      "player": {
+        "id": "goku",
+        "name": "Son Goku",
+        "name_ja": "孫悟空",
+        "power_level": 180,
+        "style": "balanced",
+        "wiki_slug": "son-goku"
+      },
+      "enemy": {
+        "id": "tenshinhan",
+        "name": "Tenshinhan",
+        "name_ja": "天津飯",
+        "power_level": 180,
+        "style": "power",
+        "boss_hp": 135.0,
+        "wiki_slug": "tenshinhan"
+      },
+      "canon_refs": {
+        "manga_url": "/wiki/manga/volume/11?chapter=133&edition=color&page=3",
+        "episode_id": 100,
+        "episode_url": "/wiki/episodes/100",
+        "wiki_arc_url": "/wiki/arcs/22e-tenkaichi-budokai",
+        "technique_slug": "kikoho",
+        "daizenshuu": "Daizenshuu 7 : Égalité technique 180 vs 180. Le Kikoho pulvérise le ring.",
+        "databook_lot": "databooks-lot-003"
+      },
+      "dialogue_intro": [
+        { "speaker": "Tenshinhan", "speaker_ja": "天津飯", "text": "L'école de la Tortue périra aujourd'hui ! Maître Tsuru m'a tout enseigné !", "text_ja": "亀仙流など恐るるに足らん！鶴仙流の真髄を見せてやる！" },
+        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Tu es fort Tenshinhan, mais le vrai combat ne doit pas servir à tuer !", "text_ja": "天津飯、おめえすげえ腕前なのに、殺し合いなんかすんな！" }
+      ],
+      "dialogue_victory": [
+        { "speaker": "Tenshinhan", "speaker_ja": "天津飯", "text": "Goku... Ton cœur est pur. J'abandonne la voie de l'assassinat.", "text_ja": "悟空…貴様の闘いには迷いがない。俺は鶴仙人を捨てる。" }
+      ],
+      "objective": "Échangez les coups en l'air après la destruction du ring.",
+      "dramatic_finish": {
+        "move": "headbutt_rebound",
+        "anim_cutscene": "tenshinhan_van_collision"
+      }
+    },
+    {
+      "id": 4,
+      "saga_id": "piccolo_daimao",
+      "tome": 14,
+      "manga_chapter": 161,
+      "page_start": 6,
+      "title": "Le Poing du Dragon contre Piccolo Daimaō",
+      "title_ja": "孫悟空怒りの一撃！ピッコロ大魔王散る",
+      "arena_id": "king_castle",
+      "arena_name": "Château du Roi de la Terre",
+      "player": {
+        "id": "goku",
+        "name": "Son Goku (Eau Sacrée)",
+        "name_ja": "孫悟空（超神水）",
+        "power_level": 260,
+        "style": "rush",
+        "wiki_slug": "son-goku"
+      },
+      "enemy": {
+        "id": "piccolo_daimao",
+        "name": "Roi Démon Piccolo",
+        "name_ja": "ピッコロ大魔王",
+        "power_level": 260,
+        "style": "boss",
+        "boss_hp": 150.0,
+        "wiki_slug": "piccolo-daimao"
+      },
+      "canon_refs": {
+        "manga_url": "/wiki/manga/volume/14?chapter=161&edition=color&page=6",
+        "episode_id": 122,
+        "episode_url": "/wiki/episodes/122",
+        "wiki_arc_url": "/wiki/arcs/piccolo-daimao",
+        "technique_slug": "ozaru-ken",
+        "daizenshuu": "Daizenshuu 7 : Après l'ingestion de la Chōshinsui, la puissance latente de Goku atteint 260.",
+        "databook_lot": "databooks-lot-004"
+      },
+      "dialogue_intro": [
+        { "speaker": "Piccolo Daimaō", "speaker_ja": "ピッコロ大魔王", "text": "Maudit vermisseau ! Je vais écraser tes os un par un !", "text_ja": "小僧めが！この世界はすでに我が支配下にあるのだ！消え去れ！" },
+        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Tu as tué Krilin, Kame Sennin et tous les autres... JE NE TE LE PARDONNERAI JAMAIS !", "text_ja": "クリリンもじっちゃんもみんな殺した…絶対に許さねえぞーーッ！" }
+      ],
+      "dialogue_victory": [
+        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "J'ai mis toute ma vie dans ce seul bras restant !", "text_ja": "オラの全部を…この拳に込めたんだーーッ！" }
+      ],
+      "objective": "Percez Piccolo Daimaō avec le poing propulsé par le Kamehameha.",
+      "dramatic_finish": {
+        "move": "ozaru_penetration",
+        "anim_cutscene": "daimao_egg_birth"
+      }
+    },
+    {
+      "id": 5,
+      "saga_id": "saiyans",
+      "tome": 17,
+      "manga_chapter": 195,
+      "page_start": 2,
+      "title": "L'Arrivée de Raditz : L'Héritage Saiyan",
+      "title_ja": "謎の異星人戦士！ラディッツ来襲",
+      "arena_id": "kame_house",
+      "arena_name": "Île de Kame House",
+      "player": {
+        "id": "goku_piccolo",
+        "name": "Son Goku & Piccolo",
+        "name_ja": "孫悟空＆ピッコロ",
+        "power_level": 416,
+        "style": "team",
+        "wiki_slug": "son-goku"
+      },
+      "enemy": {
+        "id": "raditz",
+        "name": "Raditz",
+        "name_ja": "ラディッツ",
+        "power_level": 1500,
+        "style": "brute",
+        "boss_hp": 160.0,
+        "wiki_slug": "raditz"
+      },
+      "canon_refs": {
+        "manga_url": "/wiki/manga/volume/17?chapter=195&edition=color&page=2",
+        "episode_id": 875,
+        "episode_url": "/wiki/episodes/875",
+        "wiki_arc_url": "/wiki/arcs/saiyans",
+        "technique_slug": "makankosappo",
+        "daizenshuu": "Daizenshuu 7 : Raditz scoute Goku à 416 et Piccolo à 408 (Makankōsappō monte à 1,330 et 1,480).",
+        "databook_lot": "databooks-lot-005"
+      },
+      "dialogue_intro": [
+        { "speaker": "Raditz", "speaker_ja": "ラディッツ", "text": "Kakarotto, tu as oublié ta mission ! Tu es né pour exterminer cette planète !", "text_ja": "カカロット！なぜこの星の人間どもを滅ぼしていなかったのだ！" },
+        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Je m'appelle Son Goku ! La Terre est ma maison, rends-moi Gohan !", "text_ja": "オラは孫悟空だ！悟飯を返せ！おめえなんかに従うもんか！" }
+      ],
+      "dialogue_victory": [
+        { "speaker": "Piccolo", "speaker_ja": "ピッコロ", "text": "Makankōsappō ! Mourez ensemble, vermines Saiyan !", "text_ja": "魔貫光殺砲ーーッ！地獄へ道連れにしてやるわ！" }
+      ],
+      "objective": "Immobilisez Raditz par derrière pour que Piccolo arme son tir.",
+      "dramatic_finish": {
+        "move": "makankosappo_pierce",
+        "anim_cutscene": "goku_raditz_sacrifice"
+      }
+    },
+    {
+      "id": 6,
+      "saga_id": "saiyans",
+      "tome": 20,
+      "manga_chapter": 230,
+      "page_start": 1,
+      "title": "Le Choc des Saiyans : Goku Kaiō-ken vs Vegeta",
+      "title_ja": "宿命の激突！カカロット対ベジータ",
+      "arena_id": "wasteland",
+      "arena_name": "Terre Dévastée des Saiyans",
+      "player": {
+        "id": "goku",
+        "name": "Son Goku (Kaiō-ken)",
+        "name_ja": "孫悟空（界王拳）",
+        "power_level": 8200,
+        "style": "balanced",
+        "wiki_slug": "son-goku"
+      },
+      "enemy": {
+        "id": "vegeta",
+        "name": "Vegeta (Prince des Saiyans)",
+        "name_ja": "ベジータ",
+        "power_level": 18000,
+        "style": "power",
+        "boss_hp": 180.0,
+        "wiki_slug": "vegeta"
+      },
+      "canon_refs": {
+        "manga_url": "/wiki/manga/volume/20?chapter=230&edition=color&page=1",
+        "episode_id": 898,
+        "episode_url": "/wiki/episodes/898",
+        "wiki_arc_url": "/wiki/arcs/saiyans",
+        "technique_slug": "galick-ho",
+        "daizenshuu": "Daizenshuu 7 : Goku de base 8,200. Kaiō-ken x3 = 24,000, Kaiō-ken x4 = 32,000 surpassant le Galick Gun à 24,000 de Vegeta.",
+        "databook_lot": "databooks-lot-006"
+      },
+      "dialogue_intro": [
+        { "speaker": "Vegeta", "speaker_ja": "ベジータ", "text": "Un guerrier inférieur comme toi ne surpassera jamais l'élite royale !", "text_ja": "下級戦士がエリートに敵うはずがない！思い知らせてやる！" },
+        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Même un raté peut dépasser l'élite s'il s'entraîne assez dur ! Kaiō-ken x3 !", "text_ja": "落ちこぼれだって必死に努力すりゃエリートを超えることがあるかもよ！界王拳3倍だーーッ！" }
+      ],
+      "dialogue_victory": [
+        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Kaiō-ken... QUATRE FOIS PLUS FORT ! HAAAA !", "text_ja": "界王拳…4倍だぁーーーーッ！！いっけえぇぇ！！" }
+      ],
+      "objective": "Remportez le Beam Clash décisif Kamehameha x4 contre le Galick Gun.",
+      "dramatic_finish": {
+        "move": "kamehameha_x4_beam",
+        "anim_cutscene": "vegeta_stratosphere_launch"
+      }
+    },
+    {
+      "id": 7,
+      "saga_id": "namek_frieza",
+      "tome": 27,
+      "manga_chapter": 318,
+      "page_start": 1,
+      "title": "L'Éveil du Super Saiyan : Goku vs Freezer 100%",
+      "title_ja": "伝説の超サイヤ人覚醒！孫悟空対フリーザ",
+      "arena_id": "namek_destruction",
+      "arena_name": "Planète Namek en Fusion",
+      "player": {
+        "id": "goku",
+        "name": "Son Goku (Super Saiyan)",
+        "name_ja": "孫悟空（超サイヤ人）",
+        "power_level": 150000000,
+        "style": "balanced",
+        "wiki_slug": "son-goku"
+      },
+      "enemy": {
+        "id": "frieza",
+        "name": "Freezer (100% Puissance Max)",
+        "name_ja": "フリーザ（フルパワー）",
+        "power_level": 120000000,
+        "style": "boss",
+        "boss_hp": 200.0,
+        "wiki_slug": "freezer"
+      },
+      "canon_refs": {
+        "manga_url": "/wiki/manga/volume/27?chapter=318&edition=color&page=1",
+        "episode_id": 985,
+        "episode_url": "/wiki/episodes/985",
+        "wiki_arc_url": "/wiki/arcs/frieza",
+        "technique_slug": "angry-kamehameha",
+        "daizenshuu": "Daizenshuu 7 : Freezer 100% = 120,000,000. Son Goku Super Saiyan = 150,000,000 (multiplicateur x50 du niveau de base à 3,000,000).",
+        "databook_lot": "databooks-lot-007"
+      },
+      "dialogue_intro": [
+        { "speaker": "Frieza", "speaker_ja": "フリーザ", "text": "Cette planète explosera dans 5 minutes ! Tu ne pourras pas survivre dans l'espace !", "text_ja": "あと5分もすればこの星は消滅しますよ！宇宙空間で生きられぬ貴様は終わりです！" },
+        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Tu as tué Krilin de sang-froid... JE SUIS LE SUPER SAIYAN SON GOKU !", "text_ja": "オレはおこったぞーーーッ！！フリーザーーーッ！！" }
+      ],
+      "dialogue_victory": [
+        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Espèce d'idiot... (Baka yarō !)", "text_ja": "バカヤローーーッ！！" }
+      ],
+      "objective": "Terrassez Freezer 100% avant l'explosion finale de Namek.",
+      "dramatic_finish": {
+        "move": "angry_kamehameha",
+        "anim_cutscene": "namek_cataclysm_finish"
+      }
+    },
+    {
+      "id": 8,
+      "saga_id": "androids_cell",
+      "tome": 34,
+      "manga_chapter": 415,
+      "page_start": 1,
+      "title": "Le Père-Fils Kamehameha : Gohan SSJ2 vs Cell Super Parfait",
+      "title_ja": "もう怒ったぞ！親子かめはめ波対完全体セル",
+      "arena_id": "cell_games",
+      "arena_name": "Arène des Cell Games",
+      "player": {
+        "id": "gohan",
+        "name": "Son Gohan (Super Saiyan 2)",
+        "name_ja": "孫悟飯（超サイヤ人2）",
+        "power_level": 1200000000,
+        "style": "rush",
+        "wiki_slug": "son-gohan"
+      },
+      "enemy": {
+        "id": "cell",
+        "name": "Cell (Super Parfait)",
+        "name_ja": "セル（完全体）",
+        "power_level": 1150000000,
+        "style": "boss",
+        "boss_hp": 220.0,
+        "wiki_slug": "cell"
+      },
+      "canon_refs": {
+        "manga_url": "/wiki/manga/volume/34?chapter=415&edition=color&page=1",
+        "episode_id": 1081,
+        "episode_url": "/wiki/episodes/1081",
+        "wiki_arc_url": "/wiki/arcs/cell",
+        "technique_slug": "father-son-kamehameha",
+        "daizenshuu": "Daizenshuu 7 : Le Kamehameha Solaire de Cell menace tout le système solaire. Vegeta crée la diversion décisive.",
+        "databook_lot": "databooks-lot-012"
+      },
+      "dialogue_intro": [
+        { "speaker": "Cell", "speaker_ja": "セル", "text": "Ce Kamehameha Solaire va anéantir la Terre, le système solaire et jusqu'au dernier de vos atomes !", "text_ja": "この太陽系もろとも吹き飛ぶがいい！受けてみろ、真の完全体の力を！" },
+        { "speaker": "Gohan", "speaker_ja": "孫悟飯", "text": "Papa... Même si mon bras gauche est brisé, je sens ta main sur mon épaule !", "text_ja": "お父さん…僕、もう片腕しか動かないけど…負けないよ！" }
+      ],
+      "dialogue_victory": [
+        { "speaker": "Gohan", "speaker_ja": "孫悟飯", "text": "HAAAA ! Maintenant, Gohan ! Relâche toute ta puissance !", "text_ja": "いまだ悟飯！力を出し切れーーッ！！波ーーーーッ！！" }
+      ],
+      "objective": "Remportez le plus grand clash de rayon de l'univers Dragon Ball.",
+      "dramatic_finish": {
+        "move": "father_son_kamehameha",
+        "anim_cutscene": "cell_disintegration"
+      }
+    },
+    {
+      "id": 9,
+      "saga_id": "majin_buu",
+      "tome": 42,
+      "manga_chapter": 516,
+      "page_start": 1,
+      "title": "Le Chō Genki Dama de la Terre : Goku vs Kid Buu",
+      "title_ja": "元気玉炸裂！バイバイ、魔人ブウ",
+      "arena_id": "kaiohshin",
+      "arena_name": "Domaine Sacré des Kaiōshin",
+      "player": {
+        "id": "goku",
+        "name": "Son Goku (Super Saiyan)",
+        "name_ja": "孫悟空（元気玉）",
+        "power_level": 2500000000,
+        "style": "balanced",
+        "wiki_slug": "son-goku"
+      },
+      "enemy": {
+        "id": "buu",
+        "name": "Kid Buu (Pur Mal)",
+        "name_ja": "魔人ブウ（純粋）",
+        "power_level": 2400000000,
+        "style": "boss",
+        "boss_hp": 250.0,
+        "wiki_slug": "majin-buu"
+      },
+      "canon_refs": {
+        "manga_url": "/wiki/manga/volume/42?chapter=516&edition=color&page=1",
+        "episode_id": 1184,
+        "episode_url": "/wiki/episodes/1184",
+        "wiki_arc_url": "/wiki/arcs/buu",
+        "technique_slug": "cho-genki-dama",
+        "daizenshuu": "Daizenshuu 7 : Le Chō Genki Dama alimenté par l'énergie des Terriens rassemblée par M. Satan.",
+        "databook_lot": "databooks-lot-020"
+      },
+      "dialogue_intro": [
+        { "speaker": "Kid Buu", "speaker_ja": "魔人ブウ", "text": "KHEE-KHEE-KHEE ! KYA-HA-HA !", "text_ja": "ウキャキャキャッ！ギャハハハッ！" },
+        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Gens de la Terre... Prêtez-moi votre force une toute dernière fois !", "text_ja": "地球のみんな…たのむ！オラに元気をわけてくれーーッ！！" }
+      ],
+      "dialogue_victory": [
+        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Tu t'es bien battu... Réincarne-toi en type bien, je t'attendrai ! Bye-bye, Buu !", "text_ja": "またな！今度はいいヤツに生まれ変われよ…一対一で勝負しようぜ！バイバイ、魔人ブウ！" }
+      ],
+      "objective": "Poussez le Chō Genki Dama restauré à pleine puissance.",
+      "dramatic_finish": {
+        "move": "super_genki_dama_push",
+        "anim_cutscene": "kid_buu_vaporization"
+      }
+    },
+    {
+      "id": 10,
+      "saga_id": "super_beerus",
+      "tome": 43,
+      "manga_chapter": 4,
+      "page_start": 1,
+      "title": "Le Super Saiyan God : Goku vs Dieu de la Destruction Beerus",
+      "title_ja": "神と神！超サイヤ人ゴッド孫悟空対破壊神ビルス",
+      "arena_id": "stratosphere",
+      "arena_name": "Stratosphère Terrestre",
+      "player": {
+        "id": "goku_god",
+        "name": "Son Goku (Super Saiyan God)",
+        "name_ja": "孫悟空（超サイヤ人ゴッド）",
+        "power_level": 10000000000,
+        "style": "balanced",
+        "wiki_slug": "son-goku"
+      },
+      "enemy": {
+        "id": "beerus",
+        "name": "Beerus (Dieu de la Destruction)",
+        "name_ja": "破壊神ビルス",
+        "power_level": 15000000000,
+        "style": "boss",
+        "boss_hp": 300.0,
+        "wiki_slug": "beerus"
+      },
+      "canon_refs": {
+        "manga_url": "/wiki/manga/volume/43?chapter=4&edition=color&page=1",
+        "episode_id": 14,
+        "episode_url": "/wiki/episodes/14",
+        "wiki_arc_url": "/wiki/arcs/beerus",
+        "technique_slug": "dragon-smash",
+        "daizenshuu": "Chouzenshuu 4 : L'éveil du Ki Divin via le rituel des 5 Saiyans au cœur pur.",
+        "databook_lot": "databooks-lot-030"
+      },
+      "dialogue_intro": [
+        { "speaker": "Beerus", "speaker_ja": "ビルス", "text": "Montre-moi si le Super Saiyan God de ma prophétie valait mon réveil !", "text_ja": "予知夢の超サイヤ人ゴッドが本物かどうか、確かめさせてもらうよ。" },
+        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "C'est une sensation incroyable... C'est donc ça, le monde des dieux !", "text_ja": "すげえ…これが神様の世界の力か！オラ、ワクワクしてきたぞ！" }
+      ],
+      "dialogue_victory": [
+        { "speaker": "Beerus", "speaker_ja": "ビルス", "text": "Tu n'es que le deuxième être le plus fort que j'ai combattu. Tu as du mérite, Son Goku.", "text_ja": "認めてあげよう。僕とここまで闘えたのは、君が二人目だよ。" }
+      ],
+      "objective": "Poussez le Dieu de la Destruction dans ses derniers retranchements.",
+      "dramatic_finish": {
+        "move": "god_burst_punch",
+        "anim_cutscene": "earth_saved_nap"
+      }
+    }
+  ]
+}

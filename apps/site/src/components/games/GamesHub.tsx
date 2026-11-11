@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  Flame,
   Gamepad2,
   Grid2X2,
   Hand,
@@ -33,6 +34,7 @@ const games = [
   { id: "bingo", href: "/games/bingo", icon: Radar, account: true },
 ] as const;
 const explorers = [
+  { id: "canon", href: "/games/canon", icon: Flame },
   { id: "pixel", href: "/games/dragon-pixel", icon: Gamepad2 },
   { id: "xenoverse", href: "/games/xenoverse-2", icon: ScanLine },
   { id: "bt3", href: "/games/budokai-tenkaichi-3", icon: MonitorPlay },
@@ -70,6 +72,44 @@ export function GamesHub({ access = null }: { access?: AccessSnapshot | null } =
           </span>
         </div>
       </section>
+
+      {/* Featured Epic Canon 2.5D Game Showcase Banner */}
+      <div className="relative mb-6 overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-950/40 via-zinc-950 to-slate-950 p-6 md:p-8 shadow-2xl">
+        <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-amber-500/20 blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="space-y-3 max-w-2xl">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-amber-400 border border-amber-500/30 flex items-center gap-1">
+                <Sparkles className="size-3" />
+                Moteur Dédié • WebGPU 60 FPS
+              </span>
+              <span className="rounded-full bg-sky-500/20 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-sky-400 border border-sky-500/30">
+                2.5D ArcSys & Pixel Perfect
+              </span>
+              <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-emerald-400 border border-emerald-500/30">
+                Toriyama 42 Tomes
+              </span>
+            </div>
+            <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">
+              Dragon Ball 2.5D Canon : Le Jeu Épique
+            </h2>
+            <p className="text-sm text-zinc-300 leading-relaxed">
+              Combattez à travers les sagas canoniques d'Akira Toriyama (du 21e Tenkaichi Budōkai au
+              Chō Genki Dama contre Kid Buu), avec scénarios générés via le Wiki, Manga, Anime et
+              notices du Daizenshuu 7.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 w-full md:w-auto">
+            <Link
+              href="/games/canon"
+              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-amber-400 hover:bg-amber-300 px-6 py-3 font-display text-sm font-bold text-black transition-all hover:scale-[1.02] shadow-[0_0_24px_rgba(251,191,36,0.35)] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none"
+            >
+              <Swords className="h-4 w-4" />
+              Lancer l'Histoire Canonique
+            </Link>
+          </div>
+        </div>
+      </div>
 
       {/* Featured Epic / Steam Showcase Banner */}
       <div className="relative mb-6 overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-r from-zinc-950 via-[#161a23] to-zinc-950 p-6 md:p-8 shadow-2xl">

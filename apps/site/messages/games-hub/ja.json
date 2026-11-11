@@ -60,5 +60,11 @@
     "category": "格闘 · 実験的",
     "description": "自分のディスクイメージで Budokai Tenkaichi 3 をブラウザ上で実行します。ファイルは端末内にとどまり、送信されません。",
     "action": "Budokai Tenkaichi 3 を起動"
+  },
+  "canon": {
+    "name": "ドラゴンボール 2.5D 正史",
+    "category": "格闘 · 全42巻ストーリー",
+    "description": "鳥山明の正史42巻をWebGPU 60FPSエンジンと大全集データで追体験。",
+    "action": "正史ストーリーを開始"
   }
 }

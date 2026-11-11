@@ -60,5 +60,11 @@
     "category": "Fighting · Experimental",
     "description": "Run Budokai Tenkaichi 3 in your browser with your own disc image. The file stays on your device and is never uploaded.",
     "action": "Launch Budokai Tenkaichi 3"
+  },
+  "canon": {
+    "name": "Dragon Ball 2.5D Canon",
+    "category": "Fighting · 42 Tomes Story",
+    "description": "Relive Akira Toriyama's 42 canonical tomes at 60 FPS with the 2.5D WebGPU engine and Daizenshuu lore.",
+    "action": "Play Canonical Story"
   }
 }

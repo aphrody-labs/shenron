@@ -5,6 +5,7 @@ pub mod beam_clash;
 pub mod combat;
 pub mod frame_data;
 pub mod haptics;
+pub mod canon_story;
 pub mod input;
 pub mod render_packet;
 pub mod roster;
@@ -30,6 +31,7 @@ pub use render_packet::{
     ProjectileRenderData, UiOverlayData, WebGpuRenderPacket,
 };
 pub use roster::{FighterDefinition, StoryChapter, get_fighter_def, get_story_chapters};
+pub use canon_story::*;
 pub use sprite_manifest::*;
 pub use types::{
     ArenaId, AudioEvent, AuraType, FighterId, FighterStyle, GameMode, HapticEvent, Hitbox, Hurtbox,

@@ -60,5 +60,11 @@
     "category": "Combat · Expérimental",
     "description": "Lance Budokai Tenkaichi 3 dans ton navigateur avec ta propre image de disque. Le fichier reste sur ton appareil et n’est jamais envoyé.",
     "action": "Lancer Budokai Tenkaichi 3"
+  },
+  "canon": {
+    "name": "Dragon Ball 2.5D Canon",
+    "category": "Combat · Scénario 42 Tomes",
+    "description": "Revivez les 42 tomes canoniques d'Akira Toriyama en 60 FPS avec le moteur 2.5D WebGPU et les notices Daizenshuu.",
+    "action": "Lancer l'Histoire Canonique"
   }
 }

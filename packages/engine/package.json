@@ -24,7 +24,8 @@
     "./xv2-character": "./src/xv2-character.ts",
     "./sprite-atlas": "./src/sprite-atlas.ts",
     "./combat-atlas": "./src/combat-atlas.ts",
-    "./games": "./src/games/index.ts"
+    "./games": "./src/games/index.ts",
+    "./games/*": "./src/games/*.ts"
   },
   "publishConfig": {
     "access": "public",
