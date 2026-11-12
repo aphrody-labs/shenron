@@ -344,7 +344,7 @@ def check_logo_required(brand_name, skip_prompt=False):
     Returns:
         str: 'continue' to proceed without logo, 'generate' to use logo-design skill, 'exit' to abort
     """
-    if skip_prompt:
+    if skip_prompt or not sys.stdin.isatty():
         return 'continue'
 
     print(f"\n⚠️  No logo image provided for '{brand_name}'")
