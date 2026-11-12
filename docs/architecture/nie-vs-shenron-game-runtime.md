@@ -1,12 +1,12 @@
 # Architectural & Deployment Comparison: NIE vs Shenron Game Runtime
 
-This document provides a comparative analysis of the architecture, game runtimes, reverse-engineering pipelines, and deployment systems between **NIE** (`C:\src\rosegriffon`) and **Shenron** (`C:\src\apps\shenron`), establishing a convergence roadmap.
+This document provides a comparative analysis of the architecture, game runtimes, reverse-engineering pipelines, and deployment systems between **NIE** (`C:\src\apps\rosegriffon`) and **Shenron** (`C:\src\apps\shenron`), establishing a convergence roadmap.
 
 ---
 
 ## 1. Executive Topology Matrix
 
-| Dimension | NIE (`C:\src\rosegriffon`) | Shenron (`C:\src\apps\shenron`) |
+| Dimension | NIE (`C:\src\apps\rosegriffon`) | Shenron (`C:\src\apps\shenron`) |
 | :--- | :--- | :--- |
 | **Primary Domain** | Game engine exploration, deep reverse-engineering (IEVR / CPK / Steam), 3D world engine | Sovereign Dragon Ball portal, encyclopedia, streaming engine, WebGPU mini-games, manga OCR |
 | **Runtime Core** | Rust 2024 (`aphrody-nie-*`) + Bun v1.4.4 (`nie-sre-server.ts`) | Upstream Bun v1.4.4 + Next.js 16.5 standalone + Rust 2024 (`crates/*`) |
@@ -24,7 +24,7 @@ NIE is architected as a modular cluster of 45+ specialized Rust crates operating
 
 ```mermaid
 flowchart TD
-    subgraph NIE_Architecture["NIE Engine (C:/src/rosegriffon)"]
+    subgraph NIE_Architecture["NIE Engine (C:/src/apps/rosegriffon)"]
         CORE["aphrody-nie-core"]
         BEVY["aphrody-nie-bevy (ECS)"]
         RENDER["aphrody-nie-render3d (WGPU 30)"]

@@ -11,7 +11,7 @@
       "paths": {
         "vps": "~/src/shenron",
         "cdn": "~/src/shenron",
-        "windows": "C:/src/shenron",
+        "windows": "C:/src/apps/shenron",
         "prod": "/srv/shenron/build/source"
       }
     },
@@ -62,7 +62,7 @@
     }
   ],
   "excluded": [
-    { "host": "windows", "path": "C:/src/shenron", "reason": "main checkout holds other sessions' uncommitted work" },
+    { "host": "windows", "path": "C:/src/apps/shenron", "reason": "main checkout holds other sessions' uncommitted work" },
     { "host": "windows", "path": "C:/src/yolo-stack", "reason": "main checkout holds other sessions' uncommitted work" },
     { "host": "windows", "path": "C:/src/yolo-ui", "reason": "main checkout holds other sessions' uncommitted work" },
     { "host": "vps", "path": "~/build/yolo-ui", "reason": "build checkout in use by other sessions (submodule init running); sync by hand" }

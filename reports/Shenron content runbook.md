@@ -1,6 +1,6 @@
 # Shenron : runbook d'exécution des chaînes de contenu
 
-Audit en lecture seule réalisé le 2026-11-05 (environ 06:00–07:30 UTC). Dépôt `C:\src\shenron` à HEAD `2e465772`. La production sert l'image `f04de517` (`/srv/shenron/current` → `releases/docker-f04de517…`).
+Audit en lecture seule réalisé le 2026-11-05 (environ 06:00–07:30 UTC). Dépôt `C:\src\apps\shenron` à HEAD `2e465772`. La production sert l'image `f04de517` (`/srv/shenron/current` → `releases/docker-f04de517…`).
 
 Aucune écriture n'a eu lieu :
 - aucun pipeline lancé en mode écriture ;
@@ -13,7 +13,7 @@ Les mesures viennent de quatre sources :
 - **Requêtes HEAD publiques** sur `cdn.dragonballfr.com`.
 - **L'inventaire CDN de prod** `/srv/shenron/data/cdn/inventory-9a8ecae6371f.json` (246 420 chemins), lu sans écriture et comparé aux références en base.
 
-Les chemins de dépôt sont relatifs à `C:\src\shenron`.
+Les chemins de dépôt sont relatifs à `C:\src\apps\shenron`.
 
 ## 0. Constats transverses (à lire avant tout lot massif)
 

@@ -39,7 +39,7 @@ A curated list of libraries, tools, engines, decompilers, runtimes, and resource
 ---
 
 ## 5. Web, Bun & Next.js Ecosystem
-- **[`@rosegriffon/lua-plugin`](file:///C:/src/rosegriffon/packages/rg-lua)**:
+- **[`@rosegriffon/lua-plugin`](file:///C:/src/apps/rosegriffon/packages/rg-lua)**:
   - Official Bun bundler plugin (`bunPluginLua`) supporting `import script from "./script.lua"`.
   - Next.js webpack/turbopack extension (`withLua`) for isomorphic client/server Lua loading.
   - Zero-dependency Lua 5.2 pure sandbox VM (`Lua52VM`) supporting `_ENV`, `bit32`, `table.pack`, and `rawlen`.
