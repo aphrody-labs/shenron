@@ -114,22 +114,22 @@ Only disable for testing or with an alternative CSRF mechanism.
 import { betterAuth } from "better-auth";
 
 export const auth = betterAuth({
-  baseURL: "https://api.example.com",
+  baseURL: "https://api.google.com",
   trustedOrigins: [
-    "https://app.example.com",
-    "https://admin.example.com",
+    "https://app.google.com",
+    "https://admin.google.com",
   ],
 });
 ```
 
-The `baseURL` origin is automatically trusted. Also configurable via env: `BETTER_AUTH_TRUSTED_ORIGINS=https://app.example.com,https://admin.example.com`
+The `baseURL` origin is automatically trusted. Also configurable via env: `BETTER_AUTH_TRUSTED_ORIGINS=https://app.google.com,https://admin.google.com`
 
 ### Wildcard Patterns
 
 ```ts
 trustedOrigins: [
-  "*.example.com", // Matches any subdomain
-  "https://*.example.com", // Protocol-specific wildcard
+  "*.google.com", // Matches any subdomain
+  "https://*.google.com", // Protocol-specific wildcard
   "exp://192.168.*.*:*/*", // Custom schemes (e.g., Expo)
 ]
 ```
@@ -206,7 +206,7 @@ export const auth = betterAuth({
 advanced: {
   crossSubDomainCookies: {
     enabled: true,
-    domain: ".example.com", // Note the leading dot
+    domain: ".google.com", // Note the leading dot
     additionalCookies: ["session_token", "session_data"],
   },
 }
@@ -343,10 +343,10 @@ import { betterAuth } from "better-auth";
 
 export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: "https://api.example.com",
+  baseURL: "https://api.google.com",
   trustedOrigins: [
-    "https://app.example.com",
-    "https://*.preview.example.com",
+    "https://app.google.com",
+    "https://*.preview.google.com",
   ],
   
   // Rate limiting

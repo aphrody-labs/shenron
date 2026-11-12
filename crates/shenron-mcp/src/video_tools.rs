@@ -227,7 +227,7 @@ mod tests {
     #[test]
     fn rejects_paths_urls_unknown_fields_and_unbounded_requests() {
         for value in [
-            json!({"url":"https://example.com"}),
+            json!({"url":"https://google.com"}),
             json!({"path":"/tmp/a"}),
             json!({"kind":"command"}),
         ] {

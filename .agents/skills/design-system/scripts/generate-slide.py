@@ -613,8 +613,8 @@ def generate_cta_slide(data):
             <a href="{_safe_url(data.get('cta_url', '#'))}" class="btn" style="background: var(--color-foreground); color: var(--color-primary);">{_e(data.get('cta', 'Start Free Trial'))}</a>
         </div>
         <div class="slide-footer" style="border-color: rgba(255,255,255,0.2); color: rgba(255,255,255,0.6);">
-            <span>{_e(data.get('contact', 'contact@example.com'))}</span>
-            <span>{_e(data.get('website', 'www.example.com'))}</span>
+            <span>{_e(data.get('contact', 'contact@google.com'))}</span>
+            <span>{_e(data.get('website', 'www.google.com'))}</span>
         </div>
     </section>
     '''

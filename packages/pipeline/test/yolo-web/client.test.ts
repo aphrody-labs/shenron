@@ -17,7 +17,7 @@ describe("YOLO WEB stdio client (fixture server with the web-cli mcp framing)", 
     const saved = process.env.YOLO_WEB_CLI;
     delete process.env.YOLO_WEB_CLI;
     try {
-      await expect(yoloWebScrape("https://example.org/")).rejects.toBeInstanceOf(
+      await expect(yoloWebScrape("https://gemini.google.com/")).rejects.toBeInstanceOf(
         YoloWebNotConfiguredError,
       );
     } finally {
@@ -29,7 +29,7 @@ describe("YOLO WEB stdio client (fixture server with the web-cli mcp framing)", 
     await withYoloWeb(
       async (mcp) => {
         await expect(mcp.navigate("file:///etc/passwd")).rejects.toThrow("HTTP(S)");
-        await expect(mcp.capture("https://u:p@example.org/")).rejects.toThrow("credentials");
+        await expect(mcp.capture("https://u:p@gemini.google.com/")).rejects.toThrow("credentials");
       },
       { cli: FIXTURE },
     );
@@ -41,13 +41,13 @@ describe("YOLO WEB stdio client (fixture server with the web-cli mcp framing)", 
         const tools = await mcp.listTools();
         expect(tools.map((tool) => tool.name)).toContain("browser_navigate");
         expect(mcp.serverInfo.name).toBe("fixture-web-mcp");
-        expect(await mcp.markdown("https://example.org/a")).toContain(
-          "Source: https://example.org/a",
+        expect(await mcp.markdown("https://gemini.google.com/a")).toContain(
+          "Source: https://gemini.google.com/a",
         );
-        expect(await mcp.capture("https://example.org/b")).toEqual({
-          url: "https://example.org/b",
+        expect(await mcp.capture("https://gemini.google.com/b")).toEqual({
+          url: "https://gemini.google.com/b",
           title: "Fixture",
-          content: "<html>https://example.org/b</html>",
+          content: "<html>https://gemini.google.com/b</html>",
         });
         await expect(mcp.tool("nope")).rejects.toThrow("unknown tool nope");
       },
@@ -78,7 +78,7 @@ describe("YOLO WEB stdio client (fixture server with the web-cli mcp framing)", 
 
   it("a server that exits is reported with its status, not a hang", async () => {
     await expect(
-      yoloWebScrape("https://example.org/", { cli: "/bin/false", timeoutMs: 5_000 }),
+      yoloWebScrape("https://gemini.google.com/", { cli: "/bin/false", timeoutMs: 5_000 }),
     ).rejects.toThrow(/exited with code|failed to start|timed out/);
   });
 
@@ -86,7 +86,7 @@ describe("YOLO WEB stdio client (fixture server with the web-cli mcp framing)", 
     const dir = mkdtempSync(join(tmpdir(), "yolo-web-batch-"));
     try {
       const batch = new YoloWebBatchCapture(dir, { cli: FIXTURE });
-      const job = await batch.crawl({ urls: ["https://example.org/1", "https://example.org/2"] });
+      const job = await batch.crawl({ urls: ["https://gemini.google.com/1", "https://gemini.google.com/2"] });
       expect(job.status).toBe("completed");
       expect(job.stats).toEqual({ total: 2, saved: 2, failed: 0 });
       const files = readdirSync(dir);

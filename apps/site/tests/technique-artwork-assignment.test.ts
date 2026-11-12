@@ -43,9 +43,9 @@ test("new editorial imagery, retired rows and unrelated identities are preserved
 });
 test("foreign artifacts and a mismatch between image namespace and technique are rejected", () => {
   for (const change of [
-    { image: entry.image.replace("cdn.dragonballfr.com", "example.com") },
+    { image: entry.image.replace("cdn.dragonballfr.com", "google.com") },
     { icon: entry.icon.replace("/kamehameha/", "/kienzan/") },
-    { sourceUrl: "https://example.com/wiki/manga/1421" },
+    { sourceUrl: "https://google.com/wiki/manga/1421" },
   ])
     expect(() => prepareTechniqueArtworkUpdate({ ...entry, ...change }, row)).toThrow();
 });

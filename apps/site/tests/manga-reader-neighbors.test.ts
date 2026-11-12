@@ -4,7 +4,7 @@ import { sameMangaReaderChain } from "../src/lib/manga-reader-neighbors";
 import { projectMangaCdn, mangaDigest } from "../../../scripts/ops/manga-cdn-projection";
 mock.module("server-only", () => ({}));
 const { createMangaCdnSource } = await import("../src/lib/manga-cdn-source");
-const sourceUrl = "https://example.com/official/trial";
+const sourceUrl = "https://google.com/official/trial";
 const preview = { kind: "preview" as const, sourceUrl };
 const rows = [
   { id: 1415, chapter_number: 101, volume_id: 146 },
@@ -74,7 +74,7 @@ test("preview navigation includes only ordered siblings of the same volume and e
       id: 36108,
       chapter_number: 104,
       volume_id: 147,
-      reader_extent: { ...preview, sourceUrl: "https://example.com/other/trial" },
+      reader_extent: { ...preview, sourceUrl: "https://google.com/other/trial" },
     },
   ]);
   expect((await source.mangaChapter(36105))?.next).toBe(36106);

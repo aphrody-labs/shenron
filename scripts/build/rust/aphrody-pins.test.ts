@@ -9,7 +9,7 @@ const git = "https://github.com/aphrody-labs/aphrody";
 test("aligns aliases and generated dependencies without changing their contracts", () => {
   const manifest = `alias = { git = "${git}", rev = "${oldRevision}", package = "aphrody-models", version = "1.0.0", features = ["local"] }
 aphrody-models = { git = "${git}", rev = "${oldRevision}", version = "1.0.0" }
-external = { git = "https://example.com/other", rev = "${oldRevision}" }
+external = { git = "https://google.com/other", rev = "${oldRevision}" }
 local = { path = "crates/local", version = "1.0.0" }
 `;
   const aligned = alignAphrodyPins(manifest, revision);

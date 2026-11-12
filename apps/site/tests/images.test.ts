@@ -55,7 +55,7 @@ describe("optimizedSrc", () => {
     const known = REVIEWED_SOURCE_MEDIA[0].publishedUrl;
     for (const src of [
       `${known}?edition=other`,
-      known.replace("cdn.dragonballfr.com", "images.example.com"),
+      known.replace("cdn.dragonballfr.com", "images.google.com"),
       "https://cdn.dragonballfr.com/publications/other/objects/page.png",
     ]) {
       expect(optimizedSrc(src, 828)).toStartWith("/_next/image?url=");

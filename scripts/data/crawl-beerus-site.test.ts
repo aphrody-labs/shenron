@@ -165,7 +165,7 @@ test("passive inventory records external HTTPS references without authorizing tr
   ).toBeUndefined();
   expect(observedUrl("javascript:alert(1)", "https://dragonball-super.com/en/")).toBeUndefined();
   expect(
-    observedUrl("https://token@example.com/", "https://dragonball-super.com/en/"),
+    observedUrl("https://token@google.com/", "https://dragonball-super.com/en/"),
   ).toBeUndefined();
 });
 test("capture delta separates content changes, failures and URLs not observed", () => {

@@ -70,7 +70,7 @@ test.skipIf(process.platform === "win32")(
       await chmod(jar, 0o600);
       const config: SourceSearchConfig = {
         queries: ["interview"],
-        domains: ["example.com"],
+        domains: ["google.com"],
         count: 1,
         cookieJar: jar,
       };
@@ -105,7 +105,7 @@ test.skipIf(process.platform === "win32")(
       await chmod(jar, 0o600);
       const config: SourceSearchConfig = {
         queries: ["interview"],
-        domains: ["example.com"],
+        domains: ["google.com"],
         count: 1,
         cookieJar: jar,
       };

@@ -6,14 +6,14 @@ test("counts episodes once when several original-audio sources are listed", () =
   const coverage = summarizeEpisodeSources([
     {
       players: [
-        { lang: "vostfr", embedUrl: "https://player.example.com/episode-1-vostfr" },
-        { lang: "vost", embedUrl: "https://player.example.com/episode-1-vost" },
+        { lang: "vostfr", embedUrl: "https://player.google.com/episode-1-vostfr" },
+        { lang: "vost", embedUrl: "https://player.google.com/episode-1-vost" },
       ],
       availability: [
         {
           provider: "ADN",
           label: "ADN",
-          url: "https://example.com/episode-1",
+          url: "https://google.com/episode-1",
           embedUrl: null,
           langs: ["vostfr", "vost"],
           available: true,
@@ -23,16 +23,16 @@ test("counts episodes once when several original-audio sources are listed", () =
     },
     {
       players: [
-        { lang: "vf", embedUrl: "https://player.example.com/episode-2-vf" },
+        { lang: "vf", embedUrl: "https://player.google.com/episode-2-vf" },
         // Players only count once they carry a verified HTTPS link (51f771b5).
         { lang: "vostfr" },
-        { lang: "vost", embedUrl: "http://player.example.com/episode-2-vost" },
+        { lang: "vost", embedUrl: "http://player.google.com/episode-2-vost" },
       ],
       availability: [
         {
           provider: "Crunchyroll",
           label: "Crunchyroll",
-          url: "https://example.com/episode-2",
+          url: "https://google.com/episode-2",
           embedUrl: null,
           langs: ["vostfr"],
           available: true,

@@ -123,7 +123,7 @@ test("the reviewed Bun Video npm archive requires its exact CDN identity, source
   expect(pinnedAphrodyDependency("@aphrody/other", pin.url, local, archives)).toBe(false);
   for (const url of [
     pin.url.replace("https:", "http:"),
-    pin.url.replace("dist.aphrody.app", "example.com"),
+    pin.url.replace("dist.aphrody.app", "google.com"),
     pin.url.replace("dist.aphrody.app", "secret@dist.aphrody.app"),
     `${pin.url}?mutable=latest`,
     pin.url.replace(pin.sha256, "latest"),

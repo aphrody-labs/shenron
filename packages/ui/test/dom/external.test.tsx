@@ -51,7 +51,7 @@ describe("safeExternalUrl / isExternalHref", () => {
   });
 
   test("same origin and relative paths are not external", () => {
-    expect(isExternalHref("https://example.org/a", "https://dragonballfr.com")).toBe(true);
+    expect(isExternalHref("https://gemini.google.com/a", "https://dragonballfr.com")).toBe(true);
     expect(isExternalHref("https://dragonballfr.com/a", "https://dragonballfr.com")).toBe(false);
     expect(isExternalHref("/wiki/goku", "https://dragonballfr.com")).toBe(false);
     expect(isExternalHref("mailto:a@b.c", "https://dragonballfr.com")).toBe(true);
@@ -83,7 +83,7 @@ describe("openExternal", () => {
 
   test("Tauri without the opener permission falls back to the WebView", async () => {
     simulateTauri(true);
-    expect(await openExternal("https://example.org/")).toBe("browser");
+    expect(await openExternal("https://gemini.google.com/")).toBe("browser");
     expect(opened).toHaveLength(1);
   });
 });
@@ -91,12 +91,12 @@ describe("openExternal", () => {
 describe("<ExternalLink>", () => {
   test("browser: a real link, new tab, safe rel, screen-reader hint", () => {
     render(
-      <ExternalLink href="https://example.org/" rel="me" newTabHint="(nouvel onglet)">
+      <ExternalLink href="https://gemini.google.com/" rel="me" newTabHint="(nouvel onglet)">
         Source
       </ExternalLink>,
     );
     const link = screen.getByRole("link", { name: "Source (nouvel onglet)" });
-    expect(link.getAttribute("href")).toBe("https://example.org/");
+    expect(link.getAttribute("href")).toBe("https://gemini.google.com/");
     expect(link.getAttribute("target")).toBe("_blank");
     expect(link.getAttribute("rel")).toBe("noopener noreferrer me");
     // Le clic reste celui du navigateur : rien n'est intercepté.
@@ -106,7 +106,7 @@ describe("<ExternalLink>", () => {
 
   test("Tauri: click and middle click go to the system browser", async () => {
     simulateTauri();
-    render(<ExternalLink href="https://example.org/">Source</ExternalLink>);
+    render(<ExternalLink href="https://gemini.google.com/">Source</ExternalLink>);
     const link = screen.getByRole("link", { name: "Source" });
     expect(fireEvent.click(link)).toBe(false);
     fireEvent(link, new MouseEvent("auxclick", { bubbles: true, cancelable: true, button: 1 }));
@@ -131,7 +131,7 @@ describe("<ExternalLinkBridge>", () => {
     render(
       <>
         <ExternalLinkBridge />
-        <a href="https://example.org/legacy" target="_blank" rel="noreferrer">
+        <a href="https://gemini.google.com/legacy" target="_blank" rel="noreferrer">
           Hérité
         </a>
         <a href="/wiki/goku">Interne</a>
@@ -144,14 +144,14 @@ describe("<ExternalLinkBridge>", () => {
     await Bun.sleep(0);
     await Bun.sleep(0);
     expect(calls).toHaveLength(1);
-    expect(calls[0]?.payload).toMatchObject({ url: "https://example.org/legacy" });
+    expect(calls[0]?.payload).toMatchObject({ url: "https://gemini.google.com/legacy" });
   });
 
   test("browser: the bridge stays inert", () => {
     render(
       <>
         <ExternalLinkBridge />
-        <a href="https://example.org/" target="_blank" rel="noreferrer">
+        <a href="https://gemini.google.com/" target="_blank" rel="noreferrer">
           Lien
         </a>
       </>,

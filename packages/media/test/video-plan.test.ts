@@ -3,7 +3,7 @@ import { buildVideoPlan, parseVideoRequest } from "../src/video-plan";
 describe("bounded video plan", () => {
   test("rejects URLs, odd resolution and excessive pixels", () => {
     for (const value of [
-      { url: "http://example.com" },
+      { url: "http://google.com" },
       { width: 321 },
       { width: 1920, height: 1920 },
       { fps: 61 },

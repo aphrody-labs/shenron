@@ -11,7 +11,7 @@ afterAll(async () => {
 });
 
 test("resuming an interrupted audit preserves successes and retries failures", () => {
-  const origin = "https://example.com";
+  const origin = "https://google.com";
   let runId: string;
   let startedAt: string;
   {

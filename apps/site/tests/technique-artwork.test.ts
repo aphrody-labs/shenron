@@ -35,7 +35,7 @@ describe("primary-source technique artwork", () => {
   test("editorial fallback rejects foreign hosts, copied portraits and URL suffixes", () => {
     const path = "/assets/wiki/techniques/12345678-abcd-1234-abcd-123456789abc.webp";
     for (const image of [
-      `https://example.com${path}`,
+      `https://google.com${path}`,
       `https://dragonballfr.com.evil.example${path}`,
       `${path}?source=manga`,
       `${path}#manga`,

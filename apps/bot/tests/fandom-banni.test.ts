@@ -62,7 +62,7 @@ describe("Fandom reste banni", () => {
       {
         id: "fd-fr-example",
         name: "Source interdite",
-        url: "https://example.org/article",
+        url: "https://gemini.google.com/article",
         markdown: "Un contenu pourtant assez long pour être indexé.",
       },
       {

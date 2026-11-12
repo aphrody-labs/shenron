@@ -99,7 +99,7 @@ test("requires qualified sources and typed catalogue IDs", () => {
   expect(() =>
     validateReviewedVariantManifest({
       ...original,
-      entries: [{ ...item, sources: [{ ...item.sources[0], url: "https://example.com/claim" }] }],
+      entries: [{ ...item, sources: [{ ...item.sources[0], url: "https://google.com/claim" }] }],
     }),
   ).toThrow("primary source");
   expect(() =>

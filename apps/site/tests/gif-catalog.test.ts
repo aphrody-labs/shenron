@@ -53,7 +53,7 @@ test("public projection strips private metadata and keeps measured durations", (
 test("qualification, CDN namespace, provenance and bounded unique assets are mandatory", () => {
   expect(() => parseGifIndex({ ...index(), qualified: false })).toThrow();
   expect(() =>
-    parseGifIndex(index([{ ...item(), gifUrl: "https://example.com/private.gif" }])),
+    parseGifIndex(index([{ ...item(), gifUrl: "https://google.com/private.gif" }])),
   ).toThrow();
   expect(() =>
     parseGifIndex(

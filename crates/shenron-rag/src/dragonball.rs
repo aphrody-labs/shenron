@@ -892,7 +892,7 @@ mod tests {
             conn.execute_batch(
                 "CREATE TABLE docs (id INTEGER PRIMARY KEY, path TEXT, title TEXT, language TEXT);
                  CREATE TABLE chunks (id INTEGER PRIMARY KEY, doc_id INTEGER, content TEXT);
-                 INSERT INTO docs VALUES (1, 'https://example.org/vegeta', 'Vegeta', 'en');
+                 INSERT INTO docs VALUES (1, 'https://gemini.google.com/vegeta', 'Vegeta', 'en');
                  INSERT INTO chunks VALUES (1, 1, 'Vegeta is the prince of Saiyans.');",
             )
             .expect("seed");
@@ -910,7 +910,7 @@ mod tests {
         );
         assert_eq!(hits.len(), 1);
         assert_eq!(hits[0].origin_source_id, "aphrody-rag-dragonball");
-        assert_eq!(hits[0].url, "https://example.org/vegeta");
+        assert_eq!(hits[0].url, "https://gemini.google.com/vegeta");
     }
 
     #[test]
@@ -1007,7 +1007,7 @@ mod tests {
             "C:\\private\\note.md",
             "memory/note.md",
             "shenron:home:memory/review.md",
-            "https://example.org/wiki?q=Nail",
+            "https://gemini.google.com/wiki?q=Nail",
         ] {
             assert_eq!(absolutize(locator), locator);
         }

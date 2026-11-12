@@ -82,7 +82,7 @@ describe("resolveAiConfig", () => {
 
   test("non-loopback URL and short token: issues name variables, never values", () => {
     const secret = "short-secret-value";
-    const remote = ["http://", "example.org", ":8789"].join("");
+    const remote = ["http://", "gemini.google.com", ":8789"].join("");
     const r = resolveAiConfig({
       APHRODY_AI_HTTP_URL: remote,
       APHRODY_AI_HTTP_TOKEN: secret,
@@ -95,7 +95,7 @@ describe("resolveAiConfig", () => {
     ]);
     const serialised = JSON.stringify(r.issues);
     expect(serialised).not.toContain(secret);
-    expect(serialised).not.toContain("example.org");
+    expect(serialised).not.toContain("gemini.google.com");
   });
 
   test("URL without token is an issue naming the canonical token variable", () => {
@@ -209,13 +209,13 @@ describe("aphrody-ai-http require helpers", () => {
       `${LOOP}/`,
     );
     expect(requireAiHttpToken({ APHRODY_SHENRON_API_TOKEN: TOKEN })).toBe(TOKEN);
-    const remote = ["http://", "example.org", ":1"].join("");
+    const remote = ["http://", "gemini.google.com", ":1"].join("");
     try {
       requireAiHttpUrl({ APHRODY_AI_HTTP_URL: remote });
       throw new Error("expected a throw");
     } catch (error) {
       expect(error).toBeInstanceOf(AiConfigError);
-      expect(String(error)).not.toContain("example.org");
+      expect(String(error)).not.toContain("gemini.google.com");
     }
   });
 });
@@ -361,7 +361,7 @@ describe("resolveDirectChat", () => {
   });
 
   test("refuses a public address", () => {
-    expect(resolveDirectChat({ APHRODY_AI_CHAT_BASE_URL: "https://example.com/v1" }).ok).toBe(
+    expect(resolveDirectChat({ APHRODY_AI_CHAT_BASE_URL: "https://google.com/v1" }).ok).toBe(
       false,
     );
   });

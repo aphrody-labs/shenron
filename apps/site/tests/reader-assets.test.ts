@@ -32,7 +32,7 @@ describe("same-origin reader scans", () => {
   });
   it("preserves unrelated remote sources and non-asset endpoints", () => {
     for (const url of [
-      "https://example.com/assets/scan.jpg",
+      "https://google.com/assets/scan.jpg",
       "https://bot.dragonballfr.com/api/manga/1",
       "/wiki/scan.jpg",
     ]) {

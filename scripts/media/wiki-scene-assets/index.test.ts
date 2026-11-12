@@ -29,7 +29,7 @@ async function setup() {
         height: 2,
         provenance: {
           kind: "authored-decoration",
-          referenceUrl: "https://example.com/source",
+          referenceUrl: "https://google.com/source",
           note: "Pixel fixture for coordinate validation only; no playback qualification.",
         },
       },

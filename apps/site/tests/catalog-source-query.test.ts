@@ -13,7 +13,7 @@ test("archives initially match explicit title labels and all notices remain acce
     catalogSourceFilters("sources", {
       order: "title DESC; DROP TABLE",
       kind: "adult",
-      domain: "example.com/evil",
+      domain: "google.com/evil",
     }),
   ).toEqual({ order: "source", focus: "dragon-ball", kind: "", domain: "" });
   expect(catalogSourceFilters("sources", { domain: "WWW.Archive.org" }).domain).toBe("archive.org");

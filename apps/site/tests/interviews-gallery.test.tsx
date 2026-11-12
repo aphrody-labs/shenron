@@ -72,7 +72,7 @@ const view = (locale: "fr" | "en" | "ja" = "fr", access?: AccessSnapshot) => (
       ragResults={[
         {
           title: "Corpus proof",
-          url: "https://example.com/private",
+          url: "https://google.com/private",
           snippet: "private search snippet",
         },
       ]}
@@ -103,7 +103,7 @@ test("gallery thumbnails and titles use all locales without printing quotations 
     expect(html).not.toContain("Une création originale.");
     expect(html).not.toContain("private search snippet");
     expect(html).toContain("Corpus proof");
-    expect(html).not.toContain("https://example.com/private");
+    expect(html).not.toContain("https://google.com/private");
   }
 });
 
@@ -115,12 +115,12 @@ test("RAG titles with spaces or Japanese resolve to their rendered ASCII fragmen
         ragResults={[
           {
             title: "Corpus proof with spaces",
-            url: "https://example.com/reference-one",
+            url: "https://google.com/reference-one",
             snippet: "private reference one",
           },
           {
             title: "鳥山明 のインタビュー",
-            url: "https://example.com/reference-two",
+            url: "https://google.com/reference-two",
             snippet: "private reference two",
           },
           {

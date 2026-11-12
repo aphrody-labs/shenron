@@ -87,8 +87,8 @@ test("the three mascots retain distinct curated identities and an SSR-selected f
   expect(portalFeaturedKey(mascots, 2)).toBe("shenron");
   expect(portalFeaturedKey(mascots, 3)).toBe("goku");
   expect(wikiPortalMascots([], [])).toEqual([]);
-  expect(portalArtworkUrl("https://example.org/dbz/original.png")).toBe(
-    "https://example.org/dbz/original.png",
+  expect(portalArtworkUrl("https://gemini.google.com/dbz/original.png")).toBe(
+    "https://gemini.google.com/dbz/original.png",
   );
 });
 

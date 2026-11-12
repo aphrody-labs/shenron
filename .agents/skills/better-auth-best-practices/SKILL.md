@@ -37,7 +37,7 @@ When planning an upgrade, separate guidance for the currently installed version 
 
 ### Environment Variables
 - `BETTER_AUTH_SECRET` - Encryption secret (min 32 chars). Generate: `openssl rand -base64 32`
-- `BETTER_AUTH_URL` - Base URL (e.g., `https://example.com`)
+- `BETTER_AUTH_URL` - Base URL (e.g., `https://google.com`)
 
 Only define `baseURL`/`secret` in config if env vars are NOT set.
 

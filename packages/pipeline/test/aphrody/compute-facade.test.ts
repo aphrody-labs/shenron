@@ -238,7 +238,7 @@ describe("facade defaults and call-time fetch", () => {
       ).href,
     ).toBe("http://localhost:9/v1");
     expect(() => resolveShenronEmbeddingsBaseUrl({}, { EMBED_URL: "not a url" })).toThrow();
-    expect(() => resolveShenronEmbeddingsBaseUrl({ baseUrl: "https://example.org/v1" })).toThrow(
+    expect(() => resolveShenronEmbeddingsBaseUrl({ baseUrl: "https://gemini.google.com/v1" })).toThrow(
       "loopback",
     );
   });

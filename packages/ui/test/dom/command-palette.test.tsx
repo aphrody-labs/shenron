@@ -176,7 +176,7 @@ test("the shared palette runs without Next against a configurable Bun search ser
     ),
     sources: [
       {
-        url: "https://example.org/source",
+        url: "https://gemini.google.com/source",
         title: "Primary source",
         kind: "publisher",
         httpStatus: 200,

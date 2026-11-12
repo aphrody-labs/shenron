@@ -116,7 +116,7 @@ test("broadcast slots print their zone and platforms announce the new tab", () =
       regions={[
         {
           region: "Worldwide",
-          platforms: [{ name: "Crunchyroll", url: "https://example.org/cr" }],
+          platforms: [{ name: "Crunchyroll", url: "https://gemini.google.com/cr" }],
         },
         { region: "Europe", platforms: [] },
       ]}

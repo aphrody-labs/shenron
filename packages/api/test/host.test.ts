@@ -176,7 +176,7 @@ describe("public RAG boundary", () => {
         source: "db_characters",
         kind: "wiki",
         visibility: "public",
-        url: "https://example.org/wiki/characters/goku",
+        url: "https://gemini.google.com/wiki/characters/goku",
       },
       {
         id: "conversation",

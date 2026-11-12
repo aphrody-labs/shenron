@@ -76,7 +76,7 @@ describe("youtube helpers", () => {
 
   test("URL invalide → null", () => {
     expect(extractYoutubeId("")).toBeNull();
-    expect(extractYoutubeId("https://example.com/watch?v=abc")).toBeNull();
+    expect(extractYoutubeId("https://google.com/watch?v=abc")).toBeNull();
     expect(extractYoutubeId("not-a-url")).toBeNull();
   });
 

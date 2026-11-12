@@ -18,7 +18,7 @@ const post: IndexablePost = {
   excerpt: "Public excerpt",
   contentHtml:
     '<p><a href="https://dragonball-super.com/">Primary</a><a href="javascript:alert(1)">Invalid</a></p>',
-  cover: "https://example.org/cover.jpg",
+  cover: "https://gemini.google.com/cover.jpg",
   coverAlt: "Official artwork",
   tags: ["Anime"],
   canonicalUrl: null,

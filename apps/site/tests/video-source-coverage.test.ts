@@ -9,7 +9,7 @@ test("separates licensed offers, external readers and original audio", () => {
       {
         provider: "ADN",
         label: "ADN",
-        url: "https://example.com/watch",
+        url: "https://google.com/watch",
         embedUrl: null,
         langs: ["vostfr"],
         available: true,
@@ -18,7 +18,7 @@ test("separates licensed offers, external readers and original audio", () => {
       {
         provider: "Withdrawn",
         label: "Withdrawn",
-        url: "https://example.com/old",
+        url: "https://google.com/old",
         embedUrl: null,
         langs: ["vf"],
         available: false,

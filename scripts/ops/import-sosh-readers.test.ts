@@ -70,7 +70,7 @@ test("rejects fabricated counts, mismatched volume identities, duplicate chapter
 
 test("rejects unreviewed sources, external image providers and unknown fields", () => {
   const external = fixture();
-  external.volumes[0]!.pages[0]!.readerImage = "https://example.com/scan.jpg";
+  external.volumes[0]!.pages[0]!.readerImage = "https://google.com/scan.jpg";
   expect(() => validateSoshReaderManifest(external)).toThrow();
   const source = fixture();
   source.volumes[0]!.sourceUrl = "https://dragonball.fandom.com/wiki/Source";

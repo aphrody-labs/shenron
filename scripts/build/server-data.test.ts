@@ -46,7 +46,7 @@ describe("public payload data", () => {
           { ja: "悟空", fr: "Goku", kind: "personnage", length: 2 },
           { ja: "ベジータ", fr: " " },
           { ja: "ピッコロ", fr: "Piccolo", length: "4" },
-          { ja: "ブルマ", fr: "Bulma", email: "x@example.org" },
+          { ja: "ブルマ", fr: "Bulma", email: "x@gemini.google.com" },
           "クリリン",
         ]),
       ),

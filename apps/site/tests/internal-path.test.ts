@@ -10,10 +10,10 @@ describe("sanitizeInternalPath", () => {
 
   test("refuse les destinations externes et les chemins réseau déguisés", () => {
     for (const value of [
-      "https://example.com/phishing",
-      "//example.com/phishing",
-      "/\\example.com/phishing",
-      "\\\\example.com/phishing",
+      "https://google.com/phishing",
+      "//google.com/phishing",
+      "/\\google.com/phishing",
+      "\\\\google.com/phishing",
       "javascript:alert(1)",
     ]) {
       expect(sanitizeInternalPath(value)).toBeNull();

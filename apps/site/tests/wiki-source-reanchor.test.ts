@@ -32,7 +32,7 @@ describe("ré-ancrage canonique exact", () => {
   test("accepte uniquement manga/databook avec href primaire", () => {
     expect(isPrimaryReference(reference())).toBe(true);
     expect(isPrimaryReference(reference({ provenance: "fandom" }))).toBe(false);
-    expect(isPrimaryReference(reference({ href: "https://example.com/wiki" }))).toBe(false);
+    expect(isPrimaryReference(reference({ href: "https://google.com/wiki" }))).toBe(false);
   });
 
   test("produit une bibliographie traçable vers canon_references", () => {

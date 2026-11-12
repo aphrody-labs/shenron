@@ -15,7 +15,7 @@ Covering indexes include all columns needed by a query, enabling index-only scan
 create index users_email_idx on users (email);
 
 -- Must fetch name and created_at from table heap
-select email, name, created_at from users where email = 'user@example.com';
+select email, name, created_at from users where email = 'user@google.com';
 ```
 
 **Correct (index-only scan with INCLUDE):**
@@ -25,7 +25,7 @@ select email, name, created_at from users where email = 'user@example.com';
 create index users_email_idx on users (email) include (name, created_at);
 
 -- All columns served from index, no table access needed
-select email, name, created_at from users where email = 'user@example.com';
+select email, name, created_at from users where email = 'user@google.com';
 ```
 
 Use INCLUDE for columns you SELECT but don't filter on:

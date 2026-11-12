@@ -33,7 +33,7 @@ test("video recipe separates requested time from decoder evidence and budgets so
     video: { requestedTimeSec: 120 },
     provenance: {
       kind: "official",
-      referenceUrl: "https://example.com/episode",
+      referenceUrl: "https://google.com/episode",
       note: "Validation only, no media generated",
       episodeId: 875,
     },

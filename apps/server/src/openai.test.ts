@@ -230,7 +230,7 @@ describe("native OpenAI provider transport", () => {
       undefined,
       "invalid",
       "file:///private",
-      "https://user:private@example.com/v1",
+      "https://user:private@google.com/v1",
       "http://localhost:18080/v1",
     ]) {
       const response = await call(openAiApi({ SHENRON_OPENAI_BASE_URL: base }), "/v1/models");

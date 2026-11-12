@@ -158,7 +158,7 @@ describe("/train et lab — helpers", () => {
     expect(canonTierColor("CANON_ABSOLU")).toBe(0x22c55e);
     expect(canonTierColor("APOCRYPHE_FANON")).toBe(0xef4444);
     expect(typeof canonTierColor("inconnu")).toBe("number");
-    expect(isHttpUrl("https://example.com/a.png")).toBe(true);
+    expect(isHttpUrl("https://google.com/a.png")).toBe(true);
     expect(isHttpUrl("javascript:alert(1)")).toBe(false);
     expect(isHttpUrl("pas une url")).toBe(false);
   });

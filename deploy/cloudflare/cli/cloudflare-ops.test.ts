@@ -25,8 +25,8 @@ test("invalid identity cannot reach provider", () => {
 test("DNS compare ignores provider metadata, preserves TTL/type/proxy", () => {
   const record = {
     type: "CNAME",
-    name: "cdn.example.com",
-    content: "before.example.com",
+    name: "cdn.google.com",
+    content: "before.google.com",
     ttl: 1,
     proxied: true,
   };
@@ -37,13 +37,13 @@ test("DNS compare ignores provider metadata, preserves TTL/type/proxy", () => {
     dns: {
       id: "c".repeat(32),
       before: record,
-      desired: { ...record, content: "after.example.com" },
+      desired: { ...record, content: "after.google.com" },
       preflightFile: "evidence.json",
       preflightSha256: "d".repeat(64),
     },
   };
   expect(() => guardDns(m, record)).not.toThrow();
-  expect(() => guardDns(m, { ...record, content: "changed.example.com" })).toThrow();
+  expect(() => guardDns(m, { ...record, content: "changed.google.com" })).toThrow();
   expect(() =>
     guardDns({ ...m, dns: { ...m.dns, desired: { ...record, type: "MX" } } }, record),
   ).toThrow();
@@ -129,7 +129,7 @@ test("read-only reconciliation continues after worker failure and never logs cre
         const result = path.endsWith("/r2/buckets")
           ? { buckets: [{ name: manifest.bucket }] }
           : path.includes("/zones/")
-            ? { name: "example.com", status: "pending" }
+            ? { name: "google.com", status: "pending" }
             : path.includes("/cfd_tunnel/")
               ? { status: "inactive", connections: [] }
               : {};

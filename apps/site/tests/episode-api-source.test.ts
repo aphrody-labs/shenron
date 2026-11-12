@@ -39,9 +39,9 @@ describe("episode API official source URL", () => {
 
   test("does not expose insecure, credentialed, malformed, or absent source URLs", () => {
     for (const source of [
-      "http://example.com/video",
+      "http://google.com/video",
       "javascript:alert(1)",
-      "https://user:pass@example.com/video",
+      "https://user:pass@google.com/video",
       "not a URL",
       null,
     ]) {
@@ -51,9 +51,9 @@ describe("episode API official source URL", () => {
 
   test("known SDBH episodes retain their safe official fallback when a source is rejected", () => {
     for (const source of [
-      "http://example.com/video",
+      "http://google.com/video",
       "javascript:alert(1)",
-      "https://user:pass@example.com/video",
+      "https://user:pass@google.com/video",
       "not a URL",
       null,
     ]) {

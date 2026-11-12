@@ -105,7 +105,7 @@ test("section publication resolves the actual visible parent and rejects drift o
   forged.discoveryContext!.parent.identity.name = "Goku";
   await expect(verifySectionContext(forged, fetchParent)).rejects.toThrow("canonical parent");
   const foreign = structuredClone(proposal);
-  foreign.discoveryContext!.parent.apiPath = "https://example.com/private";
+  foreign.discoveryContext!.parent.apiPath = "https://google.com/private";
   await expect(verifySectionContext(foreign, fetchParent)).rejects.toThrow("reference");
   await expect(
     verifySectionContext(proposal, async () => Response.json({ ...parent, visible: false })),

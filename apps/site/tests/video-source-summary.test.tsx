@@ -47,8 +47,8 @@ test("real subtitle resources do not imply players or versions", () => {
 test("listed versions and official offers are counted separately", () => {
   const html = render({
     players: [
-      { name: "One", provider: "ADN", embedUrl: "https://example.com/1", lang: "vostfr" },
-      { name: "Two", provider: "ADN", embedUrl: "https://example.com/2", lang: "vostfr" },
+      { name: "One", provider: "ADN", embedUrl: "https://google.com/1", lang: "vostfr" },
+      { name: "Two", provider: "ADN", embedUrl: "https://google.com/2", lang: "vostfr" },
     ],
   });
   expect(html).toContain("2 lecteur(s) · 0 offre(s) officielle(s)");

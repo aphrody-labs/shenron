@@ -98,7 +98,7 @@ describe("variant evidence provenance", () => {
     );
     expect(() =>
       assertVariantEvidenceUpdate(before, {
-        image: "https://example.com/generated.png",
+        image: "https://google.com/generated.png",
         evidence: { ...measurements, editorialReferences: [reference] },
       }),
     ).toThrow("primary source image");

@@ -21,8 +21,8 @@ test("the source registry does not guess other images, variants, hosts or editio
   for (const source of [
     `${REVIEWED_SOURCE_MEDIA[0].sourceUrl}?variant=other`,
     REVIEWED_SOURCE_MEDIA[0].sourceUrl.replace("img_01", "img_10"),
-    REVIEWED_SOURCE_MEDIA[0].sourceUrl.replace("www.carddass.com", "example.com"),
-    "https://example.com/image.png",
+    REVIEWED_SOURCE_MEDIA[0].sourceUrl.replace("www.carddass.com", "google.com"),
+    "https://google.com/image.png",
   ]) {
     expect(reviewedSourceMediaUrl(source)).toBeNull();
     expect(readerAssetUrl(source)).toBe(source);

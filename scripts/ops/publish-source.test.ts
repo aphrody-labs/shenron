@@ -231,7 +231,7 @@ test("publication targets map only to the actual dynamic public namespace", () =
     "official-guide",
   );
   for (const target of [
-    "https://example.com/publications/guide",
+    "https://google.com/publications/guide",
     "https://dragonballfr.com/admin",
     "https://dragonballfr.com/publications/a?secret=1",
     "https://dragonballfr.com/publications/A",

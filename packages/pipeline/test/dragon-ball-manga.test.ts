@@ -52,7 +52,7 @@ test("promo review excludes editorial references while keeping native originals"
       );
       await Bun.write(path, text);
       return {
-        url: `https://cdn.example.org/${index}.png`,
+        url: `https://cdn.gemini.google.com/${index}.png`,
         path,
         source_path: path,
         bytes: text.length,

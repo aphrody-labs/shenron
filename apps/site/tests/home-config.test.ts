@@ -42,7 +42,7 @@ describe("resolveHomeConfig", () => {
         title: "À regarder",
         destinations: [
           { href: "/wiki/episodes", enabled: false },
-          { href: "https://example.com", enabled: true },
+          { href: "https://google.com", enabled: true },
         ],
       },
       journey: {
@@ -58,7 +58,7 @@ describe("resolveHomeConfig", () => {
       cfg.catalogue.destinations.find((entry) => entry.href === "/wiki/episodes")?.enabled,
     ).toBe(false);
     expect(
-      cfg.catalogue.destinations.some((entry) => (entry.href as string) === "https://example.com"),
+      cfg.catalogue.destinations.some((entry) => (entry.href as string) === "https://google.com"),
     ).toBe(false);
     expect(cfg.journey.destinations[0]?.href).toBe("/dashboard");
     expect(cfg.journey.destinations[0]?.label).toBe("Mon repaire");

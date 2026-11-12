@@ -7,7 +7,7 @@ const volumes = (): VolumeEvidence[] =>
     series: "SOSH",
     number: i + 1,
     pages: 400,
-    sampledAssets: [{ url: "https://example.com/page.jpg", status: 200, image: true }],
+    sampledAssets: [{ url: "https://google.com/page.jpg", status: 200, image: true }],
   }));
 describe("source corpus readiness evidence", () => {
   test("metadata-only volumes fail even when every volume exists", () => {
@@ -50,13 +50,13 @@ test("the public API numeric summary is resolved to reader page lists", async ()
     if (url.endsWith("/api/manga/chapter/35001"))
       return Response.json({
         pages: 381,
-        pageList: [{ image: "https://cdn.example.com/001.jpg" }],
+        pageList: [{ image: "https://cdn.google.com/001.jpg" }],
       });
-    if (url === "https://cdn.example.com/001.jpg")
+    if (url === "https://cdn.google.com/001.jpg")
       return new Response("image", { status: 206, headers: { "Content-Type": "image/jpeg" } });
     throw new Error("Unexpected request " + url);
   }) as typeof fetch;
-  const report = await auditSourceReadiness("https://example.com", fetcher);
+  const report = await auditSourceReadiness("https://google.com", fetcher);
   expect(report.soshuhen.volumes[0]?.pages).toBe(1);
   expect(report.soshuhen.volumes[0]?.sampledAssets[0]?.image).toBe(true);
   expect(report.soshuhen.emptyVolumes).toHaveLength(17);
@@ -85,7 +85,7 @@ test("all-assets probes every listed page with bounded concurrency and range req
     if (url.endsWith("/api/manga/chapter/35001"))
       return Response.json({
         pageList: Array.from({ length: 9 }, (_, i) => ({
-          image: "https://cdn.example.com/" + i + ".jpg",
+          image: "https://cdn.google.com/" + i + ".jpg",
         })),
       });
     expect(new Headers(init?.headers).get("Range")).toBe("bytes=0-511");
@@ -98,7 +98,7 @@ test("all-assets probes every listed page with bounded concurrency and range req
     active--;
     return new Response("image", { status: 206, headers: { "Content-Type": "image/jpeg" } });
   }) as typeof fetch;
-  const report = await auditSourceReadiness("https://example.com", fetcher, {
+  const report = await auditSourceReadiness("https://google.com", fetcher, {
     allAssets: true,
     concurrency: 3,
   });
@@ -116,7 +116,7 @@ test("expired audit deadline prevents later requests", async () => {
     await new Promise((resolve) => setTimeout(resolve, 5));
     return Response.json({ series: "SOSH", volume_number: 1, chapters: [] });
   }) as typeof fetch;
-  const report = await auditSourceReadiness("https://example.com", fetcher, { deadlineMs: 1 });
+  const report = await auditSourceReadiness("https://google.com", fetcher, { deadlineMs: 1 });
   expect(requests).toBeLessThanOrEqual(1);
   expect(report.assetAudit.deadlineExceeded).toBe(true);
   expect(report.productionReady).toBe(false);

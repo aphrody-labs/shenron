@@ -103,7 +103,7 @@ test("admin crawl actions reject arbitrary commands, unlisted sources, and exces
   });
   const cases = [
     { id: "web-shell", args: ["dragon-ball", "crawl"], maxAttempts: 1 },
-    { id: "web-custom", source: "custom", url: "https://example.org/" },
+    { id: "web-custom", source: "custom", url: "https://gemini.google.com/" },
     { id: "web-large", source: "official", maxRequests: 2001 },
     { id: "web-deep", source: "official", depth: 6 },
   ];

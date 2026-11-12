@@ -73,7 +73,7 @@ const stripe = require('stripe')('sk_test_xxx', {
 
 ```python
 stripe.Customer.create(
-  email="customer@example.com",
+  email="customer@google.com",
   stripe_version='2026-09-30.endive'
 )
 ```

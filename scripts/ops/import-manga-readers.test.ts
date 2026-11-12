@@ -107,7 +107,7 @@ test("generic import rejects opposite language, wrong physical format, ISBN, tar
     { language: "ja" },
     { format: "digital" },
     { isbn: "9784088511818" },
-    { identityEvidence: "https://example.com/review" },
+    { identityEvidence: "https://google.com/review" },
   ]) {
     const input = mangaFixture();
     Object.assign(input.volumes[0]!.edition, override);

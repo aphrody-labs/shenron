@@ -76,7 +76,7 @@ Create a connected account using Accounts v2:
 
 ```javascript
 const account = await stripe.v2.core.accounts.create({
-  contact_email: 'seller@example.com',
+  contact_email: 'seller@google.com',
   display_name: 'Seller Name',
   dashboard: 'express',
   identity: { country: 'us', entity_type: 'individual' },
@@ -104,7 +104,7 @@ const account = await stripe.v2.core.accounts.create({
 ```javascript
 const account = await stripe.v2.core.accounts.create(
   {
-    contact_email: 'merchant@example.com',
+    contact_email: 'merchant@google.com',
     display_name: 'Merchant Name',
     dashboard: 'express',
     identity: { country: 'us', entity_type: 'individual' },
@@ -140,7 +140,7 @@ This Stripe-managed-pricing configuration (Express dashboard + Stripe-managed pr
 
 ```javascript
 const account = await stripe.v2.core.accounts.create({
-  contact_email: 'merchant@example.com',
+  contact_email: 'merchant@google.com',
   display_name: 'Merchant Name',
   dashboard: 'full',
   identity: { country: 'us', entity_type: 'individual' },

@@ -13,7 +13,7 @@ mock.module("@/lib/db-universe", () => ({
             {
               name: "VO FR",
               provider: "observed",
-              embedUrl: "https://example.com",
+              embedUrl: "https://google.com",
               lang: "vostfr",
             },
           ],
@@ -21,7 +21,7 @@ mock.module("@/lib/db-universe", () => ({
             {
               provider: "ADN",
               label: "ADN",
-              url: "https://example.com/watch",
+              url: "https://google.com/watch",
               embedUrl: null,
               langs: ["vf", "vostfr"],
               available: true,

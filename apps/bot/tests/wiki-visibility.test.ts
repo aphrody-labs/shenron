@@ -100,12 +100,12 @@ beforeAll(async () => {
     { id: 2, slug: "jeu-masque", title: "Jeu masqué", visible: false },
   ]);
   await db.insert(dbTools).values([
-    { id: 1, slug: "outil", name: "Outil", url: "https://example.org/a", targetGameId: 2 },
+    { id: 1, slug: "outil", name: "Outil", url: "https://gemini.google.com/a", targetGameId: 2 },
     {
       id: 2,
       slug: "outil-masque",
       name: "Outil masqué",
-      url: "https://example.org/b",
+      url: "https://gemini.google.com/b",
       visible: false,
     },
   ]);

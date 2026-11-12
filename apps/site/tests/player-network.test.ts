@@ -8,7 +8,7 @@ test("network probe does not require CORS or send provider credentials", async (
     expect(options).toMatchObject({ method: "HEAD", mode: "no-cors", credentials: "omit", signal });
     return new Response(null);
   };
-  expect(await probePlayerNetwork("https://example.com/embed", signal, request)).toBe("reachable");
+  expect(await probePlayerNetwork("https://google.com/embed", signal, request)).toBe("reachable");
 });
 
 test("DNS/network failure triggers fallback but cancellation is inconclusive", async () => {
@@ -16,9 +16,9 @@ test("DNS/network failure triggers fallback but cancellation is inconclusive", a
     throw new TypeError("Failed to fetch");
   };
   expect(
-    await probePlayerNetwork("https://example.com/embed", new AbortController().signal, request),
+    await probePlayerNetwork("https://google.com/embed", new AbortController().signal, request),
   ).toBe("unreachable");
-  expect(await probePlayerNetwork("https://example.com/embed", AbortSignal.abort(), request)).toBe(
+  expect(await probePlayerNetwork("https://google.com/embed", AbortSignal.abort(), request)).toBe(
     "unknown",
   );
 });

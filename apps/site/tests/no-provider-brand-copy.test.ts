@@ -91,7 +91,7 @@ describe("OffreLegale rendering", () => {
     {
       provider: "adn",
       label: "Crunchyroll",
-      url: "https://example.com/watch/1",
+      url: "https://google.com/watch/1",
       embedUrl: null,
       langs: ["vostfr"],
       available: true,
@@ -116,7 +116,7 @@ describe("OffreLegale rendering", () => {
       );
       const text = html.replace(/<[^>]*>/g, " ");
       expect(text).not.toMatch(BRAND);
-      expect(html).toContain('href="https://example.com/watch/1"');
+      expect(html).toContain('href="https://google.com/watch/1"');
       expect(text).toContain(messages.mediaPlayback.officialPlatform);
     });
   }

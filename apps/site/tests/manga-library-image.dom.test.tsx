@@ -45,7 +45,7 @@ test("rendered chapter and volume thumbnails use the same qualified scan origin 
 });
 
 test("foreign covers retain their identity and owned scan queries retain their source version", () => {
-  const foreign = "https://example.org/assets/manga/cover.jpg?v=2#original";
+  const foreign = "https://gemini.google.com/assets/manga/cover.jpg?v=2#original";
   expect(mangaLibraryImageUrl(foreign)).toBe(foreign);
   expect(
     mangaLibraryImageUrl("https://bot.dragonballfr.com/assets/manga/DBS/ch1316/001.webp?v=2"),

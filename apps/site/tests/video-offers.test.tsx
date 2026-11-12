@@ -29,7 +29,7 @@ test("offer projection rejects malformed catalogues, unsafe destinations and mis
     "   ",
     "javascript:alert(1)",
     "data:text/html,hello",
-    "https://user:secret@example.com/",
+    "https://user:secret@google.com/",
   ])
     expect(normalizeAvailability([{ ...observed, url }])).toBeNull();
   expect(normalizeAvailability([{ ...observed, provider: "  " }])).toBeNull();

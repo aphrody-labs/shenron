@@ -11,7 +11,7 @@ import {
 } from "../scripts/_crawled-wiki-pages";
 
 const record = {
-  url: "https://example.org/interview-toriyama",
+  url: "https://gemini.google.com/interview-toriyama",
   kind: "reference",
   title: "Interview *Toriyama* [1995]",
   excerpt: "Line one\nline two <b>",

@@ -85,7 +85,7 @@ describe("streaming favorites adapter", () => {
       "dbfr_favorites_v1",
       JSON.stringify([
         { kind: "episode", id: "-1", title: "bad", href: "/wiki/episodes/1", at: 1 },
-        { kind: "episode", id: "1", title: "external", href: "https://example.com", at: 2 },
+        { kind: "episode", id: "1", title: "external", href: "https://google.com", at: 2 },
       ]),
     );
     expect(readStreamingWatchlist()).toEqual([]);

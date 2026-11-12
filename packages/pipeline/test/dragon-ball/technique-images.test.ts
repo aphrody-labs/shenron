@@ -69,7 +69,7 @@ test("untrusted, signed, game and portrait media are excluded without altering v
     "https://cdn.dragonballfr.com/portrait.webp",
     "https://cdn.dragonballfr.com/a.webp?token=private",
     "javascript:alert(1)",
-    "https://user:password@example.com/a.png",
+    "https://user:password@google.com/a.png",
   ])
     expect(eligibleTechniqueImageUrl(url)).toBeNull();
   expect(eligibleTechniqueImageUrl("https://cdn.dragonballfr.com/scene.webp?quality=80")).toBe(
@@ -209,7 +209,7 @@ test("native Markdown keeps an attack heading when its adjacent prose omits the 
 
 test("editorial references resolve exact inventoried pages and preserve their coordinates", () => {
   const page = { ...document("OCR misses the attack name"), chapterId: 20396, pageIndex: 13 };
-  const article = `![Kamehameha](unlisted.webp)\n\n![Kienzan](${page.images[0]!.url})\n\n![Kienzan](https://example.com/databooks/guide.webp)`;
+  const article = `![Kamehameha](unlisted.webp)\n\n![Kienzan](${page.images[0]!.url})\n\n![Kienzan](https://google.com/databooks/guide.webp)`;
   const entries = [{ ...techniques[2]!, article }];
   const docs = techniqueDocumentsFromEditorialArticles(entries, [page]);
   expect(docs).toHaveLength(1);

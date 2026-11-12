@@ -77,7 +77,7 @@ describe("typed complete HAR import", () => {
       {
         log: {
           entries: [
-            { ...entry(), request: { method: "GET\r\nsecret", url: "https://example.com" } },
+            { ...entry(), request: { method: "GET\r\nsecret", url: "https://google.com" } },
           ],
         },
       },

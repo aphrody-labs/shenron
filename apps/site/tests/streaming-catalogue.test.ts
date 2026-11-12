@@ -20,9 +20,9 @@ const source = {
   synopsis: "An adventure. (Source: ANN)",
   air_date: 1767225600,
   players: [
-    { lang: "vostfr", embedUrl: "https://example.com/private", provider: "cdn", name: "CDN" },
+    { lang: "vostfr", embedUrl: "https://google.com/private", provider: "cdn", name: "CDN" },
   ],
-  stream_url: "https://example.com/token",
+  stream_url: "https://google.com/token",
   subtitles: [],
   availability: [],
 } as unknown as Episode;
@@ -37,7 +37,7 @@ describe("streaming catalogue projection", () => {
       hasPlayback: true,
       synopsis: "An adventure.",
     });
-    expect(JSON.stringify(episode)).not.toContain("example.com");
+    expect(JSON.stringify(episode)).not.toContain("google.com");
     expect(streamingEpisode({ ...source, players: null, stream_url: null }).hasPlayback).toBe(
       false,
     );

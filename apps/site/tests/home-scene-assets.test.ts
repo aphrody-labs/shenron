@@ -15,13 +15,13 @@ test("the qualified owned compressed sibling is selected once and keeps query pa
   const expected = `${DEFAULT_PUBLIC_ORIGINS.cdn}/assets/wiki/kidbuu.web.mp4?v=3#frame`;
   expect(homeSceneVideoUrl("/wiki/kidbuu.mp4?v=3#frame")).toBe(expected);
   expect(homeSceneVideoUrl("/wiki/kidbuu.web.mp4?v=3#frame")).toBe(expected);
-  expect(homeSceneVideoUrl("https://example.com/approved/clip.mp4")).toBe(
-    "https://example.com/approved/clip.mp4",
+  expect(homeSceneVideoUrl("https://google.com/approved/clip.mp4")).toBe(
+    "https://google.com/approved/clip.mp4",
   );
 });
 
 test("custom external scenes and other local application assets preserve their source", () => {
-  const foreign = "https://example.com/approved/clip.mp4?v=3";
+  const foreign = "https://google.com/approved/clip.mp4?v=3";
   expect(homeSceneAssetUrl(foreign)).toBe(foreign);
   expect(homeSceneAssetUrl("/brand/home-beerus-goku.webp")).toBe("/brand/home-beerus-goku.webp");
 });

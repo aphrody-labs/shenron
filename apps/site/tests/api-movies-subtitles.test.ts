@@ -17,14 +17,14 @@ mock.module("@/lib/db-universe", () => ({
       slug: "broly",
       title: "Broly",
       players: [
-        { name: "External", provider: "observed", embedUrl: "https://example.com", lang: "vostfr" },
+        { name: "External", provider: "observed", embedUrl: "https://google.com", lang: "vostfr" },
       ],
       subtitles: [...subtitles, { lang: "ja", label: "Unsafe", src: "javascript:bad" }],
       availability: [
         {
           provider: "ADN",
           label: "ADN",
-          url: "https://example.com/watch",
+          url: "https://google.com/watch",
           embedUrl: null,
           langs: ["vostfr"],
           available: true,

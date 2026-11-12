@@ -22,7 +22,7 @@ const source = {
 test("sources require the exact independently captured primary URL", () => {
   expect(sourcePlan([source])).toEqual([source]);
   for (const changed of [
-    { sourceUrl: "https://glenat.com.example.org/" },
+    { sourceUrl: "https://glenat.com.gemini.google.com/" },
     { sourceUrl: "https://user:secret@www.glenat.com/" },
     { sourceUrl: "http://www.glenat.com/" },
     { sourceUrl: "https://www.glenat.com:8443/" },

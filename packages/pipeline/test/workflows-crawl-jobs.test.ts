@@ -92,7 +92,7 @@ describe("createCrawlJobArgs", () => {
     );
     const custom = createCrawlJobIntent("custom-alpha", {
       source: "custom",
-      url: "https://example.org/",
+      url: "https://gemini.google.com/",
     });
     expect(custom.args[0]).toBe("crawl-index");
     expect(custom.args).not.toContain("--output");
@@ -101,22 +101,22 @@ describe("createCrawlJobArgs", () => {
   test("creates a stable, per-seed crawl-index job for a custom host", () => {
     const first = createCrawlJobArgs({
       source: "custom",
-      url: "https://example.org/news/",
+      url: "https://gemini.google.com/news/",
       maxRequests: 7,
       depth: 1,
     });
     const second = createCrawlJobArgs({
       source: "custom",
-      url: "https://example.org/news/",
+      url: "https://gemini.google.com/news/",
       maxRequests: 7,
       depth: 1,
     });
     expect(first).toEqual(second);
     expect(first).toEqual([
       "crawl-index",
-      "https://example.org/news/",
+      "https://gemini.google.com/news/",
       "--label",
-      expect.stringMatching(/^shenron-custom-example-org-[a-f0-9]{12}$/),
+      expect.stringMatching(/^shenron-custom-gemini-google-com-[a-f0-9]{12}$/),
       "--profile",
       "shenron",
       "--max-requests",
@@ -134,10 +134,10 @@ describe("createCrawlJobArgs", () => {
       createCrawlJobArgs({ source: "custom", url: "https://fandom.com/wiki/Dragon_Ball" }),
     ).toThrow("Fandom is not an allowed");
     expect(() =>
-      createCrawlJobArgs({ source: "custom", url: "https://user:pass@example.org/" }),
+      createCrawlJobArgs({ source: "custom", url: "https://user:pass@gemini.google.com/" }),
     ).toThrow("without credentials");
     expect(() =>
-      createCrawlJobArgs({ source: "custom", url: "https://example.org/", outDir: "C:/tmp" }),
+      createCrawlJobArgs({ source: "custom", url: "https://gemini.google.com/", outDir: "C:/tmp" }),
     ).toThrow("owned by the worker host");
     expect(() => createCrawlJobArgs({ source: "official", maxRequests: 0 })).toThrow(
       "maxRequests must be positive",

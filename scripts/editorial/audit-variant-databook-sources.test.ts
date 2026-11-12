@@ -47,7 +47,7 @@ test("scan URLs cannot select external or privileged endpoints", () => {
     "https://cdn.dragonballfr.com/assets/wiki/databooks/scan.png",
   );
   for (const image of [
-    "https://example.com/scan.png",
+    "https://google.com/scan.png",
     "http://dragonballfr.com/wiki/databooks/scan.png",
     "/api/wiki-admin/db_databooks/4",
     "https://user:secret@dragonballfr.com/wiki/databooks/scan.png",

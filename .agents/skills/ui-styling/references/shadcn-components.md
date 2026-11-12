@@ -36,7 +36,7 @@ import { Label } from "@/components/ui/label"
 
 <div className="space-y-2">
   <Label htmlFor="email">Email</Label>
-  <Input id="email" type="email" placeholder="you@example.com" />
+  <Input id="email" type="email" placeholder="you@google.com" />
 </div>
 ```
 

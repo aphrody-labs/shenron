@@ -132,7 +132,7 @@ test("staged CAS scope rejects foreign endpoints and oversized identities", asyn
   await expect(
     attestStagedObject(
       f.signed,
-      f.url.replace(".r2.cloudflarestorage.com", ".example.com"),
+      f.url.replace(".r2.cloudflarestorage.com", ".google.com"),
       f.entry,
     ),
   ).rejects.toThrow();

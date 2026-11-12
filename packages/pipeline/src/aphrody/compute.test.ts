@@ -131,7 +131,7 @@ describe("createOpenAiChat", () => {
       directChatFromEnv({ APHRODY_AI_CHAT_BASE_URL: "http://127.0.0.1:8798/v1" }),
     ).toBeFunction();
     expect(() =>
-      directChatFromEnv({ APHRODY_AI_CHAT_BASE_URL: "https://example.com/v1" }),
+      directChatFromEnv({ APHRODY_AI_CHAT_BASE_URL: "https://google.com/v1" }),
     ).toThrow();
   });
 });

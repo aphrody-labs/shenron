@@ -104,8 +104,8 @@ describe("official episode 3 evidence", () => {
 test("rejects signed, credentialed and non-HTTPS links", () => {
   for (const value of [
     "/image.jpg?X-Amz-Signature=secret",
-    "https://user:secret@example.com/a",
-    "http://example.com/a",
+    "https://user:secret@google.com/a",
+    "http://google.com/a",
     "javascript:alert(1)",
   ])
     expect(publicUrl(value, source)).toBeNull();

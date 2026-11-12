@@ -29,17 +29,17 @@ describe("external source public identifiers", () => {
 
   test("rejects malformed identifiers and non-canonical encodings", () => {
     expect(externalSourceUrlFromId("../../etc-passwd")).toBeNull();
-    expect(externalSourceUrlFromId(`${externalSourceId("https://example.com/")}=`)).toBeNull();
+    expect(externalSourceUrlFromId(`${externalSourceId("https://google.com/")}=`)).toBeNull();
     expect(
-      externalSourceUrlFromId(externalSourceId("https://user:password@example.com/")),
+      externalSourceUrlFromId(externalSourceId("https://user:password@google.com/")),
     ).toBeNull();
   });
   test("retains the exact stored URL key when URL.href would normalize it", () => {
     for (const url of [
-      "https://example.com/鳥山明",
-      "https://example.com/Dragon Ball.jpg",
+      "https://google.com/鳥山明",
+      "https://google.com/Dragon Ball.jpg",
       "https://EXAMPLE.com:443/",
-      "https://example.com",
+      "https://google.com",
     ]) {
       expect(externalSourceUrlFromId(externalSourceId(url))).toBe(url);
     }
@@ -76,7 +76,7 @@ test("archive filters and sorting stay parameterized with stable URL tie breaks"
     focus: "dragon-ball",
     archiveCategory: "archive-movies",
     domain: "archive.org",
-    parentUrl: "https://example.com/parent",
+    parentUrl: "https://google.com/parent",
     q: "100%_",
     limit: 999,
     offset: 48,
@@ -84,7 +84,7 @@ test("archive filters and sorting stay parameterized with stable URL tie breaks"
   const query = executed.at(-1)!;
   expect(query.params).toContain("archive-movies");
   expect(query.params).toContain("archive.org");
-  expect(query.params).toContain("https://example.com/parent");
+  expect(query.params).toContain("https://google.com/parent");
   expect(query.sql).toContain("records.title ~*");
   expect(query.sql).toContain("records.url ASC");
   expect(query.sql).toContain("lower(coalesce(nullif(records.title");

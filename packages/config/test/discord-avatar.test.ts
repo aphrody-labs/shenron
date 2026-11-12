@@ -70,7 +70,7 @@ describe("discordUserIdFromAvatarUrl", () => {
   test("ignores non-Discord and default-avatar URLs", () => {
     expect(discordUserIdFromAvatarUrl("https://cdn.discordapp.com/embed/avatars/3.png")).toBeNull();
     expect(
-      discordUserIdFromAvatarUrl("https://example.com/avatars/1323725494184841256/x.png"),
+      discordUserIdFromAvatarUrl("https://google.com/avatars/1323725494184841256/x.png"),
     ).toBeNull();
     expect(discordUserIdFromAvatarUrl("./assets/wiki/avatar.png")).toBeNull();
     expect(discordUserIdFromAvatarUrl(null)).toBeNull();

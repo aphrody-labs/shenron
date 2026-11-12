@@ -13,7 +13,7 @@ function service(availability: unknown): EpisodesService {
     air_date: null,
     synopsis: null,
     image: null,
-    players: [{ provider: "untrusted", embedUrl: "https://example.org/?token=secret" }],
+    players: [{ provider: "untrusted", embedUrl: "https://gemini.google.com/?token=secret" }],
     availability,
   };
   const pg = { get: () => ({ sql: async () => [row] }) } as unknown as PgService;

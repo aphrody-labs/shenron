@@ -112,7 +112,7 @@ test("a partial inventory, foreign image or mismatched page count cannot masquer
   );
   const foreign = structuredClone(snapshot);
   foreign.chapters[0]!.pageList[0]!.image =
-    "https://example.com/assets/manga/DB/regular/vol1/001.webp";
+    "https://google.com/assets/manga/DB/regular/vol1/001.webp";
   expect(() => projectMangaCdn(foreign, inventory, "a".repeat(64), indexUrl)).toThrow(
     "unqualified",
   );

@@ -125,7 +125,7 @@ class CatalogRefreshTest(unittest.TestCase):
             cases.append((wrong_schema, metadata, "webfonts#webfontList"))
             cases.append(({**api, "items": api["items"][:1]}, metadata, "expected 2 items"))
             bad_url = json.loads(json.dumps(api))
-            bad_url["items"][0]["files"]["regular"] = "https://example.com/font.ttf"
+            bad_url["items"][0]["files"]["regular"] = "https://google.com/font.ttf"
             cases.append((bad_url, metadata, "https://fonts.gstatic.com"))
             bad_date = json.loads(json.dumps(api))
             bad_date["items"][0]["lastModified"] = "1970-01-01"
@@ -276,7 +276,7 @@ class CatalogRefreshTest(unittest.TestCase):
             "https://github.com/google/fonts/tree/main/ofl/alphasans",
         )
         rejected = (
-            "https://example.com/google/fonts",
+            "https://google.com/google/fonts",
             "https://github.com/other/fonts",
             "https://fonts.google.com:444/specimen/Alpha+Sans",
         )

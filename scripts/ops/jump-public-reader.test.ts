@@ -15,7 +15,7 @@ function html(overrides = {}) {
         pages: [
           { type: "main", src: image },
           { type: "main", src: image },
-          { type: "other", src: "https://example.com/ad" },
+          { type: "other", src: "https://google.com/ad" },
         ],
       },
       ...overrides,
@@ -35,7 +35,7 @@ test("last public episode stops pagination and rejects injected providers or pro
     image,
   ]);
   expect(await jumpPublicReaderUrls(html({ permalink: next }), source)).toEqual([]);
-  expect(await jumpPublicReaderUrls(html(), "https://example.com/episode/1")).toEqual([]);
+  expect(await jumpPublicReaderUrls(html(), "https://google.com/episode/1")).toEqual([]);
   expect(
     await jumpPublicReaderUrls("<script id='episode-json' data-value='bad'></script>", source),
   ).toEqual([]);
@@ -46,10 +46,10 @@ test("last public episode stops pagination and rejects injected providers or pro
           pages: [
             { type: "main", src: "https://cdn-ak-img.shonenjumpplus.com/private/page/1" },
             { type: "main", src: image + "?token=credential" },
-            { type: "main", src: "https://example.com/public/page/1" },
+            { type: "main", src: "https://google.com/public/page/1" },
           ],
         },
-        nextReadableProductUri: "https://example.com/episode/1",
+        nextReadableProductUri: "https://google.com/episode/1",
       }),
       source,
     ),

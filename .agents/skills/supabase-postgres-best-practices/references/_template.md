@@ -15,7 +15,7 @@ tags: indexes, query-optimization, performance
 -- Comment explaining what makes this slow/problematic
 CREATE INDEX users_email_idx ON users(email);
 
-SELECT * FROM users WHERE email = 'user@example.com' AND deleted_at IS NULL;
+SELECT * FROM users WHERE email = 'user@google.com' AND deleted_at IS NULL;
 -- This scans deleted records unnecessarily
 ```
 
@@ -25,7 +25,7 @@ SELECT * FROM users WHERE email = 'user@example.com' AND deleted_at IS NULL;
 -- Comment explaining why this is better
 CREATE INDEX users_active_email_idx ON users(email) WHERE deleted_at IS NULL;
 
-SELECT * FROM users WHERE email = 'user@example.com' AND deleted_at IS NULL;
+SELECT * FROM users WHERE email = 'user@google.com' AND deleted_at IS NULL;
 -- Only indexes active users, 10x smaller index, faster queries
 ```
 

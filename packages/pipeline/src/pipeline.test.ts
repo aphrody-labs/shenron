@@ -58,7 +58,7 @@ describe("@aphrody/shenron-pipeline — exécution vérifiable", () => {
     const officialCrawl = await runCrawl({ source: "official", runner: okRunner });
     const remoteCrawl = await runCrawl({
       source: "custom",
-      url: "https://example.org/news",
+      url: "https://gemini.google.com/news",
       runner: okRunner,
     });
     expect(manga.command.at(1)?.endsWith("run-manga-ocr.ts")).toBe(true);
@@ -71,7 +71,7 @@ describe("@aphrody/shenron-pipeline — exécution vérifiable", () => {
     expect(remoteCrawl.command.slice(1, 4)).toEqual([
       "web",
       "crawl-index",
-      "https://example.org/news",
+      "https://gemini.google.com/news",
     ]);
     for (const result of [crawl, officialCrawl, remoteCrawl]) {
       expect(result.command[result.command.indexOf("--profile") + 1]).toBe("shenron");
@@ -85,7 +85,7 @@ describe("@aphrody/shenron-pipeline — exécution vérifiable", () => {
     };
     for (const url of [
       "https://dragonball.fandom.com/wiki/Goku",
-      "https://user:secret@example.org",
+      "https://user:secret@gemini.google.com",
       "file:///tmp/private",
     ]) {
       await expect(runCrawl({ source: "custom", url, runner })).rejects.toThrow();

@@ -480,7 +480,7 @@ describe("transfert vers un réplica migré", () => {
           col("name", "text"),
           col("url", "text"),
         ],
-        rows: [{ id: 1, slug: "x", name: "X", url: "https://example.org" }],
+        rows: [{ id: 1, slug: "x", name: "X", url: "https://gemini.google.com" }],
       },
     });
     const sqlite = openReplica(path, { readonly: true });

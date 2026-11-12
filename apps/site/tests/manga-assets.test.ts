@@ -19,7 +19,7 @@ describe("publication des médias manga", () => {
 
   test("conserve les assets auto-hébergés et les autres sources", () => {
     const local = "./assets/manga/DB/regular/vol1/001.webp";
-    const external = "https://cdn.example.org/manga/001.webp";
+    const external = "https://cdn.gemini.google.com/manga/001.webp";
     expect(readableMangaPages([local, external])).toEqual([local, external]);
   });
 

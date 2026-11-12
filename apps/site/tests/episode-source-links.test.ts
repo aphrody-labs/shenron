@@ -36,7 +36,7 @@ describe("collectEpisodeSourceLinks", () => {
           {
             provider: "stale",
             label: "Inactive",
-            url: "https://example.com/12",
+            url: "https://google.com/12",
             embedUrl: null,
             langs: ["vf"],
             available: false,

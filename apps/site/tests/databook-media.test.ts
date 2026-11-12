@@ -23,8 +23,8 @@ describe("public databook media", () => {
     expect(publicDatabookImage("https://comic.dragonballcn.com/images/cover/book.gif")).toBe(
       "https://comic.dragonballcn.com/images/cover/book.gif",
     );
-    expect(publicDatabookImage("https://images.example.com/book.webp")).toBe(
-      "https://images.example.com/book.webp",
+    expect(publicDatabookImage("https://images.google.com/book.webp")).toBe(
+      "https://images.google.com/book.webp",
     );
   });
 
