@@ -10,6 +10,9 @@ Group=root
 UMask=0077
 LoadCredential=api-token:/etc/aphrody/cloudflare/api-token
 Environment=CLOUDFLARE_API_TOKEN_FILE=/run/credentials/shenron-cloudflare-s3-renew.service/api-token
+# An interrupted run leaves its lock directory and O_EXCL temporaries (*.next) behind and every
+# later run fails; oneshot runs never overlap, so anything older than 3 min is stale.
+ExecStartPre=/usr/bin/find /etc/aphrody/cloudflare -maxdepth 1 ( -name *.lock -type d -o -name *.next -type f ) -mmin +3 -delete
 ExecStart=/usr/local/bin/bun /etc/aphrody/cloudflare/cli/s3-profile.ts renew --manifest /home/ubuntu/.config/aphrody/cloudflare/manifest.json --profile /etc/aphrody/cloudflare/shenron-s3.json --apply
 TimeoutStartSec=120
 NoNewPrivileges=true
