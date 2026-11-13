@@ -16,9 +16,7 @@
         "url": "https://www.kanzenshuu.com/2026/08/24/dr-slump-hilltop/",
         "publication": "Kanzenshuu interview post",
         "publicationDate": "24 August 2026",
-        "participants": [
-          "Hilltop (fan translator)"
-        ],
+        "participants": ["Hilltop (fan translator)"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
         "bodyAvailable": true,
         "bodyEmpty": false,
@@ -42,9 +40,7 @@
         "url": "https://www.kanzenshuu.com/2026/08/10/goku-hishoden-kazetrigger/",
         "publication": "Kanzenshuu interview post",
         "publicationDate": "10 August 2026",
-        "participants": [
-          "Kazetrigger (fan translator and game hacker)"
-        ],
+        "participants": ["Kazetrigger (fan translator and game hacker)"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
         "bodyAvailable": true,
         "bodyEmpty": false,
@@ -71,10 +67,7 @@
         "url": "https://www.kanzenshuu.com/2026/04/19/age-1000-xenoverse-3-dragon-ball-games-battle-hour-2026/",
         "publication": "Entretien vidéo préenregistré évoqué dans le compte rendu Kanzenshuu de DRAGON BALL Games Battle Hour 2026",
         "publicationDate": "2026-04-19",
-        "participants": [
-          "Masayuki Hirano",
-          "Akio Iyoku"
-        ],
+        "participants": ["Masayuki Hirano", "Akio Iyoku"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
         "transcriptAvailable": false,
         "bodyAvailable": true,
@@ -102,9 +95,7 @@
         "url": "https://www.kanzenshuu.com/2026/07/30/new-dragon-ball-sparking-zero-theme-song-zero-by-hironobu-kageyama-released/",
         "publication": "Dragon Ball Official Site — bref entretien avec Hironobu Kageyama",
         "publicationDate": "2026-07-30",
-        "participants": [
-          "Hironobu Kageyama"
-        ],
+        "participants": ["Hironobu Kageyama"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
         "sourcePageUrl": "https://dragon-ball-official.com/news/01_4345.html",
         "sourcePageUrlEn": "https://en.dragon-ball-official.com/news/01_4345.html",
@@ -133,9 +124,7 @@
         "url": "https://www.kanzenshuu.com/2026/08/09/podcast-episode-0540/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2026-08-09",
-        "participants": [
-          "Vincent Haddad"
-        ],
+        "participants": ["Vincent Haddad"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
         "bodyAvailable": true,
         "bodyEmpty": false,

@@ -9,6 +9,7 @@ Handle to a command buffer on the GPU.
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn map_buffer_on_submit<S: core::ops::RangeBounds<BufferAddress>>(&self, buffer: &api::Buffer, mode: MapMode, bounds: S, callback: impl FnOnce(Result<(), BufferAsyncError>) + WasmNotSend + 'static)` — On submission, maps the buffer to host (CPU) memory, making it available for reading or writing via [`get_mapped_range()`](Buffer::get_mapped_range). The buffer becomes accessible once the `callback` is invoked with [`O…
 - `fn on_submitted_work_done(&self, callback: impl FnOnce() + Send + 'static)` — Registers a callback that is invoked when this command buffer’s work finishes executing on the GPU. When this callback runs, all mapped-buffer callbacks registered for the same submission are guaranteed to have been cal…
 
@@ -21,6 +22,7 @@ Encodes a series of GPU operations.
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn finish(self) -> CommandBuffer` — Finishes recording and returns a [`CommandBuffer`] that can be submitted for execution.
 - `fn begin_render_pass<'encoder>(self: &'encoder mut Self, desc: &RenderPassDescriptor<'_>) -> RenderPass<'encoder>` — Begins recording of a render pass.
 - `fn begin_compute_pass<'encoder>(self: &'encoder mut Self, desc: &ComputePassDescriptor<'_>) -> ComputePass<'encoder>` — Begins recording of a compute pass.
@@ -51,9 +53,11 @@ Implements: `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`
 Describes a [`CommandEncoder`](../wgpu/struct.CommandEncoder.html).
 
 Fields:
+
 - `label: L` — Debug label for the command encoder. This will show up in graphics debuggers for easy identification.
 
 Methods and constants:
+
 - `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> CommandEncoderDescriptor<K>` — Takes a closure and maps the label of the command encoder descriptor into another. _[must_use]_
 
 Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -65,6 +69,7 @@ In-progress recording of a compute pass.
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn forget_lifetime(self) -> ComputePass<'static>` — Drops the lifetime relationship to the parent command encoder, making usage of the encoder while this pass is recorded a run-time error instead.
 - `fn set_bind_group<'a, BG>(&mut self, index: u32, bind_group: BG, offsets: &[DynamicOffset]) where Option<&'a BindGroup>: From<BG>` — Sets the active bind group for a given bind group index. The bind group layout in the active pipeline when the `dispatch_workgroups()` function is called must match the layout of this bind group.
 - `fn set_pipeline(&mut self, pipeline: &ComputePipeline)` — Sets the active compute pipeline.
@@ -88,6 +93,7 @@ Implements: `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`
 Describes the attachments of a compute pass.
 
 Fields:
+
 - `label: Label<'a>` — Debug label of the compute pass. This will show up in graphics debuggers for easy identification.
 - `timestamp_writes: Option<ComputePassTimestampWrites<'a>>` — Defines which timestamp values will be written for this pass, and where to write them to.
 
@@ -98,6 +104,7 @@ Implements: `Clone`, `Debug`, `Default`
 Describes the timestamp writes of a compute pass.
 
 Fields:
+
 - `query_set: &'a QuerySet` — The query set to write to.
 - `beginning_of_pass_write_index: Option<u32>` — The index of the query set at which a start timestamp of this pass is written, if any.
 - `end_of_pass_write_index: Option<u32>` — The index of the query set at which an end timestamp of this pass is written, if any.
@@ -119,9 +126,11 @@ Implements: `Clone`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`
 Describes a [`RenderBundle`](../wgpu/struct.RenderBundle.html).
 
 Fields:
+
 - `label: L` — Debug label of the render bundle encoder. This will show up in graphics debuggers for easy identification.
 
 Methods and constants:
+
 - `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> RenderBundleDescriptor<K>` — Takes a closure and maps the label of the render bundle descriptor into another. _[must_use]_
 
 Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -133,6 +142,7 @@ Encodes a series of GPU operations into a reusable "render bundle".
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn finish(self, desc: &RenderBundleDescriptor<'_>) -> RenderBundle` — Finishes recording and returns a [`RenderBundle`] that can be executed in other render passes.
 - `fn set_bind_group<'b, BG>(&mut self, index: u32, bind_group: BG, offsets: &[DynamicOffset]) where Option<&'b BindGroup>: From<BG>` — Sets the active bind group for a given bind group index. The bind group layout in the active pipeline when any `draw()` function is called must match the layout of this bind group.
 - `fn set_pipeline(&mut self, pipeline: &'a RenderPipeline)` — Sets the active render pipeline.
@@ -151,6 +161,7 @@ Implements: `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`, `RenderEnco
 Describes a [`RenderBundleEncoder`].
 
 Fields:
+
 - `label: Label<'a>` — Debug label of the render bundle encoder. This will show up in graphics debuggers for easy identification.
 - `color_formats: &'a [Option<TextureFormat>]` — The formats of the color attachments that this render bundle is capable to rendering to. This must match the formats of the color attachments in the render pass this render bundle…
 - `depth_stencil: Option<RenderBundleDepthStencil>` — Information about the depth attachment that this render bundle is capable to rendering to. This must match the format of the depth attachments in the render pass this render bundl…
@@ -164,6 +175,7 @@ Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralP
 Methods shared by [`RenderPass`] and [`RenderBundleEncoder`].
 
 Items:
+
 - `fn set_bind_group(&mut self, index: u32, bind_group: Option<&'a BindGroup>, offsets: &[DynamicOffset])` — Sets the active bind group for a given bind group index. The bind group layout in the active pipeline when any `draw()` function is called must match the layout of this bind group.
 - `fn set_pipeline(&mut self, pipeline: &'a RenderPipeline)` — Sets the active render pipeline.
 - `fn set_index_buffer(&mut self, buffer_slice: BufferSlice<'a>, index_format: IndexFormat)` — Sets the active index buffer.
@@ -181,6 +193,7 @@ In-progress recording of a render pass: a list of render commands in a [`Command
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn forget_lifetime(self) -> RenderPass<'static>` — Drops the lifetime relationship to the parent command encoder, making usage of the encoder while this pass is recorded a run-time error instead.
 - `fn set_bind_group<'a, BG>(&mut self, index: u32, bind_group: BG, offsets: &[DynamicOffset]) where Option<&'a BindGroup>: From<BG>` — Sets the active bind group for a given bind group index. The bind group layout in the active pipeline when any `draw_*()` method is called must match the layout of this bind group.
 - `fn set_pipeline(&mut self, pipeline: &RenderPipeline)` — Sets the active render pipeline.
@@ -222,6 +235,7 @@ Implements: `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`, `RenderEnco
 Describes a color attachment to a [`RenderPass`].
 
 Fields:
+
 - `view: &'tex TextureView` — The view to use as an attachment.
 - `depth_slice: Option<u32>` — The depth slice index of a 3D view. It must not be provided if the view is not 3D.
 - `resolve_target: Option<&'tex TextureView>` — The view that will receive the resolved output if multisampling is used.
@@ -234,6 +248,7 @@ Implements: `Clone`, `Debug`
 Describes a depth/stencil attachment to a [`RenderPass`].
 
 Fields:
+
 - `view: &'tex TextureView` — The view to use as an attachment.
 - `depth_ops: Option<Operations<f32>>` — What operations will be performed on the depth part of the attachment.
 - `stencil_ops: Option<Operations<u32>>` — What operations will be performed on the stencil part of the attachment.
@@ -245,6 +260,7 @@ Implements: `Clone`, `Debug`
 Describes the attachments of a render pass.
 
 Fields:
+
 - `label: Label<'a>` — Debug label of the render pass. This will show up in graphics debuggers for easy identification.
 - `color_attachments: &'a [Option<RenderPassColorAttachment<'a>>]` — The color attachments of the render pass.
 - `depth_stencil_attachment: Option<RenderPassDepthStencilAttachment<'a>>` — The depth and stencil attachment of the render pass, if any.
@@ -259,6 +275,7 @@ Implements: `Clone`, `Debug`, `Default`
 Describes the timestamp writes of a render pass.
 
 Fields:
+
 - `query_set: &'a QuerySet` — The query set to write to.
 - `beginning_of_pass_write_index: Option<u32>` — The index of the query set at which a start timestamp of this pass is written, if any.
 - `end_of_pass_write_index: Option<u32>` — The index of the query set at which an end timestamp of this pass is written, if any.
@@ -272,6 +289,7 @@ Implements: `Clone`, `Debug`
 View of a buffer which can be used to copy to/from a texture.
 
 Fields:
+
 - `buffer: B` — The buffer to be copied to/from.
 - `layout: TexelCopyBufferLayout` — The layout of the texture data in this buffer.
 
@@ -284,12 +302,14 @@ Implements: `Clone`, `Copy`, `Debug`
 View of a texture which can be used to copy to/from a buffer/texture.
 
 Fields:
+
 - `texture: T` — The texture to be copied to/from.
 - `mip_level: u32` — The target mip level of the texture.
 - `origin: Origin3d` — The base texel of the texture in the selected `mip_level`. Together with the `copy_size` argument to copy functions, defines the sub-region of the texture to copy.
 - `aspect: TextureAspect` — The copy aspect.
 
 Methods and constants:
+
 - `fn to_tagged(self, color_space: PredefinedColorSpace, premultiplied_alpha: bool) -> CopyExternalImageDestInfo<T>` — Adds color space and premultiplied alpha information to make this descriptor tagged.
 
 Implements: `Clone`, `Copy`, `Debug`

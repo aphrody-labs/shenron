@@ -9,10 +9,7 @@
       "publicationType": "Guidebook",
       "format": "Interview",
       "publicationDate": "03 October 2003",
-      "participants": [
-        "Akira Toriyama",
-        "Katsuyoshi Nakatsuru"
-      ],
+      "participants": ["Akira Toriyama", "Katsuyoshi Nakatsuru"],
       "topics": [
         "Dragon Ball Z",
         "Dragon Ball GT",
@@ -43,14 +40,8 @@
       "publicationType": "Guidebook",
       "format": "Interview",
       "publicationDate": "19 December 2003",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball (Manga)",
-        "Jackie Chan",
-        "Bruce Lee"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball (Manga)", "Jackie Chan", "Bruce Lee"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-landmark-dragon-ball-toriyama.html",
       "acquired": true,
       "forumContent": false,
@@ -74,16 +65,8 @@
       "publicationType": "Guidebook",
       "format": "Interview",
       "publicationDate": "30 April 2004",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball (Manga)",
-        "Characters",
-        "Kanzenban",
-        "Manga",
-        "Setting"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball (Manga)", "Characters", "Kanzenban", "Manga", "Setting"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-forever-dragon-ball-toriyama.html",
       "acquired": true,
       "forumContent": false,
@@ -107,18 +90,8 @@
       "publicationType": "Guidebook",
       "format": "Interview",
       "publicationDate": "02 July 2004",
-      "participants": [
-        "Akira Toriyama",
-        "Takao Koyama",
-        "Masako Nozawa"
-      ],
-      "topics": [
-        "Dragon Ball (Anime)",
-        "Dragon Ball Z",
-        "Characters",
-        "Production",
-        "Voice Actor"
-      ],
+      "participants": ["Akira Toriyama", "Takao Koyama", "Masako Nozawa"],
+      "topics": ["Dragon Ball (Anime)", "Dragon Ball Z", "Characters", "Production", "Voice Actor"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/tenkaichi-densetsu-toriyama-koyama-nozawa.html",
       "acquired": true,
       "forumContent": false,
@@ -142,13 +115,8 @@
       "publicationType": "Booklet",
       "format": "Interview",
       "publicationDate": "15 June 2005",
-      "participants": [
-        "Kōzō Morishita"
-      ],
-      "topics": [
-        "Dragon Ball GT",
-        "Production"
-      ],
+      "participants": ["Kōzō Morishita"],
+      "topics": ["Dragon Ball GT", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-gt-dragon-book-gt-back-then-kozo-morishita-interview.html",
       "acquired": true,
       "forumContent": false,
@@ -171,14 +139,8 @@
       "publicationType": "Anthology",
       "format": "Interview",
       "publicationDate": "02 April 2008",
-      "participants": [
-        "Akira Toriyama",
-        "Masakazu Katsura"
-      ],
-      "topics": [
-        "Non-Dragon Ball",
-        "Galactic Patrol"
-      ],
+      "participants": ["Akira Toriyama", "Masakazu Katsura"],
+      "topics": ["Non-Dragon Ball", "Galactic Patrol"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/jump-sq-may-2008-akira-toriyama-masakazu-katsura.html",
       "acquired": true,
       "forumContent": false,
@@ -202,13 +164,8 @@
       "publicationType": "Booklet",
       "format": "Interview",
       "publicationDate": "23 October 2009",
-      "participants": [
-        "Masako Nozawa"
-      ],
-      "topics": [
-        "Dragon Ball Kai",
-        "Voice Actor"
-      ],
+      "participants": ["Masako Nozawa"],
+      "topics": ["Dragon Ball Kai", "Voice Actor"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/kai_book-masako_nozawa.html",
       "acquired": true,
       "forumContent": false,
@@ -280,9 +237,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2003-12-19",
-      "participants": [
-        "Akira Toriyama"
-      ],
+      "participants": ["Akira Toriyama"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-landmark-toriyama-qa.html",
       "acquired": true,
@@ -308,9 +263,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-04-30",
-      "participants": [
-        "Akira Toriyama"
-      ],
+      "participants": ["Akira Toriyama"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-forever-toriyama-qa.html",
       "acquired": true,
@@ -338,9 +291,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Masako Nozawa"
-      ],
+      "participants": ["Masako Nozawa"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-masako-nozawa.html",
       "acquired": true,
@@ -366,9 +317,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Toshio Furukawa"
-      ],
+      "participants": ["Toshio Furukawa"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-toshio-furukawa.html",
       "acquired": true,
@@ -394,9 +343,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Ryō Horikawa"
-      ],
+      "participants": ["Ryō Horikawa"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-ryo-horikawa.html",
       "acquired": true,
@@ -422,9 +369,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Mayumi Tanaka"
-      ],
+      "participants": ["Mayumi Tanaka"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-mayumi-tanaka.html",
       "acquired": true,
@@ -450,9 +395,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Tōru Furuya"
-      ],
+      "participants": ["Tōru Furuya"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-toru-furuya.html",
       "acquired": true,
@@ -478,9 +421,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Hirotaka Suzuoki"
-      ],
+      "participants": ["Hirotaka Suzuoki"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-hirotaka-suzuoki.html",
       "acquired": true,
@@ -506,9 +447,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Takeshi Kusao"
-      ],
+      "participants": ["Takeshi Kusao"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-takeshi-kusao.html",
       "acquired": true,
@@ -534,9 +473,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Hiromi Tsuru"
-      ],
+      "participants": ["Hiromi Tsuru"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-hiromi-tsuru.html",
       "acquired": true,
@@ -562,9 +499,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Takeshi Aono"
-      ],
+      "participants": ["Takeshi Aono"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-takeshi-aono.html",
       "acquired": true,
@@ -590,9 +525,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Yūko Minaguchi"
-      ],
+      "participants": ["Yūko Minaguchi"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-yuko-minaguchi.html",
       "acquired": true,
@@ -618,9 +551,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Mayumi Shō"
-      ],
+      "participants": ["Mayumi Shō"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-mayumi-sho.html",
       "acquired": true,
@@ -646,9 +577,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Hiroshi Masuoka"
-      ],
+      "participants": ["Hiroshi Masuoka"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-hiroshi-masuoka.html",
       "acquired": true,
@@ -674,9 +603,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Ryūsei Nakao"
-      ],
+      "participants": ["Ryūsei Nakao"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-ryusei-nakao.html",
       "acquired": true,
@@ -702,9 +629,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Norio Wakamoto"
-      ],
+      "participants": ["Norio Wakamoto"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-norio-wakamoto.html",
       "acquired": true,
@@ -730,9 +655,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Kōzō Shioya"
-      ],
+      "participants": ["Kōzō Shioya"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-kozo-shioya.html",
       "acquired": true,
@@ -758,9 +681,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2004-07-02",
-      "participants": [
-        "Jōji Yanami"
-      ],
+      "participants": ["Jōji Yanami"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-joji-yanami.html",
       "acquired": true,
@@ -786,9 +707,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "2005-06-15",
-      "participants": [
-        "Atsushi Maekawa"
-      ],
+      "participants": ["Atsushi Maekawa"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-gt-dragon-book-dragon-ball-q-atsushi-maekawa-story-qa.html",
       "acquired": true,
@@ -814,9 +733,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "14 April 2006",
-      "participants": [
-        "Takao Koyama"
-      ],
+      "participants": ["Takao Koyama"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-box-the-movies-dragonbook-theatrical-story-qa-takao-koyama.html",
       "acquired": true,
@@ -841,9 +758,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "04 March 2009",
-      "participants": [
-        "Akira Toriyama"
-      ],
+      "participants": ["Akira Toriyama"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/seg-story-volume-truth-about-dragon-ball.html",
       "acquired": true,
@@ -869,9 +784,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "03 April 2009",
-      "participants": [
-        "Akira Toriyama"
-      ],
+      "participants": ["Akira Toriyama"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/seg-character-volume-truth-about-dragon-ball.html",
       "acquired": true,
@@ -898,24 +811,15 @@
       "publicationType": "Website post excerpt",
       "format": "Interview excerpt",
       "publicationDate": "26 August 2009",
-      "participants": [
-        "Traci Todd",
-        "GC4K (interviewer)"
-      ],
-      "topics": [
-        "Viz Kids",
-        "Children’s publishing",
-        "Dragon Ball"
-      ],
+      "participants": ["Traci Todd", "GC4K (interviewer)"],
+      "topics": ["Viz Kids", "Children’s publishing", "Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
       "acquired": true,
       "forumContent": false,
       "alternatePrimarySource": "http://www.schoollibraryjournal.com/blog/540000654/post/160048216.html",
       "sourceDescription": "Kanzenshuu reproduces one question and one answer from an external interview with Viz Kids editor Traci Todd; only this brief excerpt is present in the post.",
       "questionCount": 1,
-      "sectionHeadings": [
-        "Traci Todd, editor of Viz Kids"
-      ],
+      "sectionHeadings": ["Traci Todd, editor of Viz Kids"],
       "editorialSummary": "Extrait bref : interrogée sur les réécritures dans les livres jeunesse, Traci Todd répond que le public tolère davantage les adaptations destinées aux enfants et que Viz tente de choisir des titres qui n’exigent pas de contournements. Le billet ne reproduit qu’une question et une réponse, puis formule les réserves de Kanzenshuu sur le format Chapter Book.",
       "reviewStatus": "source-checked-summary-written"
     },
@@ -928,14 +832,8 @@
       "publicationType": "Booklet interview reproduced in website post",
       "format": "Interview",
       "publicationDate": "29 October 2009 (Kanzenshuu post)",
-      "participants": [
-        "Masako Nozawa"
-      ],
-      "topics": [
-        "Dragon Ball Kai",
-        "Voice acting",
-        "Anime production"
-      ],
+      "participants": ["Masako Nozawa"],
+      "topics": ["Dragon Ball Kai", "Voice acting", "Anime production"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
       "acquired": true,
       "forumContent": false,
@@ -961,19 +859,8 @@
       "publicationType": "Podcast episode",
       "format": "Audio interview",
       "publicationDate": "12 July 2009",
-      "participants": [
-        "Lanipator",
-        "Takahata101",
-        "VegettoEX",
-        "Meri",
-        "Julian"
-      ],
-      "topics": [
-        "TeamFourStar",
-        "Dragon Ball Z Abridged",
-        "Voice acting",
-        "Podcast"
-      ],
+      "participants": ["Lanipator", "Takahata101", "VegettoEX", "Meri", "Julian"],
+      "topics": ["TeamFourStar", "Dragon Ball Z Abridged", "Voice acting", "Podcast"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
       "acquired": true,
       "forumContent": false,
@@ -996,13 +883,8 @@
       "publicationType": "Podcast audio",
       "format": "Audio interview",
       "publicationDate": "2009-06-21",
-      "participants": [
-        "KaiserNeko",
-        "MasakoX"
-      ],
-      "topics": [
-        "DBZ Abridged"
-      ],
+      "participants": ["KaiserNeko", "MasakoX"],
+      "topics": ["DBZ Abridged"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
       "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Daizenshuu_EX_-_Episode_0180.mp3",
       "acquired": true,
@@ -1025,18 +907,8 @@
       "publicationType": "Website post announcing an audio interview",
       "format": "Audio interview",
       "publicationDate": "2008-06-29",
-      "participants": [
-        "KaiserNeko",
-        "Lanipator",
-        "VegettoEX",
-        "Meri",
-        "Jeff"
-      ],
-      "topics": [
-        "TeamFourStar",
-        "Dragon Ball Z Abridged",
-        "fan production"
-      ],
+      "participants": ["KaiserNeko", "Lanipator", "VegettoEX", "Meri", "Jeff"],
+      "topics": ["TeamFourStar", "Dragon Ball Z Abridged", "fan production"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
       "acquired": true,
       "transcriptAvailable": false,
@@ -1056,15 +928,8 @@
       "publicationType": "Website post reporting an event Q&A",
       "format": "Event Q&A excerpt",
       "publicationDate": "2008-11-30",
-      "participants": [
-        "Masako Nozawa",
-        "Hironobu Kageyama"
-      ],
-      "topics": [
-        "Dragon Ball Z",
-        "event appearance",
-        "Shenlong"
-      ],
+      "participants": ["Masako Nozawa", "Hironobu Kageyama"],
+      "topics": ["Dragon Ball Z", "event appearance", "Shenlong"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
       "acquired": true,
       "transcriptAvailable": false,
@@ -1084,27 +949,15 @@
       "publicationType": "External interview transcript linked by Kanzenshuu",
       "format": "Written voice-actor interview",
       "publicationDate": "2000-11",
-      "participants": [
-        "Jon Allen",
-        "Sonny Strait"
-      ],
-      "topics": [
-        "FUNimation",
-        "voice acting",
-        "Krillin",
-        "Toonami",
-        "Bardock",
-        "English dub"
-      ],
+      "participants": ["Jon Allen", "Sonny Strait"],
+      "topics": ["FUNimation", "voice acting", "Krillin", "Toonami", "Bardock", "English dub"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-ex-2000-sonny-strait-interview.txt",
       "acquired": true,
       "transcriptAvailable": true,
       "forumContent": false,
       "alternatePrimarySource": null,
       "questionCount": null,
-      "sectionHeadings": [
-        "Jon Allen interviews Sonny Strait"
-      ],
+      "sectionHeadings": ["Jon Allen interviews Sonny Strait"],
       "pageTitle": "The Sonny Strait & Terry Klassen Prank Call",
       "sourceDescription": "Le guide des rumeurs Kanzenshuu précise qu’il conserve et lie la transcription intégrale de l’entretien Daizenshuu EX avec Sonny Strait, publiée en novembre 2000. La page indique que l’audio joint contient une blague de fin, et non un véritable appel piégé à Terry Klassen. La transcription liée a été acquise dans le corpus privé.",
       "editorialSummary": "Sonny Strait raconte sa formation d’acteur, son audition chez FUNimation et la manière dont il a construit sa voix de Krillin, en choisissant de proposer sa propre interprétation plutôt que d’imiter Terry Klassen. Il décrit aussi son travail sur TOM, l’animateur de Toonami, et sur Bardock, ses méthodes de préparation, ainsi que les réactions des fans au changement de voix. Le segment intitulé « prank call » en fin d’audio est une blague dans l’entretien, pas une conversation réelle avec Terry Klassen.",
@@ -1120,16 +973,8 @@
       "publicationType": "Website page describing external video interviews",
       "format": "Voice-cast interview compilation (media described)",
       "publicationDate": "2004-11",
-      "participants": [
-        "Tiffany Vollmer",
-        "FUNimation voice cast (other interviewees unnamed)"
-      ],
-      "topics": [
-        "Dragon Ball Z: Budokai 3",
-        "FUNimation",
-        "voice acting",
-        "voice cast"
-      ],
+      "participants": ["Tiffany Vollmer", "FUNimation voice cast (other interviewees unnamed)"],
+      "topics": ["Dragon Ball Z: Budokai 3", "FUNimation", "voice acting", "voice cast"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2022.json",
       "acquired": true,
       "transcriptAvailable": false,
@@ -1150,12 +995,8 @@
       "publicationType": "Guidebook",
       "format": "Entretien imprimé en questions-réponses, publié en deux parties",
       "publicationDate": "2007-10/2007-11",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
       "acquired": true,
       "forumContent": false,
@@ -1166,10 +1007,7 @@
       "sectionHeadings": [],
       "editorialSummary": "Cette interview de Toriyama, publiée en deux livraisons de Shonen Jump, aborde les dragons, les animaux de compagnie et les choix de création de Dragon Ball. Dans la première partie, Toriyama explique notamment qu’il a choisi le dragon européen pour son équilibre visuel et qu’il aurait nommé Gon un petit dragon domestique. La seconde partie prolonge l’entretien : il explique préférer dessiner des femmes fortes, vouloir déjouer les attentes sur la croissance de la puissance, et cite Enter the Dragon et Drunken Master parmi ses films de kung-fu favoris. Les deux textes sont reliés comme parties d’une seule interview.",
       "reviewStatus": "source-acquired-summary-pending",
-      "kanzenshuuPageIds": [
-        51375,
-        51383
-      ],
+      "kanzenshuuPageIds": [51375, 51383],
       "dragonBallRelevance": "Directe : propos de Toriyama sur la création, ses préférences de dessin et ses inspirations cinématographiques."
     },
     {
@@ -1180,13 +1018,8 @@
       "publicationType": "Guidebook",
       "format": "external-interview-summary",
       "publicationDate": "2001",
-      "participants": [
-        "Eiichirō Oda",
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Eiichirō Oda", "Akira Toriyama"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2013.json",
       "acquired": false,
       "forumContent": false,
@@ -1207,12 +1040,8 @@
       "publicationType": "Guidebook",
       "format": "interview",
       "publicationDate": "2004",
-      "participants": [
-        "Daisuke Nishio"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Daisuke Nishio"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
       "acquired": false,
       "forumContent": false,
@@ -1233,12 +1062,8 @@
       "publicationType": "Guidebook",
       "format": "interview",
       "publicationDate": "2004",
-      "participants": [
-        "Hiromi Tsuru"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Hiromi Tsuru"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
       "acquired": false,
       "forumContent": false,
@@ -1259,12 +1084,8 @@
       "publicationType": "Guidebook",
       "format": "interview",
       "publicationDate": "2004",
-      "participants": [
-        "Keizō Shichijō"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Keizō Shichijō"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
       "acquired": false,
       "forumContent": false,
@@ -1285,12 +1106,8 @@
       "publicationType": "Guidebook",
       "format": "interview",
       "publicationDate": "2004",
-      "participants": [
-        "Masako Nozawa"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Masako Nozawa"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
       "acquired": false,
       "forumContent": false,
@@ -1311,12 +1128,8 @@
       "publicationType": "Guidebook",
       "format": "interview",
       "publicationDate": "2004",
-      "participants": [
-        "Mayumi Tanaka"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Mayumi Tanaka"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
       "acquired": false,
       "forumContent": false,
@@ -1337,12 +1150,8 @@
       "publicationType": "Guidebook",
       "format": "interview",
       "publicationDate": "2004",
-      "participants": [
-        "Minoru Maeda"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Minoru Maeda"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
       "acquired": false,
       "forumContent": false,
@@ -1363,12 +1172,8 @@
       "publicationType": "Guidebook",
       "format": "interview",
       "publicationDate": "2004",
-      "participants": [
-        "Minoru Okazaki"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Minoru Okazaki"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
       "acquired": false,
       "forumContent": false,
@@ -1389,12 +1194,8 @@
       "publicationType": "Guidebook",
       "format": "interview",
       "publicationDate": "2004",
-      "participants": [
-        "Tadanao Tsuji"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Tadanao Tsuji"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
       "acquired": false,
       "forumContent": false,
@@ -1415,12 +1216,8 @@
       "publicationType": "Guidebook",
       "format": "interview",
       "publicationDate": "2004",
-      "participants": [
-        "Takao Koyama"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Takao Koyama"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
       "acquired": false,
       "forumContent": false,
@@ -1441,13 +1238,8 @@
       "publicationType": "Guidebook",
       "format": "Entretien de presse et démonstration de jeu",
       "publicationDate": "2004-11",
-      "participants": [
-        "Daisuke Uchiyama",
-        "Ryo Mito (démonstration de jeu)"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Daisuke Uchiyama", "Ryo Mito (démonstration de jeu)"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
       "acquired": true,
       "forumContent": false,
@@ -1469,12 +1261,8 @@
       "publicationType": "Guidebook",
       "format": "interview",
       "publicationDate": "2006",
-      "participants": [
-        "Hironobu Kageyama"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Hironobu Kageyama"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
       "acquired": false,
       "forumContent": false,
@@ -1495,12 +1283,8 @@
       "publicationType": "Guidebook",
       "format": "Entretien imprimé en questions-réponses",
       "publicationDate": "2006-07",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
       "acquired": true,
       "forumContent": false,
@@ -1522,12 +1306,8 @@
       "publicationType": "Guidebook",
       "format": "Entretien imprimé en questions-réponses",
       "publicationDate": "2003-01",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
       "acquired": true,
       "forumContent": false,
@@ -1549,13 +1329,8 @@
       "publicationType": "Guidebook",
       "format": "Q&A imprimé d’événement",
       "publicationDate": "2003-03",
-      "participants": [
-        "Akira Toriyama",
-        "Jeunes lecteurs de Shonen Jump"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Akira Toriyama", "Jeunes lecteurs de Shonen Jump"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
       "acquired": true,
       "forumContent": false,
@@ -1577,13 +1352,8 @@
       "publicationType": "Guidebook",
       "format": "Entretien imprimé en dialogue",
       "publicationDate": "2003-03",
-      "participants": [
-        "Akira Toriyama",
-        "Takeshi Yasutoko"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Akira Toriyama", "Takeshi Yasutoko"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
       "acquired": true,
       "forumContent": false,
@@ -1605,15 +1375,8 @@
       "publicationType": "Guidebook",
       "format": "Q&A imprimé avec quatre membres de l’équipe FUNimation",
       "publicationDate": "2003-12",
-      "participants": [
-        "Chris Bevins",
-        "Jeremy Carlisle",
-        "Eric Vale",
-        "Mike McFarland"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Chris Bevins", "Jeremy Carlisle", "Eric Vale", "Mike McFarland"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2017.json",
       "acquired": true,
       "forumContent": false,
@@ -1635,10 +1398,7 @@
       "publicationType": "Web post",
       "format": "Réponse ponctuelle par courriel, sans entretien intégral.",
       "publicationDate": "2000-10-15",
-      "participants": [
-        "Ian James Corlett",
-        "Questionneur Kanzenshuu non nommé"
-      ],
+      "participants": ["Ian James Corlett", "Questionneur Kanzenshuu non nommé"],
       "topics": [
         "Corlett évoque des informations indirectes sur les droits canadiens d’IPP/Ocean.",
         "Il ne participerait pas si IPP était responsable.",
@@ -1661,11 +1421,7 @@
       "publicationType": "Podcast episode/show notes",
       "format": "Entretien audio; note d’épisode locale, sans transcription ni audio vérifié.",
       "publicationDate": "2005-12-11",
-      "participants": [
-        "Scott Melzer",
-        "VegettoEX",
-        "Meri"
-      ],
+      "participants": ["Scott Melzer", "VegettoEX", "Meri"],
       "topics": [
         "Invité : Scott Melzer; intervieweurs annoncés : VegettoEX et Meri.",
         "Thèmes annoncés : fandom anime, AMV, parodies, préférences de fan.",
@@ -1688,9 +1444,7 @@
       "publicationType": "Web post",
       "format": "Lien vers entretien vidéo externe; contenu absent localement.",
       "publicationDate": "2006-05-03",
-      "participants": [
-        "Ryo Mito"
-      ],
+      "participants": ["Ryo Mito"],
       "topics": [
         "Intervenant annoncé : Ryo Mito.",
         "Sujet : Sparking! NEO / Budokai Tenkaichi 2 et gameplay.",
@@ -1713,9 +1467,7 @@
       "publicationType": "Web post",
       "format": "Lien seul vers MUSIC JAPAN+; aucune réponse reproduite.",
       "publicationDate": "2008-06-26",
-      "participants": [
-        "Tōru Furuya"
-      ],
+      "participants": ["Tōru Furuya"],
       "topics": [
         "Furuya est présenté comme la voix japonaise de Yamcha.",
         "Contenu de l’entretien externe non reproduit localement."
@@ -1737,9 +1489,7 @@
       "publicationType": "Web post",
       "format": "Extrait informatif relayé; entretien complet non acquis.",
       "publicationDate": "2008-03-18",
-      "participants": [
-        "Donny Clay"
-      ],
+      "participants": ["Donny Clay"],
       "topics": [
         "Clay est décrit comme producteur lié à Atari.",
         "Le billet rapporte 21 personnages jouables et cinq stages.",
@@ -1762,9 +1512,7 @@
       "publicationType": "Web post",
       "format": "Entretien externe lié; citation reproduite, autres réponses seulement signalées.",
       "publicationDate": "2008-01-21",
-      "participants": [
-        "Gen Fukunaga"
-      ],
+      "participants": ["Gen Fukunaga"],
       "topics": [
         "Fukunaga annonce plusieurs films DBZ remastérisés pour février.",
         "Les réponses sur piratage, fansubs et coffrets ne sont pas reproduites."
@@ -1786,9 +1534,7 @@
       "publicationType": "Web post",
       "format": "Citation brève relayée; contexte complet non acquis.",
       "publicationDate": "2008-01-16",
-      "participants": [
-        "James Marsters"
-      ],
+      "participants": ["James Marsters"],
       "topics": [
         "Marsters loue le récit moral de Dragon Ball et l’action du film à venir.",
         "Citation relayée par TV Guide, Toon Zone puis Kanzenshuu; entretien complet absent."

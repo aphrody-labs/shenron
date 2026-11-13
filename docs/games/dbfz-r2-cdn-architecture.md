@@ -7,6 +7,7 @@ This document specifies the end-to-end architecture for synchronizing the comple
 ## 1. Byte-Exact R2 CDN Synchronization
 
 ### Cryptographic Manifest Summary
+
 - **Source Root**: `C:\Program Files (x86)\Steam\steamapps\common\DRAGON BALL FighterZ`
 - **Total Tracked Files**: 63 files
 - **Total Payload Size**: **6,951,922,626 bytes** (6.474 GB / 6.95 GiB)
@@ -15,21 +16,22 @@ This document specifies the end-to-end architecture for synchronizing the comple
 
 ### Primary Asset Inventory
 
-| File Path | Size (Bytes) | Size (Formatted) | Content-Addressed Key (`_objects/<sha256>`) |
-| :--- | :--- | :--- | :--- |
-| `RED/Content/Paks/pakchunk0-WindowsNoEditor.pak` | 5,414,923,132 | 5.04 GB | `_objects/6f2e9124...` |
-| `RED/Content/Paks/pakchunk1-WindowsNoEditor.pak` | 881,949,120 | 841 MB | `_objects/d48b10f5...` |
-| `RED/Binaries/Win64/RED-Win64-Shipping.exe` | 184,261,120 | 175.73 MB | `_objects/30ae9e5c...` |
-| `RED/Content/Movies/mv_opening_jp_pakchunk1.mp4` | 144,887,352 | 138.18 MB | `_objects/a27cf4bf...` |
-| `RED/Content/Movies/mv_opening_ww_pakchunk1.mp4` | 144,874,832 | 138.16 MB | `_objects/8c869fa8...` |
-| `RED/Content/Movies/mv_storyop_pakchunk1.mp4` | 102,661,510 | 97.91 MB | `_objects/32eb1e42...` |
-| `Engine/Extras/Redist/en-us/UE4PrereqSetup_x64.exe`| 40,025,648 | 38.17 MB | `_objects/e3ea952d...` |
-| `Engine/Binaries/ThirdParty/WeGame/.../rail_sdk64.dll` | 17,052,848 | 16.26 MB | `_objects/b565aeb9...` |
-| `DBFighterZ.exe` | 1,518,192 | 1.45 MB | `_objects/2e4efe2a...` |
-| `steam_api64.dll` | 249,120 | 0.24 MB | `_objects/56a237eb...` |
-| `EasyAntiCheat/EasyAntiCheat_x64.dll` | 796,784 | 0.76 MB | `_objects/ef1cf822...` |
+| File Path                                              | Size (Bytes)  | Size (Formatted) | Content-Addressed Key (`_objects/<sha256>`) |
+| :----------------------------------------------------- | :------------ | :--------------- | :------------------------------------------ |
+| `RED/Content/Paks/pakchunk0-WindowsNoEditor.pak`       | 5,414,923,132 | 5.04 GB          | `_objects/6f2e9124...`                      |
+| `RED/Content/Paks/pakchunk1-WindowsNoEditor.pak`       | 881,949,120   | 841 MB           | `_objects/d48b10f5...`                      |
+| `RED/Binaries/Win64/RED-Win64-Shipping.exe`            | 184,261,120   | 175.73 MB        | `_objects/30ae9e5c...`                      |
+| `RED/Content/Movies/mv_opening_jp_pakchunk1.mp4`       | 144,887,352   | 138.18 MB        | `_objects/a27cf4bf...`                      |
+| `RED/Content/Movies/mv_opening_ww_pakchunk1.mp4`       | 144,874,832   | 138.16 MB        | `_objects/8c869fa8...`                      |
+| `RED/Content/Movies/mv_storyop_pakchunk1.mp4`          | 102,661,510   | 97.91 MB         | `_objects/32eb1e42...`                      |
+| `Engine/Extras/Redist/en-us/UE4PrereqSetup_x64.exe`    | 40,025,648    | 38.17 MB         | `_objects/e3ea952d...`                      |
+| `Engine/Binaries/ThirdParty/WeGame/.../rail_sdk64.dll` | 17,052,848    | 16.26 MB         | `_objects/b565aeb9...`                      |
+| `DBFighterZ.exe`                                       | 1,518,192     | 1.45 MB          | `_objects/2e4efe2a...`                      |
+| `steam_api64.dll`                                      | 249,120       | 0.24 MB          | `_objects/56a237eb...`                      |
+| `EasyAntiCheat/EasyAntiCheat_x64.dll`                  | 796,784       | 0.76 MB          | `_objects/ef1cf822...`                      |
 
 ### Cloudflare R2 / Garage S3 Sync Recipe
+
 Synchronization executes with zero drift via `rclone` or native `Bun.S3Client`:
 
 ```sh
@@ -76,15 +78,18 @@ flowchart TD
 ```
 
 ### 1. Bevy ECS Combat Core (`packages/engine/src/games/fighterz-bevy-runtime.ts`)
+
 - **Simulation Loop**: Deterministic 60 FPS tick model with frame data tables (Startup, Active, Recovery, Hit Stun, Block Stun).
 - **Combat State Machine**: States include `idle`, `walk_forward`, `walk_back`, `light_atk`, `medium_atk`, `heavy_atk`, `super_kamehameha`, and `hit_stun`.
 - **Opponent AI**: Distance-based responsive AI that switches between closing gaps, blocking, and chaining light/medium normals.
 
 ### 2. Taffy Flexbox Layout Engine
+
 - Computes absolute coordinate boxes (`x`, `y`, `width`, `height`) for all UI widgets from CSS-like flexbox declarations.
 - Resolves Top Health Gauges (P1/P2), Round Timer, Bottom Ki Meters (0 to 7 Bars), and Assist character portraits dynamically based on viewport aspect ratio.
 
 ### 3. Google Design System (GDS) Integration (`src/gds`)
+
 - Uses Material Design 3 (M3) design tokens:
   - **Primary**: `#e06000` (Dragon Ball Amber).
   - **Secondary**: `#1e3a8a` (Royal Saiyan Navy).
@@ -93,6 +98,7 @@ flowchart TD
   - **Components**: `GdsCard`, `GdsButton`, `GdsChip` adhering to semantic HTML and accessibility guidelines.
 
 ### 4. ArcSys Cel-Shading WGSL Shader Pipeline
+
 - **Vertex Normal Steering**: Replaces spherical facial normals with planar projections to produce hand-drawn anime shadows.
 - **Vertex Color Data Packing**:
   - `Channel R`: Threshold offset bias for the light ramp.

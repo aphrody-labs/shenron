@@ -364,9 +364,7 @@
       "fr": "Bardock",
       "en": "Bardock",
       "aliases": {
-        "fr": [
-          "Baddack"
-        ]
+        "fr": ["Baddack"]
       },
       "sources": [
         {
@@ -431,9 +429,7 @@
       "fr": "Beerus",
       "en": "Beerus",
       "aliases": {
-        "fr": [
-          "Bills"
-        ]
+        "fr": ["Bills"]
       },
       "sources": [
         {
@@ -463,9 +459,7 @@
       "fr": "Beeta Atsui",
       "en": "",
       "aliases": {
-        "ja": [
-          "熱井"
-        ]
+        "ja": ["熱井"]
       }
     },
     {
@@ -1082,9 +1076,7 @@
       "fr": "Colonel Black",
       "en": "",
       "aliases": {
-        "ja": [
-          "補佐"
-        ]
+        "ja": ["補佐"]
       }
     },
     {
@@ -1379,9 +1371,7 @@
       "fr": "Dr Gero",
       "en": "Dr. Gero",
       "aliases": {
-        "fr": [
-          "Docteur Gero"
-        ]
+        "fr": ["Docteur Gero"]
       },
       "sources": [
         {
@@ -1453,9 +1443,7 @@
       "fr": "Dragon Radar",
       "en": "Dragon Radar",
       "aliases": {
-        "fr": [
-          "Radar à Dragon Balls"
-        ]
+        "fr": ["Radar à Dragon Balls"]
       },
       "sources": [
         {
@@ -1583,9 +1571,7 @@
       "fr": "Kinto-Un",
       "en": "Flying Nimbus",
       "aliases": {
-        "en": [
-          "Nimbus"
-        ]
+        "en": ["Nimbus"]
       },
       "sources": [
         {
@@ -1629,9 +1615,7 @@
       "fr": "Freezer",
       "en": "Frieza",
       "aliases": {
-        "en": [
-          "Freeza"
-        ]
+        "en": ["Freeza"]
       },
       "sources": [
         {
@@ -1681,9 +1665,7 @@
       "fr": "Canon Garric",
       "en": "Galick Gun",
       "aliases": {
-        "en": [
-          "Garlic Gun"
-        ]
+        "en": ["Garlic Gun"]
       },
       "sources": [
         {
@@ -1727,9 +1709,7 @@
       "fr": "Garlic Jr.",
       "en": "",
       "aliases": {
-        "ja": [
-          "ジュニア"
-        ]
+        "ja": ["ジュニア"]
       }
     },
     {
@@ -2210,9 +2190,7 @@
       "fr": "Salle de l'Esprit et du Temps",
       "en": "Hyperbolic Time Chamber",
       "aliases": {
-        "en": [
-          "Room of Spirit and Time"
-        ]
+        "en": ["Room of Spirit and Time"]
       },
       "sources": [
         {
@@ -2549,9 +2527,7 @@
       "fr": "Kamehameha x10",
       "en": "",
       "aliases": {
-        "ja": [
-          "倍かめはめ波"
-        ]
+        "ja": ["倍かめはめ波"]
       }
     },
     {
@@ -2694,9 +2670,7 @@
       "en": "King Piccolo",
       "romaji": "Piccolo Daimaō",
       "aliases": {
-        "fr": [
-          "Piccolo Daimaô"
-        ]
+        "fr": ["Piccolo Daimaô"]
       },
       "sources": [
         {
@@ -3030,9 +3004,7 @@
       "fr": "Maji Kayo",
       "en": "",
       "aliases": {
-        "ja": [
-          "マジ"
-        ]
+        "ja": ["マジ"]
       }
     },
     {
@@ -3062,12 +3034,8 @@
       "fr": "Majin Boo",
       "en": "Majin Buu",
       "aliases": {
-        "fr": [
-          "Boo"
-        ],
-        "en": [
-          "Buu"
-        ]
+        "fr": ["Boo"],
+        "en": ["Buu"]
       },
       "sources": [
         {
@@ -3203,9 +3171,7 @@
       "en": "Master Roshi",
       "romaji": "Kame Sennin",
       "aliases": {
-        "en": [
-          "Muten Roshi"
-        ]
+        "en": ["Muten Roshi"]
       },
       "sources": [
         {
@@ -3449,9 +3415,7 @@
       "fr": "Mr. Satan",
       "en": "Mr. Satan",
       "aliases": {
-        "en": [
-          "Hercule"
-        ]
+        "en": ["Hercule"]
       },
       "sources": [
         {
@@ -3745,10 +3709,7 @@
       "fr": "OG72-I",
       "en": "",
       "aliases": {
-        "ja": [
-          "オージー",
-          "アイ"
-        ]
+        "ja": ["オージー", "アイ"]
       }
     },
     {
@@ -4449,10 +4410,7 @@
       "fr": "Saga Bardock",
       "en": "",
       "aliases": {
-        "ja": [
-          "フリーザに挑んだ",
-          "戦士孫悟空の父"
-        ]
+        "ja": ["フリーザに挑んだ", "戦士孫悟空の父"]
       }
     },
     {
@@ -4602,9 +4560,7 @@
       "fr": "Saiyan",
       "en": "Saiyan",
       "aliases": {
-        "fr": [
-          "Saïyen"
-        ]
+        "fr": ["Saïyen"]
       },
       "sources": [
         {
@@ -4620,9 +4576,7 @@
       "fr": "Saiyan au Masque Écarlate",
       "en": "",
       "aliases": {
-        "ja": [
-          "紅き仮面"
-        ]
+        "ja": ["紅き仮面"]
       }
     },
     {
@@ -4744,9 +4698,7 @@
       "fr": "Senzu",
       "en": "Senzu Bean",
       "aliases": {
-        "fr": [
-          "haricot magique"
-        ]
+        "fr": ["haricot magique"]
       },
       "sources": [
         {
@@ -4930,9 +4882,7 @@
       "en": "Solar Flare",
       "romaji": "Taiyōken",
       "aliases": {
-        "fr": [
-          "Taiyoken"
-        ]
+        "fr": ["Taiyoken"]
       },
       "sources": [
         {
@@ -4959,12 +4909,8 @@
       "fr": "Son Gohan",
       "en": "Son Gohan",
       "aliases": {
-        "ja": [
-          "悟飯"
-        ],
-        "en": [
-          "Gohan"
-        ]
+        "ja": ["悟飯"],
+        "en": ["Gohan"]
       },
       "sources": [
         {
@@ -4980,9 +4926,7 @@
       "fr": "Son Goku",
       "en": "Son Goku",
       "aliases": {
-        "en": [
-          "Goku"
-        ]
+        "en": ["Goku"]
       },
       "sources": [
         {
@@ -5139,9 +5083,7 @@
       "fr": "Super Saiyan",
       "en": "Super Saiyan",
       "aliases": {
-        "fr": [
-          "Super Saïyen"
-        ]
+        "fr": ["Super Saïyen"]
       },
       "sources": [
         {
@@ -5157,9 +5099,7 @@
       "fr": "Super Saiyan Blue",
       "en": "",
       "aliases": {
-        "ja": [
-          "超サイヤ人ブルー"
-        ]
+        "ja": ["超サイヤ人ブルー"]
       }
     },
     {
@@ -5294,9 +5234,7 @@
       "fr": "Tenshinhan",
       "en": "Tien Shinhan",
       "aliases": {
-        "en": [
-          "Tien"
-        ]
+        "en": ["Tien"]
       },
       "sources": [
         {
@@ -5712,9 +5650,7 @@
       "fr": "Yamhan",
       "en": "",
       "aliases": {
-        "ja": [
-          "ヤム飯"
-        ]
+        "ja": ["ヤム飯"]
       }
     },
     {
@@ -5815,9 +5751,7 @@
       "fr": "Zamasu (Volonté)",
       "en": "",
       "aliases": {
-        "ja": [
-          "無限ザマス"
-        ]
+        "ja": ["無限ザマス"]
       }
     },
     {

@@ -12,20 +12,19 @@ de références (`canon_references`), les planches et les fiches vivent en base 
 ne sont pas embarqués. Le verdict d'une question se calcule hors ligne par
 `bun scripts/canon.js "question"` (même moteur que `GET /api/canon?q=`).
 
-Ordre de décision du moteur : 1. sujet tranché (`entry:<id>`, mots-clés et titre) ;
-2. famille de formulations (`heuristic:<id>`, rang présumé) ; 3. `fallback` (non tranché).
+Ordre de décision du moteur : 1. sujet tranché (`entry:<id>`, mots-clés et titre) ; 2. famille de formulations (`heuristic:<id>`, rang présumé) ; 3. `fallback` (non tranché).
 Le `score` exprime l'autorité du rang ou du sujet, **pas une probabilité** : chaque
 sujet porte son propre score, le score du rang ne sert que de défaut.
 
 ## Rangs
 
-| Rang | Libellé | Score par défaut |
-| --- | --- | --- |
-| `CANON_ABSOLU` | Canon Absolu (Tier 1 — Manga & Toriyama pur) | 100 |
-| `CANON_SUPERVISE` | Canon Supervisé (Tier 2 — DBS, Films récents & Daima) | 88 |
-| `EXTENSION_OFFICIELLE` | Extension Officielle (Tier 3 — Daizenshuu & SEG) | 70 |
-| `NON_CANON_DERIVE` | Non-Canon Dérivé (Tier 4 — Fillers, Films Toei & GT) | 20 |
-| `APOCRYPHE_FANON` | Apocryphe / Fanon (Tier 5 — Rumeurs & Inventions) | 0 |
+| Rang                   | Libellé                                               | Score par défaut |
+| ---------------------- | ----------------------------------------------------- | ---------------- |
+| `CANON_ABSOLU`         | Canon Absolu (Tier 1 — Manga & Toriyama pur)          | 100              |
+| `CANON_SUPERVISE`      | Canon Supervisé (Tier 2 — DBS, Films récents & Daima) | 88               |
+| `EXTENSION_OFFICIELLE` | Extension Officielle (Tier 3 — Daizenshuu & SEG)      | 70               |
+| `NON_CANON_DERIVE`     | Non-Canon Dérivé (Tier 4 — Fillers, Films Toei & GT)  | 20               |
+| `APOCRYPHE_FANON`      | Apocryphe / Fanon (Tier 5 — Rumeurs & Inventions)     | 0                |
 
 ### CANON_ABSOLU
 
@@ -107,14 +106,14 @@ Inclut (doctrine générale, à confronter au sujet tranché) :
 
 ## Familles de formulations (rang présumé, jamais un verdict établi)
 
-| Identifiant | Libellé | Rang | Score | Mots-clés |
-| --- | --- | --- | --- | --- |
-| `manga-original` | Renvoi au manga original | `CANON_ABSOLU` | 100 | manga original, chapitre, tome 1, tome 42, 42 tomes, akira toriyama a dessine |
-| `production-toei` | Renvoi à la production animée | `NON_CANON_DERIVE` | 20 | filler, hors-serie, hors serie, oav, episode inedit, toei |
-| `jeux-video` | Renvoi aux jeux vidéo | `NON_CANON_DERIVE` | 15 | jeu video, xenoverse, kakarot, budokai, fighterz, sdbh, heroes |
-| `supervision-officielle` | Renvoi aux guides et interviews officielles | `EXTENSION_OFFICIELLE` | 85 | daizenshuu, chozenshu, super exciting guide, seg, interview toriyama, entretien toriyama, v-jump, saikyo jump, guide officiel |
-| `fanon-general` | Création de fans ou œuvre non officielle | `APOCRYPHE_FANON` | 0 | fan manga, fan-manga, fan animation, fan-animation, fan art, dessin de fan, doujin, doujinshi, non officiel, oeuvre de fan |
-| `rumeur` | Rumeur ou fausse citation | `APOCRYPHE_FANON` | 0 | rumeur, fausse interview, leak, fan fiction, fanfiction, doujinshi |
+| Identifiant              | Libellé                                     | Rang                   | Score | Mots-clés                                                                                                                     |
+| ------------------------ | ------------------------------------------- | ---------------------- | ----- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `manga-original`         | Renvoi au manga original                    | `CANON_ABSOLU`         | 100   | manga original, chapitre, tome 1, tome 42, 42 tomes, akira toriyama a dessine                                                 |
+| `production-toei`        | Renvoi à la production animée               | `NON_CANON_DERIVE`     | 20    | filler, hors-serie, hors serie, oav, episode inedit, toei                                                                     |
+| `jeux-video`             | Renvoi aux jeux vidéo                       | `NON_CANON_DERIVE`     | 15    | jeu video, xenoverse, kakarot, budokai, fighterz, sdbh, heroes                                                                |
+| `supervision-officielle` | Renvoi aux guides et interviews officielles | `EXTENSION_OFFICIELLE` | 85    | daizenshuu, chozenshu, super exciting guide, seg, interview toriyama, entretien toriyama, v-jump, saikyo jump, guide officiel |
+| `fanon-general`          | Création de fans ou œuvre non officielle    | `APOCRYPHE_FANON`      | 0     | fan manga, fan-manga, fan animation, fan-animation, fan art, dessin de fan, doujin, doujinshi, non officiel, oeuvre de fan    |
+| `rumeur`                 | Rumeur ou fausse citation                   | `APOCRYPHE_FANON`      | 0     | rumeur, fausse interview, leak, fan fiction, fanfiction, doujinshi                                                            |
 
 ## Repli (`fallback`)
 
@@ -123,57 +122,57 @@ Un `fallback` n'établit aucun rang : répondre « non établi ».
 
 ## Sujets tranchés (49)
 
-| Identifiant | Sujet | Catégorie | Rang | Score |
-| --- | --- | --- | --- | --- |
-| `broly` | Broly (Dragon Ball Super, 2018) | character | `CANON_SUPERVISE` | 85 |
-| `broly-dbz-1993` | Broly (Version DBZ 1993 / Films Z de Takao Koyama) | character | `NON_CANON_DERIVE` | 20 |
-| `gogeta` | Gogeta | character | `CANON_SUPERVISE` | 85 |
-| `vegetto` | Vegetto (Vegito) | character | `CANON_ABSOLU` | 100 |
-| `bardock` | Bardock | character | `CANON_ABSOLU` | 95 |
-| `bardock-tv-special-1990` | Téléfilm Bardock (Le Père de Son Goku, 1990) vs Dragon Ball Minus | work | `NON_CANON_DERIVE` | 30 |
-| `goku-saiyan-kakarotto` | Son Goku : Origine Saiyan (Kakarotto) | character | `CANON_ABSOLU` | 100 |
-| `destruction-planete-vegeta` | Destruction de la planète Vegeta par Freezer | lore | `CANON_ABSOLU` | 100 |
-| `jaco-minus` | Dragon Ball Minus & Jaco the Galactic Patrolman | work | `CANON_ABSOLU` | 100 |
-| `gine` | Gine (Mère de Son Goku) | character | `CANON_ABSOLU` | 100 |
-| `c16-fils-gero` | C-16 et Gebō (Le fils du Dr Gero) | lore | `CANON_ABSOLU` | 95 |
-| `c17-lapis-c18-lazuli` | Noms civils de C-17 (Lapis) et C-18 (Lazuli) | lore | `CANON_ABSOLU` | 100 |
-| `mr-satan-mark` | Véritable nom de Mr. Satan (Mark) | lore | `CANON_ABSOLU` | 100 |
-| `db-gt` | Dragon Ball GT (SSJ4, Baby, Dragons) | work | `NON_CANON_DERIVE` | 15 |
-| `super-saiyan-4` | Super Saiyan 4 (SSJ4) | form | `CANON_SUPERVISE` | 85 |
-| `super-saiyan-4-gt` | Super Saiyan 4 — Dragon Ball GT | form | `NON_CANON_DERIVE` | 20 |
-| `super-saiyan-4-daima` | Super Saiyan 4 — Dragon Ball DAIMA | form | `CANON_SUPERVISE` | 85 |
-| `ssj4-vs-ssjg` | Super Saiyan 4 vs Super Saiyan God / Blue (Canonicité & Débat) | form | `CANON_SUPERVISE` | 85 |
-| `cooler` | Cooler & Metal Cooler | character | `NON_CANON_DERIVE` | 20 |
-| `janemba` | Janemba | character | `NON_CANON_DERIVE` | 20 |
-| `tapion-epee-trunks` | Tapion, Hildegarn et l'Épée de Trunks | character | `NON_CANON_DERIVE` | 20 |
-| `bojack-zangya` | Bojack et les Mercenaires de l'Espace | character | `NON_CANON_DERIVE` | 20 |
-| `thales-arbre-sacre` | Thalès (Turles) & l'Arbre Sacré | character | `NON_CANON_DERIVE` | 20 |
-| `films-toei-vintage` | Films DBZ vintage (Cycles Toei 1986-1995) | work | `NON_CANON_DERIVE` | 20 |
-| `tarble` | Tarble (Frère de Vegeta) | character | `CANON_SUPERVISE` | 90 |
-| `piccolo-favori` | Piccolo : Personnage préféré de Toriyama | lore | `CANON_ABSOLU` | 100 |
-| `super-saiyan-5-af` | Super Saiyan 5 & Dragon Ball AF | myth | `APOCRYPHE_FANON` | 0 |
-| `daima` | Dragon Ball Daima | work | `CANON_SUPERVISE` | 98 |
-| `dieu-noyau-monde` | Origine des Dieux Kaïo et Kaïoshin (Planète du Noyau) | lore | `CANON_ABSOLU` | 100 |
-| `s-cells` | Cellules S (S-Cells) et déclencheur Super Saiyan | lore | `CANON_ABSOLU` | 95 |
-| `dragon-ball-super-manga` | Dragon Ball Super (Manga de Toyotaro) | work | `CANON_SUPERVISE` | 90 |
-| `multiplicateurs-super-saiyan` | Multiplicateurs officiels du Super Saiyan (x50, x2, x4) | lore | `EXTENSION_OFFICIELLE` | 75 |
-| `unite-kiri-babidi` | L'unité Kiri (Babidi) et conversion en Sentōryoku | lore | `CANON_ABSOLU` | 100 |
-| `fusion-potara-vs-metamol-puissance` | Puissance Vegetto (Potara) vs Gogeta (Métamol) | lore | `EXTENSION_OFFICIELLE` | 75 |
-| `kid-buu-vs-buuhan` | Majin Buu Pur (Kid Buu) vs Buuhan | lore | `CANON_ABSOLU` | 100 |
-| `goku-ssj3-vs-ultimate-gohan` | Son Goku Super Saiyan 3 vs Gohan Ultime (Ultimate Gohan) | lore | `CANON_ABSOLU` | 100 |
-| `cell-parfait-vs-gohan-ssj2` | Cell Parfait (Super Perfect Cell) vs Son Gohan Super Saiyan 2 | lore | `CANON_ABSOLU` | 100 |
-| `puissance-goku-ssj1-namek` | Puissance de Goku SSJ1 sur Namek (150 000 000 BP) | lore | `EXTENSION_OFFICIELLE` | 75 |
-| `arret-scouter-namek-toriyama` | Abandon des niveaux de puissance chiffrés (Scouters) après Namek | lore | `CANON_ABSOLU` | 100 |
-| `beerus-whis` | Beerus, Whis et la hiérarchie divine | character | `CANON_SUPERVISE` | 98 |
-| `super-saiyan-god-blue` | Super Saiyan God & Super Saiyan Blue (SSGSS) | form | `CANON_SUPERVISE` | 95 |
-| `beast-gohan-orange-piccolo` | Son Gohan Beast & Orange Piccolo | form | `CANON_SUPERVISE` | 98 |
-| `zalama-super-dragon-balls` | Zalama & les Super Dragon Balls | lore | `CANON_SUPERVISE` | 92 |
-| `uub-oob` | Uub (Oob) & le Ki Divin du Grand Kaïoshin | character | `CANON_ABSOLU` | 100 |
-| `c21-vomi` | C-21 & Vomi (Épouse du Dr Gero) | lore | `CANON_SUPERVISE` | 85 |
-| `sdbh-heroes` | Super Dragon Ball Heroes (SDBH) & Xenoverse | work | `NON_CANON_DERIVE` | 10 |
-| `dbm-multiverse` | Dragon Ball Multiverse (DBM) | myth | `APOCRYPHE_FANON` | 0 |
-| `fillers-anime-garlic-paikuhan` | Fillers de l'anime (Garlic Jr, Paikuhan, Gregory, Maron) | work | `NON_CANON_DERIVE` | 20 |
-| `gregory-kaio` | Gregory (Le grillon de Kaïo) | character | `NON_CANON_DERIVE` | 20 |
+| Identifiant                          | Sujet                                                             | Catégorie | Rang                   | Score |
+| ------------------------------------ | ----------------------------------------------------------------- | --------- | ---------------------- | ----- |
+| `broly`                              | Broly (Dragon Ball Super, 2018)                                   | character | `CANON_SUPERVISE`      | 85    |
+| `broly-dbz-1993`                     | Broly (Version DBZ 1993 / Films Z de Takao Koyama)                | character | `NON_CANON_DERIVE`     | 20    |
+| `gogeta`                             | Gogeta                                                            | character | `CANON_SUPERVISE`      | 85    |
+| `vegetto`                            | Vegetto (Vegito)                                                  | character | `CANON_ABSOLU`         | 100   |
+| `bardock`                            | Bardock                                                           | character | `CANON_ABSOLU`         | 95    |
+| `bardock-tv-special-1990`            | Téléfilm Bardock (Le Père de Son Goku, 1990) vs Dragon Ball Minus | work      | `NON_CANON_DERIVE`     | 30    |
+| `goku-saiyan-kakarotto`              | Son Goku : Origine Saiyan (Kakarotto)                             | character | `CANON_ABSOLU`         | 100   |
+| `destruction-planete-vegeta`         | Destruction de la planète Vegeta par Freezer                      | lore      | `CANON_ABSOLU`         | 100   |
+| `jaco-minus`                         | Dragon Ball Minus & Jaco the Galactic Patrolman                   | work      | `CANON_ABSOLU`         | 100   |
+| `gine`                               | Gine (Mère de Son Goku)                                           | character | `CANON_ABSOLU`         | 100   |
+| `c16-fils-gero`                      | C-16 et Gebō (Le fils du Dr Gero)                                 | lore      | `CANON_ABSOLU`         | 95    |
+| `c17-lapis-c18-lazuli`               | Noms civils de C-17 (Lapis) et C-18 (Lazuli)                      | lore      | `CANON_ABSOLU`         | 100   |
+| `mr-satan-mark`                      | Véritable nom de Mr. Satan (Mark)                                 | lore      | `CANON_ABSOLU`         | 100   |
+| `db-gt`                              | Dragon Ball GT (SSJ4, Baby, Dragons)                              | work      | `NON_CANON_DERIVE`     | 15    |
+| `super-saiyan-4`                     | Super Saiyan 4 (SSJ4)                                             | form      | `CANON_SUPERVISE`      | 85    |
+| `super-saiyan-4-gt`                  | Super Saiyan 4 — Dragon Ball GT                                   | form      | `NON_CANON_DERIVE`     | 20    |
+| `super-saiyan-4-daima`               | Super Saiyan 4 — Dragon Ball DAIMA                                | form      | `CANON_SUPERVISE`      | 85    |
+| `ssj4-vs-ssjg`                       | Super Saiyan 4 vs Super Saiyan God / Blue (Canonicité & Débat)    | form      | `CANON_SUPERVISE`      | 85    |
+| `cooler`                             | Cooler & Metal Cooler                                             | character | `NON_CANON_DERIVE`     | 20    |
+| `janemba`                            | Janemba                                                           | character | `NON_CANON_DERIVE`     | 20    |
+| `tapion-epee-trunks`                 | Tapion, Hildegarn et l'Épée de Trunks                             | character | `NON_CANON_DERIVE`     | 20    |
+| `bojack-zangya`                      | Bojack et les Mercenaires de l'Espace                             | character | `NON_CANON_DERIVE`     | 20    |
+| `thales-arbre-sacre`                 | Thalès (Turles) & l'Arbre Sacré                                   | character | `NON_CANON_DERIVE`     | 20    |
+| `films-toei-vintage`                 | Films DBZ vintage (Cycles Toei 1986-1995)                         | work      | `NON_CANON_DERIVE`     | 20    |
+| `tarble`                             | Tarble (Frère de Vegeta)                                          | character | `CANON_SUPERVISE`      | 90    |
+| `piccolo-favori`                     | Piccolo : Personnage préféré de Toriyama                          | lore      | `CANON_ABSOLU`         | 100   |
+| `super-saiyan-5-af`                  | Super Saiyan 5 & Dragon Ball AF                                   | myth      | `APOCRYPHE_FANON`      | 0     |
+| `daima`                              | Dragon Ball Daima                                                 | work      | `CANON_SUPERVISE`      | 98    |
+| `dieu-noyau-monde`                   | Origine des Dieux Kaïo et Kaïoshin (Planète du Noyau)             | lore      | `CANON_ABSOLU`         | 100   |
+| `s-cells`                            | Cellules S (S-Cells) et déclencheur Super Saiyan                  | lore      | `CANON_ABSOLU`         | 95    |
+| `dragon-ball-super-manga`            | Dragon Ball Super (Manga de Toyotaro)                             | work      | `CANON_SUPERVISE`      | 90    |
+| `multiplicateurs-super-saiyan`       | Multiplicateurs officiels du Super Saiyan (x50, x2, x4)           | lore      | `EXTENSION_OFFICIELLE` | 75    |
+| `unite-kiri-babidi`                  | L'unité Kiri (Babidi) et conversion en Sentōryoku                 | lore      | `CANON_ABSOLU`         | 100   |
+| `fusion-potara-vs-metamol-puissance` | Puissance Vegetto (Potara) vs Gogeta (Métamol)                    | lore      | `EXTENSION_OFFICIELLE` | 75    |
+| `kid-buu-vs-buuhan`                  | Majin Buu Pur (Kid Buu) vs Buuhan                                 | lore      | `CANON_ABSOLU`         | 100   |
+| `goku-ssj3-vs-ultimate-gohan`        | Son Goku Super Saiyan 3 vs Gohan Ultime (Ultimate Gohan)          | lore      | `CANON_ABSOLU`         | 100   |
+| `cell-parfait-vs-gohan-ssj2`         | Cell Parfait (Super Perfect Cell) vs Son Gohan Super Saiyan 2     | lore      | `CANON_ABSOLU`         | 100   |
+| `puissance-goku-ssj1-namek`          | Puissance de Goku SSJ1 sur Namek (150 000 000 BP)                 | lore      | `EXTENSION_OFFICIELLE` | 75    |
+| `arret-scouter-namek-toriyama`       | Abandon des niveaux de puissance chiffrés (Scouters) après Namek  | lore      | `CANON_ABSOLU`         | 100   |
+| `beerus-whis`                        | Beerus, Whis et la hiérarchie divine                              | character | `CANON_SUPERVISE`      | 98    |
+| `super-saiyan-god-blue`              | Super Saiyan God & Super Saiyan Blue (SSGSS)                      | form      | `CANON_SUPERVISE`      | 95    |
+| `beast-gohan-orange-piccolo`         | Son Gohan Beast & Orange Piccolo                                  | form      | `CANON_SUPERVISE`      | 98    |
+| `zalama-super-dragon-balls`          | Zalama & les Super Dragon Balls                                   | lore      | `CANON_SUPERVISE`      | 92    |
+| `uub-oob`                            | Uub (Oob) & le Ki Divin du Grand Kaïoshin                         | character | `CANON_ABSOLU`         | 100   |
+| `c21-vomi`                           | C-21 & Vomi (Épouse du Dr Gero)                                   | lore      | `CANON_SUPERVISE`      | 85    |
+| `sdbh-heroes`                        | Super Dragon Ball Heroes (SDBH) & Xenoverse                       | work      | `NON_CANON_DERIVE`     | 10    |
+| `dbm-multiverse`                     | Dragon Ball Multiverse (DBM)                                      | myth      | `APOCRYPHE_FANON`      | 0     |
+| `fillers-anime-garlic-paikuhan`      | Fillers de l'anime (Garlic Jr, Paikuhan, Gregory, Maron)          | work      | `NON_CANON_DERIVE`     | 20    |
+| `gregory-kaio`                       | Gregory (Le grillon de Kaïo)                                      | character | `NON_CANON_DERIVE`     | 20    |
 
 ### Broly (Dragon Ball Super, 2018)
 

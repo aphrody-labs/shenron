@@ -154,7 +154,7 @@ Le corpus est alimenté en continu par l'ingestion canon (unité `shenron-canon-
 ## Champs des entités
 
 - **Character** : `id, name, name_ja, name_romaji, race, gender, affiliation, ki,
-max_ki, origin_planet_id, description, image`. `ki`/`max_ki` sont indicatifs et
+  max_ki, origin_planet_id, description, image`. `ki`/`max_ki` sont indicatifs et
   dépendent du support (databook/anime) — à citer avec contexte.
 - **Saga** : `id, name, name_ja, slug, series, order_idx, description, image`.
   Trie par `order_idx` pour l'ordre chronologique au sein d'une `series`.

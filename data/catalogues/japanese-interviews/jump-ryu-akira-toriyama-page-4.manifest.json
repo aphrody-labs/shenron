@@ -5,12 +5,8 @@
   "sourceDimensions": "1470x2048",
   "transcriptPath": "data/catalogues/japanese-interviews/jump-ryu-akira-toriyama-page-4.jsonl",
   "transcriptSha256": "A725EDF6D9DFEB6FBD4546A4865490AE65C3EEFEF9ECED2EE8D7C176589047EE",
-  "transcribedPages": [
-    4
-  ],
-  "participants": [
-    "鳥山明"
-  ],
+  "transcribedPages": [4],
+  "participants": ["鳥山明"],
   "scope": "Three printed questions and Toriyama's answers in the yellow 'EXTRA QUESTION' box only; adjacent editorial narrative is omitted. The page states that its content was re-edited from a conversation recorded on the DVD.",
   "method": "Manual visual transcription from the local scan; no OCR, network, or translation.",
   "review": "Single-pass transcription; not independently reviewed.",

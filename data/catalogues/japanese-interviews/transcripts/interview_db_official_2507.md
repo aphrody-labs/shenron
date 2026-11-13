@@ -43,4 +43,3 @@
 ©バード・スタジオ、とよたろう／集英社  
 ©バードスタジオ/集英社・東映アニメーション  
 ©Bandai Namco Entertainment Inc.
-

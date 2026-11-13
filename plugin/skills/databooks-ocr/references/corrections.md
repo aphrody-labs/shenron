@@ -44,16 +44,16 @@ dégénérée doit être un prédicat nommé, borné et testé.
 
 Ne pas automatiser sans preuve nouvelle les familles suivantes :
 
-| Motif | Contre-exemple ou limite |
-| --- | --- |
-| Ligne hiragana/furigana | Peut être du vrai texte |
-| ソ/ン, シ/ツ, 一/ー | `ヤシ`, `ミート`, `キラー`, `一味`, `一家`, `一同` légitimes |
-| Pleine chasse, texte court | `２０１３`, `1990`, `第51話` peuvent être des folios |
-| `�` entre kana | Supprimer soude deux fragments et masque la lacune |
-| Intrusion d'alphabet | Substitution sans motif fiable : exige le scan |
-| Rōmaji seul | Logos, ISBN, copyright, ouvrages anglais légitimes |
-| Nombre cerclé > 50 | Aucun caractère Unicode correspondant à inventer |
-| Répétition inter-planches | Peut être un boilerplate authentique de magazine |
+| Motif                      | Contre-exemple ou limite                                     |
+| -------------------------- | ------------------------------------------------------------ |
+| Ligne hiragana/furigana    | Peut être du vrai texte                                      |
+| ソ/ン, シ/ツ, 一/ー        | `ヤシ`, `ミート`, `キラー`, `一味`, `一家`, `一同` légitimes |
+| Pleine chasse, texte court | `２０１３`, `1990`, `第51話` peuvent être des folios         |
+| `�` entre kana             | Supprimer soude deux fragments et masque la lacune           |
+| Intrusion d'alphabet       | Substitution sans motif fiable : exige le scan               |
+| Rōmaji seul                | Logos, ISBN, copyright, ouvrages anglais légitimes           |
+| Nombre cerclé > 50         | Aucun caractère Unicode correspondant à inventer             |
+| Répétition inter-planches  | Peut être un boilerplate authentique de magazine             |
 
 Préserver les frontières : `ベジタブル` ne contient pas une faute de Vegeta,
 `スーパーボンバーマン` ne doit pas être altéré par une règle sur `パーボン`.

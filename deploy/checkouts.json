@@ -62,10 +62,26 @@
     }
   ],
   "excluded": [
-    { "host": "windows", "path": "C:/src/apps/shenron", "reason": "main checkout holds other sessions' uncommitted work" },
-    { "host": "windows", "path": "C:/src/yolo-stack", "reason": "main checkout holds other sessions' uncommitted work" },
-    { "host": "windows", "path": "C:/src/yolo-ui", "reason": "main checkout holds other sessions' uncommitted work" },
-    { "host": "vps", "path": "~/build/yolo-ui", "reason": "build checkout in use by other sessions (submodule init running); sync by hand" }
+    {
+      "host": "windows",
+      "path": "C:/src/apps/shenron",
+      "reason": "main checkout holds other sessions' uncommitted work"
+    },
+    {
+      "host": "windows",
+      "path": "C:/src/yolo-stack",
+      "reason": "main checkout holds other sessions' uncommitted work"
+    },
+    {
+      "host": "windows",
+      "path": "C:/src/yolo-ui",
+      "reason": "main checkout holds other sessions' uncommitted work"
+    },
+    {
+      "host": "vps",
+      "path": "~/build/yolo-ui",
+      "reason": "build checkout in use by other sessions (submodule init running); sync by hand"
+    }
   ],
   "notes": "prod entries are disabled on purpose: no automatic sync on production, fast-forward by hand only (git fetch + merge --ff-only, never touching compose, .env, models, data or the running release symlink). Windows is not scheduled."
 }

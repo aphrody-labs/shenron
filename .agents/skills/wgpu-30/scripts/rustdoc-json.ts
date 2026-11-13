@@ -12,7 +12,14 @@
  * once the registry sources are cached. Needs a nightly toolchain (`rustup toolchain list`) and
  * network access to crates.io the first time.
  */
-import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, writeFileSync } from "node:fs";
+import {
+  copyFileSync,
+  existsSync,
+  mkdirSync,
+  mkdtempSync,
+  readdirSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
@@ -23,19 +30,21 @@ const option = (name: string): string | undefined => {
 };
 const version = option("--version");
 const out = option("--out");
-if (!version || !out) throw new Error("usage: rustdoc-json.ts --version <x.y.z> --out <dir> [--toolchain <nightly-…>]");
+if (!version || !out)
+  throw new Error("usage: rustdoc-json.ts --version <x.y.z> --out <dir> [--toolchain <nightly-…>]");
 
 const toolchain =
   option("--toolchain") ??
-  (Bun.spawnSync(["rustup", "toolchain", "list"], { stdout: "pipe" })
+  Bun.spawnSync(["rustup", "toolchain", "list"], { stdout: "pipe" })
     .stdout.toString()
     .split("\n")
     .map((line) => line.split(" ")[0]!)
     .filter((name) => name.startsWith("nightly-"))
     .toSorted()
     .at(-1)
-    ?.replace(/-x86_64.*$/, ""));
-if (!toolchain) throw new Error("no nightly toolchain installed (rustup toolchain install nightly)");
+    ?.replace(/-x86_64.*$/, "");
+if (!toolchain)
+  throw new Error("no nightly toolchain installed (rustup toolchain install nightly)");
 
 const work = mkdtempSync(join(tmpdir(), "wgpu-doc-"));
 mkdirSync(join(work, "src"));
@@ -58,8 +67,25 @@ naga = { version = "=${version}", features = ["wgsl-in", "wgsl-out", "spv-in", "
 const target = join(work, "target");
 for (const pkg of ["wgpu-types", "wgpu", "naga"]) {
   const run = Bun.spawnSync(
-    ["cargo", `+${toolchain}`, "rustdoc", "-p", pkg, "--lib", "--", "-Z", "unstable-options", "--output-format", "json"],
-    { cwd: work, env: { ...process.env, CARGO_TARGET_DIR: target, RUSTC_WRAPPER: "" }, stdout: "inherit", stderr: "inherit" },
+    [
+      "cargo",
+      `+${toolchain}`,
+      "rustdoc",
+      "-p",
+      pkg,
+      "--lib",
+      "--",
+      "-Z",
+      "unstable-options",
+      "--output-format",
+      "json",
+    ],
+    {
+      cwd: work,
+      env: { ...process.env, CARGO_TARGET_DIR: target, RUSTC_WRAPPER: "" },
+      stdout: "inherit",
+      stderr: "inherit",
+    },
   );
   if (run.exitCode !== 0) throw new Error(`cargo rustdoc -p ${pkg} failed`);
 }
@@ -68,7 +94,8 @@ const dest = resolve(out);
 mkdirSync(dest, { recursive: true });
 const docDir = join(target, "doc");
 for (const file of readdirSync(docDir)) {
-  if (/^(wgpu|wgpu_types|naga)\.json$/.test(file)) copyFileSync(join(docDir, file), join(dest, file));
+  if (/^(wgpu|wgpu_types|naga)\.json$/.test(file))
+    copyFileSync(join(docDir, file), join(dest, file));
 }
 if (!existsSync(join(dest, "wgpu.json"))) throw new Error("wgpu.json was not produced");
 console.log(`rustdoc JSON of wgpu ${version} in ${dest} (toolchain ${toolchain})`);

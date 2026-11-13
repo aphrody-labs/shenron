@@ -361,9 +361,7 @@ describe("resolveDirectChat", () => {
   });
 
   test("refuses a public address", () => {
-    expect(resolveDirectChat({ APHRODY_AI_CHAT_BASE_URL: "https://google.com/v1" }).ok).toBe(
-      false,
-    );
+    expect(resolveDirectChat({ APHRODY_AI_CHAT_BASE_URL: "https://google.com/v1" }).ok).toBe(false);
   });
 
   test("a direct vLLM provider enables chat independently of the compute gateway", () => {

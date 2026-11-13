@@ -121,11 +121,26 @@
         "databook_lot": "databooks-lot-001"
       },
       "dialogue_intro": [
-        { "speaker": "Yamcha", "speaker_ja": "ヤムチャ", "text": "Si vous tenez à vos vies, laissez-moi tout votre argent et vos capsules !", "text_ja": "命が惜しければ、金とホイポイカプセルを置いていきな！" },
-        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Pas question ! Grand-père m'a appris à ne jamais me laisser faire !", "text_ja": "オラ、じっちゃんから悪いヤツには負けるなって教わったぞ！" }
+        {
+          "speaker": "Yamcha",
+          "speaker_ja": "ヤムチャ",
+          "text": "Si vous tenez à vos vies, laissez-moi tout votre argent et vos capsules !",
+          "text_ja": "命が惜しければ、金とホイポイカプセルを置いていきな！"
+        },
+        {
+          "speaker": "Goku",
+          "speaker_ja": "孫悟空",
+          "text": "Pas question ! Grand-père m'a appris à ne jamais me laisser faire !",
+          "text_ja": "オラ、じっちゃんから悪いヤツには負けるなって教わったぞ！"
+        }
       ],
       "dialogue_victory": [
-        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Tu es fort avec tes poings de loup, mais mon Nyoï-bō tape plus dur !", "text_ja": "おめえの狼牙風風拳すげえけど、オラの如意棒のほうがつええぞ！" }
+        {
+          "speaker": "Goku",
+          "speaker_ja": "孫悟空",
+          "text": "Tu es fort avec tes poings de loup, mais mon Nyoï-bō tape plus dur !",
+          "text_ja": "おめえの狼牙風風拳すげえけど、オラの如意棒のほうがつええぞ！"
+        }
       ],
       "objective": "Neutralisez Yamcha avec les attaques de base du Nyoï-bō.",
       "dramatic_finish": {
@@ -170,11 +185,26 @@
         "databook_lot": "databooks-lot-002"
       },
       "dialogue_intro": [
-        { "speaker": "Jackie Chun", "speaker_ja": "ジャッキー・チュン", "text": "Montre-moi les fruits de l'entraînement de Kame Sennin, mon garçon !", "text_ja": "カメハウスでの修業の成果を見せてみよ、悟空！" },
-        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Papy Chun, je vais donner tout ce que j'ai ! KA-ME-HA-ME-HA !", "text_ja": "おじいちゃん、オラぜったい勝つぞ！か・め・は・め・波ーーッ！" }
+        {
+          "speaker": "Jackie Chun",
+          "speaker_ja": "ジャッキー・チュン",
+          "text": "Montre-moi les fruits de l'entraînement de Kame Sennin, mon garçon !",
+          "text_ja": "カメハウスでの修業の成果を見せてみよ、悟空！"
+        },
+        {
+          "speaker": "Goku",
+          "speaker_ja": "孫悟空",
+          "text": "Papy Chun, je vais donner tout ce que j'ai ! KA-ME-HA-ME-HA !",
+          "text_ja": "おじいちゃん、オラぜったい勝つぞ！か・め・は・め・波ーーッ！"
+        }
       ],
       "dialogue_victory": [
-        { "speaker": "Jackie Chun", "speaker_ja": "ジャッキー・チュン", "text": "Le monde est vaste... Il y aura toujours plus fort que toi, Goku.", "text_ja": "世の中は広い。上には上がおるんじゃ、悟空よ。" }
+        {
+          "speaker": "Jackie Chun",
+          "speaker_ja": "ジャッキー・チュン",
+          "text": "Le monde est vaste... Il y aura toujours plus fort que toi, Goku.",
+          "text_ja": "世の中は広い。上には上がおるんじゃ、悟空よ。"
+        }
       ],
       "objective": "Remportez la finale en évitant le Ring Out.",
       "dramatic_finish": {
@@ -219,11 +249,26 @@
         "databook_lot": "databooks-lot-003"
       },
       "dialogue_intro": [
-        { "speaker": "Tenshinhan", "speaker_ja": "天津飯", "text": "L'école de la Tortue périra aujourd'hui ! Maître Tsuru m'a tout enseigné !", "text_ja": "亀仙流など恐るるに足らん！鶴仙流の真髄を見せてやる！" },
-        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Tu es fort Tenshinhan, mais le vrai combat ne doit pas servir à tuer !", "text_ja": "天津飯、おめえすげえ腕前なのに、殺し合いなんかすんな！" }
+        {
+          "speaker": "Tenshinhan",
+          "speaker_ja": "天津飯",
+          "text": "L'école de la Tortue périra aujourd'hui ! Maître Tsuru m'a tout enseigné !",
+          "text_ja": "亀仙流など恐るるに足らん！鶴仙流の真髄を見せてやる！"
+        },
+        {
+          "speaker": "Goku",
+          "speaker_ja": "孫悟空",
+          "text": "Tu es fort Tenshinhan, mais le vrai combat ne doit pas servir à tuer !",
+          "text_ja": "天津飯、おめえすげえ腕前なのに、殺し合いなんかすんな！"
+        }
       ],
       "dialogue_victory": [
-        { "speaker": "Tenshinhan", "speaker_ja": "天津飯", "text": "Goku... Ton cœur est pur. J'abandonne la voie de l'assassinat.", "text_ja": "悟空…貴様の闘いには迷いがない。俺は鶴仙人を捨てる。" }
+        {
+          "speaker": "Tenshinhan",
+          "speaker_ja": "天津飯",
+          "text": "Goku... Ton cœur est pur. J'abandonne la voie de l'assassinat.",
+          "text_ja": "悟空…貴様の闘いには迷いがない。俺は鶴仙人を捨てる。"
+        }
       ],
       "objective": "Échangez les coups en l'air après la destruction du ring.",
       "dramatic_finish": {
@@ -268,11 +313,26 @@
         "databook_lot": "databooks-lot-004"
       },
       "dialogue_intro": [
-        { "speaker": "Piccolo Daimaō", "speaker_ja": "ピッコロ大魔王", "text": "Maudit vermisseau ! Je vais écraser tes os un par un !", "text_ja": "小僧めが！この世界はすでに我が支配下にあるのだ！消え去れ！" },
-        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Tu as tué Krilin, Kame Sennin et tous les autres... JE NE TE LE PARDONNERAI JAMAIS !", "text_ja": "クリリンもじっちゃんもみんな殺した…絶対に許さねえぞーーッ！" }
+        {
+          "speaker": "Piccolo Daimaō",
+          "speaker_ja": "ピッコロ大魔王",
+          "text": "Maudit vermisseau ! Je vais écraser tes os un par un !",
+          "text_ja": "小僧めが！この世界はすでに我が支配下にあるのだ！消え去れ！"
+        },
+        {
+          "speaker": "Goku",
+          "speaker_ja": "孫悟空",
+          "text": "Tu as tué Krilin, Kame Sennin et tous les autres... JE NE TE LE PARDONNERAI JAMAIS !",
+          "text_ja": "クリリンもじっちゃんもみんな殺した…絶対に許さねえぞーーッ！"
+        }
       ],
       "dialogue_victory": [
-        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "J'ai mis toute ma vie dans ce seul bras restant !", "text_ja": "オラの全部を…この拳に込めたんだーーッ！" }
+        {
+          "speaker": "Goku",
+          "speaker_ja": "孫悟空",
+          "text": "J'ai mis toute ma vie dans ce seul bras restant !",
+          "text_ja": "オラの全部を…この拳に込めたんだーーッ！"
+        }
       ],
       "objective": "Percez Piccolo Daimaō avec le poing propulsé par le Kamehameha.",
       "dramatic_finish": {
@@ -317,11 +377,26 @@
         "databook_lot": "databooks-lot-005"
       },
       "dialogue_intro": [
-        { "speaker": "Raditz", "speaker_ja": "ラディッツ", "text": "Kakarotto, tu as oublié ta mission ! Tu es né pour exterminer cette planète !", "text_ja": "カカロット！なぜこの星の人間どもを滅ぼしていなかったのだ！" },
-        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Je m'appelle Son Goku ! La Terre est ma maison, rends-moi Gohan !", "text_ja": "オラは孫悟空だ！悟飯を返せ！おめえなんかに従うもんか！" }
+        {
+          "speaker": "Raditz",
+          "speaker_ja": "ラディッツ",
+          "text": "Kakarotto, tu as oublié ta mission ! Tu es né pour exterminer cette planète !",
+          "text_ja": "カカロット！なぜこの星の人間どもを滅ぼしていなかったのだ！"
+        },
+        {
+          "speaker": "Goku",
+          "speaker_ja": "孫悟空",
+          "text": "Je m'appelle Son Goku ! La Terre est ma maison, rends-moi Gohan !",
+          "text_ja": "オラは孫悟空だ！悟飯を返せ！おめえなんかに従うもんか！"
+        }
       ],
       "dialogue_victory": [
-        { "speaker": "Piccolo", "speaker_ja": "ピッコロ", "text": "Makankōsappō ! Mourez ensemble, vermines Saiyan !", "text_ja": "魔貫光殺砲ーーッ！地獄へ道連れにしてやるわ！" }
+        {
+          "speaker": "Piccolo",
+          "speaker_ja": "ピッコロ",
+          "text": "Makankōsappō ! Mourez ensemble, vermines Saiyan !",
+          "text_ja": "魔貫光殺砲ーーッ！地獄へ道連れにしてやるわ！"
+        }
       ],
       "objective": "Immobilisez Raditz par derrière pour que Piccolo arme son tir.",
       "dramatic_finish": {
@@ -366,11 +441,26 @@
         "databook_lot": "databooks-lot-006"
       },
       "dialogue_intro": [
-        { "speaker": "Vegeta", "speaker_ja": "ベジータ", "text": "Un guerrier inférieur comme toi ne surpassera jamais l'élite royale !", "text_ja": "下級戦士がエリートに敵うはずがない！思い知らせてやる！" },
-        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Même un raté peut dépasser l'élite s'il s'entraîne assez dur ! Kaiō-ken x3 !", "text_ja": "落ちこぼれだって必死に努力すりゃエリートを超えることがあるかもよ！界王拳3倍だーーッ！" }
+        {
+          "speaker": "Vegeta",
+          "speaker_ja": "ベジータ",
+          "text": "Un guerrier inférieur comme toi ne surpassera jamais l'élite royale !",
+          "text_ja": "下級戦士がエリートに敵うはずがない！思い知らせてやる！"
+        },
+        {
+          "speaker": "Goku",
+          "speaker_ja": "孫悟空",
+          "text": "Même un raté peut dépasser l'élite s'il s'entraîne assez dur ! Kaiō-ken x3 !",
+          "text_ja": "落ちこぼれだって必死に努力すりゃエリートを超えることがあるかもよ！界王拳3倍だーーッ！"
+        }
       ],
       "dialogue_victory": [
-        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Kaiō-ken... QUATRE FOIS PLUS FORT ! HAAAA !", "text_ja": "界王拳…4倍だぁーーーーッ！！いっけえぇぇ！！" }
+        {
+          "speaker": "Goku",
+          "speaker_ja": "孫悟空",
+          "text": "Kaiō-ken... QUATRE FOIS PLUS FORT ! HAAAA !",
+          "text_ja": "界王拳…4倍だぁーーーーッ！！いっけえぇぇ！！"
+        }
       ],
       "objective": "Remportez le Beam Clash décisif Kamehameha x4 contre le Galick Gun.",
       "dramatic_finish": {
@@ -415,11 +505,26 @@
         "databook_lot": "databooks-lot-007"
       },
       "dialogue_intro": [
-        { "speaker": "Frieza", "speaker_ja": "フリーザ", "text": "Cette planète explosera dans 5 minutes ! Tu ne pourras pas survivre dans l'espace !", "text_ja": "あと5分もすればこの星は消滅しますよ！宇宙空間で生きられぬ貴様は終わりです！" },
-        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Tu as tué Krilin de sang-froid... JE SUIS LE SUPER SAIYAN SON GOKU !", "text_ja": "オレはおこったぞーーーッ！！フリーザーーーッ！！" }
+        {
+          "speaker": "Frieza",
+          "speaker_ja": "フリーザ",
+          "text": "Cette planète explosera dans 5 minutes ! Tu ne pourras pas survivre dans l'espace !",
+          "text_ja": "あと5分もすればこの星は消滅しますよ！宇宙空間で生きられぬ貴様は終わりです！"
+        },
+        {
+          "speaker": "Goku",
+          "speaker_ja": "孫悟空",
+          "text": "Tu as tué Krilin de sang-froid... JE SUIS LE SUPER SAIYAN SON GOKU !",
+          "text_ja": "オレはおこったぞーーーッ！！フリーザーーーッ！！"
+        }
       ],
       "dialogue_victory": [
-        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Espèce d'idiot... (Baka yarō !)", "text_ja": "バカヤローーーッ！！" }
+        {
+          "speaker": "Goku",
+          "speaker_ja": "孫悟空",
+          "text": "Espèce d'idiot... (Baka yarō !)",
+          "text_ja": "バカヤローーーッ！！"
+        }
       ],
       "objective": "Terrassez Freezer 100% avant l'explosion finale de Namek.",
       "dramatic_finish": {
@@ -464,11 +569,26 @@
         "databook_lot": "databooks-lot-012"
       },
       "dialogue_intro": [
-        { "speaker": "Cell", "speaker_ja": "セル", "text": "Ce Kamehameha Solaire va anéantir la Terre, le système solaire et jusqu'au dernier de vos atomes !", "text_ja": "この太陽系もろとも吹き飛ぶがいい！受けてみろ、真の完全体の力を！" },
-        { "speaker": "Gohan", "speaker_ja": "孫悟飯", "text": "Papa... Même si mon bras gauche est brisé, je sens ta main sur mon épaule !", "text_ja": "お父さん…僕、もう片腕しか動かないけど…負けないよ！" }
+        {
+          "speaker": "Cell",
+          "speaker_ja": "セル",
+          "text": "Ce Kamehameha Solaire va anéantir la Terre, le système solaire et jusqu'au dernier de vos atomes !",
+          "text_ja": "この太陽系もろとも吹き飛ぶがいい！受けてみろ、真の完全体の力を！"
+        },
+        {
+          "speaker": "Gohan",
+          "speaker_ja": "孫悟飯",
+          "text": "Papa... Même si mon bras gauche est brisé, je sens ta main sur mon épaule !",
+          "text_ja": "お父さん…僕、もう片腕しか動かないけど…負けないよ！"
+        }
       ],
       "dialogue_victory": [
-        { "speaker": "Gohan", "speaker_ja": "孫悟飯", "text": "HAAAA ! Maintenant, Gohan ! Relâche toute ta puissance !", "text_ja": "いまだ悟飯！力を出し切れーーッ！！波ーーーーッ！！" }
+        {
+          "speaker": "Gohan",
+          "speaker_ja": "孫悟飯",
+          "text": "HAAAA ! Maintenant, Gohan ! Relâche toute ta puissance !",
+          "text_ja": "いまだ悟飯！力を出し切れーーッ！！波ーーーーッ！！"
+        }
       ],
       "objective": "Remportez le plus grand clash de rayon de l'univers Dragon Ball.",
       "dramatic_finish": {
@@ -513,11 +633,26 @@
         "databook_lot": "databooks-lot-020"
       },
       "dialogue_intro": [
-        { "speaker": "Kid Buu", "speaker_ja": "魔人ブウ", "text": "KHEE-KHEE-KHEE ! KYA-HA-HA !", "text_ja": "ウキャキャキャッ！ギャハハハッ！" },
-        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Gens de la Terre... Prêtez-moi votre force une toute dernière fois !", "text_ja": "地球のみんな…たのむ！オラに元気をわけてくれーーッ！！" }
+        {
+          "speaker": "Kid Buu",
+          "speaker_ja": "魔人ブウ",
+          "text": "KHEE-KHEE-KHEE ! KYA-HA-HA !",
+          "text_ja": "ウキャキャキャッ！ギャハハハッ！"
+        },
+        {
+          "speaker": "Goku",
+          "speaker_ja": "孫悟空",
+          "text": "Gens de la Terre... Prêtez-moi votre force une toute dernière fois !",
+          "text_ja": "地球のみんな…たのむ！オラに元気をわけてくれーーッ！！"
+        }
       ],
       "dialogue_victory": [
-        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "Tu t'es bien battu... Réincarne-toi en type bien, je t'attendrai ! Bye-bye, Buu !", "text_ja": "またな！今度はいいヤツに生まれ変われよ…一対一で勝負しようぜ！バイバイ、魔人ブウ！" }
+        {
+          "speaker": "Goku",
+          "speaker_ja": "孫悟空",
+          "text": "Tu t'es bien battu... Réincarne-toi en type bien, je t'attendrai ! Bye-bye, Buu !",
+          "text_ja": "またな！今度はいいヤツに生まれ変われよ…一対一で勝負しようぜ！バイバイ、魔人ブウ！"
+        }
       ],
       "objective": "Poussez le Chō Genki Dama restauré à pleine puissance.",
       "dramatic_finish": {
@@ -562,11 +697,26 @@
         "databook_lot": "databooks-lot-030"
       },
       "dialogue_intro": [
-        { "speaker": "Beerus", "speaker_ja": "ビルス", "text": "Montre-moi si le Super Saiyan God de ma prophétie valait mon réveil !", "text_ja": "予知夢の超サイヤ人ゴッドが本物かどうか、確かめさせてもらうよ。" },
-        { "speaker": "Goku", "speaker_ja": "孫悟空", "text": "C'est une sensation incroyable... C'est donc ça, le monde des dieux !", "text_ja": "すげえ…これが神様の世界の力か！オラ、ワクワクしてきたぞ！" }
+        {
+          "speaker": "Beerus",
+          "speaker_ja": "ビルス",
+          "text": "Montre-moi si le Super Saiyan God de ma prophétie valait mon réveil !",
+          "text_ja": "予知夢の超サイヤ人ゴッドが本物かどうか、確かめさせてもらうよ。"
+        },
+        {
+          "speaker": "Goku",
+          "speaker_ja": "孫悟空",
+          "text": "C'est une sensation incroyable... C'est donc ça, le monde des dieux !",
+          "text_ja": "すげえ…これが神様の世界の力か！オラ、ワクワクしてきたぞ！"
+        }
       ],
       "dialogue_victory": [
-        { "speaker": "Beerus", "speaker_ja": "ビルス", "text": "Tu n'es que le deuxième être le plus fort que j'ai combattu. Tu as du mérite, Son Goku.", "text_ja": "認めてあげよう。僕とここまで闘えたのは、君が二人目だよ。" }
+        {
+          "speaker": "Beerus",
+          "speaker_ja": "ビルス",
+          "text": "Tu n'es que le deuxième être le plus fort que j'ai combattu. Tu as du mérite, Son Goku.",
+          "text_ja": "認めてあげよう。僕とここまで闘えたのは、君が二人目だよ。"
+        }
       ],
       "objective": "Poussez le Dieu de la Destruction dans ses derniers retranchements.",
       "dramatic_finish": {

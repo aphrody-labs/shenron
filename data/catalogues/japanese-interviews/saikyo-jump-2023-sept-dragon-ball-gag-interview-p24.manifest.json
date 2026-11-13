@@ -12,13 +12,8 @@
   },
   "transcriptPath": "data/catalogues/japanese-interviews/saikyo-jump-2023-sept-dragon-ball-gag-interview-p24.jsonl",
   "transcriptSha256": "f6ea46c4d557a6f25a8464a022b130749160ca47430a07ff909a01847f90a237",
-  "transcribedPages": [
-    24
-  ],
-  "participants": [
-    "イワイ",
-    "サンシャイン池崎"
-  ],
+  "transcribedPages": [24],
+  "participants": ["イワイ", "サンシャイン池崎"],
   "scope": "All four visible answer passages on p.24, under two interview questions. These are direct statements by invited comedians about Dragon Ball scenes; neither participant is identified as the creator or production staff.",
   "method": "Manual visual transcription from the original local scan; no OCR, network, or translation.",
   "review": "Single-pass visual transcription; not independently reviewed.",

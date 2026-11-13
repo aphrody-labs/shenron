@@ -5,19 +5,19 @@ Unified package manager and edge distribution engine for Dragon Ball games acros
 ## 1. Capabilities
 
 - **Steam & SteamDB Integration**:
-  - Full metadata for modern titles: *Sparking! ZERO* (AppID 1790600), *Xenoverse 2* (AppID 454650), *KAKAROT* (AppID 851850), *FighterZ* (AppID 678950), *THE BREAKERS* (AppID 1276760), and *Xenoverse 1* (AppID 323470).
+  - Full metadata for modern titles: _Sparking! ZERO_ (AppID 1790600), _Xenoverse 2_ (AppID 454650), _KAKAROT_ (AppID 851850), _FighterZ_ (AppID 678950), _THE BREAKERS_ (AppID 1276760), and _Xenoverse 1_ (AppID 323470).
   - Headless SteamCMD script generator (`@ShutdownOnFailedCommand 1`, depot keys, validation).
   - Native launch protocol generation (`steam://run/<AppID>`).
 - **RetroArch & Libretro Core Resolution**:
   - Direct mapping for 10+ platforms:
-    - Nintendo Wii / GameCube: `dolphin_libretro` (*Budokai Tenkaichi 2 & 3*, *Revenge of King Piccolo*)
-    - Sony PlayStation 2: `pcsx2_libretro` (*Budokai Tenkaichi 1-3*, *Budokai 1-3*, *Infinite World*)
-    - Sony PlayStation 1: `swanstation_libretro` (*Ultimate Battle 22*, *Final Bout*)
-    - Game Boy Advance: `mgba_libretro` (*Legacy of Goku II*, *Buu's Fury*, *Supersonic Warriors*, *Advanced Adventure*)
-    - Nintendo DS: `melonds_libretro` (*Ultimate Butoden*, *Attack of the Saiyans*)
-    - Super Nintendo: `snes9x_libretro` (*Super Butōden 1-3*, *Hyper Dimension*)
-    - Sega Mega Drive: `genesis_plus_gx_libretro` (*Buyū Retsuden*)
-    - Arcade: `fbneo_libretro` (*Dragon Ball Z 2: Super Battle*)
+    - Nintendo Wii / GameCube: `dolphin_libretro` (_Budokai Tenkaichi 2 & 3_, _Revenge of King Piccolo_)
+    - Sony PlayStation 2: `pcsx2_libretro` (_Budokai Tenkaichi 1-3_, _Budokai 1-3_, _Infinite World_)
+    - Sony PlayStation 1: `swanstation_libretro` (_Ultimate Battle 22_, _Final Bout_)
+    - Game Boy Advance: `mgba_libretro` (_Legacy of Goku II_, _Buu's Fury_, _Supersonic Warriors_, _Advanced Adventure_)
+    - Nintendo DS: `melonds_libretro` (_Ultimate Butoden_, _Attack of the Saiyans_)
+    - Super Nintendo: `snes9x_libretro` (_Super Butōden 1-3_, _Hyper Dimension_)
+    - Sega Mega Drive: `genesis_plus_gx_libretro` (_Buyū Retsuden_)
+    - Arcade: `fbneo_libretro` (_Dragon Ball Z 2: Super Battle_)
   - Nightly core downloads directly from `buildbot.libretro.com`.
   - Auto-generated low-latency RetroArch configuration (vsync, hard sync, 16:9 / 4:3 aspect ratios, auto-save state).
 - **Cloudflare R2 Storage & Nginx Edge Caching**:
@@ -57,11 +57,13 @@ just db-games serve --port 3030
 ## 3. Production Deployment
 
 ### Launch with Docker Compose:
+
 ```sh
 docker compose -f deploy/prod/docker-compose.games.yml up -d
 ```
 
 ### Healthcheck:
+
 ```sh
 curl http://localhost:3030/healthz
 # {"status":"ok","gamesCount":22,"engine":"Bun v1.4.4"}

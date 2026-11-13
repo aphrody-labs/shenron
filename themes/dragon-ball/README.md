@@ -9,11 +9,11 @@ redistributable. Schema v1.1.
 
 ## Contents
 
-| File | Origin |
-| --- | --- |
-| `theme.toml` | Pack manifest. Every value is traced below. |
-| `assets/logo/kinto-un-mark.svg` | `bun plugin/skills/toriyama-svg/scripts/toriyama.js kinto-un icone`. Byte-identical to `packages/ui/assets/dbz/kinto-un-icone.svg`, the site favicon source. |
-| `assets/logo/kinto-un-monochrome.svg` | `toriyama.js kinto-un monochrome`, with `fill="#000"` changed to `fill="currentColor"` (the format's tinting rule) and an `aria-label`. |
+| File                                  | Origin                                                                                                                                                       |
+| ------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `theme.toml`                          | Pack manifest. Every value is traced below.                                                                                                                  |
+| `assets/logo/kinto-un-mark.svg`       | `bun plugin/skills/toriyama-svg/scripts/toriyama.js kinto-un icone`. Byte-identical to `packages/ui/assets/dbz/kinto-un-icone.svg`, the site favicon source. |
+| `assets/logo/kinto-un-monochrome.svg` | `toriyama.js kinto-un monochrome`, with `fill="#000"` changed to `fill="currentColor"` (the format's tinting rule) and an `aria-label`.                      |
 
 There are no binaries in the pack. The PNG and ICO renders of the mark already exist in
 `packages/ui/assets/` (`favicon-*.png`, `favicon.ico`, `icon-512.png`); `[logo] png` and `ico`
@@ -41,13 +41,13 @@ The four Toei stills are the live home hero frames, in its order
 file was downloaded once from cdn.dragonballfr.com into a temporary folder to compute its hash and
 seed, then deleted.
 
-| # | Source | Size | sha256 | Seed | Focal | Subject |
-| --- | --- | --- | --- | --- | --- | --- |
-| 1 | `media/episodes/876/hero/.../frame-1115.webp` | 1440x810, 50 852 B | `15415c10...33957aa1` | `#edca57` | 30, 42 | Beerus facing Super Saiyan 3 Goku |
-| 2 | `media/episodes/875/hero/.../frame-1100.webp` | 1440x810, 103 528 B | `84284388...3e762ab3` | `#f61819` | 25, 42 | red aura, energy blast |
-| 3 | `media/episodes/876/hero/.../frame-900.webp` | 1440x810, 57 444 B | `5c591046...57ad279f` | `#c781d2` | 22, 30 | Kaio panicking |
-| 4 | `media/episodes/876/hero/.../frame-240.webp` | 1440x810, 36 028 B | `e59bb6df...49dde7f9` | `#623f53` | 50, 38 | Beerus close-up, French subtitle burned in |
-| 5 | `assets/manga/DBFC/ch516/001.jpg` | 1662x2560, 479 343 B | `7b949dbe...e6f915bd` | `#9df0fa` | 50, 62 | chapter 516 title page, `fit = "contain"` |
+| #   | Source                                        | Size                 | sha256                | Seed      | Focal  | Subject                                    |
+| --- | --------------------------------------------- | -------------------- | --------------------- | --------- | ------ | ------------------------------------------ |
+| 1   | `media/episodes/876/hero/.../frame-1115.webp` | 1440x810, 50 852 B   | `15415c10...33957aa1` | `#edca57` | 30, 42 | Beerus facing Super Saiyan 3 Goku          |
+| 2   | `media/episodes/875/hero/.../frame-1100.webp` | 1440x810, 103 528 B  | `84284388...3e762ab3` | `#f61819` | 25, 42 | red aura, energy blast                     |
+| 3   | `media/episodes/876/hero/.../frame-900.webp`  | 1440x810, 57 444 B   | `5c591046...57ad279f` | `#c781d2` | 22, 30 | Kaio panicking                             |
+| 4   | `media/episodes/876/hero/.../frame-240.webp`  | 1440x810, 36 028 B   | `e59bb6df...49dde7f9` | `#623f53` | 50, 38 | Beerus close-up, French subtitle burned in |
+| 5   | `assets/manga/DBFC/ch516/001.jpg`             | 1662x2560, 479 343 B | `7b949dbe...e6f915bd` | `#9df0fa` | 50, 62 | chapter 516 title page, `fit = "contain"`  |
 
 Full hashes are in `theme.toml`; the frame hashes match the content hash in their CDN paths.
 Seeds are `sourceColorFromImage` from material-color-utilities 0.4.0 (Celebi quantizer to 128

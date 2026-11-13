@@ -26,10 +26,7 @@
       "title": "Saikyō Jump",
       "url": "https://www.kanzenshuu.com/wiki/Saiky%C5%8D_Jump",
       "revisedAt": "2026-09-22T18:25:10Z",
-      "categories": [
-        "Category:Incomplete",
-        "Category:Magazine"
-      ],
+      "categories": ["Category:Incomplete", "Category:Magazine"],
       "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/saikyo-jump.json",
       "bodyCaptured": true,
       "publicPreviewListed": true,
@@ -43,9 +40,7 @@
       "title": "Yamoshi",
       "url": "https://www.kanzenshuu.com/wiki/Yamoshi",
       "revisedAt": "2020-07-27T22:42:08Z",
-      "categories": [
-        "Category:Character"
-      ],
+      "categories": ["Category:Character"],
       "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/yamoshi.json",
       "bodyCaptured": true,
       "publicPreviewListed": true,
@@ -59,9 +54,7 @@
       "title": "List of Super Dragon Ball Heroes Episodes",
       "url": "https://www.kanzenshuu.com/wiki/List_of_Super_Dragon_Ball_Heroes_Episodes",
       "revisedAt": "2026-04-27T14:25:07Z",
-      "categories": [
-        "Category:Super Dragon Ball Heroes"
-      ],
+      "categories": ["Category:Super Dragon Ball Heroes"],
       "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/list-of-super-dragon-ball-heroes-episodes.json",
       "bodyCaptured": true,
       "publicPreviewListed": true,
@@ -89,9 +82,7 @@
       "title": "Age 757",
       "url": "https://www.kanzenshuu.com/wiki/Age_757",
       "revisedAt": "2020-07-27T22:44:39Z",
-      "categories": [
-        "Category:Date"
-      ],
+      "categories": ["Category:Date"],
       "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/age-757.json",
       "bodyCaptured": true,
       "publicPreviewListed": true,
@@ -105,9 +96,7 @@
       "title": "Kintoki: Toki of the Golden-Eyed Tribe",
       "url": "https://www.kanzenshuu.com/wiki/Kintoki%3A_Toki_of_the_Golden-Eyed_Tribe",
       "revisedAt": "2021-03-04T00:50:22Z",
-      "categories": [
-        "Category:Incomplete"
-      ],
+      "categories": ["Category:Incomplete"],
       "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/kintoki-toki-of-the-golden-eyed-tribe.json",
       "bodyCaptured": true,
       "publicPreviewListed": true,
@@ -121,9 +110,7 @@
       "title": "Sachie-chan GOOD!!",
       "url": "https://www.kanzenshuu.com/wiki/Sachie-chan_GOOD!!",
       "revisedAt": "2020-07-27T22:46:51Z",
-      "categories": [
-        "Category:Incomplete"
-      ],
+      "categories": ["Category:Incomplete"],
       "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/sachie-chan-good.json",
       "bodyCaptured": true,
       "publicPreviewListed": true,
@@ -137,11 +124,7 @@
       "title": "Amond",
       "url": "https://www.kanzenshuu.com/wiki/Amond",
       "revisedAt": "2022-02-22T21:56:50Z",
-      "categories": [
-        "Category:Character",
-        "Category:Citation Needed",
-        "Category:Incomplete"
-      ],
+      "categories": ["Category:Character", "Category:Citation Needed", "Category:Incomplete"],
       "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/amond.json",
       "bodyCaptured": true,
       "publicPreviewListed": true,
@@ -169,9 +152,7 @@
       "title": "Yūya Mori catalogue",
       "url": "https://www.kanzenshuu.com/wiki/Y%C5%ABya_Mori_catalogue",
       "revisedAt": "2021-07-12T14:49:00Z",
-      "categories": [
-        "Category:Music"
-      ],
+      "categories": ["Category:Music"],
       "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/yu-ya-mori-catalogue.json",
       "bodyCaptured": true,
       "publicPreviewListed": true,
@@ -185,9 +166,7 @@
       "title": "Super Dragon Ball Heroes Music",
       "url": "https://www.kanzenshuu.com/wiki/Super_Dragon_Ball_Heroes_Music",
       "revisedAt": "2021-09-15T14:04:53Z",
-      "categories": [
-        "Category:Music"
-      ],
+      "categories": ["Category:Music"],
       "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/super-dragon-ball-heroes-music.json",
       "bodyCaptured": true,
       "publicPreviewListed": true,
@@ -201,9 +180,7 @@
       "title": "Super Dragon Ball Heroes Cast",
       "url": "https://www.kanzenshuu.com/wiki/Super_Dragon_Ball_Heroes_Cast",
       "revisedAt": "2024-10-29T04:18:45Z",
-      "categories": [
-        "Category:Cast"
-      ],
+      "categories": ["Category:Cast"],
       "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/super-dragon-ball-heroes-cast.json",
       "bodyCaptured": true,
       "publicPreviewListed": true,
@@ -217,9 +194,7 @@
       "title": "Super Dragon Ball Heroes Staff",
       "url": "https://www.kanzenshuu.com/wiki/Super_Dragon_Ball_Heroes_Staff",
       "revisedAt": "2021-09-15T12:03:11Z",
-      "categories": [
-        "Category:Staff"
-      ],
+      "categories": ["Category:Staff"],
       "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/super-dragon-ball-heroes-staff.json",
       "bodyCaptured": true,
       "publicPreviewListed": true,
@@ -233,11 +208,7 @@
       "title": "Season",
       "url": "https://www.kanzenshuu.com/wiki/Season",
       "revisedAt": "2026-07-31T17:25:58Z",
-      "categories": [
-        "Category:Citation Needed",
-        "Category:Home Video",
-        "Category:Incomplete"
-      ],
+      "categories": ["Category:Citation Needed", "Category:Home Video", "Category:Incomplete"],
       "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/season.json",
       "bodyCaptured": true,
       "publicPreviewListed": true,

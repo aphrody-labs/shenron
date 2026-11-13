@@ -5,9 +5,11 @@ Scope: Dioxus 0.7.x / 0.8 alpha, dioxus-fullstack (SSR/SSG/streaming/SEO), Blitz
 ## Key Question 0 — Project health: versions, cadence, stars, contributors, funding (Dioxus / Blitz / Taffy / anyrender)
 
 ### Takeaway
+
 Dioxus is a 39.6k-star, 460+-contributor project with a stable 0.7.x line (0.7.0 on 2025-10-31, last patch 0.7.10 on 2026-07-30) and an active 0.8 alpha series (alpha.3 on 2026-10-16). In September 2026 the whole Dioxus Labs team was hired by Cognition (Devin); the stated effect is that Dioxus/Blitz/Taffy/Subsecond continue as open source without monetization pressure, with Nico Burns full time on Blitz/Dioxus. This is a sustainability positive but also a single-sponsor dependency.
 
 ### Cited Findings
+
 - DioxusLabs/dioxus: 39,598 stars, 1,958 forks, 896 open issues+PRs (671 issues / 225 PRs), Apache-2.0, last push 2026-11-03 — [GitHub API repos/DioxusLabs/dioxus](https://api.github.com/repos/DioxusLabs/dioxus); issue/PR split from [GitHub search API](https://api.github.com/search/issues?q=repo:DioxusLabs/dioxus+is:issue+is:open)
 - Contributors (incl. anonymous) paginate to 463 entries — [GitHub API contributors Link header](https://api.github.com/repos/DioxusLabs/dioxus/contributors?per_page=1&anon=true)
 - Release timeline (published_at): v0.7.0 2025-10-31; v0.7.1 2025-11-06; v0.7.2 2025-12-05; v0.7.3 2026-01-17; v0.7.4 2026-03-28; v0.7.5 2026-04-06; v0.7.6 2026-04-22; v0.7.7 2026-05-01; v0.7.8 2026-05-07; v0.7.9 2026-05-08; v0.7.10 2026-07-30; v0.8.0-alpha.0 2026-05-19; alpha.1 2026-07-31; alpha.2 2026-10-14; alpha.3 2026-10-16 — [GitHub API releases](https://api.github.com/repos/DioxusLabs/dioxus/releases)
@@ -25,11 +27,13 @@ Dioxus is a 39.6k-star, 460+-contributor project with a stable 0.7.x line (0.7.0
 - Release engineering is now driven largely by nicoburns (alpha.3 lists ~25 PRs, nearly all by nicoburns) — [v0.8.0-alpha.3 notes](https://github.com/DioxusLabs/dioxus/releases/tag/v0.8.0-alpha.3)
 
 ### Inferences
+
 - Cadence: 0.7 patch releases roughly monthly through mid-2026, then effort shifted to 0.8 alphas; no 0.8 stable or RC as of 2026-11-04, and no blog post for 0.8 exists yet.
 - Blitz is still "beta" by its own label and ships only via crates.io version bumps synced into Dioxus alphas; it is not a standalone 1.0 product.
 - Bus factor: core maintenance (Dioxus, Blitz, Taffy, Parley) concentrates on a few Cognition employees; the project is funded by an AI company whose core product is not a GUI framework.
 
 ### Gaps
+
 - Exact team headcount at Cognition not disclosed.
 - No written governance/licensing commitments beyond "we will keep maintaining"; no foundation or multi-vendor steering.
 - Could not confirm the Blitz talk at RustWeek 2026 (referenced in alpha.0 notes) via search.
@@ -37,9 +41,11 @@ Dioxus is a 39.6k-star, 460+-contributor project with a stable 0.7.x line (0.7.0
 ## Key Question 1 — dioxus-fullstack: SSR/SSG/ISR-like generation, streaming, head/SEO; can it replace a Next.js 16 app serving thousands of localized pages?
 
 ### Takeaway
+
 dioxus-fullstack (Axum-based) provides SSR + hydration, server functions with HTTP routing attributes, out-of-order HTML streaming, an incremental renderer (file + memory cache with `invalidate_after`, i.e. ISR-like), and `dx bundle --web --ssg` static generation driven by a `static_routes` endpoint (static routes only; dynamic segments are excluded). Head management covers `document::Title/Meta/Link/Stylesheet/Script` with the caveat that Meta props are not updated after first render and head tags must be in the first streamed chunk to be seen by crawlers. There is no built-in sitemap generator, no hreflang/i18n routing, no image optimization and no ISR-on-demand revalidation API; those must be hand-built in Axum.
 
 ### Cited Findings
+
 - Fullstack feature list (0.7 docs): SSR, server functions, typed routing, multipart forms, binary streams, SSE/WebSockets, asset management, WASM support, bundle splitting, static site generation; "Dioxus Fullstack has no built-in databases, caches, sessions, or mailers" — [learn/0.7/essentials/fullstack](https://dioxuslabs.com/learn/0.7/essentials/fullstack/llms.txt)
 - Server functions use HTTP attribute routes, e.g. `#[get("/api/dog/{breed}")] async fn fetch_dog(breed: String) -> Result<String>`, consumed during SSR/hydration via `use_loader(|| fetch_dog(...))?` — [same](https://dioxuslabs.com/learn/0.7/essentials/fullstack/llms.txt)
 - 0.7 docs pages that exist for fullstack: authentication, axum, errors, forms, headers, loading, middleware, native, project_setup, publishing, routes, routing, server_functions, ssr, static_site_generation, streaming, streams, websockets — [docsite tree docs-src/0.7/src/essentials/fullstack](https://github.com/DioxusLabs/docsite/tree/main/docs-src/0.7/src/essentials/fullstack)
@@ -57,12 +63,14 @@ dioxus-fullstack (Axum-based) provides SSR + hydration, server functions with HT
 - WASM-split: "`dx` splits apps into chunks per route, loaded on demand via `#[wasm_split("/route")]`" — [Dioxus 0.7 blog](https://dioxuslabs.com/blog/release-070)
 
 ### Inferences
+
 - Feature parity vs Next.js 16 for a content site: SSR yes; streaming yes (out-of-order only); ISR partially (time-based `invalidate_after`, file/memory cache; no tag-based or on-demand revalidation API found); SSG yes but only for enumerable static routes — thousands of `/{lang}/{slug}` pages would need either (a) a custom `static_routes` endpoint listing every concrete URL (the doc says dynamic segments are excluded by default, but the endpoint returns `Vec<String>` so a hand-built list may work; unverified), or (b) runtime SSR + incremental cache behind a CDN.
 - SEO plumbing missing vs Next: no metadata API with per-locale alternates, no sitemap.xml/robots generators, no `<picture>`/image optimization, no canonical/hreflang helpers — all must be written as Axum handlers. The Meta "no update after first render" rule means per-route meta must be rendered by the page component on the server, not mutated client-side.
 - For no-JS crawlers and users, disabling streaming is safer; streaming trades no-JS visibility for TTFB.
 - Server side is plain Axum (Rust), so Bun is not needed; but the dx CLI downloads `esbuild` and wasm-bindgen/wasm-opt binaries (alpha.0 mentions `NPM_CONFIG_REGISTRY` for esbuild download) — not Node runtime, but a Node-ecosystem binary is fetched by the CLI.
 
 ### Gaps
+
 - Could not fetch ssr.md/hydration.md/routes.md content (base64 decode errors via API); exact `use_server_future`/`use_loader` hydration semantics not quoted.
 - No official benchmark of SSR throughput or SSG build time for thousands of pages.
 - No documentation found on ISR cache invalidation by key/tag or on `memory_cache_limit` defaults.
@@ -70,9 +78,11 @@ dioxus-fullstack (Axum-based) provides SSR + hydration, server functions with HT
 ## Key Question 2 — Blitz / dioxus-native maturity in 2026 (accessibility, IME, CJK/RTL text, forms, scroll, performance), GPU painting stack, Skia option
 
 ### Takeaway
+
 Blitz 0.3.0-beta.4 (2026-10-16) self-describes as "beta": it renders Wikipedia/old Reddit, has flex/grid/block/floats, animations, 2D transforms, filters, text selection, nested documents, overlay scrollbars, basic AccessKit tree and inline text input; but accessibility is explicitly immature (no incremental updates, no ARIA attrs, no a11y events), IME/composition and clipboard events are 1.0 backlog, `<select>` dropdown/range/password inputs are not built in, `overflow:auto` and `unicode-bidi`/inline RTL/`text-orientation` are unsupported, and tables/3D transforms are partial/absent. Painting goes through the anyrender abstraction: default backend `vello-hybrid` (vello_gpu) on wgpu 30, with vello (full compute), vello_cpu, and Skia (skia-safe) as alternative backends.
 
 ### Cited Findings
+
 - README status: "Blitz is currently in a **beta** state. It can already render many popular no-JS websites (Wikipedia, (Old) Reddit, etc), and is usable for making apps if you are an early adopter and willing to live on the bleeding edge. But there are also still many bugs and missing features." Goals include "Accessibility using AccessKit", HTML form controls; explicitly no webrtc/websockets/localstorage in the engine — [blitz README](https://github.com/DioxusLabs/blitz/blob/main/README.md)
 - Architecture: `blitz-dom` (Stylo CSS, Taffy layout, Parley text), `blitz-html` (html5ever/xml5ever), `blitz-net` (reqwest), `blitz-paint` (-> anyrender), `blitz-shell` (winit + AccessKit + muda), `dioxus-native` / `dioxus-native-dom` wrappers, plus `stylo_taffy`, `accesskit_xplat`, `blitz-vibey-script` (new package) — [README](https://github.com/DioxusLabs/blitz/blob/main/README.md); [packages dir](https://github.com/DioxusLabs/blitz/tree/main/packages)
 - Pinned stack (blitz main, 0.3.0-beta.4): rust-version 1.91; `stylo` 0.23.0 (servo git rev), `selectors` 0.42, `cssparser` 0.38, `html5ever` 0.40.1, `taffy` git rev, `parley` 0.12, `skrifa` 0.44, `peniko` 0.6, `kurbo` 0.13.1, `wgpu` 30, `winit` =0.31.0-beta.4, `accesskit` 0.25, anyrender crates from git main — [blitz Cargo.toml](https://github.com/DioxusLabs/blitz/blob/main/Cargo.toml)
@@ -93,6 +103,7 @@ Blitz 0.3.0-beta.4 (2026-10-16) self-describes as "beta": it renders Wikipedia/o
 - Downloadable Browser UI builds exist for Windows/macOS/Linux/Android — [README](https://github.com/DioxusLabs/blitz/blob/main/README.md)
 
 ### Inferences
+
 - For a desktop editor (b): text editing is the weakest area (macOS cursor bugs, no composition/IME events spec'd for 1.0, no clipboard events, no contenteditable found, `<select>` dropdown missing). A Japanese-input-heavy editor on dioxus-native would be high risk in Q4 2026; use dioxus-desktop (wry/tao webview) for the editor or wait for Blitz 1.0 items.
 - Japanese typography: horizontal CJK works (CJK font fix on Apple, `line-break`, `font-variant-east-asian`), vertical text is opt-in and block-level only; inline bidi/RTL unsupported (fr/en/ja do not need RTL, so acceptable).
 - Accessibility: a basic AccessKit tree exists, but no ARIA attributes pass-through means dioxus-primitives' WAI-ARIA semantics would be largely lost on native today; screen-reader parity with the web target is not achievable yet.
@@ -100,6 +111,7 @@ Blitz 0.3.0-beta.4 (2026-10-16) self-describes as "beta": it renders Wikipedia/o
 - Performance is not quantified publicly; the roadmap shows incremental box-tree construction (0.2) and image cache / delayed first paint (0.3) as the main perf work.
 
 ### Gaps
+
 - No published Blitz performance benchmarks (frame times, layout times) or memory figures.
 - Could not read the Blitz CHANGELOG (API returned invalid base64); 0.3.0-beta.x per-release notes unavailable.
 - Unknown: whether `contenteditable`/rich text editing exists (no issues with that title); whether the winit 0.31 beta IME API is wired beyond the 2025 commit fix.
@@ -108,9 +120,11 @@ Blitz 0.3.0-beta.4 (2026-10-16) self-describes as "beta": it renders Wikipedia/o
 ## Key Question 3 — dioxus-components / dioxus-primitives: component list and styling without Tailwind
 
 ### Takeaway
+
 `dioxus-primitives` is a Radix-style, WAI-ARIA-oriented unstyled primitive set (~37 public modules) with shadcn-style styled wrappers (43 components on the 0.8 branch) distributed by `dx components add <name>` which copies Rust + plain CSS files into the project and injects a `dx-components-theme.css` of CSS custom properties. Styling is plain CSS (CSS variables, data-theme light/dark), no Tailwind required; components spread attributes so any class/style system works. Caveats: no crates.io release (0.0.0 placeholder), repo pins Dioxus 0.7.8 on main with a separate `0.8` branch, `dx components` is broken in 0.8.0-alpha.3, and the repo's own lint/e2e tooling uses npm/stylelint/Playwright (dev-only).
 
 ### Cited Findings
+
 - Description: "Accessible, unstyled, foundational components for Dioxus." README: "a shadcn style component library for Dioxus built on top of the unstyled Dioxus primitives library"; "The styled versions serve as a starting point to develop your own design system." Install: `cargo install dioxus-cli`, `dx components add button` -> creates `components/` folder and prompts to link `/assets/dx-components.css`. Contribution rule: primitives must adhere to "WAI-ARIA Authoring Practices" and "Every element should spread attributes and children from the props" — [components README](https://github.com/DioxusLabs/components/blob/main/README.md)
 - Public primitive modules (main, `primitives/src/lib.rs`): accordion, alert_dialog, aspect_ratio, avatar, calendar, checkbox, collapsible, color_picker, combobox, context_menu, date_picker, dialog, drag_and_drop_list, dropdown_menu, hover_card, label, menubar, navbar (feature `router`), popover, progress, radio_group, scroll_area, select, separator, slider, switch, tabs, tag_group, toast, toggle, toggle_group, toolbar, tooltip, virtual_list; internal: collection, listbox, move_interaction, pointer, portal, selectable, selection, virtual. Uses a `focus-trap.js` asset and `use_server_cached` for SSR-stable ids — [primitives/src/lib.rs](https://github.com/DioxusLabs/components/blob/main/primitives/src/lib.rs)
 - Styled components on the `0.8` branch (`preview/src/components`): accordion, alert_dialog, aspect_ratio, avatar, badge, button, calendar, card, checkbox, collapsible, color_picker, combobox, context_menu, date_picker, dialog, drag_and_drop_list, dropdown_menu, form, hover_card, input, item, label, menubar, navbar, pagination, popover, progress, radio_group, scroll_area, select, separator, sheet, sidebar, skeleton, slider, switch, tabs, textarea, toast, toggle, toggle_group, toolbar, tooltip, virtual_list — [components tree (0.8)](https://github.com/DioxusLabs/components/tree/0.8/preview/src/components)
@@ -123,20 +137,24 @@ Blitz 0.3.0-beta.4 (2026-10-16) self-describes as "beta": it renders Wikipedia/o
 - In dioxus-native, CSS is resolved by Stylo (Firefox/Servo engine) — plain CSS files work natively; no Tailwind runtime is needed — [blitz README](https://github.com/DioxusLabs/blitz/blob/main/README.md)
 
 ### Inferences
+
 - The copy-into-project model (like shadcn) suits a custom design system (HCT/CAM16 tokens, own fonts): replace `dx-components-theme.css` variables with your own, keep the primitives for ARIA/keyboard logic.
 - Because primitives rely on a small `focus-trap.js` asset and `lazy-js-bundle`, "zero raw JS" is not strictly true on the web target; on dioxus-native there is no JS runtime, and primitive behaviors depending on JS (focus trap, portals) may not work.
 - Component coverage is broad enough for a content site and an editor shell (dialog, sidebar, tabs, combobox, virtual_list, toast), but there is no data table/tree view/rich text editor primitive.
 
 ### Gaps
+
 - No accessibility audit results (axe/Playwright a11y) published; the Playwright suite exists but no coverage numbers.
 - Whether primitives are verified against dioxus-native (vs web) is undocumented.
 
 ## Key Question 4 — dioxus-cli: hot-reload / Subsecond hot-patching, build/bundle pipeline, WASM sizes, js-framework-benchmark
 
 ### Takeaway
+
 `dx serve` combines RSX/asset hot-reload with Subsecond binary hot-patching (incremental linking of Rust code into the running process on web/desktop/mobile; enabled by default since 0.8 alpha.0), `dx bundle` produces platform bundles and `--ssg` output, and `#[wasm_split]` does per-route WASM code splitting. In krausest's js-framework-benchmark the dioxus-v0.7.2-keyed entry ships 419.6 KB uncompressed / 114.9 KB compressed and is 10-25% slower than vanilla JS on most DOM ops (create10k 251 ms vs 205.5 ms), competitive with Leptos, faster than Yew, but with a 536.9 ms first paint vs 236 ms for Leptos and 53 ms for Solid.
 
 ### Cited Findings
+
 - Subsecond: "Dioxus now supports hot-patching of Rust code at runtime... without losing app state... works across all major platforms: Web (WASM), Desktop (macOS, Linux, Windows), and even mobile (iOS, Android)". Mechanism: "a form of incremental linking / binary patching tailored for running apps". Explicit `subsecond::call(|| ...)` integration points; "If you add or remove a field of a struct between hot-patches, Subsecond does not automatically migrate your state"; engine ships inside the CLI, with Axum/Bevy/Ratatui integrations — [Dioxus 0.7 blog](https://dioxuslabs.com/blog/release-070)
 - Docs caveat: "Only code at the 'tip' of the app is recommended for hot-reload. Code that runs only once is not hot-reloadable and requires an app restart." — [fullstack llms.txt](https://dioxuslabs.com/learn/0.7/essentials/fullstack/llms.txt)
 - 0.8 alpha.0: "enable hotpatch by default, hotreload cargo.toml, dynamic file watcher" (#5506); "fix wasm hotpatching with c deps" (#5556); CLI must be installed with `--locked` from source — [alpha.0](https://github.com/DioxusLabs/dioxus/releases/tag/v0.8.0-alpha.0)
@@ -150,11 +168,13 @@ Blitz 0.3.0-beta.4 (2026-10-16) self-describes as "beta": it renders Wikipedia/o
 - Dioxus's own bench: "6.2ms to create 10_000 rows" measuring framework overhead only — [docs.rs benches/jsframework.rs](https://docs.rs/crate/dioxus/latest/source/benches/jsframework.rs)
 
 ### Inferences
+
 - The benchmark entry is 0.7.2 (Dec 2025); the 0.8 "markerless placeholders/const builder/optimized templates" rewrite (#5554) is not reflected; expect changes but no numbers yet.
 - The ~115 KB gzipped benchmark payload vs ~49 KB for Leptos and the 537 ms first paint are the main web-perf costs; `wasm_split` per-route splitting and SSR/SSG mitigate for a content site.
 - The CLI pulls esbuild/wasm-opt/wasm-bindgen binaries: not Node.js runtime, but not a "pure cargo" pipeline either.
 
 ### Gaps
+
 - No official 2026 WASM size table from Dioxus Labs; the "60KB runtime" figure is from 0.6-era docs.
 - Hot-reload guide page URL returned 404 (docs moved); detailed Subsecond limitations list not retrieved beyond the blog/fullstack intro.
 - Benchmark Chrome version/date for results.json not captured.
@@ -162,9 +182,11 @@ Blitz 0.3.0-beta.4 (2026-10-16) self-describes as "beta": it renders Wikipedia/o
 ## Key Question 5 — Taffy 0.15
 
 ### Takeaway
+
 Taffy 0.15.0 (2026-10-17) / 0.15.1 (2026-10-25) is a mature CSS Block + Flexbox + Grid layout engine (MIT, MSRV 1.71) used by Servo, Blitz, Bevy, Slint, Zed/GPUI, Floem; 0.15 adds `position: static/fixed` with containing-block hoisting, `align-self/justify-self` for abspos, `normal` alignment keyword, ~60% faster grid and ~15-20% faster flexbox, and removes no-alloc mode. `position: sticky` and table layout are not implemented.
 
 ### Cited Findings
+
 - "It currently implements the CSS Block, Flexbox and CSS Grid layout algorithms." Used by Servo, Blitz, Bevy, Takumi, iocraft, Slint, Lapce/Floem, Zed/GPUI — [taffy README](https://github.com/DioxusLabs/taffy/blob/main/README.md)
 - 0.15.0: MSRV 1.71; `Position::Static` default (matches CSS), `Position::Fixed` added, abspos/fixed boxes hoisted to containing block, `align-self`/`justify-self` on abspos, `normal` alignment first-class (align/justify fields no longer `Option`), grid ~60% faster, flexbox ~15% faster, no-alloc build removed (no-std with alloc remains), `Position::Sticky` added but "Sticky positioning is not implemented", `fit-content(calc())`, `transpose()` helpers "for tree implementations laying out vertical writing modes" — [v0.15.0 notes](https://github.com/DioxusLabs/taffy/releases/tag/v0.15.0)
 - 0.15.1: flexbox "~15-20% faster for deep trees", float/grid/baseline fixes — [v0.15.1 notes](https://github.com/DioxusLabs/taffy/releases/tag/v0.15.1)
@@ -172,17 +194,21 @@ Taffy 0.15.0 (2026-10-17) / 0.15.1 (2026-10-25) is a mature CSS Block + Flexbox 
 - Blitz tracks Taffy from a git rev, not the crates.io release — [blitz Cargo.toml](https://github.com/DioxusLabs/blitz/blob/main/Cargo.toml)
 
 ### Inferences
+
 - For a custom wgpu/GPUI-style renderer (c), Taffy is a safe shared layout core (same as Zed's GPUI); expect API churn roughly every 1-2 months on minor versions.
 
 ### Gaps
+
 - No table layout or `sticky`; Blitz lists both under 1.0.
 
 ## Key Question 6 — How the pieces fit for (a) SEO content site fr/en/ja, (b) native desktop editor, (c) wgpu canvas rendering
 
 ### Takeaway
+
 (a) Web/SSR: dioxus-fullstack on Axum with SSR + incremental cache (+ optional `dx bundle --ssg` for enumerable routes), `document::*` for head, hand-written sitemap/hreflang handlers, `dioxus-i18n` (Fluent) for fr/en/ja; viable but requires building the SEO/i18n layer Next.js provides out of the box. (b) Desktop editor: dioxus-desktop (wry/tao webview, tao 0.37/wry 0.57) is production-grade today; dioxus-native/Blitz is beta with text-input/IME/accessibility gaps, so it is an R&D track, not the editor substrate for 2026. (c) wgpu canvas: Blitz paints via anyrender (vello_gpu on wgpu 30, Skia optional) and supports embedding a wgpu texture (`<canvas>`), while Taffy can be used standalone for a GPUI-style custom renderer.
 
 ### Cited Findings
+
 - SSR "improves load times and search-engine discoverability"; hybrid SSG output "static HTML that loads SPA content" — [fullstack llms.txt](https://dioxuslabs.com/learn/0.7/essentials/fullstack/llms.txt); [SSG llms.txt](https://dioxuslabs.com/learn/0.7/essentials/fullstack/static_site_generation/llms.txt)
 - Head components must be in the first streamed chunk for crawlers; `Meta` props frozen after first render — [streaming.md](https://github.com/DioxusLabs/docsite/blob/main/docs-src/0.7/src/essentials/fullstack/streaming.md); [meta.rs](https://github.com/DioxusLabs/dioxus/blob/main/packages/document/src/elements/meta.rs)
 - `dioxus-i18n` 0.7.0-alpha.1 (Fluent), updated 2026-10-15 — [crates.io](https://crates.io/api/v1/crates/dioxus-i18n)
@@ -193,11 +219,13 @@ Taffy 0.15.0 (2026-10-17) / 0.15.1 (2026-10-25) is a mature CSS Block + Flexbox 
 - Cognition commits to "invest heavily in Dioxus-Native and Blitz" — [joining-cognition](https://dioxuslabs.com/blog/joining-cognition)
 
 ### Inferences
+
 - Version strategy for a Q4-2026 start: build on 0.7.10 (stable, components repo main targets 0.7.8) and track 0.8 alphas on a branch; 0.8 brings breaking changes (keyboard-types 0.8 `Key::Named`, `html::main` element namespacing, WriteMutations API) and a known-broken `dx components` in alpha.3.
 - Mobile: dioxus-mobile (webview) exists with device support; Blitz Android builds exist for the browser UI but dioxus-native mobile is not positioned as production.
 - Pure-Rust constraint is met at runtime (Axum server, WASM client, no Node); the exceptions are CLI-downloaded esbuild/wasm-opt binaries and a tiny `focus-trap.js` asset in primitives.
 
 ### Gaps
+
 - No case study of a Dioxus fullstack site with thousands of localized pages; SSR throughput and SSG wall-time unknown.
 - No first-party i18n routing (`/fr/...`, `/ja/...`) guidance found in 0.7 docs.
 - Blitz WPT pass rates not published on the pages fetched.

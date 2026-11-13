@@ -34,24 +34,24 @@ d'analyse statique praticable retenue pour le port.
 
 ## Sources
 
-| Source | URL | Ce qu’elle établit |
-| --- | --- | --- |
-| Site officiel Bandai Namco | https://en.bandainamcoent.eu/dragon-ball/dragon-ball-xenoverse-2 | Le produit évolue avec des campagnes, personnages, quêtes parallèles, missions, compétences, costumes, scènes et fonctions de galerie ; la page annonce le chapitre final Future Saga en juillet 2026. |
-| Fiche Steam officielle | https://store.steampowered.com/app/454650/DRAGON_BALL_XENOVERSE_2/ | Identité commerciale de l’application et catalogue de DLC. |
+| Source                                   | URL                                                                                                     | Ce qu’elle établit                                                                                                                                                                                                                    |
+| ---------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Site officiel Bandai Namco               | https://en.bandainamcoent.eu/dragon-ball/dragon-ball-xenoverse-2                                        | Le produit évolue avec des campagnes, personnages, quêtes parallèles, missions, compétences, costumes, scènes et fonctions de galerie ; la page annonce le chapitre final Future Saga en juillet 2026.                                |
+| Fiche Steam officielle                   | https://store.steampowered.com/app/454650/DRAGON_BALL_XENOVERSE_2/                                      | Identité commerciale de l’application et catalogue de DLC.                                                                                                                                                                            |
 | Présentation officielle Xenoverse 2 Lite | https://en.bandainamcoent.eu/dragon-ball/news/dragon-ball-xenoverse-2-lite-coming-ps4-and-xbox-one-free | Confirme les familles de parcours : missions d’histoire, quêtes parallèles, mode Hero Colosseum, combats/quêtes en ligne, versus hors ligne et mode photo. Source historique, elle ne décrit pas l’intégralité de l’édition actuelle. |
-| Recon Shenron/Play existante | `replica/dbxv2/recon.md` | Carte de l’explorateur DBFR et du lancement Steam en streaming ; ce n’est pas une reconnaissance du gameplay complet. |
-| Documentation du paquet privé DBXV2 | `docs/products/dbxv2-plugin.md` | Outils privés de lecture/conversion de médias et de formats ; indique explicitement que le WASM public `shenron_re` ne contient qu’un catalogue et des parseurs. |
-| Couverture de la base DBXV2 | `docs/operations/dbxv2-couverture.md` | Un relevé du 18 octobre 2026 décrit 26 archives, 39,25 Go stockés et 56,93 Go extraits sur le store VPS ; ces données ne constituent pas le moteur du jeu. |
+| Recon Shenron/Play existante             | `replica/dbxv2/recon.md`                                                                                | Carte de l’explorateur DBFR et du lancement Steam en streaming ; ce n’est pas une reconnaissance du gameplay complet.                                                                                                                 |
+| Documentation du paquet privé DBXV2      | `docs/products/dbxv2-plugin.md`                                                                         | Outils privés de lecture/conversion de médias et de formats ; indique explicitement que le WASM public `shenron_re` ne contient qu’un catalogue et des parseurs.                                                                      |
+| Couverture de la base DBXV2              | `docs/operations/dbxv2-couverture.md`                                                                   | Un relevé du 18 octobre 2026 décrit 26 archives, 39,25 Go stockés et 56,93 Go extraits sur le store VPS ; ces données ne constituent pas le moteur du jeu.                                                                            |
 
 ## Inventaire observé du dossier fourni
 
-| Élément | Observation | Portée |
-| --- | --- | --- |
-| `bin/DBXV2.exe` | Exécutable Windows, 23 877 704 octets, verrouillé par SteamStub x64 (`var/reports/dbxv2-drm-20261022/`) | Présence du programme natif ; la section de code est chiffrée au repos (DRM Steamworks), le code réel n'existe qu'en mémoire sous session Steam. Aucune analyse Ghidra exploitable, aucun outil de retrait produit. |
-| `START.exe` | Lanceur, 3 975 920 octets | Bootstrapper, pas une source de build WASM. |
-| `steam_api64.dll`, `EOSSDK-Win64-Shipping.dll` | Bibliothèques natives | Dépendances de services desktop ; leur présence ne donne pas leurs implémentations portables. |
-| `EasyAntiCheat/` | Configuration, installateur, certificats et traductions | Dépendance au déploiement Windows ; aucun contenu de jeu. |
-| Archives/ressources du jeu | Aucune dans les 39 fichiers recensés | Le dossier est incomplet pour analyser les données ou reconstruire une expérience de jeu. |
+| Élément                                        | Observation                                                                                             | Portée                                                                                                                                                                                                              |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bin/DBXV2.exe`                                | Exécutable Windows, 23 877 704 octets, verrouillé par SteamStub x64 (`var/reports/dbxv2-drm-20261022/`) | Présence du programme natif ; la section de code est chiffrée au repos (DRM Steamworks), le code réel n'existe qu'en mémoire sous session Steam. Aucune analyse Ghidra exploitable, aucun outil de retrait produit. |
+| `START.exe`                                    | Lanceur, 3 975 920 octets                                                                               | Bootstrapper, pas une source de build WASM.                                                                                                                                                                         |
+| `steam_api64.dll`, `EOSSDK-Win64-Shipping.dll` | Bibliothèques natives                                                                                   | Dépendances de services desktop ; leur présence ne donne pas leurs implémentations portables.                                                                                                                       |
+| `EasyAntiCheat/`                               | Configuration, installateur, certificats et traductions                                                 | Dépendance au déploiement Windows ; aucun contenu de jeu.                                                                                                                                                           |
+| Archives/ressources du jeu                     | Aucune dans les 39 fichiers recensés                                                                    | Le dossier est incomplet pour analyser les données ou reconstruire une expérience de jeu.                                                                                                                           |
 
 Le relevé est une observation de noms, tailles et fichiers texte de configuration. Il ne prouve
 pas l’absence de données ailleurs sur la machine, ni le comportement d’un jeu lancé.
@@ -112,12 +112,12 @@ Les déduire des seuls textes marketing serait spéculatif.
 
 ## Décision de périmètre
 
-| Fonction | Priorité | État clone | Décision |
-| --- | --- | --- | --- |
-| Exécuter le jeu complet dans un navigateur WASM | must | no | Cible demandée ; aucun source/build portable fourni. Il faut poursuivre l'analyse statique et l'inventaire CPK pour établir le périmètre technique. |
-| Analyser certains fichiers DBXV2 sélectionnés localement | must | yes | Fonction existante, bornée à cinq formats et à 16 Mio par fichier. Ce n’est pas de l’exécution de jeu. |
-| Jouer au jeu Windows via le streaming Play existant | won't | skip | Hors périmètre selon la demande du propriétaire du 2026-10-20. |
-| Créer un jeu de combat original compilé en WASM | could | no | Option de produit distincte ; gameplay, personnages, histoire, modèles, sons et interfaces doivent être originaux. |
+| Fonction                                                 | Priorité | État clone | Décision                                                                                                                                            |
+| -------------------------------------------------------- | -------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Exécuter le jeu complet dans un navigateur WASM          | must     | no         | Cible demandée ; aucun source/build portable fourni. Il faut poursuivre l'analyse statique et l'inventaire CPK pour établir le périmètre technique. |
+| Analyser certains fichiers DBXV2 sélectionnés localement | must     | yes        | Fonction existante, bornée à cinq formats et à 16 Mio par fichier. Ce n’est pas de l’exécution de jeu.                                              |
+| Jouer au jeu Windows via le streaming Play existant      | won't    | skip       | Hors périmètre selon la demande du propriétaire du 2026-10-20.                                                                                      |
+| Créer un jeu de combat original compilé en WASM          | could    | no         | Option de produit distincte ; gameplay, personnages, histoire, modèles, sons et interfaces doivent être originaux.                                  |
 
 ## Taille et inconnues
 

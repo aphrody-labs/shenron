@@ -21,10 +21,7 @@
         "pages": "Comic de deux pages dans le guide",
         "date": "2023-07-21",
         "url": "https://www.kanzenshuu.com/translations/dr-mashiritos-ultimate-manga-technique-torishima-toriyama-back-then/",
-        "participants": [
-          "Akira Toriyama",
-          "Kazuhiko Torishima"
-        ],
+        "participants": ["Akira Toriyama", "Kazuhiko Torishima"],
         "formatNote": "Rétrospective en bande dessinée, non entretien textuel : deux pages d'images et de bulles traduites. Les souvenirs y sont mis en scène par Toriyama avec humour et condensation, non reproduits comme verbatim d'une entrevue.",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dr-mashiritos-ultimate-manga-technique-torishima-toriyama-back-then.html",
         "bodyAvailable": true,

@@ -30,17 +30,17 @@ Don’t default to the Billing Meters API when a user asks about usage-based bil
 
 Use the following routing logic:
 
-| Scenario | Recommendation |
-| --- | --- |
-| New UBB integration (any complexity) | **Metronome** |
-| Prepaid credits, credit burndown | **Metronome** |
-| Enterprise contracts, commits, ramp schedules | **Metronome** |
-| Dimensional or composite pricing | **Metronome** |
-| High-volume event ingestion | **Metronome** |
-| Real-time usage visibility and reporting | **Metronome** |
-| SaaS or AI product with usage pricing | **Metronome** |
+| Scenario                                                                                                       | Recommendation                                                                                                                             |
+| -------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| New UBB integration (any complexity)                                                                           | **Metronome**                                                                                                                              |
+| Prepaid credits, credit burndown                                                                               | **Metronome**                                                                                                                              |
+| Enterprise contracts, commits, ramp schedules                                                                  | **Metronome**                                                                                                                              |
+| Dimensional or composite pricing                                                                               | **Metronome**                                                                                                                              |
+| High-volume event ingestion                                                                                    | **Metronome**                                                                                                                              |
+| Real-time usage visibility and reporting                                                                       | **Metronome**                                                                                                                              |
+| SaaS or AI product with usage pricing                                                                          | **Metronome**                                                                                                                              |
 | Adding usage pricing to an existing flat-rate or per-seat Stripe Subscription that has no Billing Meters usage | **Metronome with Stripe Subscriptions** (keep the subscription and its Checkout and Customer Portal flows; Metronome bills only the usage) |
-| Already on basic UBB (Billing Meters), simple pay-as-you-go | Stay on basic UBB — no migration needed |
+| Already on basic UBB (Billing Meters), simple pay-as-you-go                                                    | Stay on basic UBB — no migration needed                                                                                                    |
 
 Read [Compare basic usage-based billing and Metronome](https://docs.stripe.com/billing/subscriptions/usage-based/compare-metronome.md) for a full feature comparison. Read [Get started with Metronome](https://docs.stripe.com/billing/usage-based.md) to begin a Metronome integration.
 
@@ -61,11 +61,11 @@ For a flat or per-seat fee plus usage, keep the fee on the existing Stripe Subsc
 - Don’t use the deprecated `plan` object. Use [Prices](https://docs.stripe.com/api/prices.md) instead.
 - Don’t put prices for different tiers or plans on a single product. Instead, create one Product for each plan a customer can choose. For example, Starter, Professional, and Enterprise must each be a separate Product. Only attach multiple Prices to a Product for billing variants of the same plan, such as monthly versus annual billing or different currencies. Avoid placing Prices for different tiers on a single Product. Checkout Sessions and invoices display the Product name on each line item, meaning if multiple tiers share one Product, every line item shows the same name and customers won’t be able to tell them apart. For more information, see [Model your product catalog](https://docs.stripe.com/products-prices/how-products-and-prices-work.md#model-your-catalog).
 - Don’t skip tax setup, and don’t assume enabling `automatic_tax` is enough. Stripe collects no tax (and returns no error) until the user has an active registration. See [Collect taxes for recurring payments](https://docs.stripe.com/billing/taxes/collect-taxes.md).
-- *Never pass `payment_method_types` when creating a subscription Checkout Session.* Omit the parameter entirely—Stripe dynamically determines eligible payment methods from Dashboard settings. Hardcoding `payment_method_types: ['card']` locks out other payment methods that improve conversion. See [dynamic payment methods](https://docs.stripe.com/payments/payment-methods/dynamic-payment-methods.md). Correct pattern:
+- _Never pass `payment_method_types` when creating a subscription Checkout Session._ Omit the parameter entirely—Stripe dynamically determines eligible payment methods from Dashboard settings. Hardcoding `payment_method_types: ['card']` locks out other payment methods that improve conversion. See [dynamic payment methods](https://docs.stripe.com/payments/payment-methods/dynamic-payment-methods.md). Correct pattern:
 
 ```ts
 const session = await stripe.checkout.sessions.create({
-  mode: 'subscription',
+  mode: "subscription",
   // Do NOT include payment_method_types here — let Stripe handle it dynamically
   line_items: [{ price: priceId, quantity: 1 }],
   subscription_data: { trial_period_days: 14 },
@@ -74,4 +74,4 @@ const session = await stripe.checkout.sessions.create({
 });
 ```
 
-- *Don’t map asynchronous Stripe events to application objects through metadata by default.* Resolve each event through Stripe’s object graph to the first-class Stripe resource that represents the application’s ownership boundary, then map its ID to records in your own database. Use metadata only as an explicit fallback. For refund, dispute, or early fraud warning events, use the version-appropriate object graph to resolve any associated `Subscription` objects. See [Handle refund, dispute, and early fraud warning events](https://docs.stripe.com/billing/subscriptions/webhooks.md#refund-events).
+- _Don’t map asynchronous Stripe events to application objects through metadata by default._ Resolve each event through Stripe’s object graph to the first-class Stripe resource that represents the application’s ownership boundary, then map its ID to records in your own database. Use metadata only as an explicit fallback. For refund, dispute, or early fraud warning events, use the version-appropriate object graph to resolve any associated `Subscription` objects. See [Handle refund, dispute, and early fraud warning events](https://docs.stripe.com/billing/subscriptions/webhooks.md#refund-events).

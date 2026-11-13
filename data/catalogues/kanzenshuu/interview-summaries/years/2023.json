@@ -21,9 +21,7 @@
         "publication": "Site officiel du film Sand Land et livret spécial vidéo",
         "pages": "Q&R publiée sur le Web et reprise dans un livret; pagination non indiquée",
         "date": "2023-03-21",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/sand-land-movie-akira-toriyama-qa/",
         "questionAnswerCount": 6,
         "formatNote": "Six questions-réponses de Toriyama. Entretien sur Sand Land et son adaptation, non sur l'intrigue de Dragon Ball.",
@@ -57,10 +55,7 @@
         "publication": "Dr. Mashirito's Ultimate Manga Technique, volume 1",
         "pages": "Pages non indiquées dans la transcription Kanzenshuu",
         "date": "2023-07-21",
-        "participants": [
-          "Akira Toriyama",
-          "Kazuhiko Torishima"
-        ],
+        "participants": ["Akira Toriyama", "Kazuhiko Torishima"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1/",
         "questionAnswerCount": 8,
         "formatNote": "Huit questions-réponses dialoguées entre Toriyama et Torishima; les deux intervenants sont nommés dans les réponses. Réminiscences rétrospectives, avec des plaisanteries mutuelles à conserver comme telles.",
@@ -94,9 +89,7 @@
         "publication": "Sand Land Kanzenban",
         "pages": "Pages non indiquées dans la transcription Kanzenshuu",
         "date": "2023-08-04",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/sand-land-production-secrets/",
         "questionAnswerCount": 26,
         "formatNote": "Entretien écrit de 26 questions-réponses consacré à Sand Land. Les réponses de Toriyama sur la mythologie de Sand Land sont des explications de cette œuvre; les rapprochements avec Dabra ou Satan ne constituent pas à eux seuls une déclaration sur la continuité de Dragon Ball.",
@@ -120,9 +113,7 @@
         "url": "https://www.kanzenshuu.com/2023/06/26/podcast-episode-0503/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2023-06-26",
-        "participants": [
-          "Julian"
-        ],
+        "participants": ["Julian"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
         "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0503.mp3",
         "audioTranscriptAvailable": false,
@@ -153,9 +144,7 @@
         "url": "https://www.kanzenshuu.com/2023/10/09/podcast-episode-0506/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2023-10-09",
-        "participants": [
-          "Heath"
-        ],
+        "participants": ["Heath"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
         "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0506.mp3",
         "audioTranscriptAvailable": false,

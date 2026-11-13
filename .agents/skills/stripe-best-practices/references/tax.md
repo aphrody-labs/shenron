@@ -40,7 +40,7 @@ Use Stripe Tax for any subscription, invoice, or Checkout Session where the user
 
 **If you have execution access** (MCP tools or the Stripe CLI with a valid token), don’t hand the user a checklist item that says “run a test calculation.” Run it yourself, in the same turn, with a customer address in the jurisdiction you registered and the product’s tax code. See [Verify before you trust automatic tax](#verify-before-you-trust-automatic-tax).
 
-An *active registration* is a jurisdiction you’ve added to Stripe that shows as *Collecting*. It’s per-jurisdiction, and not the same as having a Stripe account.
+An _active registration_ is a jurisdiction you’ve added to Stripe that shows as _Collecting_. It’s per-jurisdiction, and not the same as having a Stripe account.
 
 Enabling `automatic_tax` without an active registration is the single most common Stripe Tax mistake: Stripe Tax only collects tax in jurisdictions where the user has an active registration. Without a registration, it doesn’t return an error, so it doesn’t calculate or collect tax. The user thinks tax is on while collecting nothing. Never enable `automatic_tax` and assume the user is set up. Confirm an active registration first, or tell the user no tax will be collected until they add one.
 
@@ -55,7 +55,7 @@ After enabling `automatic_tax`, don’t assume the setup is complete: tax is onl
 **If you have execution access** (MCP tools or the Stripe CLI with a valid token), run a test [Tax Calculation](https://docs.stripe.com/api/tax/calculations.md) with a customer address in the target jurisdiction and the product’s tax code. Check `tax_breakdown[].taxability_reason`, not the tax amount.
 
 - `not_collecting` means the setup is broken — a registration or tax code gap. Don’t tell the user their setup works. See [Diagnose zero tax](#diagnose-zero-tax).
-- Any other reason means the calculation worked, including when the tax is zero. Zero is *correct* for an exempt tax code or an exempt customer. Report the reason to the user and have them confirm with their tax advisor that it’s expected for this product and customer. Never swap in a different tax code to produce tax.
+- Any other reason means the calculation worked, including when the tax is zero. Zero is _correct_ for an exempt tax code or an exempt customer. Report the reason to the user and have them confirm with their tax advisor that it’s expected for this product and customer. Never swap in a different tax code to produce tax.
 - Run it in the same turn. Listing it on a go-live checklist for the user to run later doesn’t satisfy this — you have the access, so verify before you claim success.
 - If you only have read or advisory access, don’t claim it’s verified. Point the user to [Testing Stripe Tax](https://docs.stripe.com/tax/testing.md) to run the check themselves in a sandbox.
 
@@ -121,7 +121,7 @@ As soon as you know the liable entity:
 
 **If you have execution access** (MCP tools or the Stripe CLI with a valid token), use the GetTaxThresholdMonitoring MCP dynamic tool or the `get_tax_threshold_monitoring` CLI tool to retrieve the account’s current threshold monitoring results. Report the relevant jurisdictions and when the results were computed, if that timestamp is available. If a jurisdiction is absent or its status is undetermined, say so rather than inferring an obligation.
 
-The [threshold monitoring](https://docs.stripe.com/tax/monitoring.md) tool highlights *potential* registration obligations in the Dashboard > **Tax** > **Locations** > **Needs attention**. Stripe sends email and Dashboard alerts. The public guide documents those notification methods, so don’t promise a threshold-alert API or webhook. Monitoring doesn’t cover physical-presence obligations. Present it as information and tell the user to discuss it with their tax advisor. It’s up to the user to confirm whether registration is required. Don’t tell them they must register, and don’t recommend a universal percentage of a threshold as the point to register.
+The [threshold monitoring](https://docs.stripe.com/tax/monitoring.md) tool highlights _potential_ registration obligations in the Dashboard > **Tax** > **Locations** > **Needs attention**. Stripe sends email and Dashboard alerts. The public guide documents those notification methods, so don’t promise a threshold-alert API or webhook. Monitoring doesn’t cover physical-presence obligations. Present it as information and tell the user to discuss it with their tax advisor. It’s up to the user to confirm whether registration is required. Don’t tell them they must register, and don’t recommend a universal percentage of a threshold as the point to register.
 
 Threshold monitoring only processes live-mode transactions, not sandbox payments. Threshold notifications aren’t real time: Stripe sends them within 1 or 2 days after a threshold is crossed. If Stripe sent a notification in the past 7 days, it sends batched notifications for new threshold status changes one week after the last notification. Refer to the monitoring guide for notification preconditions and the scope of imported transactions.
 
@@ -130,7 +130,7 @@ Threshold monitoring only processes live-mode transactions, not sandbox payments
 Guide, don’t advise. Never tell a user where they must register or whether they’re legally obligated. Recommend they consult their tax advisor to determine their obligations.
 
 - The [Tax Registrations API](https://docs.stripe.com/api/tax/registrations.md) can list, create, update, and expire registrations (set `expires_at` to expire; there’s no delete). A scheduled expiration can be changed, but an expiration that has taken effect is permanent (to collect again, the user adds a new registration), and there’s no pause. A head office address is required before adding a registration.
-- Adding a registration in Stripe records where the user is *already* registered. It doesn’t register them with the tax authority.
+- Adding a registration in Stripe records where the user is _already_ registered. It doesn’t register them with the tax authority.
 - Creating or expiring a registration changes whether Stripe collects tax in that jurisdiction, but it doesn’t register or deregister the user with the tax authority. The user must do that separately. Prepare the change and have the user confirm it; never create or expire a registration automatically.
 
 **How to register.** Present the paths that fit the user and let them (with their tax advisor) choose. Don’t pick for them.

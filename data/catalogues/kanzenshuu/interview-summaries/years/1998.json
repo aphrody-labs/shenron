@@ -18,9 +18,7 @@
         "url": "https://www.kanzenshuu.com/press-archive/animerica-march-1998-spotlight-akira-toriyama/",
         "publication": "Animerica, mars 1998, « Spotlight — Akira Toriyama »",
         "publicationDate": "1998-03",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "kanzenshuuPageId": 50990,
         "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
         "bodyAvailable": true,
@@ -49,9 +47,7 @@
         "url": "https://www.kanzenshuu.com/press-archive/animerica-march-1998-animerica-interview-dragon-ball-z-how-it-gets-on-tv/",
         "publication": "Animerica, mars 1998, « Dragon Ball Z… How It Gets On TV »",
         "publicationDate": "1998-03",
-        "participants": [
-          "Barry Watson"
-        ],
+        "participants": ["Barry Watson"],
         "kanzenshuuPageId": 51009,
         "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
         "bodyAvailable": true,

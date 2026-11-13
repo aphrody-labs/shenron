@@ -10,7 +10,6 @@ allowed-tools:
   - Bash(stripe docs *)
   - Bash(stripe login)
   - Bash(stripe version)
-
 ---
 
 Use `stripe docs` instead of fetching [docs.stripe.com](https://docs.stripe.com/.md) content directly with `curl` or `WebFetch`. If you don’t have the CLI installed, [install the Stripe CLI](https://docs.stripe.com/cli/install).

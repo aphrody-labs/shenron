@@ -20,30 +20,41 @@ It provides a CLI (ilmcraft-cli) and an MCP server (ilmcraft) for complete hea
 ## Common CLI Workflows
 
 `ash
+
 # Inspect active sequence and project tree
+
 filmcraft-cli --demo inspect
 
 # List all available commands and presets
+
 filmcraft-cli commands --json
 filmcraft-cli export --list-presets
 
 # Import media assets
+
 filmcraft-cli --project myproject.fcproj import video.mp4 audio.wav
 
 # Cut / Razor at specific timestamp
+
 filmcraft-cli --project myproject.fcproj exec timeline.razor seconds=12.5
 
 # Render a snapshot frame
+
 filmcraft-cli --demo render --seconds 3.0 --out preview.png
 
 # Export full timeline to H.264 MP4
+
 filmcraft-cli --demo export output.mp4 --format h264 --quality 85
 `
 
 ## MCP Tools Integration
 
 When running under the agent via MCP (ilmcraft), the server exposes:
+
 - engine_execute: Run any timeline, project, or sequence command.
 - project_inspect: Inspect media pool, tracks, clips, and timeline status.
-- ender_frame: Retrieve high-fidelity visual feedback of the active timeline.
+-
+
+ender_frame: Retrieve high-fidelity visual feedback of the active timeline.
+
 - export_sequence: Automate final rendering pipelines.

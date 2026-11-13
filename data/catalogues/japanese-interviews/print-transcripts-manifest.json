@@ -7,9 +7,7 @@
       "id": "desktop-ocr-daima-special-booklet-p18-iyoku",
       "title": "Dragon Ball Daima Special Booklet",
       "page": 18,
-      "participants": [
-        "Akio Iyoku / 伊能昭夫"
-      ],
+      "participants": ["Akio Iyoku / 伊能昭夫"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\jsp\\Capture d'écran 2026-08-04 161245.png",
       "imageBytes": 860313,
       "imageSha256": "45f4e7fed4a8abf8de275a49c237ebc0c6c566a7e0d868a2dcd129fbdf2491ba",
@@ -21,10 +19,7 @@
       "id": "desktop-ocr-daima-special-booklet-p26-komaki-yashima",
       "title": "Dragon Ball Daima Special Booklet",
       "page": 26,
-      "participants": [
-        "Aya Komaki / 小牧",
-        "Yoshitaka Yashima / 八島"
-      ],
+      "participants": ["Aya Komaki / 小牧", "Yoshitaka Yashima / 八島"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\jsp\\Capture d'écran 2026-08-04 161256.png",
       "imageBytes": 882622,
       "imageSha256": "ce7b8431e7cd633097fb4285bd5977a027e07005f61c9f24e002efffa5036f46",
@@ -36,9 +31,7 @@
       "id": "desktop-ocr-daima-special-booklet-p32-kakihara",
       "title": "Dragon Ball Daima Special Booklet",
       "page": 32,
-      "participants": [
-        "Yuko Kakihara / 柿原優子"
-      ],
+      "participants": ["Yuko Kakihara / 柿原優子"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\jsp\\Capture d'écran 2026-08-04 161334.png",
       "imageBytes": 999931,
       "imageSha256": "4fe3b5e0fac432b18eca17d0ddb02f920cfd0a1d157a537c738555f7fad4844f",
@@ -50,9 +43,7 @@
       "id": "desktop-ocr-daima-special-booklet-p33-kakihara",
       "title": "Dragon Ball Daima Special Booklet",
       "page": 33,
-      "participants": [
-        "Yuko Kakihara / 柿原優子"
-      ],
+      "participants": ["Yuko Kakihara / 柿原優子"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\jsp\\Capture d'écran 2026-08-04 161344.png",
       "imageBytes": 695149,
       "imageSha256": "0bd65a84bef961eea44fcff2845f8ed8a050467fa0d0985f22b37643045ca55e",
@@ -64,9 +55,7 @@
       "id": "desktop-ocr-existing-atsushi-maekawa-dragon-book-p56",
       "title": "Dragon Ball GT DVD Box / Dragon Book",
       "page": 56,
-      "participants": [
-        "Atsushi Maekawa / 前川淳"
-      ],
+      "participants": ["Atsushi Maekawa / 前川淳"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\4 Debunk\\Saga buu\\a trier\\page-56.jpg",
       "imageBytes": 10615152,
       "imageSha256": "b465db2371417264694b1028374832d147cd657540165e1b1dec9c5508781fc6",
@@ -78,10 +67,7 @@
       "id": "desktop-ocr-daima-special-interview-p30-komaki-yashima",
       "title": "Dragon Ball Daima Special Interview (publication title unidentified)",
       "page": 30,
-      "participants": [
-        "Aya Komaki / 小牧",
-        "Yoshitaka Yashima / 八島"
-      ],
+      "participants": ["Aya Komaki / 小牧", "Yoshitaka Yashima / 八島"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\jsp\\IMG_8631.jpg",
       "imageBytes": 148547,
       "imageSha256": "2682ac3982cde17e007be7bc0634962c26a9dea742543227a9f43689018d3db3",
@@ -93,10 +79,7 @@
       "id": "print_shueisha_goku-densetsu_2003_p90-91",
       "title": "テレビアニメ完全ガイド DRAGON BALL Z 孫悟空伝説 — 鳥山明×中鶴勝祥 対談",
       "pageRange": "90-91",
-      "participants": [
-        "Akira Toriyama / 鳥山明",
-        "Katsuyoshi Nakatsuru / 中鶴勝祥"
-      ],
+      "participants": ["Akira Toriyama / 鳥山明", "Katsuyoshi Nakatsuru / 中鶴勝祥"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\5 DragonBall livres\\son goku densetsu\\FB_IMG_1769075270009.jpg",
       "imageBytes": 441496,
       "imageSha256": "4074def9a824f827d9a5d686cb4ab7cebf7b59662bfa70d54d33464f27a4eb4a",
@@ -108,10 +91,7 @@
       "id": "print_shueisha_goku-densetsu_2003_p92-93",
       "title": "テレビアニメ完全ガイド DRAGON BALL Z 孫悟空伝説 — 鳥山明×中鶴勝祥 対談",
       "pageRange": "92-93",
-      "participants": [
-        "Akira Toriyama / 鳥山明",
-        "Katsuyoshi Nakatsuru / 中鶴勝祥"
-      ],
+      "participants": ["Akira Toriyama / 鳥山明", "Katsuyoshi Nakatsuru / 中鶴勝祥"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\5 DragonBall livres\\son goku densetsu\\FB_IMG_1769075272154.jpg",
       "imageBytes": 438496,
       "imageSha256": "9ee6d6d3cf1c491464dd7ee8b45c31a22c7d3282cc2aaf220aaabe586c791b4f",
@@ -123,10 +103,7 @@
       "id": "print_shueisha_goku-densetsu_2003_p94-95",
       "title": "テレビアニメ完全ガイド DRAGON BALL Z 孫悟空伝説 — 鳥山明×中鶴勝祥 対談",
       "pageRange": "94-95",
-      "participants": [
-        "Akira Toriyama / 鳥山明",
-        "Katsuyoshi Nakatsuru / 中鶴勝祥"
-      ],
+      "participants": ["Akira Toriyama / 鳥山明", "Katsuyoshi Nakatsuru / 中鶴勝祥"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\5 DragonBall livres\\son goku densetsu\\FB_IMG_1769075274403.jpg",
       "imageBytes": 444768,
       "imageSha256": "48c9460f7376ac5bdecfbf29bc2c0d676032d99d2b5abb3f69826d6941cf2c99",
@@ -138,10 +115,7 @@
       "id": "print_shueisha_goku-densetsu_2003_p96-97",
       "title": "テレビアニメ完全ガイド DRAGON BALL Z 孫悟空伝説 — 鳥山明×中鶴勝祥 対談",
       "pageRange": "96-97",
-      "participants": [
-        "Akira Toriyama / 鳥山明",
-        "Katsuyoshi Nakatsuru / 中鶴勝祥"
-      ],
+      "participants": ["Akira Toriyama / 鳥山明", "Katsuyoshi Nakatsuru / 中鶴勝祥"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\5 DragonBall livres\\son goku densetsu\\FB_IMG_1769075276393.jpg",
       "imageBytes": 440165,
       "imageSha256": "9bd107594dcff372f30032db784281b6c8da90f9cb08f3965f4d7ca0d47a193e",
@@ -154,10 +128,7 @@
       "id": "print_shueisha_goku-densetsu_2003_p98-99",
       "title": "テレビアニメ完全ガイド DRAGON BALL Z 孫悟空伝説 — 鳥山明×中鶴勝祥 対談",
       "pageRange": "98-99",
-      "participants": [
-        "Akira Toriyama / 鳥山明",
-        "Katsuyoshi Nakatsuru / 中鶴勝祥"
-      ],
+      "participants": ["Akira Toriyama / 鳥山明", "Katsuyoshi Nakatsuru / 中鶴勝祥"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\5 DragonBall livres\\son goku densetsu\\FB_IMG_1769075278575.jpg",
       "imageBytes": 422979,
       "imageSha256": "d0126b1cd5890fbb2ebcf3d91953efbf84c018e1bd094badfd16dab77ed040f8",
@@ -170,10 +141,7 @@
       "id": "print_shueisha_goku-densetsu_2003_p100-101",
       "title": "テレビアニメ完全ガイド DRAGON BALL Z 孫悟空伝説 — 鳥山明×中鶴勝祥 対談",
       "pageRange": "100-101",
-      "participants": [
-        "Akira Toriyama / 鳥山明",
-        "Katsuyoshi Nakatsuru / 中鶴勝祥"
-      ],
+      "participants": ["Akira Toriyama / 鳥山明", "Katsuyoshi Nakatsuru / 中鶴勝祥"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\5 DragonBall livres\\son goku densetsu\\FB_IMG_1769075280592.jpg",
       "imageBytes": 382114,
       "imageSha256": "f0887b1b9e6900e9c615c7b84ed3d0d5255eaa84a45f6f18c4e4998d382b4333",
@@ -230,9 +198,7 @@
       "id": "print_shueisha_chozenshuu4_nozawa_p340",
       "title": "ドラゴンボール超全集4 超事典 — 野沢雅子が振り返ってみた DRAGON BALL!!",
       "page": 340,
-      "participants": [
-        "Masako Nozawa / 野沢雅子"
-      ],
+      "participants": ["Masako Nozawa / 野沢雅子"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\340.png",
       "imageBytes": 2315141,
       "imageSha256": "06f0dd65b48ba89b90aaca1706799a290246066d4f60388656962504daa35d57",
@@ -244,9 +210,7 @@
       "id": "print_shueisha_dragonbook_movies_kageyama_p60-61",
       "title": "DragonBook Movies — MUSIC FIGHTER SPECIAL INTERVIEW",
       "pageRange": "60-61",
-      "participants": [
-        "Hironobu Kageyama / 影山ヒロノブ"
-      ],
+      "participants": ["Hironobu Kageyama / 影山ヒロノブ"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\DragonBook\\DragonBook Movies\\61-60.jpg",
       "imageBytes": 256252,
       "imageSha256": "3dd194e6e1dc777a9052875c2765e576e083096badcd7466527d04082a320457",
@@ -258,9 +222,7 @@
       "id": "print_shueisha_dragonbook_movies_koyama_p52-53",
       "title": "DragonBook Movies — 劇場版ストーリーQ&A / DRAGON MOVIES FAQ",
       "pageRange": "52-53",
-      "participants": [
-        "Takao Koyama / 小山高生"
-      ],
+      "participants": ["Takao Koyama / 小山高生"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\DragonBook\\DragonBook Movies\\53-52.jpg",
       "imageBytes": 408139,
       "imageSha256": "ca0a9724d4313105e1374b0e34bd9039a4ed89fc8a09f20f0665fea95ae26ba9",
@@ -272,9 +234,7 @@
       "id": "print_shueisha_dragonbook_movies_koyama_p54-55",
       "title": "DragonBook Movies — 劇場版ストーリーQ&A / DRAGON MOVIES FAQ",
       "pageRange": "54-55",
-      "participants": [
-        "Takao Koyama / 小山高生"
-      ],
+      "participants": ["Takao Koyama / 小山高生"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\DragonBook\\DragonBook Movies\\55-54.jpg",
       "imageBytes": 410492,
       "imageSha256": "c94555423a4a59b9e77ef31606b85e450acab03088581fc3571acf5e8426380e",
@@ -286,9 +246,7 @@
       "id": "print_shueisha_chozenshuu4_nozawa_p341",
       "title": "ドラゴンボール超全集4 超事典 — 野沢雅子が振り返ってみた DRAGON BALL!!",
       "page": 341,
-      "participants": [
-        "Masako Nozawa / 野沢雅子"
-      ],
+      "participants": ["Masako Nozawa / 野沢雅子"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\341.png",
       "imageBytes": 2357218,
       "imageSha256": "2d4af5713be3d1f225fccb746709c04ab61726bda04320c634da0127f08c7cb1",
@@ -300,9 +258,7 @@
       "id": "print_shueisha_chozenshuu4_nozawa_p342",
       "title": "ドラゴンボール超全集4 超事典 — 野沢雅子が振り返ってみた DRAGON BALL!!",
       "page": 342,
-      "participants": [
-        "Masako Nozawa / 野沢雅子"
-      ],
+      "participants": ["Masako Nozawa / 野沢雅子"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\342.png",
       "imageBytes": 2326419,
       "imageSha256": "b9623c5065ec403ea6c5467a48311cea17c62ffe2228ee6d767b3c15e340f29c",
@@ -314,9 +270,7 @@
       "id": "print_shueisha_chozenshuu4_nozawa_p343",
       "title": "ドラゴンボール超全集4 超事典 — 野沢雅子が振り返ってみた DRAGON BALL!!",
       "page": 343,
-      "participants": [
-        "Masako Nozawa / 野沢雅子"
-      ],
+      "participants": ["Masako Nozawa / 野沢雅子"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\343.png",
       "imageBytes": 2587911,
       "imageSha256": "2e6fbaf81cebdd9476a0f426e220bda524a83a2a42c636d3c817a8435200e889",
@@ -328,9 +282,7 @@
       "id": "print_shueisha_chozenshuu4_nozawa_p344",
       "title": "ドラゴンボール超全集4 超事典 — 野沢雅子が振り返ってみた DRAGON BALL!!",
       "page": 344,
-      "participants": [
-        "Masako Nozawa / 野沢雅子"
-      ],
+      "participants": ["Masako Nozawa / 野沢雅子"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\344.png",
       "imageBytes": 2375330,
       "imageSha256": "7a29877411e392c786262eb9feb56ba1a9271c57bd78e70ba9c5b9da94ea11e0",
@@ -342,9 +294,7 @@
       "id": "print_shueisha_chozenshuu4_nozawa_p345",
       "title": "ドラゴンボール超全集4 超事典 — 野沢雅子が振り返ってみた DRAGON BALL!!",
       "page": 345,
-      "participants": [
-        "Masako Nozawa / 野沢雅子"
-      ],
+      "participants": ["Masako Nozawa / 野沢雅子"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\345.png",
       "imageBytes": 2879981,
       "imageSha256": "8197b7c995a9f6858596e3d5981361e32f9caab8e7471e1202b4ee4b6efad0e3",
@@ -356,9 +306,7 @@
       "id": "print_shueisha_chozenshuu4_toriyama_p346",
       "title": "ドラゴンボール超全集4 超事典 — 鳥山明も振り返ってみた DRAGON BALL!!",
       "page": 346,
-      "participants": [
-        "Akira Toriyama / 鳥山明"
-      ],
+      "participants": ["Akira Toriyama / 鳥山明"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\346.jpg",
       "imageBytes": 4206100,
       "imageSha256": "f13f817a2d77b13926bdd848d0d93ed8d4a8a4effaaa8982d5e05602477766e3",
@@ -370,9 +318,7 @@
       "id": "print_shueisha_chozenshuu4_toriyama_p347",
       "title": "ドラゴンボール超全集4 超事典 — 鳥山明も振り返ってみた DRAGON BALL!!",
       "page": 347,
-      "participants": [
-        "Akira Toriyama / 鳥山明"
-      ],
+      "participants": ["Akira Toriyama / 鳥山明"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\347.jpg",
       "imageBytes": 4416001,
       "imageSha256": "bb7b1329063f8e2534bc30735a281b5d30b4155efa65b2173161ff30fd955237",
@@ -384,9 +330,7 @@
       "id": "print_shueisha_chozenshuu4_toriyama_p348",
       "title": "ドラゴンボール超全集4 超事典 — 鳥山明も振り返ってみた DRAGON BALL!!",
       "page": 348,
-      "participants": [
-        "Akira Toriyama / 鳥山明"
-      ],
+      "participants": ["Akira Toriyama / 鳥山明"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\348.jpg",
       "imageBytes": 5174335,
       "imageSha256": "4c6407e6b0ec758ca207069466c714227febc22283bcea5465b54d98e2edb9c0",
@@ -398,9 +342,7 @@
       "id": "print_shueisha_chozenshuu4_toriyama_katsura_p349",
       "title": "ドラゴンボール超全集4 超事典 — 桂くんなら、自主的に漫画が描ける!?",
       "page": 349,
-      "participants": [
-        "Akira Toriyama / 鳥山明"
-      ],
+      "participants": ["Akira Toriyama / 鳥山明"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)\\349.jpg",
       "imageBytes": 5175924,
       "imageSha256": "b84b5d3a5580c29c5c93ef81074af0bc8a21b0a68d0eab98208bdaa42c4a28b0",
@@ -412,9 +354,7 @@
       "id": "print_shueisha_jump_ryu_toriyama_p4",
       "title": "Jump Ryu! Akira Toriyama issue — 先生に質問！",
       "page": 4,
-      "participants": [
-        "Akira Toriyama / 鳥山明"
-      ],
+      "participants": ["Akira Toriyama / 鳥山明"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Jump Ryu Dragon Ball\\FB_IMG_1768465399144.jpg",
       "imageBytes": 354313,
       "imageSha256": "461b894d2086494f465586723994929c0180fd6021e0aff1781c4abe38a99776",
@@ -426,10 +366,7 @@
       "id": "vjump-db-super-divers-p190",
       "title": "Vジャンプ — 子ども目線で見た「DBSDV」の課題",
       "page": 190,
-      "participants": [
-        "Kaneko / 金子",
-        "Nakagawa / 中川"
-      ],
+      "participants": ["Kaneko / 金子", "Nakagawa / 中川"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Les V-Jump\\V-Jump 2026\\juillet\\748115214_2124153005203452_5094841535306393554_n.jpg",
       "imageBytes": 535106,
       "imageSha256": "7ce41ab839f3e9b874555432655946eb331c7606a66c643425f9f7bc02331563",
@@ -441,10 +378,7 @@
       "id": "vjump-db-super-divers-p191",
       "title": "Vジャンプ — 子ども目線で見た「DBSDV」の課題",
       "page": 191,
-      "participants": [
-        "Kaneko / 金子",
-        "Nakagawa / 中川"
-      ],
+      "participants": ["Kaneko / 金子", "Nakagawa / 中川"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Les V-Jump\\V-Jump 2026\\juillet\\748231314_1962505244541588_93145766781321470_n.jpg",
       "imageBytes": 504965,
       "imageSha256": "335d12fe70fd31d352de1fb3b962643638b481d7dcfd1aa8f9b7c4cd64141cf6",
@@ -640,9 +574,7 @@
       "id": "saikyo-jump-2018-jan-toriyama-saiyan-special-qa-116-117",
       "title": "Saikyō Jump — サイヤ人超最強COMICS / 鳥山明先生に聞いてみた！サイヤ人スペシャルQ&A",
       "pageRange": "116-117",
-      "participants": [
-        "Akira Toriyama / 鳥山明"
-      ],
+      "participants": ["Akira Toriyama / 鳥山明"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\saikyou jump\\2018\\janvier\\481701778_1612718696034162_7420829104018820363_n.jpg",
       "imageBytes": 928372,
       "imageSha256": "27D36A5234F74FB5121A782D8DBE141B77293385E5B120D668948CBBA62DD2E4",
@@ -654,9 +586,7 @@
       "id": "saikyo-jump-2018-nov-nagatomo-p23",
       "title": "Saikyō Jump — 長友選手の夢の質問",
       "page": 23,
-      "participants": [
-        "Yūto Nagatomo / 長友佑都"
-      ],
+      "participants": ["Yūto Nagatomo / 長友佑都"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\saikyou jump\\2018\\novembre\\44496527_276809872958391_5288066272884424704_n.jpg",
       "imageBytes": 579019,
       "imageSha256": "cb28377ed5884599afd8ff2363706f2b717129368d7f0936075aa54553ed5806",
@@ -748,9 +678,7 @@
       "id": "daizenshuu-3-satake-i-love-dragon-ball-p7",
       "title": "I LOVE DRAGON BALL 第3回 佐竹雅昭さん（空手家）",
       "page": 7,
-      "participants": [
-        "Masahiro Satake / 佐竹雅昭"
-      ],
+      "participants": ["Masahiro Satake / 佐竹雅昭"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 3 - TV Animation Part 1 (COMPLETE)\\Shenlong Times\\7.png",
       "imageBytes": 2095812,
       "imageSha256": "085986ff89d3a0c9b9ef7e759d60f4e0e5f3dc29da7b8451fc6d16081241466d",
@@ -842,9 +770,7 @@
       "id": "daizenshuu-5-horii-i-love-dragon-ball-p7",
       "title": "DRAGON BALL 大全集5 TV Animation Part 2 — I LOVE DRAGON BALL 第5回",
       "page": 7,
-      "participants": [
-        "Yūji Horii / 堀井雄二"
-      ],
+      "participants": ["Yūji Horii / 堀井雄二"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times\\7.png",
       "imageBytes": 1895083,
       "imageSha256": "dac1f4fc178df4ff13782a22e17630224d0aab53a35da6df4a90be1669b1d137",
@@ -907,9 +833,7 @@
       "id": "daizenshuu-4-momoko-i-love-dragon-ball-p6",
       "title": "DRAGON BALL 大全集④ World Guide — I LOVE DRAGON BALL 第4回",
       "page": 6,
-      "participants": [
-        "Momoko Sakura / さくらももこ"
-      ],
+      "participants": ["Momoko Sakura / さくらももこ"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 4 - World Guide (COMPLETE)\\Shenlong Times\\6-7.png",
       "imageBytes": 3349370,
       "imageSha256": "e7d1d2fc007d08785276125d74629a3c50291ec9dabc94444c9d4ce679a90490",
@@ -921,10 +845,7 @@
       "id": "saikyo-jump-2023-sept-gag-interview-p24",
       "title": "Saikyō Jump — 鳥山明作品はギャグがおもしろい!!",
       "page": 24,
-      "participants": [
-        "Iwai / イワイ",
-        "Sunshine Ikezaki / サンシャイン池崎"
-      ],
+      "participants": ["Iwai / イワイ", "Sunshine Ikezaki / サンシャイン池崎"],
       "imagePath": "C:/Users/omara/Desktop/Data et guide book/saikyou jump/2023/septembre/484035907_993007699594921_1123646754241630102_n.jpg",
       "imageBytes": 590525,
       "imageSha256": "81373704BC8C3003ED547F4ED531AD14E038785D8767D05C5C27B51498A818F4",
@@ -1004,9 +925,7 @@
       "id": "daizenshuu-2-katori-i-love-dragon-ball-p7",
       "title": "DRAGON BALL 大全集② — I LOVE DRAGON BALL 第2回",
       "page": 7,
-      "participants": [
-        "Shingo Katori / 香取慎吾"
-      ],
+      "participants": ["Shingo Katori / 香取慎吾"],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 2\\daizenshuu_02_shenron-news_page007_4887003553_o.jpg",
       "imageBytes": 100892,
       "imageSha256": "d99a7da04247dbbf8b79f90ee31cd8b0170752bcb18338b1e20ced9cc4e5dd29",
@@ -1018,9 +937,7 @@
       "id": "daizenshuu-1-jackie-chan-i-love-dragon-ball-p7",
       "title": "DRAGON BALL 大全集① — I LOVE DRAGON BALL 第1回 ジャッキー・チェンさん",
       "page": 7,
-      "participants": [
-        "Jackie Chan / ジャッキー・チェン"
-      ],
+      "participants": ["Jackie Chan / ジャッキー・チェン"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page007_6033670821_o.jpg",
       "imageBytes": 813489,
       "imageSha256": "5ecc6f9eb6480834c3c2a64b457945ebb9a25dcb02fa5c5e2f511dc6e52ad0f2",
@@ -1032,9 +949,7 @@
       "id": "daizenshuu-6-okumoto-i-love-dragon-ball-p7",
       "title": "I LOVE DRAGON BALL 第6回 奥本大三郎さん（フランス文学者）",
       "page": 7,
-      "participants": [
-        "Daizaburo Okumoto / 奥本大三郎"
-      ],
+      "participants": ["Daizaburo Okumoto / 奥本大三郎"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 6\\daizenshuu_06_shenron-news_page007_9717732155_o.jpg",
       "imageBytes": 3244160,
       "imageSha256": "1b43c76f7ab60791f4e1b3ddf859ad840a02cecc207f28935a02beec10875a3d",
@@ -1109,13 +1024,8 @@
       "id": "30th-anniversary-morishita-p124",
       "title": "30th Anniversary ドラゴンボール超史集 — 森下孝三",
       "page": 124,
-      "pages": [
-        124,
-        125
-      ],
-      "participants": [
-        "Kozo Morishita / 森下孝三"
-      ],
+      "pages": [124, 125],
+      "participants": ["Kozo Morishita / 森下孝三"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
@@ -1129,13 +1039,8 @@
       "id": "30th-anniversary-nozawa-p128",
       "title": "30th Anniversary ドラゴンボール超史集 — 野沢雅子",
       "page": 128,
-      "pages": [
-        128,
-        129
-      ],
-      "participants": [
-        "Masako Nozawa / 野沢雅子"
-      ],
+      "pages": [128, 129],
+      "participants": ["Masako Nozawa / 野沢雅子"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
@@ -1149,12 +1054,8 @@
       "id": "30th-anniversary-yamamuro-140",
       "title": "30th Anniversary ドラゴンボール超史集 — 山室直儀",
       "page": 140,
-      "pages": [
-        140
-      ],
-      "participants": [
-        "Tadayoshi Yamamuro / 山室直儀"
-      ],
+      "pages": [140],
+      "participants": ["Tadayoshi Yamamuro / 山室直儀"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
@@ -1168,12 +1069,8 @@
       "id": "30th-anniversary-nakatsuru-141",
       "title": "30th Anniversary ドラゴンボール超史集 — 中鶴勝祥",
       "page": 141,
-      "pages": [
-        141
-      ],
-      "participants": [
-        "Katsuyoshi Nakatsuru / 中鶴勝祥"
-      ],
+      "pages": [141],
+      "participants": ["Katsuyoshi Nakatsuru / 中鶴勝祥"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
@@ -1187,13 +1084,8 @@
       "id": "30th-anniversary-kido-148-149",
       "title": "30th Anniversary ドラゴンボール超史集 — 木戸睦",
       "page": 148,
-      "pages": [
-        148,
-        149
-      ],
-      "participants": [
-        "Mutsumi Kido / 木戸睦"
-      ],
+      "pages": [148, 149],
+      "participants": ["Mutsumi Kido / 木戸睦"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
@@ -1240,32 +1132,23 @@
       "transcriptPath": "data/catalogues/japanese-interviews/print-transcripts.jsonl#L75",
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\janvier\\654602916_1375733284596195_4865005340773771057_n.jpg",
       "title": "Vジャンプ",
-      "participants": [
-        "鳥山明"
-      ],
+      "participants": ["鳥山明"],
       "imageBytes": 587026,
       "completeness": "Transcribes only Toriyama's visible message panel on p.83; this is not the full page or a Q&A interview.",
       "transcriptRow": 75,
       "sectionTitle": "鳥山先生からメッセージ＆描きおろしブロリーイラスト",
       "id": "vjump-2019-toriyama-broly-message-p83",
       "imageSha256": "56c02eef5a9c66e5cfa05a8b24f95ada71b7d8d1c4f4d2274859f547b2933a7c",
-      "pages": [
-        83
-      ]
+      "pages": [83]
     },
     {
       "sectionTitle": "オレたちプロゲーマー!! — DBFZ / かずのこ",
       "imageSha256": "61fa6951c15d9b05718d15fab8ed082eb7e77a4acfefca919ff598e68ed427ef",
       "imageBytes": 593400,
-      "pages": [
-        339
-      ],
+      "pages": [339],
       "transcriptPath": "data/catalogues/japanese-interviews/print-transcripts.jsonl#L76",
       "completeness": "Visible direct gamer comments and the clearly associated editorial reply transcribed from one page. The page is part of a larger feature; p.339 is inferred, not printed legibly in this crop.",
-      "participants": [
-        "かずのこ",
-        "ビクトリー・ウチダ（編集部）"
-      ],
+      "participants": ["かずのこ", "ビクトリー・ウチダ（編集部）"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\mars\\660461417_1387192693450254_3355142928239876073_n.jpg",
       "transcriptRow": 76,
       "title": "Vジャンプ",
@@ -1286,24 +1169,13 @@
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\mars\\661198480_1387192866783570_6175762419575968923_n.jpg",
       "id": "vjump-2019-db-fighterz-pro-players-p340",
       "title": "Vジャンプ",
-      "pages": [
-        340
-      ]
+      "pages": [340]
     },
     {
       "id": "30th-anniversary-toriyama-interview-body",
       "title": "30th Anniversary ドラゴンボール超史集 — DRAGON BALLと鳥山明",
-      "pages": [
-        88,
-        89,
-        90,
-        91,
-        92,
-        93
-      ],
-      "participants": [
-        "鳥山明 / Akira Toriyama"
-      ],
+      "pages": [88, 89, 90, 91, 92, 93],
+      "participants": ["鳥山明 / Akira Toriyama"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
@@ -1315,15 +1187,8 @@
     {
       "id": "30th-anniversary-creator-interview-197",
       "title": "30th Anniversary ドラゴンボール超史集 — フィギュア原型師インタビュー",
-      "pages": [
-        197
-      ],
-      "participants": [
-        "中澤",
-        "山下",
-        "VAROQ",
-        "阪田"
-      ],
+      "pages": [197],
+      "participants": ["中澤", "山下", "VAROQ", "阪田"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
@@ -1335,13 +1200,8 @@
     {
       "id": "30th-anniversary-kondo-editor-interview-2-54-55",
       "title": "30th Anniversary ドラゴンボール超史集 — DRAGON BALL EDITORS INTERVIEW #2",
-      "pages": [
-        54,
-        55
-      ],
-      "participants": [
-        "近藤裕"
-      ],
+      "pages": [54, 55],
+      "participants": ["近藤裕"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
@@ -1353,13 +1213,8 @@
     {
       "id": "30th-anniversary-takeda-editor-interview-3-70-71",
       "title": "30th Anniversary ドラゴンボール超史集 — DRAGON BALL EDITORS INTERVIEW #3",
-      "pages": [
-        70,
-        71
-      ],
-      "participants": [
-        "武田冬門"
-      ],
+      "pages": [70, 71],
+      "participants": ["武田冬門"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
@@ -1371,13 +1226,8 @@
     {
       "id": "30th-anniversary-torishima-editor-interview-1-38-40",
       "title": "30th Anniversary ドラゴンボール超史集 — DRAGON BALL EDITORS INTERVIEW #1",
-      "pages": [
-        38,
-        39
-      ],
-      "participants": [
-        "鳥嶋和彦"
-      ],
+      "pages": [38, 39],
+      "participants": ["鳥嶋和彦"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
@@ -1390,9 +1240,7 @@
       "id": "animage-nozawa-mini-interview-1989-p46",
       "title": "Animage? — 悟空・悟飯役 野沢雅子ミニインタビュー",
       "page": 46,
-      "participants": [
-        "野沢雅子"
-      ],
+      "participants": ["野沢雅子"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\animage\\animage 89 septembre\\Ce-K7t7-MXEAAPtcm.jpg",
       "imageBytes": 306143,
       "imageSha256": "452a663958a58ae6fc298f5cddd0309e284f24cbd6c4d16d1da0500e5fac087a",
@@ -1405,9 +1253,7 @@
       "id": "jump-ryu-torishima-editor-interview-17",
       "title": "Jump Ryu! vol.01 — 初代担当に聞く!!",
       "page": 17,
-      "participants": [
-        "鳥嶋和彦"
-      ],
+      "participants": ["鳥嶋和彦"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Jump Ryu Dragon Ball\\FB_IMG_1768465428791.jpg",
       "imageBytes": 405965,
       "imageSha256": "89c8d8eadbef01827411d2201361be9d5d0d40c05d54fb64e7331882b77b0efc",
@@ -1420,9 +1266,7 @@
       "id": "jump-ryu-road-to-jump-toriyama-p4-excerpt",
       "title": "Jump Ryu! vol.01 — ROAD to JUMP「マンガ家デビュー秘話 第1回 鳥山明」 (extrait p.4)",
       "page": 4,
-      "participants": [
-        "鳥山明"
-      ],
+      "participants": ["鳥山明"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Jump Ryu Dragon Ball\\FB_IMG_1768465399144.jpg",
       "imageBytes": 354313,
       "imageSha256": "461b894d2086494f465586723994929c0180fd6021e0aff1781c4abe38a99776",
@@ -1435,9 +1279,7 @@
       "id": "jump-ryu-road-to-jump-toriyama-p5-excerpt",
       "title": "Jump Ryu! vol.01 — ROAD to JUMP「マンガ家デビュー秘話 第1回 鳥山明」 (extrait p.5)",
       "page": 5,
-      "participants": [
-        "鳥山明"
-      ],
+      "participants": ["鳥山明"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Jump Ryu Dragon Ball\\FB_IMG_1768465401365.jpg",
       "imageBytes": 394521,
       "imageSha256": "546718d2b6a9896233ca0b813241f4c3286f1bec01a455c1fd87f96efdfc55f1",

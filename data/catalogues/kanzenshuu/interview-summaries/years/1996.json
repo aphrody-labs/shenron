@@ -48,10 +48,7 @@
         "publication": "Dragon Ball Daizenshuu 7: Dragon Ball Large Encyclopedia",
         "pages": "numéro Shenlong Times; couverture et panneau rétrospectif associés au volume",
         "date": "1996-02-05",
-        "participants": [
-          "Akira Toriyama",
-          "Masakazu Katsura"
-        ],
+        "participants": ["Akira Toriyama", "Masakazu Katsura"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-7-shenlong-times/",
         "questionAnswerCount": 8,
         "formatNote": "Les huit blocs question-réponse détectés comprennent l'interview principale, une conversation éditoriale avec Katsura et des encadrés/panneaux de commentaire de Toriyama; ils ne sont pas huit questions biographiques homogènes.",
@@ -113,9 +110,7 @@
         "url": "https://www.kanzenshuu.com/translations/daizenshuu-7-secret-stories-of-the-dragon-ball-characters/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-7-secret-stories-of-the-dragon-ball-characters/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/daizenshuu-7-secret-stories-of-the-dragon-ball-characters.html",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "questionAnswerCount": 5,
         "questionBlockCount": 5,
         "answerBlockCount": 5,
@@ -145,10 +140,7 @@
         "url": "https://www.kanzenshuu.com/press-archive/animerica-november-1996-take-ten-with-funimation/",
         "publication": "Animerica, novembre 1996, « Take Ten With FUNimation »",
         "publicationDate": "1996-11",
-        "participants": [
-          "Gen Fukunaga",
-          "Cindy Brennan Fukunaga"
-        ],
+        "participants": ["Gen Fukunaga", "Cindy Brennan Fukunaga"],
         "kanzenshuuPageId": 50883,
         "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
         "bodyAvailable": true,

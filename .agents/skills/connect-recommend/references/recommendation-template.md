@@ -31,6 +31,7 @@ If any section is missing, add it before moving on.
 ## Recommended Connect integration
 
 ### A. Account configuration
+
 Accounts API: `/v2/core/accounts`
 Legacy account `type`: not used
 Dashboard: [express / full / none]
@@ -45,63 +46,74 @@ Each connected account needs merchant configuration (`configuration.merchant`) f
 Each connected account needs recipient configuration (`configuration.recipient`) with `stripe_transfers` on `stripe_balance` requested, so the account can receive transfers from the platform.
 
 ### B. Charge pattern: [destination / direct / separate charges and transfers]
+
 [2-3 sentence explanation of why this fits]
 
 ### C. {sellerRole} onboarding flow
+
 Onboarding method: [embedded / Stripe-hosted]
 [2-3 sentence explanation of why this method was chosen over the alternative.]
 
 [Describe the full onboarding flow: sign up, create account, onboarding with the chosen method, Stripe verification, capability status verification, handling ongoing requirements, checking capability status on an ongoing basis. Only enable live transactions when the necessary capabilities are active.]
 
 ### D. Payments dashboard access for {sellerRole}
+
 - If dashboard=express: explain connected accounts access the Express dashboard through platform-generated Express login links, with embedded components for in-app workflows
 - If dashboard=full: explain connected accounts log in directly at `dashboard.stripe.com`
 - If dashboard=none: explain connected accounts don't use Stripe Dashboard login and embedded components are the primary interface for connected accounts
 
 ### E. Embedded components
+
 Recommended [Connect embedded components](https://docs.stripe.com/connect/supported-embedded-components):
+
 - `account_onboarding`
 - `notification_banner` [required; keeps connected accounts aware of new requirements so they stay enabled]
 - `account_management`
 - `payments`
 - `payouts`
-[Add optional standalone components only when explicitly needed]
-[Note any charge-pattern caveats, if relevant]
+  [Add optional standalone components only when explicitly needed]
+  [Note any charge-pattern caveats, if relevant]
 
 ### F. Webhook integration
+
 Use webhooks for reliable payment confirmation, especially for async payment methods. Always verify incoming webhook signatures before processing event data ([webhook signature verification](https://stripe.com/docs/events/manage-webhook-endpoints#signature-errors)). Specific events and implementation details are covered in the build skill.
 
 ### G. Onboarding status gating
+
 Verify capability statuses with `stripe.v2.core.accounts.retrieve(id)` before enabling payouts and transfers:
+
 - Direct: `configuration.merchant.capabilities.card_payments.status === 'active'`
 - Destination or separate: `configuration.recipient.capabilities.stripe_balance.stripe_transfers.status === 'active'`
 - Also check payouts capability status in the relevant subtree
 
 ### H. Fee structure
+
 - Platform fee model: [percentage / flat / tiered / mixed]
 - `application_fee_amount` strategy: [platform fee only | platform fee + estimated Stripe processing fee]
 - [Describe the fee structure, whether customers pay the connected account (seller) or platform, whether fees are paid to Stripe or to the platform, and whether anything is transferred from the platform to the seller. Pricing varies by region or payment method — check [stripe.com/pricing](https://stripe.com/pricing).]
 - [Funds flow diagram with seller or provider net amount explanation:]
 
-   {customerRole} pays ${amount}
-         │
-         ▼
+  {customerRole} pays ${amount}
+  │
+  ▼
   ┌───────────────┐
-  │  {platform}   │ ─── keeps {X}% minus processing fees
+  │ {platform} │ ─── keeps {X}% minus processing fees
   └──────┬────────┘
-         │ transfer ({amount} minus {X}%)
-         ▼
+  │ transfer ({amount} minus {X}%)
+  ▼
   ┌───────────────┐
-  │  {sellerRole} │ ─── receives {amount} minus {X}%
+  │ {sellerRole} │ ─── receives {amount} minus {X}%
   └───────────────┘
 
 ### I. SaaS monetization (if applicable)
+
 State the monetization choice clearly: transaction fees (`application_fee_amount` or Platform Pricing Tool, not both), recurring SaaS or service fees, or both when justified.
 Use `customer_account` only when charging recurring SaaS or service fees to connected accounts (v2 SetupIntent/Subscription calls).
 Do NOT apply `customer_account` guidance to marketplace subscription or fan-to-creator recurring-payment flows.
 Do NOT recommend creating a separate v1 Customer object for SaaS billing connected accounts.
 
 ### J. Implementation plan
+
 1. [Account setup tasks]
 2. [Onboarding flow tasks]
 3. [Payments and fund-flow tasks]
@@ -109,14 +121,17 @@ Do NOT recommend creating a separate v1 Customer object for SaaS billing connect
 5. [Go-live checks]
 
 ### K. Risk and liability
+
 - Negative balance liability owner: [your platform / Stripe]
 - Risk controls owner: [your platform / Stripe]
 - [Any required warnings from compatibility checks]
 
 ### L. Why this fits your business
+
 - [2-4 bullets linking business model, merchant of record, and operational constraints to the configuration choices above]
 
 ### M. Open questions
+
 - [Any unresolved assumptions to confirm before implementation]
 ```
 

@@ -12,13 +12,7 @@
       "bytes": 89708353,
       "sha256": "3d8d2cc160305f673f8d3a2cd8586882c3b440e63db11dff2d2272ecc4c98b5a",
       "transcriptPath": "data/catalogues/japanese-interviews/jump-gold-selection-4-dragon-call-124-125.visual-review.jsonl#L1",
-      "visibleProfiles": [
-        "森下孝三",
-        "清水賢治",
-        "小山高生",
-        "七條敬三",
-        "西尾大介"
-      ]
+      "visibleProfiles": ["森下孝三", "清水賢治", "小山高生", "七條敬三", "西尾大介"]
     },
     {
       "page": 125,
@@ -26,12 +20,7 @@
       "bytes": 87161059,
       "sha256": "cd32e35def57afa2d0a8667e74d096f1e61403896fae7ef5530582f405b306a6",
       "transcriptPath": "data/catalogues/japanese-interviews/jump-gold-selection-4-dragon-call-124-125.visual-review.jsonl#L2",
-      "visibleProfiles": [
-        "西尾大介（p.124続き）",
-        "前田実",
-        "岡崎稔",
-        "池田裕二"
-      ]
+      "visibleProfiles": ["西尾大介（p.124続き）", "前田実", "岡崎稔", "池田裕二"]
     }
   ],
   "transcriptPath": "data/catalogues/japanese-interviews/jump-gold-selection-4-dragon-call-124-125.visual-review.jsonl",

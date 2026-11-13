@@ -3,40 +3,28 @@
   "status": "complete-visual-correction-alternative",
   "publication": "Son Goku Densetsu",
   "interviewTitle": "鳥山明×中鶴勝祥 対談",
-  "interviewee": [
-    "鳥山明",
-    "中鶴勝祥"
-  ],
+  "interviewee": ["鳥山明", "中鶴勝祥"],
   "method": "Existing manual transcript compared with local scanned spreads at full resolution; no OCR and no network.",
   "records": [
     {
       "imageBytes": 440165,
       "transcriptPath": "dragonball-son-goku-densetsu-96-101.visual-corrected.jsonl#L1",
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\5 DragonBall livres\\son goku densetsu\\FB_IMG_1769075276393.jpg",
-      "printedPages": [
-        96,
-        97
-      ],
+      "printedPages": [96, 97],
       "imageSha256": "9bd107594dcff372f30032db784281b6c8da90f9cb08f3965f4d7ca0d47a193e"
     },
     {
       "imageBytes": 422979,
       "transcriptPath": "dragonball-son-goku-densetsu-96-101.visual-corrected.jsonl#L2",
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\5 DragonBall livres\\son goku densetsu\\FB_IMG_1769075278575.jpg",
-      "printedPages": [
-        98,
-        99
-      ],
+      "printedPages": [98, 99],
       "imageSha256": "d0126b1cd5890fbb2ebcf3d91953efbf84c018e1bd094badfd16dab77ed040f8"
     },
     {
       "imageBytes": 382114,
       "transcriptPath": "dragonball-son-goku-densetsu-96-101.visual-corrected.jsonl#L3",
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\5 DragonBall livres\\son goku densetsu\\FB_IMG_1769075280592.jpg",
-      "printedPages": [
-        100,
-        101
-      ],
+      "printedPages": [100, 101],
       "imageSha256": "f0887b1b9e6900e9c615c7b84ed3d0d5255eaa84a45f6f18c4e4998d382b4333"
     }
   ],

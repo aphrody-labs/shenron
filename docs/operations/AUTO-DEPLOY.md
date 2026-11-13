@@ -52,25 +52,25 @@ par Infra avant installation.
 Base, mesurée (journaux GitHub des runs réussis du 2026-11-01/02 sur `aphrody-vps-shenron`,
 journaux de Prod du 2026-11-02/03) :
 
-| Cas | Avant |
-| --- | --- |
+| Cas                               | Avant                                                                                                                                                                             |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Commit sans changement d'artefact | 90–134 s de build (paquet serveur 46–76 s, image et vérification 44–77 s) + 78–85 s de livraison (image entière de 1,94 Go, environ 55 s de transfert), soit 8,6–12,7 min par run |
-| Site seul, cache chaud | 214 s de build + 64 s de livraison (run du 2026-11-01 22:47) ; sur Prod en local 41–183 s + 20–26 s |
-| Site, cache Turbopack froid | 1101 s ; 3235 s avec attente mémoire |
-| Crate Rust | cargo 616–1093 s ; `build-image.sh` ne posait pas `RUSTC_WRAPPER`, sccache n'était donc utilisé que si l'hôte le configurait |
-| Activation | `up -d --wait --remove-orphans` de toute la pile, site et bot recréés à chaque release |
-| Depuis le 2026-11-03 | 15 runs mis en file puis annulés : runner hors ligne après la purge du VPS |
+| Site seul, cache chaud            | 214 s de build + 64 s de livraison (run du 2026-11-01 22:47) ; sur Prod en local 41–183 s + 20–26 s                                                                               |
+| Site, cache Turbopack froid       | 1101 s ; 3235 s avec attente mémoire                                                                                                                                              |
+| Crate Rust                        | cargo 616–1093 s ; `build-image.sh` ne posait pas `RUSTC_WRAPPER`, sccache n'était donc utilisé que si l'hôte le configurait                                                      |
+| Activation                        | `up -d --wait --remove-orphans` de toute la pile, site et bot recréés à chaque release                                                                                            |
+| Depuis le 2026-11-03              | 15 runs mis en file puis annulés : runner hors ligne après la purge du VPS                                                                                                        |
 
 Cibles :
 
-| Cas | Après | Nature |
-| --- | --- | --- |
-| Docs, tests, scripts hors build | plan en 4,3 s contre Prod, aucun build | mesuré |
-| 30 derniers commits | 24 déploient, 6 non (docs et tests) | mesuré (`just deploy-history`) |
-| Bot seul | lane bot 2–16 s, paquet serveur sauté, image en cache, bascule du bot seul (santé en environ 10 s) : environ 40–60 s | estimé |
-| Site seul | wasm sauté sauf crates wasm, site 12–48 s, paquet 8–12 s, image environ 13 s, gateway puis site environ 15 s : environ 1–1,5 min | estimé à partir des phases mesurées |
-| Crate Rust | sccache posé par `build-image.sh` dès qu'il est installé (il l'est sur Prod) : 2–5 min avec cache chaud | estimé, non mesuré |
-| Revert, branche reconstruite | restauration depuis le store, quelques secondes | estimé |
+| Cas                             | Après                                                                                                                            | Nature                              |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------- |
+| Docs, tests, scripts hors build | plan en 4,3 s contre Prod, aucun build                                                                                           | mesuré                              |
+| 30 derniers commits             | 24 déploient, 6 non (docs et tests)                                                                                              | mesuré (`just deploy-history`)      |
+| Bot seul                        | lane bot 2–16 s, paquet serveur sauté, image en cache, bascule du bot seul (santé en environ 10 s) : environ 40–60 s             | estimé                              |
+| Site seul                       | wasm sauté sauf crates wasm, site 12–48 s, paquet 8–12 s, image environ 13 s, gateway puis site environ 15 s : environ 1–1,5 min | estimé à partir des phases mesurées |
+| Crate Rust                      | sccache posé par `build-image.sh` dès qu'il est installé (il l'est sur Prod) : 2–5 min avec cache chaud                          | estimé, non mesuré                  |
+| Revert, branche reconstruite    | restauration depuis le store, quelques secondes                                                                                  | estimé                              |
 
 ## Ce que le propriétaire approuve pour activer
 

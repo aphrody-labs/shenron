@@ -7,6 +7,7 @@ Shenron (`C:\src\products\shenron`) is the sovereign platform behind **dragonbal
 Operate and evolve Shenron on **100% Upstream Bun v1.4.4+ and Rust 2024** with zero external bottlenecks, minimal build steps, and sub-millisecond cold starts.
 
 ### Stack Architecture (`docs/decisions/0001-pile-du-site.md`)
+
 - **Production Web & Server**: `apps/site` (Next.js 16.5+ standalone optimized for Bun) packaged with `apps/server` into a self-contained Bun runtime binary, migrating progressively to **Leptos 0.8 SSR + Axum** and **Dioxus 0.8 / GPUI**.
 - **Native Studio & Rendering**: GPUI / Dioxus 0.8, WGPU 30, Vello, Parley, Taffy, AccessKit.
 - **Creative & Engine Extensions**: `crates/bun-engine-core`, `packages/bun-blender` (Blender 5.2.3 LTS headless pipeline), `packages/bun-video-project`, `packages/bun-gamestream`.
@@ -15,6 +16,7 @@ Operate and evolve Shenron on **100% Upstream Bun v1.4.4+ and Rust 2024** with z
 ## 2. Sovereign Fleet Triad (`vps` / `cdn` / `prod`)
 
 All infrastructure is interconnected over the private WireGuard mesh (`10.200.77.0/24`):
+
 - **`ssh vps` (`10.200.77.1` / `51.77.147.152`)**: 12-core Build Hub, Rust/Bun compilation farm, OCR/RAG batch compute, and mesh hub.
 - **`ssh cdn` (`10.200.77.3` / `51.255.162.6`, alias `bunos`)**: Cloudflare Edge Simulator running Pingora Gateway (`yolo-cf-gateway`), Garage S3 R2 (`yolo-cf-garage`), RQLite D1 (`yolo-cf-rqlite`), `workerd` (`yolo-cf-workerd`), Mail, and Auth sync bridges.
 - **`ssh prod` (`10.200.77.5` / `72.60.186.43`)**: Bare-metal Arch Linux 7.2.11 production host running `shenron-gateway`, `shenron-site`, `shenron-bot`, `shenron-chat`, `shenron-compute`, `shenron-embed`, `shenron-postgres`, `shenron-redis`, and `shenron-cloudflared`.

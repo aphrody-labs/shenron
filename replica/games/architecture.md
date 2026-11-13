@@ -8,17 +8,17 @@ Rédigé le 2026-11-11 avec `/replica-architect`. Sources : `replica/games/recon
 
 La stack repose sur 100% Upstream Bun v1.4.4, Rust 2024 et WebGPU, sans aucune dépendance superflue.
 
-| Couche | Choix | Pourquoi |
-| :--- | :--- | :--- |
-| **Moteur Graphique Web** | WebGPU (WGPU 30) + WGSL | Exécution 60/120 FPS native sur GPU moderne (Ada Lovelace, DX12, Vulkan, Metal) avec pipelines de cel-shading ArcSys Toon. |
-| **Moteur Physique & Combat** | `crates/dragon-pixel` (Rust WASM) | Déterminisme frame-par-frame strict (60 Hz), zéro allocation dans la boucle de rendu, rollback netcode mathématiquement exact. |
-| **Serveur & Netcode** | Axum 0.8 + Tokio (Rust) | Gestion de milliers de rooms P2P WebRTC / WebSocket simultanées avec sub-millisecond tick latency (`/api/game/bevy/tick`). |
-| **Frontend Web** | Next.js 16.5 + React 19 (Bun standalone) | Rendu hybride SSR pour le SEO des fiches d'arène et CSR haute fréquence pour le canvas de jeu. |
-| **Composants & HUD** | `@aphrody/shenron-ui` (Tailwind CSS v4) | Primitives vectorielles SVG haute-résolution (barre 15°, Dragon Radar) garantissant zéro flou sur écrans 4K/Retina. |
-| **Base de Données** | PostgreSQL (`DATABASE_URL`) + RQLite D1 | Unicité des profils, transactions atomiques sur les Zénis et inventaires de Dragon Balls. |
-| **Stockage Fichiers** | Cloudflare R2 / Garage S3 | Distribution géodistribuée des textures KTX2 et maillages Zstandard sous clé immuable `_objects/<sha256>`. |
-| **Audio** | Web Audio API natif | Synthèse procédurale d'oscillateurs (Ki blasts, bruits d'impact, bourdonnement d'aura) sans charger de fichiers MP3 volumineux. |
-| **Tâches d'Arrière-Plan** | Bun native scripts (`scripts/ops`) | Extraction et déchiffrement AES-256 des archives PAK/CPK, compilation automatique vers KTX2. |
+| Couche                       | Choix                                    | Pourquoi                                                                                                                        |
+| :--------------------------- | :--------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------ |
+| **Moteur Graphique Web**     | WebGPU (WGPU 30) + WGSL                  | Exécution 60/120 FPS native sur GPU moderne (Ada Lovelace, DX12, Vulkan, Metal) avec pipelines de cel-shading ArcSys Toon.      |
+| **Moteur Physique & Combat** | `crates/dragon-pixel` (Rust WASM)        | Déterminisme frame-par-frame strict (60 Hz), zéro allocation dans la boucle de rendu, rollback netcode mathématiquement exact.  |
+| **Serveur & Netcode**        | Axum 0.8 + Tokio (Rust)                  | Gestion de milliers de rooms P2P WebRTC / WebSocket simultanées avec sub-millisecond tick latency (`/api/game/bevy/tick`).      |
+| **Frontend Web**             | Next.js 16.5 + React 19 (Bun standalone) | Rendu hybride SSR pour le SEO des fiches d'arène et CSR haute fréquence pour le canvas de jeu.                                  |
+| **Composants & HUD**         | `@aphrody/shenron-ui` (Tailwind CSS v4)  | Primitives vectorielles SVG haute-résolution (barre 15°, Dragon Radar) garantissant zéro flou sur écrans 4K/Retina.             |
+| **Base de Données**          | PostgreSQL (`DATABASE_URL`) + RQLite D1  | Unicité des profils, transactions atomiques sur les Zénis et inventaires de Dragon Balls.                                       |
+| **Stockage Fichiers**        | Cloudflare R2 / Garage S3                | Distribution géodistribuée des textures KTX2 et maillages Zstandard sous clé immuable `_objects/<sha256>`.                      |
+| **Audio**                    | Web Audio API natif                      | Synthèse procédurale d'oscillateurs (Ki blasts, bruits d'impact, bourdonnement d'aura) sans charger de fichiers MP3 volumineux. |
+| **Tâches d'Arrière-Plan**    | Bun native scripts (`scripts/ops`)       | Extraction et déchiffrement AES-256 des archives PAK/CPK, compilation automatique vers KTX2.                                    |
 
 ---
 
@@ -26,19 +26,20 @@ La stack repose sur 100% Upstream Bun v1.4.4, Rust 2024 et WebGPU, sans aucune d
 
 Fichier de définition : `replica/games/schema.sql`. Il structure 9 tables relationnelles avec contraintes strictes.
 
-| Table | Rôle | Propriétaire |
-| :--- | :--- | :--- |
-| `game_profiles` | Battle Points (BP), Zénis, palier de rang, statistiques victoires/défaites | Joueur (`user_id`) |
-| `game_fighters` | 25 combattants canoniques, styles, PV/Ki de base, niveaux de puissance Daizenshuu | Éditorial / Catalogue |
-| `game_fighter_forms` | Transformations (Kaiō-ken, SSJ, SSJ2, SSJ3, God), multiplicateurs et auras | Éditorial / Catalogue |
-| `game_moves` | Catalogue des coups normaux, spéciaux, Kikōha et ultimes avec frame data | Éditorial / Catalogue |
-| `game_stages` | 7 arènes canoniques, polygone du ring Tenkaichi, destructibilité et pistes BGM | Éditorial / Catalogue |
-| `game_canon_chapters` | 10 chapitres majeurs (42 tomes Toriyama) reliant wiki, manga, anime et Daizenshuu | Éditorial / Catalogue |
-| `game_match_sessions` | Sessions de combat 60 FPS, vainqueur, durée, activation Dramatic Finish | Joueur & Arbitre Serveur |
-| `game_dragon_ball_inventory` | Masque binaire des 7 Dragon Balls (0..127), historique des invocations Shenron | Joueur (`user_id`) |
-| `game_leaderboard_entries` | Classement compétitif par saison (S01, S02) indexé sur les BP | Système / Saisonnier |
+| Table                        | Rôle                                                                              | Propriétaire             |
+| :--------------------------- | :-------------------------------------------------------------------------------- | :----------------------- |
+| `game_profiles`              | Battle Points (BP), Zénis, palier de rang, statistiques victoires/défaites        | Joueur (`user_id`)       |
+| `game_fighters`              | 25 combattants canoniques, styles, PV/Ki de base, niveaux de puissance Daizenshuu | Éditorial / Catalogue    |
+| `game_fighter_forms`         | Transformations (Kaiō-ken, SSJ, SSJ2, SSJ3, God), multiplicateurs et auras        | Éditorial / Catalogue    |
+| `game_moves`                 | Catalogue des coups normaux, spéciaux, Kikōha et ultimes avec frame data          | Éditorial / Catalogue    |
+| `game_stages`                | 7 arènes canoniques, polygone du ring Tenkaichi, destructibilité et pistes BGM    | Éditorial / Catalogue    |
+| `game_canon_chapters`        | 10 chapitres majeurs (42 tomes Toriyama) reliant wiki, manga, anime et Daizenshuu | Éditorial / Catalogue    |
+| `game_match_sessions`        | Sessions de combat 60 FPS, vainqueur, durée, activation Dramatic Finish           | Joueur & Arbitre Serveur |
+| `game_dragon_ball_inventory` | Masque binaire des 7 Dragon Balls (0..127), historique des invocations Shenron    | Joueur (`user_id`)       |
+| `game_leaderboard_entries`   | Classement compétitif par saison (S01, S02) indexé sur les BP                     | Système / Saisonnier     |
 
 ### Règles et Intégrité :
+
 - Clés primaires `uuid` générées par `gen_random_uuid()` et horodatage UTC `timestamptz`.
 - Contraintes `check` sur les masques de bits des 7 boules de cristal (`0 <= bitmask <= 127`).
 - Règle `on delete cascade` sur les profils et inventaires pour respecter le droit à l'effacement RGPD.

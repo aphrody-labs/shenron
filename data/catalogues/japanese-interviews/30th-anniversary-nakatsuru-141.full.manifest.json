@@ -13,12 +13,8 @@
       "completeness": "Complete interview body for the printed page. Includes visible section headings. Excludes profile caption, pull-quote display text duplicated from the body, and decorative imagery.",
       "transcriptBytes": 3475,
       "imageBytes": 100224986,
-      "printedPages": [
-        141
-      ],
-      "pdfPageIndices": [
-        142
-      ],
+      "printedPages": [141],
+      "pdfPageIndices": [142],
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2"
     }
   ],

@@ -4,12 +4,8 @@
     {
       "transcriptPath": "data\\catalogues\\japanese-interviews\\30th-anniversary-toriyama-interview-body.jsonl#L1",
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
-      "printedPages": [
-        88
-      ],
-      "pdfPageIndices": [
-        89
-      ],
+      "printedPages": [88],
+      "pdfPageIndices": [89],
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
       "completeness": "Visible interview prose on printed p.88 transcribed. The upper block ends at a visible column boundary; a lower quote continues across the printed page break into p.89.",
@@ -18,12 +14,8 @@
     {
       "transcriptPath": "data\\catalogues\\japanese-interviews\\30th-anniversary-toriyama-interview-body.jsonl#L2",
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
-      "printedPages": [
-        89
-      ],
-      "pdfPageIndices": [
-        90
-      ],
+      "printedPages": [89],
+      "pdfPageIndices": [90],
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
       "completeness": "Visible interview prose on printed p.89 transcribed, including carryover fragment from p.88; lower answer continues past the page edge after 「フリーザも」.",
@@ -32,12 +24,8 @@
     {
       "transcriptPath": "data\\catalogues\\japanese-interviews\\30th-anniversary-toriyama-interview-body.jsonl#L3",
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
-      "printedPages": [
-        90
-      ],
-      "pdfPageIndices": [
-        91
-      ],
+      "printedPages": [90],
+      "pdfPageIndices": [91],
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
       "completeness": "Partial: visible p.90 text transcribed through the question about Kami being an alien, but the lower worldbuilding columns on the same folio are omitted; continuation is on p.91.",
@@ -46,12 +34,8 @@
     {
       "transcriptPath": "data\\catalogues\\japanese-interviews\\30th-anniversary-toriyama-interview-body.jsonl#L4",
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
-      "printedPages": [
-        91
-      ],
-      "pdfPageIndices": [
-        92
-      ],
+      "printedPages": [91],
+      "pdfPageIndices": [92],
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
       "completeness": "Visible interview text transcribed in draft; carryover and exact column breaks need independent review.",
@@ -60,12 +44,8 @@
     {
       "transcriptPath": "data\\catalogues\\japanese-interviews\\30th-anniversary-toriyama-interview-body.jsonl#L5",
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
-      "printedPages": [
-        92
-      ],
-      "pdfPageIndices": [
-        93
-      ],
+      "printedPages": [92],
+      "pdfPageIndices": [93],
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
       "completeness": "Partial excerpts only; remaining visible p.92 columns not transcribed.",
@@ -74,12 +54,8 @@
     {
       "transcriptPath": "data\\catalogues\\japanese-interviews\\30th-anniversary-toriyama-interview-body.jsonl#L6",
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
-      "printedPages": [
-        93
-      ],
-      "pdfPageIndices": [
-        94
-      ],
+      "printedPages": [93],
+      "pdfPageIndices": [94],
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
       "completeness": "Visible p.93 columns transcribed in draft; review for exact wording and continuation breaks needed.",

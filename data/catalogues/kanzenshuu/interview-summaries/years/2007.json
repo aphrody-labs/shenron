@@ -22,13 +22,8 @@
         ],
         "publication": "Shonen Jump, octobre et novembre 2007, « Interview With the Majin! » / « Revisited »",
         "publicationDate": "2007-10/2007-11",
-        "participants": [
-          "Akira Toriyama"
-        ],
-        "kanzenshuuPageIds": [
-          51375,
-          51383
-        ],
+        "participants": ["Akira Toriyama"],
+        "kanzenshuuPageIds": [51375, 51383],
         "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
         "bodyAvailable": true,
         "bodyEmpty": false,

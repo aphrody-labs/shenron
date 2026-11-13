@@ -9,6 +9,7 @@ Handle to a physical graphics and/or compute device.
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn request_device(&self, desc: &DeviceDescriptor<'_>) -> impl Future<Output = Result<(Device, Queue), RequestDeviceError>> + WasmNotSend` — Requests a connection to a physical device, creating a logical device.
 - `unsafe fn create_device_from_hal<A: hal::Api>(&self, hal_device: hal::OpenDevice<A>, desc: &DeviceDescriptor<'_>) -> Result<(Device, Queue), RequestDeviceError>` — Create a wgpu [`Device`] and [`Queue`] from a wgpu-hal [`hal::OpenDevice`].
 - `unsafe fn as_hal<A: hal::Api>(&self) -> Option<impl Deref<Target = <A as >::Adapter> + WasmNotSendSync>` — Get the [`wgpu_hal`] adapter from this `Adapter`.
@@ -28,6 +29,7 @@ Implements: `Clone`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`
 Information about an adapter.
 
 Fields:
+
 - `name: alloc::string::String` — Adapter name
 - `vendor: u32` — [`Backend`]-specific vendor ID of the adapter
 - `device: u32` — [`Backend`]-specific device ID of the adapter
@@ -42,6 +44,7 @@ Fields:
 - `limit_bucket: Option<AdapterLimitBucketInfo>` — If limit bucketing was requested, contains the name of the applied bucket and the original capabilities of the adapter.
 
 Methods and constants:
+
 - `const fn new(device_type: DeviceType, backend: Backend) -> Self` — Create a new `AdapterInfo` with the given device type and backend.
 
 Implements: `Clone`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -57,6 +60,7 @@ Aligns a `value` to an `alignment`.
 Trait for adjusting integers to the next multiple of an alignment.
 
 Items:
+
 - `fn align_to(self, alignment: Self) -> Self` — Aligns `self` to `alignment`.
 
 ### AllocatorReport — struct
@@ -64,6 +68,7 @@ Items:
 A report that can be generated for informational purposes using `Allocator::generate_report()`.
 
 Fields:
+
 - `allocations: alloc::vec::Vec<AllocationReport>` — All live allocations, sub-allocated from memory blocks.
 - `blocks: alloc::vec::Vec<MemoryBlockReport>` — All memory blocks.
 - `total_allocated_bytes: u64` — Sum of the memory used by all allocations, in bytes.
@@ -76,6 +81,7 @@ Implements: `Clone`, `Debug`
 Backends supported by wgpu.
 
 Variants (6):
+
 - `Noop = 0` — Dummy backend, which may be used for testing.
 - `Vulkan = 1` — Vulkan API (Windows, Linux, Android, MacOS via `vulkan-portability`/MoltenVK)
 - `Metal = 2` — Metal API (Apple platforms)
@@ -84,6 +90,7 @@ Variants (6):
 - `BrowserWebGpu = 5` — WebGPU in the browser
 
 Methods and constants:
+
 - `const ALL: [Backend; 6]` — Array of all [`Backend`] values, corresponding to [`Backends::all()`].
 - `const fn to_str(self) -> &'static str` — Returns the string name of the backend. _[must_use]_
 
@@ -94,11 +101,13 @@ Implements: `Clone`, `Copy`, `Debug`, `Display`, `Eq`, `From<Backend>`, `Hash`, 
 Options that are passed to a given backend.
 
 Fields:
+
 - `gl: GlBackendOptions` — Options for the OpenGL/OpenGLES backend, [`Backend::Gl`].
 - `dx12: Dx12BackendOptions` — Options for the DX12 backend, [`Backend::Dx12`].
 - `noop: NoopBackendOptions` — Options for the noop backend, [`Backend::Noop`].
 
 Methods and constants:
+
 - `fn from_env_or_default() -> Self` — Choose backend options by calling `from_env` on every field. _[must_use]_
 - `fn with_env(self) -> Self` — Takes the given options, modifies them based on the environment variables, and returns the result. _[must_use]_
 
@@ -111,6 +120,7 @@ Represents the backends that wgpu will use.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const NOOP: Self` — [`Backend::Noop`].
 - `const VULKAN: Self` — [`Backend::Vulkan`]. Supported on Windows, Linux/Android, and macOS/iOS via Vulkan Portability (with the Vulkan feature enabled)
 - `const GL: Self` — [`Backend::Gl`]. Supported on Linux/Android, the web through webassembly via WebGL, and Windows and macOS/iOS via ANGLE
@@ -164,12 +174,14 @@ Integral type used for [`BufferSlice`] sizes.
 RGBA double precision color.
 
 Fields:
+
 - `r: f64` — Red component of the color
 - `g: f64` — Green component of the color
 - `b: f64` — Blue component of the color
 - `a: f64` — Alpha component of the color
 
 Methods and constants:
+
 - `const TRANSPARENT: Self`
 - `const BLACK: Self`
 - `const WHITE: Self`
@@ -184,9 +196,11 @@ Implements: `Clone`, `Copy`, `Debug`, `Default`, `PartialEq`, `StructuralPartial
 Describes a [`CommandBuffer`](../wgpu/struct.CommandBuffer.html).
 
 Fields:
+
 - `label: L` — Debug label of this command buffer.
 
 Methods and constants:
+
 - `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> CommandBufferDescriptor<K>` — Takes a closure and maps the label of the command buffer descriptor into another. _[must_use]_
 
 Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -196,6 +210,7 @@ Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralP
 Describes a supported cooperative matrix configuration.
 
 Fields:
+
 - `m_size: u32` — Number of rows in matrices A and C (M dimension)
 - `n_size: u32` — Number of columns in matrices B and C (N dimension)
 - `k_size: u32` — Number of columns in A / rows in B (K dimension)
@@ -210,6 +225,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPart
 The underlying scalar type of the cooperative matrix component.
 
 Variants (4):
+
 - `F32` — 32-bit floating point.
 - `F16` — 16-bit floating point.
 - `I32` — 32-bit signed integer.
@@ -242,6 +258,7 @@ Open connection to a graphics and/or compute device.
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn poll(&self, poll_type: PollType) -> Result<PollStatus, PollError>` — Check for resource cleanups and mapping callbacks. Will block if [`PollType::Wait`] is passed.
 - `fn features(&self) -> Features` — The [features][Features] which can be used on this device. _[must_use]_
 - `fn limits(&self) -> Limits` — The limits which can be used on this device. _[must_use]_
@@ -287,6 +304,7 @@ Implements: `Clone`, `Debug`, `DeviceExt`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Pa
 Describes a [`Device`](../wgpu/struct.Device.html).
 
 Fields:
+
 - `label: L` — Debug label for the device.
 - `required_features: Features` — Specifies the features that are required by the device request. The request will fail if the adapter cannot provide these features.
 - `required_limits: Limits` — Specifies the limits that are required by the device request. The request will fail if the adapter cannot provide these limits.
@@ -295,6 +313,7 @@ Fields:
 - `trace: Trace` — Whether API tracing for debugging is enabled, and where the trace is written if so.
 
 Methods and constants:
+
 - `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> DeviceDescriptor<K>` — Takes a closure and maps the label of the device descriptor into another. _[must_use]_
 
 Implements: `Clone`, `Debug`, `Default`
@@ -304,6 +323,7 @@ Implements: `Clone`, `Debug`, `Default`
 Corresponds to a [`GPUDeviceLostReason`].
 
 Variants (2):
+
 - `Unknown = 0` — The device was lost for an unspecific reason, including driver errors.
 - `Destroyed = 1` — The device's `destroy` method was called.
 
@@ -314,6 +334,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `PartialEq`, `StructuralPartialEq`
 Supported physical device types.
 
 Variants (5):
+
 - `Other` — Other or Unknown.
 - `IntegratedGpu` — Integrated GPU with shared CPU/GPU memory.
 - `DiscreteGpu` — Discrete GPU with separate CPU/GPU memory.
@@ -327,6 +348,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPart
 Configuration for the DX12 backend.
 
 Fields:
+
 - `shader_compiler: Dx12Compiler` — Which DX12 shader compiler to use.
 - `presentation_system: Dx12SwapchainKind` — Presentation system to use.
 - `latency_waitable_object: Dx12UseFrameLatencyWaitableObject` — Whether to wait for the latency waitable object before acquiring the next swapchain image.
@@ -334,6 +356,7 @@ Fields:
 - `agility_sdk: Option<Dx12AgilitySDK>` — Optional Agility SDK configuration for using the Independent Devices API.
 
 Methods and constants:
+
 - `fn from_env_or_default() -> Self` — Choose DX12 backend options by calling `from_env` on every field. _[must_use]_
 - `fn with_env(self) -> Self` — Takes the given options, modifies them based on the environment variables, and returns the result. _[must_use]_
 
@@ -344,12 +367,14 @@ Implements: `Clone`, `Debug`, `Default`
 Selects which DX12 shader compiler to use.
 
 Variants (4):
+
 - `Fxc` — The Fxc compiler (default) is old, slow and unmaintained.
 - `DynamicDxc { dxc_path: alloc::string::String }` — The Dxc compiler is new, fast and maintained.
 - `StaticDxc` — The statically-linked variant of Dxc.
 - `Auto` — Use statically-linked DXC if available. Otherwise check for dynamically linked DXC on the PATH. Finally, fallback to FXC.
 
 Methods and constants:
+
 - `fn default_dynamic_dxc() -> Self` — Helper function to construct a `DynamicDxc` variant with default paths.
 - `fn from_env() -> Option<Self>` — Choose which DX12 shader compiler to use from the environment variable `WGPU_DX12_COMPILER`. _[must_use]_
 - `fn with_env(self) -> Self` — Takes the given compiler, modifies it based on the `WGPU_DX12_COMPILER` environment variable, and returns the result. _[must_use]_
@@ -361,10 +386,12 @@ Implements: `Clone`, `Debug`, `Default`, `FromStr`
 Selects which kind of swapchain to use on DX12.
 
 Variants (2):
+
 - `DxgiFromHwnd` — Use a DXGI swapchain made directly from the window's HWND.
 - `DxgiFromVisual` — Use a DXGI swapchain made from a DirectComposition visual made automatically from the window's HWND.
 
 Methods and constants:
+
 - `fn from_env() -> Option<Self>` — Choose which presentation system to use from the environment variable `WGPU_DX12_PRESENTATION_SYSTEM`. _[must_use]_
 - `fn with_env(self) -> Self` — Takes the given presentation system, modifies it based on the `WGPU_DX12_PRESENTATION_SYSTEM` environment variable, and returns the result. _[must_use]_
 
@@ -375,11 +402,13 @@ Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `PartialEq`, `StructuralP
 Whether and how to use a waitable handle obtained from `GetFrameLatencyWaitableObject`.
 
 Variants (3):
+
 - `None` — Do not obtain a waitable handle and do not wait for it. The swapchain will be created without the `DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT` flag.
 - `Wait` — Obtain a waitable handle and wait for it before acquiring the next swapchain image.
 - `DontWait` — Create the swapchain with the `DXGI_SWAP_CHAIN_FLAG_FRAME_LATENCY_WAITABLE_OBJECT` flag and obtain a waitable handle, but do not wait for it before acquiring the next swapchain image. This is useful…
 
 Methods and constants:
+
 - `fn from_env() -> Option<Self>` — Choose whether to use a frame latency waitable object from the environment variable `WGPU_DX12_USE_FRAME_LATENCY_WAITABLE_OBJECT`. _[must_use]_
 - `fn with_env(self) -> Self` — Takes the given setting, modifies it based on the `WGPU_DX12_USE_FRAME_LATENCY_WAITABLE_OBJECT` environment variable, and returns the result. _[must_use]_
 
@@ -390,6 +419,7 @@ Implements: `Clone`, `Debug`, `Default`
 DXC shader model.
 
 Variants (10):
+
 - `V6_0`
 - `V6_1`
 - `V6_2`
@@ -402,6 +432,7 @@ Variants (10):
 - `V6_9`
 
 Methods and constants:
+
 - `fn from_dxc_version(major: u32, minor: u32) -> Self` — Get the shader model supported by a certain DXC version.
 - `fn from_parts(major: u32, minor: u32) -> Self` — Parse a DxcShaderModel from its version components.
 
@@ -418,6 +449,7 @@ Integral type used for [dynamic bind group offsets](../wgpu/struct.RenderPass.ht
 Errors resulting from usage of GPU APIs.
 
 Variants (3):
+
 - `OutOfMemory { source: ErrorSource }` — Out of memory.
 - `Validation { source: ErrorSource, description: alloc::string::String }` — Validation error, signifying a bug in code or data provided to `wgpu`.
 - `Internal { source: ErrorSource, description: alloc::string::String }` — Internal error. Used for signalling any failures not explicitly expected by WebGPU.
@@ -429,6 +461,7 @@ Implements: `Debug`, `Display`, `Error`
 Kinds of [`Error`]s a [`Device::push_error_scope()`] may be configured to catch.
 
 Variants (3):
+
 - `OutOfMemory` — Catch only out-of-memory errors.
 - `Validation` — Catch only validation errors.
 - `Internal` — Catch only internal errors.
@@ -442,6 +475,7 @@ Guard for an error scope pushed with [`Device::push_error_scope()`].
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn pop(self) -> impl Future<Output = Option<Error>> + WasmNotSend` — Pops the error scope.
 
 Implements: `Debug`, `Drop`
@@ -459,6 +493,7 @@ Token of the user agreeing to access experimental features.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const fn disabled() -> Self` — Uses of [`Features`] prefixed with "EXPERIMENTAL" are disallowed.
 - `const unsafe fn enabled() -> Self` — Uses of [`Features`] prefixed with "EXPERIMENTAL" may result in undefined behavior when used incorrectly. The exact bounds of these issues varies by the feature. These instances are inherently bugs in our implementation…
 - `const fn is_enabled(&self) -> bool` — Returns true if the user has agreed to access experimental features.
@@ -472,6 +507,7 @@ Used to force wgpu to expose certain features on passthrough shaders even when t
 Opaque (private fields).
 
 Methods and constants:
+
 - `unsafe fn with_shader_model(sm: DxcShaderModel) -> Self` — Creates an unsafe token, opting you in to seeing features that you may not necessarily use on standard runtime-compiled shaders. # Safety Do not make use in runtime-compiled shaders of any features that may not be suppo…
 - `fn get(&self) -> Option<DxcShaderModel>` — Returns the shader model version, if any, in this token.
 
@@ -482,11 +518,13 @@ Implements: `Clone`, `Debug`, `Default`
 Configuration for the OpenGL/OpenGLES backend.
 
 Fields:
+
 - `gles_minor_version: Gles3MinorVersion` — Which OpenGL ES 3 minor version to request, if using OpenGL ES.
 - `fence_behavior: GlFenceBehavior` — Behavior of OpenGL fences. Affects how `on_completed_work_done` and `device.poll` behave.
 - `debug_fns: GlDebugFns` — Controls whether debug functions (`glPushDebugGroup`, `glPopDebugGroup`, `glObjectLabel`, etc.) are enabled when supported by the driver.
 
 Methods and constants:
+
 - `fn from_env_or_default() -> Self` — Choose OpenGL backend options by calling `from_env` on every field. _[must_use]_
 - `fn with_env(self) -> Self` — Takes the given options, modifies them based on the environment variables, and returns the result. _[must_use]_
 
@@ -497,11 +535,13 @@ Implements: `Clone`, `Debug`, `Default`
 Controls whether OpenGL debug functions are enabled.
 
 Variants (3):
+
 - `Auto` — Automatically decide whether to enable debug functions.
 - `ForceEnabled` — Force enable debug functions if supported by the driver.
 - `Disabled` — Disable debug functions entirely.
 
 Methods and constants:
+
 - `fn from_env() -> Option<Self>` — Choose debug functions setting from the environment variable `WGPU_GL_DEBUG_FNS`. _[must_use]_
 - `fn with_env(self) -> Self` — Takes the given setting, modifies it based on the `WGPU_GL_DEBUG_FNS` environment variable, and returns the result. _[must_use]_
 
@@ -512,12 +552,14 @@ Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `PartialEq`, `StructuralP
 Selects which OpenGL ES 3 minor version to request.
 
 Variants (4):
+
 - `Automatic` — No explicit minor version is requested, the driver automatically picks the highest available.
 - `Version0` — Request an ES 3.0 context.
 - `Version1` — Request an ES 3.1 context.
 - `Version2` — Request an ES 3.2 context.
 
 Methods and constants:
+
 - `fn from_env() -> Option<Self>` — Choose which minor OpenGL ES version to use from the environment variable `WGPU_GLES_MINOR_VERSION`. _[must_use]_
 - `fn with_env(self) -> Self` — Takes the given compiler, modifies it based on the `WGPU_GLES_MINOR_VERSION` environment variable, and returns the result. _[must_use]_
 
@@ -528,10 +570,12 @@ Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `Str
 Dictate the behavior of fences in OpenGL.
 
 Variants (2):
+
 - `Normal` — Fences in OpenGL behave normally. If you don't know what to pick, this is what you want.
 - `AutoFinish` — Fences in OpenGL are short-circuited to always return `true` immediately.
 
 Methods and constants:
+
 - `fn is_auto_finish(&self) -> bool` — Returns true if the fence behavior is `AutoFinish`.
 - `fn is_normal(&self) -> bool` — Returns true if the fence behavior is `Normal`.
 - `fn from_env() -> Option<Self>` — Choose which minor OpenGL ES version to use from the environment variable `WGPU_GL_FENCE_BEHAVIOR`. _[must_use]_
@@ -544,6 +588,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `PartialEq`, `StructuralP
 `wgpu-hal`'s part of [`InternalCounters`].
 
 Fields:
+
 - `buffers: InternalCounter`
 - `textures: InternalCounter`
 - `texture_views: InternalCounter`
@@ -578,6 +623,7 @@ Contains the various entry points to start interacting with the system's GPUs.
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn new(desc: InstanceDescriptor) -> Self` — Create an new instance of wgpu using the given options and enabled backends.
 - `const fn enabled_backend_features() -> Backends` — Returns which backends can be picked for the current build configuration.
 - `fn wgsl_language_features(&self) -> WgslLanguageFeatures` — Returns the set of [WGSL language extensions] supported by this instance.
@@ -599,6 +645,7 @@ Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Part
 Options for creating an instance.
 
 Fields:
+
 - `backends: Backends` — Which [`Backends`] to enable.
 - `flags: InstanceFlags` — Flags to tune the behavior of the instance.
 - `memory_budget_thresholds: MemoryBudgetThresholds` — Memory budget thresholds used by some backends.
@@ -606,6 +653,7 @@ Fields:
 - `display: Option<alloc::boxed::Box<dyn WgpuHasDisplayHandle>>` — System platform or compositor connection to connect this `Instance` to.
 
 Methods and constants:
+
 - `fn new_without_display_handle() -> Self` — The default instance options, without display handle. _[must_use]_
 - `fn new_with_display_handle(display: alloc::boxed::Box<dyn WgpuHasDisplayHandle>) -> Self` — The default instance options, with display handle. _[must_use]_
 - `fn new_without_display_handle_from_env() -> Self` — Choose instance options entirely from environment variables. _[must_use]_
@@ -622,6 +670,7 @@ Instance debugging flags.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const DEBUG: Self` — Generate debug information in shaders and objects.
 - `const VALIDATION: Self` — Enable validation in the backend API, if possible:
 - `const DISCARD_HAL_LABELS: Self` — Don't pass labels to wgpu-hal.
@@ -665,6 +714,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 All internal counters, exposed for debugging purposes.
 
 Fields:
+
 - `core: CoreCounters` — `wgpu-core` counters.
 - `hal: HalCounters` — `wgpu-hal` counters.
 
@@ -683,6 +733,7 @@ Token of the user agreeing to use [`LoadOp::DontCare`](crate::LoadOp::DontCare).
 Opaque (private fields).
 
 Methods and constants:
+
 - `const unsafe fn enabled() -> Self` — Using [`LoadOp::DontCare`](crate::LoadOp::DontCare) will result in the render target having undefined contents at the start of the render pass. This may lead to undefined behavior if you read from the any of the render…
 
 Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -704,6 +755,7 @@ The maximum allowed value for [`AdapterInfo::subgroup_max_size`].
 Memory budget thresholds used by backends to try to avoid high memory pressure situations.
 
 Fields:
+
 - `for_resource_creation: Option<u8>` — Threshold at which texture, buffer, query set and acceleration structure creation will start to return OOM errors. This is a percent of the memory budget reported by native APIs.
 - `for_device_loss: Option<u8>` — Threshold at which devices will become lost due to memory pressure. This is a percent of the memory budget reported by native APIs.
 
@@ -714,6 +766,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Default`
 Hints to the device about the memory allocation strategy.
 
 Variants (3):
+
 - `Performance` — Favor performance over memory usage (the default value).
 - `MemoryUsage` — Favor memory usage over performance.
 - `Manual { suballocated_device_memory_block_size: core::ops::Range<u64> }` — Applications that have control over the content that is rendered (typically games) may find an optimal compromise between memory usage and performance by specifying the allocation configuration.
@@ -731,6 +784,7 @@ The minimum allowed value for [`AdapterInfo::subgroup_min_size`].
 Configuration for the noop backend.
 
 Fields:
+
 - `enable: bool` — Whether to allow the noop backend to be used.
 - `limits: Option<Limits>` — Specify the reported limits values. If `None`, reports maximally permissive limits.
 - `features: Option<Features>` — Specify the reported feature support. If `None`, reports support for all features.
@@ -739,6 +793,7 @@ Fields:
 - `subgroup_max_size: Option<u32>` — Specify the reported maximum subgroup size.
 
 Methods and constants:
+
 - `fn enabled() -> Self` — Enable the noop backend.
 - `fn from_env_or_default() -> Self` — Choose whether the noop backend is enabled from the environment. _[must_use]_
 - `fn with_env(self) -> Self` — Takes the given options, modifies them based on the environment variables, and returns the result. _[must_use]_
@@ -752,6 +807,7 @@ Flags for which pipeline data should be recorded in a query.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const VERTEX_SHADER_INVOCATIONS: Self` — Amount of times the vertex shader is ran. Accounts for the vertex cache when doing indexed rendering.
 - `const CLIPPER_INVOCATIONS: Self` — Amount of times the clipper is invoked. This is also the amount of triangles output by the vertex shader.
 - `const CLIPPER_PRIMITIVES_OUT: Self` — Amount of primitives that are not culled by the clipper. This is the amount of triangles that are actually on screen and will be rasterized and rendered.
@@ -787,6 +843,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 Error states after a device poll.
 
 Variants (2):
+
 - `Timeout` — The requested Wait timed out before the submission was completed.
 - `WrongSubmissionIndex(u64, u64)` — The requested Wait was given a wrong submission index.
 
@@ -797,11 +854,13 @@ Implements: `Debug`, `Display`, `Error`
 Status of device poll operation.
 
 Variants (3):
+
 - `QueueEmpty` — There are no active submissions in flight as of the beginning of the poll call. Other submissions may have been queued on other threads during the call.
 - `WaitSucceeded` — The requested Wait was satisfied before the timeout.
 - `Poll` — This was a poll.
 
 Methods and constants:
+
 - `fn is_queue_empty(&self) -> bool` — Returns true if the result is [`Self::QueueEmpty`]. _[must_use]_
 - `fn wait_finished(&self) -> bool` — Returns true if the result is either [`Self::WaitSucceeded`] or [`Self::QueueEmpty`]. _[must_use]_
 
@@ -814,10 +873,12 @@ Implements: `Debug`, `Eq`, `PartialEq`, `StructuralPartialEq`
 Passed to `Device::poll` to control how and if it should block.
 
 Variants (2):
+
 - `Wait { submission_index: Option<T>, timeout: Option<core::time::Duration> }` — On wgpu-core based backends, block until the given submission has completed execution, and any callbacks have been invoked.
 - `Poll` — Check the device for a single time without blocking.
 
 Methods and constants:
+
 - `const fn wait_indefinitely() -> Self` — Wait indefinitely until for the most recent submission to complete. _[must_use]_
 - `fn is_wait(&self) -> bool` — This `PollType` represents a wait of some kind. _[must_use]_
 - `fn map_index<U, F>(self, func: F) -> PollType<U> where F: FnOnce(T) -> U` — Map on the wait index type. _[must_use]_
@@ -829,11 +890,13 @@ Implements: `Clone`, `Debug`
 Power Preference when choosing a physical adapter.
 
 Variants (3):
+
 - `None = 0` — Power usage is not considered when choosing an adapter.
 - `LowPower = 1` — Adapter that uses the least possible power. This is often an integrated GPU.
 - `HighPerformance = 2` — Adapter that has the highest performance. This is often a discrete GPU.
 
 Methods and constants:
+
 - `fn from_env() -> Option<Self>` — Get a power preference from the environment variable `WGPU_POWER_PREF`.
 
 Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -861,6 +924,7 @@ Size in bytes of a single piece of [query] data.
 Type of queries contained in a [`QuerySet`].
 
 Variants (3):
+
 - `Occlusion` — An occlusion query reports whether any of the fragments drawn within the scope of the query passed all per-fragment tests (i.e. were not occluded).
 - `Timestamp` — A timestamp query records a GPU-timestamp value at which a certain command started or finished executing.
 - `PipelineStatistics(PipelineStatisticsTypes)` — A pipeline statistics query records information about the execution of pipelines; see [`PipelineStatisticsTypes`]'s documentation for details.
@@ -874,6 +938,7 @@ Handle to a command queue on a device.
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn write_buffer(&self, buffer: &Buffer, offset: BufferAddress, data: &[u8])` — Copies the bytes of `data` into `buffer` starting at `offset`.
 - `fn write_buffer_with(&self, buffer: &Buffer, offset: BufferAddress, size: BufferSize) -> Option<QueueWriteBufferView>` — Prepares to write data to a buffer via a mapped staging buffer. _[must_use]_
 - `fn write_texture(&self, texture: TexelCopyTextureInfo<'_>, data: &[u8], data_layout: TexelCopyBufferLayout, size: Extent3d)` — Copies the bytes of `data` into a texture.
@@ -893,6 +958,7 @@ A write-only view into a staging buffer.
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn len(&self) -> usize` — Returns the length of this view; the number of bytes to be written.
 - `fn is_empty(&self) -> bool` — Returns `true` if the view has a length of 0.
 - `fn slice<'a, S: RangeBounds<usize>>(self: &'a mut Self, bounds: S) -> WriteOnly<'a, [u8]>` — Returns a [`WriteOnly`] reference to a portion of this.
@@ -905,6 +971,7 @@ Implements: `Debug`, `Drop`
 Error when [`Instance::request_adapter()`] fails.
 
 Variants (2):
+
 - `NotFound {  }` — No adapter available via the instance’s backends matched the request’s adapter criteria.
 - `EnvNotSet` — Attempted to obtain adapter specified by environment variable, but the environment variable was not set.
 
@@ -917,6 +984,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `PartialEq`, `StructuralPartia
 Options for requesting adapter.
 
 Fields:
+
 - `power_preference: PowerPreference` — Power preference for the adapter.
 - `force_fallback_adapter: bool` — Indicates that only a fallback adapter can be returned. This is generally a "software" implementation on the system.
 - `compatible_surface: Option<S>` — Surface that is required to be presentable with the requested adapter. This does not create the surface, only guarantees that the adapter can present to said surface. For WebGL, t…
@@ -929,6 +997,7 @@ Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralP
 Options for requesting adapter.
 
 Fields:
+
 - `power_preference: PowerPreference` — Power preference for the adapter.
 - `force_fallback_adapter: bool` — Indicates that only a fallback adapter can be returned. This is generally a "software" implementation on the system.
 - `compatible_surface: Option<S>` — Surface that is required to be presentable with the requested adapter. This does not create the surface, only guarantees that the adapter can present to said surface. For WebGL, t…
@@ -963,6 +1032,7 @@ Implements: `Clone`, `Debug`
 Controls API call tracing and specifies where the trace is written.
 
 Variants (1):
+
 - `Off` — Tracing disabled.
 
 Implements: `Clone`, `Debug`, `Default`
@@ -990,6 +1060,7 @@ WGSL language extensions.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const ReadOnlyAndReadWriteStorageTextures: Self` — <https://www.w3.org/TR/WGSL/#language_extension-readonly_and_readwrite_storage_textures>
 - `const Packed4x8IntegerDotProduct: Self` — <https://www.w3.org/TR/WGSL/#language_extension-packed_4x8_integer_dot_product>
 - `const UnrestrictedPointerParameters: Self` — <https://www.w3.org/TR/WGSL/#language_extension-unrestricted_pointer_parameters>

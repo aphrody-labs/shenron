@@ -24,7 +24,7 @@ recadrage est disponible) ; sinon le signaler.
 Une ligne par image, sans prose autour :
 
 ```json
-{"image":"323-0007.jpg","text":{"kind":"text","markdown":"# タイトル\n\n本文"}}
+{ "image": "323-0007.jpg", "text": { "kind": "text", "markdown": "# タイトル\n\n本文" } }
 ```
 
 Contrôles hors ligne utiles : noms propres avec

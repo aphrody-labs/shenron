@@ -19,15 +19,11 @@
         "date": "14 April 2006",
         "publication": "Dragon Box The Movies",
         "pages": "pp. 52-55",
-        "bibliographicYears": [
-          2006
-        ],
+        "bibliographicYears": [2006],
         "url": "https://www.kanzenshuu.com/translations/dragon-box-the-movies-dragonbook-theatrical-story-qa-takao-koyama/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-box-the-movies-dragonbook-theatrical-story-qa-takao-koyama/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-box-the-movies-dragonbook-theatrical-story-qa-takao-koyama.html",
-        "participants": [
-          "Takao Koyama"
-        ],
+        "participants": ["Takao Koyama"],
         "questionAnswerCount": 10,
         "questionBlockCount": 10,
         "answerBlockCount": 10,
@@ -61,12 +57,8 @@
         "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box-movies/",
         "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
         "archivedTranslation": null,
-        "bibliographicYears": [
-          2006
-        ],
-        "participants": [
-          "Hironobu Kageyama"
-        ],
+        "bibliographicYears": [2006],
+        "participants": ["Hironobu Kageyama"],
         "pages": "2 pages",
         "format": "interview",
         "bodyAvailable": false,
@@ -92,9 +84,7 @@
         "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-july-2006-toriyama-rama-interview-with-akira-toriyama/",
         "publication": "Shonen Jump, juillet 2006, « Toriyama-rama — Interview with Akira Toriyama! »",
         "publicationDate": "2006-07",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "kanzenshuuPageId": 51335,
         "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
         "bodyAvailable": true,
@@ -124,9 +114,7 @@
         "url": "https://www.kanzenshuu.com/2006/05/03/gamespot-com-sparking-neo-content/",
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2006.json",
         "date": "2006-05-03",
-        "participants": [
-          "Ryo Mito"
-        ],
+        "participants": ["Ryo Mito"],
         "formatNote": "Lien vers entretien vidéo externe; contenu absent localement.",
         "questionAnswerCount": null,
         "forumContent": false

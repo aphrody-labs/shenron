@@ -90,7 +90,7 @@ Lets your app change how Stripe processes billing or payments. Available types:
 
 For Connect platforms that want to surface third-party Stripe Apps (like QuickBooks, Xero, or Mailchimp) directly inside their own product.
 
-**This is different from building an app.** Embedded apps are for platforms that want to *host* existing apps, not for building new ones.
+**This is different from building an app.** Embedded apps are for platforms that want to _host_ existing apps, not for building new ones.
 
 **Private preview:** If the user asks for this, point them to https://docs.stripe.com/stripe-apps/embedded-apps.
 
@@ -98,22 +98,22 @@ For Connect platforms that want to surface third-party Stripe Apps (like QuickBo
 
 For UI extensions — maps plain-language descriptions to viewport IDs:
 
-| What the user wants | Viewport ID |
-| --- | --- |
-| Next to a specific customer | `stripe.dashboard.customer.detail` |
-| On the customers list page | `stripe.dashboard.customer.list` |
-| Next to a specific payment | `stripe.dashboard.payment.detail` |
-| On the payments list page | `stripe.dashboard.payment.list` |
-| Next to a specific invoice | `stripe.dashboard.invoice.detail` |
-| On the invoices list page | `stripe.dashboard.invoice.list` |
-| Next to a specific subscription | `stripe.dashboard.subscription.detail` |
-| On the subscriptions list page | `stripe.dashboard.subscription.list` |
-| Next to a specific product | `stripe.dashboard.product.detail` |
-| On the products list page | `stripe.dashboard.product.list` |
-| Everywhere in the Dashboard (side panel) | `stripe.dashboard.drawer.default` |
-| As its own full-screen page | Full-page app — `stripe.dashboard.fullpage` |
-| On the Dashboard homepage | `stripe.dashboard.home.overview` |
-| App settings page | `settings` |
-| First-run setup after install | `onboarding` |
+| What the user wants                      | Viewport ID                                 |
+| ---------------------------------------- | ------------------------------------------- |
+| Next to a specific customer              | `stripe.dashboard.customer.detail`          |
+| On the customers list page               | `stripe.dashboard.customer.list`            |
+| Next to a specific payment               | `stripe.dashboard.payment.detail`           |
+| On the payments list page                | `stripe.dashboard.payment.list`             |
+| Next to a specific invoice               | `stripe.dashboard.invoice.detail`           |
+| On the invoices list page                | `stripe.dashboard.invoice.list`             |
+| Next to a specific subscription          | `stripe.dashboard.subscription.detail`      |
+| On the subscriptions list page           | `stripe.dashboard.subscription.list`        |
+| Next to a specific product               | `stripe.dashboard.product.detail`           |
+| On the products list page                | `stripe.dashboard.product.list`             |
+| Everywhere in the Dashboard (side panel) | `stripe.dashboard.drawer.default`           |
+| As its own full-screen page              | Full-page app — `stripe.dashboard.fullpage` |
+| On the Dashboard homepage                | `stripe.dashboard.home.overview`            |
+| App settings page                        | `settings`                                  |
+| First-run setup after install            | `onboarding`                                |
 
 For the full viewport reference, see https://docs.stripe.com/stripe-apps/reference/viewports.

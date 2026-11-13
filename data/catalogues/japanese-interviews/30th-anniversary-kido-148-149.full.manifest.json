@@ -8,14 +8,8 @@
   "records": [
     {
       "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-kido-148-149.full.jsonl#L1",
-      "printedPages": [
-        148,
-        149
-      ],
-      "pdfPageIndices": [
-        149,
-        150
-      ],
+      "printedPages": [148, 149],
+      "pdfPageIndices": [149, 150],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",

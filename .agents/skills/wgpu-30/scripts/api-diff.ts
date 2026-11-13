@@ -33,7 +33,8 @@ const option = (name: string): string | undefined => {
   const i = args.indexOf(name);
   return i >= 0 ? args[i + 1] : undefined;
 };
-if (!option("--old") || !option("--new")) throw new Error("usage: api-diff.ts --old <dir> --new <dir> [--out <file>]");
+if (!option("--old") || !option("--new"))
+  throw new Error("usage: api-diff.ts --old <dir> --new <dir> [--out <file>]");
 
 interface Snapshot {
   version: string;
@@ -93,7 +94,8 @@ for (const [path, old] of before.items) {
     if (next === undefined) lines.push(`  - − method/const \`${decl}\``);
     else if (next !== decl) lines.push(`  - ~ \`${decl}\` → \`${next}\``);
   }
-  for (const [name, decl] of now.members) if (!old.members.has(name)) lines.push(`  - + method/const \`${decl}\``);
+  for (const [name, decl] of now.members)
+    if (!old.members.has(name)) lines.push(`  - + method/const \`${decl}\``);
   if (lines.length) changed.push(`- \`${path.replace(/^wgpu::/, "")}\` (${now.kind})`, ...lines);
 }
 for (const [path, now] of after.items) {
@@ -123,4 +125,6 @@ const out = [
 const target = option("--out");
 if (target) writeFileSync(resolve(target), out);
 else console.log(out);
-console.log(`removed ${removed.length}, added ${added.length}, changed ${changed.filter((l) => l.startsWith("- ")).length}`);
+console.log(
+  `removed ${removed.length}, added ${added.length}, changed ${changed.filter((l) => l.startsWith("- ")).length}`,
+);

@@ -11,7 +11,6 @@ allowed-tools:
   - Bash(stripe directory *)
   - Bash(stripe pay *)
   - Bash(stripe whoami *)
-
 ---
 
 # stripe pay
@@ -38,12 +37,12 @@ If the user needs details about financial accounts, read [Money Management](http
 
 Read the documentation to accomplish your goal. You must read the relevant page before taking action:
 
-| Goal | Documentation |
-| --- | --- |
+| Goal                                                                                                  | Documentation                                                                      |
+| ----------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
 | Find or verify a recipient when the user doesn’t provide an exact Stripe Profile handle or network ID | [Use Stripe Directory with AI agents](https://docs.stripe.com/directory.md#agents) |
-| Review, send, handle approval, resume, or dry-run a transfer | [`stripe pay` CLI reference](https://docs.stripe.com/cli/pay) |
-| Create or manage a Stripe Profile, including a recipient’s transfer destination | [Stripe Profile](https://docs.stripe.com/get-started/account/profile.md) |
-| Set up or understand an eligible financial account | [Money Management](https://docs.stripe.com/money-management.md) |
+| Review, send, handle approval, resume, or dry-run a transfer                                          | [`stripe pay` CLI reference](https://docs.stripe.com/cli/pay)                      |
+| Create or manage a Stripe Profile, including a recipient’s transfer destination                       | [Stripe Profile](https://docs.stripe.com/get-started/account/profile.md)           |
+| Set up or understand an eligible financial account                                                    | [Money Management](https://docs.stripe.com/money-management.md)                    |
 
 ## Handle setup errors
 

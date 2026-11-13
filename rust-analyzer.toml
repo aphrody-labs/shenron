@@ -17,14 +17,14 @@ command = "clippy"
 [files]
 # Bun, Next and build outputs: nothing for rust-analyzer to index or watch.
 exclude = [
-    "target",
-    "node_modules",
-    "dist",
-    "var",
-    "apps/site/.next",
-    "apps/site/.next-build",
-    "apps/site/.next-check",
-    "apps/site/.next-dev",
-    "apps/site/.next-standalone",
-    "apps/server/.build",
+  "target",
+  "node_modules",
+  "dist",
+  "var",
+  "apps/site/.next",
+  "apps/site/.next-build",
+  "apps/site/.next-check",
+  "apps/site/.next-dev",
+  "apps/site/.next-standalone",
+  "apps/server/.build",
 ]

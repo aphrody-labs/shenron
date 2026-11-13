@@ -3,24 +3,15 @@
   "status": "partial-visible-page-transcription-pending-independent-review",
   "publication": "30th Anniversary ドラゴンボール超史集",
   "interviewTitle": "フィギュア原型師インタビュー（見出しは目次より）",
-  "intervieweesAsPrinted": [
-    "中澤",
-    "山下",
-    "VAROQ",
-    "阪田"
-  ],
+  "intervieweesAsPrinted": ["中澤", "山下", "VAROQ", "阪田"],
   "method": "Independent manual visual transcription of the local PDF rendered at 4x, followed by a second visual pass over enlarged crops. No OCR and no network.",
   "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-creator-interview-197.jsonl",
   "records": [
     {
-      "pdfPageIndices": [
-        197
-      ],
+      "pdfPageIndices": [197],
       "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-creator-interview-197.jsonl#L1",
       "completeness": "Only visible interview material and display quotations from printed p.197 are transcribed. Printed p.196 is missing from the supplied PDF, so the interview opening is unavailable; the first visible question begins with the fragment いといった. The final VAROQ line on p.197 also ends at そういうのを. No missing wording has been reconstructed.",
-      "printedPages": [
-        197
-      ],
+      "printedPages": [197],
       "excludedElements": [
         "Product figure captions and non-quotation profile copy are excluded. Four display quotes are transcribed in a separate section without attributing a speaker where the page does not print one."
       ],
@@ -31,12 +22,8 @@
   ],
   "coverage": {
     "tableOfContentsPrintedPage": 196,
-    "missingPrintedPages": [
-      196
-    ],
-    "visiblePrintedPagesTranscribed": [
-      197
-    ],
+    "missingPrintedPages": [196],
+    "visiblePrintedPagesTranscribed": [197],
     "completeness": "The local PDF omits printed p.196: PDF page 196 shows printed folio 195; the next scanned page is PDF page 197 with printed folio 197. The interview therefore remains truncated at its beginning.",
     "limits": [
       "The title フィギュア原型師インタビュー is transcribed from the contents page; it is not visible on p.197.",

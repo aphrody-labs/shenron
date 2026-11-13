@@ -8,10 +8,10 @@ How to version, release, and publish your Stripe App.
 
 **Plain-language:** “A sandbox uses test data so you can try things safely. Live mode uses real customer data. Always build and test in a sandbox first.”
 
-| Mode | Data | When to use |
-| --- | --- | --- |
-| Sandbox | Test data (test cards, test customers) | Development and QA |
-| Live mode | Real customer and payment data | Production |
+| Mode      | Data                                   | When to use        |
+| --------- | -------------------------------------- | ------------------ |
+| Sandbox   | Test data (test cards, test customers) | Development and QA |
+| Live mode | Real customer and payment data         | Production         |
 
 **Workflow:** Upload → install in a sandbox → test thoroughly → install in live mode.
 
@@ -109,15 +109,15 @@ Your app has been uploaded to version 0.0.1.
 
 **Common upload failures and fixes:**
 
-| Error | Cause | Fix |
-| --- | --- | --- |
-| `Invalid manifest` / validation failed | Missing required fields or malformed YAML | Check indentation; ensure `id:`, `version:`, `name:` are present |
-| `Build failed` / TypeScript errors | UI component has type/import errors | Run `pnpm build` locally first to see the exact error |
-| `Version already exists` | Already uploaded this version number | Bump `version` in stripe-app.yaml (for example, 0.0.1 → 0.0.2) |
-| `Permission denied` / `Not authenticated` | CLI not logged in or wrong account | Run `stripe login` and verify with `stripe config --list` |
-| `connect-src` / CSP error | App calls a URL not declared in content_security_policy | Add the URL to `content_security_policy.connect-src` in stripe-app.yaml |
-| `extensions field required` | Missing `extensions: []` in stripe-app.yaml | Add `extensions: []` even if you have no backend extensions |
-| `Component not found` | Viewport references a component name that doesn’t match your export | Ensure `component:` in stripe-app.yaml matches your default export name |
+| Error                                     | Cause                                                               | Fix                                                                     |
+| ----------------------------------------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| `Invalid manifest` / validation failed    | Missing required fields or malformed YAML                           | Check indentation; ensure `id:`, `version:`, `name:` are present        |
+| `Build failed` / TypeScript errors        | UI component has type/import errors                                 | Run `pnpm build` locally first to see the exact error                   |
+| `Version already exists`                  | Already uploaded this version number                                | Bump `version` in stripe-app.yaml (for example, 0.0.1 → 0.0.2)          |
+| `Permission denied` / `Not authenticated` | CLI not logged in or wrong account                                  | Run `stripe login` and verify with `stripe config --list`               |
+| `connect-src` / CSP error                 | App calls a URL not declared in content_security_policy             | Add the URL to `content_security_policy.connect-src` in stripe-app.yaml |
+| `extensions field required`               | Missing `extensions: []` in stripe-app.yaml                         | Add `extensions: []` even if you have no backend extensions             |
+| `Component not found`                     | Viewport references a component name that doesn’t match your export | Ensure `component:` in stripe-app.yaml matches your default export name |
 
 **Debugging steps when upload fails:**
 

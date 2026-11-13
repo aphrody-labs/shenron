@@ -60,9 +60,7 @@
         "pages": "pp. 116–119",
         "date": "2017-12-01",
         "url": "https://www.kanzenshuu.com/translations/saikyo-jump-january-2018-we-asked-akira-toriyama-sensei-saiyan-special-qa/",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "formatNote": "Dossier de questions-réponses et encadrés avec plusieurs explications de Toriyama. Le désaccord sur l'origine des Saibaimen avec le Daizenshuu 7 est relevé par la note du traducteur, pas tranché par l'article.",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/saikyo-jump-january-2018-we-asked-akira-toriyama-sensei-saiyan-special-qa/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/saikyo-jump-january-2018-we-asked-akira-toriyama-sensei-saiyan-special-qa.html",
@@ -93,9 +91,7 @@
         "url": "https://www.kanzenshuu.com/2017/11/04/interview-with-kimitoshi-chioka-hiroyuki-sakurada-from-salon-del-manga/",
         "publication": "Kanzenshuu site post",
         "publicationDate": "2017-11-04",
-        "participants": [
-          "Kimitoshi Chioka"
-        ],
+        "participants": ["Kimitoshi Chioka"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2017.json",
         "externalMediaUrl": "https://www.youtube.com/watch?v=fV9wRPY9hOE",
         "transcriptAvailable": false,
@@ -121,9 +117,7 @@
         "url": "https://www.kanzenshuu.com/2017/11/04/interview-with-kimitoshi-chioka-hiroyuki-sakurada-from-salon-del-manga/",
         "publication": "Kanzenshuu site post",
         "publicationDate": "2017-11-04",
-        "participants": [
-          "Hiroyuki Sakurada"
-        ],
+        "participants": ["Hiroyuki Sakurada"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2017.json",
         "externalMediaUrl": "http://www.ivoox.com/entrevista-a-hiroyuki-sakurada-masatoshi-chioka-audios-mp3_rf_21873387_1.html",
         "transcriptAvailable": false,
@@ -148,9 +142,7 @@
       "source": {
         "publication": "WIRED Italia, entretien avec Toyotarō au Napoli Comicon",
         "date": "2017-05-01",
-        "participants": [
-          "Toyotarō"
-        ],
+        "participants": ["Toyotarō"],
         "primarySource": "http://www.wired.it/play/fumetti/2017/05/01/toyotaro-dragon-ball-super/",
         "kanzenshuuSitePost": {
           "wpId": 55762,
@@ -182,9 +174,7 @@
       "source": {
         "publication": "Game Informer, « Dragon Ball Z: Budokai’s Producer on Cutting Off After Three Entries and Working with Akira Toriyama »",
         "date": "13 October 2017",
-        "participants": [
-          "Daisuke Uchiyama"
-        ],
+        "participants": ["Daisuke Uchiyama"],
         "originalSource": "https://www.gameinformer.com/b/features/archive/2017/10/13/dragon-ball-z-budokais-producer-on-cutting-off-after-three-entries-and-working-with-akira-toriyama.aspx",
         "kanzenshuuPage": "https://www.kanzenshuu.com/rumor/budokai-video-games-held-back-story-story-content-english-dub/",
         "kanzenshuuPageId": 71102,
@@ -199,4 +189,3 @@
     }
   ]
 }
-

@@ -65,82 +65,97 @@ To enable SPIR-V shaders, enable the `spirv` feature of `wgpu`.
 To enable GLSL shaders, enable the `glsl` feature of `wgpu`.
 
 ## Feature flags
- ### Backends
-* **`dx12`** *(enabled by default)* —  Enables the DX12 backend on Windows.
-* **`metal`** *(enabled by default)* —  Enables the Metal backend on macOS & iOS.
-* **`vulkan`** *(enabled by default)* —  Enables the Vulkan backend on Windows, Linux, and Android.
-* **`gles`** *(enabled by default)* —  Enables the OpenGL/GLES backend on Windows, Linux, Android, and Emscripten.
-* **`webgpu`** *(enabled by default)* —  Enables the WebGPU backend on WebAssembly.
 
- ### Conditional Backends
-* **`angle`** —  Enables the GLES backend on macOS only for use with [ANGLE](https://github.com/google/angle).
-* **`vulkan-portability`** —  Enables the Vulkan backend on macOS & iOS only for use with [MoltenVK](https://github.com/KhronosGroup/MoltenVK).
-* **`webgl`** —  Enables the GLES backend on WebAssembly only.
+### Backends
 
- ### Backend features
-* **`drm`** —  Support creating textures from DRM display/window handles.
-* **`noop`** —  Enables the noop backend for testing.
- 
+- **`dx12`** _(enabled by default)_ — Enables the DX12 backend on Windows.
+- **`metal`** _(enabled by default)_ — Enables the Metal backend on macOS & iOS.
+- **`vulkan`** _(enabled by default)_ — Enables the Vulkan backend on Windows, Linux, and Android.
+- **`gles`** _(enabled by default)_ — Enables the OpenGL/GLES backend on Windows, Linux, Android, and Emscripten.
+- **`webgpu`** _(enabled by default)_ — Enables the WebGPU backend on WebAssembly.
+
+### Conditional Backends
+
+- **`angle`** — Enables the GLES backend on macOS only for use with [ANGLE](https://github.com/google/angle).
+- **`vulkan-portability`** — Enables the Vulkan backend on macOS & iOS only for use with [MoltenVK](https://github.com/KhronosGroup/MoltenVK).
+- **`webgl`** — Enables the GLES backend on WebAssembly only.
+
+### Backend features
+
+- **`drm`** — Support creating textures from DRM display/window handles.
+- **`noop`** — Enables the noop backend for testing.
+
   This backend allows creating resources such as buffers and textures,
   but performs no computation.
   Because it lacks basic functionality, it is only actually used if explicitly enabled
   through `NoopBackendOptions`.
 
- **Note:** In the documentation, if you see that an item depends on a backend,
- it means that the item is only available when that backend is enabled _and_ the backend
- is supported on the current platform.
- ### Shading language support
- These features enable support for that input language on all platforms.
- We will translate the input language to whatever the backend requires.
-* **`spirv`** —  Enable accepting SPIR-V shaders as input.
-* **`glsl`** —  Enable accepting GLSL shaders as input.
-* **`wgsl`** *(enabled by default)* —  Enable accepting WGSL shaders as input.
-* **`naga-ir`** —  Enable accepting naga IR shaders as input.
+**Note:** In the documentation, if you see that an item depends on a backend,
+it means that the item is only available when that backend is enabled _and_ the backend
+is supported on the current platform.
 
- ### Assertions and Serialization
-* **`strict_asserts`** —  Apply run-time checks, even in release builds. These are in addition
+### Shading language support
+
+These features enable support for that input language on all platforms.
+We will translate the input language to whatever the backend requires.
+
+- **`spirv`** — Enable accepting SPIR-V shaders as input.
+- **`glsl`** — Enable accepting GLSL shaders as input.
+- **`wgsl`** _(enabled by default)_ — Enable accepting WGSL shaders as input.
+- **`naga-ir`** — Enable accepting naga IR shaders as input.
+
+### Assertions and Serialization
+
+- **`strict_asserts`** — Apply run-time checks, even in release builds. These are in addition
   to the validation carried out at public APIs in all builds.
-* **`serde`** —  Enables serialization via `serde` on common wgpu types.
-* **`trace`** —  Allow writing of trace capture files. See [`Adapter::request_device`].
+- **`serde`** — Enables serialization via `serde` on common wgpu types.
+- **`trace`** — Allow writing of trace capture files. See [`Adapter::request_device`].
 
- ### External libraries
- The following features facilitate integration with third-party supporting libraries.
-* **`static-dxc`** —  Enables statically linking DXC.
- 
+### External libraries
+
+The following features facilitate integration with third-party supporting libraries.
+
+- **`static-dxc`** — Enables statically linking DXC.
+
   Normally, to use the modern DXC shader compiler with wgpu, the final application
   must be shipped alongside `dxcompiler.dll` (min v1.8.2502) (which can be downloaded from [Microsoft's GitHub][dxc]).
   This feature statically links a version of DXC so that no external binaries are required
   to compile DX12 shaders.
- 
+
   [dxc]: https://github.com/Microsoft/DirectXShaderCompiler
 
- ### Other
-* **`counters`** —  Internally count resources and events for debugging purposes. If the counters
+### Other
+
+- **`counters`** — Internally count resources and events for debugging purposes. If the counters
   feature is disabled, the counting infrastructure is removed from the build and
   the exposed counters always return 0.
-* **`fragile-send-sync-non-atomic-wasm`** —  Implement `Send` and `Sync` on Wasm, but only if atomics are not enabled.
- 
+- **`fragile-send-sync-non-atomic-wasm`** — Implement `Send` and `Sync` on Wasm, but only if atomics are not enabled.
+
   WebGL/WebGPU objects can not be shared between threads.
   However, it can be useful to artificially mark them as `Send` and `Sync`
   anyways to make it easier to write cross-platform code.
-  This is technically *very* unsafe in a multithreaded environment,
+  This is technically _very_ unsafe in a multithreaded environment,
   but on a wasm binary compiled without atomics is a definitionally single-threaded environment.
-* **`web`** *(enabled by default)* —  Use web-specific libraries on WASM
- 
+
+- **`web`** _(enabled by default)_ — Use web-specific libraries on WASM
+
   Those libraries (wasm-bindgen, web-sys, js-sys) can only be used when there is a JavaScript
   context around the WASM VM, e.g., when the WASM binary is used in a browser.
-* **`std`** *(enabled by default)* —  Enables use of the standard library within `wgpu` and its dependencies.
- 
+
+- **`std`** _(enabled by default)_ — Enables use of the standard library within `wgpu` and its dependencies.
+
   This can allow for better error reporting and for improved multithreading
   support.
-* **`parking_lot`** *(enabled by default)* —  Uses `parking_lot` as the implementation for locking primitives.
- 
+
+- **`parking_lot`** _(enabled by default)_ — Uses `parking_lot` as the implementation for locking primitives.
+
   This is a recommended feature for most users and should only be disabled when
   required, e.g., for `no_std` support.
   If disabled, either `std::sync::Mutex` or `core::cell::RefCell` will be used,
   based on whether `std` is enabled or not.
-* **`exhaust`** —  Enables `exhaust` method for `TextureFormat` of `wgpu-types`.
- 
+
+- **`exhaust`** — Enables `exhaust` method for `TextureFormat` of `wgpu-types`.
+
   This is relevant for `wgpu-info`.
 
 ### Feature Aliases
@@ -171,16 +186,16 @@ support it.
 
 Three ideas carry most of the weight:
 
-* **Reference white and headroom.** Brightness is measured in *nits*
+- **Reference white and headroom.** Brightness is measured in _nits_
   (cd/m²). On HDR-capable monitors, SDR reference white (plain white, `(1.0, 1.0, 1.0)` in the
-  extended color spaces) sits *below* the display's peak output on purpose, so
-  highlights have room above it. That gap is the display's *headroom*.
-* **The transfer function is a round-trip.** Your shader applies an
+  extended color spaces) sits _below_ the display's peak output on purpose, so
+  highlights have room above it. That gap is the display's _headroom_.
+- **The transfer function is a round-trip.** Your shader applies an
   encoding transfer function (the OETF) to turn the light it computed into a
   stored signal, and the display applies the inverse decoding transfer
   function (the EOTF) to turn it back into light. Choosing a color space
   chooses which transfer functions both ends use.
-* **Who applies the encoding transfer function.** wgpu applies it for you
+- **Who applies the encoding transfer function.** wgpu applies it for you
   **only** when you render to an `*Srgb` texture view format, where the GPU
   runs the sRGB OETF when a value is stored to a texture. For every other
   color space (linear extended sRGB, encoded extended sRGB or P3, PQ, HLG)
@@ -192,7 +207,7 @@ Three ideas carry most of the weight:
 
 wgpu does **not** tonemap or gamut-map for you. It gives you the surface
 and, through [`DisplayHdrInfo`], the display's advisory capabilities;
-*choosing* and *applying* a tone curve is your application's job.
+_choosing_ and _applying_ a tone curve is your application's job.
 
 ### The practical path
 
@@ -206,7 +221,7 @@ and, through [`DisplayHdrInfo`], the display's advisory capabilities;
 2. **Optionally query the display.** Call `Surface::display_hdr_info` for the
    current [`DisplayHdrInfo`] (peak and SDR-white nits, EDR headroom,
    primaries, and a coarse dynamic-range/gamut bucket). Use it to pick a
-   tone-map target ([`DisplayHdrInfo::tone_map_headroom`]); *whether* HDR is
+   tone-map target ([`DisplayHdrInfo::tone_map_headroom`]); _whether_ HDR is
    worthwhile is the capability question from step 1, not this live value.
    Every field is advisory and optional; `None` means "cannot tell here",
    never "SDR".
@@ -238,16 +253,16 @@ encoding transfer function for each color space.
 What the values your shader writes to the surface texture must contain for
 each color space, and whether wgpu applies the transfer function for you:
 
-| Color space | Typical format | You write | wgpu encodes? |
-| ----------- | -------------- | --------- | ------------- |
-| `Srgb`, `*Srgb` format | `{Rgba,Bgra}8UnormSrgb` | linear | **yes** (hardware sRGB OETF on store) |
-| `Srgb`, non-srgb format | `{Rgba,Bgra}8Unorm` | sRGB-encoded | no; apply the sRGB OETF yourself or use `*Srgb` instead |
-| `ExtendedSrgbLinear` (scRGB) | `Rgba16Float` | linear, `1.0` = SDR white | no, but no encoding is necessary |
-| `ExtendedSrgb` | `Rgba16Float` | extended sRGB-encoded | no; apply the extended sRGB OETF yourself |
-| `DisplayP3` | `Bgra8Unorm` | sRGB-encoded, P3 primaries | no; apply the sRGB OETF (after gamut-mapping to P3) |
-| `ExtendedDisplayP3` | `Rgba16Float` | extended sRGB-encoded, P3 primaries | no; apply the extended sRGB OETF (after gamut-mapping to P3) |
-| `Bt2100Pq` (HDR10) | `Rgb10a2Unorm` | PQ-encoded, BT.2020 primaries | no; apply the PQ OETF (after gamut-mapping to BT.2020) |
-| `Bt2100Hlg` | `Rgb10a2Unorm` | HLG-encoded, BT.2020 primaries | no; apply the HLG OETF (after gamut-mapping to BT.2020) |
+| Color space                  | Typical format          | You write                           | wgpu encodes?                                                |
+| ---------------------------- | ----------------------- | ----------------------------------- | ------------------------------------------------------------ |
+| `Srgb`, `*Srgb` format       | `{Rgba,Bgra}8UnormSrgb` | linear                              | **yes** (hardware sRGB OETF on store)                        |
+| `Srgb`, non-srgb format      | `{Rgba,Bgra}8Unorm`     | sRGB-encoded                        | no; apply the sRGB OETF yourself or use `*Srgb` instead      |
+| `ExtendedSrgbLinear` (scRGB) | `Rgba16Float`           | linear, `1.0` = SDR white           | no, but no encoding is necessary                             |
+| `ExtendedSrgb`               | `Rgba16Float`           | extended sRGB-encoded               | no; apply the extended sRGB OETF yourself                    |
+| `DisplayP3`                  | `Bgra8Unorm`            | sRGB-encoded, P3 primaries          | no; apply the sRGB OETF (after gamut-mapping to P3)          |
+| `ExtendedDisplayP3`          | `Rgba16Float`           | extended sRGB-encoded, P3 primaries | no; apply the extended sRGB OETF (after gamut-mapping to P3) |
+| `Bt2100Pq` (HDR10)           | `Rgb10a2Unorm`          | PQ-encoded, BT.2020 primaries       | no; apply the PQ OETF (after gamut-mapping to BT.2020)       |
+| `Bt2100Hlg`                  | `Rgb10a2Unorm`          | HLG-encoded, BT.2020 primaries      | no; apply the HLG OETF (after gamut-mapping to BT.2020)      |
 
 In short, wgpu applies the transfer function for you only when you render to
 an `*Srgb` format. In every other case the values your shader writes to the
@@ -256,34 +271,34 @@ conversion. The [HDR surface example] implements every encoder in WGSL.
 
 ### Glossary
 
-* **Chromaticity** --- a color's hue and saturation independent of its
+- **Chromaticity** --- a color's hue and saturation independent of its
   brightness, given as an `(x, y)` coordinate on the CIE 1931 diagram.
-* **Primaries / gamut** --- the chromaticities of the red, green, and blue a
+- **Primaries / gamut** --- the chromaticities of the red, green, and blue a
   color space addresses, and so the range of colors it can express. [BT.709]
   is the sRGB gamut, [Display P3] is wider, and [BT.2020] is wider still.
-* **White point** --- the chromaticity of `R = G = B` (what "white" looks
+- **White point** --- the chromaticity of `R = G = B` (what "white" looks
   like). Every color space here uses [D65], standard daylight.
-* **Transfer function (OETF / EOTF)** --- how stored values map to light. The
-  *OETF* is the encoding transfer function your application applies; the
-  *EOTF* is the inverse decoding transfer function the display applies.
-* **SDR / HDR** --- standard dynamic range clips at `1.0` (reference white);
+- **Transfer function (OETF / EOTF)** --- how stored values map to light. The
+  _OETF_ is the encoding transfer function your application applies; the
+  _EOTF_ is the inverse decoding transfer function the display applies.
+- **SDR / HDR** --- standard dynamic range clips at `1.0` (reference white);
   high dynamic range lets values above `1.0` drive brighter-than-white
   output.
-* **Nits and reference white** --- a *nit* (cd/m²) is a unit of brightness;
-  *reference white* (also called *paper white*, especially on Windows) is the
+- **Nits and reference white** --- a _nit_ (cd/m²) is a unit of brightness;
+  _reference white_ (also called _paper white_, especially on Windows) is the
   brightness of SDR plain white, set below the panel's peak so highlights have
   room above it.
-* **Headroom (EDR)** --- how much brighter than current SDR white the display
+- **Headroom (EDR)** --- how much brighter than current SDR white the display
   can go right now, as a multiplier (`1.0` means none). Dynamic; see
   [`DisplayHdrInfo::tone_map_headroom`].
-* **PQ / HLG** --- the two HDR transfer functions: [PQ] (SMPTE ST 2084,
+- **PQ / HLG** --- the two HDR transfer functions: [PQ] (SMPTE ST 2084,
   HDR10) encodes absolute luminance, [HLG] (BT.2100) encodes relative
   luminance.
-* **scRGB / extended-range sRGB** --- sRGB extended past 0.0..=1.0 for
-  HDR: [scRGB] is *linear*
+- **scRGB / extended-range sRGB** --- sRGB extended past 0.0..=1.0 for
+  HDR: [scRGB] is _linear_
   ([`ExtendedSrgbLinear`](SurfaceColorSpace::ExtendedSrgbLinear)), while
   [`ExtendedSrgb`](SurfaceColorSpace::ExtendedSrgb) is the same range but
-  sRGB-*encoded* (gamma), the web's HDR path.
+  sRGB-_encoded_ (gamma), the web's HDR path.
 
 [HDR surface example]: https://github.com/gfx-rs/wgpu/tree/v30/examples/standalone/03_hdr_surface
 [BT.709]: https://www.itu.int/rec/R-REC-BT.709
@@ -293,4 +308,3 @@ conversion. The [HDR surface example] implements every encoder in WGSL.
 [PQ]: https://en.wikipedia.org/wiki/Perceptual_quantizer
 [HLG]: https://www.itu.int/rec/R-REC-BT.2100
 [scRGB]: https://en.wikipedia.org/wiki/ScRGB
-

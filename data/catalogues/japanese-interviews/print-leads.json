@@ -24,12 +24,7 @@
       ],
       "evidenceLevel": "Local Japanese PDF SHA-256 449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2. Contents and page renders confirm Toriyama pp.88–93; pp.88–89 have visible transcription, p.90 is partial, p.91 and p.93 are drafts, and p.92 contains partial excerpts. The same contents and folio renders reveal three previously unindexed editors interviews (Torishima pp.38–39, Kondo pp.54–55, Takeda pp.70–71; Torishima and Takeda now have visible-body drafts) and a creator/sculptor interview page p.197. p.196 is absent from this PDF; p.197 transcription would be incomplete at its beginning. Other selected interviews have visible-body transcripts linked below. Folio 197 has a partial creator interview transcription; printed p.196 is absent locally. Kondo editor interview pp.54–55 is transcribed from the local scan in a working draft; one short quotation remains unreadable pending proofread.",
       "transcriptStatus": "multiple-visible-interviews-partially-transcribed-toriyama-editors-and-creator-interviews-identified",
-      "participantsNormalized": [
-        "Akira Toriyama",
-        "Masako Nozawa",
-        "former editors",
-        "creators"
-      ],
+      "participantsNormalized": ["Akira Toriyama", "Masako Nozawa", "former editors", "creators"],
       "localSourceFile": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "localSourceBytes": 100224986,
       "localSourceSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
@@ -62,20 +57,10 @@
       ],
       "evidenceLevel": "Local contents page and scans confirm both interviews and page range. Four visible section headings are transcribed in a separate sidecar; question-and-answer body remains too compressed for reliable verbatim transcription.",
       "transcriptStatus": "local-pages-found-heading-only-sidecar-body-unreadable",
-      "participantsNormalized": [
-        "Akira Toriyama"
-      ],
+      "participantsNormalized": ["Akira Toriyama"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\artbook\\Dragon Ball A Visual History Akira Toriyama  [DRAGON BALL 超画集 Akira Toriyama]",
-      "localScanFiles": [
-        "img (202).jpg",
-        "img (203).jpg"
-      ],
-      "localInterviewPages": [
-        222,
-        223,
-        224,
-        225
-      ],
+      "localScanFiles": ["img (202).jpg", "img (203).jpg"],
+      "localInterviewPages": [222, 223, 224, 225],
       "transcriptRecords": [
         "data/catalogues/japanese-interviews/cho-gashuu-toriyama-interviews-p222-225.jsonl"
       ]
@@ -87,9 +72,7 @@
       "publisher": "集英社",
       "isbn": "978-4-08-782499-5",
       "evidenceUrl": "https://ndlsearch.ndl.go.jp/books/R100000002-I024393391",
-      "interviewContents": [
-        "新規インタビュー (JPRO/NDL bibliographic description)"
-      ],
+      "interviewContents": ["新規インタビュー (JPRO/NDL bibliographic description)"],
       "evidenceLevel": "library/publisher bibliography confirms new interviews, but not interviewees or pages",
       "transcriptStatus": "Japanese print original; full transcript not verified online; consult book",
       "participantsNormalized": []
@@ -106,9 +89,7 @@
       ],
       "evidenceLevel": "Local Japanese scans for pp.124–125 visually reviewed at high resolution; corrected revision sidecar created. Eight staff profile blocks are represented, but passages remain omitted/clipped; exact Nishio p.124 correction: 「ヤムチャは」.",
       "transcriptStatus": "local-primary-scan-partial-visually-revised",
-      "participantsNormalized": [
-        "anime production staff"
-      ],
+      "participantsNormalized": ["anime production staff"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Jump Gold Selection 4",
       "interviewPageRange": "124-125",
       "interviewTitle": "DRAGON CALL――スタッフ8人に聞きました",
@@ -125,15 +106,10 @@
       "publisher": "集英社",
       "isbn": null,
       "evidenceUrl": null,
-      "interviewContents": [
-        "鳥山明 × 中鶴勝祥 conversation, pages 92 and 97 are secondary leads"
-      ],
+      "interviewContents": ["鳥山明 × 中鶴勝祥 conversation, pages 92 and 97 are secondary leads"],
       "evidenceLevel": "Primary local Japanese scan verified: pp.90–101 contain the Toriyama × Nakatsuru interview; pp.96–101 visually rechecked and corrected in master. Survey of subsequent scanned pages through p.261 found no further interview/対談; review remains pending and p.96 retains one unresolved glyph.",
       "transcriptStatus": "local-primary-scan-transcribed-partially-reviewed",
-      "participantsNormalized": [
-        "Akira Toriyama",
-        "Katsuyoshi Nakatsuru"
-      ],
+      "participantsNormalized": ["Akira Toriyama", "Katsuyoshi Nakatsuru"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\5 DragonBall livres\\son goku densetsu",
       "interviewPageRange": "90-101",
       "recordedAt": "2003-08-21",
@@ -154,9 +130,7 @@
       "publisher": "集英社",
       "isbn": null,
       "evidenceUrl": null,
-      "interviewContents": [
-        "この先どうなるインタビュー, 2 pages per secondary lead"
-      ],
+      "interviewContents": ["この先どうなるインタビュー, 2 pages per secondary lead"],
       "evidenceLevel": "secondary bibliographic lead only; original supplement not yet collated",
       "transcriptStatus": "Japanese print original; locate and inspect legal copy",
       "participantsNormalized": []
@@ -167,10 +141,7 @@
       "publicationTitle": "Unidentified Dragon Ball Daima publication",
       "visibleHeading": "「ドラゴンボールDAIMA」ならではのキャラクター＆アクション。",
       "page": 30,
-      "participants": [
-        "Aya Komaki / 小牧",
-        "Yoshitaka Yashima / 八島"
-      ],
+      "participants": ["Aya Komaki / 小牧", "Yoshitaka Yashima / 八島"],
       "localImage": "C:\\Users\\omara\\Desktop\\goku solo\\jsp\\IMG_8631.jpg",
       "imageSha256": "2682ac3982cde17e007be7bc0634962c26a9dea742543227a9f43689018d3db3",
       "transcript": "data/catalogues/japanese-interviews/print-transcripts.jsonl#L6",
@@ -181,14 +152,10 @@
       "title": "DragonBook GT (exact publication title unverified)",
       "date": null,
       "publisher": null,
-      "interviewContents": [
-        "あのころのGT／森下孝三インタビュー"
-      ],
+      "interviewContents": ["あのころのGT／森下孝三インタビュー"],
       "evidenceLevel": "Local audit: composites pp.44–45 (1056×760), pp.46–47 (1022×735), and pp.48–49 (1045×745) visually inspected; p.44–45 recropped. The 63-page ODT has no extractable article text; no separate page scans or sharper duplicate found in Desktop, Downloads, or Pictures. Kanji/small type remain too compressed for faithful transcription. P.49 prose relation to interview remains uncertain.",
       "transcriptStatus": "local-primary-scans-composited-unreadable-after-recrop",
-      "participantsNormalized": [
-        "Kōzō Morishita / 森下孝三"
-      ],
+      "participantsNormalized": ["Kōzō Morishita / 森下孝三"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\DragonBook\\DragonBAll GT DragonBook",
       "interviewPageRange": "44-48 likely (p.44 folio obscured); p.49 relation uncertain",
       "scanFiles": [
@@ -201,21 +168,14 @@
       "interviewPageRange": "52-55",
       "publisher": null,
       "evidenceLevel": "Ten visible Q/R transcribed; independent review corrected p.54–55 readings; the tightly printed p.53 response still needs rechecking against a sharper scan.",
-      "participantsNormalized": [
-        "Takao Koyama / 小山高生"
-      ],
-      "interviewContents": [
-        "Takao Koyama interview / Q&A, ten questions"
-      ],
+      "participantsNormalized": ["Takao Koyama / 小山高生"],
+      "interviewContents": ["Takao Koyama interview / Q&A, ten questions"],
       "title": "DragonBook Movies (exact title unverified) — 劇場版ストーリーQ&A / DRAGON MOVIES FAQ",
       "date": null,
       "transcriptStatus": "four-page-transcribed-p53-review-pending",
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\DragonBook\\DragonBook Movies",
       "id": "print_shueisha_dragonbook-movies_koyama",
-      "scanFiles": [
-        "53-52.jpg",
-        "55-54.jpg"
-      ],
+      "scanFiles": ["53-52.jpg", "55-54.jpg"],
       "transcriptRecords": [
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L17",
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L18"
@@ -225,47 +185,28 @@
       "interviewPageRange": "60-61",
       "publisher": null,
       "evidenceLevel": "Local Japanese scan identifies pp.60–61; two-page interview.",
-      "participantsNormalized": [
-        "Hironobu Kageyama / 影山ヒロノブ"
-      ],
-      "interviewContents": [
-        "Hironobu Kageyama special interview"
-      ],
+      "participantsNormalized": ["Hironobu Kageyama / 影山ヒロノブ"],
+      "interviewContents": ["Hironobu Kageyama special interview"],
       "title": "DragonBook Movies (exact title unverified) — MUSIC FIGHTER SPECIAL INTERVIEW",
       "date": null,
       "transcriptStatus": "partial-headings-and-song-titles-only-body-unreadable",
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\DragonBook\\DragonBook Movies",
       "id": "print_shueisha_dragonbook-movies_kageyama",
-      "scanFiles": [
-        "61-60.jpg"
-      ],
-      "transcriptRecords": [
-        "data/catalogues/japanese-interviews/print-transcripts.jsonl#L16"
-      ]
+      "scanFiles": ["61-60.jpg"],
+      "transcriptRecords": ["data/catalogues/japanese-interviews/print-transcripts.jsonl#L16"]
     },
     {
       "interviewPageRange": "340-345",
       "publisher": "集英社",
       "evidenceLevel": "Local Japanese scans pp.340–345 confirmed and visually transcribed. Page edges at p.340 and p.344 remain visibly clipped; review required.",
-      "participantsNormalized": [
-        "Masako Nozawa / 野沢雅子"
-      ],
-      "interviewContents": [
-        "野沢雅子が振り返ってみた DRAGON BALL!!"
-      ],
+      "participantsNormalized": ["Masako Nozawa / 野沢雅子"],
+      "interviewContents": ["野沢雅子が振り返ってみた DRAGON BALL!!"],
       "title": "ドラゴンボール超全集4 超事典",
       "date": "2013-05",
       "transcriptStatus": "all-pages-340-345-transcribed-review-needed",
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)",
       "id": "print_shueisha_chozenshuu4_nozawa",
-      "scanFiles": [
-        "340.png",
-        "341.png",
-        "342.png",
-        "343.png",
-        "344.png",
-        "345.png"
-      ],
+      "scanFiles": ["340.png", "341.png", "342.png", "343.png", "344.png", "345.png"],
       "transcriptRecords": [
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L15",
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L19-23"
@@ -275,22 +216,14 @@
       "interviewPageRange": "346-348",
       "publisher": "集英社",
       "evidenceLevel": "Local Japanese scans 346.jpg–348.jpg verified and transcribed. The page-346 retrospective title and p.347 INTERVIEW AKIRA TORIYAMA heading are visible; p.348 ends mid-question. Page 349 begins a visually separate Toriyama Q&A and is catalogued separately.",
-      "participantsNormalized": [
-        "Akira Toriyama / 鳥山明"
-      ],
-      "interviewContents": [
-        "Akira Toriyama interview (local translated interview listing)"
-      ],
+      "participantsNormalized": ["Akira Toriyama / 鳥山明"],
+      "interviewContents": ["Akira Toriyama interview (local translated interview listing)"],
       "title": "ドラゴンボール超全集4 超事典",
       "date": "2013-05",
       "transcriptStatus": "local-primary-scan-transcribed-review-needed",
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)",
       "id": "print_shueisha_chozenshuu4_toriyama",
-      "scanFiles": [
-        "346.jpg",
-        "347.jpg",
-        "348.jpg"
-      ],
+      "scanFiles": ["346.jpg", "347.jpg", "348.jpg"],
       "transcriptRecords": [
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L24",
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L25",
@@ -302,22 +235,14 @@
       "title": "ドラゴンボール超全集4 超事典",
       "date": "2013-05",
       "publisher": "集英社",
-      "interviewContents": [
-        "桂くんなら、自主的に漫画が描ける!? — Akira Toriyama interview"
-      ],
+      "interviewContents": ["桂くんなら、自主的に漫画が描ける!? — Akira Toriyama interview"],
       "evidenceLevel": "Separate heading and Q&A visually identified on p.349 after the preceding retrospective section; transcribed from the local Japanese scan.",
       "transcriptStatus": "local-primary-scan-transcribed-review-needed",
-      "participantsNormalized": [
-        "Akira Toriyama / 鳥山明"
-      ],
+      "participantsNormalized": ["Akira Toriyama / 鳥山明"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\Chozenshuu 1-4 (COMPLETE)\\Dragon Ball Chōzenshū 4 - Dragon Ball Super Encyclopedia (COMPLETE)",
       "interviewPageRange": "349",
-      "scanFiles": [
-        "349.jpg"
-      ],
-      "transcriptRecords": [
-        "data/catalogues/japanese-interviews/print-transcripts.jsonl#L27"
-      ]
+      "scanFiles": ["349.jpg"],
+      "transcriptRecords": ["data/catalogues/japanese-interviews/print-transcripts.jsonl#L27"]
     },
     {
       "id": "print_shueisha_dragonbook-movies_design-labo",
@@ -329,25 +254,17 @@
       ],
       "evidenceLevel": "Local audit: `57-56.jpg` (pp.56–57, 996×703) and `59-58.jpg` (continuation) are the only targeted scans; p.56 recropped. The ODT embeds the same images without extractable text; no separate/sharper copy found. Body text remains too small/compressed for exact transcription. P.57 identifies 前田実 and 山室直儀.",
       "transcriptStatus": "local-primary-composite-only-unreadable-after-recrop",
-      "participantsNormalized": [
-        "Minoru Maeda / 前田実",
-        "Tadayoshi Yamamuro / 山室直儀"
-      ],
+      "participantsNormalized": ["Minoru Maeda / 前田実", "Tadayoshi Yamamuro / 山室直儀"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\DragonBook\\DragonBook Movies",
       "interviewPageRange": "56-57",
-      "scanFiles": [
-        "57-56.jpg",
-        "59-58.jpg"
-      ]
+      "scanFiles": ["57-56.jpg", "59-58.jpg"]
     },
     {
       "id": "print_shueisha_daizenshuu1_editor-roundtable-1995",
       "title": "DRAGON BALL 大全集①",
       "date": "1995-06-25",
       "publisher": "集英社",
-      "interviewContents": [
-        "歴代担当者座談会 第1回"
-      ],
+      "interviewContents": ["歴代担当者座談会 第1回"],
       "evidenceLevel": "Local first edition and folios visually checked. The printed dialogue on pp.1–3 and continuation on p.6 are transcribed; pp.4–5 are a separate Toriyama column and excluded. p.6 continuation has no clear speaker label; independent review remains.",
       "transcriptStatus": "local-primary-scan-transcribed-review-needed",
       "participantsNormalized": [
@@ -380,32 +297,21 @@
       ],
       "evidenceLevel": "Local Japanese scan, printed p.4, visually transcribed. The page says the answers were re-edited from a conversation recorded on the included DVD; only the yellow EXTRA QUESTION box is in this text.",
       "transcriptStatus": "local-primary-scan-transcribed-review-needed",
-      "participantsNormalized": [
-        "Akira Toriyama / 鳥山明"
-      ],
+      "participantsNormalized": ["Akira Toriyama / 鳥山明"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Jump Ryu Dragon Ball",
       "interviewPageRange": "4",
-      "scanFiles": [
-        "FB_IMG_1768465399144.jpg"
-      ],
-      "transcriptRecords": [
-        "data/catalogues/japanese-interviews/print-transcripts.jsonl#L28"
-      ]
+      "scanFiles": ["FB_IMG_1768465399144.jpg"],
+      "transcriptRecords": ["data/catalogues/japanese-interviews/print-transcripts.jsonl#L28"]
     },
     {
       "id": "print_shueisha_vjump_db-super-divers_2026",
       "title": "Vジャンプ（号数・発売月未確認）",
       "date": null,
       "publisher": "集英社",
-      "interviewContents": [
-        "子ども目線で見た「DBSDV」の課題"
-      ],
+      "interviewContents": ["子ども目線で見た「DBSDV」の課題"],
       "evidenceLevel": "Local scans of pp.190–191 visually transcribed; exact issue details remain unidentified. Page seam and omitted comic lettering are documented in the sidecar manifest.",
       "transcriptStatus": "local-primary-scan-transcribed-review-needed",
-      "participantsNormalized": [
-        "Kaneko / 金子",
-        "Nakagawa / 中川"
-      ],
+      "participantsNormalized": ["Kaneko / 金子", "Nakagawa / 中川"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\Les V-Jump\\V-Jump 2026\\juillet",
       "interviewPageRange": "190-191",
       "scanFiles": [
@@ -422,9 +328,7 @@
       "title": "Jump Gold Selection 5",
       "date": null,
       "publisher": "集英社",
-      "interviewContents": [
-        "超アニメ人座談会"
-      ],
+      "interviewContents": ["超アニメ人座談会"],
       "evidenceLevel": "Local scans for printed pp.97–102 transcribed visually. Folio 100 is assigned by continuity although absent from the scan. Several small-text readings/attributions and two glyphs marked � need independent review; the transcript manifests document these limits. Existing p.101–102 row has known errors; corrected p.101 excerpt is at master line 74.",
       "transcriptStatus": "partial-roundtable-with-p101-correction-addendum-review-needed",
       "participantsNormalized": [
@@ -461,31 +365,21 @@
       "title": "Saikyō Jump — サイヤ人超最強COMICS",
       "date": null,
       "publisher": "集英社",
-      "interviewContents": [
-        "鳥山明先生に聞いてみた！サイヤ人スペシャルQ&A"
-      ],
+      "interviewContents": ["鳥山明先生に聞いてみた！サイヤ人スペシャルQ&A"],
       "evidenceLevel": "Local two-page spread scan, printed pp.116–117, visually transcribed as five Q&A. Year 2018 inferred from local folder; exact issue date unconfirmed. Adjacent manga/captions omitted; not independently reviewed.",
       "transcriptStatus": "local-primary-scan-transcribed-review-needed",
-      "participantsNormalized": [
-        "Akira Toriyama / 鳥山明"
-      ],
+      "participantsNormalized": ["Akira Toriyama / 鳥山明"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\saikyou jump\\2018\\janvier",
       "interviewPageRange": "116-117",
-      "scanFiles": [
-        "481701778_1612718696034162_7420829104018820363_n.jpg"
-      ],
-      "transcriptRecords": [
-        "data/catalogues/japanese-interviews/print-transcripts.jsonl#L41"
-      ]
+      "scanFiles": ["481701778_1612718696034162_7420829104018820363_n.jpg"],
+      "transcriptRecords": ["data/catalogues/japanese-interviews/print-transcripts.jsonl#L41"]
     },
     {
       "id": "print_shueisha_daizenshuu3_anime-main-staff-roundtable-1",
       "title": "DRAGON BALL 大全集3 TV Animation Part 1",
       "date": "1995-09-09",
       "publisher": "集英社",
-      "interviewContents": [
-        "アニメ ドラゴンボール メインスタッフ座談会 第1回"
-      ],
+      "interviewContents": ["アニメ ドラゴンボール メインスタッフ座談会 第1回"],
       "evidenceLevel": "All legible dialogue on pp.2–3 and 6 transcribed; p.1 is title/introduction/roster only. p.3 points to p.6. pp.4–5 are separate Toriyama manga; p.7 is the separate Satake interview. Independent review recommended.",
       "transcriptStatus": "local-primary-scan-transcribed-review-needed",
       "participantsNormalized": [
@@ -499,16 +393,7 @@
       ],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 3 - TV Animation Part 1 (COMPLETE)\\Shenlong Times",
       "interviewPageRange": "1-3, 6",
-      "scanFiles": [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-        "6.png",
-        "7.png",
-        "8.png"
-      ],
+      "scanFiles": ["1.png", "2.png", "3.png", "4.png", "5.png", "6.png", "7.png", "8.png"],
       "transcriptRecords": [
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L43",
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L44",
@@ -521,9 +406,7 @@
       "title": "DRAGON BALL 大全集5 TV Animation Part 2",
       "date": "1995-11-07",
       "publisher": "集英社",
-      "interviewContents": [
-        "アニメ ドラゴンボール メインスタッフ座談会 第2回"
-      ],
+      "interviewContents": ["アニメ ドラゴンボール メインスタッフ座談会 第2回"],
       "evidenceLevel": "Transcribed visible roundtable dialogue on pp.1–3 and continuation p.6. pp.4–5 are a separate Toriyama manga, p.7 is a separate Horii guest-comment feature, and p.8 is DB News/ads. Independent review recommended.",
       "transcriptStatus": "local-primary-scan-transcribed-review-needed",
       "participantsNormalized": [
@@ -537,16 +420,7 @@
       ],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times",
       "interviewPageRange": "1-3, 6",
-      "scanFiles": [
-        "1.png",
-        "2.png",
-        "3.png",
-        "4.png",
-        "5.png",
-        "6.png",
-        "7.png",
-        "8.png"
-      ],
+      "scanFiles": ["1.png", "2.png", "3.png", "4.png", "5.png", "6.png", "7.png", "8.png"],
       "transcriptRecords": [
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L48",
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L49",
@@ -559,66 +433,42 @@
       "title": "Saikyō Jump — 長友選手の夢の質問",
       "date": null,
       "publisher": "集英社",
-      "interviewContents": [
-        "サッカー選手の長友佑都さんに7つの質問!!"
-      ],
+      "interviewContents": ["サッカー選手の長友佑都さんに7つの質問!!"],
       "evidenceLevel": "Local scan of printed p.23 visually transcribed in full for all seven questions and answers. Issue timing inferred from local folder 2018/November; only this page is available; single-pass, not independently reviewed.",
       "transcriptStatus": "local-primary-scan-transcribed-review-needed",
-      "participantsNormalized": [
-        "Yūto Nagatomo / 長友佑都"
-      ],
+      "participantsNormalized": ["Yūto Nagatomo / 長友佑都"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\saikyou jump\\2018\\novembre",
       "interviewPageRange": "23",
-      "scanFiles": [
-        "44496527_276809872958391_5288066272884424704_n.jpg"
-      ],
-      "transcriptRecords": [
-        "data/catalogues/japanese-interviews/print-transcripts.jsonl#L42"
-      ]
+      "scanFiles": ["44496527_276809872958391_5288066272884424704_n.jpg"],
+      "transcriptRecords": ["data/catalogues/japanese-interviews/print-transcripts.jsonl#L42"]
     },
     {
       "id": "print_shueisha_daizenshuu3_satake_p7",
       "title": "DRAGON BALL 大全集3 TV Animation Part 1",
       "date": "1995-09-09",
       "publisher": "集英社",
-      "interviewContents": [
-        "I LOVE DRAGON BALL 第3回 佐竹雅昭さん（空手家）"
-      ],
+      "interviewContents": ["I LOVE DRAGON BALL 第3回 佐竹雅昭さん（空手家）"],
       "evidenceLevel": "Complete legible direct interview text from printed p.7 transcribed; unsourced editorial caption and image text excluded. No Horii attribution visible.",
       "transcriptStatus": "local-primary-scan-transcribed-review-needed",
-      "participantsNormalized": [
-        "Masahiro Satake / 佐竹雅昭"
-      ],
+      "participantsNormalized": ["Masahiro Satake / 佐竹雅昭"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 3 - TV Animation Part 1 (COMPLETE)\\Shenlong Times",
       "interviewPageRange": "7",
-      "scanFiles": [
-        "7.png"
-      ],
-      "transcriptRecords": [
-        "data/catalogues/japanese-interviews/print-transcripts.jsonl#L47"
-      ]
+      "scanFiles": ["7.png"],
+      "transcriptRecords": ["data/catalogues/japanese-interviews/print-transcripts.jsonl#L47"]
     },
     {
       "id": "print_shueisha_daizenshuu5_horii_comment-p7",
       "title": "DRAGON BALL 大全集5 TV Animation Part 2",
       "date": "1995-11-07",
       "publisher": "集英社",
-      "interviewContents": [
-        "I LOVE DRAGON BALL 第5回 — 堀井雄二（ゲームデザイナー）"
-      ],
+      "interviewContents": ["I LOVE DRAGON BALL 第5回 — 堀井雄二（ゲームデザイナー）"],
       "evidenceLevel": "Local p.7 guest comment transcribed, attributed to Yuji Horii. The page is an editorial guest-message feature, not Q&A; photo caption omitted.",
       "transcriptStatus": "local-primary-scan-transcribed-review-needed",
-      "participantsNormalized": [
-        "Yuji Horii / 堀井雄二"
-      ],
+      "participantsNormalized": ["Yuji Horii / 堀井雄二"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times",
       "interviewPageRange": "7",
-      "scanFiles": [
-        "7.png"
-      ],
-      "transcriptRecords": [
-        "data/catalogues/japanese-interviews/print-transcripts.jsonl#L52"
-      ]
+      "scanFiles": ["7.png"],
+      "transcriptRecords": ["data/catalogues/japanese-interviews/print-transcripts.jsonl#L52"]
     },
     {
       "id": "print_shueisha_daizenshuu4_world-guide_transcripts",
@@ -640,12 +490,7 @@
       ],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 4 - World Guide (COMPLETE)\\Shenlong Times",
       "interviewPageRange": "1-3, 6",
-      "scanFiles": [
-        "1.png",
-        "2.png",
-        "3.png",
-        "6-7.png"
-      ],
+      "scanFiles": ["1.png", "2.png", "3.png", "6-7.png"],
       "transcriptRecords": [
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L53",
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L54",
@@ -663,19 +508,14 @@
       ],
       "evidenceLevel": "Local scan of p.24 visually transcribed; title page p.22 identifies participants. Page 23 and any further continuation unavailable.",
       "transcriptStatus": "local-primary-scan-transcribed-review-needed",
-      "participantsNormalized": [
-        "Iwai / イワイ",
-        "Sunshine Ikezaki / サンシャイン池崎"
-      ],
+      "participantsNormalized": ["Iwai / イワイ", "Sunshine Ikezaki / サンシャイン池崎"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\Data et guide book\\saikyou jump\\2023\\septembre",
       "interviewPageRange": "24",
       "scanFiles": [
         "484035907_993007699594921_1123646754241630102_n.jpg",
         "484040077_993007766261581_7382000816951942731_n.jpg"
       ],
-      "transcriptRecords": [
-        "data/catalogues/japanese-interviews/print-transcripts.jsonl#L57"
-      ]
+      "transcriptRecords": ["data/catalogues/japanese-interviews/print-transcripts.jsonl#L57"]
     },
     {
       "id": "print_shueisha_daizenshuu2_shenlong-news",
@@ -758,17 +598,11 @@
       ],
       "evidenceLevel": "Local p.7 scan fully legible; transcript hash and source scan hash verified. Not a production interview.",
       "transcriptStatus": "local-primary-scan-transcribed-review-needed",
-      "participantsNormalized": [
-        "Jackie Chan / ジャッキー・チェン"
-      ],
+      "participantsNormalized": ["Jackie Chan / ジャッキー・チェン"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1",
       "interviewPageRange": "7",
-      "scanFiles": [
-        "daizenshuu_01_shenron-news_page007_6033670821_o.jpg"
-      ],
-      "transcriptRecords": [
-        "data/catalogues/japanese-interviews/print-transcripts.jsonl#L66"
-      ]
+      "scanFiles": ["daizenshuu_01_shenron-news_page007_6033670821_o.jpg"],
+      "transcriptRecords": ["data/catalogues/japanese-interviews/print-transcripts.jsonl#L66"]
     },
     {
       "id": "print_shueisha_vjump_2024_daima_cast_comments",
@@ -783,9 +617,7 @@
       "localSourceFile": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2024\\novembre\\721189628_1946019039366449_6233491298252524125_n.jpg",
       "localSourceBytes": 647507,
       "localSourceSha256": "47ba2182ba771f09ad79b811e012d5ed031763a4ac797de760036f4c539c9086",
-      "transcriptRecords": [
-        "data/catalogues/japanese-interviews/print-transcripts.jsonl#L73"
-      ],
+      "transcriptRecords": ["data/catalogues/japanese-interviews/print-transcripts.jsonl#L73"],
       "participantsNormalized": [
         "小林由美子 / 界王神（ミニ）役",
         "ファイルーズあい / パンジ役",
@@ -797,50 +629,35 @@
       "title": "Vジャンプ — 鳥山先生からメッセージ＆描きおろしブロリーイラスト",
       "date": null,
       "publisher": "集英社 (issue/date exacts unverified)",
-      "interviewContents": [
-        "鳥山先生からメッセージ＆描きおろしブロリーイラスト"
-      ],
+      "interviewContents": ["鳥山先生からメッセージ＆描きおろしブロリーイラスト"],
       "evidenceLevel": "Transcribes only Toriyama's visible message panel on p.83; this is not the full page or a Q&A interview.",
       "transcriptStatus": "single-page-direct-author-message-transcribed-review-needed",
-      "participantsNormalized": [
-        "鳥山明"
-      ],
+      "participantsNormalized": ["鳥山明"],
       "localSourceFile": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\janvier\\654602916_1375733284596195_4865005340773771057_n.jpg",
       "localSourceBytes": 587026,
       "localSourceSha256": "56c02eef5a9c66e5cfa05a8b24f95ada71b7d8d1c4f4d2274859f547b2933a7c",
-      "transcriptRecords": [
-        "data/catalogues/japanese-interviews/print-transcripts.jsonl#L1"
-      ]
+      "transcriptRecords": ["data/catalogues/japanese-interviews/print-transcripts.jsonl#L1"]
     },
     {
       "id": "vjump-2019-db-fighterz-kazunoko-excerpt",
       "title": "Vジャンプ — オレたちプロゲーマー!! — DBFZ / かずのこ",
       "date": null,
       "publisher": "集英社 (issue/date exacts unverified)",
-      "interviewContents": [
-        "オレたちプロゲーマー!! — DBFZ / かずのこ"
-      ],
+      "interviewContents": ["オレたちプロゲーマー!! — DBFZ / かずのこ"],
       "evidenceLevel": "Visible direct gamer comments and the clearly associated editorial reply transcribed from one page. The page is part of a larger feature; p.339 is inferred, not printed legibly in this crop.",
       "transcriptStatus": "single-page-interview-excerpt-transcribed-speaker-review-needed",
-      "participantsNormalized": [
-        "かずのこ",
-        "ビクトリー・ウチダ（編集部）"
-      ],
+      "participantsNormalized": ["かずのこ", "ビクトリー・ウチダ（編集部）"],
       "localSourceFile": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\mars\\660461417_1387192693450254_3355142928239876073_n.jpg",
       "localSourceBytes": 593400,
       "localSourceSha256": "61fa6951c15d9b05718d15fab8ed082eb7e77a4acfefca919ff598e68ed427ef",
-      "transcriptRecords": [
-        "data/catalogues/japanese-interviews/print-transcripts.jsonl#L1"
-      ]
+      "transcriptRecords": ["data/catalogues/japanese-interviews/print-transcripts.jsonl#L1"]
     },
     {
       "id": "vjump-2019-db-fighterz-pro-players-p340",
       "title": "Vジャンプ — オレたちプロゲーマー!! — DBFZ",
       "date": null,
       "publisher": "集英社 (issue/date exacts unverified)",
-      "interviewContents": [
-        "オレたちプロゲーマー!! — DBFZ"
-      ],
+      "interviewContents": ["オレたちプロゲーマー!! — DBFZ"],
       "evidenceLevel": "Three visible answer/advice passages transcribed from p.340. Two speaker assignments remain unresolved; SonicFox note is editorially phrased.",
       "transcriptStatus": "single-page-db-fighting-game-player-commentary-transcribed-review-needed",
       "participantsNormalized": [
@@ -851,9 +668,7 @@
       "localSourceFile": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\mars\\661198480_1387192866783570_6175762419575968923_n.jpg",
       "localSourceBytes": 630777,
       "localSourceSha256": "6564519fdb3505ccba90e5e2f4a90c27de58d2f83db9498d78563b5c39c4a722",
-      "transcriptRecords": [
-        "data/catalogues/japanese-interviews/print-transcripts.jsonl#L1"
-      ]
+      "transcriptRecords": ["data/catalogues/japanese-interviews/print-transcripts.jsonl#L1"]
     },
     {
       "id": "print_animage_1989_september_nozawa_p46",
@@ -861,14 +676,10 @@
       "date": null,
       "publisher": null,
       "isbn": null,
-      "interviewContents": [
-        "悟空・悟飯役 野沢雅子ミニインタビュー"
-      ],
+      "interviewContents": ["悟空・悟飯役 野沢雅子ミニインタビュー"],
       "evidenceLevel": "Local page image confirms printed p.46 and interview heading; visible Japanese mini-interview body is transcribed and independently proofread. Issue/date remain unconfirmed.",
       "transcriptStatus": "local-primary-scan-transcribed-and-independently-proofread",
-      "participantsNormalized": [
-        "野沢雅子 / Masako Nozawa"
-      ],
+      "participantsNormalized": ["野沢雅子 / Masako Nozawa"],
       "localIssueFolder": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\animage\\animage 89 septembre",
       "localSourceFile": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\animage\\animage 89 septembre\\Ce-K7t7-MXEAAPtcm.jpg",
       "localSourceBytes": 306143,
@@ -884,19 +695,13 @@
       "title": "Jump Ryu! vol.01 — interview de Kazuhiko Torishima",
       "date": null,
       "publisher": null,
-      "interviewContents": [
-        "初代担当に聞く!! — entretien imprimé avec 鳥嶋和彦"
-      ],
+      "interviewContents": ["初代担当に聞く!! — entretien imprimé avec 鳥嶋和彦"],
       "evidenceLevel": "Local Japanese scan confirms the full visible main interview panel on printed p.17. Independent visual review applied three corrections. The separate upper Jump Studio panel and yellow contents-comment box are excluded. No DVD, disc image or related video file is locally available.",
       "transcriptStatus": "local-primary-scan-transcribed-and-independently-proofread",
-      "participantsNormalized": [
-        "鳥嶋和彦 / Kazuhiko Torishima"
-      ],
+      "participantsNormalized": ["鳥嶋和彦 / Kazuhiko Torishima"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Jump Ryu Dragon Ball",
       "interviewPageRange": "17",
-      "scanFiles": [
-        "FB_IMG_1768465428791.jpg"
-      ],
+      "scanFiles": ["FB_IMG_1768465428791.jpg"],
       "transcriptRecords": [
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L84",
         "data/catalogues/japanese-interviews/jump-ryu-torishima-editor-interview-17.jsonl"
@@ -912,15 +717,10 @@
       ],
       "evidenceLevel": "Local scans and the printed p.3 contents page identify a distinct Toriyama interview on pp.4–5. Two directly quoted excerpts have been transcribed and independently proofread; the feature is not transcribed in full.",
       "transcriptStatus": "local-primary-scan-quoted-excerpts-transcribed-and-proofread",
-      "participantsNormalized": [
-        "鳥山明 / Akira Toriyama"
-      ],
+      "participantsNormalized": ["鳥山明 / Akira Toriyama"],
       "localSourceFolder": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Jump Ryu Dragon Ball",
       "interviewPageRange": "4–5",
-      "scanFiles": [
-        "FB_IMG_1768465399144.jpg",
-        "FB_IMG_1768465401365.jpg"
-      ],
+      "scanFiles": ["FB_IMG_1768465399144.jpg", "FB_IMG_1768465401365.jpg"],
       "transcriptRecords": [
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L85",
         "data/catalogues/japanese-interviews/print-transcripts.jsonl#L86",

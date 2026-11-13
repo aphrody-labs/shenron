@@ -4,10 +4,7 @@
   "method": "Manual visual transcription from enlarged local Japanese scans; read page order 52 through 55 and columns visually. No OCR, network, translation, or completion from secondary text. Image captions omitted.",
   "records": [
     {
-      "pages": [
-        52,
-        53
-      ],
+      "pages": [52, 53],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\DragonBook\\DragonBook Movies\\53-52.jpg",
       "imageBytes": 408139,
       "transcriptPath": "data/catalogues/japanese-interviews/dragonbook-movies-koyama-52-55.jsonl#L1",
@@ -16,16 +13,11 @@
       "completeness": "Visible Q&A prose transcribed; scan review corrected readings in the p.53 continuation; no unreadable glyphs remain marked.",
       "id": "print-dragonbook-movies-koyama-52-53",
       "transcriptRow": 1,
-      "participants": [
-        "Takao Koyama / 小山高生"
-      ],
+      "participants": ["Takao Koyama / 小山高生"],
       "title": "DragonBook Movies"
     },
     {
-      "pages": [
-        54,
-        55
-      ],
+      "pages": [54, 55],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\DragonBook\\DragonBook Movies\\55-54.jpg",
       "imageBytes": 410492,
       "transcriptPath": "data/catalogues/japanese-interviews/dragonbook-movies-koyama-52-55.jsonl#L2",
@@ -34,9 +26,7 @@
       "completeness": "Visible Q&A prose transcribed; scan review corrected p.54–55 readings; unusual phrase 信頼と遠い環境 retained as printed.",
       "id": "print-dragonbook-movies-koyama-54-55",
       "transcriptRow": 2,
-      "participants": [
-        "Takao Koyama / 小山高生"
-      ],
+      "participants": ["Takao Koyama / 小山高生"],
       "title": "DragonBook Movies"
     }
   ],

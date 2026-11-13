@@ -52,14 +52,8 @@
       "input": "孫悟空は界王拳を使った。",
       "masked": "Zeta001はZeta002を使った。",
       "tokens": [
-        [
-          "Zeta001",
-          "Son Goku"
-        ],
-        [
-          "Zeta002",
-          "Kaioken"
-        ]
+        ["Zeta001", "Son Goku"],
+        ["Zeta002", "Kaioken"]
       ],
       "translation": "Zeta001 a utilisé le Zeta002.",
       "restored": "Son Goku a utilisé le Kaioken."
@@ -69,14 +63,8 @@
       "input": "カプセルコーポレーションのセルと超サイヤ人",
       "masked": "カプセルコーポレーションのZeta001とZeta002",
       "tokens": [
-        [
-          "Zeta001",
-          "Cell"
-        ],
-        [
-          "Zeta002",
-          "Super Saiyan"
-        ]
+        ["Zeta001", "Cell"],
+        ["Zeta002", "Super Saiyan"]
       ],
       "translation": "Zeta001 and Zeta002 of the Capsule Corporation",
       "restored": "Cell and Super Saiyan of the Capsule Corporation"

@@ -73,13 +73,13 @@ Le script [`scripts/ops/dbs-beerus-workflow.ts`](../../scripts/ops/dbs-beerus-wo
 
 ### 4.1 Registre Canonique des Episodes 1 a 5
 
-| ID Shenron | Episode | ID Crunchyroll | Date de diffusion | Stills Officiels | Titre FR |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| `875` | 1 | `GE00389313JAJP` | `2026-10-04` | `st01_01..04.webp` | Le reveil du dieu de la destruction |
-| `876` | 2 | `GE00389314JAJP` | `2026-10-11` | `st02_01..04.webp` | La prophetie du Super Saiyan Divin |
-| `877` | 3 | `GE00389315JAJP` | `2026-10-18` | `st03_01..04.webp` | Beerus descend sur la planete Kaio |
-| `878` | 4 | `GE00389316JAJP` | `2026-10-25` | `st04_01..04.webp` | La fureur de Vegeta |
-| `879` | 5 | `GE00389317JAJP` | `2026-11-01` | `st05_01..04.webp` | Le rituel des six Saiyans |
+| ID Shenron | Episode | ID Crunchyroll   | Date de diffusion | Stills Officiels   | Titre FR                            |
+| :--------- | :------ | :--------------- | :---------------- | :----------------- | :---------------------------------- |
+| `875`      | 1       | `GE00389313JAJP` | `2026-10-04`      | `st01_01..04.webp` | Le reveil du dieu de la destruction |
+| `876`      | 2       | `GE00389314JAJP` | `2026-10-11`      | `st02_01..04.webp` | La prophetie du Super Saiyan Divin  |
+| `877`      | 3       | `GE00389315JAJP` | `2026-10-18`      | `st03_01..04.webp` | Beerus descend sur la planete Kaio  |
+| `878`      | 4       | `GE00389316JAJP` | `2026-10-25`      | `st04_01..04.webp` | La fureur de Vegeta                 |
+| `879`      | 5       | `GE00389317JAJP` | `2026-11-01`      | `st05_01..04.webp` | Le rituel des six Saiyans           |
 
 ### 4.2 Etapes d'Ingestion d'un Nouvel Episode (ex. Episode 6 / ID `880`)
 

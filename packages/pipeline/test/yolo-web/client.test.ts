@@ -86,7 +86,9 @@ describe("YOLO WEB stdio client (fixture server with the web-cli mcp framing)", 
     const dir = mkdtempSync(join(tmpdir(), "yolo-web-batch-"));
     try {
       const batch = new YoloWebBatchCapture(dir, { cli: FIXTURE });
-      const job = await batch.crawl({ urls: ["https://gemini.google.com/1", "https://gemini.google.com/2"] });
+      const job = await batch.crawl({
+        urls: ["https://gemini.google.com/1", "https://gemini.google.com/2"],
+      });
       expect(job.status).toBe("completed");
       expect(job.stats).toEqual({ total: 2, saved: 2, failed: 0 });
       const files = readdirSync(dir);

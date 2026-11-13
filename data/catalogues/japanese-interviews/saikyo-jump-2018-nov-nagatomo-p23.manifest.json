@@ -6,12 +6,8 @@
   "sourceDimensions": "1294x1865",
   "transcriptPath": "data/catalogues/japanese-interviews/saikyo-jump-2018-nov-nagatomo-p23.jsonl",
   "transcriptSha256": "4b97d195edd03299633f9919b1433f394939cd73cd89b5c8165f58b3e23e9e01",
-  "transcribedPages": [
-    23
-  ],
-  "participants": [
-    "長友佑都"
-  ],
+  "transcribedPages": [23],
+  "participants": ["長友佑都"],
   "scope": "The complete visible seven-question interview on p.23. Includes two direct Dragon Ball answers (favorite aspect and character) and the answer about Dragon Ball games; the participant is an invited public figure discussing Dragon Ball, not a creator or production staff member.",
   "method": "Manual visual transcription from the original local scan; no OCR, network, or translation.",
   "review": "Single-pass visual transcription; not independently reviewed.",

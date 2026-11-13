@@ -5,12 +5,21 @@
   "description": "Aphrody's vendorized, zero-overhead Remotion composition and timeline engine, optimized for Bun and streaming video.",
   "homepage": "https://dragonballfr.com",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/remotion"
+  },
   "type": "module",
   "exports": {
     ".": "./src/index.tsx",
     "./timeline": "./src/timeline.ts",
     "./waveform": "./src/waveform.ts",
     "./subtitles": "./src/subtitles.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "typecheck": "bun check --project tsconfig.json",
@@ -20,14 +29,5 @@
   "devDependencies": {
     "@types/bun": "catalog:",
     "@types/react": "catalog:"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/aphrody-labs/shenron.git",
-    "directory": "packages/remotion"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
   }
 }

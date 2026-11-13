@@ -7,6 +7,7 @@
 Describes a [Buffer](crate::Buffer) when allocating.
 
 Fields:
+
 - `label: Label<'a>` — Debug label of a buffer. This will show up in graphics debuggers for easy identification.
 - `contents: &'a [u8]` — Contents of a buffer on creation.
 - `usage: BufferUsages` — Usages of a buffer. If the buffer is used in any way that isn't specified here, the operation will panic.
@@ -18,6 +19,7 @@ Implements: `Clone`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
 Utility methods not meant to be in the main API.
 
 Items:
+
 - `fn create_buffer_init(&self, desc: &BufferInitDescriptor<'_>) -> Buffer` — Creates a [Buffer](crate::Buffer) with data to initialize it.
 - `fn create_texture_with_data(&self, queue: &Queue, desc: &TextureDescriptor<'_>, order: TextureDataOrder, data: &[u8]) -> Texture` — Upload an entire texture and its mipmaps from a source buffer.
 
@@ -28,6 +30,7 @@ CPU-accessible buffer used to retrieve data from buffers that cannot or must not
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn read_buffer(device: &super::Device, queue: &super::Queue, buffer_slice: &super::BufferSlice<'_>, callback: impl FnOnce(Result<Self, super::BufferAsyncError>) + Send + 'static)` — Asynchronously read the contents of a buffer by copying it to a staging buffer.
 
 Implements: `Debug`, `Deref`
@@ -75,6 +78,7 @@ Efficiently performs many buffer writes by sharing and reusing temporary buffers
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn new(device: Device, chunk_size: BufferAddress) -> Self` — Create a new staging belt.
 - `fn new_with_buffer_usages(device: Device, chunk_size: BufferAddress, buffer_usages: BufferUsages) -> Self` — Create a new staging belt.
 - `fn write_buffer(&mut self, encoder: &mut CommandEncoder, target: &Buffer, offset: BufferAddress, size: BufferSize) -> BufferViewMut` — Allocate a staging belt slice of `size` to be copied into the `target` buffer at the specified offset.
@@ -92,6 +96,7 @@ Texture Blitting (Copying) Utility
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn new(device: &Device, format: TextureFormat) -> Self` — Returns a [`TextureBlitter`] with default settings.
 - `fn copy(&self, device: &Device, encoder: &mut CommandEncoder, source: &TextureView, target: &TextureView)` — Copies the data from the source [`TextureView`] to the target [`TextureView`]
 
@@ -104,6 +109,7 @@ A builder for the [`TextureBlitter`] utility. If you want the default [`TextureB
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn new(device: &'a Device, format: TextureFormat) -> Self` — Returns a new [`TextureBlitterBuilder`]
 - `fn sample_type(self, sample_type: FilterMode) -> Self` — Sets the [`Sampler`] Filtering Mode
 - `fn blend_state(self, blend_state: BlendState) -> Self` — Sets the [`BlendState`] that is used.
@@ -116,5 +122,6 @@ Implements: `Debug`
 Adds extra conversion functions to `TextureFormat`.
 
 Items:
+
 - `fn from_storage_format(storage_format: naga::StorageFormat) -> Self` — Finds the [`TextureFormat`](wgt::TextureFormat) corresponding to the given [`StorageFormat`](wgc::naga::StorageFormat).
 - `fn to_storage_format(&self) -> Option<naga::StorageFormat>` — Finds the [`StorageFormat`](wgc::naga::StorageFormat) corresponding to the given [`TextureFormat`](wgt::TextureFormat). Returns `None` if there is no matching storage format, which typically indicates this format is not…

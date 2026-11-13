@@ -25,9 +25,7 @@
         "publication": "Kanzenban Official Guide: Dragon Ball Forever",
         "pages": "146–155",
         "date": "2004-04-30",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-forever-dragon-ball-toriyama/",
         "questionAnswerCount": null,
         "formatNote": "Entretien thématique organisé sous forme de titres et réponses, sans blocs Q/R standard.",
@@ -58,11 +56,7 @@
         "publication": "TV Anime Guide: Dragon Ball Tenka’ichi Densetsu",
         "pages": "80–91",
         "date": "2004-07-02",
-        "participants": [
-          "Akira Toriyama",
-          "Takao Koyama",
-          "Masako Nozawa"
-        ],
+        "participants": ["Akira Toriyama", "Takao Koyama", "Masako Nozawa"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toriyama-koyama-nozawa/",
         "questionAnswerCount": 28,
         "formatNote": "Le HTML contient 29 blocs question et 28 blocs réponse; la synthèse dénombre les paires complètes et conserve à part la question balisée sans bloc de réponse associé.",
@@ -88,9 +82,7 @@
         "url": "https://www.kanzenshuu.com/translations/dragon-ball-forever-toriyama-qa/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-forever-toriyama-qa/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-forever-toriyama-qa.html",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "questionAnswerCount": 13,
         "questionBlockCount": 13,
         "answerBlockCount": 13,
@@ -121,9 +113,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-masako-nozawa/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-masako-nozawa/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-masako-nozawa.html",
-        "participants": [
-          "Masako Nozawa"
-        ],
+        "participants": ["Masako Nozawa"],
         "questionAnswerCount": 16,
         "questionBlockCount": 16,
         "answerBlockCount": 16,
@@ -154,9 +144,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toshio-furukawa/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toshio-furukawa/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-toshio-furukawa.html",
-        "participants": [
-          "Toshio Furukawa"
-        ],
+        "participants": ["Toshio Furukawa"],
         "questionAnswerCount": 12,
         "questionBlockCount": 12,
         "answerBlockCount": 12,
@@ -187,9 +175,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-ryo-horikawa/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-ryo-horikawa/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-ryo-horikawa.html",
-        "participants": [
-          "Ryō Horikawa"
-        ],
+        "participants": ["Ryō Horikawa"],
         "questionAnswerCount": 20,
         "questionBlockCount": 20,
         "answerBlockCount": 20,
@@ -220,9 +206,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-mayumi-tanaka/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-mayumi-tanaka/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-mayumi-tanaka.html",
-        "participants": [
-          "Mayumi Tanaka"
-        ],
+        "participants": ["Mayumi Tanaka"],
         "questionAnswerCount": 13,
         "questionBlockCount": 13,
         "answerBlockCount": 13,
@@ -253,9 +237,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toru-furuya/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-toru-furuya/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-toru-furuya.html",
-        "participants": [
-          "Tōru Furuya"
-        ],
+        "participants": ["Tōru Furuya"],
         "questionAnswerCount": 18,
         "questionBlockCount": 18,
         "answerBlockCount": 17,
@@ -286,9 +268,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hirotaka-suzuoki/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hirotaka-suzuoki/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-hirotaka-suzuoki.html",
-        "participants": [
-          "Hirotaka Suzuoki"
-        ],
+        "participants": ["Hirotaka Suzuoki"],
         "questionAnswerCount": 11,
         "questionBlockCount": 11,
         "answerBlockCount": 11,
@@ -319,9 +299,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-takeshi-kusao/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-takeshi-kusao/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-takeshi-kusao.html",
-        "participants": [
-          "Takeshi Kusao"
-        ],
+        "participants": ["Takeshi Kusao"],
         "questionAnswerCount": 13,
         "questionBlockCount": 13,
         "answerBlockCount": 13,
@@ -352,9 +330,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hiromi-tsuru/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hiromi-tsuru/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-hiromi-tsuru.html",
-        "participants": [
-          "Hiromi Tsuru"
-        ],
+        "participants": ["Hiromi Tsuru"],
         "questionAnswerCount": 21,
         "questionBlockCount": 21,
         "answerBlockCount": 21,
@@ -385,9 +361,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-takeshi-aono/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-takeshi-aono/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-takeshi-aono.html",
-        "participants": [
-          "Takeshi Aono"
-        ],
+        "participants": ["Takeshi Aono"],
         "questionAnswerCount": 7,
         "questionBlockCount": 7,
         "answerBlockCount": 7,
@@ -418,9 +392,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-yuko-minaguchi/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-yuko-minaguchi/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-yuko-minaguchi.html",
-        "participants": [
-          "Yūko Minaguchi"
-        ],
+        "participants": ["Yūko Minaguchi"],
         "questionAnswerCount": 10,
         "questionBlockCount": 10,
         "answerBlockCount": 10,
@@ -451,9 +423,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-mayumi-sho/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-mayumi-sho/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-mayumi-sho.html",
-        "participants": [
-          "Mayumi Shō"
-        ],
+        "participants": ["Mayumi Shō"],
         "questionAnswerCount": 7,
         "questionBlockCount": 7,
         "answerBlockCount": 7,
@@ -484,9 +454,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hiroshi-masuoka/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-hiroshi-masuoka/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-hiroshi-masuoka.html",
-        "participants": [
-          "Hiroshi Masuoka"
-        ],
+        "participants": ["Hiroshi Masuoka"],
         "questionAnswerCount": 7,
         "questionBlockCount": 7,
         "answerBlockCount": 7,
@@ -517,9 +485,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-ryusei-nakao/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-ryusei-nakao/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-ryusei-nakao.html",
-        "participants": [
-          "Ryūsei Nakao"
-        ],
+        "participants": ["Ryūsei Nakao"],
         "questionAnswerCount": 7,
         "questionBlockCount": 7,
         "answerBlockCount": 7,
@@ -550,9 +516,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-norio-wakamoto/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-norio-wakamoto/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-norio-wakamoto.html",
-        "participants": [
-          "Norio Wakamoto"
-        ],
+        "participants": ["Norio Wakamoto"],
         "questionAnswerCount": 10,
         "questionBlockCount": 10,
         "answerBlockCount": 10,
@@ -583,9 +547,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-kozo-shioya/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-kozo-shioya/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-kozo-shioya.html",
-        "participants": [
-          "Kōzō Shioya"
-        ],
+        "participants": ["Kōzō Shioya"],
         "questionAnswerCount": 10,
         "questionBlockCount": 10,
         "answerBlockCount": 10,
@@ -616,9 +578,7 @@
         "url": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-joji-yanami/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/tenkaichi-densetsu-joji-yanami/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/tenkaichi-densetsu-joji-yanami.html",
-        "participants": [
-          "Jōji Yanami"
-        ],
+        "participants": ["Jōji Yanami"],
         "questionAnswerCount": 4,
         "questionBlockCount": 4,
         "answerBlockCount": 4,
@@ -654,12 +614,8 @@
         "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
         "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
         "archivedTranslation": null,
-        "bibliographicYears": [
-          2004
-        ],
-        "participants": [
-          "Daisuke Nishio"
-        ],
+        "bibliographicYears": [2004],
+        "participants": ["Daisuke Nishio"],
         "pages": "1 page",
         "format": "interview",
         "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
@@ -691,12 +647,8 @@
         "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
         "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
         "archivedTranslation": null,
-        "bibliographicYears": [
-          2004
-        ],
-        "participants": [
-          "Hiromi Tsuru"
-        ],
+        "bibliographicYears": [2004],
+        "participants": ["Hiromi Tsuru"],
         "pages": "4 pages",
         "format": "interview",
         "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
@@ -728,12 +680,8 @@
         "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
         "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
         "archivedTranslation": null,
-        "bibliographicYears": [
-          2004
-        ],
-        "participants": [
-          "Keizō Shichijō"
-        ],
+        "bibliographicYears": [2004],
+        "participants": ["Keizō Shichijō"],
         "pages": "3 pages",
         "format": "interview",
         "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
@@ -765,12 +713,8 @@
         "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
         "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
         "archivedTranslation": null,
-        "bibliographicYears": [
-          2004
-        ],
-        "participants": [
-          "Masako Nozawa"
-        ],
+        "bibliographicYears": [2004],
+        "participants": ["Masako Nozawa"],
         "pages": "6 pages",
         "format": "interview",
         "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
@@ -802,12 +746,8 @@
         "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
         "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
         "archivedTranslation": null,
-        "bibliographicYears": [
-          2004
-        ],
-        "participants": [
-          "Mayumi Tanaka"
-        ],
+        "bibliographicYears": [2004],
+        "participants": ["Mayumi Tanaka"],
         "pages": "4 pages",
         "format": "interview",
         "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
@@ -839,12 +779,8 @@
         "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
         "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
         "archivedTranslation": null,
-        "bibliographicYears": [
-          2004
-        ],
-        "participants": [
-          "Minoru Maeda"
-        ],
+        "bibliographicYears": [2004],
+        "participants": ["Minoru Maeda"],
         "pages": "1 page",
         "format": "interview",
         "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
@@ -876,12 +812,8 @@
         "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
         "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
         "archivedTranslation": null,
-        "bibliographicYears": [
-          2004
-        ],
-        "participants": [
-          "Minoru Okazaki"
-        ],
+        "bibliographicYears": [2004],
+        "participants": ["Minoru Okazaki"],
         "pages": "1 page",
         "format": "interview",
         "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
@@ -913,12 +845,8 @@
         "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
         "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
         "archivedTranslation": null,
-        "bibliographicYears": [
-          2004
-        ],
-        "participants": [
-          "Tadanao Tsuji"
-        ],
+        "bibliographicYears": [2004],
+        "participants": ["Tadanao Tsuji"],
         "pages": "1 page",
         "format": "interview",
         "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
@@ -950,12 +878,8 @@
         "sourcePageUrl": "https://www.kanzenshuu.com/home-video/jp/dragon-box/",
         "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
         "archivedTranslation": null,
-        "bibliographicYears": [
-          2004
-        ],
-        "participants": [
-          "Takao Koyama"
-        ],
+        "bibliographicYears": [2004],
+        "participants": ["Takao Koyama"],
         "pages": "1 page",
         "format": "interview",
         "formatNote": "Entretien signalé dans la liste du coffret; aucun contenu Q/R reproduit dans le corps Kanzenshuu acquis.",
@@ -981,10 +905,7 @@
         "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-november-2004-game-interview-dragon-ball-z-budokai-3/",
         "publication": "Shonen Jump, novembre 2004, « Game Interview — Dragon Ball Z: Budokai 3 »",
         "publicationDate": "2004-11",
-        "participants": [
-          "Daisuke Uchiyama",
-          "Ryo Mito (démonstration de jeu)"
-        ],
+        "participants": ["Daisuke Uchiyama", "Ryo Mito (démonstration de jeu)"],
         "kanzenshuuPageId": 51245,
         "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
         "bodyAvailable": true,
@@ -1013,10 +934,7 @@
         "url": "https://www.kanzenshuu.com/rumor/bulma-playable-character-dragon-ball-z-budokai-3/",
         "publication": "Dragon Ball Z: Budokai 3 North American Collector’s Edition — Behind the Screams DVD",
         "date": "2004-11",
-        "participants": [
-          "Tiffany Vollmer",
-          "FUNimation voice cast (other interviewees unnamed)"
-        ],
+        "participants": ["Tiffany Vollmer", "FUNimation voice cast (other interviewees unnamed)"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2022.json",
         "transcriptAvailable": false,
         "formatNote": "La page Kanzenshuu identifie le DVD bonus Behind the Screams de l’édition nord-américaine collector de Budokai 3 et indique qu’il contient des interviews de la plupart des comédiens de FUNimation. Elle nomme Tiffany Vollmer et décrit des images où elle enregistre des effets vocaux de combat; les autres intervenants et les échanges ne sont pas listés.",

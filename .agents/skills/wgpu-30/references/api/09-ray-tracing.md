@@ -17,6 +17,7 @@ Flags for acceleration structures
 Opaque (private fields).
 
 Methods and constants:
+
 - `const ALLOW_UPDATE: Self` — Allow for incremental updates (no change in size), currently this is unimplemented and will build as normal (this is fine, update vs build should be unnoticeab…
 - `const ALLOW_COMPACTION: Self` — Allow the acceleration structure to be compacted in a copy operation (`Blas::prepare_for_compaction`, `CommandEncoder::compact_blas`).
 - `const PREFER_FAST_TRACE: Self` — Optimize for fast ray tracing performance, recommended if the geometry is unlikely to change (e.g. in a game: non-interactive scene geometry)
@@ -58,6 +59,7 @@ Flags for acceleration structure geometries
 Opaque (private fields).
 
 Methods and constants:
+
 - `const OPAQUE: Self` — Is OPAQUE (is there no alpha test) recommended as currently in naga there is no candidate intersections yet so currently BLASes without this flag will not have…
 - `const NO_DUPLICATE_ANY_HIT_INVOCATION: Self` — NO_DUPLICATE_ANY_HIT_INVOCATION, not useful unless using hal with wgpu, ray-tracing pipelines are not supported in wgpu so any-hit shaders do not exist. For wh…
 - `const fn empty() -> Self` — Get a flags value with all bits unset.
@@ -92,6 +94,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 Update mode for acceleration structure builds.
 
 Variants (2):
+
 - `Build` — Always perform a full build.
 - `PreferUpdate` — If possible, perform an incremental update.
 
@@ -104,6 +107,7 @@ Bottom Level Acceleration Structure (BLAS).
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn handle(&self) -> Option<u64>` — Raw handle to the acceleration structure, used inside raw instance buffers.
 - `unsafe fn as_hal<A: hal::Api>(&mut self) -> Option<impl Deref<Target = <A as >::AccelerationStructure> + WasmNotSendSync>` — Get the [`wgpu_hal`] acceleration structure from this `Blas`.
 - `fn prepare_compaction_async(&self, callback: impl FnOnce(Result<(), BlasAsyncError>) + WasmNotSend + 'static)` — Asynchronously prepares this BLAS for compaction. The callback is called once all builds using this BLAS are finished and the BLAS is compactable. This can be checked using [`Blas::ready_for_compaction`]. Rebuilding thi…
@@ -116,6 +120,7 @@ Implements: `Clone`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`
 Definition for an axis-aligned bounding box geometry group for a bottom level acceleration structure.
 
 Fields:
+
 - `size: &'a BlasAABBGeometrySizeDescriptor` — Sub descriptor for the size defining attributes of this geometry.
 - `stride: BufferAddress` — Stride in bytes between consecutive AABB primitives in the buffer (at least [`AABB_GEOMETRY_MIN_STRIDE`], and must be a multiple of 8).
 - `aabb_buffer: &'a Buffer` — Buffer containing packed AABB primitives (layout determined by `size.stride`).
@@ -130,6 +135,7 @@ Implements: `Debug`
 Descriptor for size-defining attributes of one AABB geometry group in a bottom level acceleration structure.
 
 Fields:
+
 - `primitive_count: u32` — Number of AABB primitives in this geometry.
 - `flags: AccelerationStructureGeometryFlags` — Flags for the geometry.
 
@@ -146,6 +152,7 @@ Implements: `Clone`, `Debug`, `Display`, `Eq`, `Error`, `PartialEq`, `Structural
 Builds the given sets of geometry into the given [Blas].
 
 Fields:
+
 - `blas: &'a Blas` — Reference to the acceleration structure.
 - `geometry: BlasGeometries<'a>` — Geometries.
 
@@ -156,6 +163,7 @@ Implements: `Debug`
 Contains the sets of geometry that go into a [Blas].
 
 Variants (2):
+
 - `TriangleGeometries(alloc::vec::Vec<BlasTriangleGeometry<'a>>)` — Triangle geometry variant.
 - `AabbGeometries(alloc::vec::Vec<BlasAabbGeometry<'a>>)` — Procedural AABB geometry variant.
 
@@ -168,6 +176,7 @@ Implements: `Debug`
 Descriptor for all size defining attributes of all geometries inside a bottom level acceleration structure.
 
 Variants (2):
+
 - `Triangles { descriptors: alloc::vec::Vec<BlasTriangleGeometrySizeDescriptor> }` — Triangle geometry version.
 - `AABBs { descriptors: alloc::vec::Vec<BlasAABBGeometrySizeDescriptor> }` — AABB geometry version.
 
@@ -178,6 +187,7 @@ Implements: `Clone`, `Debug`
 Definition for a triangle geometry for a Bottom Level Acceleration Structure (BLAS).
 
 Fields:
+
 - `size: &'a BlasTriangleGeometrySizeDescriptor` — Sub descriptor for the size defining attributes of a triangle geometry.
 - `vertex_buffer: &'a Buffer` — Vertex buffer.
 - `first_vertex: u32` — Offset into the vertex buffer as a factor of the vertex stride.
@@ -196,6 +206,7 @@ Implements: `Debug`
 Descriptor for all size defining attributes of a single triangle geometry inside a bottom level acceleration structure.
 
 Fields:
+
 - `vertex_format: VertexFormat` — Format of a vertex position, must be [`VertexFormat::Float32x3`] with just [`Features::EXPERIMENTAL_RAY_QUERY`] but [`Features::EXTENDED_ACCELERATION_STRUCTURE_VERTEX_FORMATS`] ad…
 - `vertex_count: u32` — Number of vertices.
 - `index_format: Option<IndexFormat>` — Format of an index. Only needed if an index buffer is used. If `index_format` is provided `index_count` is required.
@@ -221,6 +232,7 @@ Opaque (private fields).
 Context version of [BlasGeometries].
 
 Variants (2):
+
 - `TriangleGeometries(alloc::boxed::Box<dyn Iterator<Item = ContextBlasTriangleGeometry<'a>> + 'a>)` — Triangle geometries.
 - `AabbGeometries(alloc::boxed::Box<dyn Iterator<Item = ContextBlasAabbGeometry<'a>> + 'a>)` — AABB geometries.
 
@@ -237,11 +249,13 @@ Opaque (private fields).
 Descriptor for creating a bottom level acceleration structure.
 
 Fields:
+
 - `label: L` — Label for the bottom level acceleration structure.
 - `flags: AccelerationStructureFlags` — Flags for the bottom level acceleration structure.
 - `update_mode: AccelerationStructureUpdateMode` — Update mode for the bottom level acceleration structure.
 
 Methods and constants:
+
 - `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> CreateBlasDescriptor<K>` — Takes a closure and maps the label of the blas descriptor into another.
 
 Implements: `Clone`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -253,12 +267,14 @@ Implements: `Clone`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
 Descriptor for creating a top level acceleration structure.
 
 Fields:
+
 - `label: L` — Label for the top level acceleration structure.
 - `max_instances: u32` — Number of instances that can be stored in the acceleration structure.
 - `flags: AccelerationStructureFlags` — Flags for the bottom level acceleration structure.
 - `update_mode: AccelerationStructureUpdateMode` — Update mode for the bottom level acceleration structure.
 
 Methods and constants:
+
 - `fn map_label<'a, K>(self: &'a Self, fun: impl FnOnce(&'a L) -> K) -> CreateTlasDescriptor<K>` — Takes a closure and maps the label of the blas descriptor into another.
 
 Implements: `Clone`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -270,6 +286,7 @@ Top Level Acceleration Structure (TLAS).
 Opaque (private fields).
 
 Methods and constants:
+
 - `unsafe fn as_hal<A: hal::Api>(&mut self) -> Option<impl Deref<Target = <A as >::AccelerationStructure>>` — Get the [`wgpu_hal`] acceleration structure from this `Tlas`.
 - `fn get(&self) -> &[Option<TlasInstance>]` — Get a reference to all instances.
 - `fn get_mut_slice(&mut self, range: Range<usize>) -> Option<&mut [Option<TlasInstance>]>` — Get a mutable slice to a range of instances. Returns None if the range is out of bounds. All elements from the lowest accessed index up are marked as modified. For best performance it is recommended to prefer access to…
@@ -283,12 +300,14 @@ Implements: `Clone`, `Debug`, `Eq`, `Hash`, `Index<Range<usize>>`, `Index<usize>
 Safe instance for a [Tlas].
 
 Fields:
+
 - `transform: [f32; 12]` — Affine transform matrix 3x4 (rows x columns, row major order).
 - `custom_data: u32` — Custom index for the instance used inside the shader.
 - `mask: u8` — Mask for the instance used inside the shader to filter instances. Reports hit only if `(shader_cull_mask & tlas_instance.mask) != 0u`.
 - (private fields omitted)
 
 Methods and constants:
+
 - `fn new(blas: &Blas, transform: [f32; 12], custom_data: u32, mask: u8) -> Self` — Construct TlasInstance. - blas: Reference to the bottom level acceleration structure - transform: Transform buffer offset in bytes (optional, required if transform buffer is present) - custom_data: Custom index for the…
 - `fn set_blas(&mut self, blas: &Blas)` — Set the bottom level acceleration structure.
 

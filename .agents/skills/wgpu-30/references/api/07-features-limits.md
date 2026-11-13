@@ -7,11 +7,13 @@
 Lists various ways the underlying platform does not conform to the WebGPU standard.
 
 Fields:
+
 - `flags: DownlevelFlags` — Combined boolean flags.
 - `limits: DownlevelLimits` — Additional limits
 - `shader_model: ShaderModel` — Which collections of features shaders support. Defined in terms of D3D's shader models.
 
 Methods and constants:
+
 - `fn is_webgpu_compliant(&self) -> bool` — Returns true if the underlying platform offers complete support of the baseline WebGPU standard. _[must_use]_
 
 Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`, `StructuralPartialEq`
@@ -23,6 +25,7 @@ Binary flags listing features that may or may not be present on downlevel adapte
 Opaque (private fields).
 
 Methods and constants:
+
 - `const COMPUTE_SHADERS: Self` — The device supports compiling and using compute shaders.
 - `const FRAGMENT_WRITABLE_STORAGE: Self` — Supports binding storage buffers and textures to fragment shaders.
 - `const INDIRECT_EXECUTION: Self` — Supports indirect drawing and dispatching.
@@ -86,10 +89,12 @@ Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Part
 Features that are not guaranteed to be supported.
 
 Fields:
+
 - `features_wgpu: FeaturesWGPU`
 - `features_webgpu: FeaturesWebGPU`
 
 Methods and constants:
+
 - `const fn bits(&self) -> FeatureBits` — Gets the set flags as a container holding an array of bits.
 - `const fn empty() -> Self` — Returns self with no flags set.
 - `const fn all() -> Self` — Returns self with all flags set.
@@ -142,7 +147,7 @@ Methods and constants:
 - `const TEXTURE_FORMAT_NV12: Self` — Allows for creation of textures of format [`TextureFormat::NV12`]
 - `const TEXTURE_FORMAT_P010: Self` — Allows for creation of textures of format [`TextureFormat::P010`]
 - `const EXTERNAL_TEXTURE: Self` — Allows for the creation and usage of `ExternalTexture`s, and bind group layouts containing external texture `BindingType`s.
-- `const EXPERIMENTAL_RAY_QUERY: Self` — ***THIS IS EXPERIMENTAL:*** Features enabled by this may have major bugs in it and are expected to be subject to breaking changes, suggestions for the API expo…
+- `const EXPERIMENTAL_RAY_QUERY: Self` — _**THIS IS EXPERIMENTAL:**_ Features enabled by this may have major bugs in it and are expected to be subject to breaking changes, suggestions for the API expo…
 - `const SHADER_F64: Self` — Enables 64-bit floating point types in SPIR-V shaders.
 - `const SHADER_I16: Self` — Allows shaders to use `i16` and `u16` 16-bit integer types.
 - `const SHADER_EARLY_DEPTH_TEST: Self` — Allows shaders to use the `early_depth_test` attribute.
@@ -160,7 +165,7 @@ Methods and constants:
 - `const TEXTURE_INT64_ATOMIC: Self` — Enables R64Uint image atomic min and max.
 - `const UNIFORM_BUFFER_BINDING_ARRAYS: Self` — Allows uniform buffers to be bound as binding arrays.
 - `const EXPERIMENTAL_MESH_SHADER: Self` — Enables mesh shaders and task shaders in mesh shader pipelines. This extension does NOT imply support for compiling mesh shaders at runtime.
-- `const EXPERIMENTAL_RAY_HIT_VERTEX_RETURN: Self` — ***THIS IS EXPERIMENTAL:*** Features enabled by this may have major bugs in them and are expected to be subject to breaking changes, suggestions for the API ex…
+- `const EXPERIMENTAL_RAY_HIT_VERTEX_RETURN: Self` — _**THIS IS EXPERIMENTAL:**_ Features enabled by this may have major bugs in them and are expected to be subject to breaking changes, suggestions for the API ex…
 - `const EXPERIMENTAL_MESH_SHADER_MULTIVIEW: Self` — Enables multiview in mesh shader pipelines
 - `const EXTENDED_ACCELERATION_STRUCTURE_VERTEX_FORMATS: Self` — Allows usage of additional vertex formats in [BlasTriangleGeometrySizeDescriptor::vertex_format]
 - `const PASSTHROUGH_SHADERS: Self` — Enables creating shaders from passthrough with reflection info (unsafe)
@@ -207,6 +212,7 @@ Features that are not guaranteed to be supported.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const DEPTH_CLIP_CONTROL: Self` — By default, polygon depth is clipped to 0-1 range before/during rasterization. Anything outside of that range is rejected, and respective fragments are not tou…
 - `const DEPTH32FLOAT_STENCIL8: Self` — Allows for explicit creation of textures of format [`TextureFormat::Depth32FloatStencil8`]
 - `const TEXTURE_COMPRESSION_BC: Self` — Enables BCn family of compressed textures. All BCn textures use 4x4 pixel blocks with 8 or 16 bytes per block.
@@ -257,6 +263,7 @@ Features that are not guaranteed to be supported.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const SHADER_FLOAT32_ATOMIC: Self` — Allows shaders to use f32 atomic load, store, add, sub, and exchange.
 - `const TEXTURE_FORMAT_16BIT_NORM: Self` — Enables normalized `16-bit` texture formats.
 - `const TEXTURE_COMPRESSION_ASTC_HDR: Self` — Enables ASTC HDR family of compressed textures.
@@ -285,7 +292,7 @@ Methods and constants:
 - `const TEXTURE_FORMAT_NV12: Self` — Allows for creation of textures of format [`TextureFormat::NV12`]
 - `const TEXTURE_FORMAT_P010: Self` — Allows for creation of textures of format [`TextureFormat::P010`]
 - `const EXTERNAL_TEXTURE: Self` — Allows for the creation and usage of `ExternalTexture`s, and bind group layouts containing external texture `BindingType`s.
-- `const EXPERIMENTAL_RAY_QUERY: Self` — ***THIS IS EXPERIMENTAL:*** Features enabled by this may have major bugs in it and are expected to be subject to breaking changes, suggestions for the API expo…
+- `const EXPERIMENTAL_RAY_QUERY: Self` — _**THIS IS EXPERIMENTAL:**_ Features enabled by this may have major bugs in it and are expected to be subject to breaking changes, suggestions for the API expo…
 - `const SHADER_F64: Self` — Enables 64-bit floating point types in SPIR-V shaders.
 - `const SHADER_I16: Self` — Allows shaders to use `i16` and `u16` 16-bit integer types.
 - `const SHADER_EARLY_DEPTH_TEST: Self` — Allows shaders to use the `early_depth_test` attribute.
@@ -303,7 +310,7 @@ Methods and constants:
 - `const TEXTURE_INT64_ATOMIC: Self` — Enables R64Uint image atomic min and max.
 - `const UNIFORM_BUFFER_BINDING_ARRAYS: Self` — Allows uniform buffers to be bound as binding arrays.
 - `const EXPERIMENTAL_MESH_SHADER: Self` — Enables mesh shaders and task shaders in mesh shader pipelines. This extension does NOT imply support for compiling mesh shaders at runtime.
-- `const EXPERIMENTAL_RAY_HIT_VERTEX_RETURN: Self` — ***THIS IS EXPERIMENTAL:*** Features enabled by this may have major bugs in them and are expected to be subject to breaking changes, suggestions for the API ex…
+- `const EXPERIMENTAL_RAY_HIT_VERTEX_RETURN: Self` — _**THIS IS EXPERIMENTAL:**_ Features enabled by this may have major bugs in them and are expected to be subject to breaking changes, suggestions for the API ex…
 - `const EXPERIMENTAL_MESH_SHADER_MULTIVIEW: Self` — Enables multiview in mesh shader pipelines
 - `const EXTENDED_ACCELERATION_STRUCTURE_VERTEX_FORMATS: Self` — Allows usage of additional vertex formats in [BlasTriangleGeometrySizeDescriptor::vertex_format]
 - `const PASSTHROUGH_SHADERS: Self` — Enables creating shaders from passthrough with reflection info (unsafe)
@@ -348,6 +355,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 Represents the sets of limits an adapter/device supports.
 
 Fields:
+
 - `max_texture_dimension_1d: u32` — Maximum allowed value for the `size.width` of a texture created with `TextureDimension::D1`. Defaults to 8192. Higher is "better".
 - `max_texture_dimension_2d: u32` — Maximum allowed value for the `size.width` and `size.height` of a texture created with `TextureDimension::D2`. Defaults to 8192. Higher is "better".
 - `max_texture_dimension_3d: u32` — Maximum allowed value for the `size.width`, `size.height`, and `size.depth_or_array_layers` of a texture created with `TextureDimension::D3`. Defaults to 2048. Higher is "better".
@@ -407,6 +415,7 @@ Fields:
 - `max_ray_recursion_depth: u32` — The maximum number that one can pass into a ray tracing pipeline creation to be the maximum ray recursion depth. (the maximum of the max ray recursion depth) Requesting more than…
 
 Methods and constants:
+
 - `const fn defaults() -> Self` — These default limits are guaranteed to work on all modern backends and guaranteed to be supported by WebGPU _[must_use]_
 - `const fn downlevel_defaults() -> Self` — These default limits are guaranteed to be compatible with GLES-3.1. _[must_use]_
 - `const fn downlevel_webgl2_defaults() -> Self` — These default limits are guaranteed to be compatible with GLES-3.0 and WebGL2 _[must_use]_
@@ -430,6 +439,7 @@ Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralP
 Collections of shader features a device supports if they support less than WebGPU normally allows.
 
 Variants (3):
+
 - `Sm2` — Extremely limited shaders, including a total instruction limit.
 - `Sm4` — Missing minor features and storage images.
 - `Sm5` — WebGPU supports shader module 5.

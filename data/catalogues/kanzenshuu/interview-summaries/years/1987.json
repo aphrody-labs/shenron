@@ -19,9 +19,7 @@
         "url": "https://www.kanzenshuu.com/translations/adventure-special-toriyama-qa/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/adventure-special-toriyama-qa/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/adventure-special-toriyama-qa.html",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "questionAnswerCount": 64,
         "questionBlockCount": 64,
         "answerBlockCount": 64,

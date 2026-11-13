@@ -49,24 +49,65 @@ const api = collectPublic(wgpu, [wgt]);
 
 /** Output file of an item, from the source file that defines it. */
 const AREAS: { file: string; title: string; match: RegExp }[] = [
-  { file: "01-instance-adapter-device-queue", title: "Instance, adapter, device, queue", match: /^(wgpu\/)?src\/(api\/(instance|adapter|device|queue)|instance|adapter|device|backend|counters|tokens|error|math)\.rs$|^src\/(api\/mod|backend\/wgpu_core)\.rs$/ },
-  { file: "02-buffers-textures-samplers", title: "Buffers, textures, samplers, queries", match: /^src\/(api\/(buffer|texture|texture_view|sampler|query_set|external_texture)|buffer|texture|origin_extent|write_only|transfers|texture\/external_(image|texture))\.rs$/ },
-  { file: "03-commands-and-passes", title: "Command encoding, render and compute passes, bundles", match: /^src\/(api\/(command_encoder|command_buffer|render_pass|compute_pass|render_bundle|render_bundle_encoder)|util\/encoder)\.rs$/ },
-  { file: "04-render-state", title: "Render state: primitive, blend, depth/stencil, multisample", match: /^src\/render\.rs$/ },
-  { file: "05-pipelines-shaders-bindings", title: "Pipelines, shaders, bind groups, vertex layouts", match: /^src\/(api\/(bind_group|bind_group_layout|pipeline_layout|render_pipeline|compute_pipeline|shader_module|pipeline_cache|common_pipeline)|binding|shader|vertex)\.rs$/ },
-  { file: "06-surface-presentation", title: "Surface and presentation", match: /^src\/(api\/(surface|surface_texture)|surface)\.rs$/ },
-  { file: "07-features-limits", title: "Features and limits", match: /^src\/(features|limits)\.rs$/ },
+  {
+    file: "01-instance-adapter-device-queue",
+    title: "Instance, adapter, device, queue",
+    match:
+      /^(wgpu\/)?src\/(api\/(instance|adapter|device|queue)|instance|adapter|device|backend|counters|tokens|error|math)\.rs$|^src\/(api\/mod|backend\/wgpu_core)\.rs$/,
+  },
+  {
+    file: "02-buffers-textures-samplers",
+    title: "Buffers, textures, samplers, queries",
+    match:
+      /^src\/(api\/(buffer|texture|texture_view|sampler|query_set|external_texture)|buffer|texture|origin_extent|write_only|transfers|texture\/external_(image|texture))\.rs$/,
+  },
+  {
+    file: "03-commands-and-passes",
+    title: "Command encoding, render and compute passes, bundles",
+    match:
+      /^src\/(api\/(command_encoder|command_buffer|render_pass|compute_pass|render_bundle|render_bundle_encoder)|util\/encoder)\.rs$/,
+  },
+  {
+    file: "04-render-state",
+    title: "Render state: primitive, blend, depth/stencil, multisample",
+    match: /^src\/render\.rs$/,
+  },
+  {
+    file: "05-pipelines-shaders-bindings",
+    title: "Pipelines, shaders, bind groups, vertex layouts",
+    match:
+      /^src\/(api\/(bind_group|bind_group_layout|pipeline_layout|render_pipeline|compute_pipeline|shader_module|pipeline_cache|common_pipeline)|binding|shader|vertex)\.rs$/,
+  },
+  {
+    file: "06-surface-presentation",
+    title: "Surface and presentation",
+    match: /^src\/(api\/(surface|surface_texture)|surface)\.rs$/,
+  },
+  {
+    file: "07-features-limits",
+    title: "Features and limits",
+    match: /^src\/(features|limits)\.rs$/,
+  },
   { file: "08-texture-formats", title: "Texture formats", match: /^src\/texture\/format\.rs$/ },
-  { file: "09-ray-tracing", title: "Ray tracing (BLAS, TLAS)", match: /^src\/(api\/(blas|tlas)|ray_tracing)\.rs$/ },
+  {
+    file: "09-ray-tracing",
+    title: "Ray tracing (BLAS, TLAS)",
+    match: /^src\/(api\/(blas|tlas)|ray_tracing)\.rs$/,
+  },
   { file: "10-util", title: "wgpu::util helpers", match: /^src\/util\// },
 ];
 
 const areaOf = (p: PublicItem): string => {
   const file = sourceFile(p.item);
   const hit = AREAS.find((a) => a.match.test(file));
-  return hit ? hit.file : p.krate.name === "wgpu_types" && file === "src/lib.rs" ? "01-instance-adapter-device-queue" : "11-misc";
+  return hit
+    ? hit.file
+    : p.krate.name === "wgpu_types" && file === "src/lib.rs"
+      ? "01-instance-adapter-device-queue"
+      : "11-misc";
 };
-const titleOf = (file: string): string => AREAS.find((a) => a.file === file)?.title ?? "Everything else";
+const titleOf = (file: string): string =>
+  AREAS.find((a) => a.file === file)?.title ?? "Everything else";
 
 const esc = (text: string): string => text.replaceAll("|", "\\|");
 const code = (text: string): string => `\`${text.replaceAll("`", "'")}\``;
@@ -86,11 +127,20 @@ function renderItem(p: PublicItem): string {
   const kind = kindOf(target.item);
   const head: string[] = [];
   const mk = markers(renderMarkers(p.item));
-  const generics = kind === "struct" || kind === "enum" || kind === "trait" ? typeGenerics(target) : "";
+  const generics =
+    kind === "struct" || kind === "enum" || kind === "trait" ? typeGenerics(target) : "";
   if (p.kind === "type_alias") {
-    head.push(`### ${p.name} — type alias${mk}`, "", `${code(`type ${p.name} = ${aliasTarget(p)}`)}`);
+    head.push(
+      `### ${p.name} — type alias${mk}`,
+      "",
+      `${code(`type ${p.name} = ${aliasTarget(p)}`)}`,
+    );
   } else if (p.kind === "function") {
-    head.push(`### ${p.name} — function${mk}`, "", code(renderFunction(p.item, p.path.replace(/^wgpu::/, ""))));
+    head.push(
+      `### ${p.name} — function${mk}`,
+      "",
+      code(renderFunction(p.item, p.path.replace(/^wgpu::/, ""))),
+    );
   } else if (p.kind === "constant") {
     head.push(`### ${p.name} — constant`, "", code(constantDecl(p)));
   } else if (p.kind === "macro") {
@@ -106,13 +156,15 @@ function renderItem(p: PublicItem): string {
     const { fields, tuple, hidden } = structFields(target);
     if (fields.length) {
       body.push("", tuple ? "Fields (tuple):" : "Fields:");
-      for (const f of fields) body.push(`- ${code(`${f.name}: ${f.type}`)}${f.doc ? ` — ${esc(f.doc)}` : ""}`);
+      for (const f of fields)
+        body.push(`- ${code(`${f.name}: ${f.type}`)}${f.doc ? ` — ${esc(f.doc)}` : ""}`);
       if (hidden) body.push("- (private fields omitted)");
     } else if (hidden) body.push("", "Opaque (private fields).");
   } else if (kind === "enum") {
     const variants = enumVariants(target);
     body.push("", `Variants (${variants.length}):`);
-    for (const v of variants) body.push(`- ${code(`${v.name}${v.shape}`)}${v.doc ? ` — ${esc(v.doc)}` : ""}`);
+    for (const v of variants)
+      body.push(`- ${code(`${v.name}${v.shape}`)}${v.doc ? ` — ${esc(v.doc)}` : ""}`);
   }
   if (kind === "struct" || kind === "enum" || kind === "trait") {
     const m = renderMembers(p, target);
@@ -174,7 +226,9 @@ for (const file of files) {
   console.log(`${file}.md: ${items.length} items, ${(text.length / 1024).toFixed(0)} KiB`);
 }
 writeFileSync(join(outDir, "00-index.md"), index.join("\n"));
-console.log(`${api.filter((p) => p.kind !== "module").length} public items of wgpu ${wgpu.version}`);
+console.log(
+  `${api.filter((p) => p.kind !== "module").length} public items of wgpu ${wgpu.version}`,
+);
 
 // ── naga (shader front ends, back ends, validation) ──────────────────────────────────────────
 import { existsSync } from "node:fs";
@@ -184,7 +238,8 @@ if (existsSync(nagaFile)) {
   const naga = loadCrate(nagaFile, "naga");
   crates.push(naga);
   const items = collectPublic(naga, []).filter((p) => p.kind !== "module");
-  const moduleOf = (p: PublicItem): string => p.path.split("::")[1] && p.path.split("::").length > 2 ? p.path.split("::")[1]! : "(root)";
+  const moduleOf = (p: PublicItem): string =>
+    p.path.split("::")[1] && p.path.split("::").length > 2 ? p.path.split("::")[1]! : "(root)";
   const heavy = new Set(["ir", "proc"]);
   const full: string[] = [];
   const names = new Map<string, string[]>();
@@ -199,7 +254,12 @@ if (existsSync(nagaFile)) {
     `> Generated ${generated} from the rustdoc JSON (format ${naga.formatVersion}) of \`naga\` ${naga.version} (front ends WGSL/SPIR-V/GLSL, back ends WGSL/SPIR-V/MSL/HLSL/GLSL, validation). The intermediate representation (\`ir\`) and the procedural helpers (\`proc\`) are listed by name only. Do not edit: regenerate (see ../SKILL.md).`,
     "",
   ].join("\n");
-  const tail = [...names].flatMap(([mod, list]) => [`## naga::${mod} (names only)`, "", list.join(", "), ""]);
+  const tail = [...names].flatMap(([mod, list]) => [
+    `## naga::${mod} (names only)`,
+    "",
+    list.join(", "),
+    "",
+  ]);
   const text = [nagaHeader, ...full, ...tail].join("\n");
   writeFileSync(join(outDir, "..", "naga-api.md"), text);
   console.log(`naga-api.md: ${items.length} items, ${(text.length / 1024).toFixed(0)} KiB`);

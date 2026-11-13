@@ -1,3 +1,7 @@
 {
-  "recommendations": ["ms-vscode-remote.remote-wsl", "ms-vscode-remote.remote-ssh", "oxc.oxc-vscode"]
+  "recommendations": [
+    "ms-vscode-remote.remote-wsl",
+    "ms-vscode-remote.remote-ssh",
+    "oxc.oxc-vscode"
+  ]
 }

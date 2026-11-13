@@ -23,11 +23,7 @@
         "publication": "V-Jump, numéro de juin 2022, comic bonus « Victory Asada's Road Toward Super Top-Class!!! », chapitre 35",
         "pages": "7 pages (planches 1 à 7 dans la transcription Kanzenshuu)",
         "date": "2022-04-21",
-        "participants": [
-          "Tetsuro Kodama",
-          "Victory Asada",
-          "Kasai"
-        ],
+        "participants": ["Tetsuro Kodama", "Victory Asada", "Kasai"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-june-2022-back-up-comic-chapter-35/",
         "questionAnswerCount": 7,
         "formatNote": "Les sept unités repérées par Kanzenshuu correspondent aux sept pages/planches d'un comic d'interview humoristique, et non à sept questions journalistiques autonomes. Des didascalies, bulles et éléments de gag complètent les propos de Kodama; l'annonce que Victory Asada serait dans le film est une plaisanterie démentie dans la dernière planche.",
@@ -56,9 +52,7 @@
         "publication": "Dragon Ball Super: Super Hero Theatrical Pamphlet",
         "pages": "Entretien de quatre questions, pagination non indiquée dans la transcription Kanzenshuu",
         "date": "2022-06-11",
-        "participants": [
-          "Chikashi Kubota"
-        ],
+        "participants": ["Chikashi Kubota"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview/",
         "questionAnswerCount": 4,
         "formatNote": "Entretien écrit de quatre questions-réponses. Kubota s'exprime comme directeur d'animation et ancien animateur clé; ses appréciations de la 3D sont son expérience professionnelle.",
@@ -84,9 +78,7 @@
         "url": "https://www.kanzenshuu.com/2022/02/21/super-hero-panel-hosted-at-dragon-ball-games-battle-hour-2022/",
         "publication": "Dragon Ball Games Battle Hour 2022 — Super Hero Super Stage",
         "publicationDate": "2022-02-21",
-        "participants": [
-          "Miyu Irino"
-        ],
+        "participants": ["Miyu Irino"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2022.json",
         "videoUrl": "https://dbgbh.bn-ent.net/archive/2022/en/title/2022dbs/",
         "transcriptAvailable": false,

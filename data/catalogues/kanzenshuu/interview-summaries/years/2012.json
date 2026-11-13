@@ -17,9 +17,7 @@
         "url": "https://www.kanzenshuu.com/2012/04/22/podcast-episode-0296/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2012-04-22",
-        "participants": [
-          "Jerome Mazandarani"
-        ],
+        "participants": ["Jerome Mazandarani"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2012.json",
         "audioUrl": "http://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0296.mp3",
         "audioTranscriptAvailable": false,

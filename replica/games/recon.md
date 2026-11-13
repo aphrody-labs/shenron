@@ -6,18 +6,18 @@ Date : 2026-11-11. Rédigé d'après l'analyse des exécutables, archives PAK/CP
 
 ## 1. Inventaire des Écrans (10 Écrans)
 
-| ID | Écran | Route | Composants Principaux | Rôle & États |
-| :--- | :--- | :--- | :--- | :--- |
-| **S01** | Hub Principal | `/games/canon` | Navigation Sagas, Status Bar Gamescope (60 FPS), Roster Preview, Sélecteur de Mode | Sélection du mode de jeu et de la saga active |
-| **S02** | Sélection Combattants | `/games/canon/select` | Grille 25 combattants, sélecteur de forme/transformation (Base, SSJ, SSJ2, SSJ3, God), carte de stats | Choix de l'équipe (1v1 ou 3v3 Tag Team) et des assists |
-| **S03** | Arène de Combat 2.5D | `/games/canon/battle` | Canvas WebGPU/WASM 60 FPS, HUD FighterZ (barre 15°, Dragon Radar 7 boules), jauge de Ki 0..7 | Exécution du combat en temps réel avec shaders ArcSys |
-| **S04** | Duel de Rayons (Beam Clash) | `/games/canon/clash` | Overlay de duel de rayons, jauge de mash rate [J]/[K], caméra dynamique, speedlines | Mini-jeu de confrontation décisive lors de Kikōha simultanés |
-| **S05** | Invocation de Shenron | `/games/canon/shenron` | Animation cinématique du dragon céleste Shenron, carte des 4 vœux (Vie, Réanimation, Ki, Invincibilité) | Déclenchée lorsque 7 Dragon Balls sont collectées par combos |
-| **S06** | Coupure Manga Narrative | `/games/canon/dialogue` | Bulles manga bilingues (Kanji/Kana + FR), lien vers tome manga, lien épisode anime | Cutscene pré-combat et dialogue de victoire canonique |
-| **S07** | Dramatic Finish | `/games/canon/finish` | Écran de victoire cinématique avec destructibilité d'arène (Namek, Cell Games, Wasteland) | Déclenché lors du coup final canonique sur le boss |
-| **S08** | Tournoi Tenkaichi | `/games/canon/tournament`| Arbre d'élimination 8/16 combattants, annonceur Tenkaichi, jauge de Ring-Out | Mode championnat avec élimination hors de l'arène |
-| **S09** | Salle du Temps (Training) | `/games/canon/training` | Visualisateur de hitboxes (vertes/rouges), affichage frame data (Startup, Active, Recovery), replay d'inputs | Entraînement technique et perfectionnement des combos |
-| **S10** | Hall Multijoueur Rollback | `/games/canon/lobby` | Liste des salons P2P WebRTC, ping, jauge de delay frames (0..3), match classé | Affrontement en ligne synchronisé par Axum 0.8 |
+| ID      | Écran                       | Route                     | Composants Principaux                                                                                        | Rôle & États                                                 |
+| :------ | :-------------------------- | :------------------------ | :----------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------- |
+| **S01** | Hub Principal               | `/games/canon`            | Navigation Sagas, Status Bar Gamescope (60 FPS), Roster Preview, Sélecteur de Mode                           | Sélection du mode de jeu et de la saga active                |
+| **S02** | Sélection Combattants       | `/games/canon/select`     | Grille 25 combattants, sélecteur de forme/transformation (Base, SSJ, SSJ2, SSJ3, God), carte de stats        | Choix de l'équipe (1v1 ou 3v3 Tag Team) et des assists       |
+| **S03** | Arène de Combat 2.5D        | `/games/canon/battle`     | Canvas WebGPU/WASM 60 FPS, HUD FighterZ (barre 15°, Dragon Radar 7 boules), jauge de Ki 0..7                 | Exécution du combat en temps réel avec shaders ArcSys        |
+| **S04** | Duel de Rayons (Beam Clash) | `/games/canon/clash`      | Overlay de duel de rayons, jauge de mash rate [J]/[K], caméra dynamique, speedlines                          | Mini-jeu de confrontation décisive lors de Kikōha simultanés |
+| **S05** | Invocation de Shenron       | `/games/canon/shenron`    | Animation cinématique du dragon céleste Shenron, carte des 4 vœux (Vie, Réanimation, Ki, Invincibilité)      | Déclenchée lorsque 7 Dragon Balls sont collectées par combos |
+| **S06** | Coupure Manga Narrative     | `/games/canon/dialogue`   | Bulles manga bilingues (Kanji/Kana + FR), lien vers tome manga, lien épisode anime                           | Cutscene pré-combat et dialogue de victoire canonique        |
+| **S07** | Dramatic Finish             | `/games/canon/finish`     | Écran de victoire cinématique avec destructibilité d'arène (Namek, Cell Games, Wasteland)                    | Déclenché lors du coup final canonique sur le boss           |
+| **S08** | Tournoi Tenkaichi           | `/games/canon/tournament` | Arbre d'élimination 8/16 combattants, annonceur Tenkaichi, jauge de Ring-Out                                 | Mode championnat avec élimination hors de l'arène            |
+| **S09** | Salle du Temps (Training)   | `/games/canon/training`   | Visualisateur de hitboxes (vertes/rouges), affichage frame data (Startup, Active, Recovery), replay d'inputs | Entraînement technique et perfectionnement des combos        |
+| **S10** | Hall Multijoueur Rollback   | `/games/canon/lobby`      | Liste des salons P2P WebRTC, ping, jauge de delay frames (0..3), match classé                                | Affrontement en ligne synchronisé par Axum 0.8               |
 
 ---
 

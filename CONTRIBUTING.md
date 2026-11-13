@@ -12,11 +12,13 @@ Thank you for contributing to Shenron. Shenron is the sovereign technical platfo
 ## Development Workflow
 
 1. Install dependencies:
+
    ```sh
    just install
    ```
 
 2. Validate codebase before opening a PR:
+
    ```sh
    just check
    just lint

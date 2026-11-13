@@ -9,6 +9,7 @@ Rédigé d'après `replica/crunchyroll/recon.md`, `replica/crunchyroll/features.
 Bâtir l'expérience complète de découverte et de visionnage de la plateforme d'animés (tranche « Découvrir -> Fiche Série -> Lecture -> Watchlist ») intégrée à `tv.dragonballfr.com` / `apps/site/src/app/tv` sans aucune dépendance propriétaire ni code emprunté.
 
 ### Principes Clean-Room :
+
 - 100% code original, zéro iframe non autorisée, zéro scraper en production.
 - Rendu vectoriel haute performance, typographie accessible WCAG AAA.
 - Utilisation du moteur HLS natif de Shenron (`packages/engine/src/video`) et du CDN Garage S3 / R2 (`cdn.dragonballfr.com/stream`).
@@ -17,14 +18,14 @@ Bâtir l'expérience complète de découverte et de visionnage de la plateforme 
 
 ## 2. Stack Technique Retenue
 
-| Couche | Technologie | Justification |
-| :--- | :--- | :--- |
-| **Framework Frontend** | Next.js 16.5 + React 19 (Bun standalone) | Rendu SSR pour le SEO des fiches d'anime et lecteur vidéo optimisé sans rechargement. |
-| **Styling & Design Tokens** | Tailwind CSS v4 + `replica/crunchyroll/design/tokens.json` | 14 paires de contraste AA/AAA validées, design fluide 390px à 1920px. |
-| **Moteur Vidéo** | HLS.js 1.5+ / WebCodecs / Shaka Player | Support HLS multirésolution (1080p, 720p, 480p), dual-audio (VF / VOSTFR), sous-titres ASS/VTT. |
-| **Base de Données** | PostgreSQL (`DATABASE_URL`) | Schéma unifié pour les saisons, épisodes, progression de lecture et watchlist. |
-| **Gestion d'État Client** | Zustand / React Context | Suivi de progression temporelle (`currentTime`), reprise de lecture, état de mise en favori. |
-| **Authentification** | Better Auth existant | Gestion des profils de visionnage et synchronisation multi-appareils. |
+| Couche                      | Technologie                                                | Justification                                                                                   |
+| :-------------------------- | :--------------------------------------------------------- | :---------------------------------------------------------------------------------------------- |
+| **Framework Frontend**      | Next.js 16.5 + React 19 (Bun standalone)                   | Rendu SSR pour le SEO des fiches d'anime et lecteur vidéo optimisé sans rechargement.           |
+| **Styling & Design Tokens** | Tailwind CSS v4 + `replica/crunchyroll/design/tokens.json` | 14 paires de contraste AA/AAA validées, design fluide 390px à 1920px.                           |
+| **Moteur Vidéo**            | HLS.js 1.5+ / WebCodecs / Shaka Player                     | Support HLS multirésolution (1080p, 720p, 480p), dual-audio (VF / VOSTFR), sous-titres ASS/VTT. |
+| **Base de Données**         | PostgreSQL (`DATABASE_URL`)                                | Schéma unifié pour les saisons, épisodes, progression de lecture et watchlist.                  |
+| **Gestion d'État Client**   | Zustand / React Context                                    | Suivi de progression temporelle (`currentTime`), reprise de lecture, état de mise en favori.    |
+| **Authentification**        | Better Auth existant                                       | Gestion des profils de visionnage et synchronisation multi-appareils.                           |
 
 ---
 
@@ -101,39 +102,44 @@ create table if not exists tv_watchlist (
 
 ## 4. Matrice des Écrans & Routes
 
-| ID | Écran Répliqué | Route Shenron | Rôle |
-| :--- | :--- | :--- | :--- |
-| **S01** | Découvrir | `/tv` | Carrousel hero à la une, rangée « Continuer la lecture », catégories et sélections. |
-| **S02** | Fiche Série | `/tv/series/:slug` | Affiche grand format, badge d'âge, bouton Watchlist, sélecteur de saison et grille d'épisodes avec miniatures. |
-| **S03** | Lecteur Vidéo | `/tv/watch/:episode` | Lecteur plein écran HLS, sélecteur VF/VOSTFR, saut d'intro (85s), enchaînement épisode suivant. |
-| **S04** | Watchlist | `/tv/watchlist` | Grille des séries favorites de l'utilisateur avec filtre par état (En cours, Terminée). |
+| ID      | Écran Répliqué | Route Shenron        | Rôle                                                                                                           |
+| :------ | :------------- | :------------------- | :------------------------------------------------------------------------------------------------------------- |
+| **S01** | Découvrir      | `/tv`                | Carrousel hero à la une, rangée « Continuer la lecture », catégories et sélections.                            |
+| **S02** | Fiche Série    | `/tv/series/:slug`   | Affiche grand format, badge d'âge, bouton Watchlist, sélecteur de saison et grille d'épisodes avec miniatures. |
+| **S03** | Lecteur Vidéo  | `/tv/watch/:episode` | Lecteur plein écran HLS, sélecteur VF/VOSTFR, saut d'intro (85s), enchaînement épisode suivant.                |
+| **S04** | Watchlist      | `/tv/watchlist`      | Grille des séries favorites de l'utilisateur avec filtre par état (En cours, Terminée).                        |
 
 ---
 
 ## 5. Découpage en Tranches Verticales (Build Order)
 
 ### Tranche 1 : Shell & Navigation TV (`apps/site/src/app/tv/layout.tsx`)
+
 - En-tête minimaliste sombre avec logo TV, barre de recherche, lien Watchlist et profil.
 - Configuration du thème sombre immersif (`bg-[#0a0d14] text-white`).
 - Intégration des jetons `tokens.json`.
 
 ### Tranche 2 : Lecteur HLS & Contrôles Immersifs (`S03`)
+
 - Composant `TvVideoPlayer.tsx` avec barre de contrôle auto-masquable (3s d'inactivité).
 - Saut automatique ou manuel de générique (« Passer l'intro »).
 - Synchronisation de position de lecture (ping toutes les 15s vers `/api/tv/progress`).
 - Bouton « Épisode Suivant » avec compte à rebours de 5 secondes en fin de générique de fin.
 
 ### Tranche 3 : Fiche Série & Navigation de Saison (`S02`)
+
 - En-tête cinématique avec bannière assombrie en dégradé vertical.
 - Accordéon ou onglets de saisons avec vignettes 16:9 de chaque épisode.
 - Badge d'avancement de lecture (barre rouge/ambre sous la miniature).
 
 ### Tranche 4 : Page Découvrir & Continuer la Lecture (`S01`)
+
 - Bannière Hero plein écran avec extrait vidéo automatique muet (ou image haute résolution).
 - Rangée dynamique « Reprendre » alimentée par `tv_watch_progress`.
 - Carrousels thématiques : Sagas Canoniques, Films, Séries Alternatives.
 
 ### Tranche 5 : Watchlist & Synchronisation Compte (`S04`)
+
 - Bouton d'ajout/retrait immédiat avec mutation optimiste.
 - Vue grille responsive (2 colonnes mobile, 4 colonnes desktop).
 

@@ -9,34 +9,20 @@
   "records": [
     {
       "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nozawa-p128-129-visual.jsonl#L1",
-      "printedPages": [
-        128
-      ],
-      "pdfPageIndices": [
-        129
-      ],
+      "printedPages": [128],
+      "pdfPageIndices": [129],
       "completeness": "Corps d'entretien lisible transcrit. La dernière ligne s'interrompt au changement de page après オーディション, continué par のテープ au folio suivant."
     },
     {
       "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nozawa-p128-129-visual.jsonl#L2",
-      "printedPages": [
-        129
-      ],
-      "pdfPageIndices": [
-        130
-      ],
+      "printedPages": [129],
+      "pdfPageIndices": [130],
       "completeness": "Corps d'entretien visible transcrit; la première ligne complète le mot オーディション de la page 128. Fin du texte visible incluse."
     }
   ],
   "coverage": {
-    "printedPages": [
-      128,
-      129
-    ],
-    "pdfPageIndices": [
-      129,
-      130
-    ],
+    "printedPages": [128, 129],
+    "pdfPageIndices": [129, 130],
     "completeness": "Corps d'entretien visible sur les deux folios couvert. La mise en page interrompt une phrase entre les pages, raccordée sans ajout.",
     "limits": [
       "Les légendes de la photographie de profil, le texte incorporé aux images et les éléments décoratifs ne font pas partie du corps de l'entretien transcrit.",

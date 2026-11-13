@@ -8,34 +8,35 @@ Objet : ajouter à dragonballfr.com des pages œuvre génériques (série, film,
 
 La stack est celle du site et de l'ADR 0003. Rien de nouveau n'est introduit sans raison.
 
-| Couche | Choix | Pourquoi |
-| --- | --- | --- |
-| Site | Leptos 0.8 SSR statique sur Axum (`yolo-stack/apps/shenron/crates/shenron-site`) | Décision ADR 0003. Le SSR statique sert le SEO des pages œuvre. |
-| Transition | `apps/site` Next 16.5 reste en production jusqu'à la bascule | `yolo-next migrate --target leptos` donne 91 % de parité (`yolo-stack/docs/research/notes/shenron-site-next-migration-report.md`). |
-| Style | Jetons `replica/design/tokens.json` (14 paires AA validées), sans CSS manuel côté Leptos | Les jetons existent déjà et passent le contrôle de contraste. |
-| Base | Postgres existant (`DATABASE_URL`), une seule base | Les tables `ba_*`, `site_*` et catalogue y vivent déjà. |
-| Accès | `sqlx` côté Rust, Drizzle côté Next pendant la transition, même schéma | Un seul schéma, migrations SQL versionnées. |
-| Auth | Better Auth existant (`ba_user`, `ba_session`, passkey, OAuth) | Les pages œuvre sont publiques ; seule l'administration exige un rôle. |
-| Fichiers | R2 derrière `cdn.dragonballfr.com` | Déjà la source des planches et des médias autorisés. |
-| E-mail | Fournisseur transactionnel à confirmer (aucun SDK mail dans `apps/site/package.json`) | Indispensable pour le double opt-in de la newsletter. |
-| Tâches | Timer systemd ou cron sur l'hôte prod, journalisé | Une seule tâche (fraîcheur de la diffusion), pas de file de jobs à introduire. |
+| Couche     | Choix                                                                                    | Pourquoi                                                                                                                           |
+| ---------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| Site       | Leptos 0.8 SSR statique sur Axum (`yolo-stack/apps/shenron/crates/shenron-site`)         | Décision ADR 0003. Le SSR statique sert le SEO des pages œuvre.                                                                    |
+| Transition | `apps/site` Next 16.5 reste en production jusqu'à la bascule                             | `yolo-next migrate --target leptos` donne 91 % de parité (`yolo-stack/docs/research/notes/shenron-site-next-migration-report.md`). |
+| Style      | Jetons `replica/design/tokens.json` (14 paires AA validées), sans CSS manuel côté Leptos | Les jetons existent déjà et passent le contrôle de contraste.                                                                      |
+| Base       | Postgres existant (`DATABASE_URL`), une seule base                                       | Les tables `ba_*`, `site_*` et catalogue y vivent déjà.                                                                            |
+| Accès      | `sqlx` côté Rust, Drizzle côté Next pendant la transition, même schéma                   | Un seul schéma, migrations SQL versionnées.                                                                                        |
+| Auth       | Better Auth existant (`ba_user`, `ba_session`, passkey, OAuth)                           | Les pages œuvre sont publiques ; seule l'administration exige un rôle.                                                             |
+| Fichiers   | R2 derrière `cdn.dragonballfr.com`                                                       | Déjà la source des planches et des médias autorisés.                                                                               |
+| E-mail     | Fournisseur transactionnel à confirmer (aucun SDK mail dans `apps/site/package.json`)    | Indispensable pour le double opt-in de la newsletter.                                                                              |
+| Tâches     | Timer systemd ou cron sur l'hôte prod, journalisé                                        | Une seule tâche (fraîcheur de la diffusion), pas de file de jobs à introduire.                                                     |
 
 ## 2. Schéma
 
 Fichier : `replica/schema.sql`. Il prévoit 8 tables neuves, sans toucher aux tables existantes.
 
-| Table | Rôle | Propriétaire |
-| --- | --- | --- |
-| `works` | œuvre (anime, film, jeu, manga), slug, statut de publication | éditorial (rôle admin) |
-| `work_texts` | titre, intro, histoire par langue (fr, en, ja) | éditorial |
-| `work_videos` | médias autorisés (CDN propre ou embed officiel) avec date et type | éditorial |
-| `characters` | fiche personnage par œuvre, portrait propre ou absent | éditorial |
-| `broadcast_slots` | diffusion par région, plateforme, jour et heure (fuseau explicite) | éditorial |
-| `staff_credits` | crédits ordonnés | éditorial |
-| `work_news` | liens d'actualité datés | éditorial |
-| `newsletter_signups` | e-mail, langue, consentement daté, double opt-in | l'inscrit (effacement RGPD) |
+| Table                | Rôle                                                               | Propriétaire                |
+| -------------------- | ------------------------------------------------------------------ | --------------------------- |
+| `works`              | œuvre (anime, film, jeu, manga), slug, statut de publication       | éditorial (rôle admin)      |
+| `work_texts`         | titre, intro, histoire par langue (fr, en, ja)                     | éditorial                   |
+| `work_videos`        | médias autorisés (CDN propre ou embed officiel) avec date et type  | éditorial                   |
+| `characters`         | fiche personnage par œuvre, portrait propre ou absent              | éditorial                   |
+| `broadcast_slots`    | diffusion par région, plateforme, jour et heure (fuseau explicite) | éditorial                   |
+| `staff_credits`      | crédits ordonnés                                                   | éditorial                   |
+| `work_news`          | liens d'actualité datés                                            | éditorial                   |
+| `newsletter_signups` | e-mail, langue, consentement daté, double opt-in                   | l'inscrit (effacement RGPD) |
 
 Règles appliquées :
+
 - clés `uuid` et `created_at` / `updated_at` en `timestamptz` ;
 - règles `on delete` choisies une par une ;
 - index sur chaque clé étrangère et chaque tri ;
@@ -50,23 +51,24 @@ Les données du jeu S08/S09 (plateformes, wishlist) restent hors périmètre : l
 
 ## 3. Routes
 
-| Méthode et chemin | Rôle | Qui | Entrée | Sortie | Parcours |
-| --- | --- | --- | --- | --- | --- |
-| GET `/:lang/oeuvres` | liste des œuvres publiées | public | `lang` | HTML statique | F01 |
-| GET `/:lang/oeuvres/:slug` | page œuvre à ancres (hero, vidéos, personnages, diffusion, staff, actus) | public | `lang`, `slug` | HTML statique, `SsrMode::Static` + `prerender_params` | F01, F02 |
-| GET `/:lang/oeuvres/:slug#personnages` et les autres ancres | navigation interne | public | – | – | F01 |
-| GET `/:lang/oeuvres/:slug/declarations` | déclarations de l'auteur liées (`toriyama-interviews` existant) | public | `slug` | HTML | F03 |
-| POST `/api/newsletter` | inscription, envoi du lien de confirmation | public, limité en débit | e-mail, langue, consentement | 202 | F04 |
-| GET `/api/newsletter/confirm/:token` | confirme l'inscription (jeton à usage unique) | public | jeton | redirection 303 | F04 |
-| POST `/api/newsletter/unsubscribe/:token` | désinscription et effacement | public | jeton | 200 | F04 |
-| POST/PATCH/DELETE `/api/admin/works…` | édition des œuvres et des tables liées | admin | JSON validé | 200/201/204 | éditorial |
-| GET `/sitemap.xml`, `/robots.txt` | entrées des pages œuvre publiées | public | – | XML / texte | SEO |
+| Méthode et chemin                                           | Rôle                                                                     | Qui                     | Entrée                       | Sortie                                                | Parcours  |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------ | ----------------------- | ---------------------------- | ----------------------------------------------------- | --------- |
+| GET `/:lang/oeuvres`                                        | liste des œuvres publiées                                                | public                  | `lang`                       | HTML statique                                         | F01       |
+| GET `/:lang/oeuvres/:slug`                                  | page œuvre à ancres (hero, vidéos, personnages, diffusion, staff, actus) | public                  | `lang`, `slug`               | HTML statique, `SsrMode::Static` + `prerender_params` | F01, F02  |
+| GET `/:lang/oeuvres/:slug#personnages` et les autres ancres | navigation interne                                                       | public                  | –                            | –                                                     | F01       |
+| GET `/:lang/oeuvres/:slug/declarations`                     | déclarations de l'auteur liées (`toriyama-interviews` existant)          | public                  | `slug`                       | HTML                                                  | F03       |
+| POST `/api/newsletter`                                      | inscription, envoi du lien de confirmation                               | public, limité en débit | e-mail, langue, consentement | 202                                                   | F04       |
+| GET `/api/newsletter/confirm/:token`                        | confirme l'inscription (jeton à usage unique)                            | public                  | jeton                        | redirection 303                                       | F04       |
+| POST `/api/newsletter/unsubscribe/:token`                   | désinscription et effacement                                             | public                  | jeton                        | 200                                                   | F04       |
+| POST/PATCH/DELETE `/api/admin/works…`                       | édition des œuvres et des tables liées                                   | admin                   | JSON validé                  | 200/201/204                                           | éditorial |
+| GET `/sitemap.xml`, `/robots.txt`                           | entrées des pages œuvre publiées                                         | public                  | –                            | XML / texte                                           | SEO       |
 
 Le changement de langue (F02) reste le `LanguageSwitcher` existant, avec les liens `hreflang` entre `/fr`, `/en` et `/ja`.
 
 Webhooks entrants : aucun. Webhook sortant : aucun.
 
 Tâches :
+
 - `broadcast-staleness`, quotidienne à 06:00 UTC : marque les créneaux sans vérification depuis 30 jours ;
 - `newsletter-purge`, quotidienne : supprime les inscriptions non confirmées après 7 jours.
 

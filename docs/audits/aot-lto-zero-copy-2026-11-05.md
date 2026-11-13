@@ -17,11 +17,11 @@ clock around `cargo build` for build times.
 
 ## 1. What AOT and bytecode are, and which Bun does what
 
-| Mode | Flag | What it does | Limit |
-| --- | --- | --- | --- |
-| bundle | none | JavaScript source is embedded and parsed at start | slowest start |
-| bytecode | `--bytecode --format=esm` | JavaScriptCore bytecode cache embedded, no parse at start | valid for the JSC of the Bun that wrote it |
-| aot | `--aot` | JavaScript/TypeScript compiled to machine code at build time | no cross-compile; no Bun command line inside the executable; type errors in generated entries fail the build |
+| Mode     | Flag                      | What it does                                                 | Limit                                                                                                        |
+| -------- | ------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------ |
+| bundle   | none                      | JavaScript source is embedded and parsed at start            | slowest start                                                                                                |
+| bytecode | `--bytecode --format=esm` | JavaScriptCore bytecode cache embedded, no parse at start    | valid for the JSC of the Bun that wrote it                                                                   |
+| aot      | `--aot`                   | JavaScript/TypeScript compiled to machine code at build time | no cross-compile; no Bun command line inside the executable; type errors in generated entries fail the build |
 
 Bun toolchain facts verified on the hub (`bun build --help`, Bun 1.4.4-canary.1):
 
@@ -72,14 +72,14 @@ Consequences implemented:
 
 Bytecode built with `+11c367163` (AOT panics there), AOT built with `+5b598476c`.
 
-| Metric | bytecode | aot | change |
-| --- | --- | --- | --- |
-| `--version` median (n=30), min, p90 | 77.4 ms, 67.4, 92.2 | 35.6 ms, 32.8, 41.3 | -54% |
-| `--smoke` median (n=20), min, p90 | 514.4 ms, 376.2, 777.5 | 410.8 ms, 324.5, 569.5 | -20% |
-| RSS `--version` median (n=20) | 60.5 MB | 43.6 MB | -28% |
-| RSS `--smoke` median (n=20) | 139.9 MB | 113.6 MB | -19% |
-| Executable size | 235,137,736 B | 238,373,688 B | +1.4% (Windows: +22%) |
-| Compile time (`bun build`) | 5.7 s | 48.0 s | AOT is about 8x slower to build |
+| Metric                              | bytecode               | aot                    | change                          |
+| ----------------------------------- | ---------------------- | ---------------------- | ------------------------------- |
+| `--version` median (n=30), min, p90 | 77.4 ms, 67.4, 92.2    | 35.6 ms, 32.8, 41.3    | -54%                            |
+| `--smoke` median (n=20), min, p90   | 514.4 ms, 376.2, 777.5 | 410.8 ms, 324.5, 569.5 | -20%                            |
+| RSS `--version` median (n=20)       | 60.5 MB                | 43.6 MB                | -28%                            |
+| RSS `--smoke` median (n=20)         | 139.9 MB               | 113.6 MB               | -19%                            |
+| Executable size                     | 235,137,736 B          | 238,373,688 B          | +1.4% (Windows: +22%)           |
+| Compile time (`bun build`)          | 5.7 s                  | 48.0 s                 | AOT is about 8x slower to build |
 
 Both binaries print `"smoke":"ok"` (115 slash commands, 11 canvas fonts, indexer worker ready).
 Linux behavior: the canvas native addon is loaded from `skia.linux-x64-gnu.node` beside the binary
@@ -95,26 +95,26 @@ Opt-in `SHENRON_AOT_TRIM=1` adds `--trim`: 192.8 MB (-45 MB, "67.5 MB of unused 
 Real build with `scripts/build/server.ts` (Next build 79 s, whole script 5 min 38 s).
 `bytecode` compiled from the same generated entry with the default Bun.
 
-| Metric | bytecode | aot (+ runtime/bun) | change |
-| --- | --- | --- | --- |
-| Executable size (payload embedded) | 321,649,352 B | 313,613,112 B | -2.5% (plus the 100 MB `runtime/bun` file) |
-| Time to first 200 on `/robots.txt`, warm payload cache, median (n=11) | 1582 ms | 1588 ms | none (Next child dominates) |
-| RSS of the server process | 78.7 MB | 59.1 MB | -25% |
-| RSS of the Next child | 149.3 MB | 148.3 MB | none |
-| `GET /api/local/health` (oha 8 s, 16 conns) | 16,168 req/s, p50 0.90 ms, p99 2.37 ms | 22,637 req/s, p50 0.61 ms, p99 1.93 ms | +40% req/s |
-| `GET /robots.txt` (proxied to Next) | 1,044 req/s, p50 13.2 ms | 1,047 req/s, p50 12.8 ms | none (Next is the limit) |
+| Metric                                                                | bytecode                               | aot (+ runtime/bun)                    | change                                     |
+| --------------------------------------------------------------------- | -------------------------------------- | -------------------------------------- | ------------------------------------------ |
+| Executable size (payload embedded)                                    | 321,649,352 B                          | 313,613,112 B                          | -2.5% (plus the 100 MB `runtime/bun` file) |
+| Time to first 200 on `/robots.txt`, warm payload cache, median (n=11) | 1582 ms                                | 1588 ms                                | none (Next child dominates)                |
+| RSS of the server process                                             | 78.7 MB                                | 59.1 MB                                | -25%                                       |
+| RSS of the Next child                                                 | 149.3 MB                               | 148.3 MB                               | none                                       |
+| `GET /api/local/health` (oha 8 s, 16 conns)                           | 16,168 req/s, p50 0.90 ms, p99 2.37 ms | 22,637 req/s, p50 0.61 ms, p99 1.93 ms | +40% req/s                                 |
+| `GET /robots.txt` (proxied to Next)                                   | 1,044 req/s, p50 13.2 ms               | 1,047 req/s, p50 12.8 ms               | none (Next is the limit)                   |
 
 The first start (payload extraction) took 18.4 s for bytecode and 37.3 s for AOT; it is dominated by
 disk and load at that minute (one sample each), not a mode property.
 
 ### Other compiled CLIs
 
-| Target | plain | bytecode | aot |
-| --- | --- | --- | --- |
-| `packages/crunchyroll` `cli help` median (n=30) | 10.2 ms | 7.8 ms | 7.1 ms |
-| same, RSS median | 16.8 MB | 16.0 MB | 19.6 MB |
-| same, size | 140.5 MB | 142.0 MB | 69.0 MB |
-| `apps/activity` size | 140.7 MB | n/a | 71.3 MB |
+| Target                                          | plain    | bytecode | aot     |
+| ----------------------------------------------- | -------- | -------- | ------- |
+| `packages/crunchyroll` `cli help` median (n=30) | 10.2 ms  | 7.8 ms   | 7.1 ms  |
+| same, RSS median                                | 16.8 MB  | 16.0 MB  | 19.6 MB |
+| same, size                                      | 140.5 MB | 142.0 MB | 69.0 MB |
+| `apps/activity` size                            | 140.7 MB | n/a      | 71.3 MB |
 
 The Crunchyroll CLI gains nothing at runtime, so its `package.json` build is unchanged. The Activity
 server (`apps/activity/scripts/compile.ts`) now compiles with `Bun.build({ compile: { aot: true } })`
@@ -179,16 +179,16 @@ gzip 605.3 KiB to 603.8 KiB); `build-wasm.ts --check` passes and `packages/kohar
 
 ### Build times and sizes (vps, cold `CARGO_TARGET_DIR`, no sccache)
 
-| Build | time | size | notes |
-| --- | --- | --- | --- |
-| `shenron-video` release, cold | 412 s | 1,580,808 B | load average 30 at the time |
-| `shenron-video` production-abort, cold | 107.6 s | 994,248 B (-37%) | load average 15 |
-| `shenron-video` release, warm (touch `lib.rs`) | 9.9 s | | |
-| `shenron-video` production-abort, warm | 17.8 s | | single codegen unit, fat LTO relink |
-| `shenron-mcp` release, cold | 259.6 s | 26,495,088 B | |
-| `shenron-mcp` production-abort, cold | 470.4 s | 14,998,224 B (-43%) | measurement of the abort variant |
-| `shenron-mcp` production (shipped: unwind), cold | 574.8 s | 16,496,176 B (-38%) | load average 9 |
-| `shenron-mcp` production, warm (touch `main.rs`) | 147.0 s | | fat LTO relink of the whole graph |
+| Build                                            | time    | size                | notes                               |
+| ------------------------------------------------ | ------- | ------------------- | ----------------------------------- |
+| `shenron-video` release, cold                    | 412 s   | 1,580,808 B         | load average 30 at the time         |
+| `shenron-video` production-abort, cold           | 107.6 s | 994,248 B (-37%)    | load average 15                     |
+| `shenron-video` release, warm (touch `lib.rs`)   | 9.9 s   |                     |                                     |
+| `shenron-video` production-abort, warm           | 17.8 s  |                     | single codegen unit, fat LTO relink |
+| `shenron-mcp` release, cold                      | 259.6 s | 26,495,088 B        |                                     |
+| `shenron-mcp` production-abort, cold             | 470.4 s | 14,998,224 B (-43%) | measurement of the abort variant    |
+| `shenron-mcp` production (shipped: unwind), cold | 574.8 s | 16,496,176 B (-38%) | load average 9                      |
+| `shenron-mcp` production, warm (touch `main.rs`) | 147.0 s |                     | fat LTO relink of the whole graph   |
 
 The cold release number for `shenron-video` is inflated by load (it includes compiling all
 dependencies under a load of 30); compare cold times only with this caveat. The price of fat LTO is
@@ -207,10 +207,10 @@ length)`, `Buffer.from(await file.arrayBuffer())` is a view, not a copy.
 
 Changed (each with a byte-identical-output test):
 
-| Change | Evidence |
-| --- | --- |
+| Change                                                                                                                                                               | Evidence                                                                                                                                                                           |
+| -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `apps/server/src/payload.ts` `pack()` reads every file straight into its slot of one archive buffer (was: a `Buffer` per file, then a second copy into the archive). | Test compares the compressed bytes with the old packer (3 MB file, empty file, nested dirs). 382 MB tree: peak RSS 1073 MiB to 690 MiB (-36%), 1.12 s to 1.04 s, identical sha256. |
-| `apps/bot/src/render/png.ts` `encodePngRgba()` writes signature, chunks and the zlib stream into one buffer (was: zlib copy, chunk copies, `Buffer.concat`). | Test compares bytes with the old encoder on 5 sizes and levels. Timing: 21.3 ms vs 21.6 ms for 2000x720, no measurable change (deflate dominates); fewer allocations only. |
+| `apps/bot/src/render/png.ts` `encodePngRgba()` writes signature, chunks and the zlib stream into one buffer (was: zlib copy, chunk copies, `Buffer.concat`).         | Test compares bytes with the old encoder on 5 sizes and levels. Timing: 21.3 ms vs 21.6 ms for 2000x720, no measurable change (deflate dominates); fewer allocations only.         |
 
 Examined and left alone, with the cause:
 

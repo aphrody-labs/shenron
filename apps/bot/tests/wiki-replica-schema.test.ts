@@ -33,7 +33,9 @@ describe("réplica wiki : colonnes absentes des migrations SQL", () => {
     db.exec(
       "CREATE TABLE db_tools (id INTEGER PRIMARY KEY, slug TEXT NOT NULL, name TEXT NOT NULL, url TEXT NOT NULL)",
     );
-    db.exec("INSERT INTO db_tools (slug, name, url) VALUES ('x', 'X', 'https://gemini.google.com')");
+    db.exec(
+      "INSERT INTO db_tools (slug, name, url) VALUES ('x', 'X', 'https://gemini.google.com')",
+    );
     ensureWikiReplicaSchema(db);
     ensureWikiVisibility(db);
     expect(columns(db, "db_tools")).toEqual(

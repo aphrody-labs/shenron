@@ -233,7 +233,16 @@
       "texture": "ui/avatars/dbfz_chibi_avatars_atlas.webp",
       "tile_size": [64, 64],
       "characters": [
-        "goku", "vegeta", "gohan", "piccolo", "trunks", "frieza", "cell", "buu", "beerus", "whis"
+        "goku",
+        "vegeta",
+        "gohan",
+        "piccolo",
+        "trunks",
+        "frieza",
+        "cell",
+        "buu",
+        "beerus",
+        "whis"
       ]
     },
     "stamps": {

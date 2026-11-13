@@ -58,14 +58,14 @@ Check if there’s an existing project to scan:
 
 For each of the 6 dimensions below, report what you found and how confident you are. Do NOT interpret the decision matrix or derive a recommended configuration — that happens downstream.
 
-| Dimension | What to determine | Confidence: HIGH | Confidence: MEDIUM | Confidence: LOW |
-| --- | --- | --- | --- | --- |
-| **Business model** | marketplace, on-demand services, professional services, SaaS with payments, crowdfunding, subscription platform, rental marketplace, event ticketing, e-commerce (white-label), B2B platform | Explicit on homepage or about page | Inferred from product description or competitor comparison | Guessing from vague signals |
-| **Parties** | Who are the sellers or providers? Who are the buyers? | Roles explicitly named on the site | Inferred from business model type | No party information found |
-| **Payment flow** | Platform collects → pays out? Buyers pay sellers directly? Platform processes on behalf? | Pricing page or docs describe the flow | Inferred from business model (for example, marketplaces usually collect) | No payment information found |
-| **Onboarding control** | Embedded, Stripe-hosted redirect, or fully custom or API | Custom onboarding shown on site, or white-label signals | Default inference from business model | Contradictory signals |
-| **Dispute responsibility** | Platform handles, sellers handle, or shared | Explicitly stated in terms/policies | Inferred from model (marketplace → platform usually) | No information |
-| **Fee structure** | Percentage, flat, tiered, subscription+tx | Pricing page shows exact fee structure | Inferred from competitor patterns or partial information | No pricing information found |
+| Dimension                  | What to determine                                                                                                                                                                            | Confidence: HIGH                                        | Confidence: MEDIUM                                                       | Confidence: LOW              |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------ | ---------------------------- |
+| **Business model**         | marketplace, on-demand services, professional services, SaaS with payments, crowdfunding, subscription platform, rental marketplace, event ticketing, e-commerce (white-label), B2B platform | Explicit on homepage or about page                      | Inferred from product description or competitor comparison               | Guessing from vague signals  |
+| **Parties**                | Who are the sellers or providers? Who are the buyers?                                                                                                                                        | Roles explicitly named on the site                      | Inferred from business model type                                        | No party information found   |
+| **Payment flow**           | Platform collects → pays out? Buyers pay sellers directly? Platform processes on behalf?                                                                                                     | Pricing page or docs describe the flow                  | Inferred from business model (for example, marketplaces usually collect) | No payment information found |
+| **Onboarding control**     | Embedded, Stripe-hosted redirect, or fully custom or API                                                                                                                                     | Custom onboarding shown on site, or white-label signals | Default inference from business model                                    | Contradictory signals        |
+| **Dispute responsibility** | Platform handles, sellers handle, or shared                                                                                                                                                  | Explicitly stated in terms/policies                     | Inferred from model (marketplace → platform usually)                     | No information               |
+| **Fee structure**          | Percentage, flat, tiered, subscription+tx                                                                                                                                                    | Pricing page shows exact fee structure                  | Inferred from competitor patterns or partial information                 | No pricing information found |
 
 #### Step 4 — Produce structured output
 
@@ -96,11 +96,11 @@ Return your analysis in this exact format:
 
 #### Step 5 — Handle edge cases
 
-| Scenario | What to do |
-| --- | --- |
-| **URL returns 403/404/timeout** | Fall back to `WebSearch` with the domain name. Note in Sources: “Direct URL unreachable, used web search.” |
-| **URL is a SPA with minimal HTML** | `WebFetch` may return little content. Fall back to `WebSearch`. Check meta tags and page title. |
-| **Pricing is behind a login** | Fee structure confidence drops to LOW. Note: “Pricing not publicly available.” |
-| **Company does multiple things** | Note the ambiguity. Classify based on the primary product. Set confidence to MEDIUM with reasoning about which facet you chose. |
-| **Not a marketplace or platform** | If the business is purely B2C with no multiparty payments, flag clearly: “This business appears to be a direct seller — standard Stripe integration may be more appropriate than Stripe Connect.” Set Business Model confidence to HIGH with value “not-connect”. |
-| **Conflicting signals** | Note the conflict explicitly. Set confidence to MEDIUM. Provide your best inference with reasoning about why you chose one interpretation over the other. |
+| Scenario                           | What to do                                                                                                                                                                                                                                                        |
+| ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **URL returns 403/404/timeout**    | Fall back to `WebSearch` with the domain name. Note in Sources: “Direct URL unreachable, used web search.”                                                                                                                                                        |
+| **URL is a SPA with minimal HTML** | `WebFetch` may return little content. Fall back to `WebSearch`. Check meta tags and page title.                                                                                                                                                                   |
+| **Pricing is behind a login**      | Fee structure confidence drops to LOW. Note: “Pricing not publicly available.”                                                                                                                                                                                    |
+| **Company does multiple things**   | Note the ambiguity. Classify based on the primary product. Set confidence to MEDIUM with reasoning about which facet you chose.                                                                                                                                   |
+| **Not a marketplace or platform**  | If the business is purely B2C with no multiparty payments, flag clearly: “This business appears to be a direct seller — standard Stripe integration may be more appropriate than Stripe Connect.” Set Business Model confidence to HIGH with value “not-connect”. |
+| **Conflicting signals**            | Note the conflict explicitly. Set confidence to MEDIUM. Provide your best inference with reasoning about why you chose one interpretation over the other.                                                                                                         |

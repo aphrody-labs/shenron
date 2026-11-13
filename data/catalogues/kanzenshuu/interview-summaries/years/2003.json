@@ -25,10 +25,7 @@
         "publication": "TV Anime Guide: Dragon Ball Z Son Goku Densetsu",
         "pages": "90–102",
         "date": "2003-10-03",
-        "participants": [
-          "Akira Toriyama",
-          "Katsuyoshi Nakatsuru"
-        ],
+        "participants": ["Akira Toriyama", "Katsuyoshi Nakatsuru"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/son-goku-densetsu-toriyama-x-nakatsuru/",
         "questionAnswerCount": 31,
         "formatNote": "Le HTML acquis contient 32 blocs question et 31 blocs réponse; le compte résumé correspond aux 31 paires complètes, tandis que l'index compte les 32 questions balisées.",
@@ -55,9 +52,7 @@
         "publication": "Kanzenban Official Guide: Dragon Ball Landmark",
         "pages": "146–157",
         "date": "2003-12-19",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-landmark-dragon-ball-toriyama/",
         "questionAnswerCount": null,
         "formatNote": "Entretien thématique organisé sous forme de titres et réponses, sans balisage standard des questions.",
@@ -136,9 +131,7 @@
         "url": "https://www.kanzenshuu.com/translations/dragon-ball-landmark-toriyama-qa/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-landmark-toriyama-qa/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-landmark-toriyama-qa.html",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "questionAnswerCount": 10,
         "questionBlockCount": 10,
         "answerBlockCount": 10,
@@ -168,9 +161,7 @@
         "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-january-2003-interview-dragon-power-ask-akira-toriyama/",
         "publication": "Shonen Jump, janvier 2003, « Dragon Power! / Ask Akira Toriyama »",
         "publicationDate": "2003-01",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "kanzenshuuPageId": 51125,
         "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
         "bodyAvailable": true,
@@ -199,10 +190,7 @@
         "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-march-2003-nyc-launch-kidz-questionz-for-akira-toriyama/",
         "publication": "Shonen Jump, mars 2003, « NYC Launch / KidZ QuestionZ for Akira Toriyama »",
         "publicationDate": "2003-03",
-        "participants": [
-          "Akira Toriyama",
-          "Jeunes lecteurs de Shonen Jump"
-        ],
+        "participants": ["Akira Toriyama", "Jeunes lecteurs de Shonen Jump"],
         "kanzenshuuPageId": 51151,
         "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
         "bodyAvailable": true,
@@ -231,10 +219,7 @@
         "url": "https://www.kanzenshuu.com/press-archive/shonen-jump-march-2003-interview-toriyama-vs-tasutoko/",
         "publication": "Shonen Jump, mars 2003, « Interview — Toriyama vs Yasutoko »",
         "publicationDate": "2003-03",
-        "participants": [
-          "Akira Toriyama",
-          "Takeshi Yasutoko"
-        ],
+        "participants": ["Akira Toriyama", "Takeshi Yasutoko"],
         "kanzenshuuPageId": 51159,
         "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
         "bodyAvailable": true,
@@ -264,12 +249,7 @@
         "url": "https://www.kanzenshuu.com/press-archive/anime-insider-december-2003-feature-the-qt-on-gt/",
         "publication": "Anime Insider, décembre 2003, « The QT on GT »",
         "publicationDate": "2003-12",
-        "participants": [
-          "Chris Bevins",
-          "Jeremy Carlisle",
-          "Eric Vale",
-          "Mike McFarland"
-        ],
+        "participants": ["Chris Bevins", "Jeremy Carlisle", "Eric Vale", "Mike McFarland"],
         "kanzenshuuPageId": 53780,
         "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2017.json",
         "bodyAvailable": true,

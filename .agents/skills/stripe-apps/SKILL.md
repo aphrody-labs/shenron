@@ -7,7 +7,6 @@ description: >-
   extensions, extension interfaces, custom workflow actions, and apps that
   authenticate to Stripe or react to events. Also use when deciding whether a
   Stripe extension can support the user's billing or workflow requirements.
-
 ---
 
 ## Stripe Apps
@@ -24,29 +23,29 @@ Use information already supplied by the user or existing app. Read <references/d
 
 Use these existing product documents to determine which capability fits and whether the account has the required access. Don’t infer support from an extension’s name or the existence of a scaffold.
 
-| Task | Read |
-| --- | --- |
-| Select an extension interface and its supported implementation types | [Extension points](https://docs.stripe.com/extensions/extension-points.md) and [how extensions work](https://docs.stripe.com/extensions/how-extensions-work.md) |
-| Change how items are included on subscription invoices | [Item handling extensions](https://docs.stripe.com/billing/scripts/item-handling.md) |
-| Customize prorations | [Native proration behavior](https://docs.stripe.com/billing/subscriptions/prorations.md) and [prorations extensions](https://docs.stripe.com/billing/scripts/prorations.md) |
-| Apply customer balances | [Customer balance extensions](https://docs.stripe.com/billing/scripts/customer-balance.md) |
-| Calculate discount amounts | [Discount calculation extensions](https://docs.stripe.com/billing/scripts/discount-calculation.md) |
-| Add an action to Stripe Workflows | [Existing workflow actions](https://docs.stripe.com/workflows/define-workflows.md#actions), [existing custom actions](https://docs.stripe.com/workflows/custom-actions.md), and [how custom actions work](https://docs.stripe.com/extensions/custom-actions/how-custom-actions-work.md) |
-| Customize another product’s behavior | Follow the selected interface’s product documentation from the extension-point catalog |
+| Task                                                                 | Read                                                                                                                                                                                                                                                                                    |
+| -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Select an extension interface and its supported implementation types | [Extension points](https://docs.stripe.com/extensions/extension-points.md) and [how extensions work](https://docs.stripe.com/extensions/how-extensions-work.md)                                                                                                                         |
+| Change how items are included on subscription invoices               | [Item handling extensions](https://docs.stripe.com/billing/scripts/item-handling.md)                                                                                                                                                                                                    |
+| Customize prorations                                                 | [Native proration behavior](https://docs.stripe.com/billing/subscriptions/prorations.md) and [prorations extensions](https://docs.stripe.com/billing/scripts/prorations.md)                                                                                                             |
+| Apply customer balances                                              | [Customer balance extensions](https://docs.stripe.com/billing/scripts/customer-balance.md)                                                                                                                                                                                              |
+| Calculate discount amounts                                           | [Discount calculation extensions](https://docs.stripe.com/billing/scripts/discount-calculation.md)                                                                                                                                                                                      |
+| Add an action to Stripe Workflows                                    | [Existing workflow actions](https://docs.stripe.com/workflows/define-workflows.md#actions), [existing custom actions](https://docs.stripe.com/workflows/custom-actions.md), and [how custom actions work](https://docs.stripe.com/extensions/custom-actions/how-custom-actions-work.md) |
+| Customize another product’s behavior                                 | Follow the selected interface’s product documentation from the extension-point catalog                                                                                                                                                                                                  |
 
 ### Implementation guidance
 
 The `references/*.md` files are bundled with this skill. After selecting the capability, load the applicable files before following their links to supporting documentation. Combine rows when an app needs multiple types. Follow the selected guide’s prerequisites, scaffolding, testing, and debugging instructions.
 
-| Task | Read |
-| --- | --- |
-| Build or modify any Dashboard UI, including drawers and full-page apps | <references/ui-extensions.md>, then each selected component’s current API documentation |
-| Author, test, or debug a script extension | <references/script-extensions.md>, then the selected extension point’s implementation guide |
-| Build a custom-action script | <references/script-extensions.md> and [build a custom action with a script](https://docs.stripe.com/extensions/custom-actions/build-with-script.md) |
-| Build a custom-action remote function | [Build a custom action with a remote function](https://docs.stripe.com/extensions/custom-actions/build-with-remote-function.md) |
-| Build a self-hosted UI back-end or webhook service | <references/backend.md> and <references/authentication.md>; also load <references/webhooks.md> when receiving Stripe events |
-| Store app credentials with the Secret Store API | The Secret Store API section in <references/backend.md> and [store secrets](https://docs.stripe.com/stripe-apps/store-secrets.md), including for apps without a self-hosted back-end |
-| Look up APIs, SDK patterns, configuration, or additional extension documentation | <references/canonical-docs.md> |
+| Task                                                                             | Read                                                                                                                                                                                 |
+| -------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Build or modify any Dashboard UI, including drawers and full-page apps           | <references/ui-extensions.md>, then each selected component’s current API documentation                                                                                              |
+| Author, test, or debug a script extension                                        | <references/script-extensions.md>, then the selected extension point’s implementation guide                                                                                          |
+| Build a custom-action script                                                     | <references/script-extensions.md> and [build a custom action with a script](https://docs.stripe.com/extensions/custom-actions/build-with-script.md)                                  |
+| Build a custom-action remote function                                            | [Build a custom action with a remote function](https://docs.stripe.com/extensions/custom-actions/build-with-remote-function.md)                                                      |
+| Build a self-hosted UI back-end or webhook service                               | <references/backend.md> and <references/authentication.md>; also load <references/webhooks.md> when receiving Stripe events                                                          |
+| Store app credentials with the Secret Store API                                  | The Secret Store API section in <references/backend.md> and [store secrets](https://docs.stripe.com/stripe-apps/store-secrets.md), including for apps without a self-hosted back-end |
+| Look up APIs, SDK patterns, configuration, or additional extension documentation | <references/canonical-docs.md>                                                                                                                                                       |
 
 Use the UI reference for layout and composition, and current component documentation for import paths, props, and styling APIs. For scripts and remote functions, follow the selected extension’s documentation; UI and self-hosted back-end instructions don’t define their runtime capabilities.
 
@@ -54,14 +53,14 @@ Use the UI reference for layout and composition, and current component documenta
 
 Read these references when the corresponding task is needed. Reuse existing apps and packages; scaffold only what is missing.
 
-| Task | Read |
-| --- | --- |
-| Scaffold, build, test, preview, or upload an app | <references/workflow.md>, together with the selected implementation guide |
-| Choose authentication for access to Stripe APIs | <references/authentication.md> |
-| Receive Stripe events | <references/webhooks.md> |
-| Build a first-run setup experience | <references/onboarding-ux.md> and the UI reference |
-| Release versions, change installed permissions, or publish to the marketplace | <references/publishing.md> |
-| Submit feedback after running app toolchain commands | <references/feedback.md> |
+| Task                                                                          | Read                                                                      |
+| ----------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Scaffold, build, test, preview, or upload an app                              | <references/workflow.md>, together with the selected implementation guide |
+| Choose authentication for access to Stripe APIs                               | <references/authentication.md>                                            |
+| Receive Stripe events                                                         | <references/webhooks.md>                                                  |
+| Build a first-run setup experience                                            | <references/onboarding-ux.md> and the UI reference                        |
+| Release versions, change installed permissions, or publish to the marketplace | <references/publishing.md>                                                |
+| Submit feedback after running app toolchain commands                          | <references/feedback.md>                                                  |
 
 ## Load bundled reference files
 

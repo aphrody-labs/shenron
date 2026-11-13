@@ -19,12 +19,12 @@ You need a backend if your app needs to:
 
 Before writing back-end code, read these pages using an available documentation tool:
 
-| Topic | URL |
-| --- | --- |
-| Backend implementation + fetchStripeSignature | https://docs.stripe.com/stripe-apps/build-backend |
+| Topic                                             | URL                                                    |
+| ------------------------------------------------- | ------------------------------------------------------ |
+| Backend implementation + fetchStripeSignature     | https://docs.stripe.com/stripe-apps/build-backend      |
 | Authentication types (determines backend pattern) | https://docs.stripe.com/stripe-apps/api-authentication |
-| Events and webhooks | https://docs.stripe.com/stripe-apps/events |
-| Secret Store API | https://docs.stripe.com/stripe-apps/store-secrets |
+| Events and webhooks                               | https://docs.stripe.com/stripe-apps/events             |
+| Secret Store API                                  | https://docs.stripe.com/stripe-apps/store-secrets      |
 
 ## Backend architecture decisions
 
@@ -53,10 +53,10 @@ Key facts:
 
 Webhook setup depends on your app’s distribution and auth type:
 
-| App type | Webhook setup |
-| --- | --- |
-| Private (your account only) | ONE standard webhook endpoint |
-| Public with platform keys | ONE webhook with “Listen to events on Connected accounts” enabled |
+| App type                        | Webhook setup                                                               |
+| ------------------------------- | --------------------------------------------------------------------------- |
+| Private (your account only)     | ONE standard webhook endpoint                                               |
+| Public with platform keys       | ONE webhook with “Listen to events on Connected accounts” enabled           |
 | Public with restricted API keys | Can’t use Connect webhook fanout — each merchant manages their own webhooks |
 
 The `event_read` permission MUST be declared in your manifest, plus read permissions for each event type you want to receive.
@@ -71,10 +71,10 @@ For firewall allowlisting of inbound webhook traffic, see https://docs.stripe.co
 
 ### Two scopes
 
-| Scope | Use for | Example |
-| --- | --- | --- |
+| Scope     | Use for                               | Example                                     |
+| --------- | ------------------------------------- | ------------------------------------------- |
 | `account` | Shared across all users of an account | The business’s API key for an email service |
-| `user` | Per-user secrets | An individual user’s OAuth access token |
+| `user`    | Per-user secrets                      | An individual user’s OAuth access token     |
 
 ### Limits and restrictions
 

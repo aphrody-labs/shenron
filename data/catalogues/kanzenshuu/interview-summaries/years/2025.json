@@ -25,9 +25,7 @@
         "publication": "MANTANWEB",
         "pages": "Entretien-reportage Web, sans pagination; aucune numérotation de questions dans la transcription",
         "date": "2025-02-11",
-        "participants": [
-          "Akio Iyoku"
-        ],
+        "participants": ["Akio Iyoku"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/mantanweb-daima-akiyo-iyoku-1/",
         "questionAnswerCount": 0,
         "formatNote": "Long article avec intertitres et réponses de Iyoku insérées dans un récit journalistique, sans balisage Q/R. Les affirmations sur la conception et la diffusion sont celles d'Akio Iyoku, producteur exécutif; seules les idées qu'il attribue explicitement à Toriyama sont indirectement rapportées comme telles.",
@@ -52,9 +50,7 @@
         "publication": "Dragon Ball Super, volume 24 (manga)",
         "pages": "Postface, pagination non indiquée dans la transcription Kanzenshuu",
         "date": "2025-04-04",
-        "participants": [
-          "Toyotarō"
-        ],
+        "participants": ["Toyotarō"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-manga-vol-24-toyotaro-afterword/",
         "questionAnswerCount": 0,
         "formatNote": "Postface autobiographique, et non entretien question-réponse. L'index Kanzenshuu classe cette entrée parmi les interviews; les propos concernent la genèse éditoriale d'un one-shot et la répartition du travail entre Toriyama et Toyotarō.",
@@ -78,9 +74,7 @@
         "url": "https://www.kanzenshuu.com/2025/03/23/podcast-episode-0518/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2025-03-23",
-        "participants": [
-          "Rocco (Mega64)"
-        ],
+        "participants": ["Rocco (Mega64)"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
         "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0518.mp3",
         "audioTranscriptAvailable": false,
@@ -111,9 +105,7 @@
         "url": "https://www.kanzenshuu.com/2025/04/06/podcast-episode-0519/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2025-04-06",
-        "participants": [
-          "Brandon Bovia"
-        ],
+        "participants": ["Brandon Bovia"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
         "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0519.mp3",
         "audioTranscriptAvailable": false,
@@ -148,9 +140,7 @@
         "url": "https://www.kanzenshuu.com/2025/06/20/translation-update-special-project-toyotaro-drew-it-image-90/",
         "publication": "Dragon Ball Official Site — 「とよたろうが描いてみた」特別編!!レジェンズ7周年コラボイラストについて聞いてみた!!",
         "publicationDate": "2025-05-24",
-        "participants": [
-          "Toyotarō"
-        ],
+        "participants": ["Toyotarō"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
         "sourcePageUrl": "https://dragon-ball-official.com/news/01_3414.html",
         "questionAnswerCount": 5,
@@ -178,9 +168,7 @@
         "url": "https://www.kanzenshuu.com/2025/05/18/podcast-episode-0522/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2025-05-18",
-        "participants": [
-          "David Evelyn"
-        ],
+        "participants": ["David Evelyn"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
         "bodyAvailable": true,
         "bodyEmpty": false,
@@ -208,9 +196,7 @@
         "url": "https://www.kanzenshuu.com/2025/06/01/podcast-episode-0523/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2025-06-01",
-        "participants": [
-          "Zénpai"
-        ],
+        "participants": ["Zénpai"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
         "bodyAvailable": true,
         "bodyEmpty": false,
@@ -238,9 +224,7 @@
         "url": "https://www.kanzenshuu.com/2025/06/15/podcast-episode-0524/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2025-06-15",
-        "participants": [
-          "Randy (We Gotta Podcast)"
-        ],
+        "participants": ["Randy (We Gotta Podcast)"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
         "bodyAvailable": true,
         "bodyEmpty": false,
@@ -268,10 +252,7 @@
         "url": "https://www.kanzenshuu.com/2025/06/30/podcast-episode-0525/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2025-06-30",
-        "participants": [
-          "Mike (Kanzenshuu)",
-          "invités du panel non identifiés dans le synopsis"
-        ],
+        "participants": ["Mike (Kanzenshuu)", "invités du panel non identifiés dans le synopsis"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
         "bodyAvailable": true,
         "bodyEmpty": false,
@@ -299,9 +280,7 @@
         "url": "https://www.kanzenshuu.com/2025/12/28/podcast-episode-0533/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2025-12-28",
-        "participants": [
-          "JP (The Space Above Us)"
-        ],
+        "participants": ["JP (The Space Above Us)"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
         "bodyAvailable": true,
         "bodyEmpty": false,
@@ -330,9 +309,7 @@
         "url": "https://www.kanzenshuu.com/2025/05/04/podcast-episode-0521/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2025-05-04",
-        "participants": [
-          "Von (contributeur Kanzenshuu)"
-        ],
+        "participants": ["Von (contributeur Kanzenshuu)"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
         "bodyAvailable": true,
         "bodyEmpty": false,
@@ -362,9 +339,7 @@
         "url": "https://www.kanzenshuu.com/2025/07/14/podcast-episode-0526/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2025-07-14",
-        "participants": [
-          "Von (contributeur Kanzenshuu)"
-        ],
+        "participants": ["Von (contributeur Kanzenshuu)"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
         "bodyAvailable": true,
         "bodyEmpty": false,
@@ -394,9 +369,7 @@
         "url": "https://www.kanzenshuu.com/2025/12/16/podcast-episode-0532/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2025-12-16",
-        "participants": [
-          "Von (contributeur Kanzenshuu)"
-        ],
+        "participants": ["Von (contributeur Kanzenshuu)"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
         "bodyAvailable": true,
         "bodyEmpty": false,

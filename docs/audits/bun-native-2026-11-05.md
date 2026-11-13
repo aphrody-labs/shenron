@@ -13,20 +13,20 @@ Absent: `bun:yolo`, `bun:app`, any native AI/model API (no `Bun.ai`, `Bun.llm`, 
 
 ## Before / after
 
-| Metric | Before | After |
-| --- | --- | --- |
-| bun.lock packages (entries) | 1258 | 1247 |
-| `bun install` packages installed | 1043 | 1032 |
-| node_modules size (du -sk) | 2023060 | 1931168 |
-| node_modules files | 85569 | 81668 |
+| Metric                           | Before  | After   |
+| -------------------------------- | ------- | ------- |
+| bun.lock packages (entries)      | 1258    | 1247    |
+| `bun install` packages installed | 1043    | 1032    |
+| node_modules size (du -sk)       | 2023060 | 1931168 |
+| node_modules files               | 85569   | 81668   |
 
 Direct dependency counts (dependencies + devDependencies):
 
-| Package | Before | After |
-| --- | --- | --- |
-| apps/site | 82+10 | 78+10 |
-| packages/crunchyroll | 3+1 | 2+1 |
-| all others | unchanged | unchanged |
+| Package              | Before    | After     |
+| -------------------- | --------- | --------- |
+| apps/site            | 82+10     | 78+10     |
+| packages/crunchyroll | 3+1       | 2+1       |
+| all others           | unchanged | unchanged |
 
 ## Removed (zero imports in src, scripts, tests, configs)
 

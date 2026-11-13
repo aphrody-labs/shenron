@@ -12,11 +12,11 @@ Read this page using an available documentation tool before implementing authent
 
 Stripe Apps supports three authentication methods, configured via `stripe_api_access_type` in the app manifest:
 
-| Auth type | Manifest value | How it works | Best for |
-| --- | --- | --- | --- |
+| Auth type                        | Manifest value       | How it works                                                                  | Best for                                                                      |
+| -------------------------------- | -------------------- | ----------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
 | Restricted API key (recommended) | `restricted_api_key` | Stripe generates a scoped key at install; merchant provides it to your system | Private apps, simpler integrations, apps that don’t need Connect-style access |
-| Platform keys | `platform` | Your secret key + `Stripe-Account` header to act on behalf of installers | Public/marketplace apps that need to act across many merchants |
-| OAuth 2.0 | `oauth` | Standard OAuth flow generates access tokens per-account | Apps where merchant must be merchant-of-record |
+| Platform keys                    | `platform`           | Your secret key + `Stripe-Account` header to act on behalf of installers      | Public/marketplace apps that need to act across many merchants                |
+| OAuth 2.0                        | `oauth`              | Standard OAuth flow generates access tokens per-account                       | Apps where merchant must be merchant-of-record                                |
 
 ### Choosing the right type
 
@@ -37,9 +37,12 @@ Your app’s API key acts on behalf of a merchant’s account using the `Stripe-
 // Use a restricted API key when possible; fall back to secret key only for platform-key apps
 const stripe = require("stripe")(process.env.STRIPE_API_KEY);
 
-await stripe.customers.list({}, {
-  stripeAccount: "acct_xxxxx", // the merchant's account ID
-});
+await stripe.customers.list(
+  {},
+  {
+    stripeAccount: "acct_xxxxx", // the merchant's account ID
+  },
+);
 ```
 
 **How to get the merchant’s account ID:**

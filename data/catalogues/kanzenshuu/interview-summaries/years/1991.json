@@ -59,16 +59,10 @@
         "sourcePageUrl": "https://www.kanzenshuu.com/music/miscellaneous/",
         "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
         "archivedTranslation": null,
-        "bibliographicYears": [
-          1991
-        ],
+        "bibliographicYears": [1991],
         "track": 3,
         "trackTitle": "Talk No. 1",
-        "participants": [
-          "Akira Toriyama",
-          "Yūji Horii",
-          "Hironobu Sakaguchi"
-        ],
+        "participants": ["Akira Toriyama", "Yūji Horii", "Hironobu Sakaguchi"],
         "format": "conversation audio",
         "audioAcquired": false,
         "transcriptAcquired": false,
@@ -99,16 +93,10 @@
         "sourcePageUrl": "https://www.kanzenshuu.com/music/miscellaneous/",
         "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
         "archivedTranslation": null,
-        "bibliographicYears": [
-          1991
-        ],
+        "bibliographicYears": [1991],
         "track": 34,
         "trackTitle": "Talk No. 2",
-        "participants": [
-          "Masako Nozawa",
-          "Norio Wakamoto",
-          "Kōzō Shioya"
-        ],
+        "participants": ["Masako Nozawa", "Norio Wakamoto", "Kōzō Shioya"],
         "format": "conversation audio",
         "audioAcquired": false,
         "transcriptAcquired": false,

@@ -19,10 +19,7 @@
         "url": "https://www.daizex.com/guides/rumors/media/jon_allen_sonny_strait_interview.txt",
         "publication": "Daizenshuu EX, entretien avec Sonny Strait",
         "date": "2000-11",
-        "participants": [
-          "Jon Allen",
-          "Sonny Strait"
-        ],
+        "participants": ["Jon Allen", "Sonny Strait"],
         "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-ex-2000-sonny-strait-interview.txt",
         "kanzenshuuPostUrl": "https://www.kanzenshuu.com/rumor/the-sonny-strait-terry-klassen-prank-call/",
         "kanzenshuuPostRawPath": "data/source-acquisition/kanzenshuu/site/pages/2022.json",
@@ -49,10 +46,7 @@
         "url": "https://www.kanzenshuu.com/2000/10/15/alternate-english-dub-updates-ian-corlett-responds/",
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2000.json",
         "date": "2000-10-15",
-        "participants": [
-          "Ian James Corlett",
-          "Questionneur Kanzenshuu non nommé"
-        ],
+        "participants": ["Ian James Corlett", "Questionneur Kanzenshuu non nommé"],
         "formatNote": "Réponse ponctuelle par courriel, sans entretien intégral.",
         "questionAnswerCount": null,
         "forumContent": false

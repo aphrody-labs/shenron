@@ -1,6 +1,6 @@
 # LaMa 4K benchmark fixtures
 
-- `image_4k.jpg` is the 3840-pixel Wikimedia rendition of *Landscape*,
+- `image_4k.jpg` is the 3840-pixel Wikimedia rendition of _Landscape_,
   attributed to Kanō Motonobu and contributed by the Metropolitan Museum of
   Art. Wikimedia Commons publishes the file under CC0 1.0.
   Source: <https://commons.wikimedia.org/wiki/File:MET_LC-51_95_002.jpg>

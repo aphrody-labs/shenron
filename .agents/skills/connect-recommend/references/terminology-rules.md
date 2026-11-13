@@ -55,15 +55,15 @@ Use this as a behavioral signal in discovery:
 
 When showing configuration values, ALWAYS pair them with a human-readable label. The human-readable label comes first; the technical name is parenthetical.
 
-| Raw config term | Human-readable label |
-| --- | --- |
-| `losses_collector: application` | Negative balance liability: your platform |
-| `losses_collector: stripe` | Negative balance liability: Stripe |
-| `fees_collector: application` | Fee collection: your platform manages pricing |
-| `fees_collector: stripe` | Fee collection: Stripe bills connected accounts |
-| `dashboard=express` | Dashboard: Express (lightweight view for sellers) |
-| `dashboard=full` | Dashboard: Full Stripe Dashboard (independent access) |
-| `dashboard=none` | Dashboard: none (you build all seller-facing UIs) |
+| Raw config term                 | Human-readable label                                  |
+| ------------------------------- | ----------------------------------------------------- |
+| `losses_collector: application` | Negative balance liability: your platform             |
+| `losses_collector: stripe`      | Negative balance liability: Stripe                    |
+| `fees_collector: application`   | Fee collection: your platform manages pricing         |
+| `fees_collector: stripe`        | Fee collection: Stripe bills connected accounts       |
+| `dashboard=express`             | Dashboard: Express (lightweight view for sellers)     |
+| `dashboard=full`                | Dashboard: Full Stripe Dashboard (independent access) |
+| `dashboard=none`                | Dashboard: none (you build all seller-facing UIs)     |
 
 ### “Platform-owned” and “Stripe-owned” labels
 

@@ -4,9 +4,7 @@
   "method": "Manual visual transcription from locally stored Japanese scans, read in printed order pp.1-3 then p.6. No OCR, network, translation, or secondary-text completion. Pages 4-5 are excluded because they contain a separate Toriyama manga column, not the roundtable.",
   "records": [
     {
-      "pages": [
-        1
-      ],
+      "pages": [1],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page001_6034223418_o.jpg",
       "imageBytes": 839246,
       "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-1-historical-editors-roundtable-1.jsonl#L1",
@@ -25,9 +23,7 @@
       "firstPrinting": "1995-06-25"
     },
     {
-      "pages": [
-        2
-      ],
+      "pages": [2],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page002_6033668101_o.jpg",
       "imageBytes": 887076,
       "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-1-historical-editors-roundtable-1.jsonl#L2",
@@ -46,9 +42,7 @@
       "firstPrinting": "1995-06-25"
     },
     {
-      "pages": [
-        3
-      ],
+      "pages": [3],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page003_6034224278_o.jpg",
       "imageBytes": 754031,
       "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-1-historical-editors-roundtable-1.jsonl#L3",
@@ -67,9 +61,7 @@
       "firstPrinting": "1995-06-25"
     },
     {
-      "pages": [
-        6
-      ],
+      "pages": [6],
       "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page006_6033670355_o.jpg",
       "imageBytes": 775092,
       "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-1-historical-editors-roundtable-1.jsonl#L4",

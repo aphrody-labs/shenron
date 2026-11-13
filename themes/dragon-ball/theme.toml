@@ -98,7 +98,6 @@ focal = [50, 62]
 sha256 = "7b949dbee672171643a0cfcf30da3843cefdfc152796a0806aecf774e6f915bd"
 
 
-
 # Light wallpapers: site banners (3216x1072, wide). No precomputed seed: decoded at runtime.
 [[wallpapers]]
 file = "https://cdn.dragonballfr.com/banners/banner-14.jpg"

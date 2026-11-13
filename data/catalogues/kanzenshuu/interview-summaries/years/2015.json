@@ -110,9 +110,7 @@
       "source": {
         "publication": "Flying Postman Press, April 2015 (p. 4)",
         "date": "20 March 2015",
-        "participants": [
-          "Norihiro Hayashida"
-        ],
+        "participants": ["Norihiro Hayashida"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/flying-postman-press-april-2015-norihiro-hayashida/",
         "questionAnswerCount": 4,
         "detectedQuestionBlocks": 4,
@@ -137,9 +135,7 @@
       "source": {
         "publication": "Flying Postman Press, April 2015 (p. 2)",
         "date": "20 March 2015",
-        "participants": [
-          "Ryūsei Nakao"
-        ],
+        "participants": ["Ryūsei Nakao"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/flying-postman-press-april-2015-ryusei-nakao/",
         "questionAnswerCount": 7,
         "detectedQuestionBlocks": 7,
@@ -164,9 +160,7 @@
       "source": {
         "publication": "Entermix, May 2015 (p. 78)",
         "date": "20 March 2015",
-        "participants": [
-          "Ryūsei Nakao"
-        ],
+        "participants": ["Ryūsei Nakao"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/entermix-may-2015-ryusei-nakao-interview/",
         "questionAnswerCount": 5,
         "detectedQuestionBlocks": 5,
@@ -190,9 +184,7 @@
       "source": {
         "publication": "V-Jump, June 2015 (pp. 332-333)",
         "date": "21 April 2015",
-        "participants": [
-          "Ryūsei Nakao"
-        ],
+        "participants": ["Ryūsei Nakao"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-june-2015-ryusei-nakao-interview/",
         "questionAnswerCount": 11,
         "detectedQuestionBlocks": 11,
@@ -220,10 +212,7 @@
       "source": {
         "publication": "V-Jump, numéro de mai 2015",
         "date": "2015-03-20",
-        "participants": [
-          "Naho Ōishi",
-          "Toyotarō"
-        ],
+        "participants": ["Naho Ōishi", "Toyotarō"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/v-jump-may-2015-naho-ooishi-toyotaro/",
         "questionAnswerCount": 2,
         "detectedQuestionBlocks": 5,
@@ -250,15 +239,11 @@
         "date": "04 July 2015",
         "publication": "Dragon Ball Super  Cast Comments",
         "pages": null,
-        "bibliographicYears": [
-          2015
-        ],
+        "bibliographicYears": [2015],
         "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-masako-nozawa/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-masako-nozawa/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-super-cast-comments-masako-nozawa.html",
-        "participants": [
-          "Masako Nozawa"
-        ],
+        "participants": ["Masako Nozawa"],
         "questionAnswerCount": 4,
         "questionBlockCount": 4,
         "answerBlockCount": 4,
@@ -278,24 +263,16 @@
       "title": "Dragon Ball Super Cast Comments",
       "kind": "qa",
       "summary": "Horikawa se réjouit de retrouver Vegeta et de suivre son évolution après Boo et sa relation avec Bulma. Il décrit une équipe soudée et une intrigue imprévisible guidée par Toriyama.",
-      "keyInformation": [
-        "Vegeta évolue après Boo",
-        "équipe réunie",
-        "suite imprévisible."
-      ],
+      "keyInformation": ["Vegeta évolue après Boo", "équipe réunie", "suite imprévisible."],
       "source": {
         "date": "04 July 2015",
         "publication": "Dragon Ball Super  Cast Comments",
         "pages": null,
-        "bibliographicYears": [
-          2015
-        ],
+        "bibliographicYears": [2015],
         "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-ryo-horikawa/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-ryo-horikawa/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-super-cast-comments-ryo-horikawa.html",
-        "participants": [
-          "Ryō Horikawa"
-        ],
+        "participants": ["Ryō Horikawa"],
         "questionAnswerCount": 5,
         "questionBlockCount": 5,
         "answerBlockCount": 5,
@@ -324,15 +301,11 @@
         "date": "05 July 2015",
         "publication": "Dragon Ball Super  Cast Comments",
         "pages": null,
-        "bibliographicYears": [
-          2015
-        ],
+        "bibliographicYears": [2015],
         "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-toshio-furukawa/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-toshio-furukawa/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-super-cast-comments-toshio-furukawa.html",
-        "participants": [
-          "Toshio Furukawa"
-        ],
+        "participants": ["Toshio Furukawa"],
         "questionAnswerCount": 5,
         "questionBlockCount": 5,
         "answerBlockCount": 5,
@@ -360,15 +333,11 @@
         "date": "05 July 2015",
         "publication": "Dragon Ball Super  Cast Comments",
         "pages": null,
-        "bibliographicYears": [
-          2015
-        ],
+        "bibliographicYears": [2015],
         "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-takeshi-kusao/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-takeshi-kusao/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-super-cast-comments-takeshi-kusao.html",
-        "participants": [
-          "Takeshi Kusao"
-        ],
+        "participants": ["Takeshi Kusao"],
         "questionAnswerCount": 5,
         "questionBlockCount": 5,
         "answerBlockCount": 5,
@@ -397,16 +366,11 @@
         "date": "22 August 2015",
         "publication": "Dragon Ball Super  Cast Comments",
         "pages": null,
-        "bibliographicYears": [
-          2015
-        ],
+        "bibliographicYears": [2015],
         "url": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-kozo-shioya-unsho-ishizuka/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-super-cast-comments-kozo-shioya-unsho-ishizuka/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-super-cast-comments-kozo-shioya-unsho-ishizuka.html",
-        "participants": [
-          "Kōzō Shioya",
-          "Unshō Ishizuka"
-        ],
+        "participants": ["Kōzō Shioya", "Unshō Ishizuka"],
         "questionAnswerCount": 4,
         "questionBlockCount": 4,
         "answerBlockCount": 4,
@@ -436,15 +400,11 @@
         "date": "18 April 2015",
         "publication": "Dragon Ball: Volume “F”",
         "pages": null,
-        "bibliographicYears": [
-          2015
-        ],
+        "bibliographicYears": [2015],
         "url": "https://www.kanzenshuu.com/translations/volume-f-akira-toriyama-script-comments/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/volume-f-akira-toriyama-script-comments/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/volume-f-akira-toriyama-script-comments.html",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "questionAnswerCount": 10,
         "questionBlockCount": 10,
         "answerBlockCount": 10,
@@ -472,9 +432,7 @@
         "url": "https://www.kanzenshuu.com/2015/07/21/podcast-episode-0385/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2015-07-21",
-        "participants": [
-          "Joey Weiser"
-        ],
+        "participants": ["Joey Weiser"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2015.json",
         "audioUrl": "http://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0385.mp3",
         "audioTranscriptAvailable": false,
@@ -507,12 +465,7 @@
         "url": "https://www.kanzenshuu.com/2015/08/11/podcast-episode-0387/",
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2015.json",
         "date": "2015-08-11",
-        "participants": [
-          "Chris Sabat",
-          "VegettoEX",
-          "Meri",
-          "Hujio"
-        ],
+        "participants": ["Chris Sabat", "VegettoEX", "Meri", "Hujio"],
         "audioTranscriptAvailable": false,
         "audioDownloaded": false,
         "formatNote": "Bref segment audio annoncé dans un épisode de podcast; transcription et fichier audio non disponibles dans les sources locales vérifiées.",
@@ -538,10 +491,7 @@
         "url": "https://www.kanzenshuu.com/2015/03/05/revival-of-f-aims-to-surpass-battle-of-gods-at-the-box-office/",
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2015.json",
         "date": "2015-03-05",
-        "participants": [
-          "Hidenobu Muramatsu",
-          "Yasushi Sutō"
-        ],
+        "participants": ["Hidenobu Muramatsu", "Yasushi Sutō"],
         "participantRoles": {
           "Hidenobu Muramatsu": "Responsable des ventes cinéma et du box-office chez Toei",
           "Yasushi Sutō": "Responsable de la planification et de la production chez Toei"
@@ -566,11 +516,7 @@
       "source": {
         "publication": "V-Jump, entretien en ligne; Akio Iyoku interviewe le producteur Kōzō Morishita",
         "date": "24 May 2015 (archive de la page; date originale de publication non établie)",
-        "participants": [
-          "Akio Iyoku",
-          "Kōzō Morishita",
-          "Kondō (éditeur, mentionné)"
-        ],
+        "participants": ["Akio Iyoku", "Kōzō Morishita", "Kondō (éditeur, mentionné)"],
         "originalSource": "http://vjump.shueisha.co.jp/victory/vt23/wp-main-pre23.html",
         "archivedSource": "https://web.archive.org/web/20150524012258/http://vjump.shueisha.co.jp:80/victory/vt23/wp-main-pre23.html",
         "kanzenshuuPage": "https://www.kanzenshuu.com/faqs/dbz-movies-fit-the-story/",

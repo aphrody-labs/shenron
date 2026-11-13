@@ -3,9 +3,7 @@
   "sources": [
     {
       "root": ".",
-      "evidence": [
-        "references/instantane.json"
-      ]
+      "evidence": ["references/instantane.json"]
     }
   ],
   "knowledge": [

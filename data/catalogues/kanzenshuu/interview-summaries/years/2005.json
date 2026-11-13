@@ -25,9 +25,7 @@
         "publication": "Dragon Ball GT DVD Box: Dragon Box GT — Dragon Book",
         "pages": "44–49",
         "date": "2005-06-15",
-        "participants": [
-          "Kōzō Morishita"
-        ],
+        "participants": ["Kōzō Morishita"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-gt-dragon-book-gt-back-then-kozo-morishita-interview/",
         "questionAnswerCount": 22,
         "formatNote": "Le HTML contient 23 blocs question et 22 blocs réponse; le compte de la synthèse correspond aux paires complètes.",
@@ -53,9 +51,7 @@
         "url": "https://www.kanzenshuu.com/translations/dragon-ball-gt-dragon-book-dragon-ball-q-atsushi-maekawa-story-qa/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-gt-dragon-book-dragon-ball-q-atsushi-maekawa-story-qa/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/dragon-ball-gt-dragon-book-dragon-ball-q-atsushi-maekawa-story-qa.html",
-        "participants": [
-          "Atsushi Maekawa"
-        ],
+        "participants": ["Atsushi Maekawa"],
         "questionAnswerCount": 11,
         "questionBlockCount": 11,
         "answerBlockCount": 11,
@@ -86,11 +82,7 @@
         "url": "https://www.kanzenshuu.com/2005/12/11/podcast-episode-0004/",
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2005.json",
         "date": "2005-12-11",
-        "participants": [
-          "Scott Melzer",
-          "VegettoEX",
-          "Meri"
-        ],
+        "participants": ["Scott Melzer", "VegettoEX", "Meri"],
         "formatNote": "Entretien audio; note d’épisode locale, sans transcription ni audio vérifié.",
         "questionAnswerCount": null,
         "forumContent": false

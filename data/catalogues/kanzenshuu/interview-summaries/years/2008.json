@@ -19,10 +19,7 @@
         "publication": "Jump SQ, May 2008",
         "pages": "8–10, 267–269",
         "date": "2008-04-02",
-        "participants": [
-          "Akira Toriyama",
-          "Masakazu Katsura"
-        ],
+        "participants": ["Akira Toriyama", "Masakazu Katsura"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/jump-sq-may-2008-akira-toriyama-masakazu-katsura/",
         "questionAnswerCount": 27,
         "forumContent": false,
@@ -47,14 +44,7 @@
         "url": "https://www.kanzenshuu.com/2008/06/29/podcast-episode-0135/",
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
         "date": "2008-06-29",
-        "participants": [
-          "KaiserNeko",
-          "Lanipator",
-          "VegettoEX",
-          "Meri",
-          "Jeff",
-          "Julian"
-        ],
+        "participants": ["KaiserNeko", "Lanipator", "VegettoEX", "Meri", "Jeff", "Julian"],
         "audioTranscriptAvailable": false,
         "audioDownloaded": false,
         "formatNote": "Entretien audio annoncé dans le billet; transcription et fichier audio non disponibles dans les sources locales vérifiées.",
@@ -81,10 +71,7 @@
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
         "date": "2008-11-30",
         "eventDate": "2008-11-16",
-        "participants": [
-          "Masako Nozawa",
-          "Hironobu Kageyama"
-        ],
+        "participants": ["Masako Nozawa", "Hironobu Kageyama"],
         "questionAnswerCount": 1,
         "detectedQuestionBlocks": 1,
         "detectedAnswerBlocks": 2,
@@ -109,9 +96,7 @@
         "url": "https://www.kanzenshuu.com/2008/06/26/toru-furuya-english-language-interview/",
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
         "date": "2008-06-26",
-        "participants": [
-          "Tōru Furuya"
-        ],
+        "participants": ["Tōru Furuya"],
         "formatNote": "Lien seul vers MUSIC JAPAN+; aucune réponse reproduite.",
         "questionAnswerCount": null,
         "forumContent": false
@@ -136,9 +121,7 @@
         "url": "https://www.kanzenshuu.com/2008/03/18/burst-limit-trailer-interview-at-ign/",
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
         "date": "2008-03-18",
-        "participants": [
-          "Donny Clay"
-        ],
+        "participants": ["Donny Clay"],
         "formatNote": "Extrait informatif relayé; entretien complet non acquis.",
         "questionAnswerCount": null,
         "forumContent": false
@@ -162,9 +145,7 @@
         "url": "https://www.kanzenshuu.com/2008/01/21/gen-fukunaga-interview-dbz-dvd-news/",
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
         "date": "2008-01-21",
-        "participants": [
-          "Gen Fukunaga"
-        ],
+        "participants": ["Gen Fukunaga"],
         "formatNote": "Entretien externe lié; citation reproduite, autres réponses seulement signalées.",
         "questionAnswerCount": null,
         "forumContent": false
@@ -188,9 +169,7 @@
         "url": "https://www.kanzenshuu.com/2008/01/16/james-marsters-talks-dragon-ball-to-tv-guide/",
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2008.json",
         "date": "2008-01-16",
-        "participants": [
-          "James Marsters"
-        ],
+        "participants": ["James Marsters"],
         "formatNote": "Citation brève relayée; contexte complet non acquis.",
         "questionAnswerCount": null,
         "forumContent": false

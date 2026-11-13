@@ -9,14 +9,8 @@
       "publicationType": "Web/Online",
       "format": "Interview",
       "publicationDate": "15 July 2020",
-      "participants": [
-        "Toyotarō"
-      ],
-      "topics": [
-        "Illustration",
-        "Manga",
-        "Merchandise"
-      ],
+      "participants": ["Toyotarō"],
+      "topics": ["Illustration", "Manga", "Merchandise"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-official-site-toyotaro-drew-it-debuts-in-figure-form.html",
       "acquired": true,
       "forumContent": false,
@@ -39,14 +33,8 @@
       "publicationType": "Web/Online",
       "format": "Interview",
       "publicationDate": "14 October 2020",
-      "participants": [
-        "Victory Uchida"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Manga",
-        "Production"
-      ],
+      "participants": ["Victory Uchida"],
+      "topics": ["Dragon Ball Super", "Manga", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/vj-official-dragon-ball-super-inside-scoop-editor-video.html",
       "acquired": true,
       "forumContent": false,
@@ -69,15 +57,8 @@
       "publicationType": "Magazine",
       "format": "Interview",
       "publicationDate": "21 December 2020",
-      "participants": [
-        "Toyotarō"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super",
-        "Manga",
-        "Production"
-      ],
+      "participants": ["Toyotarō"],
+      "topics": ["Manga", "Dragon Ball Super", "Manga", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/vjump-february-2021-we-ask-toyotaro-sensei.html",
       "acquired": true,
       "forumContent": false,
@@ -101,14 +82,8 @@
       "publicationType": "Magazine",
       "format": "Interview",
       "publicationDate": "21 April 2022",
-      "participants": [
-        "Tetsuro Kodama"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Super Hero",
-        "Production"
-      ],
+      "participants": ["Tetsuro Kodama"],
+      "topics": ["Dragon Ball Super", "Super Hero", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/v-jump-june-2022-back-up-comic-chapter-35.html",
       "acquired": true,
       "forumContent": false,
@@ -132,14 +107,8 @@
       "publicationType": "Booklet",
       "format": "Interview",
       "publicationDate": "11 June 2022",
-      "participants": [
-        "Chikashi Kubota"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Super Hero",
-        "Production"
-      ],
+      "participants": ["Chikashi Kubota"],
+      "topics": ["Dragon Ball Super", "Super Hero", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-super-hero-theatrical-pamphlet-chikashi-kubota-interview.html",
       "acquired": true,
       "forumContent": false,
@@ -162,14 +131,8 @@
       "publicationType": "Web/Online + Print",
       "format": "Interview",
       "publicationDate": "21 March 2023",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Sand Land",
-        "Non-Dragon Ball",
-        "Production"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Sand Land", "Non-Dragon Ball", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/sand-land-movie-akira-toriyama-qa.html",
       "acquired": true,
       "forumContent": false,
@@ -192,14 +155,8 @@
       "publicationType": "Guidebook",
       "format": "Interview",
       "publicationDate": "21 July 2023",
-      "participants": [
-        "Kazuhiko Torishima",
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball (Manga)",
-        "Production"
-      ],
+      "participants": ["Kazuhiko Torishima", "Akira Toriyama"],
+      "topics": ["Dragon Ball (Manga)", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/dr-mashiritos-ultimate-manga-technique-ultimate-interview-vol-1.html",
       "acquired": true,
       "forumContent": false,
@@ -222,15 +179,8 @@
       "publicationType": "Manga",
       "format": "Interview",
       "publicationDate": "04 August 2023",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Sand Land",
-        "Non-Dragon Ball",
-        "Manga",
-        "Production"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Sand Land", "Non-Dragon Ball", "Manga", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/sand-land-production-secrets.html",
       "acquired": true,
       "forumContent": false,
@@ -253,14 +203,8 @@
       "publicationType": "Web/Online",
       "format": "Interview",
       "publicationDate": "09 March 2024",
-      "participants": [
-        "Hisashi Tanaka"
-      ],
-      "topics": [
-        "Production",
-        "Assistants",
-        "Dragon Ball (Manga)"
-      ],
+      "participants": ["Hisashi Tanaka"],
+      "topics": ["Production", "Assistants", "Dragon Ball (Manga)"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/chunichi-shimbun-article-hisashi-tanaka.html",
       "acquired": true,
       "forumContent": false,
@@ -268,10 +212,7 @@
       "pageTitle": "Translations | Chunichi Shimbun Article - Hisashi Tanaka - Kanzenshuu",
       "sourceDescription": "English translation of a March 2024 Chunichi Shimbun article with Hisashi Tanaka, Akira Toriyama's first assistant",
       "questionCount": 1,
-      "sectionHeadings": [
-        "Chunichi Shimbun (09 March 2024)",
-        "Hisashi Tanaka Article"
-      ],
+      "sectionHeadings": ["Chunichi Shimbun (09 March 2024)", "Hisashi Tanaka Article"],
       "editorialSummary": null,
       "reviewStatus": "source-acquired-summary-pending"
     },
@@ -283,14 +224,8 @@
       "publicationType": "Web/Online",
       "format": "Interview",
       "publicationDate": "09 March 2024",
-      "participants": [
-        "Takashi Matsuyama"
-      ],
-      "topics": [
-        "Production",
-        "Assistants",
-        "Dragon Ball (Manga)"
-      ],
+      "participants": ["Takashi Matsuyama"],
+      "topics": ["Production", "Assistants", "Dragon Ball (Manga)"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/chunichi-shimbun-article-takashi-matsuyama.html",
       "acquired": true,
       "forumContent": false,
@@ -298,10 +233,7 @@
       "pageTitle": "Translations | Chunichi Shimbun Article - Takashi Matsuyama - Kanzenshuu",
       "sourceDescription": "English translation of a March 2024 Chunichi Shimbun article with Takashi Matsuyama, Akira Toriyama's second assistant",
       "questionCount": 1,
-      "sectionHeadings": [
-        "Chunichi Shimbun (09 March 2024)",
-        "Takashi Matsuyama Article"
-      ],
+      "sectionHeadings": ["Chunichi Shimbun (09 March 2024)", "Takashi Matsuyama Article"],
       "editorialSummary": null,
       "reviewStatus": "source-acquired-summary-pending"
     },
@@ -313,14 +245,8 @@
       "publicationType": "Web/Online",
       "format": "Interview",
       "publicationDate": "21 March 2024",
-      "participants": [
-        "Toyotarō"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super",
-        "Production"
-      ],
+      "participants": ["Toyotarō"],
+      "topics": ["Manga", "Dragon Ball Super", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-official-site-march-2024-toyotaro-interview.html",
       "acquired": true,
       "forumContent": false,
@@ -343,13 +269,8 @@
       "publicationType": "Web/Online",
       "format": "Interview",
       "publicationDate": "11 February 2025",
-      "participants": [
-        "Akio Iyoku"
-      ],
-      "topics": [
-        "Dragon Ball Daima",
-        "Production"
-      ],
+      "participants": ["Akio Iyoku"],
+      "topics": ["Dragon Ball Daima", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/mantanweb-daima-akiyo-iyoku-1.html",
       "acquired": true,
       "forumContent": false,
@@ -372,13 +293,8 @@
       "publicationType": "Manga",
       "format": "Interview",
       "publicationDate": "04 April 2025",
-      "participants": [
-        "Toyotarō"
-      ],
-      "topics": [
-        "Dragon Ball (Manga)",
-        "Dragon Ball Super"
-      ],
+      "participants": ["Toyotarō"],
+      "topics": ["Dragon Ball (Manga)", "Dragon Ball Super"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-super-manga-vol-24-toyotaro-afterword.html",
       "acquired": true,
       "forumContent": false,
@@ -386,10 +302,7 @@
       "pageTitle": "Translations | \"Dragon Ball Super\" Manga Vol. 24: Toyotarō Afterword",
       "sourceDescription": "English translation of Toyotarō's afterword from the 24th volume of the Dragon Ball Super manga, originally released in April 2025 in Japan",
       "questionCount": 0,
-      "sectionHeadings": [
-        "Dragon Ball Super Volume 24 (04 April 2025)",
-        "Toyotarō Afterword"
-      ],
+      "sectionHeadings": ["Dragon Ball Super Volume 24 (04 April 2025)", "Toyotarō Afterword"],
       "editorialSummary": null,
       "reviewStatus": "source-acquired-summary-pending"
     },
@@ -402,15 +315,8 @@
       "publicationType": "Website Q&A",
       "format": "Interview Q&A",
       "publicationDate": "24 August 2026",
-      "participants": [
-        "Hilltop (fan translator)"
-      ],
-      "topics": [
-        "Dr. Slump",
-        "PlayStation",
-        "Fan translation",
-        "Game hacking"
-      ],
+      "participants": ["Hilltop (fan translator)"],
+      "topics": ["Dr. Slump", "PlayStation", "Fan translation", "Game hacking"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
       "acquired": true,
       "forumContent": false,
@@ -430,15 +336,8 @@
       "publicationType": "Website Q&A",
       "format": "Interview Q&A",
       "publicationDate": "10 August 2026",
-      "participants": [
-        "Kazetrigger (fan translator and game hacker)"
-      ],
-      "topics": [
-        "Dragon Ball Z: Gokū Hishōden",
-        "Fan translation",
-        "Game Boy",
-        "Game hacking"
-      ],
+      "participants": ["Kazetrigger (fan translator and game hacker)"],
+      "topics": ["Dragon Ball Z: Gokū Hishōden", "Fan translation", "Game Boy", "Game hacking"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
       "acquired": true,
       "forumContent": false,
@@ -457,12 +356,8 @@
       "publicationType": "Podcast audio",
       "format": "Audio interview",
       "publicationDate": "2023-06-26",
-      "participants": [
-        "Julian"
-      ],
-      "topics": [
-        "Kanzenshuu history and translation work"
-      ],
+      "participants": ["Julian"],
+      "topics": ["Kanzenshuu history and translation work"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
       "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0503.mp3",
       "acquired": true,
@@ -485,12 +380,8 @@
       "publicationType": "Podcast audio",
       "format": "Audio interview",
       "publicationDate": "2023-10-09",
-      "participants": [
-        "Heath"
-      ],
-      "topics": [
-        "Kanzenshuu history and collaboration"
-      ],
+      "participants": ["Heath"],
+      "topics": ["Kanzenshuu history and collaboration"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2023.json",
       "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0506.mp3",
       "acquired": true,
@@ -513,12 +404,8 @@
       "publicationType": "Podcast audio",
       "format": "Audio interview",
       "publicationDate": "2025-03-23",
-      "participants": [
-        "Rocco (Mega64)"
-      ],
-      "topics": [
-        "Dragon Ball fandom and live-action sketches"
-      ],
+      "participants": ["Rocco (Mega64)"],
+      "topics": ["Dragon Ball fandom and live-action sketches"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
       "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0518.mp3",
       "acquired": true,
@@ -541,12 +428,8 @@
       "publicationType": "Podcast audio",
       "format": "Audio interview",
       "publicationDate": "2025-04-06",
-      "participants": [
-        "Brandon Bovia"
-      ],
-      "topics": [
-        "Manga lettering"
-      ],
+      "participants": ["Brandon Bovia"],
+      "topics": ["Manga lettering"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
       "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0519.mp3",
       "acquired": true,
@@ -569,15 +452,8 @@
       "publicationType": "Website-post interview summary",
       "format": "Video interview summary",
       "publicationDate": "2021-08-10",
-      "participants": [
-        "Toyotarō",
-        "Victory Uchida"
-      ],
-      "topics": [
-        "Dragon Ball Super manga",
-        "Granolla the Survivor",
-        "Manga creation"
-      ],
+      "participants": ["Toyotarō", "Victory Uchida"],
+      "topics": ["Dragon Ball Super manga", "Granolla the Survivor", "Manga creation"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2021.json",
       "externalMediaUrl": "https://dragon-ball-official.com/news/01_392.html",
       "acquired": true,
@@ -598,10 +474,7 @@
       "publicationType": "interview-excerpt",
       "format": "Extrait d’entretien imprimé — trois blocs de réponse, questions absentes",
       "publicationDate": "2021-05-07",
-      "participants": [
-        "Akio Iyoku",
-        "Norihiro Hayashida"
-      ],
+      "participants": ["Akio Iyoku", "Norihiro Hayashida"],
       "topics": [
         "Déclarations de producteurs sur les suites de production après Dragon Ball Super: Broly et leurs intentions pour le film suivant."
       ],
@@ -624,9 +497,7 @@
       "publicationType": "Website post summarizing a video interview",
       "format": "Video interview summary",
       "publicationDate": "2022-02-21",
-      "participants": [
-        "Miyu Irino"
-      ],
+      "participants": ["Miyu Irino"],
       "topics": [
         "Dragon Ball Super: Super Hero",
         "Dr. Hedo",
@@ -653,15 +524,8 @@
       "publicationType": "Website post summarizing an external video interview",
       "format": "Video interview excerpt",
       "publicationDate": "2024-05-09",
-      "participants": [
-        "Akai (producteur Bandai Namco)",
-        "Victory Uchida (éditeur de V-Jump)"
-      ],
-      "topics": [
-        "Super Dragon Ball Divers",
-        "Dragon Ball Heroes",
-        "arcade game"
-      ],
+      "participants": ["Akai (producteur Bandai Namco)", "Victory Uchida (éditeur de V-Jump)"],
+      "topics": ["Super Dragon Ball Divers", "Dragon Ball Heroes", "arcade game"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2024.json",
       "videoUrl": "https://www.youtube-nocookie.com/embed/V_SmC0cRzu0",
       "acquired": true,
@@ -682,14 +546,8 @@
       "publicationType": "Website post with reproduced Q&A",
       "format": "Interview Q&A",
       "publicationDate": "2025-05-24",
-      "participants": [
-        "Toyotarō"
-      ],
-      "topics": [
-        "Dragon Ball Legends",
-        "illustration",
-        "character design"
-      ],
+      "participants": ["Toyotarō"],
+      "topics": ["Dragon Ball Legends", "illustration", "character design"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
       "acquired": true,
       "transcriptAvailable": true,
@@ -697,9 +555,7 @@
       "alternatePrimarySource": "https://dragon-ball-official.com/news/01_3414.html",
       "sourceDescription": "Le billet Kanzenshuu reproduit intégralement les cinq questions et réponses de Toyotarō au sujet de son illustration de Goku et Vegeta pour le septième anniversaire de Dragon Ball Legends.",
       "questionCount": 5,
-      "sectionHeadings": [
-        "Special Project: Toyotarō Drew It! Image #90"
-      ],
+      "sectionHeadings": ["Special Project: Toyotarō Drew It! Image #90"],
       "editorialSummary": "Toyotarō décrit la composition dynamique de Goku et Vegeta tournés vers le spectateur, l’inspiration possible du Tournoi du Pouvoir et de Jiren, le travail sur la profondeur et les poses asymétriques, ainsi que la différenciation de leurs expressions. Comme la forme Evolution de Vegeta n’existe pas dans le manga, il a veillé à rendre sa coiffure et son expression cohérentes avec l’anime. Il se dit honoré que l’illustration accompagne le septième anniversaire du jeu.",
       "reviewStatus": "source-post-cross-checked-full-qa"
     },
@@ -711,10 +567,7 @@
       "publicationType": "interview-summary",
       "format": "Entretien vidéo externe résumé par Kanzenshuu",
       "publicationDate": "2026-04-19",
-      "participants": [
-        "Masayuki Hirano",
-        "Akio Iyoku"
-      ],
+      "participants": ["Masayuki Hirano", "Akio Iyoku"],
       "topics": [
         "Contribution de Toriyama au monde, à l’histoire et aux nouveaux personnages du jeu Dragon Ball XENOVERSE 3."
       ],
@@ -737,9 +590,7 @@
       "publicationType": "interview-excerpt",
       "format": "Extrait cité d’entretien Web — message final, question non reproduite",
       "publicationDate": "2026-07-30",
-      "participants": [
-        "Hironobu Kageyama"
-      ],
+      "participants": ["Hironobu Kageyama"],
       "topics": [
         "Création de la chanson principale ZERO pour Dragon Ball: Sparking! ZERO et retour de Kageyama à la composition Dragon Ball."
       ],
@@ -762,13 +613,8 @@
       "publicationType": "Web/Online",
       "format": "Interview",
       "publicationDate": null,
-      "participants": [
-        "Kazuhiko Torishima",
-        "intervieweur non identifié dans le passage cité"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Kazuhiko Torishima", "intervieweur non identifié dans le passage cité"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2024.json",
       "acquired": false,
       "forumContent": false,
@@ -791,12 +637,8 @@
       "publicationType": "Podcast audio",
       "format": "Audio interview",
       "publicationDate": "2025-05-18",
-      "participants": [
-        "David Evelyn"
-      ],
-      "topics": [
-        "Traduction de Dr. Mashirito’s Ultimate Manga Techniques; anecdotes annoncées"
-      ],
+      "participants": ["David Evelyn"],
+      "topics": ["Traduction de Dr. Mashirito’s Ultimate Manga Techniques; anecdotes annoncées"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
       "audioUrl": null,
       "acquired": true,
@@ -818,9 +660,7 @@
       "publicationType": "Podcast audio",
       "format": "Audio interview",
       "publicationDate": "2025-06-01",
-      "participants": [
-        "Zénpai"
-      ],
+      "participants": ["Zénpai"],
       "topics": [
         "Traduction d’une nouvelle parution manga Dragon Ball au Portugal; accueil selon synopsis"
       ],
@@ -845,12 +685,8 @@
       "publicationType": "Podcast audio",
       "format": "Audio conversation with podcast guest",
       "publicationDate": "2025-06-15",
-      "participants": [
-        "Randy (We Gotta Podcast)"
-      ],
-      "topics": [
-        "Genèse et continuité d’un podcast de fans"
-      ],
+      "participants": ["Randy (We Gotta Podcast)"],
+      "topics": ["Genèse et continuité d’un podcast de fans"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
       "audioUrl": null,
       "acquired": true,
@@ -872,13 +708,8 @@
       "publicationType": "Podcast audio",
       "format": "Live audio panel Q&A",
       "publicationDate": "2025-06-30",
-      "participants": [
-        "Mike (Kanzenshuu)",
-        "invités du panel non identifiés dans le synopsis"
-      ],
-      "topics": [
-        "Histoire des publications manga; jeux Dragon Ball; questions de la communauté"
-      ],
+      "participants": ["Mike (Kanzenshuu)", "invités du panel non identifiés dans le synopsis"],
+      "topics": ["Histoire des publications manga; jeux Dragon Ball; questions de la communauté"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
       "audioUrl": null,
       "acquired": true,
@@ -900,12 +731,8 @@
       "publicationType": "Podcast audio",
       "format": "Audio conversation (borderline interview)",
       "publicationDate": "2025-12-28",
-      "participants": [
-        "JP (The Space Above Us)"
-      ],
-      "topics": [
-        "Analyse d’un passage spatial de Dragon Ball Z, épisode 50"
-      ],
+      "participants": ["JP (The Space Above Us)"],
+      "topics": ["Analyse d’un passage spatial de Dragon Ball Z, épisode 50"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
       "audioUrl": null,
       "acquired": true,
@@ -927,12 +754,8 @@
       "publicationType": "Podcast audio",
       "format": "Audio interview",
       "publicationDate": "2026-08-09",
-      "participants": [
-        "Vincent Haddad"
-      ],
-      "topics": [
-        "Next Time on Dragon Ball: Playing with a Manga and Anime Franchise"
-      ],
+      "participants": ["Vincent Haddad"],
+      "topics": ["Next Time on Dragon Ball: Playing with a Manga and Anime Franchise"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2026.json",
       "audioUrl": null,
       "acquired": true,
@@ -954,9 +777,7 @@
       "publicationType": "Podcast audio",
       "format": "Podcast audio — conversation analytique avec un invité (cas frontière)",
       "publicationDate": "2024-11-11",
-      "participants": [
-        "JP (The Space Above Us)"
-      ],
+      "participants": ["JP (The Space Above Us)"],
       "topics": [
         "Analyse de l’espace dans Dragon Ball : voyages spatiaux, communications intergalactiques et téléportation"
       ],
@@ -981,12 +802,8 @@
       "publicationType": "Podcast audio",
       "format": "Podcast audio — entretien avec un contributeur Kanzenshuu",
       "publicationDate": "2025-05-04",
-      "participants": [
-        "Von (contributeur Kanzenshuu)"
-      ],
-      "topics": [
-        "Compte rendu de Made in Asia 2025; production et artwork Dragon Ball"
-      ],
+      "participants": ["Von (contributeur Kanzenshuu)"],
+      "topics": ["Compte rendu de Made in Asia 2025; production et artwork Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
       "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0521.mp3",
       "acquired": true,
@@ -1008,12 +825,8 @@
       "publicationType": "Podcast audio",
       "format": "Podcast audio — entretien avec un contributeur Kanzenshuu",
       "publicationDate": "2025-07-14",
-      "participants": [
-        "Von (contributeur Kanzenshuu)"
-      ],
-      "topics": [
-        "Compte rendu de Japan Expo 2025; Dragon Ball et ses créateurs"
-      ],
+      "participants": ["Von (contributeur Kanzenshuu)"],
+      "topics": ["Compte rendu de Japan Expo 2025; Dragon Ball et ses créateurs"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2025.json",
       "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Kanzenshuu_-_Episode_0526.mp3",
       "acquired": true,
@@ -1035,9 +848,7 @@
       "publicationType": "Podcast audio",
       "format": "Podcast audio — entretien avec un contributeur Kanzenshuu",
       "publicationDate": "2025-12-16",
-      "participants": [
-        "Von (contributeur Kanzenshuu)"
-      ],
+      "participants": ["Von (contributeur Kanzenshuu)"],
       "topics": [
         "Compte rendu de Manga Barcelona 2025; Takashi Matsuyama et production Dragon Ball"
       ],

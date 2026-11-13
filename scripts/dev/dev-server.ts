@@ -158,7 +158,7 @@ if (cmd === "run") {
   await run();
 } else if (cmd === "install") {
   const bun = process.execPath;
-  const tr = `"${bun}" "${join(ROOT, "scripts/dev/dev-server.ts")}" run`;
+  const tr = `conhost.exe --headless "${bun}" "${join(ROOT, "scripts/dev/dev-server.ts")}" run`;
   console.log(
     out(
       sh(["schtasks", "/Create", "/F", "/SC", "ONLOGON", "/RL", "LIMITED", "/TN", TASK, "/TR", tr]),

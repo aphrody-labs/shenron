@@ -44,9 +44,7 @@
         "url": "https://www.kanzenshuu.com/translations/pafu-september-1980-mangaka-whos-who-akira-toriyama/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/pafu-september-1980-mangaka-whos-who-akira-toriyama/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/pafu-september-1980-mangaka-whos-who-akira-toriyama.html",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "questionAnswerCount": 29,
         "questionBlockCount": 29,
         "answerBlockCount": 29,

@@ -28,9 +28,7 @@
         "publication": "Weekly Playboy, 1995 #5",
         "pages": "43–46",
         "date": "1995-01-17",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/weekly-playboy-1995-5-akira-toriyama-exclusive-interview/",
         "questionAnswerCount": 0,
         "formatNote": "Reportage-entretien narratif sans balisage de questions-réponses; le texte acquis contient l'entretien complet et des commentaires journalistiques, attribués séparément dans la synthèse.",
@@ -83,11 +81,7 @@
         "url": "https://www.kanzenshuu.com/translations/daizenshuu-1-shenlong-times/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-1-shenlong-times/",
         "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-1-shenlong-times.html",
-        "participants": [
-          "Kazuhiko Torishima",
-          "Yū Kondō",
-          "Fuyuto Takeda"
-        ],
+        "participants": ["Kazuhiko Torishima", "Yū Kondō", "Fuyuto Takeda"],
         "formatNote": "Table ronde issue du supplément Shenlong Times du Daizenshuu indiqué; notices biographiques et tours de parole collectifs mêlés, sans pagination explicitée dans la page Kanzenshuu.",
         "forumContent": false
       },
@@ -142,12 +136,7 @@
         "url": "https://www.kanzenshuu.com/translations/daizenshuu-2-shenlong-times/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-2-shenlong-times/",
         "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-2-shenlong-times.html",
-        "participants": [
-          "Akira Toriyama",
-          "Kazuhiko Torishima",
-          "Yū Kondō",
-          "Fuyuto Takeda"
-        ],
+        "participants": ["Akira Toriyama", "Kazuhiko Torishima", "Yū Kondō", "Fuyuto Takeda"],
         "formatNote": "Table ronde issue du supplément Shenlong Times du Daizenshuu indiqué; notices biographiques et tours de parole collectifs mêlés, sans pagination explicitée dans la page Kanzenshuu.",
         "forumContent": false
       },
@@ -261,11 +250,7 @@
         "url": "https://www.kanzenshuu.com/translations/daizenshuu-4-shenlong-times/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-4-shenlong-times/",
         "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-4-shenlong-times.html",
-        "participants": [
-          "Toshihiro Suzuki",
-          "Emi Tōnosu",
-          "Hokoto Masumoto"
-        ],
+        "participants": ["Toshihiro Suzuki", "Emi Tōnosu", "Hokoto Masumoto"],
         "formatNote": "Table ronde issue du supplément Shenlong Times du Daizenshuu indiqué; notices biographiques et tours de parole collectifs mêlés, sans pagination explicitée dans la page Kanzenshuu.",
         "forumContent": false
       },
@@ -412,9 +397,7 @@
         "url": "https://www.kanzenshuu.com/translations/daizenshuu-4-akira-toriyama-best/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/daizenshuu-4-akira-toriyama-best/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/daizenshuu-4-akira-toriyama-best.html",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "questionAnswerCount": 16,
         "questionBlockCount": 16,
         "answerBlockCount": 16,

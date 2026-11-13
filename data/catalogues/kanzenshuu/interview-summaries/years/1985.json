@@ -22,10 +22,7 @@
         "url": "https://www.kanzenshuu.com/translations/akira-toriyama-tankobon-ask-me-anything/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/akira-toriyama-tankobon-ask-me-anything/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/akira-toriyama-tankobon-ask-me-anything.html",
-        "participants": [
-          "Akira Toriyama",
-          "Dragon Ball readers"
-        ],
+        "participants": ["Akira Toriyama", "Dragon Ball readers"],
         "questionAnswerCount": 65,
         "detectedQuestionBlocks": 65,
         "detectedAnswerBlocks": 65,

@@ -17,6 +17,7 @@
 ## 1. Vision & Sovereign Architecture
 
 Shenron is the core platform powering **dragonballfr.com**, integrated into the YOLO Sovereign Fleet (`C:\src\products\shenron`):
+
 - **Web Platform & API (`apps/site`, `apps/server`)**: High-throughput SSR web portal (Next.js 16.5+ standalone under Bun v1.4.4+ transitioning to Leptos 0.8 + Axum), PostgreSQL (`pgvector`), and Redis cache.
 - **Shenron Studio (`crates/koharu-*`, `crates/shenron-desktop`)**: Native visual manga translation workbench, typesetting engine, and GPUI / Dioxus 0.8 desktop UI.
 - **Editorial OCR & Databook Pipeline (`packages/pipeline`)**: Neural OCR extraction and terminology harmonization for Akira Toriyama databooks.
@@ -27,11 +28,11 @@ Shenron is the core platform powering **dragonballfr.com**, integrated into the 
 
 ## 2. Sovereign Fleet Triad (`vps` / `cdn` / `prod`)
 
-| SSH Host | Mesh IP / Public IP | OS & Kernel | Canonical Role |
-|---|---|---|---|
-| **`ssh vps`** | `10.200.77.1` / `51.77.147.152` | Ubuntu 26.10 (Linux 7.3) | **Build Hub & Mesh Coordinator**: 12-core Rust/Bun build farm, sccache, OCR & RAG heavy compute, WireGuard hub (`10.200.77.0/24`). |
-| **`ssh cdn`** | `10.200.77.3` / `51.255.162.6` | Ubuntu 26.10 (Linux 7.3) | **Cloudflare Edge Simulator**: Pingora L4/L7 Gateway, Garage S3 (`R2` role), RQLite Raft (`D1` role), `workerd` runtime, Mail & Better-Auth SSO. |
-| **`ssh prod`** | `10.200.77.5` / `72.60.186.43` | Arch Linux (Linux 7.2.11) | **Bare-Metal Production**: Hosts `dragonballfr.com` (`shenron-gateway`, `shenron-site`, `shenron-bot`, `shenron-chat`, `shenron-compute`, `shenron-embed`, `shenron-postgres`, `shenron-redis`, `shenron-cloudflared`) with 203 GiB free NVMe and autonomous NHITL fixers. |
+| SSH Host       | Mesh IP / Public IP             | OS & Kernel               | Canonical Role                                                                                                                                                                                                                                                             |
+| -------------- | ------------------------------- | ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **`ssh vps`**  | `10.200.77.1` / `51.77.147.152` | Ubuntu 26.10 (Linux 7.3)  | **Build Hub & Mesh Coordinator**: 12-core Rust/Bun build farm, sccache, OCR & RAG heavy compute, WireGuard hub (`10.200.77.0/24`).                                                                                                                                         |
+| **`ssh cdn`**  | `10.200.77.3` / `51.255.162.6`  | Ubuntu 26.10 (Linux 7.3)  | **Cloudflare Edge Simulator**: Pingora L4/L7 Gateway, Garage S3 (`R2` role), RQLite Raft (`D1` role), `workerd` runtime, Mail & Better-Auth SSO.                                                                                                                           |
+| **`ssh prod`** | `10.200.77.5` / `72.60.186.43`  | Arch Linux (Linux 7.2.11) | **Bare-Metal Production**: Hosts `dragonballfr.com` (`shenron-gateway`, `shenron-site`, `shenron-bot`, `shenron-chat`, `shenron-compute`, `shenron-embed`, `shenron-postgres`, `shenron-redis`, `shenron-cloudflared`) with 203 GiB free NVMe and autonomous NHITL fixers. |
 
 ---
 

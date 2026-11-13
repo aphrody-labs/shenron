@@ -5,6 +5,11 @@
   "description": "Sovereign ultra-fast compression, decompression, and asset conversion suite for Bun v1.4.4+, WebGPU, and R2 CDN.",
   "homepage": "https://dragonballfr.com",
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/compression"
+  },
   "bin": {
     "compression-cli": "./src/cli.ts"
   },
@@ -16,6 +21,10 @@
     "./mesh": "./src/mesh-optimizer.ts",
     "./pak": "./src/pak-extractor.ts"
   },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "scripts": {
     "typecheck": "bun check --project tsconfig.json",
     "test": "bun test"
@@ -23,14 +32,5 @@
   "dependencies": {},
   "devDependencies": {
     "@types/bun": "catalog:"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/aphrody-labs/shenron.git",
-    "directory": "packages/compression"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
   }
 }

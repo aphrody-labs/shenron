@@ -2,15 +2,16 @@
 
 ## 1. Overview & Scope
 
-This specification documents the container formats, file manifests, asset structures, and character representations common across modern Dragon Ball gaming titles (*DRAGON BALL FighterZ*, *Xenoverse 2*, *Kakarot*, and *Sparking! ZERO*).
+This specification documents the container formats, file manifests, asset structures, and character representations common across modern Dragon Ball gaming titles (_DRAGON BALL FighterZ_, _Xenoverse 2_, _Kakarot_, and _Sparking! ZERO_).
 
 ---
 
 ## 2. Unreal Engine Asset Pipeline (`.pak` Chunks)
 
-In Unreal-based Dragon Ball games (*FighterZ*, *Kakarot*, *Sparking! ZERO*), assets are split into distinct pak chunks:
+In Unreal-based Dragon Ball games (_FighterZ_, _Kakarot_, _Sparking! ZERO_), assets are split into distinct pak chunks:
 
 ### 2.1 Chunk Partitioning
+
 - **`pakchunk0` (Base Content)**:
   - Game Engine core scripts and shaders (`REDGameShader`).
   - Base character roster assets: meshes, skeletons, animations, physics cloth (`NvCloth`).
@@ -22,7 +23,9 @@ In Unreal-based Dragon Ball games (*FighterZ*, *Kakarot*, *Sparking! ZERO*), ass
   - Balance patches and updated game state definitions.
 
 ### 2.2 Signature Validation (`.sig`)
+
 Each `.pak` file has an associated `.sig` file containing:
+
 1. RSA-signed SHA-256 hashes for each 64KB chunk of the `.pak`.
 2. Master signature validated by EasyAntiCheat (`EasyAntiCheatP2P`) and the game engine linker before mounting.
 
@@ -31,7 +34,9 @@ Each `.pak` file has an associated `.sig` file containing:
 ## 3. Character Data Architecture
 
 ### 3.1 Character Identifiers (Internal Roster Codes)
+
 Arc System Works uses uniform 3-letter / short identifiers for roster objects:
+
 - `Goku` / `GKN` (Super Saiyan Goku), `GKB` (SSGSS Goku), `GKU` (Base Goku), `GKT` (GT Goku), `GKI` (Ultra Instinct)
 - `Vegeta` / `VGN` (SS Vegeta), `VGB` (SSGSS Vegeta), `VGU` (Base Vegeta)
 - `Gohan` / `GHN` (Teen Gohan), `GHA` (Adult Gohan)
@@ -60,7 +65,9 @@ Arc System Works uses uniform 3-letter / short identifiers for roster objects:
 - `SuperBaby2` / `SBB`
 
 ### 3.2 Move & Animation Table Structure
+
 Every character defines an action and animation table containing:
+
 1. **Normal Attacks**:
    - Standing: `5A` (`NmlAtk5A`), `5B`, `5C`
    - Crouching: `2A`, `2B`, `2C`
@@ -79,6 +86,7 @@ Every character defines an action and animation table containing:
 ## 4. Save Data & Profile Architecture (`WindowsSaveData`)
 
 ### 4.1 Save Container
+
 - Saved locally under Steam user appdata: `%LOCALAPPDATA%\RED\Saved\SaveGames\`.
 - Encryption: Blowfish/AES-CTR encrypted block using game title key.
 - Save data modules:

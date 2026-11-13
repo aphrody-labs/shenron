@@ -49,10 +49,7 @@
         "url": "https://www.kanzenshuu.com/1999/04/03/agent-mai-funimation-additional-tidbits/",
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/1999.json",
         "date": "1999-04-03",
-        "emailDates": [
-          "1999-03-05",
-          "1999-03-26"
-        ],
+        "emailDates": ["1999-03-05", "1999-03-26"],
         "participants": [
           "Adrian Saavedra",
           "Agent Mai (pseudonyme déclaré; identité non confirmée)"

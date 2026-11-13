@@ -292,7 +292,9 @@ describe("plugin endpoints", () => {
       headers: { "x-forwarded-host": "dragonballfr.com", "x-forwarded-proto": "https" },
     });
     expect(pluginPublicOrigin(behind)).toBe("https://dragonballfr.com");
-    expect(pluginPublicOrigin(behind, "https://gemini.google.com")).toBe("https://gemini.google.com");
+    expect(pluginPublicOrigin(behind, "https://gemini.google.com")).toBe(
+      "https://gemini.google.com",
+    );
     const direct = new Request("https://dragonballfr.com/api/public/plugin", {
       headers: { "x-forwarded-host": "evil.example" },
     });

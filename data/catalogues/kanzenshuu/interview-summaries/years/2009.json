@@ -18,9 +18,7 @@
         "publication": "Dragon Ball Kai Blu-ray Box #1 — Dragon Book",
         "pages": "7–8",
         "date": "2009-10-23",
-        "participants": [
-          "Masako Nozawa"
-        ],
+        "participants": ["Masako Nozawa"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/kai_book-masako_nozawa/",
         "questionAnswerCount": 5,
         "forumContent": false,
@@ -44,15 +42,11 @@
         "date": "04 March 2009",
         "publication": "Dragon Ball Super Exciting Guide: Story Volume",
         "pages": "pp. 87-93",
-        "bibliographicYears": [
-          2009
-        ],
+        "bibliographicYears": [2009],
         "url": "https://www.kanzenshuu.com/translations/seg-story-volume-truth-about-dragon-ball/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/seg-story-volume-truth-about-dragon-ball/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/seg-story-volume-truth-about-dragon-ball.html",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "questionAnswerCount": 7,
         "questionBlockCount": 7,
         "answerBlockCount": 7,
@@ -81,15 +75,11 @@
         "date": "03 April 2009",
         "publication": "Dragon Ball Super Exciting Guide: Character Volume",
         "pages": "pp. 91-95",
-        "bibliographicYears": [
-          2009
-        ],
+        "bibliographicYears": [2009],
         "url": "https://www.kanzenshuu.com/translations/seg-character-volume-truth-about-dragon-ball/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/seg-character-volume-truth-about-dragon-ball/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/seg-character-volume-truth-about-dragon-ball.html",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "questionAnswerCount": 12,
         "questionBlockCount": 12,
         "answerBlockCount": 12,
@@ -115,10 +105,7 @@
         "url": "https://www.kanzenshuu.com/2009/08/26/traci-todd-viz-kids-interview/",
         "publication": "School Library Journal interview, excerpt reproduced by Kanzenshuu",
         "publicationDate": "26 August 2009",
-        "participants": [
-          "Traci Todd",
-          "GC4K (interviewer)"
-        ],
+        "participants": ["Traci Todd", "GC4K (interviewer)"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
         "bodyAvailable": true,
         "bodyEmpty": false,
@@ -143,9 +130,7 @@
         "url": "https://www.kanzenshuu.com/2009/10/29/dragon-ball-kai-home-releases-new-interview/",
         "publication": "Dragon Ball Kai Blu-ray Box #1 — Dragon Book, interview reproduced by Kanzenshuu",
         "publicationDate": "29 October 2009 (Kanzenshuu post)",
-        "participants": [
-          "Masako Nozawa"
-        ],
+        "participants": ["Masako Nozawa"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
         "bodyAvailable": true,
         "bodyEmpty": false,
@@ -169,13 +154,7 @@
         "url": "https://www.kanzenshuu.com/2009/07/12/podcast-episode-0183/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast, episode #0183",
         "publicationDate": "12 July 2009",
-        "participants": [
-          "Lanipator",
-          "Takahata101",
-          "VegettoEX",
-          "Meri",
-          "Julian"
-        ],
+        "participants": ["Lanipator", "Takahata101", "VegettoEX", "Meri", "Julian"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
         "bodyAvailable": true,
         "bodyEmpty": false,
@@ -207,10 +186,7 @@
         "url": "https://www.kanzenshuu.com/2009/06/21/podcast-episode-0180/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2009-06-21",
-        "participants": [
-          "KaiserNeko",
-          "MasakoX"
-        ],
+        "participants": ["KaiserNeko", "MasakoX"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2009.json",
         "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Daizenshuu_EX_-_Episode_0180.mp3",
         "audioTranscriptAvailable": false,

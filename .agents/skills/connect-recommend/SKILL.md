@@ -12,7 +12,6 @@ description: >-
   about onboarding or KYC for merchants, sellers, and vendors, mentions
   connected account Dashboard or responsibility configurations, or asks about
   payment flows, white-label payments, or embedded payments.
-
 ---
 
 ## Connect recommend

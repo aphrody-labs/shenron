@@ -14,28 +14,29 @@ Lecture seule. Aucune modification de serveur ni deploiement. Mesures faites dep
 
 Metriques : LCP, CLS, TBT (INP : non mesurable en lab).
 
-| URL | Profil | Perf | A11y | BP | SEO | LCP | CLS | TBT | FCP | SI |
-|---|---|---|---|---|---|---|---|---|---|---|
-| / | mobile | 36 | 100 | 77 | 100 | 8.6 s | 0 | 15 160 ms | 1.6 s | 8.8 s |
-| / | desktop | 58 | 100 | 77 | 100 | 1.9 s | 0 | 2 100 ms | 0.5 s | 2.0 s |
-| /wiki | mobile | 44 | 100 | 77 | 100 | 5.6 s | 0 | 12 280 ms | 2.5 s | 4.3 s |
-| /wiki | desktop | 52 | 100 | 77 | 100 | 1.7 s | 0.214 | 1 570 ms | 0.6 s | 1.4 s |
-| /wiki/manga/volume/82 | mobile | 42 | 96 | 77 | 100 | 8.5 s | 0 | 8 350 ms | 1.3 s | 4.7 s |
-| /wiki/manga/volume/82 | desktop | 61 | 96 | 77 | 100 | 1.4 s | 0.032 | 2 720 ms | 0.4 s | 2.3 s |
-| /wiki/databooks/45 | mobile | 39 | 100 | 77 | 100 | 15.3 s | 0 | 9 290 ms | 1.9 s | 5.8 s |
-| /wiki/databooks/45 | desktop | 62 | 100 | 77 | 100 | 1.7 s | 0.032 | 1 360 ms | 0.4 s | 1.6 s |
-| /wiki/search | mobile | 36 | 100 | 77 | 66 | 7.1 s | 0.143 | 12 300 ms | 2.3 s | 4.1 s |
-| /wiki/search | desktop | 43 | 100 | 77 | 69 | 2.2 s | 0.279 | 1 490 ms | 0.7 s | 1.3 s |
-| /wiki/characters | mobile | 40 | 97 | 77 | 100 | 8.0 s | 0 | 12 600 ms | 2.5 s | 4.5 s |
-| /wiki/characters | desktop | 47 | 97 | 77 | 100 | 3.9 s | 0.017 | 1 730 ms | 0.7 s | 1.5 s |
-| /wiki/episodes | mobile | 32 | 100 | 77 | 100 | 11.8 s | 0 | 22 440 ms | 2.5 s | 11.0 s |
-| /wiki/episodes | desktop | 38 | 100 | 77 | 100 | 2.2 s | 0.378 | 1 940 ms | 0.7 s | 1.8 s |
-| /news | mobile | 66 | 95 | 77 | 100 | 1.5 s | 0 | 17 240 ms | 1.5 s | 4.9 s |
-| /news | desktop | 68 | 95 | 77 | 100 | 1.1 s | 0.017 | 1 470 ms | 0.3 s | 1.2 s |
+| URL                   | Profil  | Perf | A11y | BP  | SEO | LCP    | CLS   | TBT       | FCP   | SI     |
+| --------------------- | ------- | ---- | ---- | --- | --- | ------ | ----- | --------- | ----- | ------ |
+| /                     | mobile  | 36   | 100  | 77  | 100 | 8.6 s  | 0     | 15 160 ms | 1.6 s | 8.8 s  |
+| /                     | desktop | 58   | 100  | 77  | 100 | 1.9 s  | 0     | 2 100 ms  | 0.5 s | 2.0 s  |
+| /wiki                 | mobile  | 44   | 100  | 77  | 100 | 5.6 s  | 0     | 12 280 ms | 2.5 s | 4.3 s  |
+| /wiki                 | desktop | 52   | 100  | 77  | 100 | 1.7 s  | 0.214 | 1 570 ms  | 0.6 s | 1.4 s  |
+| /wiki/manga/volume/82 | mobile  | 42   | 96   | 77  | 100 | 8.5 s  | 0     | 8 350 ms  | 1.3 s | 4.7 s  |
+| /wiki/manga/volume/82 | desktop | 61   | 96   | 77  | 100 | 1.4 s  | 0.032 | 2 720 ms  | 0.4 s | 2.3 s  |
+| /wiki/databooks/45    | mobile  | 39   | 100  | 77  | 100 | 15.3 s | 0     | 9 290 ms  | 1.9 s | 5.8 s  |
+| /wiki/databooks/45    | desktop | 62   | 100  | 77  | 100 | 1.7 s  | 0.032 | 1 360 ms  | 0.4 s | 1.6 s  |
+| /wiki/search          | mobile  | 36   | 100  | 77  | 66  | 7.1 s  | 0.143 | 12 300 ms | 2.3 s | 4.1 s  |
+| /wiki/search          | desktop | 43   | 100  | 77  | 69  | 2.2 s  | 0.279 | 1 490 ms  | 0.7 s | 1.3 s  |
+| /wiki/characters      | mobile  | 40   | 97   | 77  | 100 | 8.0 s  | 0     | 12 600 ms | 2.5 s | 4.5 s  |
+| /wiki/characters      | desktop | 47   | 97   | 77  | 100 | 3.9 s  | 0.017 | 1 730 ms  | 0.7 s | 1.5 s  |
+| /wiki/episodes        | mobile  | 32   | 100  | 77  | 100 | 11.8 s | 0     | 22 440 ms | 2.5 s | 11.0 s |
+| /wiki/episodes        | desktop | 38   | 100  | 77  | 100 | 2.2 s  | 0.378 | 1 940 ms  | 0.7 s | 1.8 s  |
+| /news                 | mobile  | 66   | 95   | 77  | 100 | 1.5 s  | 0     | 17 240 ms | 1.5 s | 4.9 s  |
+| /news                 | desktop | 68   | 95   | 77  | 100 | 1.1 s  | 0.017 | 1 470 ms  | 0.3 s | 1.2 s  |
 
 Constats : accessibilite 95-100 et SEO 100 partout sauf `/wiki/search` ; Bonnes pratiques bloquee a 77 sur toutes les pages ; Performance 32-68, tiree vers le bas par le TBT (partiellement artefact de charge, voir limites) et par des CLS desktop > 0,1 sur `/wiki`, `/wiki/search`, `/wiki/episodes`.
 
 Audits en echec releves (Lighthouse) :
+
 - BP 77 : `third-party-cookies` (cookies DoubleClick/AdSense), `inspector-issues`, `valid-source-maps` (page manga).
 - SEO 66/69 sur `/wiki/search` : `is-crawlable` en echec, car la page porte `robots: { index: false, follow: true }` (`apps/site/src/app/wiki/search/page.tsx:20`). Voulu a priori, donc non regressif ; le score est un faux positif de design.
 - Accueil mobile : `unused-javascript` ~253 Kio (AdSense `show_ads_impl`, GTM), `image-delivery-insight` ~888 Kio d'economie (avatars Discord `.gif`/`.webp` charges depuis cdn.discordapp.com), `total-byte-weight` 2 672 Kio, `render-blocking-insight` (5 feuilles CSS), `bf-cache` (3 raisons), `legacy-javascript` 14 Kio, `forced-reflow`.
@@ -45,31 +46,31 @@ Audits en echec releves (Lighthouse) :
 
 ## Fact-check technique
 
-| Controle | Resultat | Mesure |
-|---|---|---|
-| Pages en 4xx/5xx (home + liens internes de la home + 150 URLs du sitemap tirees au hasard, 278 URLs) | Aucune | `curl` GET, 0 reponse >= 400 |
-| Sitemap exhaustif (4 126 URLs) | NON FAIT | Seul un echantillon de 150 a ete crawle pour ne pas charger la prod |
-| Liens casses | Aucun sur l'echantillon | idem |
-| Assets 4xx/5xx | Aucun detecte sur les assets echantillonnes (css/js/woff2/svg) ; Lighthouse n'a pas signale de ressource en erreur | Pas de crawl exhaustif des assets |
-| Locales `/fr` `/en` `/ja` `/fr/wiki`, `/search` | 404 | A confirmer si attendu (voir correctifs) |
-| Canonical | Present et auto-referent sur 38 pages sur 40 echantillonnees (les 2 autres = favicons PNG). Accueil : `https://dragonballfr.com` sans slash final | `/wiki/canon?q=...` : canonical = URL avec `?q=`, ces URLs sont liees depuis la home |
-| hreflang | Absent partout (0/40) | Coherent avec un site sans locales d'URL ; `<html lang="fr">` |
-| h1 unique | 1 h1 sur toutes les pages HTML echantillonnees (`/wiki/characters/5` a 0 h1 car c'est une redirection vers `/wiki/characters/freezer`, corps de redirection) | |
-| meta description | Presente (HTML echantillonnes) | |
-| og:image | Present (HTML echantillonnes) | |
-| robots.txt | 200, `User-agent: *` Allow `/`, Disallow `/admin/ /api/ /profile/`, liste explicite des bots IA, deux `Sitemap:` | |
-| sitemap.xml | 200, 4 126 `<loc>` toutes sur `https://dragonballfr.com`, aucune URL avec `?` ; `/sources/sitemap.xml` est un index (`sitemaps/1.xml`...) non parcouru | `lastmod` = date de generation (identique pour les entrees vues) |
-| HSTS | `max-age=63072000` sans `includeSubDomains` ni `preload` | |
-| X-Content-Type-Options | `nosniff` | |
-| Referrer-Policy | `strict-origin-when-cross-origin` | |
-| CSP | `object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'` : pas de `default-src` ni `script-src`, volontaire (commentaire dans `apps/site/next.config.ts`) | Ne protege pas contre XSS script |
-| Autres | `X-Frame-Options: SAMEORIGIN`, COOP `same-origin-allow-popups`, Permissions-Policy | Pas de COEP/CORP |
-| Cache-Control assets | `_next/static` css/js : `public, max-age=31536000, immutable` (HIT Cloudflare). Police woff2 : `max-age=2592000, immutable` (30 j). Logo SVG : `max-age=86400` | |
-| Cache-Control HTML | Accueil : `private, no-cache, no-store, max-age=0, must-revalidate` ; pages wiki : `public, max-age=0, must-revalidate`. `cf-cache-status: DYNAMIC` (pas de cache edge du HTML) | |
-| Compression | `content-encoding: br` sur HTML, JS, CSS, SVG | gzip non teste separement |
-| HTTP/2 | Oui (`HTTP/2 200`) | |
-| HTTP/3 | Annonce (`alt-svc: h3=":443"; ma=86400"`) ; non teste (libcurl du VPS sans `--http3`) | |
-| Early Hints | `HTTP/2 103` recu avec `Link` preload | |
+| Controle                                                                                             | Resultat                                                                                                                                                                          | Mesure                                                                               |
+| ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| Pages en 4xx/5xx (home + liens internes de la home + 150 URLs du sitemap tirees au hasard, 278 URLs) | Aucune                                                                                                                                                                            | `curl` GET, 0 reponse >= 400                                                         |
+| Sitemap exhaustif (4 126 URLs)                                                                       | NON FAIT                                                                                                                                                                          | Seul un echantillon de 150 a ete crawle pour ne pas charger la prod                  |
+| Liens casses                                                                                         | Aucun sur l'echantillon                                                                                                                                                           | idem                                                                                 |
+| Assets 4xx/5xx                                                                                       | Aucun detecte sur les assets echantillonnes (css/js/woff2/svg) ; Lighthouse n'a pas signale de ressource en erreur                                                                | Pas de crawl exhaustif des assets                                                    |
+| Locales `/fr` `/en` `/ja` `/fr/wiki`, `/search`                                                      | 404                                                                                                                                                                               | A confirmer si attendu (voir correctifs)                                             |
+| Canonical                                                                                            | Present et auto-referent sur 38 pages sur 40 echantillonnees (les 2 autres = favicons PNG). Accueil : `https://dragonballfr.com` sans slash final                                 | `/wiki/canon?q=...` : canonical = URL avec `?q=`, ces URLs sont liees depuis la home |
+| hreflang                                                                                             | Absent partout (0/40)                                                                                                                                                             | Coherent avec un site sans locales d'URL ; `<html lang="fr">`                        |
+| h1 unique                                                                                            | 1 h1 sur toutes les pages HTML echantillonnees (`/wiki/characters/5` a 0 h1 car c'est une redirection vers `/wiki/characters/freezer`, corps de redirection)                      |                                                                                      |
+| meta description                                                                                     | Presente (HTML echantillonnes)                                                                                                                                                    |                                                                                      |
+| og:image                                                                                             | Present (HTML echantillonnes)                                                                                                                                                     |                                                                                      |
+| robots.txt                                                                                           | 200, `User-agent: *` Allow `/`, Disallow `/admin/ /api/ /profile/`, liste explicite des bots IA, deux `Sitemap:`                                                                  |                                                                                      |
+| sitemap.xml                                                                                          | 200, 4 126 `<loc>` toutes sur `https://dragonballfr.com`, aucune URL avec `?` ; `/sources/sitemap.xml` est un index (`sitemaps/1.xml`...) non parcouru                            | `lastmod` = date de generation (identique pour les entrees vues)                     |
+| HSTS                                                                                                 | `max-age=63072000` sans `includeSubDomains` ni `preload`                                                                                                                          |                                                                                      |
+| X-Content-Type-Options                                                                               | `nosniff`                                                                                                                                                                         |                                                                                      |
+| Referrer-Policy                                                                                      | `strict-origin-when-cross-origin`                                                                                                                                                 |                                                                                      |
+| CSP                                                                                                  | `object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'` : pas de `default-src` ni `script-src`, volontaire (commentaire dans `apps/site/next.config.ts`) | Ne protege pas contre XSS script                                                     |
+| Autres                                                                                               | `X-Frame-Options: SAMEORIGIN`, COOP `same-origin-allow-popups`, Permissions-Policy                                                                                                | Pas de COEP/CORP                                                                     |
+| Cache-Control assets                                                                                 | `_next/static` css/js : `public, max-age=31536000, immutable` (HIT Cloudflare). Police woff2 : `max-age=2592000, immutable` (30 j). Logo SVG : `max-age=86400`                    |                                                                                      |
+| Cache-Control HTML                                                                                   | Accueil : `private, no-cache, no-store, max-age=0, must-revalidate` ; pages wiki : `public, max-age=0, must-revalidate`. `cf-cache-status: DYNAMIC` (pas de cache edge du HTML)   |                                                                                      |
+| Compression                                                                                          | `content-encoding: br` sur HTML, JS, CSS, SVG                                                                                                                                     | gzip non teste separement                                                            |
+| HTTP/2                                                                                               | Oui (`HTTP/2 200`)                                                                                                                                                                |                                                                                      |
+| HTTP/3                                                                                               | Annonce (`alt-svc: h3=":443"; ma=86400"`) ; non teste (libcurl du VPS sans `--http3`)                                                                                             |                                                                                      |
+| Early Hints                                                                                          | `HTTP/2 103` recu avec `Link` preload                                                                                                                                             |                                                                                      |
 
 ## Correctifs priorises
 

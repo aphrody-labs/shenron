@@ -3,12 +3,7 @@
   "status": "partial-visual-heading-transcription-body-unreadable-at-source-resolution",
   "publication": "DRAGON BALL 超画集",
   "interviewTitle": "鳥山明的超会見 / 鳥山明的超会見 — 追加版",
-  "printedPages": [
-    222,
-    223,
-    224,
-    225
-  ],
+  "printedPages": [222, 223, 224, 225],
   "transcriptPath": "data\\catalogues\\japanese-interviews\\cho-gashuu-toriyama-interviews-p222-225.jsonl",
   "completeness": "4ページの見出しのみを転記。本文の質問・回答は低解像度のスキャンで文字を安定して判読できず、推測による補完を避けて省略。",
   "method": "ローカルJPEGを目視し、対象箇所のクロップを拡大して再読。OCR・ネットワーク不使用。",

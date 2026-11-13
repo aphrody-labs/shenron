@@ -4,10 +4,10 @@
 
 Security updates are applied continuously to the latest release deployed across the sovereign fleet.
 
-| Version | Supported          |
-| ------- | ------------------ |
-| main    | Yes                |
-| < main  | No                 |
+| Version | Supported |
+| ------- | --------- |
+| main    | Yes       |
+| < main  | No        |
 
 ## Reporting a Vulnerability
 

@@ -20,15 +20,10 @@
       "sectionTitle": "オレたちプロゲーマー!! — DBFZ / かずのこ",
       "imageSha256": "61fa6951c15d9b05718d15fab8ed082eb7e77a4acfefca919ff598e68ed427ef",
       "imageBytes": 593400,
-      "pages": [
-        339
-      ],
+      "pages": [339],
       "transcriptPath": "data/catalogues/japanese-interviews/vjump-2019-db-fighterz-kazunoko-excerpt.jsonl#L1",
       "completeness": "Visible direct gamer comments and the clearly associated editorial reply transcribed from one page. The page is part of a larger feature; p.339 is inferred, not printed legibly in this crop.",
-      "participants": [
-        "かずのこ",
-        "ビクトリー・ウチダ（編集部）"
-      ],
+      "participants": ["かずのこ", "ビクトリー・ウチダ（編集部）"],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\mars\\660461417_1387192693450254_3355142928239876073_n.jpg",
       "transcriptRow": 1,
       "title": "Vジャンプ",

@@ -10,22 +10,14 @@
   "records": [
     {
       "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-morishita-124-125.jsonl#L1",
-      "printedPages": [
-        124
-      ],
-      "pdfPageIndices": [
-        125
-      ],
+      "printedPages": [124],
+      "pdfPageIndices": [125],
       "completeness": "Page 124 text copied from the prior manually transcribed sidecar; that source marks omitted page-125 columns, which are replaced by line 2 here."
     },
     {
       "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-morishita-124-125.jsonl#L2",
-      "printedPages": [
-        125
-      ],
-      "pdfPageIndices": [
-        126
-      ],
+      "printedPages": [125],
+      "pdfPageIndices": [126],
       "renderPath": "C:/Users/omara/AppData/Local/Temp/shenron-30th-pages/page-126.png",
       "renderSha256": "a4cd57855859a85b3f030b6ef212a166fc26e33d123405f4fd00aca0ec0b6d13",
       "completeness": "All body text visible on printed page 125 transcribed; the interview continues beyond this folio, so this is not an interview-complete transcript."

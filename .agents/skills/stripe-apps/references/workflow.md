@@ -192,12 +192,12 @@ If you weren’t able to accomplish the user’s goal on the first try and the b
 
 **`stripe apps start` vs `stripe apps upload`**
 
-|  | `stripe apps start` | `stripe apps upload` |
-| --- | --- | --- |
-| Purpose | Local development | Publish a version |
-| Persistence | Not persistent — only while command runs | Persists in Stripe Dashboard |
-| Secret Store | Not available | Available after upload |
-| `fetchStripeSignature` | Only works after at least one upload | Works after upload |
+|                        | `stripe apps start`                      | `stripe apps upload`         |
+| ---------------------- | ---------------------------------------- | ---------------------------- |
+| Purpose                | Local development                        | Publish a version            |
+| Persistence            | Not persistent — only while command runs | Persists in Stripe Dashboard |
+| Secret Store           | Not available                            | Available after upload       |
+| `fetchStripeSignature` | Only works after at least one upload     | Works after upload           |
 
 **After updating permissions:**
 

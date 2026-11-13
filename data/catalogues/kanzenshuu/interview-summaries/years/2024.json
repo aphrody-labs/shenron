@@ -20,9 +20,7 @@
         "publication": "Chunichi Shimbun",
         "pages": "Article Web, sans pagination",
         "date": "2024-03-09",
-        "participants": [
-          "Hisashi Tanaka"
-        ],
+        "participants": ["Hisashi Tanaka"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/chunichi-shimbun-article-hisashi-tanaka/",
         "questionAnswerCount": 1,
         "formatNote": "Profil journalistique narratif, pas un entretien formel question-réponse. L'index compte un bloc-question/réponse mais le texte archivé présente un récit et des citations; les souvenirs sont attribués à l'assistant Hisashi Tanaka et rapportés par le journaliste Hiroshi Ōyama.",
@@ -50,9 +48,7 @@
         "publication": "Chunichi Shimbun",
         "pages": "Article Web, sans pagination",
         "date": "2024-03-09",
-        "participants": [
-          "Takashi Matsuyama"
-        ],
+        "participants": ["Takashi Matsuyama"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/chunichi-shimbun-article-takashi-matsuyama/",
         "questionAnswerCount": 1,
         "formatNote": "Profil journalistique narratif, pas un entretien formel question-réponse. L'index compte un bloc, mais le texte archivé est un article avec citations; propos rapportés par le journaliste Atsushi Okamura au nom de Matsuyama.",
@@ -80,9 +76,7 @@
         "publication": "Dragon Ball Official Site",
         "pages": "Article Web, sans pagination; entretien de six questions",
         "date": "2024-03-21",
-        "participants": [
-          "Toyotarō"
-        ],
+        "participants": ["Toyotarō"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-march-2024-toyotaro-interview/",
         "questionAnswerCount": 6,
         "formatNote": "Six questions-réponses; les réponses sur les chapitres 101 à 103 distinguent explicitement le scénario de Toriyama et les ajustements de Toyotarō.",
@@ -108,10 +102,7 @@
         "url": "https://www.kanzenshuu.com/2024/05/09/dragon-ball-super-divers-announced/",
         "publication": "Dragon Ball Official Site — entretien vidéo Akai / Victory Uchida",
         "publicationDate": "2024-05-09",
-        "participants": [
-          "Akai (producteur Bandai Namco)",
-          "Victory Uchida (éditeur de V-Jump)"
-        ],
+        "participants": ["Akai (producteur Bandai Namco)", "Victory Uchida (éditeur de V-Jump)"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2024.json",
         "mediaUrl": "https://www.youtube-nocookie.com/embed/V_SmC0cRzu0",
         "sourcePageUrl": "https://dragon-ball-official.com/movie/01_2632.html",
@@ -141,10 +132,7 @@
         "date": null,
         "interviewYear": null,
         "kanzenshuuCitationYear": 2024,
-        "participants": [
-          "Kazuhiko Torishima",
-          "intervieweur non identifié dans le passage cité"
-        ],
+        "participants": ["Kazuhiko Torishima", "intervieweur non identifié dans le passage cité"],
         "originalSource": "https://www.youtube.com/watch?v=Jd0ocHDfYgg&t=387s",
         "kanzenshuuPage": "https://www.kanzenshuu.com/rumor/toriyama-battle-of-gods-evolution/",
         "kanzenshuuPageId": 75060,
@@ -172,9 +160,7 @@
         "url": "https://www.kanzenshuu.com/2024/11/11/podcast-episode-0515/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2024-11-11",
-        "participants": [
-          "JP (The Space Above Us)"
-        ],
+        "participants": ["JP (The Space Above Us)"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2024.json",
         "bodyAvailable": true,
         "bodyEmpty": false,

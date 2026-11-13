@@ -5,6 +5,7 @@ A curated list of libraries, tools, engines, decompilers, runtimes, and resource
 ---
 
 ## 1. Core Runtime & Language Specifications
+
 - **[Lua 5.2 Reference Manual](https://www.lua.org/manual/5.2/)**: The canonical reference manual by Roberto Ierusalimschy, Luiz Henrique de Figueiredo, and Waldemar Celes.
 - **[A Look at the Design of Lua 5.2](https://www.lua.org/doc/cacm2018.pdf)**: Comprehensive paper exploring `_ENV` lexical environments, generational GC, and the removal of `setfenv`/`getfenv`.
 - **[Lua 5.2 Bytecode Architecture](https://files.catbox.moe/lua52_bytecode.pdf)**: Detailed layout of 32-bit instructions, chunk headers, and the 40 standard opcodes.
@@ -12,6 +13,7 @@ A curated list of libraries, tools, engines, decompilers, runtimes, and resource
 ---
 
 ## 2. Gaming Engines & Modding Ecosystems (Lua 5.2)
+
 - **Dragon Ball Xenoverse 2**: Scripting of Parallel Quests, skill parameters, AI scripts, and camera sequences using Lua 5.2 chunks.
 - **CryEngine 3.8+ / Crytek**: Uses Lua 5.2 for game logic, entity behavior trees, and UI scripting.
 - **Defold Engine**: High-performance 2D game engine built around Lua 5.2 with zero garbage collection overhead during gameplay.
@@ -21,6 +23,7 @@ A curated list of libraries, tools, engines, decompilers, runtimes, and resource
 ---
 
 ## 3. Rust + Lua 5.2 Integrations
+
 - **[mlua](https://github.com/khvzak/mlua)**: High-level Rust bindings to Lua 5.4, 5.3, 5.2, 5.1 (including LuaJIT and Luau) with async/await, multi-threading, and serde support.
   ```toml
   mlua = { version = "0.11", features = ["lua52", "vendored"] }
@@ -31,6 +34,7 @@ A curated list of libraries, tools, engines, decompilers, runtimes, and resource
 ---
 
 ## 4. Reverse Engineering & Bytecode Tooling
+
 - **[depot re](file:///C:/src/crates/depot)**: Sovereign CLI with built-in Lua 5.2 chunk reader, opcode formatter, and symbol recovery.
 - **[Unluac](https://sourceforge.net/projects/unluac/)**: Java-based decompiler for Lua 5.0 through 5.4 with full Lua 5.2 chunk support.
 - **[LuaDec 5.2](https://github.com/viruscamp/luadec)**: Dedicated Lua 5.2 decompiler fork.
@@ -39,6 +43,7 @@ A curated list of libraries, tools, engines, decompilers, runtimes, and resource
 ---
 
 ## 5. Web, Bun & Next.js Ecosystem
+
 - **[`@rosegriffon/lua-plugin`](file:///C:/src/apps/rosegriffon/packages/rg-lua)**:
   - Official Bun bundler plugin (`bunPluginLua`) supporting `import script from "./script.lua"`.
   - Next.js webpack/turbopack extension (`withLua`) for isomorphic client/server Lua loading.
@@ -49,6 +54,7 @@ A curated list of libraries, tools, engines, decompilers, runtimes, and resource
 ---
 
 ## 6. Language Server & Developer Tooling
+
 - **[LuaLS (lua-language-server)](https://github.com/LuaLS/lua-language-server)**: The de facto language server for Lua, configured for Lua 5.2 via `.luarc.json`:
   ```json
   {

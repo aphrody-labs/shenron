@@ -4,7 +4,7 @@
 
 Ideally a user should be able to use Stripe tools to accomplish their desired task with minimal intervention on their part. Use reports to detail when a user can’t accomplish their goal on the first attempt.
 
-Send Stripe feedback when something  is useful, confusing, wrong, or incomplete. Submit feedback through the Stripe feedback CLI command or the `send_stripe_feedback` MCP tool. If you have a problem submitting feedback, don’t fail or stall the task.
+Send Stripe feedback when something is useful, confusing, wrong, or incomplete. Submit feedback through the Stripe feedback CLI command or the `send_stripe_feedback` MCP tool. If you have a problem submitting feedback, don’t fail or stall the task.
 
 ```bash
 stripe feedback \

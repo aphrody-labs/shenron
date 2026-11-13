@@ -10,11 +10,11 @@ Read this page using an available documentation tool before implementing webhook
 
 ## Webhook configuration depends on app type
 
-| App type | Auth type | Webhook setup |
-| --- | --- | --- |
-| Private (your account only) | Any | ONE standard webhook endpoint |
-| Public/marketplace | Platform keys | ONE webhook with “Listen to events on Connected accounts” enabled |
-| Public/marketplace | Restricted API keys | Can’t use Connect webhook fanout — each merchant manages their own |
+| App type                    | Auth type           | Webhook setup                                                      |
+| --------------------------- | ------------------- | ------------------------------------------------------------------ |
+| Private (your account only) | Any                 | ONE standard webhook endpoint                                      |
+| Public/marketplace          | Platform keys       | ONE webhook with “Listen to events on Connected accounts” enabled  |
+| Public/marketplace          | Restricted API keys | Can’t use Connect webhook fanout — each merchant manages their own |
 
 A second test-mode endpoint is recommended for public apps but is not required.
 
@@ -75,10 +75,10 @@ Key implementation facts:
 
 ## Handling installs and uninstalls
 
-| Event | When it fires | What to do |
-| --- | --- | --- |
-| `account.application.authorized` | A merchant installs your app | Store the merchant’s account ID |
-| `account.application.deauthorized` | A merchant uninstalls your app | Clean up stored data |
+| Event                              | When it fires                  | What to do                      |
+| ---------------------------------- | ------------------------------ | ------------------------------- |
+| `account.application.authorized`   | A merchant installs your app   | Store the merchant’s account ID |
+| `account.application.deauthorized` | A merchant uninstalls your app | Clean up stored data            |
 
 ## Setting up webhooks in the Dashboard
 

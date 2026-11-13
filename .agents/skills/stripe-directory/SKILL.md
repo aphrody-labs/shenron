@@ -22,7 +22,6 @@ allowed-tools:
   - Bash(npx skills add https://docs.stripe.com *)
   - Skill
   - Read
-
 ---
 
 ## Stripe Directory

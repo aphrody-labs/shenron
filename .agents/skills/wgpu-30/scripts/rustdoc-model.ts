@@ -94,7 +94,10 @@ const isPublic = (item: RItem): boolean =>
 
 /** Every public item of `root` (a crate re-exporting `others`), by the name it is used under. */
 export function collectPublic(root: Krate, others: Krate[]): PublicItem[] {
-  const crates = new Map<string, Krate>([[root.name, root], ...others.map((k) => [k.name, k] as const)]);
+  const crates = new Map<string, Krate>([
+    [root.name, root],
+    ...others.map((k) => [k.name, k] as const),
+  ]);
   const out = new Map<string, PublicItem>();
   const seenModules = new Set<string>();
 
@@ -205,7 +208,8 @@ export function renderType(t: any): string {
     const r = t.borrowed_ref;
     return `&${r.lifetime ? `${r.lifetime} ` : ""}${r.is_mutable ? "mut " : ""}${renderType(r.type)}`;
   }
-  if (t.raw_pointer) return `*${t.raw_pointer.is_mutable ? "mut" : "const"} ${renderType(t.raw_pointer.type)}`;
+  if (t.raw_pointer)
+    return `*${t.raw_pointer.is_mutable ? "mut" : "const"} ${renderType(t.raw_pointer.type)}`;
   if (t.tuple) return `(${(t.tuple as any[]).map(renderType).join(", ")})`;
   if (t.slice) return `[${renderType(t.slice)}]`;
   if (t.array) return `[${renderType(t.array.type)}; ${t.array.len}]`;
@@ -239,7 +243,9 @@ function renderGenerics(g: any): { params: string; where: string } {
         : "";
       params.push(`${p.name}${out}`);
     } else if (p.kind.type) {
-      const bounds = (p.kind.type.bounds as any[]).length ? `: ${renderBounds(p.kind.type.bounds)}` : "";
+      const bounds = (p.kind.type.bounds as any[]).length
+        ? `: ${renderBounds(p.kind.type.bounds)}`
+        : "";
       const def = p.kind.type.default ? ` = ${renderType(p.kind.type.default)}` : "";
       params.push(`${p.name}${bounds}${def}`);
     } else if (p.kind.const) {
@@ -248,8 +254,14 @@ function renderGenerics(g: any): { params: string; where: string } {
   }
   const preds: string[] = [];
   for (const w of (g?.where_predicates ?? []) as any[]) {
-    if (w.bound_predicate) preds.push(`${renderType(w.bound_predicate.type)}: ${renderBounds(w.bound_predicate.bounds)}`);
-    else if (w.lifetime_predicate) preds.push(`${w.lifetime_predicate.lifetime}: ${(w.lifetime_predicate.outlives as string[]).join(" + ")}`);
+    if (w.bound_predicate)
+      preds.push(
+        `${renderType(w.bound_predicate.type)}: ${renderBounds(w.bound_predicate.bounds)}`,
+      );
+    else if (w.lifetime_predicate)
+      preds.push(
+        `${w.lifetime_predicate.lifetime}: ${(w.lifetime_predicate.outlives as string[]).join(" + ")}`,
+      );
   }
   return {
     params: params.length ? `<${params.join(", ")}>` : "",
@@ -263,7 +275,14 @@ export function renderFunction(item: RItem, name = item.name ?? "_"): string {
   const { params, where } = renderGenerics(f.generics);
   const inputs = (f.sig.inputs as [string, any][]).map(([n, ty]) => {
     const rendered = renderType(ty);
-    if (n === "self") return rendered === "&Self" ? "&self" : rendered === "&mut Self" ? "&mut self" : rendered === "Self" ? "self" : `self: ${rendered}`;
+    if (n === "self")
+      return rendered === "&Self"
+        ? "&self"
+        : rendered === "&mut Self"
+          ? "&mut self"
+          : rendered === "Self"
+            ? "self"
+            : `self: ${rendered}`;
     return `${n}: ${rendered}`;
   });
   const h = f.header;
@@ -274,7 +293,11 @@ export function renderFunction(item: RItem, name = item.name ?? "_"): string {
 
 export function firstParagraph(docs: string | null, max = 220): string {
   if (!docs) return "";
-  const para = docs.trim().split(/\n\s*\n/)[0]!.replace(/\s+/g, " ").trim();
+  const para = docs
+    .trim()
+    .split(/\n\s*\n/)[0]!
+    .replace(/\s+/g, " ")
+    .trim();
   return para.length > max ? `${para.slice(0, max - 1).trimEnd()}…` : para;
 }
 
@@ -288,7 +311,8 @@ export function renderMarkers(item: RItem): string[] {
     if (/must_use/.test(text)) markers.push("must_use");
     if (/non_exhaustive/.test(text)) markers.push("non_exhaustive");
   }
-  if (item.deprecation) markers.push(`deprecated${item.deprecation.note ? `: ${item.deprecation.note}` : ""}`);
+  if (item.deprecation)
+    markers.push(`deprecated${item.deprecation.note ? `: ${item.deprecation.note}` : ""}`);
   return [...new Set(markers)];
 }
 
@@ -306,7 +330,12 @@ export function members(p: PublicItem): Member[] {
   const kind = kindOf(item);
   const out: Member[] = [];
   const pushFn = (fn: RItem): void => {
-    out.push({ name: fn.name ?? "_", decl: renderFunction(fn), doc: firstParagraph(fn.docs), markers: renderMarkers(fn) });
+    out.push({
+      name: fn.name ?? "_",
+      decl: renderFunction(fn),
+      doc: firstParagraph(fn.docs),
+      markers: renderMarkers(fn),
+    });
   };
   if (kind === "trait") {
     for (const id of item.inner.trait.items as Id[]) {
@@ -314,8 +343,20 @@ export function members(p: PublicItem): Member[] {
       if (!m) continue;
       const mk = kindOf(m);
       if (mk === "function") pushFn(m);
-      else if (mk === "assoc_type") out.push({ name: m.name ?? "_", decl: `type ${m.name}`, doc: firstParagraph(m.docs), markers: [] });
-      else if (mk === "assoc_const") out.push({ name: m.name ?? "_", decl: `const ${m.name}: ${renderType(m.inner.assoc_const.type)}`, doc: firstParagraph(m.docs), markers: [] });
+      else if (mk === "assoc_type")
+        out.push({
+          name: m.name ?? "_",
+          decl: `type ${m.name}`,
+          doc: firstParagraph(m.docs),
+          markers: [],
+        });
+      else if (mk === "assoc_const")
+        out.push({
+          name: m.name ?? "_",
+          decl: `const ${m.name}: ${renderType(m.inner.assoc_const.type)}`,
+          doc: firstParagraph(m.docs),
+          markers: [],
+        });
     }
     return out;
   }
@@ -375,7 +416,11 @@ export function structFields(p: PublicItem): { fields: Field[]; tuple: boolean; 
       hidden = true;
       continue;
     }
-    fields.push({ name: f.name ?? "_", type: renderType(f.inner.struct_field), doc: firstParagraph(f.docs, 180) });
+    fields.push({
+      name: f.name ?? "_",
+      type: renderType(f.inner.struct_field),
+      doc: firstParagraph(f.docs, 180),
+    });
   }
   return { fields, tuple, hidden };
 }
@@ -393,7 +438,8 @@ export function enumVariants(p: PublicItem): Variant[] {
     if (!v) continue;
     const kind = v.inner.variant.kind;
     let shape = "";
-    if (kind.tuple) shape = `(${(kind.tuple as (Id | null)[]).map((fid) => (fid == null ? "_" : renderType(p.krate.index.get(fid)?.inner.struct_field))).join(", ")})`;
+    if (kind.tuple)
+      shape = `(${(kind.tuple as (Id | null)[]).map((fid) => (fid == null ? "_" : renderType(p.krate.index.get(fid)?.inner.struct_field))).join(", ")})`;
     else if (kind.struct) {
       const fields = (kind.struct.fields as Id[]).map((fid) => {
         const f = p.krate.index.get(fid);
@@ -401,8 +447,14 @@ export function enumVariants(p: PublicItem): Variant[] {
       });
       shape = ` { ${fields.join(", ")} }`;
     }
-    const discriminant = v.inner.variant.discriminant ? ` = ${v.inner.variant.discriminant.expr}` : "";
-    out.push({ name: v.name ?? "_", shape: `${shape}${discriminant}`, doc: firstParagraph(v.docs, 200) });
+    const discriminant = v.inner.variant.discriminant
+      ? ` = ${v.inner.variant.discriminant.expr}`
+      : "";
+    out.push({
+      name: v.name ?? "_",
+      shape: `${shape}${discriminant}`,
+      doc: firstParagraph(v.docs, 200),
+    });
   }
   return out;
 }
@@ -439,7 +491,9 @@ export function resolveAlias(p: PublicItem, crates: Krate[]): PublicItem | null 
   const local = p.krate.index.get(rp.id);
   if (local) {
     const kind = kindOf(local);
-    return KINDS.has(kind) ? { path: p.path, name: p.name, kind: kind as Kind, item: local, krate: p.krate } : null;
+    return KINDS.has(kind)
+      ? { path: p.path, name: p.name, kind: kind as Kind, item: local, krate: p.krate }
+      : null;
   }
   const info = p.krate.paths[String(rp.id)];
   if (!info) return null;
@@ -448,5 +502,7 @@ export function resolveAlias(p: PublicItem, crates: Krate[]): PublicItem | null 
   const item = id == null ? undefined : target?.index.get(id);
   if (!target || !item) return null;
   const kind = kindOf(item);
-  return KINDS.has(kind) ? { path: p.path, name: p.name, kind: kind as Kind, item, krate: target } : null;
+  return KINDS.has(kind)
+    ? { path: p.path, name: p.name, kind: kind as Kind, item, krate: target }
+    : null;
 }

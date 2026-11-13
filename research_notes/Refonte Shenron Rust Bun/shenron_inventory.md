@@ -3,6 +3,7 @@
 Scope: read-only survey of the local repository at HEAD `f04de517` (2026-11-04, "fix(wiki): separate mobile controls…"). All sources are local file paths inside `C:\src\apps\shenron` unless stated. Counts were produced with `find`/`wc`/`grep` and `bun:sqlite`; they exclude `node_modules`, `.next*`, `dist`, `target`.
 
 Global figures:
+
 - Git: 2 186 commits, first commit dated 2026-09-29 — `git log --oneline | wc -l`, `git log --format=%ad | tail -1`.
 - TypeScript: 3 388 `.ts/.tsx` files across `apps/*` + `packages/*`; `scripts/` adds 313 `.ts` files.
 - Rust (excluding the `crates/filmcraft` submodule): 133 434 lines, 701 `#[test]` functions; `crates/filmcraft` alone is 993 `.rs` files / 400 700 lines.
@@ -13,9 +14,11 @@ Global figures:
 ## Q1. Workspaces: apps/* and packages/* (purpose, runtime, deps, size, tests)
 
 ### Takeaway
+
 15 packages + 4 apps, all Bun workspaces (`bun@1.4.6`, `engines.bun >= 1.4.4`). Only `apps/site` (and the React half of `packages/ui`) runs under Next; everything else is plain Bun (`Bun.serve`, `bun:ffi`, `bun:sqlite`, `bun build --compile`). The site is ~81 % of all TS lines (272 895 of ~335 k in apps; 580 k total with packages).
 
 ### Cited Findings
+
 - Root manifest `C:\src\apps\shenron\package.json`: name `@aphrody/shenron` v1.4.5, workspaces `apps/*`, `packages/*`, Bun catalog pins `next 16.5.0-canary.5` (overridden by a vendored fork `vendor/next-fork/next-16.5.0-canary.5-dac376c6fe-ffbf5f76.tgz`), `react ^19.3.0`, `next-intl 4.14.7`, `better-auth 1.7.14`, `@base-ui/react ^1.8.0`, `tailwindcss ^4.3.3`, `shadcn ^4.21.0`, `drizzle-orm ^0.45.3`, `postgres ^3.4.9`, `discordx 11.13.3`, `discord.js ^14.27.0`, `@pothos/core`, `graphql-yoga`, `@napi-rs/canvas 1.0.9`, `sharp`, `@tiptap/* ^3.31.3`, `@codemirror/*`, `@tanstack/react-query ^5.104`, `@tanstack/react-virtual`, `stripe ^23`, `pixi.js 8.22`, `three 0.187`, `mediabunny`, `typescript 7.0.2`, `@types/bun` aliased to `@aphrody/bun-types@1.4.4`. Scripts: `typecheck` = `bun check`, `lint` = `bun lint`, `fmt` = `bun fmt` — [package.json](C:\src\apps\shenron\package.json).
 - `bunfig.toml`: `linker = "isolated"`, only `react`/`react-dom` hoisted, `minimumReleaseAge = 259200` with an exclude list of `@aphrody/*` packages, `[run] bun = true` (node shebangs run under Bun) — [bunfig.toml](C:\src\apps\shenron\bunfig.toml).
 - Per-workspace inventory (ts/tsx files · lines · test files · key deps) from each `package.json`:
@@ -38,10 +41,12 @@ Global figures:
 - Dependency graph is acyclic: `config ← db/auth ← api`; `@aphrody/shenron-ui` depends only on `config`, `koharu`, `pipeline`; no package imports an app — [AGENTS.md](C:\src\apps\shenron\AGENTS.md).
 
 ### Inferences
+
 - Framework-agnostic Bun code (keepable as services/workers): `apps/bot`, `apps/server` (minus the Next child-process relay), `apps/activity`, `packages/{api,auth,config,db,pipeline,media,images,lexicon,native,koharu,dbxv2,crunchyroll,activity,engine}`. Together ≈ 310 k TS lines.
 - Inherently Next/React-bound (must be rewritten): `apps/site` (272 895 lines, 1 710 files) and the React component half of `packages/ui` (~47 k lines). `packages/api/src/next.ts`, `packages/auth/src/next.ts`, `packages/db/src/postgres-js.ts` are thin Next adapters.
 
 ### Gaps
+
 - `git shortlog -sn` returned no output in this shell; author distribution not captured.
 - Test counts are file counts, not test-case counts (`bun test` not executed, per the no-modification constraint).
 
@@ -50,9 +55,11 @@ Global figures:
 ## Q2. apps/site: Next.js version, route tree, i18n, rendering, SEO, data, auth, editors
 
 ### Takeaway
+
 Next 16.5.0-canary.5 (vendored fork) App Router with Turbopack, no `[locale]` segment (cookie-based next-intl, fr/en/ja), 200 `page.tsx`, 159 `route.ts`, 222 files with `force-dynamic`, 73 ISR `revalidate` exports, 25 `generateStaticParams`, 364 `"use client"` files, 11 server-action files. OG images use `next/og` `ImageResponse` (Satori), not `@napi-rs/canvas`.
 
 ### Cited Findings
+
 - Next config: `withBun` from `@aphrody/next-bun`; `serverExternalPackages`, `deploymentId: NEXT_DEPLOYMENT_ID` (skew protection for self-hosted `next start`), `assetPrefix = NEXT_PUBLIC_CDN_URL`, `output: "standalone"` only when `NEXT_OUTPUT=standalone`, `experimental.useTypeScriptCli`, `cpus: 1`, `staticGenerationMaxConcurrency: 2`; comments record cold build ≈ 8.1 GiB RSS and 10.5 GiB incremental → OOM on an 11 GiB VPS — [apps/site/next.config.ts](C:\src\apps\shenron\apps\site\next.config.ts).
 - Middleware: `src/proxy.ts` (Next 16 rename of middleware): host canonicalisation to dragonballfr.com, `/admin` + `/workshop` staff gating via `better-auth/cookies` `getSessionCookie`, `x-admin-token`, `SHENRON_ADMIN_IPS`, beta gating of wiki categories read from DB (`WikiLaunch` singleton) — [apps/site/src/proxy.ts](C:\src\apps\shenron\apps\site\src\proxy.ts).
 - i18n: `src/i18n/request.ts` (next-intl `getRequestConfig`, locale from `NEXT_LOCALE` cookie else `Accept-Language`, `timeZone Europe/Paris`, French fallback). Messages `messages/fr.json`, `en.json`, `ja.json` (3 469 lines each; 157 KB / 145 KB / 172 KB), `glossary.json` (4 835 lines) plus ~40 namespace sub-directories (`wiki-public/`, `manga-ui/`, `video-ui/`, `dbxv2/`, …) — [apps/site/messages](C:\src\apps\shenron\apps\site\messages), [apps/site/src/i18n/request.ts](C:\src\apps\shenron\apps\site\src\i18n\request.ts). 105 files import `next-intl`.
@@ -76,10 +83,12 @@ Next 16.5.0-canary.5 (vendored fork) App Router with Turbopack, no `[locale]` se
 - Site CSS: `src/app/globals.css` (14 lines, imports), `dragon-ball-design.css` (149), `neutral-theme.css` (82), `frame-theme.css` (79), `official-beerus.css` (38), `fonts.css` (1 356).
 
 ### Inferences
+
 - With 222 `force-dynamic` files vs 25 `generateStaticParams`, the site is predominantly SSR with ISR on list pages; a Rust SSG/SSR replacement must support per-request auth gating (proxy.ts) and DB-driven section visibility (`WikiLaunch`), not pure SSG.
 - Satori-based OG generation can be replaced by a Rust renderer (vello/resvg) since inputs are already SVG strings.
 
 ### Gaps
+
 - Exact per-route rendering mode matrix not computed (would require parsing 200 pages); numbers above are file-level greps.
 - Service-worker (`sw.js` route) behaviour not read.
 
@@ -88,9 +97,11 @@ Next 16.5.0-canary.5 (vendored fork) App Router with Turbopack, no `[locale]` se
 ## Q3. packages/ui design system (layers, Tailwind/Base UI, components, tokens, CSS, SVG, fonts)
 
 ### Takeaway
+
 `@aphrody/shenron-ui` is a Tailwind v4 CSS-first design system with a documented three-layer architecture (primitive `--dbz-*`/`--toriyama-*` → semantic `@theme inline` aliases → components), 26 files using `@base-ui/react` (25 distinct Base UI modules), 113 package exports, ~8.5 k lines of CSS, 55 SVG assets, and one bundled font (`NotoSansCJK-VF.otf` for the Koharu editor).
 
 ### Cited Findings
+
 - Three layers table: Primitive = raw value overridable at runtime by `/admin/design` (`--dbz-*`, `--toriyama-*`); Semantic = alias with fallback in `@theme inline` of `src/styles.css` (e.g. `--color-dbz-orange: var(--dbz-orange, #e78220)`); Component = class/component reading only semantic tokens (`toriyama.css`, `src/components/`, `.toriyama-panel`, `<Button variant="dragonball">`). "Primitives accessibles : `@base-ui/react` + `class-variance-authority` + `cn`" — [docs/products/design-system.md lines 84-124](C:\src\apps\shenron\docs\products\design-system.md).
 - `src/styles.css` header: "shared design-token layer (Tailwind v4, CSS-first)… `@import "tailwindcss"; @import "@aphrody/shenron-ui/styles.css"`… Every palette value stays `var(--dbz-*, <default>)`: /admin/design overrides `--dbz-*` at runtime. `src/tokens.ts` is generated from this file (`bun packages/ui/scripts/generate-tokens.ts`)". Accent is Goku's gi orange `#e78220` (contrast 7.18:1 on black); fonts `--font-display`, `--font-serif`, `--font-mono`, `--font-jp`, `--font-saiyan`, `--font-scouter` — [packages/ui/src/styles.css](C:\src\apps\shenron\packages\ui\src\styles.css).
 - `src/tokens.ts` (generated) exports `colorVars` = `--dbz-{bg,card,border,orange,orangeDark,blue,blueLight,yellow,red,green,purple,gold,cyan,pink,…}` — [packages/ui/src/tokens.ts](C:\src\apps\shenron\packages\ui\src\tokens.ts).
@@ -111,10 +122,12 @@ Next 16.5.0-canary.5 (vendored fork) App Router with Turbopack, no `[locale]` se
 - Art direction rules (owner, 2026-11-03/04): immersive illustrated wiki with Goku, Kid Buu, Shenron; "Les nouvelles scènes utilisent WebGPU explicitement, jamais WebGL ni un repli automatique WebGL"; content must remain reachable in HTML/SVG without GPU; "Les interfaces Rust et desktop partagent ces contrats visuels… ne pas créer de palette parallèle" — [AGENTS.md § Direction artistique](C:\src\apps\shenron\AGENTS.md), [docs/products/wiki-art-direction.md](C:\src\apps\shenron\docs\products\wiki-art-direction.md).
 
 ### Inferences
+
 - The token model (primitive → semantic → component, runtime-overridable via `/admin/design`, persisted in `SiteTheme` table) maps cleanly to a Rust theme struct; the `--dbz-*` names are the stable contract to preserve.
 - Toriyama vector assets are already pure TS geometry (`toriyama-svg/*.ts`), portable to Rust path builders (vello/kurbo) without redrawing.
 
 ### Gaps
+
 - `docs/design/` does not exist (`ls docs/design` → "No such file"); design docs live in `docs/products/{design-system,wiki-art-direction,spec-ui-dragon-ball-cinematic,toriyama-catalogue,episode-design,shell-navigation,accueil-et-shell}.md`.
 - `@aphrody/m3-tokens` / `m3-theme` are external published packages (not in repo); their internals were not inspected.
 
@@ -123,9 +136,11 @@ Next 16.5.0-canary.5 (vendored fork) App Router with Turbopack, no `[locale]` se
 ## Q4. Rust side: workspace, crates, GPU/UI stack
 
 ### Takeaway
+
 Root `Cargo.toml` (resolver 3, edition 2024, rust-version 1.97, toolchain 1.99.1) has `members = ["crates/*"]` with `crates/shenron-video` and `crates/filmcraft` excluded. 30 crates in-workspace (koharu-* 13, shenron-* 15, dragon-pixel) plus the FilmCraft submodule (≈ 50 crates, 400 k lines) — a complete clean-room media stack with an **egui/eframe** frontend (`filmcraft-ui-egui`, 73 669 lines) and a **wgpu** compositor. wgpu 30.0.1 + vello 0.11 already own rendering in `shenron-gpu`, `koharu-rasterizer`, `koharu-renderer`, `shenron-engine`.
 
 ### Cited Findings
+
 - Workspace header: "the shenron CLI, MCP server, C ABI, studio commands, desktop app and the Koharu manga translation engine… Aphrody capabilities (ML runtime, RAG, OCR, models, Tauri 3 fork) come from aphrody-labs/aphrody pinned by revision"; `exclude = ["crates/shenron-video", "crates/filmcraft"]` — [Cargo.toml](C:\src\apps\shenron\Cargo.toml).
 - Pinned graphics/ML deps: `wgpu = "30.0.1"` ("The one wgpu of the workspace (crates/shenron-gpu owns it)"), `vello = "0.11.0"`, `bevy = 0.19.1` (features `3d, web, webgpu`, for dragon-pixel wasm32), `image 0.25.10`, `imageproc 0.27`, `fast_image_resize 6.1`, `webp 0.3.1`, `fontique 0.11.1`, `harfrust 0.13.3`, `skrifa`, `icu_*`, `tokenizers 0.23.2`, `hf-hub` (git), `rmcp =3.5.0`, `axum 0.8`, `rusqlite 0.40 bundled`, `tokio 1.53`, `reqwest 0.13.5`, Tauri 3 alpha fork (`aphrody-tauri =3.0.0-alpha.4`, `tauri-runtime-cef`), ML via `aphrody-{llama,diffusion,torch,ml-runtime,ocr,rag}` git deps — [Cargo.toml lines 24-180](C:\src\apps\shenron\Cargo.toml).
 - Toolchain: `channel = "1.99.1"`, targets `x86_64-unknown-linux-gnu`, `x86_64-pc-windows-msvc`, `wasm32-unknown-unknown` — [rust-toolchain.toml](C:\src\apps\shenron\rust-toolchain.toml).
@@ -151,11 +166,13 @@ Root `Cargo.toml` (resolver 3, edition 2024, rust-version 1.97, toolchain 1.99.1
   - FilmCraft (`crates/filmcraft`, git submodule `aphrody-labs/filmcraft`): `apps/filmcraft` (egui/eframe desktop, 4 312 lines; deps egui, eframe, rfd, cpal, arboard), `apps/filmcraft-web` (wasm32 eframe, WebGPU/WebGL2, OPFS, WebCodecs; 2 650), `apps/filmcraft-cli` (CLI + MCP; 1 891); `crates/ui-egui` = `filmcraft-ui-egui` 176 files · 73 669 lines "The FilmCraft egui frontend (swappable): panels, docking, timeline, monitors, control channel" (dep `craft-ui`); `crates/gpu` = `filmcraft-gpu` 4 585 "wgpu compositor: YUV/RGB layer sampling, linear-light premultiplied compositing in WGSL"; `crates/render` 23 132 (CPU reference compositor); `crates/engine` 56 041; `crates/text` 3 102 (skrifa/harfrust shaping, bidi, line-break); codecs: av1 (20 404), h264 (10 159), h264enc (8 114), hevc (8 630), vp9, vp8, prores, dnx, apv, mpeg2v, aac, opus, ac3, mpa, flac; containers isobmff, matroska, mxf, mpegts, ogg, avi, cfb; `platform` 16 469 (VideoToolbox/Media Foundation/VA-API/NVDEC HW decode); `speech` (Whisper on candle), `tts` (Kokoro on candle), `captions`, `interchange` (EDL/FCPXML/OTIO), `audio-dsp` 12 890, `scopes`, `golden`, `testkit`.
 
 ### Inferences
+
 - Crates promotable into a new Rust UI stack: `shenron-gpu` (wgpu/vello surface), `koharu-rasterizer` + `koharu-renderer` (vector text/typesetting), `shenron-engine` (2D/3D + wasm), `filmcraft-ui-egui` + `filmcraft-gpu` (a working egui+wgpu application shell with docking/timeline), `filmcraft-text` (font DB + shaping), `shenron-panels`, `shenron-lexicon`, `shenron-mcp`, `shenron-rag`, `shenron-ffi`.
 - Current desktop is Tauri 3 (CEF webview) wrapping the Next site; replacing it with egui/wgpu is consistent with the owner's "WebGPU explicit, never WebGL" rule and the FilmCraft precedent.
 - No Dioxus, iced, GPUI, taffy or skia dependency exists in the workspace (none matched in `Cargo.toml` grep); taffy/Dioxus would be new additions.
 
 ### Gaps
+
 - The `craft-ui` crate used by `filmcraft-ui-egui` was not located inside `crates/filmcraft/crates` (likely a path/git dep in the submodule's own `Cargo.toml`, not inspected).
 - Rust test counts for the FilmCraft submodule were not computed.
 
@@ -164,9 +181,11 @@ Root `Cargo.toml` (resolver 3, edition 2024, rust-version 1.97, toolchain 1.99.1
 ## Q5. Backend: API, DB, auth, pipeline, media/images, MCP, Discord bot
 
 ### Takeaway
+
 PostgreSQL (Drizzle, 62 `pgTable` in site schema + 84 `bot.table` in schema `bot`) is the editorial source of truth; the bot's SQLite `data/bot.db` (273 MB) is a replica; Redis holds rebuildable projections; an embedded SQLite VFS (`shenron-vfs.sqlite`, FTS5 + e5 vectors) ships inside binaries. API = zod contract + native `Bun.serve` router (`packages/api`), with a read-only GraphQL (`/graphql`, Pothos + graphql-yoga) in the bot only. MCP tools are served by the Rust `shenron-mcp` crate (not TS). Neon is retired.
 
 ### Cited Findings
+
 - README: "PostgreSQL est la source éditoriale ; SQLite est le réplica du bot… Redis contient des projections reconstructibles, dont les articles publics dans la base logique 4" — [README.md](C:\src\apps\shenron\README.md).
 - `packages/db/src/bot-schema.ts` line 7: "L'ancien miroir Neon (timer `shenron-neon-sync`) est retiré"; `config.ts` requires `DATABASE_URL` as `postgres://` — [packages/db/src/bot-schema.ts](C:\src\apps\shenron\packages\db\src\bot-schema.ts), [packages/db/src/config.ts](C:\src\apps\shenron\packages\db\src\config.ts).
 - Site schema tables (`pgTable`): `User, Tierlist, Comment, WikiCategory, WikiPage, ba_user, ba_session, ba_account, ba_verification, two_factor, jwks, oauth_resource, oauth_client_assertion, site_ad_slots, HomeConfig, ContributionRights, SiteTheme, ChronologyConfig, CanonConfig, WikiLaunch, PageBanners, url_redirects, canon_references, canon_verdicts, canon_ingest_runs` … (62 total) — [packages/db/src/schema.ts](C:\src\apps\shenron\packages\db\src\schema.ts).
@@ -182,10 +201,12 @@ PostgreSQL (Drizzle, 62 `pgTable` in site schema + 84 `bot.table` in schema `bot
 - External services (env keys in `apps/site/src/lib/env.ts` and `packages/config/src/public-urls.ts`): Discord OAuth (`DISCORD_CLIENT_ID/SECRET`, `NEXT_PUBLIC_DISCORD_INVITE_URL`, `bot.dragonballfr.com`), Google OAuth, Stripe, PayPal, Resend (`RESEND_API_KEY`) + SMTP (`SMTP_USER/PASSWORD`, `AUTH_EMAIL_FROM`), Crunchyroll (`CRUNCHYROLL_EMAIL/PASSWORD`, `BUN_VIDEO_CRUNCHYROLL_*`), Steam link (`/api/account/steam/*`), Google AdSense/GA/GTM, Typesafe (`TYPESAFE_API_KEY`), Aphrody A2A (`APHRODY_A2A_COORD_API`), CDN hosts `cdn.dragonballfr.com`, `shenron-cdn.aphrody-labs.workers.dev`, `play.aphrody.app`, `cdn.discordapp.com`, `www.carddass.com`; canon YOLO model gates `SHENRON_CANON_YOLO_*`. `Bun.s3`/S3 usage in `packages/media/src/episode-video-delivery.ts`, `scripts/ops/web-engine-cdn.ts`, `scripts/ops/bun-source-pipeline.ts`, `apps/site/src/lib/catalog-editorial-contracts.ts`.
 
 ### Inferences
+
 - The whole backend (API contract, DB, auth, pipeline, bot, activity) is already Next-independent Bun code; only `packages/api/src/next.ts`, `packages/auth/src/next.ts` and the site's 159 `route.ts` handlers wrap it. A Rust/Bun refactor can keep these as-is and re-expose the route handlers from `Bun.serve`.
 - better-auth is JS-only; retaining a Bun auth service (or replacing with a Rust OIDC/passkey stack) is a decision point — sessions, passkeys, 2FA, magic links, OAuth-provider and MCP auth are all active.
 
 ### Gaps
+
 - Redis key layout and the `chat` PG schema not inspected.
 - `scripts/` (313 files: audit, build, data, deploy, editorial, i18n, media, ops, plugin, release, testing, video) not inventoried individually.
 
@@ -194,24 +215,28 @@ PostgreSQL (Drizzle, 62 `pgTable` in site schema + 84 `bot.table` in schema `bot
 ## Q6. Build and deploy: justfile, bunfig, Docker, bake, deploy/, Cloudflare, CI, hosting
 
 ### Takeaway
+
 One sealed Docker image (`localhost/shenron:<sha>`) contains the Next standalone server, the Bun bot binary, the `shenron-mcp` sidecar and `libshenron_ffi.so`; it is built by `scripts/deploy/release.sh` (Dockerfile.build + docker-bake.hcl) and activated on a single self-managed host "Prod" via SSH (nginx, PostgreSQL, Redis, systemd). Cloudflare is used for a private R2 bucket `shenron-cdn` behind a Worker (qualification stage, no production DNS route) and `cloudflared`; there is no Pages/Workers hosting of the site.
 
 ### Cited Findings
+
 - `justfile` targets: `check, lint, test, format-check, ci, install, typecheck, bun-lint, bun-test, test-scripts, test-live, dev-site, dev-bot, build-server, build-bot, entries, protocol, rust-check, rust-lint, rust-test, rust-fmt(-check), rust-deny, koharu, wasm, wasm-build, rust-doc, mcp, cli, desktop, deps, deps-check, align-check, container-{env,build,up,down,status,db-init,ovh,backup}, setup-connectors, connectors-status, build-local{,-cli,-desktop,-guard,-windows}`; shell is `bun exec` — [justfile](C:\src\apps\shenron\justfile).
 - `docker-bake.hcl` targets: `rust-linux-x64, rust-windows-x64, wasm, bot-linux-x64, bot-windows-x64, server-linux-x64, server-windows-x64, desktop-windows-x64, release-linux` (sealed runtime image, `FLAVOR=production`, needs public VFS), `BASE_IMAGE ubuntu:26.10` — [docker-bake.hcl](C:\src\apps\shenron\docker-bake.hcl). Dockerfiles: `Dockerfile.build` (16 KB multi-stage), `deploy/docker/Dockerfile`.
 - `deploy/docker/README.md`: "One immutable image contains the Next.js 16 standalone server, Discord bot, MCP sidecar, native FFI and bot migrations… `build-image.sh` fetches the public VFS, builds the site, the bot and the native components… `ship-image.sh` streams the image to the target and runs `~/deploy-shenron-image.sh <sha> <tar>`… Infra mounts `/srv/shenron/shared/server` at `/var/lib/shenron`; the public snapshot is `/var/lib/shenron/data/shenron-vfs.sqlite`… Both apps listen on host loopback." Compose services: `site`, `bot` (same image) — [deploy/docker/README.md](C:\src\apps\shenron\deploy\docker\README.md), [deploy/docker/compose.yaml](C:\src\apps\shenron\deploy\docker\compose.yaml).
 - Hosting (2026-11-02): "Prod — Shenron actif: Site · API · Bot · PostgreSQL · Redis · chat temps réel · origine CDN"; DBFR host is now a daily rsync backup; the VPS was purged; operated over SSH + tmux "sans Aphrody Infra"; runtime `/usr/local/bin/bun` canary `1.4.4-canary.1`; active image `aac017cec…` — [docs/operations/PROD-HOSTING.md](C:\src\apps\shenron\docs\operations\PROD-HOSTING.md), [docs/reference/root/REPRISE.md § 2026-11-02](C:\src\apps\shenron\docs\reference\root\REPRISE.md).
 - `deploy/README.md`: systemd units, nginx vhosts, releases, backups are owned by the sibling repo `aphrody-infra` (`service-catalog.json`, `systemd/shenron-*.{service,timer}`); only `deploy/privoxy/` remains here — [deploy/README.md](C:\src\apps\shenron\deploy\README.md).
 - Cloudflare: `deploy/cloudflare/wrangler.jsonc` → Worker `shenron-cdn`, `main: cdn-worker.ts`, `r2_buckets: [{binding CDN, bucket_name shenron-cdn}]`, `workers_dev: false`, vars `IMPORT_ENABLED=false`, `VERIFY_UPLOADS=false`, `MANIFEST_PREFIX=_migration/manifests/`; README: "Worker déployé en qualification sur `shenron-cdn.aphrody-labs.workers.dev`, sans route DNS de production. Le bucket `shenron-cdn` est privé ; seuls les chemins présents dans les manifests sont servis… objets adressés par SHA-256 (`_objects/<sha256>`)"; origin remains `https://cdn.dragonballfr.com` / `origin-cdn.dragonballfr.com`; systemd units `shenron-cloudflared.service`, `shenron-cloudflare-audit.service`, `shenron-cloudflare-s3-renew.service`, `shenron-cdn-origin.service`; CLI tools `deploy/cloudflare/cli/{cloudflare-ops,publish-catalog,native-s3-signer,transfer,stage-file,s3-profile}.ts` — [deploy/cloudflare/README.md](C:\src\apps\shenron\deploy\cloudflare\README.md), [deploy/cloudflare/wrangler.jsonc](C:\src\apps\shenron\deploy\cloudflare\wrangler.jsonc).
-- CI (`.github/workflows`): `ci.yml` (Bun, ubuntu-24.04), `rust.yml` (self-hosted `shenron-factory`), `server-artifact.yml` "Production image build and auto-deploy" (self-hosted, `SHENRON_DEPLOY_TARGET` default `ssh:prod`), `release.yml`, `desktop.yml` (matrix OS, Tauri), `codeql.yml`, `update-deps.yml` — [.github/workflows](C:\src\apps\shenron\.github\workflows).
+- CI (`.github/workflows`): `ci.yml` (Bun, ubuntu-24.04), `rust.yml` (self-hosted `shenron-factory`), `server-artifact.yml` "Production image build and auto-deploy" (self-hosted, `SHENRON_DEPLOY_TARGET` default `ssh:prod`), `release.yml`, `desktop.yml` (matrix OS, Tauri), `codeql.yml`, `update-deps.yml` — [.github/workflows](C:\src\apps\shenron.github\workflows).
 - Build memory constraints documented in `next.config.ts`: cold Next build ≈ 8.1 GiB RSS, 10.4 GiB with standalone file tracing; `cpus: 1`, `staticGenerationMaxConcurrency: 2` — [apps/site/next.config.ts](C:\src\apps\shenron\apps\site\next.config.ts).
 - Owner-imposed tooling: "`bun check`, `bun lint`, `bun fmt`, `bun n2b` selon le besoin ; `tsc` et `oxlint` bannis, y compris par invocation indirecte"; "Pas de node/npm/npx/bunx" — [GOAL.md § Portes](C:\src\apps\shenron\GOAL.md), [AGENTS.md § Outils](C:\src\apps\shenron\AGENTS.md).
 
 ### Inferences
+
 - Removing Next eliminates the single largest build-memory cost (8–10 GiB) and the vendored Next fork maintenance; the rest of the image pipeline (bake targets for Rust/bot/wasm) is already framework-agnostic.
 - Cloudflare dependency is limited to R2 object storage + a CDN Worker + tunnel; no Pages/Workers app hosting to migrate.
 
 ### Gaps
+
 - `aphrody-infra` (nginx routes, systemd units, service catalog) is a separate repo not present locally; exact public route map and ports were not readable.
 - `Dockerfile.build` stages were not read line-by-line.
 
@@ -220,9 +245,11 @@ One sealed Docker image (`localhost/shenron:<sha>`) contains the Next standalone
 ## Q7. Architecture-decision docs (README, AGENTS, GOAL, TODO, REPRISE, design)
 
 ### Takeaway
+
 AGENTS.md (symlinked as CLAUDE.md) is the binding rule set: NHIL autonomous execution, English identifiers/routes/APIs with French docs, zero hard-coded UI strings (fr reference, en/ja complete), one shared lexicon, Koharu never visible (product = "Shenron Studio"), WebGPU-only for new scenes, runtime-class audited package graph, Bun-only tooling. GOAL/TODO focus on manga completeness (SOSH 18 volumes, 110 missing volumes), Studio hosting, video via Bun Video/FilmCraft, and the Nov-2026 immersive wiki direction.
 
 ### Cited Findings
+
 - Languages/names: "Code…, slugs, segments de routes, chemins et champs d'API, schémas, clés de configuration, noms d'outils MCP, bot et backend : en anglais. Un ancien segment français reste servi par un 308"; "Aucun texte visible codé en dur… toute chaîne d'interface passe par les dictionnaires (`apps/site/messages/{fr,en,ja}.json`, locales des paquets). Le français est la langue de référence ; l'anglais et le japonais sont complets. Les API acceptent la langue (`lang` ou `Accept-Language`, `fr | en | ja`)"; "Un seul lexique de traduction… sert le site, l'API, le bot, le plugin, le pipeline et le traducteur"; "Koharu est un nom de code interne… aucun texte visible ne dit « Koharu »"; "La documentation (`docs/`) reste en français" — [AGENTS.md § Langues et noms](C:\src\apps\shenron\AGENTS.md).
 - NHIL: "L'utilisateur a autorisé l'exécution autonome de bout en bout… poursuivre jusqu'aux portes requises et à la livraison sans demander de confirmation intermédiaire. Trancher les choix réversibles… déléguer par défaut… revendiquer des chemins disjoints"; permanent owner agreement dated 2026-10-25 — [AGENTS.md § Exécution autonome NHIL](C:\src\apps\shenron\AGENTS.md).
 - Tools: "Bun (`bun`, `bun -e`, Bun Shell, `bun test`, `bun build --compile`) et Rust (`cargo`). Recherche : `rg`, `fd`. Pas de node/npm/npx/bunx… `bun check`, `bun lint`, `bun fmt` natifs (ni tsc, tsgo, oxlint, oxfmt, eslint). Rust : `just`…, cargo-nextest, cargo-deny" — [AGENTS.md § Outils](C:\src\apps\shenron\AGENTS.md).
@@ -237,9 +264,11 @@ AGENTS.md (symlinked as CLAUDE.md) is the binding rule set: NHIL autonomous exec
 - REPRISE.md is 1 179 lines of dated evidence (latest 2026-11-02 hosting migration; 2026-10-30 UI duplicate removal and release-script consolidation; 2026-10-20 VFS behind nginx) — [docs/reference/root/REPRISE.md](C:\src\apps\shenron\docs\reference\root\REPRISE.md).
 
 ### Inferences
+
 - A refactor plan must keep: English route/API/identifier naming with 308s from old French paths, the three message dictionaries as the only UI-string source, the shared lexicon, `koharu-library` as engine owner, Bun-only tooling (`bun check/lint/fmt`), and the Rust/desktop "same tokens, no parallel palette" rule.
 
 ### Gaps
+
 - `docs/reference/root/PLAN.md` (invariants register) and `START-HERE.md` were not read in full.
 
 ---
@@ -247,9 +276,11 @@ AGENTS.md (symlinked as CLAUDE.md) is the binding rule set: NHIL autonomous exec
 ## Q8. Data volume (wiki entities, manga, databooks) to size SSG
 
 ### Takeaway
+
 From the bot SQLite replica `data/bot.db` (273 MB) and the 2026-10 live audit: ≈ 1 312 characters, 826 techniques, 826 episodes, 254–329 manga volumes, 922–939 chapters, 12 593 manga pages indexed (53 304 pages cited in docs), 427 databooks, 28 movies, 58 games, 33 sagas, 65 arcs, 2 064 news items, 68 979–69 072 catalogue images; the RAG index holds 59 995 chunks. Order of magnitude for SSG: ~5–6 k entity pages + ~13–53 k manga page routes + ~2.6 k media pages.
 
 ### Cited Findings
+
 - `data/bot.db` row counts (via `bun:sqlite`, read-only): `db_characters 1312, db_techniques 826, db_character_techniques 1335, db_episodes 826, db_movies 28, db_games 58, db_game_characters 144, db_sagas 33, db_arcs 65, db_races 18, db_transformations 33, db_planets 62, db_locations 35, db_items 27, db_dragons 5, db_wishes 20, db_battles 49, db_timeline_events 32, db_power_levels 50, db_tournaments 11, db_voice_actors 14, db_soundtracks 24, db_manga_volumes 254, db_manga_chapters 939, db_manga_pages 12593 (FTS `manga_pages_fts_content 12577`), dragonballcn_volumes 364, db_news 2064, db_assets 1018, db_sources 17, db_tools 43, users 8037, achievements 3187, action_logs 225752, rag_chunks_content 59995, vec_chunks_rowids 59995` — [data/bot.db](C:\src\apps\shenron\data\bot.db) (file dated 2026-10-08; `data/` totals 45 GB incl. `DB Xenoverse 2/`, `episode/`, `rag/`, `source-acquisition/`).
 - Live audit (REPRISE line 643): "Audit live des catalogues : 329 tomes, 922 chapitres, 427 databooks, 874 épisodes, 28 films ; 2 580 pages répondent 200, mais seules 320/68 979 images ont été contrôlées" — [docs/reference/root/REPRISE.md](C:\src\apps\shenron\docs\reference\root\REPRISE.md).
 - Other figures quoted in GOAL/TODO/REPRISE/PLAN (grep): "53 304 pages", "876 épisodes", "69 072 images", "110 tomes manquants", "18 tomes SOSH", "672 personnages", "481 databooks", "84 volumes", "222 volumes" — [GOAL.md](C:\src\apps\shenron\GOAL.md), [TODO.md](C:\src\apps\shenron\TODO.md), [docs/reference/root/REPRISE.md](C:\src\apps\shenron\docs\reference\root\REPRISE.md).
@@ -257,10 +288,12 @@ From the bot SQLite replica `data/bot.db` (273 MB) and the 2026-10 live audit: �
 - Site-side JSON data: `apps/site/data/extracted-wiki-assets.json`, `illustrations-lieux-objets.json`; `data/streams.json` (763 KB), `data/lexique-db-canonique.json`, `data/ja-identities-2026-09-23.json`, `data/fr-episode-titles.json`, `data/databooks-ocr/lots/` — [data/](C:\src\apps\shenron\data).
 
 ### Inferences
+
 - Full SSG of entity pages (characters, techniques, episodes, movies, games, sagas, arcs, races, transformations, locations, items, databooks ≈ 4 000–4 500 routes × 3 locales) is feasible; manga page-level routes (12.6 k indexed, 53 k target) and databook pages should stay on-demand/ISR-like or be served from the VFS/CDN rather than prerendered.
 - The 427 vs 481 databooks and 254 vs 329 volumes discrepancies reflect the SQLite replica (2026-10-08) lagging PostgreSQL; PostgreSQL is authoritative.
 
 ### Gaps
+
 - No PostgreSQL access from this survey; counts for `WikiPage`, `db_databooks` pages, `media_*` tables, `narrative_events` and `contributors` were not obtainable locally (bot.db lacks `db_databooks`/`media_*` rows).
 
 ---
@@ -268,19 +301,23 @@ From the bot SQLite replica `data/bot.db` (273 MB) and the 2026-10 live audit: �
 ## Key question A. TypeScript inherently tied to Next/React vs framework-agnostic Bun
 
 ### Takeaway
+
 ≈ 320 k of ≈ 580 k TS lines are Next/React-bound (`apps/site` 272 895 + `packages/ui` 47 532); ≈ 260 k lines are Bun services (bot 110 722, pipeline 48 180, api 18 757, db 17 004, config 9 166, activity app+pkg 14 257, server 6 889, engine 6 093, dbxv2 3 667, koharu 3 267, native 3 094, auth 2 619, media 2 535, crunchyroll 2 015, lexicon 1 845, images 963).
 
 ### Cited Findings
+
 - Next-specific surfaces: 200 `page.tsx`, 159 `route.ts`, 10 `layout.tsx`, `src/proxy.ts`, `next.config.ts`, `src/i18n/request.ts` (next-intl server), 51 `next/image` files, 364 `"use client"` files, 11 `"use server"` files, `opengraph-image.tsx` (`next/og`), `sitemap.ts`/`robots.ts` (`MetadataRoute`) — `find`/`grep` over [apps/site/src](C:\src\apps\shenron\apps\site\src).
 - Framework-agnostic by contract: `packages/db` "indépendant du framework" (package description); `packages/api/server` is a native `Bun.serve` router; the bot is a `bun build --compile` binary; `apps/server` is `Bun.serve` + `bun:ffi` — [packages/db/package.json](C:\src\apps\shenron\packages\db\package.json), [AGENTS.md § Architecture](C:\src\apps\shenron\AGENTS.md).
 - Thin Next adapters to delete: `packages/api/src/next.ts`, `packages/auth/src/next.ts`, `packages/db/src/postgres-js.ts` ("pool postgres-js (Next)") — [packages/api/src](C:\src\apps\shenron\packages\api\src), [packages/auth/src](C:\src\apps\shenron\packages\auth\src).
 - React-but-not-Next: `packages/ui` components use i18next/react-i18next (not next-intl) and `zustand`; `apps/activity/client` (7 tsx) is a plain React client on `Bun.serve` — [packages/ui/package.json](C:\src\apps\shenron\packages\ui\package.json), [apps/activity](C:\src\apps\shenron\apps\activity).
 
 ### Inferences
+
 - Keepable as Bun workers/services with no change: bot, pipeline, api/db/auth/config, activity, media/images/lexicon/native/koharu/dbxv2/crunchyroll, `scripts/` (313 files).
 - Rewrite set: all `apps/site/src/{app,components}` (496 + 332 files), ~70 % of `apps/site/src/lib` (325 modules, many Next-coupled via `next/headers`, `next/cache`, `server-only`), and `packages/ui` React components (≈ 240 tsx). CSS token layers (`styles.css`, `site.css`, `toriyama.css`) and `toriyama-svg/*.ts` geometry are portable.
 
 ### Gaps
+
 - Exact share of `src/lib` modules importing `next/*` was not measured.
 
 ---
@@ -288,18 +325,22 @@ From the bot SQLite replica `data/bot.db` (273 MB) and the 2026-10 live audit: �
 ## Key question B. Rust crates that can be promoted into the new UI stack
 
 ### Takeaway
+
 Already wgpu/vello-based: `shenron-gpu`, `shenron-engine`, `koharu-rasterizer`, `koharu-renderer`, `filmcraft-gpu`; already egui: `filmcraft-ui-egui` (73 k lines) and `apps/filmcraft{,-web}`. Bevy (WebGPU) in `dragon-pixel`. Text shaping stack (skrifa/harfrust/fontique/icu) exists in `koharu-renderer` and `filmcraft-text`.
 
 ### Cited Findings
+
 - See Q4 crate list; `shenron-gpu` description "native and browser"; `koharu-rasterizer` "shared Vello/WGPU composition"; `filmcraft-ui-egui` "swappable… panels, docking, timeline, monitors, control channel"; `filmcraft-web` "eframe web runner, WebGPU/WebGL2, OPFS, WebAudio, WebCodecs" — respective `Cargo.toml` files under [crates/](C:\src\apps\shenron\crates).
 - WASM artifacts already consumed by the site: `packages/engine/src/wasm/shenron_engine_bg.wasm`, `packages/koharu/src/wasm/koharu_canvas_bg.wasm`, `packages/pipeline/src/wasm/shenron_re_bg.wasm` — [packages/*/src/wasm](C:\src\apps\shenron\packages).
 - Owner rule: "Les interfaces Rust et desktop partagent ces contrats visuels et préférences" — [AGENTS.md](C:\src\apps\shenron\AGENTS.md).
 
 ### Inferences
+
 - A Rust UI (egui or Dioxus/RSX per the YOLO protocol) can reuse `shenron-gpu` for device/surface, vello for vector/Toriyama assets, `koharu-renderer`/`filmcraft-text` for CJK-capable text, `filmcraft-ui-egui` patterns for docking/timeline (Studio/video), and `shenron-lexicon` + `shenron-mcp` + `shenron-rag` for data/AI.
 - `shenron-desktop` (Tauri 3 CEF shell around the Next site) becomes obsolete if the UI is native Rust.
 
 ### Gaps
+
 - Dioxus 0.8 / taffy are not in the workspace; feasibility of mixing them with existing egui code was not assessed.
 
 ---
@@ -307,15 +348,19 @@ Already wgpu/vello-based: `shenron-gpu`, `shenron-engine`, `koharu-rasterizer`, 
 ## Key question C. External services/APIs to preserve
 
 ### Takeaway
+
 Discord (OAuth, bot gateway, Activity SDK, CDN), PostgreSQL + Redis (self-hosted on Prod), Cloudflare R2 + Worker CDN + cloudflared, Stripe and PayPal (VIP subscriptions + donations), Google OAuth/AdSense/GA/GTM, Resend + SMTP email, Crunchyroll (via `@aphrody/bun-video`), Steam account linking, Aphrody services (ML/OCR/RAG/A2A), MCP public endpoint `/mcp`, OpenAPI `/api/agent/v1/openapi.json`.
 
 ### Cited Findings
+
 - Env keys list in [apps/site/src/lib/env.ts](C:\src\apps\shenron\apps\site\src\lib\env.ts) (quoted in Q5); public hosts in [packages/config/src/public-urls.ts](C:\src\apps\shenron\packages\config\src\public-urls.ts); auth plugins/providers in [packages/api/src/host/auth.ts](C:\src\apps\shenron\packages\api\src\host\auth.ts); Stripe/PayPal routes under `apps/site/src/app/api/{stripe,paypal}`; webhooks `/api/stripe/webhook`, `/api/paypal/webhook`; R2 Worker [deploy/cloudflare/wrangler.jsonc](C:\src\apps\shenron\deploy\cloudflare\wrangler.jsonc); Neon retired ([packages/db/src/bot-schema.ts](C:\src\apps\shenron\packages\db\src\bot-schema.ts) line 7); A2A "`APHRODY_A2A_COORD_API`… Une configuration absente est une erreur en production" — [README.md](C:\src\apps\shenron\README.md).
 
 ### Inferences
+
 - Stripe/PayPal/better-auth are JS SDK-heavy; keeping them in a Bun service is the lowest-risk path while the UI moves to Rust.
 
 ### Gaps
+
 - No Supabase, Vercel, Neon or Firebase usage found in the repo; `.env` (197 bytes) not read.
 
 ---
@@ -323,9 +368,11 @@ Discord (OAuth, bot gateway, Activity SDK, CDN), PostgreSQL + Redis (self-hosted
 ## Key question D. Full list of UI components/screens to re-implement
 
 ### Takeaway
+
 Screens: 200 page routes (119 public/user + 81 admin) across 3 locales. Components: 332 site `.tsx` (wiki 76, admin 42, home 19, episodes 15, manga 12, kit 9, editor 8, stream 8, media 7, games 6, catalog 5, databooks 5, streaming 5, ratings 4, tierlist 4, site 4, contest 3, social 3, stripe 3, studio 3, ads 2, dragon-world 2, history 2, library 2, profile 2, + 34 root) and ≈ 240 `packages/ui` `.tsx` (31 primitives, 14 navigation, 7 layout, 22 public, 12 admin, 9 reader, 9 studio, 16 toriyama, 7 cinematic, 46 Koharu editor, 5 chat, 7 dbxv2, 4 vie, misc).
 
 ### Cited Findings
+
 - Site root components: Avatar, Breadcrumbs, ChunkReloadGuard, CommandMenu, CommandPalette, ConsentGate, DiscordInviteFAB, FavoriteButton, GameSurfaceLayout, GatedLink, JsonLd, LanguageSwitcher, NavAuth, NavigationProgress, PageHero, PageTransition, PageViewTracker, PwaProvider, ReportButton, ShareButton, SiteFooter, SiteShell(Client), T, WikiPageActions, SignInDiscord, SignOut — [apps/site/src/components](C:\src\apps\shenron\apps\site\src\components).
 - Wiki components (76): AgeTimeline, CanonExplorer, CharacterGrid, CharacterPowerScaling, CharacterSagaVariants(Tabs), ChronologyAtlas, ChronologyTimeline, GamesExplorer, InterviewsExplorer, ItemsGrid, LocationsGrid, NarrativeEventsExplorer, PowerLevelsTable, SagaCatalogue, scene/{WikiEditorialPortal,WikiSceneDepth,WikiScenePortal,WikiWorldFallback}, SoundtracksGrid, TechniqueArtworkPanel, TechniqueFamiliesView, TechniqueGrid, TransformationsCatalogue, TransformationTreesView, UnifiedStaffExplorer, WikiAdminBar, WikiArticle, WikiCatalogueToolbar, WikiCategoryNav, WikiContribute, WikiContributionJourney, WikiDetailPage, WikiEditBar, WikiEditor, WikiEditorialHero, WikiEntitySections, WikiIndexPage, WikiListLayout, WikiMarkdown, WikiMediaCatalogue, WikiPageShell, WikiPortalIdentity, WikiRagArchives, WikiRelatedCharacters, WikiSectionsReader, WikiVisualFrame, WishesLedger, ZoomableImage, … — [apps/site/src/components/wiki](C:\src\apps\shenron\apps\site\src\components\wiki).
 - Admin components (42): AdminSidebar, AdminWorkspace, AdminMediaPicker, bot/{BotUi,CommandsPanel,GuildMirrorPanel}, CharacterPageEditor, CharacterStatsPanel, ContributionRightsPanel, DatabookAdminList, DatabookPagesPanel, DatabooksCatalogManager, DbCrud, GalerieMedias, GameMediaPanel, ImageCropDialog, ImageField, JsonEditor, MarkdownField, NativeAiPanel, NativePipelinePanel, RelationsPanel, RolePicker, SmartField, TranscriptionRelecteur, TranscriptionsDashboard, TransformationsPanel, UnifiedIaCockpit, UserSelect, WikiAiAssistant, WikiEditorialWorkflow, WikiEntityPreview, WikiHistory, WikiSectionsPanel, WikiStudio — [apps/site/src/components/admin](C:\src\apps\shenron\apps\site\src\components\admin).
@@ -334,7 +381,9 @@ Screens: 200 page routes (119 public/user + 81 admin) across 3 locales. Componen
 - Games requiring runtimes: 2048, bingo, rock-paper-scissors, tic-tac-toe (DOM games), budokai-tenkaichi-3 (`Bt3Player.tsx`, WASM), dragon-pixel (`CpkScene.tsx`, Bevy/WebGPU wasm), xenoverse-2 (`Xenoverse2Explorer.tsx`, `Dbxv2CpkExplorer.tsx`, shenron-re wasm) — [apps/site/src/app/games](C:\src\apps\shenron\apps\site\src\app\games).
 
 ### Inferences
+
 - Screen families for the migration map: (1) Shell/navigation/footer/command palette/language/consent/PWA; (2) Home cinematic; (3) Wiki index+detail per 14 entity types + canon/timeline/search/contribute; (4) News/publications/RSS; (5) Manga library + reader (2D/3D) + databook reader + workshop staff tools; (6) Episodes/movies catalogue + video player + GIF/frames; (7) Catalog/sources/archives; (8) Games hub + 7 games; (9) User: signin/2FA/passkey/profile/settings/favorites/watchlist/dashboard/billing/VIP/donations/shop; (10) Tierlists; (11) Admin workspace (81 pages) incl. design editor, DB CRUD, wiki studio, bot console, IA cockpit, transcriptions; (12) Shenron Studio (Koharu editor, 46 components) + `/desktop` control; (13) Chat/ask (RAG).
 
 ### Gaps
+
 - Screens rendered by the bot (Discord embeds, `@napi-rs/canvas` cards in `apps/bot/src/render`) are listed by module, not by card type.

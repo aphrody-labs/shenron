@@ -36,7 +36,12 @@ describe("dragon-ball theme pack", () => {
     expect(modes.has("light") && modes.has("dark")).toBe(true);
   });
   test("pack-local files exist", () => {
-    for (const f of [toml.logo.mark, toml.logo.monochrome, toml.logo.wordmark, ...Object.values<string>(toml.pet.files)])
+    for (const f of [
+      toml.logo.mark,
+      toml.logo.monochrome,
+      toml.logo.wordmark,
+      ...Object.values<string>(toml.pet.files),
+    ])
       expect(existsSync(join(dir, f))).toBe(true);
   });
   test("sha256 matches the repository copy served by the CDN", () => {

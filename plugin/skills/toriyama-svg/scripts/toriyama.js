@@ -13,7 +13,7 @@ var __export = (target, all) => {
       get: all[name],
       enumerable: true,
       configurable: true,
-      set: __exportSetter.bind(all, name)
+      set: __exportSetter.bind(all, name),
     });
 };
 
@@ -24,7 +24,7 @@ __export(exports_potara, {
   POTARA_MESURES: () => POTARA_MESURES,
   corpsPotara: () => corpsPotara,
   svgIcone: () => svgIcone,
-  svgIllustration: () => svgIllustration
+  svgIllustration: () => svgIllustration,
 });
 
 // packages/ui/src/toriyama-svg/senzu.ts
@@ -35,7 +35,7 @@ __export(exports_senzu, {
   corpsIcone: () => corpsIcone,
   corpsSenzu: () => corpsSenzu,
   svgIcone: () => svgIcone2,
-  svgIllustration: () => svgIllustration2
+  svgIllustration: () => svgIllustration2,
 });
 
 // packages/ui/src/toriyama-svg/kinto-un.ts
@@ -51,7 +51,7 @@ __export(exports_kinto_un, {
   svgIcone: () => svgIcone3,
   svgIllustration: () => svgIllustration3,
   svgMonochrome: () => svgMonochrome,
-  volute: () => volute
+  volute: () => volute,
 });
 
 // packages/ui/src/toriyama-svg/gohan-ultime.ts
@@ -65,7 +65,7 @@ __export(exports_gohan_ultime, {
   cheminShuchusen: () => cheminShuchusen,
   svgCalqueBanniere: () => svgCalqueBanniere,
   svgChevelure: () => svgChevelure,
-  svgEmbleme: () => svgEmbleme
+  svgEmbleme: () => svgEmbleme,
 });
 
 // packages/ui/src/toriyama-svg/couverture.ts
@@ -83,7 +83,7 @@ __export(exports_couverture, {
   etoilePath: () => etoilePath,
   etoileViewBox: () => etoileViewBox,
   ombreCadre: () => ombreCadre,
-  svgBancNuage: () => svgBancNuage
+  svgBancNuage: () => svgBancNuage,
 });
 
 // packages/ui/src/toriyama-svg/geometry.ts
@@ -93,17 +93,16 @@ var roundTo = (val, decimals = 1) => {
 };
 function arcs(pts, fleches, ferme = true) {
   const n = pts.length;
-  if (n === 0)
-    return "";
+  if (n === 0) return "";
   const fin = ferme ? n : n - 1;
   let d = `M${roundTo(pts[0][0])} ${roundTo(pts[0][1])}`;
-  for (let i = 0;i < fin; i++) {
+  for (let i = 0; i < fin; i++) {
     const [x1, y1] = pts[i];
     const [x2, y2] = pts[(i + 1) % n];
     const corde = Math.hypot(x2 - x1, y2 - y1);
     const h = fleches[i % fleches.length];
     const a = Math.max(1, Math.abs(h));
-    const r = corde * corde / 4 / (2 * a) + a / 2;
+    const r = (corde * corde) / 4 / (2 * a) + a / 2;
     d += `A${roundTo(r)} ${roundTo(r)} 0 ${a > corde / 2 ? 1 : 0} ${h < 0 ? 0 : 1} ${roundTo(x2)} ${roundTo(y2)}`;
   }
   return ferme ? `${d}Z` : d;
@@ -112,12 +111,12 @@ function volute(depart, vers, r, tours = 1.2, sens = 1) {
   const dx = vers[0] - depart[0];
   const dy = vers[1] - depart[1];
   const l = Math.hypot(dx, dy) || 1;
-  const cx = depart[0] + dx / l * r;
-  const cy = depart[1] + dy / l * r;
+  const cx = depart[0] + (dx / l) * r;
+  const cy = depart[1] + (dy / l) * r;
   const a0 = Math.atan2(depart[1] - cy, depart[0] - cx);
   const pas = Math.ceil(tours * 12);
   let d = `M${roundTo(depart[0])} ${roundTo(depart[1])}`;
-  for (let i = 1;i <= pas; i++) {
+  for (let i = 1; i <= pas; i++) {
     const t = i / pas;
     const a = a0 + sens * t * Math.PI * 2 * tours;
     const rr = r * (1 - 0.85 * t);
@@ -140,7 +139,7 @@ function meche(base, tip, baseWidth, curvature = 0.25) {
   const curve2 = arcs([tip, b], [sagitta], false).replace(/^M[^A]*/, "");
   return `${curve1}${curve2}Z`;
 }
-var inkStroke = (subjectWidth, percentage = 0.8) => roundTo(subjectWidth * percentage / 100, 2);
+var inkStroke = (subjectWidth, percentage = 0.8) => roundTo((subjectWidth * percentage) / 100, 2);
 function planDombre(contour, offset, width, attenuation = 0) {
   const [dx, dy] = offset;
   return contour.map(([x, y]) => [x + dx, y + dy + attenuation * (x / width)]);
@@ -149,9 +148,9 @@ var mirrorX = (pts, axisX) => pts.map(([x, y]) => [2 * axisX - x, y]);
 function starPoints(cx, cy, outerR, innerRatio = 0.45) {
   const innerR = outerR * innerRatio;
   const pts = [];
-  for (let i = 0;i < 10; i++) {
+  for (let i = 0; i < 10; i++) {
     const rad = i % 2 === 0 ? outerR : innerR;
-    const angle = -Math.PI / 2 + i * Math.PI / 5;
+    const angle = -Math.PI / 2 + (i * Math.PI) / 5;
     pts.push(`${roundTo(cx + rad * Math.cos(angle))},${roundTo(cy + rad * Math.sin(angle))}`);
   }
   return pts.join(" ");
@@ -164,17 +163,17 @@ function scouterBrackets(x, y, width, height, cornerLen = 8) {
     `M ${x} ${y + c} L ${x} ${y} L ${x + c} ${y}`,
     `M ${r - c} ${y} L ${r} ${y} L ${r} ${y + c}`,
     `M ${x} ${b - c} L ${x} ${b} L ${x + c} ${b}`,
-    `M ${r - c} ${b} L ${r} ${b} L ${r} ${b - c}`
+    `M ${r - c} ${b} L ${r} ${b} L ${r} ${b - c}`,
   ].join(" ");
 }
 function radialSpeedlines(cx, cy, innerRadius, outerRadius, count = 24) {
   const lines = [];
-  const angleStep = Math.PI * 2 / count;
-  for (let i = 0;i < count; i++) {
-    const jitter = (i * 17 % 7 - 3) * 0.02;
+  const angleStep = (Math.PI * 2) / count;
+  for (let i = 0; i < count; i++) {
+    const jitter = (((i * 17) % 7) - 3) * 0.02;
     const angle = i * angleStep + jitter;
-    const r1 = innerRadius + i * 13 % 5;
-    const r2 = outerRadius - i * 19 % 8;
+    const r1 = innerRadius + ((i * 13) % 5);
+    const r2 = outerRadius - ((i * 19) % 8);
     const x1 = roundTo(cx + r1 * Math.cos(angle));
     const y1 = roundTo(cy + r1 * Math.sin(angle));
     const x2 = roundTo(cx + r2 * Math.cos(angle));
@@ -188,16 +187,16 @@ function ovale(cx, cy, a, b) {
   const at = (t) => [cx + a * Math.cos(t), cy + b * Math.sin(t)];
   const pts = [];
   const fleches = [];
-  for (let i = 0;i < OVALE_PAS; i++) {
-    const t0 = i / OVALE_PAS * 2 * Math.PI;
-    const t1 = (i + 1) / OVALE_PAS * 2 * Math.PI;
+  for (let i = 0; i < OVALE_PAS; i++) {
+    const t0 = (i / OVALE_PAS) * 2 * Math.PI;
+    const t1 = ((i + 1) / OVALE_PAS) * 2 * Math.PI;
     const p0 = at(t0);
     const p1 = at(t1);
     const [dx, dy] = [p1[0] - p0[0], p1[1] - p0[1]];
     const l = Math.hypot(dx, dy);
     let h = 0;
-    for (let k = 1;k < 16; k++) {
-      const [x, y] = at(t0 + (t1 - t0) * k / 16);
+    for (let k = 1; k < 16; k++) {
+      const [x, y] = at(t0 + ((t1 - t0) * k) / 16);
       h = Math.max(h, Math.abs((x - p0[0]) * dy - (y - p0[1]) * dx) / l);
     }
     pts.push(p0);
@@ -213,15 +212,15 @@ var POTARA_MESURES = {
   ceintureSurTrait: 2 / 3.5,
   fentes: [
     { x: -0.4, y: 0.01, long: 0.34, large: 0.19, angle: -49 },
-    { x: -0.01, y: 0.31, long: 0.29, large: 0.17, angle: -41 }
+    { x: -0.01, y: 0.31, long: 0.29, large: 0.17, angle: -41 },
   ],
   tigeLarge: 0.16,
-  tigeLong: 0.6
+  tigeLong: 0.6,
 };
 var POTARA_COULEURS = {
   sphere: "#ebc442",
   fente: "#beb7b3",
-  encre: "#180c00"
+  encre: "#180c00",
 };
 function corpsPotara(cx, cy, D, id = "potara") {
   const m = POTARA_MESURES;
@@ -233,10 +232,12 @@ function corpsPotara(cx, cy, D, id = "potara") {
   const silhouette = arcs(sil.pts, sil.fleches);
   const yC = cy - R + m.ceinture * D;
   const ceinture = `M${roundTo(cx - R)} ${roundTo(yC)}H${roundTo(cx + R)}`;
-  const fentes = m.fentes.map((f) => {
-    const o = ovale(cx + f.x * R, cy + f.y * R, f.long * D / 2, f.large * D / 2);
-    return `<path d="${arcs(o.pts, o.fleches)}" transform="rotate(${f.angle} ${roundTo(cx + f.x * R)} ${roundTo(cy + f.y * R)})" fill="${c.fente}" stroke="${c.encre}" stroke-width="${roundTo(s * m.ceintureSurTrait, 2)}"/>`;
-  }).join("");
+  const fentes = m.fentes
+    .map((f) => {
+      const o = ovale(cx + f.x * R, cy + f.y * R, (f.long * D) / 2, (f.large * D) / 2);
+      return `<path d="${arcs(o.pts, o.fleches)}" transform="rotate(${f.angle} ${roundTo(cx + f.x * R)} ${roundTo(cy + f.y * R)})" fill="${c.fente}" stroke="${c.encre}" stroke-width="${roundTo(s * m.ceintureSurTrait, 2)}"/>`;
+    })
+    .join("");
   const yTige = cy - R - m.tigeLong * D;
   const tige = `<path d="M${roundTo(cx)} ${roundTo(cy - R + s / 2)}V${roundTo(yTige)}" stroke="${c.encre}" stroke-width="${roundTo(m.tigeLarge * D, 2)}" stroke-linecap="round"/>`;
   const defs = `<clipPath id="${id}-sil"><path d="${silhouette}"/></clipPath>`;
@@ -245,13 +246,13 @@ function corpsPotara(cx, cy, D, id = "potara") {
     `<path d="${silhouette}" fill="${c.sphere}"/>`,
     `<path d="${ceinture}" stroke="${c.encre}" stroke-width="${roundTo(s * m.ceintureSurTrait, 2)}" clip-path="url(#${id}-sil)"/>`,
     `<g clip-path="url(#${id}-sil)">${fentes}</g>`,
-    `<path d="${silhouette}" fill="none" stroke="${c.encre}" stroke-width="${roundTo(s, 2)}"/>`
+    `<path d="${silhouette}" fill="none" stroke="${c.encre}" stroke-width="${roundTo(s, 2)}"/>`,
   ].join("");
   return { defs, dessin };
 }
 function svgIllustration(D = 320, marge = 16) {
   const m = POTARA_MESURES;
-  const haut = D * (1 + m.tigeLong) + m.tigeLarge * D / 2;
+  const haut = D * (1 + m.tigeLong) + (m.tigeLarge * D) / 2;
   const vw = Math.round(D + 2 * marge);
   const vh = Math.round(haut + 2 * marge);
   const { defs, dessin } = corpsPotara(vw / 2, vh - marge - D / 2, D);
@@ -275,12 +276,12 @@ var SENZU_MESURES = {
   hilePosition: 0.28,
   hileEtendue: 0.5,
   hileSurTrait: 2 / 3,
-  angleIcone: -31.6
+  angleIcone: -31.6,
 };
 var SENZU_COULEURS = {
   clair: "#bed37e",
   calotte: "#a8b26c",
-  encre: "#180c00"
+  encre: "#180c00",
 };
 function corpsSenzu(cx, cy, L, id = "senzu") {
   const m = SENZU_MESURES;
@@ -292,7 +293,7 @@ function corpsSenzu(cx, cy, L, id = "senzu") {
   const { pts, fleches } = ovale(cx, cy, a, b);
   const silhouette = arcs(pts, fleches);
   const xh = cx - L / 2 + m.hilePosition * L;
-  const y = m.hileEtendue * W / 2;
+  const y = (m.hileEtendue * W) / 2;
   const hile = `M${roundTo(xh)} ${roundTo(cy + y)}L${roundTo(xh)} ${roundTo(cy - y)}`;
   const clair = `M${roundTo(xh)} ${roundTo(cy - W)}H${roundTo(cx + L)}V${roundTo(cy + W)}H${roundTo(xh)}Z`;
   const defs = `<clipPath id="${id}-sil"><path d="${silhouette}"/></clipPath>`;
@@ -300,7 +301,7 @@ function corpsSenzu(cx, cy, L, id = "senzu") {
     `<path d="${silhouette}" fill="${c.calotte}"/>`,
     `<path d="${clair}" fill="${c.clair}" clip-path="url(#${id}-sil)"/>`,
     `<path d="${hile}" fill="none" stroke="${c.encre}" stroke-width="${roundTo(s * m.hileSurTrait, 2)}" stroke-linecap="round"/>`,
-    `<path d="${silhouette}" fill="none" stroke="${c.encre}" stroke-width="${roundTo(s, 2)}" stroke-linejoin="round"/>`
+    `<path d="${silhouette}" fill="none" stroke="${c.encre}" stroke-width="${roundTo(s, 2)}" stroke-linejoin="round"/>`,
   ].join("");
   return { defs, dessin };
 }
@@ -314,13 +315,19 @@ function svgIllustration2(L = 480, marge = 16) {
 }
 function corpsIcone(cote = 512, occupation = 0.88, id = "senzu-icone") {
   const m = SENZU_MESURES;
-  const t = Math.abs(m.angleIcone) * Math.PI / 180;
+  const t = (Math.abs(m.angleIcone) * Math.PI) / 180;
   const enveloppe = (L) => {
     const A = L / 2;
     const B = L / m.ratio / 2;
-    return 2 * Math.max(Math.hypot(A * Math.cos(t), B * Math.sin(t)), Math.hypot(A * Math.sin(t), B * Math.cos(t)));
+    return (
+      2 *
+      Math.max(
+        Math.hypot(A * Math.cos(t), B * Math.sin(t)),
+        Math.hypot(A * Math.sin(t), B * Math.cos(t)),
+      )
+    );
   };
-  const L = cote * occupation / (enveloppe(1) || 1);
+  const L = (cote * occupation) / (enveloppe(1) || 1);
   const c = cote / 2;
   const { defs, dessin } = corpsSenzu(c, c, L, id);
   return { defs, dessin: `<g transform="rotate(${m.angleIcone} ${c} ${c})">${dessin}</g>` };
@@ -338,7 +345,7 @@ var SPHERE_CERNE = Math.round(0.045 * SPHERE_BOITE);
 var SPHERE_R_INT = SPHERE_R_EXT - SPHERE_CERNE;
 var SPHERE_FOYER = {
   x: SPHERE_R_EXT - 0.3 * SPHERE_R_INT,
-  y: SPHERE_R_EXT - 0.39 * SPHERE_R_INT
+  y: SPHERE_R_EXT - 0.39 * SPHERE_R_INT,
 };
 var SPHERE_DEGRADE = [
   [0, "#fdffea"],
@@ -351,7 +358,7 @@ var SPHERE_DEGRADE = [
   [0.7, "#fcb455"],
   [0.8, "#fba740"],
   [0.9, "#f29d32"],
-  [1, "#ef9a2b"]
+  [1, "#ef9a2b"],
 ];
 var SPHERE_ROUGE_ETOILE = "#e81f23";
 var SPHERE_ENCRE = "#000000";
@@ -359,25 +366,25 @@ var SPHERE_ETOILES = {
   1: [[0, 0]],
   2: [
     [-0.22, 0],
-    [0.22, 0]
+    [0.22, 0],
   ],
   3: [
     [0, -0.24],
     [-0.21, 0.13],
-    [0.21, 0.13]
+    [0.21, 0.13],
   ],
   4: [
     [-0.2, -0.2],
     [0.2, -0.2],
     [-0.2, 0.2],
-    [0.2, 0.2]
+    [0.2, 0.2],
   ],
   5: [
     [-0.22, -0.2],
     [0.22, -0.2],
     [0, 0],
     [-0.22, 0.2],
-    [0.22, 0.2]
+    [0.22, 0.2],
   ],
   6: [
     [-0.22, -0.22],
@@ -385,7 +392,7 @@ var SPHERE_ETOILES = {
     [-0.22, 0],
     [0.22, 0],
     [-0.22, 0.22],
-    [0.22, 0.22]
+    [0.22, 0.22],
   ],
   7: [
     [0, -0.26],
@@ -394,8 +401,8 @@ var SPHERE_ETOILES = {
     [0, 0.04],
     [-0.22, 0.2],
     [0.22, 0.2],
-    [0, 0.28]
-  ]
+    [0, 0.28],
+  ],
 };
 var SPHERE_R_ETOILE = {
   1: 0.412,
@@ -404,13 +411,15 @@ var SPHERE_R_ETOILE = {
   4: 0.25,
   5: 0.21,
   6: 0.2,
-  7: 0.185
+  7: 0.185,
 };
 var nombreEtoiles = (n) => Math.min(7, Math.max(1, Math.round(n)));
 function etoilesSphere(n) {
   const k = nombreEtoiles(n);
   const r = SPHERE_R_ETOILE[k] * SPHERE_R_INT;
-  return SPHERE_ETOILES[k].map(([nx, ny]) => starPoints(SPHERE_R_EXT + nx * SPHERE_BOITE, SPHERE_R_EXT + ny * SPHERE_BOITE, r));
+  return SPHERE_ETOILES[k].map(([nx, ny]) =>
+    starPoints(SPHERE_R_EXT + nx * SPHERE_BOITE, SPHERE_R_EXT + ny * SPHERE_BOITE, r),
+  );
 }
 
 // packages/ui/src/toriyama-svg/palette.ts
@@ -420,50 +429,50 @@ var TORIYAMA_PALETTE = {
     blue: "#1b365d",
     red: "#de1b22",
     beltNavy: "#0d1b2a",
-    wristband: "#1d3557"
+    wristband: "#1d3557",
   },
   kame: {
     orange: "#ff6b00",
     yellow: "#fed700",
     crestWhite: "#ffffff",
-    crestBlack: "#121417"
+    crestBlack: "#121417",
   },
   kai: {
     black: "#111111",
     white: "#f8f9fa",
-    redRing: "#d90429"
+    redRing: "#d90429",
   },
   piccolo: {
     skinGreen: "#40916c",
     skinShade: "#2d6a4f",
     musclePink: "#f72585",
     giPurple: "#5a189a",
-    capeWhite: "#f8f9fa"
+    capeWhite: "#f8f9fa",
   },
   capsule: {
     cyan: "#00b4d8",
     lightCyan: "#90e0ef",
     deepBlue: "#0077b6",
     hullWhite: "#ffffff",
-    metalGray: "#6c757d"
+    metalGray: "#6c757d",
   },
   redRibbon: {
     scarletRed: "#d90429",
     ribbonDark: "#9d0208",
     letterWhite: "#ffffff",
-    blackAccent: "#121417"
+    blackAccent: "#121417",
   },
   majin: {
     ink: "#121417",
     darkViolet: "#3a0ca3",
-    auraPink: "#f72585"
+    auraPink: "#f72585",
   },
   dragonBall: {
     amberLight: SPHERE_DEGRADE[0][1],
     amberMid: SPHERE_DEGRADE[3][1],
     amberDeep: SPHERE_DEGRADE[SPHERE_DEGRADE.length - 1][1],
     starRed: SPHERE_ROUGE_ETOILE,
-    inkRing: SPHERE_ENCRE
+    inkRing: SPHERE_ENCRE,
   },
   senzu: { ...SENZU_COULEURS },
   potara: { ...POTARA_COULEURS },
@@ -473,7 +482,7 @@ var TORIYAMA_PALETTE = {
     gridGreen: "#00f5d4",
     blipRed: "#ff0054",
     blipYellow: "#fee440",
-    buttonSilver: "#e0e1dd"
+    buttonSilver: "#e0e1dd",
   },
   scouter: {
     hudGreen: "#00ff66",
@@ -481,25 +490,25 @@ var TORIYAMA_PALETTE = {
     hudBlue: "#00e5ff",
     lensGreen: "rgba(0, 255, 102, 0.18)",
     lensRed: "rgba(255, 0, 51, 0.18)",
-    lensBlue: "rgba(0, 229, 255, 0.18)"
+    lensBlue: "rgba(0, 229, 255, 0.18)",
   },
   superSaiyan: {
     auraGold: "#ffd700",
     auraAmber: "#ff9e00",
     coreWhite: "#ffffff",
-    lightningBlue: "#00f0ff"
+    lightningBlue: "#00f0ff",
   },
   shenron: {
     scaleEmerald: "#2d6a4f",
     bellyGold: "#ffb703",
     hornBrown: "#6f4e37",
-    eyeCrimson: "#e63946"
+    eyeCrimson: "#e63946",
   },
   print: {
     ink: "#121417",
     paper: "#f7f4ea",
-    halftoneDot: "rgba(18, 20, 23, 0.14)"
-  }
+    halftoneDot: "rgba(18, 20, 23, 0.14)",
+  },
 };
 // packages/ui/src/toriyama-svg/emblems.ts
 var EMBLEMS = {
@@ -521,8 +530,8 @@ var EMBLEMS = {
       { d: "M 50 40 L 50 68", stroke: "#121417", strokeWidth: 4.5 },
       { d: "M 32 78 L 42 78", stroke: "#121417", strokeWidth: 5 },
       { d: "M 58 78 L 68 78", stroke: "#121417", strokeWidth: 5 },
-      { d: "M 50 68 L 50 82", stroke: "#121417", strokeWidth: 5 }
-    ]
+      { d: "M 50 68 L 50 82", stroke: "#121417", strokeWidth: 5 },
+    ],
   },
   go: {
     id: "go",
@@ -542,8 +551,8 @@ var EMBLEMS = {
       { d: "M 62 26 L 54 44", stroke: "#121417", strokeWidth: 4.5 },
       { d: "M 46 44 L 82 44", stroke: "#121417", strokeWidth: 5 },
       { d: "M 74 28 L 74 44", stroke: "#121417", strokeWidth: 4.5 },
-      { d: "M 50 54 L 78 54 L 78 76 L 50 76 Z", fill: "none", stroke: "#121417", strokeWidth: 5 }
-    ]
+      { d: "M 50 54 L 78 54 L 78 76 L 50 76 Z", fill: "none", stroke: "#121417", strokeWidth: 5 },
+    ],
   },
   kai: {
     id: "kai",
@@ -562,8 +571,8 @@ var EMBLEMS = {
       { d: "M 50 52 L 28 72", stroke: "#f8f9fa", strokeWidth: 5 },
       { d: "M 50 52 L 72 72", stroke: "#f8f9fa", strokeWidth: 5 },
       { d: "M 36 68 L 36 82", stroke: "#f8f9fa", strokeWidth: 4.5 },
-      { d: "M 64 68 L 64 82", stroke: "#f8f9fa", strokeWidth: 4.5 }
-    ]
+      { d: "M 64 68 L 64 82", stroke: "#f8f9fa", strokeWidth: 4.5 },
+    ],
   },
   demon: {
     id: "demon",
@@ -585,8 +594,8 @@ var EMBLEMS = {
       { d: "M 61 28 L 61 46", stroke: "#121417", strokeWidth: 3.5 },
       { d: "M 34 54 L 66 54 L 66 68 L 34 68 Z", fill: "none", stroke: "#121417", strokeWidth: 4.5 },
       { d: "M 48 68 L 48 82 L 68 82 L 72 74", fill: "none", stroke: "#121417", strokeWidth: 5 },
-      { d: "M 36 74 L 28 82", stroke: "#121417", strokeWidth: 4.5 }
-    ]
+      { d: "M 36 74 L 28 82", stroke: "#121417", strokeWidth: 4.5 },
+    ],
   },
   capsuleCorp: {
     id: "capsuleCorp",
@@ -600,13 +609,13 @@ var EMBLEMS = {
       { d: "M 50 8 A 42 42 0 1 1 49.9 8 Z", fill: "#ffffff" },
       {
         d: "M 70 26 A 32 32 0 1 0 70 74 L 62 74 A 24 24 0 1 1 62 26 Z",
-        fill: "#121417"
+        fill: "#121417",
       },
       {
         d: "M 60 38 A 18 18 0 1 0 60 62 L 54 62 A 12 12 0 1 1 54 38 Z",
-        fill: "#00b4d8"
-      }
-    ]
+        fill: "#00b4d8",
+      },
+    ],
   },
   redRibbon: {
     id: "redRibbon",
@@ -619,19 +628,19 @@ var EMBLEMS = {
         d: "M 10 24 L 90 24 L 90 76 L 10 76 Z",
         fill: "#d90429",
         stroke: "#121417",
-        strokeWidth: 4
+        strokeWidth: 4,
       },
       {
         d: "M 22 34 L 38 34 C 44 34 46 38 46 43 C 46 48 43 51 38 51 L 30 51 L 30 66 L 22 66 Z M 30 40 L 30 45 L 37 45 C 39 45 40 44 40 42.5 C 40 41 39 40 37 40 Z",
-        fill: "#ffffff"
+        fill: "#ffffff",
       },
       { d: "M 36 50 L 46 66 L 38 66 L 30 52 Z", fill: "#ffffff" },
       {
         d: "M 54 34 L 70 34 C 76 34 78 38 78 43 C 78 48 75 51 70 51 L 62 51 L 62 66 L 54 66 Z M 62 40 L 62 45 L 69 45 C 71 45 72 44 72 42.5 C 72 41 71 40 69 40 Z",
-        fill: "#ffffff"
+        fill: "#ffffff",
       },
-      { d: "M 68 50 L 78 66 L 70 66 L 62 52 Z", fill: "#ffffff" }
-    ]
+      { d: "M 68 50 L 78 66 L 70 66 L 62 52 Z", fill: "#ffffff" },
+    ],
   },
   majin: {
     id: "majin",
@@ -641,9 +650,9 @@ var EMBLEMS = {
     paths: [
       {
         d: "M 14 28 C 22 28 26 36 34 58 C 40 44 46 34 50 34 C 54 34 60 44 66 58 C 74 36 78 28 86 28 C 90 28 92 32 90 38 C 84 62 76 80 68 80 C 60 80 54 68 50 56 C 46 68 40 80 32 80 C 24 80 16 62 10 38 C 8 32 10 28 14 28 Z",
-        fill: "#121417"
-      }
-    ]
+        fill: "#121417",
+      },
+    ],
   },
   tenkaichi: {
     id: "tenkaichi",
@@ -662,8 +671,8 @@ var EMBLEMS = {
       { d: "M 32 48 L 32 78 L 48 78", fill: "none", stroke: "#121417", strokeWidth: 5 },
       { d: "M 58 20 L 72 82 L 80 78", fill: "none", stroke: "#121417", strokeWidth: 5.5 },
       { d: "M 66 48 L 52 74", stroke: "#121417", strokeWidth: 4.5 },
-      { d: "M 68 28 L 74 34", stroke: "#121417", strokeWidth: 4.5 }
-    ]
+      { d: "M 68 28 L 74 34", stroke: "#121417", strokeWidth: 4.5 },
+    ],
   },
   vegetaRoyal: {
     id: "vegetaRoyal",
@@ -676,47 +685,44 @@ var EMBLEMS = {
         d: "M 50 10 C 66 22 84 20 84 46 C 84 68 64 84 50 92 C 36 84 16 68 16 46 C 16 20 34 22 50 10 Z",
         fill: "none",
         stroke: "#ffd700",
-        strokeWidth: 5
+        strokeWidth: 5,
       },
       {
         d: "M 50 24 L 50 68",
         stroke: "#ffd700",
-        strokeWidth: 5
+        strokeWidth: 5,
       },
       {
         d: "M 36 34 C 40 44 42 54 50 62 C 58 54 60 44 64 34",
         fill: "none",
         stroke: "#ffd700",
-        strokeWidth: 4.5
+        strokeWidth: 4.5,
       },
       {
         d: "M 50 74 A 4 4 0 1 1 49.9 74 Z",
-        fill: "#ffd700"
-      }
-    ]
-  }
+        fill: "#ffd700",
+      },
+    ],
+  },
 };
 // packages/ui/src/toriyama-svg/kinto-un.ts
 var KINTO_UN_COULEURS = {
   lumiere: "#FCF03A",
   ombre: "#E4BE05",
   encre: "#1A1A1A",
-  pastille: "#0a0a0a"
+  pastille: "#0a0a0a",
 };
-var rayonLobe = (corde, h) => corde * corde / (8 * h) + h / 2;
+var rayonLobe = (corde, h) => (corde * corde) / (8 * h) + h / 2;
 function volutes(contour, fleches, creux, facteur = 0.45) {
   const n = contour.length;
-  const cg = [
-    contour.reduce((s, p) => s + p[0], 0) / n,
-    contour.reduce((s, p) => s + p[1], 0) / n
-  ];
+  const cg = [contour.reduce((s, p) => s + p[0], 0) / n, contour.reduce((s, p) => s + p[1], 0) / n];
   return creux.map((i, k) => {
     const p = contour[i];
     const prev = contour[(i - 1 + n) % n];
     const next = contour[(i + 1) % n];
     const rA = rayonLobe(Math.hypot(p[0] - prev[0], p[1] - prev[1]), fleches[(i - 1 + n) % n]);
     const rB = rayonLobe(Math.hypot(next[0] - p[0], next[1] - p[1]), fleches[i]);
-    return volute(p, cg, (rA + rB) / 2 * facteur, 1.2, k % 2 === 0 ? 1 : -1);
+    return volute(p, cg, ((rA + rB) / 2) * facteur, 1.2, k % 2 === 0 ? 1 : -1);
   });
 }
 var Y = (y) => y * 1.27 - 90;
@@ -738,7 +744,7 @@ var CONTOUR = [
   [630, 542],
   [486, 540],
   [352, 514],
-  [216, 464]
+  [216, 464],
 ].map(([x, y]) => [x, Y(y)]);
 var FLECHES = [54, 66, 74, 66, 56, 50, 40, 30, 22, 20, 24, 30, 46, 52, 52, 52, 50, 52];
 var ECLAIRE = CONTOUR.map(([x, y]) => [x - 12 + x * 0.006, y - 168 + 96 * (x / 1200)]);
@@ -746,12 +752,13 @@ var INTERIEURS = [
   [[196, Y(436)], [352, Y(356)], 58],
   [[470, Y(402)], [650, Y(384)], 66],
   [[762, Y(424)], [906, Y(392)], 50],
-  [[556, Y(272)], [704, Y(262)], 44]
+  [[556, Y(272)], [704, Y(262)], 44],
 ];
-var interieurs = (lobes, rayon) => lobes.flatMap(([a, b, h], k) => [
-  arcs([a, b], [h], false),
-  volute(b, a, rayon, 1.1, k % 2 ? 1 : -1)
-]);
+var interieurs = (lobes, rayon) =>
+  lobes.flatMap(([a, b, h], k) => [
+    arcs([a, b], [h], false),
+    volute(b, a, rayon, 1.1, k % 2 ? 1 : -1),
+  ]);
 var KINTO_UN_ILLUSTRATION = {
   largeur: 1200,
   hauteur: 676,
@@ -759,10 +766,10 @@ var KINTO_UN_ILLUSTRATION = {
   lumiere: arcs(ECLAIRE, FLECHES),
   volutes: [
     ...volutes(CONTOUR, FLECHES, [1, 2, 3, 4, 5, 6, 7, 13, 15, 17], 0.55),
-    volute(CONTOUR[9], [980, Y(380)], 26, 1.1, -1)
+    volute(CONTOUR[9], [980, Y(380)], 26, 1.1, -1),
   ],
   interieurs: interieurs(INTERIEURS, 30),
-  traits: { encre: 9, volute: 7 }
+  traits: { encre: 9, volute: 7 },
 };
 var CONTOUR_ICONE = [
   [60, 302],
@@ -773,7 +780,7 @@ var CONTOUR_ICONE = [
   [454, 302],
   [372, 392],
   [256, 404],
-  [140, 392]
+  [140, 392],
 ];
 var FLECHES_ICONE = [62, 64, 74, 64, 62, 42, 36, 36, 42];
 var ECLAIRE_ICONE = CONTOUR_ICONE.map(([x, y]) => [x - 6, y - 94]);
@@ -784,7 +791,7 @@ var KINTO_UN_ICONE = {
   lumiere: arcs(ECLAIRE_ICONE, FLECHES_ICONE),
   volutes: volutes(CONTOUR_ICONE, FLECHES_ICONE, [1, 2, 3, 4, 7], 0.5),
   interieurs: [],
-  traits: { encre: 12, volute: 9 }
+  traits: { encre: 12, volute: 9 },
 };
 function lobesIcone() {
   const n = CONTOUR_ICONE.length;
@@ -799,8 +806,7 @@ function lobesIcone() {
     const my = (a[1] + b[1]) / 2;
     let nx = -(b[1] - a[1]) / corde;
     let ny = (b[0] - a[0]) / corde;
-    if (nx * (mx - cx) + ny * (my - cy) < 0)
-      [nx, ny] = [-nx, -ny];
+    if (nx * (mx - cx) + ny * (my - cy) < 0) [nx, ny] = [-nx, -ny];
     const ox = mx + nx * (h - r);
     const oy = my + ny * (h - r);
     return { x: (ox - 256) / 256, y: (256 - oy) / 256, r: r / 256 };
@@ -808,11 +814,13 @@ function lobesIcone() {
 }
 function corpsNuage(n, prefixe = "kt", avecVolutes = true) {
   const c = KINTO_UN_COULEURS;
-  const volutesSvg = avecVolutes ? `<g fill="none" stroke="${c.encre}" stroke-width="${n.traits.volute}" stroke-linecap="round" stroke-linejoin="round">
+  const volutesSvg = avecVolutes
+    ? `<g fill="none" stroke="${c.encre}" stroke-width="${n.traits.volute}" stroke-linecap="round" stroke-linejoin="round">
 ${[...n.interieurs, ...n.volutes].map((d) => `<path d="${d}"/>`).join(`
 `)}
 </g>
-` : "";
+`
+    : "";
   return `<defs><clipPath id="${prefixe}-clip"><path d="${n.silhouette}"/></clipPath></defs>
 <path d="${n.silhouette}" fill="${c.ombre}"/>
 <g clip-path="url(#${prefixe}-clip)">
@@ -820,7 +828,8 @@ ${[...n.interieurs, ...n.volutes].map((d) => `<path d="${d}"/>`).join(`
 ${volutesSvg}</g>
 <path d="${n.silhouette}" fill="none" stroke="${c.encre}" stroke-width="${n.traits.encre}" stroke-linejoin="round"/>`;
 }
-var DESC = "Le Kinto-Un, nuage magique de Son Goku : lobes jaune citron finis en volutes, ombre dor\xE9e sur la face inf\xE9rieure, trait d'encre.";
+var DESC =
+  "Le Kinto-Un, nuage magique de Son Goku : lobes jaune citron finis en volutes, ombre dor\xE9e sur la face inf\xE9rieure, trait d'encre.";
 function svgIllustration3() {
   const n = KINTO_UN_ILLUSTRATION;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n.largeur} ${n.hauteur}" role="img" aria-labelledby="kt-t">
@@ -834,13 +843,19 @@ function corpsIcone2({
   pastille = KINTO_UN_COULEURS.pastille,
   coins = 0.22,
   echelle = 1,
-  volutes: avecVolutes = true
+  volutes: avecVolutes = true,
 } = {}) {
   const n = KINTO_UN_ICONE;
   const c = n.largeur / 2;
-  const fond = pastille === null ? "" : `<rect width="${n.largeur}" height="${n.hauteur}" rx="${roundTo(n.largeur * coins)}" fill="${pastille}"/>
+  const fond =
+    pastille === null
+      ? ""
+      : `<rect width="${n.largeur}" height="${n.hauteur}" rx="${roundTo(n.largeur * coins)}" fill="${pastille}"/>
 `;
-  const transform = echelle === 1 ? "" : ` transform="translate(${c} ${c}) scale(${echelle}) translate(${-c} ${-c})"`;
+  const transform =
+    echelle === 1
+      ? ""
+      : ` transform="translate(${c} ${c}) scale(${echelle}) translate(${-c} ${-c})"`;
   return `${fond}<g${transform}>
 ${corpsNuage(n, "kti", avecVolutes)}
 </g>`;
@@ -886,32 +901,14 @@ var GOHAN_ULTIME_MESURES = {
     [0.66, 0.99],
     [0.47, 0.9],
     [0.352, 0.851],
-    [0.3, 0.95]
+    [0.3, 0.95],
   ],
   fleches: [
-    0.004,
-    0.004,
-    0.004,
-    0.003,
-    0.003,
-    0.003,
-    0.003,
-    0.003,
-    0.003,
-    0.012,
-    0.003,
-    0.004,
-    0.014,
-    0.006,
-    0.004,
-    -0.004,
-    -0.012,
-    -0.01,
-    -0.006,
-    0.006
+    0.004, 0.004, 0.004, 0.003, 0.003, 0.003, 0.003, 0.003, 0.003, 0.012, 0.003, 0.004, 0.014,
+    0.006, 0.004, -0.004, -0.012, -0.01, -0.006, 0.006,
   ],
   shuchusen: { traits: 96, centreLibre: 0.22 },
-  aura: { pointes: 23, amplitude: 0.18 }
+  aura: { pointes: 23, amplitude: 0.18 },
 };
 var GOHAN_ULTIME_COULEURS = {
   gi: "#fc9d18",
@@ -919,21 +916,24 @@ var GOHAN_ULTIME_COULEURS = {
   bleu: "#2150ac",
   peau: "#fed7b4",
   encre: "var(--color-encre, #131b08)",
-  papier: "var(--color-os, #efe9d8)"
+  papier: "var(--color-os, #efe9d8)",
 };
 var GOHAN_ULTIME_COULEURS_BRUTES = {
   ...GOHAN_ULTIME_COULEURS,
   encre: "#131b08",
-  papier: "#efe9d8"
+  papier: "#efe9d8",
 };
 function cheminChevelure(x, y, L) {
   const m = GOHAN_ULTIME_MESURES;
   const H = L / m.ratio;
   const pts = m.contour.map(([u, v]) => [x + u * L, y + v * H]);
-  return arcs(pts, m.fleches.map((f) => f * L));
+  return arcs(
+    pts,
+    m.fleches.map((f) => f * L),
+  );
 }
 function svgChevelure(L = 480, marge = 16, couleurs = GOHAN_ULTIME_COULEURS) {
-  const H = L / GOHAN_ULTIME_MESURES.ratio * 1.22;
+  const H = (L / GOHAN_ULTIME_MESURES.ratio) * 1.22;
   const vw = Math.round(L + 2 * marge);
   const vh = Math.round(H + 2 * marge);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${vw} ${vh}" width="${vw}" height="${vh}" role="img" aria-label="Son Gohan"><path d="${cheminChevelure(marge, marge, L)}" fill="${couleurs.encre}"/></svg>
@@ -942,23 +942,29 @@ function svgChevelure(L = 480, marge = 16, couleurs = GOHAN_ULTIME_COULEURS) {
 function cheminAura(cx, cy, r) {
   const { pointes, amplitude } = GOHAN_ULTIME_MESURES.aura;
   const pts = [];
-  for (let i = 0;i < pointes * 2; i++) {
-    const t = i / (pointes * 2) * Math.PI * 2 - Math.PI / 2;
+  for (let i = 0; i < pointes * 2; i++) {
+    const t = (i / (pointes * 2)) * Math.PI * 2 - Math.PI / 2;
     const haut = Math.max(0, -Math.sin(t));
-    const k = i % 2 === 0 ? 1 + amplitude * (1 + 1.6 * haut) + i * 7 % 5 * 0.012 : 1 - amplitude * 0.35;
+    const k =
+      i % 2 === 0 ? 1 + amplitude * (1 + 1.6 * haut) + ((i * 7) % 5) * 0.012 : 1 - amplitude * 0.35;
     pts.push([cx + Math.cos(t) * r * k * 0.72, cy + Math.sin(t) * r * k]);
   }
-  return arcs(pts, pts.map(() => r * 0.006));
+  return arcs(
+    pts,
+    pts.map(() => r * 0.006),
+  );
 }
 function cheminShuchusen(cx, cy, rInt, rExt) {
   const { traits } = GOHAN_ULTIME_MESURES.shuchusen;
-  return radialSpeedlines(cx, cy, rInt, rExt, traits).map((l, i) => {
-    const [, x1, y1, x2, y2] = l.match(/M (\S+) (\S+) L (\S+) (\S+)/).map(Number);
-    const a = Math.atan2(y2 - y1, x2 - x1);
-    const e = rExt * (0.004 + i * 11 % 4 * 0.002);
-    const [nx, ny] = [-Math.sin(a) * e, Math.cos(a) * e];
-    return `M${roundTo(x1)} ${roundTo(y1)}L${roundTo(x2 + nx)} ${roundTo(y2 + ny)}L${roundTo(x2 - nx)} ${roundTo(y2 - ny)}Z`;
-  }).join("");
+  return radialSpeedlines(cx, cy, rInt, rExt, traits)
+    .map((l, i) => {
+      const [, x1, y1, x2, y2] = l.match(/M (\S+) (\S+) L (\S+) (\S+)/).map(Number);
+      const a = Math.atan2(y2 - y1, x2 - x1);
+      const e = rExt * (0.004 + ((i * 11) % 4) * 0.002);
+      const [nx, ny] = [-Math.sin(a) * e, Math.cos(a) * e];
+      return `M${roundTo(x1)} ${roundTo(y1)}L${roundTo(x2 + nx)} ${roundTo(y2 + ny)}L${roundTo(x2 - nx)} ${roundTo(y2 - ny)}Z`;
+    })
+    .join("");
 }
 function svgEmbleme(cote = 512, couleurs = GOHAN_ULTIME_COULEURS) {
   const c = cote / 2;
@@ -1006,7 +1012,7 @@ var CADRE_CASE = {
   trait: 0.0037,
   rayon: 0,
   jaune: "var(--color-logo-jaune)",
-  encre: "var(--color-encre)"
+  encre: "var(--color-encre)",
 };
 function anneauxCadre(largeur) {
   const trait = Math.max(1.5, roundTo(largeur * CADRE_CASE.trait));
@@ -1020,7 +1026,7 @@ function ombreCadre(a) {
   return [
     `0 0 0 ${t1}px ${CADRE_CASE.encre}`,
     `0 0 0 ${t2}px ${CADRE_CASE.jaune}`,
-    `0 0 0 ${t3}px ${CADRE_CASE.encre}`
+    `0 0 0 ${t3}px ${CADRE_CASE.encre}`,
   ].join(", ");
 }
 var NUAGE_MESURES = {
@@ -1031,14 +1037,14 @@ var NUAGE_MESURES = {
   tours: 1.25,
   fond: "#CFCFE7",
   trait: "#4141A1",
-  ciel: "#3760B2"
+  ciel: "#3760B2",
 };
 function bancNuage({
   creuxX = [-16, 30, 74, 108, 164, 224],
   fleches = [22, 21, 16, 27, 29],
   largeur = 240,
   base = 128,
-  creux = 78
+  creux = 78,
 } = {}) {
   const xs = [...creuxX, creuxX[1] + largeur];
   const f = [...fleches, fleches[0]];
@@ -1048,19 +1054,18 @@ function bancNuage({
   const dernier = xs[xs.length - 1];
   const silhouette = `${contour}L${roundTo(dernier)} ${base}L${roundTo(premier)} ${base}Z`;
   const volutes = [];
-  for (let i = 0;i < sommets.length; i++) {
+  for (let i = 0; i < sommets.length; i++) {
     const p = sommets[i];
     const g = i > 0 ? xs[i] - xs[i - 1] : xs[1] - xs[0];
     const d = i < xs.length - 1 ? xs[i + 1] - xs[i] : g;
-    const r = (g + d) / 2 * NUAGE_MESURES.spiraleSurCorde / 2;
+    const r = (((g + d) / 2) * NUAGE_MESURES.spiraleSurCorde) / 2;
     volutes.push(volute(p, [p[0], base], r, NUAGE_MESURES.tours, i % 2 === 0 ? 1 : -1));
   }
   const trait = roundTo(NUAGE_MESURES.corde * NUAGE_MESURES.traitSurCorde);
-  for (let i = 0;i < f.length; i++) {
+  for (let i = 0; i < f.length; i++) {
     const corde = xs[i + 1] - xs[i];
-    const r = corde * NUAGE_MESURES.spiraleSurCorde * 0.62 / 2;
-    if (r < trait * 2.5)
-      continue;
+    const r = (corde * NUAGE_MESURES.spiraleSurCorde * 0.62) / 2;
+    if (r < trait * 2.5) continue;
     const cx = (xs[i] + xs[i + 1]) / 2;
     const cy = creux + (base - creux) * 0.34;
     volutes.push(volute([cx, cy], [cx, base], r, NUAGE_MESURES.tours, i % 2 ? 1 : -1));
@@ -1096,14 +1101,14 @@ var PASTILLE = {
     [0.27, "#FEF01D"],
     [0.48, "#FBB502"],
     [0.69, "#F17102"],
-    [0.8, "#ED5102"]
+    [0.8, "#ED5102"],
   ],
   degradeJetons: [
     [0.05, "color-mix(in srgb, var(--color-logo-jaune) 78%, var(--color-os))"],
     [0.27, "var(--color-logo-jaune)"],
     [0.48, "var(--color-gi-clair)"],
-    [0.8, "var(--color-gi-ombre)"]
-  ]
+    [0.8, "var(--color-gi-ombre)"],
+  ],
 };
 function anneauPastille(diametre = PASTILLE.diametre) {
   const cerne = roundTo(diametre * PASTILLE.cerne);
@@ -1112,9 +1117,9 @@ function anneauPastille(diametre = PASTILLE.diametre) {
 var ETOILE_INTERIEUR = 0.45;
 function etoilePath(cx, cy, R, interieur = ETOILE_INTERIEUR, branches = 5) {
   const pts = [];
-  for (let i = 0;i < branches * 2; i++) {
+  for (let i = 0; i < branches * 2; i++) {
     const rayon = i % 2 === 0 ? R : R * interieur;
-    const a = -Math.PI / 2 + i * Math.PI / branches;
+    const a = -Math.PI / 2 + (i * Math.PI) / branches;
     pts.push(`${roundTo(cx + rayon * Math.cos(a))} ${roundTo(cy + rayon * Math.sin(a))}`);
   }
   return `M${pts.join("L")}Z`;
@@ -1122,12 +1127,12 @@ function etoilePath(cx, cy, R, interieur = ETOILE_INTERIEUR, branches = 5) {
 function etoileViewBox(R = 50) {
   const cx = R;
   const cy = R;
-  const demiLargeur = R * Math.sin(2 * Math.PI / 5);
+  const demiLargeur = R * Math.sin((2 * Math.PI) / 5);
   const bas = R * Math.cos(Math.PI / 5);
   return {
     viewBox: `${roundTo(cx - demiLargeur)} 0 ${roundTo(2 * demiLargeur)} ${roundTo(R + bas)}`,
     cx,
-    cy
+    cy,
   };
 }
 // packages/ui/src/toriyama-svg/model3d.ts
@@ -1135,7 +1140,7 @@ var DRAGON_BALL_PARAM_LEN = 31;
 var KINTO_UN_PARAM_LEN = 66;
 var rgb = (hex) => {
   const n = Number.parseInt(hex.slice(1), 16);
-  return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255];
+  return [((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255];
 };
 function dragonBallParams(stars) {
   const scale = SPHERE_BOITE / SPHERE_R_INT;
@@ -1150,10 +1155,9 @@ function dragonBallParams(stars) {
     ...rgb(SPHERE_DEGRADE[5][1]),
     ...rgb(SPHERE_DEGRADE.at(-1)[1]),
     ...rgb(SPHERE_ROUGE_ETOILE),
-    ...positions
+    ...positions,
   ];
-  while (p.length < DRAGON_BALL_PARAM_LEN)
-    p.push(0);
+  while (p.length < DRAGON_BALL_PARAM_LEN) p.push(0);
   return Float32Array.from(p);
 }
 function kintoUnParams() {
@@ -1177,10 +1181,9 @@ function kintoUnParams() {
     ...rgb(KINTO_UN_COULEURS.lumiere),
     ...rgb(KINTO_UN_COULEURS.ombre),
     ...rgb(KINTO_UN_COULEURS.encre),
-    ...lobes.flatMap((l) => [l.x, l.y, l.r])
+    ...lobes.flatMap((l) => [l.x, l.y, l.r]),
   ];
-  while (p.length < KINTO_UN_PARAM_LEN)
-    p.push(0);
+  while (p.length < KINTO_UN_PARAM_LEN) p.push(0);
   return Float32Array.from(p);
 }
 function modelParams(model, stars = 4) {
@@ -1191,7 +1194,9 @@ function svgSphere(n) {
   const k = nombreEtoiles(n);
   const gid = `db-sphere-${k}`;
   const arrets = SPHERE_DEGRADE.map(([o, c]) => `<stop offset="${o}" stop-color="${c}"/>`).join("");
-  const etoiles = etoilesSphere(k).map((p) => `<polygon points="${p}" fill="${SPHERE_ROUGE_ETOILE}"/>`).join(`
+  const etoiles = etoilesSphere(k).map(
+    (p) => `<polygon points="${p}" fill="${SPHERE_ROUGE_ETOILE}"/>`,
+  ).join(`
 `);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${SPHERE_BOITE} ${SPHERE_BOITE}" role="img" aria-labelledby="${gid}-t">
 <title id="${gid}-t">Dragon Ball \xE0 ${k} \xE9toile${k > 1 ? "s" : ""}</title>
@@ -1217,27 +1222,27 @@ function mesures() {
       degrade: SPHERE_DEGRADE,
       rougeEtoile: SPHERE_ROUGE_ETOILE,
       rayonEtoileUnique: SPHERE_R_ETOILE[1],
-      note: "Seule la boule \xE0 une \xE9toile est mesur\xE9e ; la disposition des \xE9toiles 2 \xE0 7 est une mise en page non sourc\xE9e."
+      note: "Seule la boule \xE0 une \xE9toile est mesur\xE9e ; la disposition des \xE9toiles 2 \xE0 7 est une mise en page non sourc\xE9e.",
     },
     kintoUn: {
       couleurs: KINTO_UN_COULEURS,
       illustration: {
         largeur: KINTO_UN_ILLUSTRATION.largeur,
         hauteur: KINTO_UN_ILLUSTRATION.hauteur,
-        traits: KINTO_UN_ILLUSTRATION.traits
+        traits: KINTO_UN_ILLUSTRATION.traits,
       },
       icone: {
         largeur: KINTO_UN_ICONE.largeur,
         hauteur: KINTO_UN_ICONE.hauteur,
-        traits: KINTO_UN_ICONE.traits
-      }
+        traits: KINTO_UN_ICONE.traits,
+      },
     },
     couverture: {
       cadreCase: CADRE_CASE,
       nuage: NUAGE_MESURES,
       pastille: PASTILLE,
-      etoileInterieur: ETOILE_INTERIEUR
-    }
+      etoileInterieur: ETOILE_INTERIEUR,
+    },
   };
 }
 function dessiner(args) {
@@ -1278,14 +1283,15 @@ if (import.meta.main) {
   const reste = iS >= 0 ? args.filter((_, i) => i !== iS && i !== iS + 1) : args;
   const contenu = dessiner(reste);
   if (!contenu) {
-    console.error("usage : bun toriyama.js sphere <1-7> | kinto-un [illustration|icone|icone-petite|maskable|monochrome] | banc-nuage | etoile [R] | mesures [--sortie fichier]");
+    console.error(
+      "usage : bun toriyama.js sphere <1-7> | kinto-un [illustration|icone|icone-petite|maskable|monochrome] | banc-nuage | etoile [R] | mesures [--sortie fichier]",
+    );
     process.exit(1);
   }
   if (sortie) {
     await Bun.write(sortie, contenu);
     console.error(`${sortie} \u2014 ${contenu.length} o`);
-  } else
-    process.stdout.write(contenu);
+  } else process.stdout.write(contenu);
 }
 export {
   DRAGON_BALL_PARAM_LEN,
@@ -1325,5 +1331,5 @@ export {
   starPoints,
   svgEtoile,
   svgSphere,
-  volute
+  volute,
 };

@@ -29,10 +29,7 @@
         "publication": "Young Jump, 2010 #07",
         "pages": "400–405",
         "date": "2010-01-14",
-        "participants": [
-          "Akira Toriyama",
-          "Masakazu Katsura"
-        ],
+        "participants": ["Akira Toriyama", "Masakazu Katsura"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/young-jump-2010-toriyama-x-katsura/",
         "questionAnswerCount": 20,
         "formatNote": "La transcription comprend 14 questions d'entretien, cinq panneaux de manga reproduits en Q/R (items 15–19) et une dernière question sur d'éventuelles collaborations.",
@@ -62,9 +59,7 @@
         "publication": "Dragon Ball Kai Blu-ray Box #2 — Dragon Book",
         "pages": "5–6",
         "date": "2010-02-19",
-        "participants": [
-          "Mayumi Tanaka"
-        ],
+        "participants": ["Mayumi Tanaka"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/kai_book-mayumi_tanaka/",
         "questionAnswerCount": 4,
         "forumContent": false,
@@ -96,9 +91,7 @@
         "publication": "Dragon Ball Anime Illustration Collection: The Golden Warrior",
         "pages": "78–79",
         "date": "2010-04-16",
-        "participants": [
-          "Katsuyoshi Nakatsuru"
-        ],
+        "participants": ["Katsuyoshi Nakatsuru"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/golden_warrior-katsuyoshi_nakatsuru/",
         "questionAnswerCount": 12,
         "forumContent": false,
@@ -130,9 +123,7 @@
         "publication": "Dragon Ball Anime Illustration Collection: The Golden Warrior",
         "pages": "20–21",
         "date": "2010-04-16",
-        "participants": [
-          "Minoru Maeda"
-        ],
+        "participants": ["Minoru Maeda"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/golden_warrior-minoru_maeda/",
         "questionAnswerCount": 11,
         "forumContent": false,
@@ -163,9 +154,7 @@
         "publication": "Dragon Ball Anime Illustration Collection: The Golden Warrior",
         "pages": "50–51",
         "date": "2010-04-16",
-        "participants": [
-          "Tadayoshi Yamamuro"
-        ],
+        "participants": ["Tadayoshi Yamamuro"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/golden_warrior-tadayoshi_yamamuro/",
         "questionAnswerCount": 12,
         "forumContent": false,
@@ -189,15 +178,11 @@
         "date": "19 March 2010",
         "publication": "Training the Manga Mind",
         "pages": "pp. 37-42",
-        "bibliographicYears": [
-          2010
-        ],
+        "bibliographicYears": [2010],
         "url": "https://www.kanzenshuu.com/translations/training-manga-mind-akira-toriyama-qa/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/training-manga-mind-akira-toriyama-qa/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/training-manga-mind-akira-toriyama-qa.html",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "questionAnswerCount": 15,
         "questionBlockCount": 15,
         "answerBlockCount": 15,
@@ -224,15 +209,11 @@
         "date": "21 July 2010",
         "publication": "Kokoro no Hane  Bonus DVD – Limited Edition",
         "pages": null,
-        "bibliographicYears": [
-          2010
-        ],
+        "bibliographicYears": [2010],
         "url": "https://www.kanzenshuu.com/translations/kokoro-no-hane-dvd-masako-nozawa/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/kokoro-no-hane-dvd-masako-nozawa/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/kokoro-no-hane-dvd-masako-nozawa.html",
-        "participants": [
-          "Masako Nozawa"
-        ],
+        "participants": ["Masako Nozawa"],
         "questionAnswerCount": 5,
         "questionBlockCount": 5,
         "answerBlockCount": 5,
@@ -261,15 +242,11 @@
         "date": "04 August 2010",
         "publication": "Dragon Ball Extreme Battle Collection: Round 02",
         "pages": "pp. 89-90",
-        "bibliographicYears": [
-          2010
-        ],
+        "bibliographicYears": [2010],
         "url": "https://www.kanzenshuu.com/translations/extreme-battle-collection-round-02-toriyama-qa/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/extreme-battle-collection-round-02-toriyama-qa/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/extreme-battle-collection-round-02-toriyama-qa.html",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "questionAnswerCount": 10,
         "questionBlockCount": 10,
         "answerBlockCount": 10,
@@ -295,10 +272,7 @@
         "url": "https://www.kanzenshuu.com/2010/02/17/hironobu-kageyama-interview/",
         "publication": "Otaku2 interview, one Q&A excerpt reproduced by Kanzenshuu",
         "publicationDate": "17 February 2010",
-        "participants": [
-          "Hironobu Kageyama",
-          "PG (interviewer)"
-        ],
+        "participants": ["Hironobu Kageyama", "PG (interviewer)"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2010.json",
         "bodyAvailable": true,
         "bodyEmpty": false,
@@ -324,9 +298,7 @@
         "url": "https://www.kanzenshuu.com/2010/08/01/dragon-ball-kai-getting-too-expensive-to-produce/",
         "publication": "Otakon 2010 — échange bref rapporté",
         "publicationDate": "2010-08-01",
-        "participants": [
-          "Yūji Mitsuya"
-        ],
+        "participants": ["Yūji Mitsuya"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2010.json",
         "questionAnswerCount": null,
         "formatNote": "Compte rendu partiel, pas de transcription du panel; Q/R formelles non dénombrables.",
@@ -353,10 +325,7 @@
         "url": "https://www.kanzenshuu.com/2010/06/01/english-freeza-recast-for-dragon-ball-kai/",
         "publication": "Vidéo FUNimation, partie 3",
         "publicationDate": "2010-06-01",
-        "participants": [
-          "Chris Sabat",
-          "Sean Schemmel"
-        ],
+        "participants": ["Chris Sabat", "Sean Schemmel"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2010.json",
         "questionAnswerCount": null,
         "formatNote": "Notice limitée au billet; vidéo non transcrite ni acquise; Q/R non dénombrables.",

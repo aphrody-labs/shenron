@@ -49,19 +49,19 @@ Where in the Stripe Dashboard should your app show up?
 
 **Viewport routing:**
 
-| Answer | Viewport(s) |
-| --- | --- |
-| Next to a customer | `stripe.dashboard.customer.detail` |
-| Next to a payment | `stripe.dashboard.payment.detail` |
-| Next to an invoice | `stripe.dashboard.invoice.detail` |
-| Next to a subscription | `stripe.dashboard.subscription.detail` |
-| Next to a product | `stripe.dashboard.product.detail` |
-| On any list page | `stripe.dashboard.customer.list`, `.payment.list`, etc. |
-| Everywhere (side panel) | `stripe.dashboard.drawer.default` |
-| Full-screen page | Full-page app — `stripe.dashboard.fullpage` |
-| Dashboard homepage | `stripe.dashboard.home.overview` |
-| Settings | `settings` viewport |
-| Setup guide (first run) | `onboarding` viewport |
+| Answer                  | Viewport(s)                                             |
+| ----------------------- | ------------------------------------------------------- |
+| Next to a customer      | `stripe.dashboard.customer.detail`                      |
+| Next to a payment       | `stripe.dashboard.payment.detail`                       |
+| Next to an invoice      | `stripe.dashboard.invoice.detail`                       |
+| Next to a subscription  | `stripe.dashboard.subscription.detail`                  |
+| Next to a product       | `stripe.dashboard.product.detail`                       |
+| On any list page        | `stripe.dashboard.customer.list`, `.payment.list`, etc. |
+| Everywhere (side panel) | `stripe.dashboard.drawer.default`                       |
+| Full-screen page        | Full-page app — `stripe.dashboard.fullpage`             |
+| Dashboard homepage      | `stripe.dashboard.home.overview`                        |
+| Settings                | `settings` viewport                                     |
+| Setup guide (first run) | `onboarding` viewport                                   |
 
 If the answer is “full-screen page”, read `ui-extensions.md` (full-page apps section). If the answer is “setup guide”, also read `onboarding-ux.md`. If “I’m not sure”, ask: “When someone opens Stripe and looks at a customer’s page — would your app show up there? Or would it be more like its own separate page?”
 
@@ -125,10 +125,10 @@ Access requirements vary by feature and extension point. Check current product d
 
 **Features to check:**
 
-| Feature | Trigger phrases (user might say) | What to tell the user |
-| --- | --- | --- |
-| Custom objects | “store custom data in Stripe”, “create my own data model”, “custom database in Stripe”, “custom fields on customers”, “structured data that isn’t in Stripe already” | Check the [custom objects documentation](https://docs.stripe.com/custom-objects.md) for current requirements, then explain any access prerequisite relevant to the user’s account. |
-| Extension interfaces | “change how Stripe calculates”, “custom billing logic”, “modify payment routing”, “override Stripe’s default behavior”, “custom tax calculation” | Identify the exact extension point, then explain its current applicability and access requirements from its product documentation. |
+| Feature              | Trigger phrases (user might say)                                                                                                                                     | What to tell the user                                                                                                                                                              |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Custom objects       | “store custom data in Stripe”, “create my own data model”, “custom database in Stripe”, “custom fields on customers”, “structured data that isn’t in Stripe already” | Check the [custom objects documentation](https://docs.stripe.com/custom-objects.md) for current requirements, then explain any access prerequisite relevant to the user’s account. |
+| Extension interfaces | “change how Stripe calculates”, “custom billing logic”, “modify payment routing”, “override Stripe’s default behavior”, “custom tax calculation”                     | Identify the exact extension point, then explain its current applicability and access requirements from its product documentation.                                                 |
 
 **When to check:**
 
@@ -148,15 +148,15 @@ Access requirements vary by feature and extension point. Check current product d
 
 Use these explanations when you need to introduce technical terms after routing:
 
-| Term | Plain-language explanation |
-| --- | --- |
-| UI extension | The part of your app that shows up inside the Stripe Dashboard |
-| Viewport | Which specific Dashboard page your app appears on |
-| Extension interface | A hook that lets your app change how Stripe processes billing or payments |
-| Platform keys | How your app accesses merchant data when they install it — no manual key-sharing needed |
-| Connected account | A merchant who has installed your app |
-| Permissions | What Stripe data your app is allowed to read or write; must be declared before use |
-| Secret Store | Stripe’s built-in way for your app to save sensitive information like passwords or tokens |
-| stripe-app.yaml | The configuration file that tells Stripe what your app is called, what it needs access to, and where it appears |
-| Custom objects | Custom data types you define and store inside Stripe; check the [custom objects documentation](https://docs.stripe.com/custom-objects.md) for current availability and access requirements |
-| Sandbox | An isolated Stripe test environment for safe testing — useful for testing destructive operations or onboarding flows |
+| Term                | Plain-language explanation                                                                                                                                                                 |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| UI extension        | The part of your app that shows up inside the Stripe Dashboard                                                                                                                             |
+| Viewport            | Which specific Dashboard page your app appears on                                                                                                                                          |
+| Extension interface | A hook that lets your app change how Stripe processes billing or payments                                                                                                                  |
+| Platform keys       | How your app accesses merchant data when they install it — no manual key-sharing needed                                                                                                    |
+| Connected account   | A merchant who has installed your app                                                                                                                                                      |
+| Permissions         | What Stripe data your app is allowed to read or write; must be declared before use                                                                                                         |
+| Secret Store        | Stripe’s built-in way for your app to save sensitive information like passwords or tokens                                                                                                  |
+| stripe-app.yaml     | The configuration file that tells Stripe what your app is called, what it needs access to, and where it appears                                                                            |
+| Custom objects      | Custom data types you define and store inside Stripe; check the [custom objects documentation](https://docs.stripe.com/custom-objects.md) for current availability and access requirements |
+| Sandbox             | An isolated Stripe test environment for safe testing — useful for testing destructive operations or onboarding flows                                                                       |

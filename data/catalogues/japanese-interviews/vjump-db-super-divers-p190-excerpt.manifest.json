@@ -16,13 +16,8 @@
   "records": [
     {
       "transcriptPath": "data/catalogues/japanese-interviews/vjump-db-super-divers-p190-excerpt.jsonl#L1",
-      "participants": [
-        "金子",
-        "中川"
-      ],
-      "pages": [
-        190
-      ],
+      "participants": ["金子", "中川"],
+      "pages": [190],
       "imageSha256": "7ce41ab839f3e9b874555432655946eb331c7606a66c643425f9f7bc02331563",
       "transcriptRow": 1,
       "completeness": "Visible interview prose transcribed from p.190. The printed final phrase breaks mid-word at 「必殺技エ」; continuation begins on p.191. Manga speech balloons and the illustrative meeting comic are omitted.",
@@ -34,13 +29,8 @@
     },
     {
       "transcriptPath": "data/catalogues/japanese-interviews/vjump-db-super-divers-p190-excerpt.jsonl#L2",
-      "participants": [
-        "金子",
-        "中川"
-      ],
-      "pages": [
-        191
-      ],
+      "participants": ["金子", "中川"],
+      "pages": [191],
       "imageSha256": "335d12fe70fd31d352de1fb3b962643638b481d7dcfd1aa8f9b7c4cd64141cf6",
       "transcriptRow": 2,
       "completeness": "Visible interview prose transcribed from p.191 through the BUPPA skill discussion, the future-plan exchange, and the final question and answer. The first characters 「ナジー」 continue the p.190 line 「必殺技エ」; no completion is added. Illustrative comic artwork text and decorative page callouts are omitted.",

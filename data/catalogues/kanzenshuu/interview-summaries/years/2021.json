@@ -17,10 +17,7 @@
         "url": "https://www.kanzenshuu.com/2021/08/10/toyotaro-interviewed-on-official-websites-weekly-dragon-ball-news/",
         "publication": "Kanzenshuu site post",
         "publicationDate": "2021-08-10",
-        "participants": [
-          "Toyotarō",
-          "Victory Uchida"
-        ],
+        "participants": ["Toyotarō", "Victory Uchida"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2021.json",
         "externalMediaUrl": "https://dragon-ball-official.com/news/01_392.html",
         "transcriptAvailable": false,
@@ -49,10 +46,7 @@
         "url": "https://www.kanzenshuu.com/2021/05/07/dragon-ball-super-movie-for-2022-release-listed-by-toei-animation-europe-website/",
         "publication": "Dragon Ball Super: Broly — livret de 60 pages accompagnant la sortie vidéo domestique, entretien staff",
         "publicationDate": "2021-05-07",
-        "participants": [
-          "Akio Iyoku",
-          "Norihiro Hayashida"
-        ],
+        "participants": ["Akio Iyoku", "Norihiro Hayashida"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2021.json",
         "sourceImageUrl": "https://www.kanzenshuu.com/wp-content/uploads/2020/11/dbsuper-future-broly-book-2.png",
         "transcriptAvailable": false,

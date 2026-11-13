@@ -36,14 +36,11 @@ Modern approach to customize Tailwind using CSS:
 ```
 
 **Usage:**
-```html
-<div class="bg-brand-500 font-display shadow-glow rounded-large">
-  Custom themed element
-</div>
 
-<div class="tablet:grid-cols-2 3xl:grid-cols-6">
-  Custom breakpoints
-</div>
+```html
+<div class="bg-brand-500 font-display shadow-glow rounded-large">Custom themed element</div>
+
+<div class="tablet:grid-cols-2 3xl:grid-cols-6">Custom breakpoints</div>
 ```
 
 ## Color Customization
@@ -161,6 +158,7 @@ Create reusable utility classes:
 ```
 
 **Usage:**
+
 ```html
 <div class="content-auto">Optimized rendering</div>
 <pre class="tab-4">Code with 4-space tabs</pre>
@@ -178,11 +176,10 @@ Create custom state variants:
 ```
 
 **Usage:**
+
 ```html
 <div data-theme="midnight">
-  <div class="theme-midnight:bg-navy-900">
-    Applies in midnight theme
-  </div>
+  <div class="theme-midnight:bg-navy-900">Applies in midnight theme</div>
 </div>
 
 <input class="required:border-red-500" required />
@@ -267,6 +264,7 @@ Extract repeated utility patterns:
 ```
 
 **Usage:**
+
 ```html
 <button class="btn-primary">Click me</button>
 <input class="input-field" />
@@ -285,14 +283,15 @@ npm install -D @tailwindcss/typography @tailwindcss/forms @tailwindcss/container
 // tailwind.config.js
 export default {
   plugins: [
-    require('@tailwindcss/typography'),
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/container-queries'),
+    require("@tailwindcss/typography"),
+    require("@tailwindcss/forms"),
+    require("@tailwindcss/container-queries"),
   ],
-}
+};
 ```
 
 **Typography plugin:**
+
 ```html
 <article class="prose lg:prose-xl">
   <h1>Styled article</h1>
@@ -301,6 +300,7 @@ export default {
 ```
 
 **Forms plugin:**
+
 ```html
 <!-- Automatically styled form elements -->
 <input type="text" />
@@ -312,33 +312,33 @@ export default {
 
 ```javascript
 // tailwind.config.js
-const plugin = require('tailwindcss/plugin')
+const plugin = require("tailwindcss/plugin");
 
 export default {
   plugins: [
-    plugin(function({ addUtilities, addComponents, theme }) {
+    plugin(function ({ addUtilities, addComponents, theme }) {
       // Add utilities
       addUtilities({
-        '.text-shadow': {
-          textShadow: '2px 2px 4px rgba(0, 0, 0, 0.1)',
+        ".text-shadow": {
+          textShadow: "2px 2px 4px rgba(0, 0, 0, 0.1)",
         },
-        '.text-shadow-lg': {
-          textShadow: '4px 4px 8px rgba(0, 0, 0, 0.2)',
+        ".text-shadow-lg": {
+          textShadow: "4px 4px 8px rgba(0, 0, 0, 0.2)",
         },
-      })
+      });
 
       // Add components
       addComponents({
-        '.card-custom': {
-          backgroundColor: theme('colors.white'),
-          borderRadius: theme('borderRadius.lg'),
-          padding: theme('spacing.6'),
-          boxShadow: theme('boxShadow.md'),
+        ".card-custom": {
+          backgroundColor: theme("colors.white"),
+          borderRadius: theme("borderRadius.lg"),
+          padding: theme("spacing.6"),
+          boxShadow: theme("boxShadow.md"),
         },
-      })
+      });
     }),
   ],
-}
+};
 ```
 
 ## Configuration Examples
@@ -417,24 +417,21 @@ export default config
 ```javascript
 // tailwind.config.js
 export default {
-  darkMode: ["class"],  // or "media" for automatic
+  darkMode: ["class"], // or "media" for automatic
   // ...
-}
+};
 ```
 
 **Usage:**
+
 ```html
 <!-- Class-based -->
 <html class="dark">
-  <div class="bg-white dark:bg-gray-900">
-    Responds to .dark class
-  </div>
+  <div class="bg-white dark:bg-gray-900">Responds to .dark class</div>
 </html>
 
 <!-- Media query-based -->
-<div class="bg-white dark:bg-gray-900">
-  Responds to system preference automatically
-</div>
+<div class="bg-white dark:bg-gray-900">Responds to system preference automatically</div>
 ```
 
 ## Content Configuration
@@ -451,7 +448,7 @@ export default {
     "./pages/**/*.{js,jsx,ts,tsx}",
   ],
   // ...
-}
+};
 ```
 
 ### Safelist
@@ -461,14 +458,14 @@ Preserve dynamic classes:
 ```javascript
 export default {
   safelist: [
-    'bg-red-500',
-    'bg-green-500',
-    'bg-blue-500',
+    "bg-red-500",
+    "bg-green-500",
+    "bg-blue-500",
     {
       pattern: /bg-(red|green|blue)-(100|500|900)/,
     },
   ],
-}
+};
 ```
 
 ## Best Practices

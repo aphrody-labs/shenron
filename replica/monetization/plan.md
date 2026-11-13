@@ -7,6 +7,7 @@ Rédigé d'après `replica/monetization/recon.md`, `replica/monetization/feature
 ## 1. Périmètre & Vision Commerciale
 
 Mettre en place une monétisation éthique, transparente et conforme au RGPD pour `dragonballfr.com` :
+
 1. **Adhésion VIP sans publicité** (4,99 €/mois ou 49,90 €/an) : Retrait de toutes les bannières, accès anticipé aux chapitres traduits Koharu, badge communautaire Discord et statut exclusif.
 2. **Dons & Soutien Ponctuel** (Paliers 2 €, 5 €, 15 €, 50 € ou montant libre) : Remerciements au générique, affichage public ou anonyme selon le choix du donateur.
 3. **Sponsoring Direct Éthique** : Partenariats contextuels sans aucun pistage tiers ni cookie de ciblage comportemental.
@@ -16,19 +17,20 @@ Mettre en place une monétisation éthique, transparente et conforme au RGPD pou
 
 ## 2. Stack & Fournisseurs
 
-| Composant | Fournisseur / Technologie | Justification |
-| :--- | :--- | :--- |
-| **Abonnements & Cartes** | Stripe Checkout & Customer Portal | Conforme PCI-DSS Niveau 1, gestion native du prorata, portail self-service d'annulation. |
-| **Moyen de Secours** | PayPal Subscriptions API v1 | Paiements sans carte bancaire directe, très populaire auprès de la communauté anime. |
-| **Gestion des Sessions** | Better Auth + PostgreSQL | Liaison directe de l'abonnement à `ba_user`, expiration automatique à la date d'échéance. |
-| **Idempotence & Webhooks** | Table `site_billing_webhook_events` | Déduplication stricte des événements Stripe/PayPal, protection contre le double-crédit. |
-| **Envoi d'E-mails** | Outbox Transactionnelle (`site_mail_outbox`) | File d'attente PostgreSQL dépilée par worker avec politique de retry exponentiel. |
+| Composant                  | Fournisseur / Technologie                    | Justification                                                                             |
+| :------------------------- | :------------------------------------------- | :---------------------------------------------------------------------------------------- |
+| **Abonnements & Cartes**   | Stripe Checkout & Customer Portal            | Conforme PCI-DSS Niveau 1, gestion native du prorata, portail self-service d'annulation.  |
+| **Moyen de Secours**       | PayPal Subscriptions API v1                  | Paiements sans carte bancaire directe, très populaire auprès de la communauté anime.      |
+| **Gestion des Sessions**   | Better Auth + PostgreSQL                     | Liaison directe de l'abonnement à `ba_user`, expiration automatique à la date d'échéance. |
+| **Idempotence & Webhooks** | Table `site_billing_webhook_events`          | Déduplication stricte des événements Stripe/PayPal, protection contre le double-crédit.   |
+| **Envoi d'E-mails**        | Outbox Transactionnelle (`site_mail_outbox`) | File d'attente PostgreSQL dépilée par worker avec politique de retry exponentiel.         |
 
 ---
 
 ## 3. Schéma de Données (`replica/monetization/schema.sql`)
 
 ### Entités Majeures :
+
 - `ba_subscription` : Statut Stripe (`active`, `past_due`, `canceled`), période en cours, ID client Stripe.
 - `site_paypal_subscriptions` : Statut PayPal équivalent avec ID de souscription I-XXXXXXXXXX.
 - `site_donations` : Montant en centimes, devise EUR, identifiant de paiement, statut de capture, flag anonyme.
@@ -40,40 +42,45 @@ Mettre en place une monétisation éthique, transparente et conforme au RGPD pou
 
 ## 4. API & Endpoints
 
-| Méthode & Route | Action | Accès | Entrée | Sortie |
-| :--- | :--- | :--- | :--- | :--- |
-| POST `/api/vip/checkout` | Crée une session Stripe Checkout | Membre connecté | `{ plan: "monthly" | "yearly" }` | `{ checkoutUrl: string }` |
-| POST `/api/vip/portal` | Ouvre le portail client Stripe | Membre VIP | – | `{ portalUrl: string }` |
-| POST `/api/donations/checkout` | Initie un don Stripe/PayPal | Public | `{ amountCents: number, isAnonymous: boolean }` | `{ redirectUrl: string }` |
-| POST `/api/webhooks/stripe` | Écoute des événements Stripe | Stripe (Signature HMAC) | Raw Body + `Stripe-Signature` | 200 OK |
-| POST `/api/webhooks/paypal` | Écoute des webhooks PayPal | PayPal (Certificat) | Raw Body + Headers | 200 OK |
-| GET `/api/user/billing` | Récapitulatif abonnements & dons | Propriétaire du compte | – | JSON d'historique |
-| POST `/api/admin/campaigns` | Création de campagne sponsor | Admin | Données de campagne validées | 201 Created |
+| Méthode & Route                | Action                           | Accès                   | Entrée                                          | Sortie                    |
+| :----------------------------- | :------------------------------- | :---------------------- | :---------------------------------------------- | :------------------------ |
+| POST `/api/vip/checkout`       | Crée une session Stripe Checkout | Membre connecté         | `{ plan: "monthly"                              | "yearly" }`               | `{ checkoutUrl: string }` |
+| POST `/api/vip/portal`         | Ouvre le portail client Stripe   | Membre VIP              | –                                               | `{ portalUrl: string }`   |
+| POST `/api/donations/checkout` | Initie un don Stripe/PayPal      | Public                  | `{ amountCents: number, isAnonymous: boolean }` | `{ redirectUrl: string }` |
+| POST `/api/webhooks/stripe`    | Écoute des événements Stripe     | Stripe (Signature HMAC) | Raw Body + `Stripe-Signature`                   | 200 OK                    |
+| POST `/api/webhooks/paypal`    | Écoute des webhooks PayPal       | PayPal (Certificat)     | Raw Body + Headers                              | 200 OK                    |
+| GET `/api/user/billing`        | Récapitulatif abonnements & dons | Propriétaire du compte  | –                                               | JSON d'historique         |
+| POST `/api/admin/campaigns`    | Création de campagne sponsor     | Admin                   | Données de campagne validées                    | 201 Created               |
 
 ---
 
 ## 5. Découpage en Tranches Verticales (Build Order)
 
 ### Tranche 1 : Intégration Stripe Checkout & Webhooks (`F02`)
+
 - Route de création de session Checkout avec métadonnées `user_id`.
 - Handler webhook `/api/webhooks/stripe` écoutant `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`.
 - Mutation atomique de `ba_subscription` et journalisation dans `site_billing_webhook_events`.
 
 ### Tranche 2 : Interface VIP & Portail Client (`apps/site/src/app/vip/page.tsx`)
+
 - Présentation comparative des deux formules (Mensuel 4,99 € / Annuel 49,90 € avec 2 mois offerts).
 - FAQ transparente expliquant l'utilisation des fonds (hébergement serveurs, bande passante CDN, acquisition de scans rares).
 - Accès direct au portail Stripe pour modifier la carte ou résilier en un clic.
 
 ### Tranche 3 : Module de Soutien Ponctuel (`/donations`)
+
 - Sélecteur de paliers (2 €, 5 €, 15 €, 50 €) et champ libre avec validation `>= 100 centimes`.
 - Option « Ne pas faire apparaître mon pseudo sur la page de remerciements » (Don anonyme).
 - Émission automatique du reçu par l'outbox e-mail transactionnelle.
 
 ### Tranche 4 : Sponsoring Direct & Exemption VIP
+
 - Rendu conditionnel des bannières partenaires : si l'utilisateur est VIP (`isVip: true`), le DOM n'insère aucun bloc publicitaire.
 - Comptabilisation côté serveur des affichages sans injection de cookies tiers.
 
 ### Tranche 5 : Worker d'Outbox E-mail Transactionnel
+
 - Tâche d'arrière-plan Bun exécutant la livraison SMTP vers les boîtes OVH configurées.
 - Marqueurs d'état : `pending` -> `sent` ou `failed` avec horodatage de réessai.
 

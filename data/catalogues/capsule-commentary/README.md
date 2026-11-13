@@ -12,10 +12,10 @@ Catalogue de trois articles de Daniel sur Dragon Ball, capturés le 8 octobre 20
 
 ## Articles
 
-| Article | Dossier versionné | Images locales | Rapport de collecte |
-|---|---|---|---|
-| Kid Buu vs. Buuhan | [kid-buu-vs-buuhan.json](articles/kid-buu-vs-buuhan.json) | `data/source-acquisition/capsule-commentary/kid-buu-vs-buuhan/images/` | `var/reports/capsule-commentary-buu-agent.md` |
-| Broly | [broly.json](articles/broly.json) | `data/source-acquisition/capsule-commentary/broly/images/` | `var/reports/capsule-commentary-broly-agent.md` |
-| Janemba | [janemba.json](articles/janemba.json) | `data/source-acquisition/capsule-commentary/janemba/images/` | `var/reports/capsule-commentary-janemba-agent.md` |
+| Article            | Dossier versionné                                         | Images locales                                                         | Rapport de collecte                               |
+| ------------------ | --------------------------------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------- |
+| Kid Buu vs. Buuhan | [kid-buu-vs-buuhan.json](articles/kid-buu-vs-buuhan.json) | `data/source-acquisition/capsule-commentary/kid-buu-vs-buuhan/images/` | `var/reports/capsule-commentary-buu-agent.md`     |
+| Broly              | [broly.json](articles/broly.json)                         | `data/source-acquisition/capsule-commentary/broly/images/`             | `var/reports/capsule-commentary-broly-agent.md`   |
+| Janemba            | [janemba.json](articles/janemba.json)                     | `data/source-acquisition/capsule-commentary/janemba/images/`           | `var/reports/capsule-commentary-janemba-agent.md` |
 
 Le dossier Janemba documente explicitement une image source en HTTP 404; aucune image de remplacement non correspondante n’a été substituée. Les autres images recensées ont été téléchargées et vérifiées selon leurs manifestes locaux.

@@ -2,9 +2,10 @@
 
 ## 1. Executive Summary & Purpose
 
-This document provides a canonical specification of modern Dragon Ball games based on binary inspection, reverse engineering, and asset layout analysis of *DRAGON BALL FighterZ* (Bandai Namco Entertainment / Arc System Works), with direct architectural cross-applicability to *DRAGON BALL Xenoverse 2* (Dimps), *DRAGON BALL Z: Kakarot* (CyberConnect2), and *DRAGON BALL: Sparking! ZERO* (Spike Chunsoft).
+This document provides a canonical specification of modern Dragon Ball games based on binary inspection, reverse engineering, and asset layout analysis of _DRAGON BALL FighterZ_ (Bandai Namco Entertainment / Arc System Works), with direct architectural cross-applicability to _DRAGON BALL Xenoverse 2_ (Dimps), _DRAGON BALL Z: Kakarot_ (CyberConnect2), and _DRAGON BALL: Sparking! ZERO_ (Spike Chunsoft).
 
 Modern Dragon Ball games share standard architectural tiers:
+
 1. **Engine Layer**: Unreal Engine 4/5 or custom proprietary engines (e.g. Dimps Havok-integrated engine), containerized with signature `.pak` / `.sig` chunking.
 2. **Deterministic Battle Subsystem (ASW / RED Engine)**: Pure fixed-point simulation decoupled from visual rendering framerate, driven by scriptable frame-by-frame action machines (`Actsub` / `ObjectManager`).
 3. **Anti-Cheat & Execution Harness**: EasyAntiCheat (EAC) launcher wrapper with P2P anti-tamper modules (`EasyAntiCheatP2P`).
@@ -18,6 +19,7 @@ Modern Dragon Ball games share standard architectural tiers:
 ## 2. Target Manifest & Binary Topology
 
 ### 2.1 File System & Package Manifest (DRAGON BALL FighterZ Target)
+
 ```
 DRAGON BALL FighterZ/
 ├── DBFighterZ.exe                      # EasyAntiCheat Launcher (eac_launcher.exe v1.0.0.0, 1,518,192 bytes)
@@ -49,7 +51,9 @@ DRAGON BALL FighterZ/
 ```
 
 ### 2.2 EAC Launcher Bootstrap (`Settings.json`)
+
 The primary executable exposed to Steam is a protective launcher shim:
+
 ```json
 {
   "title": "DRAGON BALL FighterZ",
@@ -65,6 +69,7 @@ The primary executable exposed to Steam is a protective launcher shim:
 ```
 
 ### 2.3 Package Archive Specification (`.pak` Format)
+
 - **Container Magic**: `0x5A6F12E1` (Unreal Engine Pak Magic) stored at EOF footer.
 - **Index Header**: Offset stored in trailing 204-byte metadata footer with SHA-1 hash table.
 - **Compression**: Zlib / Oodle block compression (chunk size 64KB).
@@ -111,6 +116,7 @@ stateDiagram-v2
 ```
 
 ### Key State Classes:
+
 - `REDGameState_BootSequence`: Cold boot initialization, EULA check (`REDEULAMenu`), Steam / platform auth handshake.
 - `REDGameState_UserCreate`: New profile generation and R-Code setup.
 - `REDGameState_LobbySelect`: Region/area query and server room selection.
@@ -128,12 +134,15 @@ stateDiagram-v2
 The core battle system runs independently of the Unreal Engine rendering pipeline. The simulation advances at a strict 60Hz tick rate:
 
 ### 4.1 Core Subsystems
+
 - **`battle_ObjectManager`**: Manages all active battle instances, character objects, assists, projectiles, particle emitters, and collision hulls.
 - **`char_Actsub`**: Frame-by-frame script execution machine for character states.
 - **`BattleEventManager`**: Dispatches system-level events (Super Dash, Sparking Blast, Z Reflect, Dramatic Finish).
 
 ### 4.2 Script & Action Machine Instruction Set
+
 Characters are programmed using Arc System Works bytecode commands:
+
 - **Conditionals & Flags**: `ifcommon`, `iflocal`, `ifvalue`, `ifbattle`, `ifnormalflag`, `ifsystemflag`, `ifmember`.
 - **State Setting**: `normalflag_setting`, `systemflag_setting`, `valueflag_setting`.
 - **Hit & Guard Properties**:
@@ -147,15 +156,15 @@ Characters are programmed using Arc System Works bytecode commands:
 
 ## 5. Modern Dragon Ball Games Standard Specification Matrix
 
-| Layer | DRAGON BALL FighterZ | DRAGON BALL Xenoverse 2 | DRAGON BALL Z: Kakarot | DRAGON BALL: Sparking! ZERO |
-|---|---|---|---|---|
-| **Engine** | Unreal Engine 4.17.2 | Custom Dimps Engine | Unreal Engine 4.21+ | Unreal Engine 5.3+ |
-| **Developer** | Arc System Works | Dimps | CyberConnect2 | Spike Chunsoft |
-| **Battle Type** | 3v3 2.5D Tag Fighter | 3D Arena Brawler / RPG | Action RPG / Free Roam | 3D Budokai Tenkaichi Arena |
-| **Netcode Protocol** | Rollback (GGPO) + Steam P2P | Client-Server / UDP Lockstep | None (Single Player offline) | P2P Rollback & Delay Hybrid |
-| **Backend REST API** | `TLGameServer` (Bandai Namco) | Dimps Net Server | Bandai Telemetry | Bandai Namco Channel |
-| **Anti-Cheat** | EasyAntiCheat (EAC) | EasyAntiCheat (EAC) | None | EasyAntiCheat (EAC) |
-| **Asset Packaging** | UE4 `.pak` / `.sig` | `.cpk` (CRIWARE) | UE4 `.pak` / `.sig` | UE5 `.pak` / `.ucas` / `.utoc` |
+| Layer                | DRAGON BALL FighterZ          | DRAGON BALL Xenoverse 2      | DRAGON BALL Z: Kakarot       | DRAGON BALL: Sparking! ZERO    |
+| -------------------- | ----------------------------- | ---------------------------- | ---------------------------- | ------------------------------ |
+| **Engine**           | Unreal Engine 4.17.2          | Custom Dimps Engine          | Unreal Engine 4.21+          | Unreal Engine 5.3+             |
+| **Developer**        | Arc System Works              | Dimps                        | CyberConnect2                | Spike Chunsoft                 |
+| **Battle Type**      | 3v3 2.5D Tag Fighter          | 3D Arena Brawler / RPG       | Action RPG / Free Roam       | 3D Budokai Tenkaichi Arena     |
+| **Netcode Protocol** | Rollback (GGPO) + Steam P2P   | Client-Server / UDP Lockstep | None (Single Player offline) | P2P Rollback & Delay Hybrid    |
+| **Backend REST API** | `TLGameServer` (Bandai Namco) | Dimps Net Server             | Bandai Telemetry             | Bandai Namco Channel           |
+| **Anti-Cheat**       | EasyAntiCheat (EAC)           | EasyAntiCheat (EAC)          | None                         | EasyAntiCheat (EAC)            |
+| **Asset Packaging**  | UE4 `.pak` / `.sig`           | `.cpk` (CRIWARE)             | UE4 `.pak` / `.sig`          | UE5 `.pak` / `.ucas` / `.utoc` |
 
 ---
 

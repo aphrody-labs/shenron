@@ -56,9 +56,7 @@
         "url": "https://www.kanzenshuu.com/translations/akira-toriyama-tankobon-ask-me-anything/",
         "archivedTranslation": "https://www.kanzenshuu.com/translations/akira-toriyama-tankobon-ask-me-anything/",
         "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/akira-toriyama-tankobon-ask-me-anything.html",
-        "participants": [
-          "Akira Toriyama"
-        ],
+        "participants": ["Akira Toriyama"],
         "questionAnswerCount": 65,
         "questionBlockCount": 65,
         "answerBlockCount": 65,

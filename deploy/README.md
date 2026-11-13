@@ -10,11 +10,11 @@ Procédure de déploiement: `docs/operations/deploy.md`.
 
 ## Topologie Canonique de la Triade (`10.200.77.0/24`)
 
-| Nœud | Alias Hérité | IP Publique / Mesh WireGuard | Système | Rôle Canonique |
-| :--- | :--- | :--- | :--- | :--- |
-| **`vps`** | - | `51.77.147.152` / `10.200.77.1` | Ubuntu 7.3.0 | Build Hub & Mesh Coordinator |
-| **`cdn`** | `bunos` | `51.255.162.6` / `10.200.77.3` | Ubuntu 7.3.0 | Simulateur Cloudflare Edge (Pingora Gateway, Garage S3 R2, RQLite D1, Workerd, Mail/Auth) |
-| **`prod`** | `dbfr` | `72.60.186.43` / `10.200.77.5` | Arch Linux 7.2.11 | Production Origin (`dragonballfr.com`) |
+| Nœud       | Alias Hérité | IP Publique / Mesh WireGuard    | Système           | Rôle Canonique                                                                            |
+| :--------- | :----------- | :------------------------------ | :---------------- | :---------------------------------------------------------------------------------------- |
+| **`vps`**  | -            | `51.77.147.152` / `10.200.77.1` | Ubuntu 7.3.0      | Build Hub & Mesh Coordinator                                                              |
+| **`cdn`**  | `bunos`      | `51.255.162.6` / `10.200.77.3`  | Ubuntu 7.3.0      | Simulateur Cloudflare Edge (Pingora Gateway, Garage S3 R2, RQLite D1, Workerd, Mail/Auth) |
+| **`prod`** | `dbfr`       | `72.60.186.43` / `10.200.77.5`  | Arch Linux 7.2.11 | Production Origin (`dragonballfr.com`)                                                    |
 
 - catalogue des services et unités : `aphrody-infra/config/service-catalog.json`,
   `aphrody-infra/systemd/shenron-*.{service,timer}` ;

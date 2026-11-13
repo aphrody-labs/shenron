@@ -12,6 +12,7 @@ scripts/deploy/release.sh --ship-only [revision]    # Transfert Zstd et activati
 ```
 
 ### Etapes Automatisees et Reduction de Latence
+
 1. **Detection de Lane (`scripts/deploy/lanes.ts`)** : Analyse le diff Git entre la revision active sur `prod` et la revision cible :
    - `noop` : Changement documentaire ou hors runtime -> aucun build ni redemarrage.
    - `cdn` : Mise a jour du worker Cloudflare uniquement.
@@ -40,4 +41,5 @@ just deploy-history   # Simule la classification des lanes sur les 30 derniers c
 ## 3. CDN Edge (`deploy/cloudflare` & `ssh cdn`)
 
 Le worker CDN (`deploy/cloudflare/cdn-worker.ts`) assure la distribution des assets medias depuis R2 (`shenron-cdn`) et le noeud `ssh cdn` (`10.200.77.3`, Garage S3 + Pingora + Workerd) :
+
 - Verification : `bun test deploy/cloudflare/cdn-worker.test.ts` et `bun check -p deploy/cloudflare`.

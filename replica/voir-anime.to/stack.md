@@ -1,4 +1,5 @@
 <!-- SPDX-License-Identifier: Apache-2.0 -->
+
 # Stack et surface publique de Voiranime
 
 Observation du 25 octobre 2026, entre 14:10 et 14:43 UTC. Cible :
@@ -8,13 +9,13 @@ pas un inventaire des services internes.
 
 ## Niveaux de preuve
 
-| Mention | Signification |
-| --- | --- |
-| Annoncé | Une URL, un module ou une propriété figure dans le HTML ou sa configuration publique. |
-| Testé Bun | Une requête directe bornée a reçu un statut HTTP documenté. |
-| Observé navigateur | La navigation ordinaire a déclenché une requête visible dans les événements réseau. |
-| Déduit | L'architecture paraît compatible avec les indices ; son exécution interne n'a pas été vérifiée. |
-| Non établi | La preuve est absente, indisponible ou insuffisante. |
+| Mention            | Signification                                                                                   |
+| ------------------ | ----------------------------------------------------------------------------------------------- |
+| Annoncé            | Une URL, un module ou une propriété figure dans le HTML ou sa configuration publique.           |
+| Testé Bun          | Une requête directe bornée a reçu un statut HTTP documenté.                                     |
+| Observé navigateur | La navigation ordinaire a déclenché une requête visible dans les événements réseau.             |
+| Déduit             | L'architecture paraît compatible avec les indices ; son exécution interne n'a pas été vérifiée. |
+| Non établi         | La preuve est absente, indisponible ou insuffisante.                                            |
 
 Un `200` ne certifie pas le fonctionnement métier, l'exécution d'un script ni la
 lecture d'une vidéo. Un `403` de Bun n'annule pas un `200` distinct observé dans le
@@ -22,20 +23,20 @@ navigateur : le client, la session, le moment et la requête diffèrent.
 
 ## Stack observée
 
-| Couche | Constat | Preuve et limite |
-| --- | --- | --- |
-| DNS autoritatif | Cloudflare | NS `dell.ns.cloudflare.com` et `rene.ns.cloudflare.com`. |
-| Frontal HTTP | Cloudflare | En-têtes `server: cloudflare`, `cf-ray` et `cf-cache-status: DYNAMIC` sur l'accueil. L'origine n'est pas révélée. |
-| TLS public | Certificat Let's Encrypt YE2 | Nom `voir-anime.to`, wildcard `*.voir-anime.to`, validité du 24 septembre au 23 décembre 2026 ; validation TLS active. |
-| Transport | HTTP redirige vers HTTPS ; TCP 80 et TLS 443 répondent | Deux ports web usuels seulement. `alt-svc` annonce HTTP/3, sans preuve d'une négociation QUIC. |
-| Rendu | Pages HTML servies par le site, enrichies en JavaScript | Accueil de 212 858 octets ; pages de série, ressources et XHR observés en navigateur. Rien ne prouve une application React/Next.js. |
-| CMS et thème | WordPress, Madara, thème enfant `madara-child-voiranime` | Chemins `wp-includes`, `wp-content/themes`, propriétés `madara` et réponses aux ressources en navigateur. |
-| Catalogue et compte | Madara Core / WP Manga | Ressources `plugins/madara-core`, globals `manga` et `wpMangaLogin`, champs de configuration publique. L'authentification n'a pas été testée. |
-| Recherche | Ajax Search Pro | Module map explicite `plugins/ajax-search-pro`, instances ASP, paramètres de recherche déclarés. |
-| Interface | jQuery, jQuery Migrate/UI, Bootstrap, Slick, Shuffle, AOS, imagesLoaded | Ressources nommées et réponses HTTP `200` observées en navigateur. Leur code n'a pas été conservé. |
-| Iconographie et pagination | Font Awesome, Ionicons, icônes Madara, WP PageNavi | Références de feuilles de style et réponses `200` en navigateur. |
-| Autres intégrations déclarées | Google Tag Manager/Analytics ; Widget Logic | Références publiques de scripts et de plugin. Elles n'établissent pas le traitement serveur ni les destinataires effectifs de toutes les données. |
-| Lecteurs externes | Plusieurs iframes de fournisseurs | Destinations publiques observées sur un épisode : `voembed.net`, `mfw09.org`, `voe.sx`, `streamtape.com`. La lecture n'a pas été tentée ; une iframe n'établit pas l'hôte CDN du fichier vidéo. |
+| Couche                        | Constat                                                                 | Preuve et limite                                                                                                                                                                                |
+| ----------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| DNS autoritatif               | Cloudflare                                                              | NS `dell.ns.cloudflare.com` et `rene.ns.cloudflare.com`.                                                                                                                                        |
+| Frontal HTTP                  | Cloudflare                                                              | En-têtes `server: cloudflare`, `cf-ray` et `cf-cache-status: DYNAMIC` sur l'accueil. L'origine n'est pas révélée.                                                                               |
+| TLS public                    | Certificat Let's Encrypt YE2                                            | Nom `voir-anime.to`, wildcard `*.voir-anime.to`, validité du 24 septembre au 23 décembre 2026 ; validation TLS active.                                                                          |
+| Transport                     | HTTP redirige vers HTTPS ; TCP 80 et TLS 443 répondent                  | Deux ports web usuels seulement. `alt-svc` annonce HTTP/3, sans preuve d'une négociation QUIC.                                                                                                  |
+| Rendu                         | Pages HTML servies par le site, enrichies en JavaScript                 | Accueil de 212 858 octets ; pages de série, ressources et XHR observés en navigateur. Rien ne prouve une application React/Next.js.                                                             |
+| CMS et thème                  | WordPress, Madara, thème enfant `madara-child-voiranime`                | Chemins `wp-includes`, `wp-content/themes`, propriétés `madara` et réponses aux ressources en navigateur.                                                                                       |
+| Catalogue et compte           | Madara Core / WP Manga                                                  | Ressources `plugins/madara-core`, globals `manga` et `wpMangaLogin`, champs de configuration publique. L'authentification n'a pas été testée.                                                   |
+| Recherche                     | Ajax Search Pro                                                         | Module map explicite `plugins/ajax-search-pro`, instances ASP, paramètres de recherche déclarés.                                                                                                |
+| Interface                     | jQuery, jQuery Migrate/UI, Bootstrap, Slick, Shuffle, AOS, imagesLoaded | Ressources nommées et réponses HTTP `200` observées en navigateur. Leur code n'a pas été conservé.                                                                                              |
+| Iconographie et pagination    | Font Awesome, Ionicons, icônes Madara, WP PageNavi                      | Références de feuilles de style et réponses `200` en navigateur.                                                                                                                                |
+| Autres intégrations déclarées | Google Tag Manager/Analytics ; Widget Logic                             | Références publiques de scripts et de plugin. Elles n'établissent pas le traitement serveur ni les destinataires effectifs de toutes les données.                                               |
+| Lecteurs externes             | Plusieurs iframes de fournisseurs                                       | Destinations publiques observées sur un épisode : `voembed.net`, `mfw09.org`, `voe.sx`, `streamtape.com`. La lecture n'a pas été tentée ; une iframe n'établit pas l'hôte CDN du fichier vidéo. |
 
 Les adresses A mesurées sont `172.67.162.177` et `104.21.89.173` ; les AAAA sont
 `2606:4700:3032::6815:59ad` et `2606:4700:3032::ac43:a2b1`. Elles désignent le frontal

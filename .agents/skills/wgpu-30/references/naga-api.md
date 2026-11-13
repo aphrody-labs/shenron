@@ -13,6 +13,7 @@ Width of abstract types, in bytes.
 Addressing space of variables.
 
 Variants (10):
+
 - `Function` — Function locals.
 - `Private` — Private data, per invocation, mutable.
 - `WorkGroup` — Workgroup shared data, mutable.
@@ -25,6 +26,7 @@ Variants (10):
 - `IncomingRayPayload` — Ray tracing payload, for entrypoints invoked by a TraceRays call
 
 Methods and constants:
+
 - `fn access(self) -> StorageAccess`
 - `const fn is_workgroup_like(self) -> bool`
 
@@ -37,6 +39,7 @@ An arena holding some kind of component (e.g., type, constant, instruction, etc.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const fn new() -> Self` — Create a new arena with no initial capacity allocated.
 - `fn into_inner(self) -> Vec<T>` — Extracts the inner vector.
 - `const fn len(&self) -> usize` — Returns the current number of items stored in this arena.
@@ -65,11 +68,13 @@ Implements: `Clone`, `Debug`, `Default`, `Index<Handle<T>>`, `Index<Range<T>>`, 
 Size of an array.
 
 Variants (3):
+
 - `Constant(core::num::NonZeroU32)` — The array size is constant.
 - `Pending(arena::Handle<Override>)` — The array size is an override-expression.
 - `Dynamic` — The array size can change at runtime.
 
 Methods and constants:
+
 - `const fn to_indexable_length(self, _module: &Module) -> Result<IndexableLength, IndexableLengthError>`
 - `fn resolve(&self, gctx: GlobalCtx<'_>) -> Result<IndexableLength, ResolveArraySizeError>` — Return the number of elements that `size` represents, if known at code generation time.
 
@@ -80,6 +85,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 Function on an atomic value.
 
 Variants (8):
+
 - `Add`
 - `Subtract`
 - `And`
@@ -90,6 +96,7 @@ Variants (8):
 - `Exchange { compare: Option<arena::Handle<Expression>> }`
 
 Methods and constants:
+
 - `fn map(word: &str) -> Option<Self>`
 
 Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`, `StructuralPartialEq`
@@ -111,12 +118,14 @@ Names of vector components.
 Helper structure that stores data needed when writing the function
 
 Fields:
+
 - `ty: FunctionType` — The current function being written
 - `info: &'a valid::FunctionInfo` — Analysis about the function
 - `expressions: &'a Arena<Expression>` — The expression arena of the current function being written
 - `named_expressions: &'a FastIndexMap<Handle<Expression>, alloc::string::String>` — Map of expressions that have associated variable names
 
 Methods and constants:
+
 - `fn resolve_type<'a>(self: &'a Self, handle: Handle<Expression>, types: &'a UniqueArena<Type>) -> &'a TypeInner` — Helper method that resolves a type of a given expression.
 - `const fn name_key(&self, local: Handle<LocalVariable>) -> proc::NameKey` — Helper method that generates a [`NameKey`](crate::proc::NameKey) for a local in the current function
 - `const fn argument_key(&self, arg: u32) -> proc::NameKey` — Helper method that generates a [`NameKey`](crate::proc::NameKey) for a function argument.
@@ -130,10 +139,12 @@ Implements: `Debug`
 Whether we're generating an entry point or a regular function.
 
 Variants (2):
+
 - `Function(Handle<Function>)` — A regular function.
 - `EntryPoint(proc::EntryPointIndex)` — An [`EntryPoint`], and its index in [`Module::entry_points`].
 
 Methods and constants:
+
 - `fn is_compute_like_entry_point(&self, module: &Module) -> bool` — Returns true if the function is an entry point for a compute-like shader.
 
 Implements: `Clone`, `Copy`, `Debug`
@@ -143,6 +154,7 @@ Implements: `Clone`, `Copy`, `Debug`
 A GLSL compilation error.
 
 Variants (12):
+
 - `FmtError(core::fmt::Error)` — A error occurred while writing to the output.
 - `MissingFeatures(Features)` — The specified [`Version`] doesn't have all required [`Features`].
 - `MultipleImmediateData` — [`AddressSpace::Immediate`](crate::AddressSpace::Immediate) was used more than once in the entry point, which isn't supported.
@@ -165,6 +177,7 @@ Structure used to encode additions to GLSL that aren't supported by all versions
 Opaque (private fields).
 
 Methods and constants:
+
 - `const BUFFER_STORAGE: Self` — Buffer address space support.
 - `const ARRAY_OF_ARRAYS: Self`
 - `const DOUBLE_TYPE: Self` — 8 byte floats.
@@ -222,6 +235,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 All information to bind a single uniform value to the shader.
 
 Fields:
+
 - `access_path: alloc::string::String` — GL uniform name for the item. This name is the same as if you were to access it directly from a GLSL shader.
 - `ty: GlslUniformType` — Type of the uniform. This will only ever be a scalar, vector, or matrix.
 - `offset: u32` — The offset in the immediate data memory block this uniform maps to.
@@ -234,6 +248,7 @@ Implements: `Clone`, `Debug`
 Configuration used in the [`Writer`].
 
 Fields:
+
 - `version: Version` — The GLSL version to be used.
 - `writer_flags: WriterFlags` — Configuration flags for the [`Writer`].
 - `binding_map: BindingMap` — Map of resources association to binding locations.
@@ -246,6 +261,7 @@ Implements: `Clone`, `Debug`, `Default`
 A subset of options meant to be changed per pipeline.
 
 Fields:
+
 - `shader_stage: ShaderStage` — The stage of the entry point.
 - `entry_point: alloc::string::String` — The name of the entry point.
 - `multiview: Option<core::num::NonZeroU32>` — How many views to render to, if doing multiview rendering.
@@ -257,6 +273,7 @@ Implements: `Clone`, `Debug`
 Reflection info for texture mappings and uniforms.
 
 Fields:
+
 - `texture_mapping: FastHashMap<alloc::string::String, TextureMapping>` — Mapping between texture names and variables/samplers.
 - `uniforms: FastHashMap<Handle<GlobalVariable>, alloc::string::String>` — Mapping between uniform variables and names.
 - `varying: FastHashMap<alloc::string::String, VaryingLocation>` — Mapping between names and attribute locations.
@@ -274,6 +291,7 @@ Implements: `Debug`
 Mapping between a texture and its sampler, if it exists.
 
 Fields:
+
 - `texture: Handle<GlobalVariable>` — Handle to the image global variable.
 - `sampler: Option<Handle<GlobalVariable>>` — Handle to the associated sampler global variable, if it exists.
 
@@ -282,6 +300,7 @@ Implements: `Clone`, `Debug`
 ### back::glsl::VaryingLocation — struct
 
 Fields:
+
 - `location: u32` — The location of the global. This corresponds to `layout(location = ..)` in GLSL.
 - `index: u32` — The index which can be used for dual source blending. This corresponds to `layout(index = ..)` in GLSL.
 
@@ -294,6 +313,7 @@ Writer responsible for all code generation.
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn new(out: W, module: &'a Module, info: &'a valid::ModuleInfo, options: &'a Options, pipeline_options: &'a PipelineOptions, policies: proc::BoundsCheckPolicies) -> Result<Self, Error>` — Creates a new [`Writer`] instance.
 - `fn write(&mut self) -> Result<ReflectionInfo, Error>` — Writes the [`Module`](crate::Module) as glsl to the output
 
@@ -304,6 +324,7 @@ Configuration flags for the [`Writer`].
 Opaque (private fields).
 
 Methods and constants:
+
 - `const ADJUST_COORDINATE_SPACE: Self` — Flip output Y and extend Z from (0, 1) to (-1, 1).
 - `const TEXTURE_SHADOW_LOD: Self` — Supports GL_EXT_texture_shadow_lod on the host, which provides additional functions on shadows and arrays of shadows.
 - `const DRAW_PARAMETERS: Self` — Supports ARB_shader_draw_parameters on the host, which provides support for `gl_BaseInstanceARB`, `gl_BaseVertexARB`, `gl_DrawIDARB`, and `gl_DrawID`.
@@ -343,6 +364,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 Direct3D 12 binding information for a global variable.
 
 Fields:
+
 - `space: u8`
 - `register: u32` — For regular bindings this is the register number.
 - `binding_array_size: Option<u32>` — If the binding is an unsized binding array, this overrides the size.
@@ -358,6 +380,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `Str
 ### back::hlsl::EntryPointError — enum
 
 Variants (1):
+
 - `MissingBinding(ResourceBinding)`
 
 Implements: `Clone`, `Debug`, `Display`, `Error`, `PartialEq`, `StructuralPartialEq`
@@ -365,6 +388,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `PartialEq`, `StructuralPartia
 ### back::hlsl::Error — enum
 
 Variants (8):
+
 - `IoError(core::fmt::Error)`
 - `UnsupportedScalar(Scalar)`
 - `Unimplemented(alloc::string::String)`
@@ -385,6 +409,7 @@ Implements: `Debug`, `Display`, `Error`, `From<Error>`, `From<ResolveArraySizeEr
 HLSL binding information for a Naga [`External`] image global variable.
 
 Fields:
+
 - `planes: [BindTarget; 3]` — HLSL binding information for the individual plane textures.
 - `params: BindTarget` — HLSL binding information for a buffer holding the sampling parameters.
 
@@ -397,6 +422,7 @@ A fragment entry point to be considered when generating HLSL for the output inte
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn new(module: &'a Module, ep_name: &'a str) -> Option<Self>` — Returns `None` if the entry point with the provided name can't be found or isn't a fragment entry point.
 
 Implements: `Debug`
@@ -406,6 +432,7 @@ Implements: `Debug`
 BindTarget for dynamic storage buffer offsets
 
 Fields:
+
 - `space: u8`
 - `register: u32`
 - `size: u32`
@@ -417,6 +444,7 @@ Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralP
 Configuration used in the [`Writer`].
 
 Fields:
+
 - `shader_model: ShaderModel` — The hlsl shader model to be used
 - `binding_map: BindingMap` — HLSL binding information for each Naga global variable.
 - `fake_missing_bindings: bool` — Don't panic on missing bindings, instead generate any HLSL.
@@ -440,6 +468,7 @@ Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralP
 A subset of options that are meant to be changed per pipeline.
 
 Fields:
+
 - `entry_point: Option<(ir::ShaderStage, alloc::string::String)>` — The entry point to write.
 
 Implements: `Clone`, `Debug`, `Default`
@@ -449,6 +478,7 @@ Implements: `Clone`, `Debug`, `Default`
 Reflection info for entry point names.
 
 Fields:
+
 - `entry_point_names: alloc::vec::Vec<Result<alloc::string::String, EntryPointError>>` — Mapping of the entry point names.
 
 Implements: `Debug`, `Default`
@@ -456,6 +486,7 @@ Implements: `Debug`, `Default`
 ### back::hlsl::SamplerHeapBindTargets — struct
 
 Fields:
+
 - `standard_samplers: BindTarget`
 - `comparison_samplers: BindTarget`
 
@@ -468,6 +499,7 @@ Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralP
 ### back::hlsl::SamplerIndexBufferKey — struct
 
 Fields:
+
 - `group: u32`
 
 Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`, `StructuralPartialEq`
@@ -481,6 +513,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 A HLSL shader model version.
 
 Variants (12):
+
 - `V5_0`
 - `V5_1`
 - `V6_0`
@@ -495,6 +528,7 @@ Variants (12):
 - `V6_9`
 
 Methods and constants:
+
 - `const fn to_str(self) -> &'static str`
 
 Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `PartialEq`, `PartialOrd`, `StructuralPartialEq`
@@ -508,6 +542,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `PartialEq`, `PartialOrd`, `
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn new(out: W, options: &'a Options, pipeline_options: &'a PipelineOptions) -> Self`
 - `fn write(&mut self, module: &Module, module_info: &valid::ModuleInfo, fragment_entry_point: Option<&FragmentEntryPoint<'_>>) -> Result<super::ReflectionInfo, Error>`
 
@@ -522,9 +557,11 @@ Indent for backends.
 Indentation level.
 
 Fields (tuple):
+
 - `0: usize`
 
 Methods and constants:
+
 - `const fn next(&self) -> Self`
 
 Implements: `Clone`, `Copy`, `Debug`, `Display`
@@ -534,6 +571,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Display`
 A mapping of vertex buffers and their attributes to shader locations.
 
 Fields:
+
 - `shader_location: u32` — Shader location associated with this attribute
 - `offset: u32` — Offset in bytes from start of vertex buffer structure
 - `format: nt::VertexFormat` — Format code to help us unpack the attribute into the type used by the shader. Codes correspond to a 0-based index of <https://gpuweb.github.io/gpuweb/#enumdef-gpuvertexformat>. Th…
@@ -545,6 +583,7 @@ Implements: `Clone`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
 Binding information for a Naga [`External`] image global variable.
 
 Fields:
+
 - `planes: [Slot; 3]`
 - `params: Slot`
 
@@ -557,6 +596,7 @@ Implements: `Clone`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
 ### back::msl::BindSamplerTarget — enum
 
 Variants (2):
+
 - `Resource(Slot)`
 - `Inline(InlineSamplerIndex)`
 
@@ -565,6 +605,7 @@ Implements: `Clone`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
 ### back::msl::BindTarget — struct
 
 Fields:
+
 - `buffer: Option<Slot>`
 - `texture: Option<Slot>`
 - `sampler: Option<BindSamplerTarget>`
@@ -576,6 +617,7 @@ Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralP
 ### back::msl::EntryPointError — enum
 
 Variants (4):
+
 - `MissingBinding(alloc::string::String)`
 - `MissingBindTarget(ResourceBinding)`
 - `MissingImmediateData`
@@ -590,6 +632,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `PartialEq`, `StructuralPartia
 ### back::msl::EntryPointResources — struct
 
 Fields:
+
 - `resources: BindingMap`
 - `immediates_buffer: Option<Slot>`
 - `sizes_buffer: Option<Slot>` — The slot of a buffer that contains an array of `u32`, one for the size of each bound buffer that contains a runtime array, in order of [`crate::GlobalVariable`] declarations.
@@ -599,6 +642,7 @@ Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralP
 ### back::msl::Error — enum
 
 Variants (24):
+
 - `Format(core::fmt::Error)`
 - `UnimplementedBindTarget(BindTarget)`
 - `UnsupportedCompose(arena::Handle<Type>)`
@@ -633,6 +677,7 @@ Implements: `Debug`, `Display`, `Error`, `From<Error>`, `From<ResolveArraySizeEr
 ### back::msl::Options — struct
 
 Fields:
+
 - `lang_version: (u8, u8)` — (Major, Minor) target version of the Metal Shading Language.
 - `per_entry_point_map: EntryPointResourceMap` — Map of entry-point resources, indexed by entry point function name, to slots.
 - `inline_samplers: alloc::vec::Vec<sampler::InlineSampler>` — Samplers to be inlined into the code.
@@ -653,6 +698,7 @@ Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralP
 A subset of options that are meant to be changed per pipeline.
 
 Fields:
+
 - `entry_point: Option<(ir::ShaderStage, alloc::string::String)>` — The entry point to write.
 - `allow_and_force_point_size: bool` — Allow `BuiltIn::PointSize` and inject it if doesn't exist.
 - `vertex_pulling_transform: bool` — If set, when generating the Metal vertex shader, transform it to receive the vertex buffers, lengths, and vertex id as args, and bounds-check the vertex id and use the index into…
@@ -664,6 +710,7 @@ Implements: `Clone`, `Debug`, `Default`
 ### back::msl::sampler::Address — enum
 
 Variants (5):
+
 - `Repeat`
 - `MirroredRepeat`
 - `ClampToEdge`
@@ -671,6 +718,7 @@ Variants (5):
 - `ClampToBorder`
 
 Methods and constants:
+
 - `const fn as_str(&self) -> &'static str`
 
 Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -678,11 +726,13 @@ Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `Str
 ### back::msl::sampler::BorderColor — enum
 
 Variants (3):
+
 - `TransparentBlack`
 - `OpaqueBlack`
 - `OpaqueWhite`
 
 Methods and constants:
+
 - `const fn as_str(&self) -> &'static str`
 
 Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -690,6 +740,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `Str
 ### back::msl::sampler::CompareFunc — enum
 
 Variants (8):
+
 - `Never`
 - `Less`
 - `LessEqual`
@@ -700,6 +751,7 @@ Variants (8):
 - `Always`
 
 Methods and constants:
+
 - `const fn as_str(&self) -> &'static str`
 
 Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -707,10 +759,12 @@ Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `Str
 ### back::msl::sampler::Coord — enum
 
 Variants (2):
+
 - `Normalized`
 - `Pixel`
 
 Methods and constants:
+
 - `const fn as_str(&self) -> &'static str`
 
 Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -718,10 +772,12 @@ Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `Str
 ### back::msl::sampler::Filter — enum
 
 Variants (2):
+
 - `Nearest`
 - `Linear`
 
 Methods and constants:
+
 - `const fn as_str(&self) -> &'static str`
 
 Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -729,6 +785,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `Str
 ### back::msl::sampler::InlineSampler — struct
 
 Fields:
+
 - `coord: Coord`
 - `address: [Address; 3]`
 - `border_color: BorderColor`
@@ -754,6 +811,7 @@ Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralP
 Information about a translated module that is required for the use of the result.
 
 Fields:
+
 - `entry_point_names: alloc::vec::Vec<Result<alloc::string::String, EntryPointError>>` — Mapping of the entry point names. Each item in the array corresponds to an entry point index.
 
 Implements: `Debug`
@@ -763,6 +821,7 @@ Implements: `Debug`
 A description of a vertex buffer with all the information we need to address the attributes within it.
 
 Fields:
+
 - `id: u32` — Shader location associated with this buffer
 - `stride: u32` — Size of the structure in bytes
 - `step_mode: VertexBufferStepMode` — Vertex buffer step mode
@@ -775,6 +834,7 @@ Implements: `Clone`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `StructuralP
 Defines how to advance the data in vertex buffers.
 
 Variants (3):
+
 - `Constant`
 - `ByVertex`
 - `ByInstance`
@@ -790,6 +850,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `PartialEq`, `Str
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn write_workgroup_variables_initialization(&mut self, module: &Module, module_info: &valid::ModuleInfo, fun_info: &valid::FunctionInfo, local_invocation_index: Option<&NameKey>, stage: ShaderStage) -> Result<(), Error>`
 - `fn new(out: W) -> Self` — Creates a new `Writer` instance.
 - `fn finish(self) -> W` — Finishes writing and returns the output.
@@ -804,6 +865,7 @@ Expressions that need baking.
 ### back::pipeline_constants::PipelineConstantError — enum
 
 Variants (8):
+
 - `MissingValue(alloc::string::String)`
 - `NotFound(alloc::string::String)`
 - `SrcNeedsToBeFinite`
@@ -834,6 +896,7 @@ Ray flags, for a [`RayDesc`]'s `flags` field.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const OPAQUE: Self`
 - `const NO_OPAQUE: Self`
 - `const TERMINATE_ON_FIRST_HIT: Self`
@@ -874,6 +937,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 The intersection test to use for ray queries.
 
 Variants (2):
+
 - `Triangle = 1`
 - `BoundingBox = 4`
 
@@ -882,6 +946,7 @@ Implements: `Debug`
 ### back::spv::DebugInfo`<'a>` — struct
 
 Fields:
+
 - `source_code: &'a str`
 - `file_name: &'a str`
 - `language: SourceLanguage`
@@ -891,6 +956,7 @@ Implements: `Clone`, `Debug`
 ### back::spv::Error — enum
 
 Variants (9):
+
 - `EntryPointNotFound`
 - `UnsupportedVersion(u8, u8)`
 - `MissingCapabilities(&'static str, alloc::vec::Vec<Capability>)`
@@ -910,6 +976,7 @@ Flags corresponding to the boolean(-ish) parameters to OpTypeImage.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const DEPTH: Self`
 - `const ARRAYED: Self`
 - `const MULTISAMPLED: Self`
@@ -948,6 +1015,7 @@ Implements: `Debug`
 ### back::spv::MeshReturnMember — struct
 
 Fields:
+
 - `ty_id: u32`
 - `binding: Binding`
 
@@ -956,6 +1024,7 @@ Implements: `Clone`, `Debug`
 ### back::spv::Options`<'a>` — struct
 
 Fields:
+
 - `lang_version: (u8, u8)` — (Major, Minor) target version of the SPIR-V.
 - `flags: WriterFlags` — Configuration flags for the writer.
 - `fake_missing_bindings: bool` — Don't panic on missing bindings. Instead use fake values for `Binding` and `DescriptorSet` decorations. This may result in invalid SPIR-V.
@@ -977,6 +1046,7 @@ Implements: `Clone`, `Debug`, `Default`
 ### back::spv::PipelineOptions — struct
 
 Fields:
+
 - `shader_stage: ShaderStage` — The stage of the entry point.
 - `entry_point: alloc::string::String` — The name of the entry point.
 
@@ -1003,6 +1073,7 @@ Implements: `Debug`
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn new(options: &Options<'_>) -> Result<Self, Error>`
 - `fn set_options(&mut self, options: &Options<'_>) -> Result<(), Error>`
 - `const fn lang_version(&self) -> (u8, u8)` — Returns `(major, minor)` of the SPIR-V language version.
@@ -1018,6 +1089,7 @@ Methods and constants:
 Opaque (private fields).
 
 Methods and constants:
+
 - `const DEBUG: Self` — Include debug labels for everything.
 - `const ADJUST_COORDINATE_SPACE: Self` — Flip Y coordinate of [`BuiltIn::Position`] output.
 - `const LABEL_VARYINGS: Self` — Emit [`OpName`][op] for input/output locations.
@@ -1053,6 +1125,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 ### back::spv::ZeroInitializeWorkgroupMemoryMode — enum
 
 Variants (3):
+
 - `Native` — Via `VK_KHR_zero_initialize_workgroup_memory` or Vulkan 1.3
 - `Polyfill` — Via assignments + barrier
 - `None`
@@ -1062,6 +1135,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `PartialEq`, `StructuralPartialEq`
 ### back::wgsl::Error — enum
 
 Variants (5):
+
 - `FmtError(core::fmt::Error)`
 - `Custom(alloc::string::String)`
 - `Unimplemented(alloc::string::String)`
@@ -1083,6 +1157,7 @@ Implements: `Debug`, `Display`, `Error`, `From<Error>`
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn new(out: W, flags: WriterFlags) -> Self`
 - `fn write(&mut self, module: &Module, info: &valid::ModuleInfo) -> Result<(), super::Error>`
 - `fn finish(self) -> W`
@@ -1092,6 +1167,7 @@ Methods and constants:
 Opaque (private fields).
 
 Methods and constants:
+
 - `const EXPLICIT_TYPES: Self` — Always annotate the type information instead of inferring.
 - `const fn empty() -> Self` — Get a flags value with all bits unset.
 - `const fn all() -> Self` — Get a flags value with all known bits set.
@@ -1125,6 +1201,7 @@ Memory barrier flags.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const STORAGE: Self` — Barrier affects all [`AddressSpace::Storage`] accesses.
 - `const WORK_GROUP: Self` — Barrier affects all [`AddressSpace::WorkGroup`] and [`AddressSpace::TaskPayload`] accesses.
 - `const SUB_GROUP: Self` — Barrier synchronizes execution across all invocations within a subgroup that execute this instruction.
@@ -1159,6 +1236,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 Operation that can be applied on two values.
 
 Variants (18):
+
 - `Add`
 - `Subtract`
 - `Multiply`
@@ -1185,10 +1263,12 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 Describes how an input/output variable is to be bound.
 
 Variants (2):
+
 - `BuiltIn(BuiltIn)` — Built-in shader variable.
 - `Location { location: u32, interpolation: Option<Interpolation>, sampling: Option<Sampling>, blend_src: Option<u32>, per_primitive: bool }` — Indexed location.
 
 Methods and constants:
+
 - `const fn to_built_in(&self) -> Option<BuiltIn>`
 
 Implements: `Clone`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -1200,6 +1280,7 @@ A code block is a vector of statements, with maybe a vector of spans.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const fn new() -> Self`
 - `fn from_vec(body: Vec<Statement>) -> Self`
 - `fn with_capacity(capacity: usize) -> Self`
@@ -1228,6 +1309,7 @@ Width of a boolean type, in bytes.
 Built-in inputs and outputs.
 
 Variants (49):
+
 - `PrimitiveIndex` — Read in fragment shaders, written in mesh shaders, read in any and closest hit shaders.
 - `Position { invariant: bool }` — Written in vertex/mesh shaders, read in fragment shaders
 - `ViewIndex` — Read in task, mesh, vertex, and fragment shaders
@@ -1289,6 +1371,7 @@ Number of bytes per scalar.
 ### CollectiveOperation — enum
 
 Variants (3):
+
 - `Reduce = 0`
 - `InclusiveScan = 1`
 - `ExclusiveScan = 2`
@@ -1300,6 +1383,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 A wrapper for displaying Naga IR terms in debugging output.
 
 Fields (tuple):
+
 - `0: T`
 
 Implements: `Debug`
@@ -1309,6 +1393,7 @@ Implements: `Debug`
 A wrapper for displaying Naga IR terms in diagnostic output.
 
 Fields (tuple):
+
 - `0: T`
 
 Implements: `Display`
@@ -1316,11 +1401,13 @@ Implements: `Display`
 ### common::ForDebug — trait
 
 Items:
+
 - `fn for_debug(self) -> DiagnosticDebug<Self>` — Format this type using [`core::fmt::Debug`].
 
 ### common::ForDebugWithTypes — trait
 
 Items:
+
 - `fn for_debug(self, types: &UniqueArena<Type>) -> DiagnosticDebug<(Self, &UniqueArena<Type>)>` — Format this type using [`core::fmt::Debug`].
 
 ### common::vector_size_str — function
@@ -1346,6 +1433,7 @@ Implements: `Display`
 Types that can return the WGSL source representation of their values as a `'static` string.
 
 Items:
+
 - `fn to_wgsl(self) -> &'static str` — Return WGSL source code representation of `self`.
 
 ### common::wgsl::TryToWgsl — trait
@@ -1353,6 +1441,7 @@ Items:
 Types that may be able to return the WGSL source representation for their values as a `'static` string.
 
 Items:
+
 - `fn try_to_wgsl(self) -> Option<&'static str>` — Return the WGSL form of `self` as a `'static` string.
 - `const DESCRIPTION: &'static str` — What kind of WGSL thing `Self` represents.
 - `fn to_wgsl_for_diagnostics(self) -> String where Self: core::fmt::Debug + Copy` — Return the WGSL form of `self` as appropriate for diagnostics.
@@ -1362,6 +1451,7 @@ Items:
 A context for printing Naga IR types as WGSL.
 
 Items:
+
 - `fn lookup_type(&self, handle: Handle<Type>) -> &Type` — Return the [`Type`] referred to by `handle`.
 - `fn type_name(&self, handle: Handle<Type>) -> &str` — Return the name to be used for the type referred to by `handle`.
 - `fn write_override<W: Write>(&self, override: Handle<Override>, out: &mut W) -> core::fmt::Result` — Write the WGSL form of `override` to `out`.
@@ -1389,6 +1479,7 @@ Remove most unused objects from `module`, which must be valid.
 Configuration option for [`compact`]. See [`compact`] for details.
 
 Variants (2):
+
 - `No`
 - `Yes`
 
@@ -1399,6 +1490,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `From<KeepUnused>`, `PartialEq`, `St
 Enables adjusting depth without disabling early Z.
 
 Variants (3):
+
 - `GreaterEqual` — Shader may rewrite depth only with a value greater than calculated.
 - `LessEqual` — Shader may rewrite depth smaller than one that would have been written without the modification.
 - `Unchanged` — Shader may not rewrite depth value.
@@ -1410,6 +1502,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 Constant value.
 
 Fields:
+
 - `name: Option<alloc::string::String>`
 - `ty: arena::Handle<Type>`
 - `init: arena::Handle<Expression>` — The value of the constant.
@@ -1419,6 +1512,7 @@ Implements: `Clone`, `Debug`, `PartialEq`, `StructuralPartialEq`
 ### CooperativeData — struct
 
 Fields:
+
 - `pointer: arena::Handle<Expression>`
 - `stride: arena::Handle<Expression>`
 - `row_major: bool`
@@ -1430,6 +1524,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 Role of a cooperative variable in the equation "A * B + C"
 
 Variants (3):
+
 - `A`
 - `B`
 - `C`
@@ -1441,6 +1536,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `From<CooperativeRole>`, `Hash`, `Or
 Number of components in a cooperative vector.
 
 Variants (2):
+
 - `Eight = 8`
 - `Sixteen = 16`
 
@@ -1451,6 +1547,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `From<CooperativeSize>`, `Hash`, `Or
 Axis on which to compute a derivative.
 
 Variants (3):
+
 - `X`
 - `Y`
 - `Width`
@@ -1462,6 +1559,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 Hint at which precision to compute a derivative.
 
 Variants (3):
+
 - `Coarse`
 - `Fine`
 - `None`
@@ -1473,6 +1571,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 A filtering rule that modifies how diagnostics are emitted for shaders.
 
 Fields:
+
 - `new_severity: Severity`
 - `triggering_rule: FilterableTriggeringRule`
 
@@ -1483,6 +1582,7 @@ Implements: `Clone`, `Debug`
 Represents a single parent-linking node in a tree of [`DiagnosticFilter`]s backed by a [`crate::Arena`].
 
 Fields:
+
 - `inner: DiagnosticFilter`
 - `parent: Option<Handle<DiagnosticFilterNode>>`
 
@@ -1493,11 +1593,13 @@ Implements: `Clone`, `Debug`
 A filterable triggering rule in a [`DiagnosticFilter`].
 
 Variants (3):
+
 - `Standard(StandardFilterableTriggeringRule)`
 - `Unknown(alloc::boxed::Box<str>)`
 - `User(alloc::boxed::Box<[alloc::boxed::Box<str>; 2]>)`
 
 Methods and constants:
+
 - `const fn display_wgsl_ident(&self) -> impl Display + '_` — [`Display`] this rule's identifiers in WGSL.
 
 Implements: `Clone`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`, `StructuralPartialEq`
@@ -1507,12 +1609,14 @@ Implements: `Clone`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`, `S
 A severity set on a [`DiagnosticFilter`].
 
 Variants (4):
+
 - `Off`
 - `Info`
 - `Warning`
 - `Error`
 
 Methods and constants:
+
 - `fn from_wgsl_ident(s: &str) -> Option<Self>` — Convert from a sentinel word in WGSL into its associated [`Severity`], if possible.
 
 Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`, `StructuralPartialEq`
@@ -1522,9 +1626,11 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 A filterable triggering rule in a [`DiagnosticFilter`].
 
 Variants (1):
+
 - `DerivativeUniformity`
 
 Methods and constants:
+
 - `fn from_wgsl_ident(s: &str) -> Option<Self>` — Convert from a sentinel word in WGSL into its associated [`StandardFilterableTriggeringRule`], if possible.
 - `const fn to_wgsl_ident(self) -> &'static str` — Maps this [`StandardFilterableTriggeringRule`] into the sentinel word associated with it in WGSL.
 
@@ -1533,6 +1639,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 ### Direction — enum
 
 Variants (3):
+
 - `X = 0`
 - `Y = 1`
 - `Diagonal = 2`
@@ -1544,6 +1651,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 Doc comments preceding items.
 
 Fields:
+
 - `types: FastIndexMap<arena::Handle<Type>, alloc::vec::Vec<alloc::string::String>>`
 - `struct_members: FastIndexMap<(arena::Handle<Type>, usize), alloc::vec::Vec<alloc::string::String>>`
 - `entry_points: FastIndexMap<usize, alloc::vec::Vec<alloc::string::String>>`
@@ -1559,6 +1667,7 @@ Implements: `Clone`, `Debug`, `Default`
 Explicitly allows early depth/stencil tests.
 
 Variants (2):
+
 - `Force` — Requires depth/stencil tests to be performed before fragment shading.
 - `Allow { conservative: ConservativeDepth }` — Allows an additional depth/stencil test to be performed before fragment shading.
 
@@ -1569,6 +1678,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 The main function for a pipeline stage.
 
 Fields:
+
 - `name: alloc::string::String` — Name of this entry point, visible externally.
 - `stage: ShaderStage` — Shader stage.
 - `early_depth_test: Option<EarlyDepthTest>` — Early depth test for fragment stages.
@@ -1584,6 +1694,7 @@ Implements: `Clone`, `Debug`
 ### error::ShaderError`<E>` — struct
 
 Fields:
+
 - `source: alloc::string::String` — The source code of the shader.
 - `label: Option<alloc::string::String>`
 - `inner: alloc::boxed::Box<E>`
@@ -1595,6 +1706,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`
 An expression that can be evaluated to obtain a value.
 
 Variants (34):
+
 - `Literal(Literal)` — Literal.
 - `Constant(arena::Handle<Constant>)` — Constant value.
 - `Override(arena::Handle<Override>)` — Pipeline-overridable constant.
@@ -1631,6 +1743,7 @@ Variants (34):
 - `CooperativeMultiplyAdd { a: arena::Handle<Expression>, b: arena::Handle<Expression>, c: arena::Handle<Expression> }` — Compute `a * b + c`
 
 Methods and constants:
+
 - `const fn bake_ref_count(&self) -> usize` — Returns the ref count, upon reaching which this expression should be considered for baking.
 - `const fn needs_pre_emit(&self) -> bool` — Returns true if the expression is considered emitted at the start of a function.
 - `const fn is_dynamic_index(&self) -> bool` — Return true if this expression is a dynamic array/vector/matrix index, for [`Access`].
@@ -1640,6 +1753,7 @@ Implements: `Clone`, `Debug`, `PartialEq`, `StructuralPartialEq`
 ### front::atomic_upgrade::Error — enum
 
 Variants (5):
+
 - `Unsupported`
 - `UnexpectedEndOfIndices`
 - `GlobalInitUnsupported`
@@ -1653,6 +1767,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `From<Error>`
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn insert_global(&mut self, global: Handle<GlobalVariable>)`
 - `fn insert_field(&mut self, struct_type: Handle<Type>, field: usize)`
 - `fn is_empty(&self) -> bool`
@@ -1664,10 +1779,12 @@ Implements: `Debug`, `Default`
 Error returned during shader parsing.
 
 Fields:
+
 - `kind: ErrorKind` — Holds the information about the error itself.
 - `meta: Span` — Holds information about the range of the source code where the error happened.
 
 Methods and constants:
+
 - `fn location(&self, source: &str) -> Option<SourceLocation>` — Returns a [`SourceLocation`] for the error message.
 
 Implements: `Clone`, `Debug`, `Display`, `Error`
@@ -1677,6 +1794,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`
 Information about the cause of an error.
 
 Variants (15):
+
 - `EndOfFile` — Whilst parsing as encountered an unexpected EOF.
 - `InvalidProfile(alloc::string::String)` — The shader specified an unsupported or invalid profile.
 - `InvalidVersion(u64)` — The shader requested an unsupported or invalid version.
@@ -1700,6 +1818,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `From<ConstantEvaluatorError>`
 One of the expected tokens returned in [`InvalidToken`](ErrorKind::InvalidToken).
 
 Variants (7):
+
 - `Token(super::token::TokenValue)` — A specific token was expected.
 - `TypeName` — A type was expected.
 - `Identifier` — An identifier was expected.
@@ -1717,6 +1836,7 @@ The `Frontend` is the central structure of the GLSL frontend.
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn parse(&mut self, options: &Options, source: &str) -> core::result::Result<Module, ParseErrors>` — Parses a shader either outputting a shader [`Module`] or a list of [`Error`]s.
 - `const fn metadata(&self) -> &ShaderMetadata` — Returns additional information about the parsed shader which might not be stored in the [`Module`], see the documentation for [`ShaderMetadata`] for more information about the returned data.
 
@@ -1727,8 +1847,9 @@ Implements: `Debug`, `Default`
 Per-shader options passed to [`parse`](Frontend::parse).
 
 Fields:
+
 - `stage: ShaderStage` — The shader stage in the pipeline.
-- `defines: FastHashMap<alloc::string::String, alloc::string::String>` — Preprocessor definitions to be used, akin to having ```glsl #define key value ``` for each key value pair in the map.
+- `defines: FastHashMap<alloc::string::String, alloc::string::String>` — Preprocessor definitions to be used, akin to having `glsl #define key value ` for each key value pair in the map.
 
 Implements: `Debug`, `From<ShaderStage>`
 
@@ -1737,9 +1858,11 @@ Implements: `Debug`, `From<ShaderStage>`
 A collection of errors returned during shader parsing.
 
 Fields:
+
 - `errors: alloc::vec::Vec<Error>`
 
 Methods and constants:
+
 - `fn emit_to_string(&self, source: &str) -> String`
 - `fn emit_to_string_with_path(&self, source: &str, path: &str) -> String`
 
@@ -1750,6 +1873,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `From<Vec<Error>>`
 A precision hint used in GLSL declarations.
 
 Variants (3):
+
 - `Low` — `lowp` precision
 - `Medium` — `mediump` precision
 - `High` — `highp` precision
@@ -1761,6 +1885,7 @@ Implements: `Clone`, `Copy`, `Debug`, `PartialEq`, `StructuralPartialEq`
 The GLSL profile used by a shader.
 
 Variants (1):
+
 - `Core` — The `core` profile, default when no profile is specified.
 
 Implements: `Clone`, `Copy`, `Debug`, `PartialEq`, `StructuralPartialEq`
@@ -1770,6 +1895,7 @@ Implements: `Clone`, `Copy`, `Debug`, `PartialEq`, `StructuralPartialEq`
 Additional information about the GLSL shader.
 
 Fields:
+
 - `version: u16` — The GLSL version specified in the shader through the use of the `#version` preprocessor directive.
 - `profile: Profile` — The GLSL profile specified in the shader through the use of the `#version` preprocessor directive.
 - `stage: ShaderStage` — The shader stage in the pipeline, passed to the [`parse`](Frontend::parse) method via the [`Options`] struct.
@@ -1784,6 +1910,7 @@ Implements: `Debug`, `Default`
 A token passed from the lexing used in the parsing.
 
 Variants (79):
+
 - `Identifier(alloc::string::String)`
 - `FloatConstant(Float)`
 - `IntConstant(Integer)`
@@ -1869,6 +1996,7 @@ Implements: `Clone`, `Debug`, `From<TokenValue>`, `PartialEq`, `StructuralPartia
 ### front::spv::Error — enum
 
 Variants (62):
+
 - `InvalidHeader`
 - `InvalidWordCount`
 - `UnknownInstruction(u16)`
@@ -1933,6 +2061,7 @@ Variants (62):
 - `AtomicUpgradeError(atomic_upgrade::Error)`
 
 Methods and constants:
+
 - `fn emit_to_string(&self, source: &str) -> String`
 - `fn emit_to_string_with_path(&self, source: &str, path: &str) -> String`
 
@@ -1943,6 +2072,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `From<Error>`
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn new(data: I, options: &Options) -> Self`
 - `fn parse(self) -> Result<Module, Error>`
 
@@ -1955,6 +2085,7 @@ Implements: `Clone`, `Copy`, `Debug`
 ### front::spv::ModuleState — enum
 
 Variants (13):
+
 - `Empty`
 - `Capability`
 - `Extension`
@@ -1974,6 +2105,7 @@ Implements: `Clone`, `Copy`, `Debug`, `PartialEq`, `PartialOrd`, `StructuralPart
 ### front::spv::Options — struct
 
 Fields:
+
 - `adjust_coordinate_space: bool` — The IR coordinate space matches all the APIs except SPIR-V, so by default we flip the Y coordinate of the `BuiltIn::Position`. This flag can be used to avoid this.
 - `strict_capabilities: bool` — Only allow shaders with the known set of capabilities.
 - `block_ctx_dump_prefix: Option<alloc::string::String>`
@@ -1999,6 +2131,7 @@ Structure responsible for managing variable lookups and keeping track of lexical
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn push_scope(&mut self)` — Adds a new lexical scope.
 - `fn pop_scope(&mut self)` — Removes the current lexical scope and all its variables
 - `fn reduce_lookup_scope(&mut self)` — Reduces the lookup scope by one level.
@@ -2016,6 +2149,7 @@ A table of types for an `Arena<Expression>`.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const fn new() -> Self`
 - `fn reset(&mut self)`
 - `fn get<'a>(self: &'a Self, expr_handle: Handle<Expression>, types: &'a UniqueArena<Type>) -> &'a TypeInner`
@@ -2030,10 +2164,12 @@ Implements: `Debug`, `Default`, `Index<Handle<Expression>>`
 An enable-extension not guaranteed to be present in all environments.
 
 Variants (2):
+
 - `Implemented(ImplementedEnableExtension)`
 - `Unimplemented(UnimplementedEnableExtension)`
 
 Methods and constants:
+
 - `const fn to_ident(self) -> &'static str` — Maps this [`EnableExtension`] into the sentinel word associated with it in WGSL.
 
 Implements: `Clone`, `Copy`, `Debug`, `Eq`, `From<ImplementedEnableExtension>`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -2043,6 +2179,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `From<ImplementedEnableExtension>`, 
 Opaque (private fields).
 
 Methods and constants:
+
 - `const fn new() -> Self`
 - `const fn new_with_options(options: Options) -> Self`
 - `const fn set_options(&mut self, options: Options)`
@@ -2055,6 +2192,7 @@ Implements: `Debug`
 A variant of [`EnableExtension::Implemented`].
 
 Variants (13):
+
 - `F16` — Enables `f16`/`half` primitive support in all shader languages.
 - `DualSourceBlending` — Enables the `blend_src` attribute in WGSL.
 - `ClipDistances` — Enables the `clip_distances` variable in WGSL.
@@ -2070,6 +2208,7 @@ Variants (13):
 - `WgpuInt16` — Enables `i16`/`u16` 16-bit integer support in WGSL, native only.
 
 Methods and constants:
+
 - `const VARIANTS: &'static [Self]` — A slice of all variants of [`ImplementedEnableExtension`].
 - `const fn all() -> &'static [Self]` — Returns slice of all variants of [`ImplementedEnableExtension`].
 - `const fn capability(self) -> valid::Capabilities` — Returns the capability required for this enable extension.
@@ -2081,11 +2220,13 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `From<ImplementedEnableExtension>`, 
 A variant of [`LanguageExtension::Implemented`].
 
 Variants (3):
+
 - `ReadOnlyAndReadWriteStorageTextures`
 - `Packed4x8IntegerDotProduct`
 - `PointerCompositeAccess`
 
 Methods and constants:
+
 - `const VARIANTS: &'static [Self]` — A slice of all variants of [`ImplementedLanguageExtension`].
 - `const fn all() -> &'static [Self]` — Returns slice of all variants of [`ImplementedLanguageExtension`].
 - `const fn to_ident(self) -> &'static str` — Maps this [`ImplementedLanguageExtension`] into the sentinel word associated with it in WGSL.
@@ -2097,10 +2238,12 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPart
 A language extension recognized by Naga, but not guaranteed to be present in all environments.
 
 Variants (2):
+
 - `Implemented(ImplementedLanguageExtension)`
 - `Unimplemented(UnimplementedLanguageExtension)`
 
 Methods and constants:
+
 - `fn from_ident(s: &str) -> Option<Self>` — Convert from a sentinel word in WGSL into its associated [`LanguageExtension`], if possible.
 - `const fn to_ident(self) -> &'static str` — Maps this [`LanguageExtension`] into the sentinel word associated with it in WGSL.
 
@@ -2111,10 +2254,12 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPart
 Configuration for the whole parser run.
 
 Fields:
+
 - `parse_doc_comments: bool` — Controls whether the parser should parse doc comments.
 - `capabilities: valid::Capabilities` — Capabilities to enable during parsing.
 
 Methods and constants:
+
 - `const fn new() -> Self` — Creates a new default [`Options`].
 
 Implements: `Debug`
@@ -2130,6 +2275,7 @@ Implements: `Debug`
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn labels(&self) -> impl ExactSizeIterator<Item = (Span, &str)> + '_`
 - `fn message(&self) -> &str`
 - `fn notes(&self) -> impl ExactSizeIterator<Item = &str> + '_`
@@ -2144,6 +2290,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`
 A variant of [`EnableExtension::Unimplemented`].
 
 Variants (1):
+
 - `Subgroups` — Enables subgroup built-ins in all languages.
 
 Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -2153,6 +2300,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPart
 A variant of [`LanguageExtension::Unimplemented`].
 
 Variants (1):
+
 - `UnrestrictedPointerParameters`
 
 Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -2162,6 +2310,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPart
 A function defined in the module.
 
 Fields:
+
 - `name: Option<alloc::string::String>` — Name of the function, if any.
 - `arguments: alloc::vec::Vec<FunctionArgument>` — Information about function argument.
 - `result: Option<FunctionResult>` — The result of this function, if any.
@@ -2172,6 +2321,7 @@ Fields:
 - `diagnostic_filter_leaf: Option<arena::Handle<diagnostic_filter::DiagnosticFilterNode>>` — The leaf of all diagnostic filter rules tree (stored in [`Module::diagnostic_filters`]) parsed on this function.
 
 Methods and constants:
+
 - `fn originating_global(&self, pointer: Handle<Expression>) -> Option<Handle<GlobalVariable>>` — Return the global variable being accessed by the expression `pointer`.
 
 Implements: `Clone`, `Debug`, `Default`
@@ -2181,6 +2331,7 @@ Implements: `Clone`, `Debug`, `Default`
 A function argument.
 
 Fields:
+
 - `name: Option<alloc::string::String>` — Name of the argument, if any.
 - `ty: arena::Handle<Type>` — Type of the argument.
 - `binding: Option<Binding>` — For entry points, an argument has to have a binding unless it's a structure.
@@ -2192,6 +2343,7 @@ Implements: `Clone`, `Debug`
 A function result.
 
 Fields:
+
 - `ty: arena::Handle<Type>` — Type of the result.
 - `binding: Option<Binding>` — For entry points, the result has to have a binding unless it's a structure.
 
@@ -2202,6 +2354,7 @@ Implements: `Clone`, `Debug`
 The specific behavior of a [`SubgroupGather`] statement.
 
 Variants (8):
+
 - `BroadcastFirst` — All gather from the active lane with the smallest index
 - `Broadcast(arena::Handle<Expression>)` — All gather from the same lane at the index given by the expression
 - `Shuffle(arena::Handle<Expression>)` — Each gathers from a different lane at the index given by the expression
@@ -2218,6 +2371,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 Variable defined at module level.
 
 Fields:
+
 - `name: Option<alloc::string::String>` — Name of the variable, if any.
 - `space: AddressSpace` — How this variable is to be stored.
 - `binding: Option<ResourceBinding>` — For resources, defines the binding point.
@@ -2234,6 +2388,7 @@ A strongly typed reference to an arena item.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const fn index(self) -> usize` — Returns the index of this handle.
 - `fn write_prefixed(&self, formatter: &mut fmt::Formatter<'_>, prefix: &'static str) -> fmt::Result` — Write this handle's index to `formatter`, preceded by `prefix`.
 
@@ -2244,12 +2399,14 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `ForDebugWithTypes`, `Hash`, `Index<
 Sub-class of the image type.
 
 Variants (4):
+
 - `Sampled { kind: ScalarKind, multi: bool }` — Regular sampled image.
 - `Depth { multi: bool }` — Depth comparison image.
 - `External` — External texture.
 - `Storage { format: StorageFormat, access: StorageAccess }` — Storage image.
 
 Methods and constants:
+
 - `const fn is_multisampled(self) -> bool`
 - `const fn is_mipmapped(self) -> bool`
 - `const fn is_depth(self) -> bool`
@@ -2261,6 +2418,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 The number of dimensions an image has.
 
 Variants (4):
+
 - `D1` — 1D image
 - `D2` — 2D image
 - `D3` — 3D image
@@ -2273,6 +2431,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `From<ImageDimension>`, `Hash`, `Ord
 Type of an image query.
 
 Variants (4):
+
 - `Size { level: Option<arena::Handle<Expression>> }` — Get the size at the specified level.
 - `NumLevels` — Get the number of mipmap levels, a `u32`.
 - `NumLayers` — Get the number of array layers, a `u32`.
@@ -2285,6 +2444,7 @@ Implements: `Clone`, `Copy`, `Debug`, `PartialEq`, `StructuralPartialEq`
 The interpolation qualifier of a binding or struct field.
 
 Variants (4):
+
 - `Perspective` — The value will be interpolated in a perspective-correct fashion. Also known as "smooth" in glsl.
 - `Linear` — Indicates that linear, non-perspective, correct interpolation must be used. Also known as "no_perspective" in glsl.
 - `Flat` — Indicates that no interpolation will be performed.
@@ -2311,6 +2471,7 @@ The above set of reserved keywords, turned into a cached HashSet. This saves sig
 ### Literal — enum
 
 Variants (12):
+
 - `F64(f64)` — May not be NaN or infinity.
 - `F32(f32)` — May not be NaN or infinity.
 - `F16(half::f16)` — May not be NaN or infinity.
@@ -2325,6 +2486,7 @@ Variants (12):
 - `AbstractFloat(f64)`
 
 Methods and constants:
+
 - `const fn new(value: u8, scalar: Scalar) -> Option<Self>`
 - `const fn zero(scalar: Scalar) -> Option<Self>`
 - `const fn one(scalar: Scalar) -> Option<Self>`
@@ -2341,6 +2503,7 @@ Implements: `Clone`, `Copy`, `Debug`, `From<Literal>`, `PartialEq`, `PartialOrd`
 Variable defined at function level.
 
 Fields:
+
 - `name: Option<alloc::string::String>` — Name of the variable, if any.
 - `ty: arena::Handle<Type>` — The type of this variable.
 - `init: Option<arena::Handle<Expression>>` — Initial value for this variable.
@@ -2352,6 +2515,7 @@ Implements: `Clone`, `Debug`
 Built-in shader function for math.
 
 Variants (79):
+
 - `Abs`
 - `Min`
 - `Max`
@@ -2433,6 +2597,7 @@ Variants (79):
 - `Unpack4xU8`
 
 Methods and constants:
+
 - `fn overloads(self) -> impl OverloadSet`
 - `const fn argument_count(&self) -> usize`
 
@@ -2445,6 +2610,7 @@ Memory decorations for global variables.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const COHERENT: Self` — Reads and writes are automatically visible to other invocations without explicit barriers.
 - `const VOLATILE: Self` — The variable may be modified by something external to the shader, preventing certain compiler optimizations.
 - `const fn empty() -> Self` — Get a flags value with all bits unset.
@@ -2477,11 +2643,13 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 The output topology for a mesh shader. Note that mesh shaders don't allow things like triangle-strips.
 
 Variants (3):
+
 - `Points` — Outputs individual vertices to be rendered as points.
 - `Lines` — Outputs groups of 2 vertices to be renderedas lines .
 - `Triangles` — Outputs groups of 3 vertices to be rendered as triangles.
 
 Methods and constants:
+
 - `const fn to_builtin(self) -> BuiltIn`
 
 Implements: `Clone`, `Copy`, `Debug`, `Eq`, `PartialEq`, `StructuralPartialEq`
@@ -2491,6 +2659,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `PartialEq`, `StructuralPartialEq`
 Information specific to mesh shader entry points.
 
 Fields:
+
 - `topology: MeshOutputTopology` — The type of primitive outputted.
 - `max_vertices: u32` — The maximum number of vertices a mesh shader may output.
 - `max_vertices_override: Option<arena::Handle<Expression>>` — If pipeline constants are used, the expressions that override `max_vertices`
@@ -2507,6 +2676,7 @@ Implements: `Clone`, `Debug`, `Eq`, `PartialEq`, `StructuralPartialEq`
 Shader module.
 
 Fields:
+
 - `types: arena::UniqueArena<Type>` — Arena for the types defined in this module.
 - `special_types: SpecialTypes` — Dictionary of special type handles.
 - `constants: arena::Arena<Constant>` — Arena for the constants defined in this module.
@@ -2520,6 +2690,7 @@ Fields:
 - `doc_comments: Option<alloc::boxed::Box<DocComments>>` — Doc comments.
 
 Methods and constants:
+
 - `fn generate_ray_desc_type(&mut self) -> Handle<Type>` — Populate this module's [`SpecialTypes::ray_desc`] type.
 - `fn generate_vertex_return_type(&mut self) -> Handle<Type>` — Make sure the types for the vertex return are in the module's type
 - `fn generate_ray_intersection_type(&mut self) -> Handle<Type>` — Populate this module's [`SpecialTypes::ray_intersection`] type.
@@ -2539,6 +2710,7 @@ Implements: `Clone`, `Debug`, `Default`
 Pipeline-overridable constant.
 
 Fields:
+
 - `name: Option<alloc::string::String>`
 - `id: Option<u16>` — Pipeline Constant ID.
 - `ty: arena::Handle<Type>`
@@ -2551,11 +2723,13 @@ Implements: `Clone`, `Debug`, `PartialEq`, `StructuralPartialEq`
 Return types predeclared for the frexp, modf, and atomicCompareExchangeWeak built-in functions.
 
 Variants (3):
+
 - `AtomicCompareExchangeWeakResult(Scalar)`
 - `ModfResult { size: Option<VectorSize>, scalar: Scalar }`
 - `FrexpResult { size: Option<VectorSize>, scalar: Scalar }`
 
 Methods and constants:
+
 - `fn struct_name(&self) -> String`
 
 Implements: `Clone`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
@@ -2567,6 +2741,7 @@ A strongly typed range of handles.
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn new_from_bounds(first: Handle<T>, last: Handle<T>) -> Self` — Return a range enclosing handles `first` through `last`, inclusive.
 - `const fn first_and_last(&self) -> Option<(Handle<T>, Handle<T>)>` — return the first and last handles included in `self`.
 - `fn index_range(&self) -> ops::Range<u32>` — Return the index range covered by `self`.
@@ -2581,6 +2756,7 @@ Ray flags used when casting rays. Matching vulkan constants can be found in http
 Opaque (private fields).
 
 Methods and constants:
+
 - `const FORCE_OPAQUE: Self` — Force all intersections to be treated as opaque.
 - `const FORCE_NO_OPAQUE: Self` — Force all intersections to be treated as non-opaque.
 - `const TERMINATE_ON_FIRST_HIT: Self` — Stop traversal after the first hit.
@@ -2621,6 +2797,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 Ray tracing pipeline intrinsics
 
 Variants (1):
+
 - `TraceRay { acceleration_structure: arena::Handle<Expression>, descriptor: arena::Handle<Expression>, payload: arena::Handle<Expression> }` — Traces a ray through the given acceleration structure
 
 Implements: `Clone`, `Copy`, `Debug`
@@ -2630,6 +2807,7 @@ Implements: `Clone`, `Copy`, `Debug`
 An operation that a [`RayQuery` statement] applies to its [`query`] operand.
 
 Variants (5):
+
 - `Initialize { acceleration_structure: arena::Handle<Expression>, descriptor: arena::Handle<Expression> }` — Initialize the `RayQuery` object.
 - `Proceed { result: arena::Handle<Expression> }` — Start or continue the query given by the statement's [`query`] operand.
 - `GenerateIntersection { hit_t: arena::Handle<Expression> }` — Add a candidate generated intersection to be included in the determination of the closest hit for a ray query.
@@ -2643,6 +2821,7 @@ Implements: `Clone`, `Debug`
 Type of a ray query intersection. Matching vulkan constants can be found in <https://github.com/KhronosGroup/SPIRV-Registry/blob/main/extensions/KHR/SPV_KHR_ray_query.asciidoc> but the actual values are different for candidate intersections.
 
 Variants (4):
+
 - `None = 0` — No intersection found. Matches `RayQueryCommittedIntersectionNoneKHR`.
 - `Triangle = 1` — Intersecting with triangles. Matches `RayQueryCommittedIntersectionTriangleKHR` and `RayQueryCandidateIntersectionTriangleKHR`.
 - `Generated = 2` — Intersecting with generated primitives. Matches `RayQueryCommittedIntersectionGeneratedKHR`.
@@ -2655,6 +2834,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Default`, `Eq`, `Hash`, `Ord`, `PartialEq
 Built-in shader function for testing relation between values.
 
 Variants (4):
+
 - `All`
 - `Any`
 - `IsNan`
@@ -2667,6 +2847,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 Sampling modifier to control the level of detail.
 
 Variants (5):
+
 - `Auto`
 - `Zero`
 - `Exact(arena::Handle<Expression>)`
@@ -2674,6 +2855,7 @@ Variants (5):
 - `Gradient { x: arena::Handle<Expression>, y: arena::Handle<Expression> }`
 
 Methods and constants:
+
 - `const fn implicit_derivatives(&self) -> bool`
 
 Implements: `Clone`, `Copy`, `Debug`, `PartialEq`, `StructuralPartialEq`
@@ -2683,6 +2865,7 @@ Implements: `Clone`, `Copy`, `Debug`, `PartialEq`, `StructuralPartialEq`
 The sampling qualifiers of a binding or struct field.
 
 Variants (5):
+
 - `Center` — Interpolate the value at the center of the pixel.
 - `Centroid` — Interpolate the value at a point that lies within all samples covered by the fragment within the current primitive. In multisampling, use a single value for all samples in the primitive.
 - `Sample` — Interpolate the value at each sample location. In multisampling, invoke the fragment shader once per sample.
@@ -2696,10 +2879,12 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 Characteristics of a scalar type.
 
 Fields:
+
 - `kind: ScalarKind` — How the value's bits are to be interpreted.
 - `width: Bytes` — This size of the value in bytes.
 
 Methods and constants:
+
 - `const fn automatic_conversion_combine(self, other: Self) -> Option<Scalar>` — Find the common type of `self` and `other` under WGSL's automatic conversions.
 - `fn automatically_converts_to(self, goal: Self) -> bool` — Return `true` if automatic conversions will covert `self` to `goal`.
 - `const I16: Self`
@@ -2727,6 +2912,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `ForDebug`, `From<StorageFormat>`, `
 Primitive type for a scalar.
 
 Variants (6):
+
 - `Sint` — Signed integer type.
 - `Uint` — Unsigned integer type.
 - `Float` — Floating point type.
@@ -2735,6 +2921,7 @@ Variants (6):
 - `AbstractFloat` — Abstract floating-point type.
 
 Methods and constants:
+
 - `const fn is_numeric(self) -> bool`
 
 Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`, `StructuralPartialEq`, `TryFrom<ScalarKind>`
@@ -2744,6 +2931,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 A human-readable representation for a span, tailored for text source.
 
 Fields:
+
 - `line_number: u32` — 1-based line number.
 - `line_position: u32` — 1-based column in code units (in bytes) of the start of the span.
 - `offset: u32` — 0-based Offset in code units (in bytes) of the start of the span.
@@ -2758,6 +2946,7 @@ A source code span, used for error reporting.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const UNDEFINED: Self`
 - `const fn new(start: u32, end: u32) -> Self` — Creates a new `Span` from a range of byte indices
 - `const fn until(&self, other: &Self) -> Self` — Returns a new `Span` starting at `self` and ending at `other`
@@ -2780,6 +2969,7 @@ A source code span together with "context", a user-readable description of what 
 Set of special types that can be optionally generated by the frontends.
 
 Fields:
+
 - `ray_desc: Option<arena::Handle<Type>>` — Type for `RayDesc`.
 - `ray_intersection: Option<arena::Handle<Type>>` — Type for `RayIntersection`.
 - `ray_vertex_return: Option<arena::Handle<Type>>` — Type for `RayVertexReturn`.
@@ -2794,6 +2984,7 @@ Implements: `Clone`, `Debug`, `Default`
 Instructions which make up an executable block.
 
 Variants (23):
+
 - `Emit(arena::Range<Expression>)` — Emit a range of expressions, visible to all statements that follow in this block.
 - `Block(Block)` — A block containing more statements, to be executed sequentially.
 - `If { condition: arena::Handle<Expression>, accept: Block, reject: Block }` — Conditionally executes one of two blocks, based on the value of the condition.
@@ -2819,6 +3010,7 @@ Variants (23):
 - `CooperativeStore { target: arena::Handle<Expression>, data: CooperativeData }` — Store a cooperative primitive into memory.
 
 Methods and constants:
+
 - `const fn is_terminator(&self) -> bool` — Returns true if the statement directly terminates the current block.
 
 Implements: `Clone`, `Debug`
@@ -2830,6 +3022,7 @@ Flags describing an image.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const LOAD: Self` — Storage can be used as a source for load ops.
 - `const STORE: Self` — Storage can be used as a target for store ops.
 - `const ATOMIC: Self` — Storage can be used as a target for atomic ops.
@@ -2863,6 +3056,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 Image storage format.
 
 Variants (41):
+
 - `R8Unorm`
 - `R8Snorm`
 - `R8Uint`
@@ -2912,6 +3106,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `From<StorageFormat>`, `Hash`, `Ord`
 Member of a user-defined structure.
 
 Fields:
+
 - `name: Option<alloc::string::String>`
 - `ty: arena::Handle<Type>` — Type of the field.
 - `binding: Option<Binding>` — For I/O structs, defines the binding.
@@ -2922,6 +3117,7 @@ Implements: `Clone`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
 ### SubgroupOperation — enum
 
 Variants (9):
+
 - `All = 0`
 - `Any = 1`
 - `Add = 2`
@@ -2939,6 +3135,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `Ord`, `PartialEq`, `Partial
 A case for a switch statement.
 
 Fields:
+
 - `value: SwitchValue` — Value, upon which the case is considered true.
 - `body: Block` — Body of the case.
 - `fall_through: bool` — If true, the control flow continues to the next case in the list, or default.
@@ -2950,6 +3147,7 @@ Implements: `Clone`, `Debug`
 The value of the switch case.
 
 Variants (3):
+
 - `I32(i32)`
 - `U32(u32)`
 - `Default`
@@ -2961,12 +3159,14 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPart
 Component selection for a vector swizzle.
 
 Variants (4):
+
 - `X = 0`
 - `Y = 1`
 - `Z = 2`
 - `W = 3`
 
 Methods and constants:
+
 - `const XYZW: [Self; 4]`
 - `const fn index(&self) -> u32`
 - `const fn from_index(idx: u32) -> Self`
@@ -2978,6 +3178,7 @@ Implements: `Clone`, `Copy`, `Debug`, `PartialEq`, `PartialOrd`, `StructuralPart
 A data type declared in the module.
 
 Fields:
+
 - `name: Option<alloc::string::String>` — The name of the type, if any.
 - `inner: TypeInner` — Inner structure that depends on the kind of the type.
 
@@ -2988,6 +3189,7 @@ Implements: `Clone`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPartialEq`
 Enum with additional information, depending on the kind of type.
 
 Variants (14):
+
 - `Scalar(Scalar)` — Number of integral or floating-point kind.
 - `Vector { size: VectorSize, scalar: Scalar }` — Vector of numbers.
 - `Matrix { columns: VectorSize, rows: VectorSize, scalar: Scalar }` — Matrix of numbers.
@@ -3004,6 +3206,7 @@ Variants (14):
 - `BindingArray { base: arena::Handle<Type>, size: ArraySize }` — Array of bindings.
 
 Methods and constants:
+
 - `const fn is_handle(&self) -> bool` — Returns true if a variable of this type is a handle.
 - `fn pointer_automatically_convertible_scalar(&self, types: &UniqueArena<Type>) -> Option<Scalar>` — Return the leaf scalar type of `pointer`.
 - `fn indexable_length(&self, module: &Module) -> Result<IndexableLength, IndexableLengthError>` — Return the length of a subscriptable type.
@@ -3036,6 +3239,7 @@ Implements: `Clone`, `Debug`, `Eq`, `ForDebugWithTypes`, `Hash`, `PartialEq`, `S
 Operation that can be applied on a single value.
 
 Variants (3):
+
 - `Negate`
 - `LogicalNot`
 - `BitwiseNot`
@@ -3049,6 +3253,7 @@ An arena whose elements are guaranteed to be unique.
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn new() -> Self` — Create a new arena with no initial capacity allocated.
 - `fn len(&self) -> usize` — Return the current number of items stored in this arena.
 - `fn is_empty(&self) -> bool` — Return `true` if the arena contains no elements.
@@ -3067,6 +3272,7 @@ Implements: `Clone`, `Debug`, `Default`, `Index<Handle<T>>`, `TypeContext`
 ### valid::CallError — enum
 
 Variants (6):
+
 - `Argument { index: usize, source: super::ExpressionError }`
 - `ResultAlreadyInScope(arena::Handle<Expression>)`
 - `ResultAlreadyPopulated(arena::Handle<Expression>)`
@@ -3083,6 +3289,7 @@ Allowed IR capabilities.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const IMMEDIATES: Self` — Support for [`AddressSpace::Immediate`][1].
 - `const FLOAT64: Self` — Float values with width = 8.
 - `const PRIMITIVE_INDEX: Self` — Support for [`BuiltIn::PrimitiveIndex`][1].
@@ -3159,6 +3366,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 ### valid::ComposeError — enum
 
 Variants (3):
+
 - `Type(arena::Handle<Type>)`
 - `ComponentCount { given: u32, expected: u32 }`
 - `ComponentType { index: u32 }`
@@ -3168,6 +3376,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `From<ComposeError>`
 ### valid::ConstantError — enum
 
 Variants (3):
+
 - `InitializerExprType`
 - `InvalidType`
 - `NonConstructibleType`
@@ -3177,6 +3386,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`
 ### valid::ConstExpressionError — enum
 
 Variants (7):
+
 - `NonConstOrOverride`
 - `NonFullyEvaluatedConst`
 - `Compose(super::ComposeError)`
@@ -3190,6 +3400,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `From<ComposeError>`, `From<Li
 ### valid::Disalignment — enum
 
 Variants (6):
+
 - `ArrayStride { stride: u32, alignment: proc::Alignment }`
 - `StructSpan { span: u32, alignment: proc::Alignment }`
 - `MemberOffset { index: u32, offset: u32, alignment: proc::Alignment }`
@@ -3202,6 +3413,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Display`, `Error`
 ### valid::EntryPointError — enum
 
 Variants (29):
+
 - `Conflict`
 - `MissingVertexOutputPosition`
 - `UnexpectedEarlyDepthTest`
@@ -3237,6 +3449,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `From<FunctionError>`, `From<V
 ### valid::ExpressionError — enum
 
 Variants (62):
+
 - `NotInScope`
 - `InvalidBaseType(arena::Handle<Expression>)`
 - `InvalidIndexType(arena::Handle<Expression>)`
@@ -3307,6 +3520,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `From<ComposeError>`, `From<In
 Information about an expression in a function body.
 
 Fields:
+
 - `uniformity: Uniformity` — Whether this expression is uniform, and why.
 - `ref_count: usize` — The number of direct references to this expression in statements and other expressions.
 - `ty: proc::TypeResolution` — The type of this expression.
@@ -3317,6 +3531,7 @@ Implements: `Clone`, `Debug`
 ### valid::FunctionError — enum
 
 Variants (54):
+
 - `Expression { handle: arena::Handle<Expression>, source: super::ExpressionError }`
 - `ExpressionAlreadyInScope(arena::Handle<Expression>)`
 - `LocalVariable { handle: arena::Handle<LocalVariable>, name: alloc::string::String, source: LocalVariableError }`
@@ -3377,6 +3592,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `From<FunctionError>`, `From<S
 ### valid::FunctionInfo — struct
 
 Fields:
+
 - `available_stages: super::ShaderStages` — Set of shader stages where calling this function is valid.
 - `uniformity: Uniformity` — Uniformity characteristics.
 - `may_kill: bool` — Function may kill the invocation.
@@ -3387,6 +3603,7 @@ Fields:
 - (private fields omitted)
 
 Methods and constants:
+
 - `const fn global_variable_count(&self) -> usize`
 - `const fn expression_count(&self) -> usize`
 - `fn dominates_global_use(&self, other: &Self) -> bool`
@@ -3400,6 +3617,7 @@ Indicates how a global variable is used.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const READ: Self` — Data will be read from the variable.
 - `const WRITE: Self` — Data will be written to the variable.
 - `const QUERY: Self` — The information about the data is queried.
@@ -3432,6 +3650,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 ### valid::GlobalVariableError — enum
 
 Variants (16):
+
 - `InvalidUsage(AddressSpace)`
 - `InvalidType(AddressSpace)`
 - `InvalidBindingArray(arena::Handle<Type>)`
@@ -3454,6 +3673,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`
 ### valid::ImmediateError — enum
 
 Variants (1):
+
 - `InvalidScalar(Scalar)`
 
 Implements: `Clone`, `Debug`, `Display`, `Error`
@@ -3465,6 +3685,7 @@ A bitmask, tracking which 4-byte slots have been written via `set_immediates`. B
 Opaque (private fields).
 
 Methods and constants:
+
 - `const fn from_raw(raw: u64) -> Self`
 - `const fn from_range(offset: u32, size_bytes: u32) -> Self` — Compute the bitmask for a byte range [offset .. offset + size_bytes).
 - `fn from_type(ty: &TypeInner, offset: u32, types: &UniqueArena<Type>, gctx: proc::GlobalCtx<'_>) -> Self` — Compute the slots occupied by a type at a given byte offset, excluding padding between struct members.
@@ -3477,6 +3698,7 @@ Implements: `BitOr`, `BitOrAssign`, `Clone`, `Copy`, `Debug`, `Default`, `Displa
 ### valid::LiteralError — enum
 
 Variants (3):
+
 - `NaN`
 - `Infinity`
 - `Width(super::type::WidthError)`
@@ -3486,6 +3708,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `From<LiteralError>`, `From<Wi
 ### valid::LocalVariableError — enum
 
 Variants (3):
+
 - `InvalidType(arena::Handle<Type>)`
 - `InitializerType`
 - `NonConstOrOverrideInitializer`
@@ -3503,6 +3726,7 @@ Maximum size of a type, in bytes.
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn get_entry_point(&self, index: usize) -> &FunctionInfo`
 
 Implements: `Clone`, `Debug`, `Default`, `Index<Handle<Expression>>`, `Index<Handle<Function>>`, `Index<Handle<Type>>`
@@ -3510,6 +3734,7 @@ Implements: `Clone`, `Debug`, `Default`, `Index<Handle<Expression>>`, `Index<Han
 ### valid::OverrideError — enum
 
 Variants (9):
+
 - `MissingNameAndID`
 - `DuplicateID`
 - `InitializerExprType`
@@ -3529,6 +3754,7 @@ Validation flags.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const VERTEX: Self`
 - `const FRAGMENT: Self`
 - `const COMPUTE: Self`
@@ -3567,6 +3793,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 ### valid::SubgroupError — enum
 
 Variants (5):
+
 - `InvalidOperand(arena::Handle<Expression>)`
 - `ResultTypeMismatch(arena::Handle<Expression>)`
 - `UnsupportedOperation(super::SubgroupOperationSet)`
@@ -3582,6 +3809,7 @@ Supported subgroup operations
 Opaque (private fields).
 
 Methods and constants:
+
 - `const BASIC: Self` — Barriers
 - `const VOTE: Self` — Any, All
 - `const ARITHMETIC: Self` — reductions, scans
@@ -3617,6 +3845,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 ### valid::TypeError — enum
 
 Variants (20):
+
 - `MissingCapability(super::Capabilities)`
 - `InvalidAtomicWidth(ScalarKind, Bytes)`
 - `InvalidPointerBase(arena::Handle<Type>)`
@@ -3647,6 +3876,7 @@ Flags associated with [`Type`]s by [`Validator`].
 Opaque (private fields).
 
 Methods and constants:
+
 - `const DATA: Self` — Can be used for data variables.
 - `const SIZED: Self` — The data type has a size known by pipeline creation time.
 - `const COPY: Self` — The data can be copied around.
@@ -3685,6 +3915,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 Uniform control flow characteristics.
 
 Fields:
+
 - `non_uniform_result: Option<arena::Handle<Expression>>` — A child expression with non-uniform result.
 - `requirements: UniformityRequirements` — If this expression requires uniform control flow, store the reason here.
 
@@ -3697,6 +3928,7 @@ Kinds of expressions that require uniform control flow.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const WORK_GROUP_BARRIER: Self`
 - `const DERIVATIVE: Self`
 - `const IMPLICIT_LEVEL: Self`
@@ -3729,6 +3961,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 ### valid::ValidationError — enum
 
 Variants (11):
+
 - `InvalidHandle(self::handles::InvalidHandleError)`
 - `Layouter(proc::LayoutError)`
 - `Type { handle: arena::Handle<Type>, name: alloc::string::String, source: TypeError }`
@@ -3750,6 +3983,7 @@ Validation flags.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const EXPRESSIONS: Self` — Expressions.
 - `const BLOCKS: Self` — Statements and blocks of them.
 - `const CONTROL_FLOW_UNIFORMITY: Self` — Uniformity of control flow for operations that require it.
@@ -3786,6 +4020,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 Opaque (private fields).
 
 Methods and constants:
+
 - `fn validate_literal(&self, literal: Literal) -> Result<(), LiteralError>`
 - `fn new(flags: ValidationFlags, capabilities: Capabilities) -> Self` — Create a validator for Naga [`Module`]s.
 - `const fn subgroup_stages(&mut self, stages: ShaderStages) -> &mut Self`
@@ -3799,6 +4034,7 @@ Implements: `Debug`
 ### valid::VaryingError — enum
 
 Variants (26):
+
 - `InvalidType(arena::Handle<Type>)`
 - `NotIOShareableType(arena::Handle<Type>)`
 - `InvalidInterpolationInStage(Interpolation, ShaderStage)`
@@ -3831,6 +4067,7 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `From<VaryingError>`
 ### valid::WidthError — enum
 
 Variants (3):
+
 - `Invalid(ScalarKind, Bytes)`
 - `MissingCapability { name: &'static str, flag: &'static str }`
 - `Abstract`
@@ -3842,11 +4079,13 @@ Implements: `Clone`, `Debug`, `Display`, `Error`, `From<WidthError>`
 Number of components in a vector.
 
 Variants (3):
+
 - `Bi = 2` — 2D vector
 - `Tri = 3` — 3D vector
 - `Quad = 4` — 4D vector
 
 Methods and constants:
+
 - `const MAX: usize`
 
 Implements: `Clone`, `Copy`, `Debug`, `Eq`, `From<VectorSize>`, `Hash`, `Ord`, `PartialEq`, `PartialOrd`, `StructuralPartialEq`
@@ -3858,6 +4097,7 @@ Wrapper class for [`Error`], augmenting it with a list of [`SpanContext`]s.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const fn new(inner: E) -> Self` — Create a new [`WithSpan`] from an [`Error`], containing no spans.
 - `fn into_inner(self) -> E` — Reverse of [`Self::new`], discards span information and returns an inner error.
 - `const fn as_inner(&self) -> &E`

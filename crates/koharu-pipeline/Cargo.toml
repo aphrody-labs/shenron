@@ -39,10 +39,7 @@ tracing = { workspace = true }
 nvml-wrapper = { workspace = true }
 
 [target.'cfg(target_os = "windows")'.dependencies]
-windows = { workspace = true, features = [
-    "Win32_Graphics_Dxgi",
-    "Win32_Graphics_Dxgi_Common",
-] }
+windows = { workspace = true, features = ["Win32_Graphics_Dxgi", "Win32_Graphics_Dxgi_Common"] }
 
 [dev-dependencies]
 toml = { workspace = true }

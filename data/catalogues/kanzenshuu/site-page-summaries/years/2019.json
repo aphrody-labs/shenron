@@ -11,14 +11,8 @@
       "publishedAt": "2019-12-27T11:22:56",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide de production",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Toriyama’s Contributions to the Anime"
-      ],
+      "classifications": ["page publique", "guide de production", "contenu non-forum"],
+      "topics": ["Toriyama’s Contributions to the Anime"],
       "summary": "Cette page distingue les contributions avérées d’Akira Toriyama à l’anime des idées qui ne viennent pas de lui. Elle recense des propositions, dessins de personnages et éléments d’intrigue fournis pour les adaptations, y compris certains épisodes originaux souvent qualifiés de remplissage.",
       "keyInformation": [
         "Guide de référence sur le rôle de Toriyama dans les productions animées."
@@ -42,18 +36,10 @@
       "publishedAt": "2019-12-27T00:20:59",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide de production",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball Kai Remastering Process"
-      ],
+      "classifications": ["page publique", "guide de production", "contenu non-forum"],
+      "topics": ["Dragon Ball Kai Remastering Process"],
       "summary": "L’article explique le remaster HD de Dragon Ball Kai, réalisé en réutilisant les images de Dragon Ball Z tout en nettoyant et recadrant le matériel. Il décrit les sources vidéo et les étapes qui distinguent la remastérisation d’une nouvelle animation.",
-      "keyInformation": [
-        "Page du guide de production consacrée au traitement de Kai."
-      ],
+      "keyInformation": ["Page du guide de production consacrée au traitement de Kai."],
       "editorialRelevance": "Page Kanzenshuu — guide de production; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -73,18 +59,10 @@
       "publishedAt": "2019-12-27T00:12:10",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide de production",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Staff Profiles"
-      ],
+      "classifications": ["page publique", "guide de production", "contenu non-forum"],
+      "topics": ["Staff Profiles"],
       "summary": "Cette page dresse une liste alphabétique des principaux membres du personnel d’animation Dragon Ball et renvoie aux crédits détaillés par épisode et film. Elle précise que le répertoire ne constitue pas un catalogue exhaustif de tous les crédits.",
-      "keyInformation": [
-        "Profils consultables par nom ou paramètres de recherche."
-      ],
+      "keyInformation": ["Profils consultables par nom ou paramètres de recherche."],
       "editorialRelevance": "Page Kanzenshuu — guide de production; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -104,18 +82,10 @@
       "publishedAt": "2019-12-27T00:00:14",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide de production",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Animation Staff Database"
-      ],
+      "classifications": ["page publique", "guide de production", "contenu non-forum"],
+      "topics": ["Animation Staff Database"],
       "summary": "La base de données répertorie les principaux membres d’équipes d’animation ayant travaillé sur les productions Dragon Ball. Elle précise que les crédits sont une sélection de personnel principal, avec renvois aux guides d’épisodes et de films pour les listes complètes.",
-      "keyInformation": [
-        "Base organisée pour rechercher les équipes de production."
-      ],
+      "keyInformation": ["Base organisée pour rechercher les équipes de production."],
       "editorialRelevance": "Page Kanzenshuu — guide de production; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -135,18 +105,10 @@
       "publishedAt": "2019-12-26T23:54:01",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide de production",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Animation Supervisor Catalog"
-      ],
+      "classifications": ["page publique", "guide de production", "contenu non-forum"],
+      "topics": ["Animation Supervisor Catalog"],
       "summary": "Ce catalogue présente les studios et superviseurs d’animation des séries Dragon Ball, avec des profils et une vue sur leur rôle dans l’apparence visuelle des épisodes. Il sert de complément aux crédits individuels.",
-      "keyInformation": [
-        "Guide de production couvrant les séries télévisées."
-      ],
+      "keyInformation": ["Guide de production couvrant les séries télévisées."],
       "editorialRelevance": "Page Kanzenshuu — guide de production; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -166,18 +128,10 @@
       "publishedAt": "2019-12-26T23:38:20",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide de production",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "The Animation Process"
-      ],
+      "classifications": ["page publique", "guide de production", "contenu non-forum"],
+      "topics": ["The Animation Process"],
       "summary": "La page explique les principales étapes de l’animation traditionnelle sur celluloïd et les changements liés aux outils numériques. Elle décrit les dessins, la mise en couleur, le tournage puis les processus modernes de compositing.",
-      "keyInformation": [
-        "Introduction pédagogique au processus de production de l’animation."
-      ],
+      "keyInformation": ["Introduction pédagogique au processus de production de l’animation."],
       "editorialRelevance": "Page Kanzenshuu — guide de production; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -197,18 +151,10 @@
       "publishedAt": "2019-12-26T23:22:06",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide de production",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Animation Quality"
-      ],
+      "classifications": ["page publique", "guide de production", "contenu non-forum"],
+      "topics": ["Animation Quality"],
       "summary": "L’article examine la qualité de l’animation comme jugement subjectif, puis propose des critères visuels pour comparer les épisodes Dragon Ball. Il aborde le dessin, les mouvements, la composition et le travail des animateurs.",
-      "keyInformation": [
-        "Guide de production consacré à l’évaluation visuelle."
-      ],
+      "keyInformation": ["Guide de production consacré à l’évaluation visuelle."],
       "editorialRelevance": "Page Kanzenshuu — guide de production; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -228,18 +174,10 @@
       "publishedAt": "2019-12-26T23:15:02",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide de production",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "General Credits Overview"
-      ],
+      "classifications": ["page publique", "guide de production", "contenu non-forum"],
+      "topics": ["General Credits Overview"],
       "summary": "Cette introduction explique la structure habituelle des crédits d’épisodes et films Dragon Ball, les postes listés et la lecture des noms. Elle précise les conventions utiles pour interpréter les crédits traduits par le site.",
-      "keyInformation": [
-        "Complément des guides d’épisodes et de films."
-      ],
+      "keyInformation": ["Complément des guides d’épisodes et de films."],
       "editorialRelevance": "Page Kanzenshuu — guide de production; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -259,18 +197,10 @@
       "publishedAt": "2019-12-26T23:07:19",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide de production",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Production Staff Positions & Roles"
-      ],
+      "classifications": ["page publique", "guide de production", "contenu non-forum"],
+      "topics": ["Production Staff Positions & Roles"],
       "summary": "La page décrit les postes de l’équipe de production selon les étapes de création, du développement et de la planification jusqu’à la réalisation et à la finition. Elle explique les responsabilités des principaux métiers d’animation.",
-      "keyInformation": [
-        "Guide des fonctions de production et de leurs rôles."
-      ],
+      "keyInformation": ["Guide des fonctions de production et de leurs rôles."],
       "editorialRelevance": "Page Kanzenshuu — guide de production; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -290,19 +220,10 @@
       "publishedAt": "2019-12-17T11:04:52",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "archive de presse",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Presse",
-        "Animerica Extra (May 2000): In Depth – Kajika"
-      ],
+      "classifications": ["page publique", "archive de presse", "contenu non-forum"],
+      "topics": ["Presse", "Animerica Extra (May 2000): In Depth – Kajika"],
       "summary": "Ce dossier d’Animerica Extra présente Kajika, manga en un volume de Toriyama, et son héros mi-humain mi-renard en quête d’humanité. Il résume l’intrigue, les thèmes et les ressemblances avec les œuvres précédentes de l’auteur.",
-      "keyInformation": [
-        "Article de P. Duffield, Animerica Extra, mai 2000."
-      ],
+      "keyInformation": ["Article de P. Duffield, Animerica Extra, mai 2000."],
       "editorialRelevance": "Page Kanzenshuu — archive de presse; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -322,14 +243,8 @@
       "publishedAt": "2019-12-04T18:42:55",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "article de fond",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "A Different Missing Link: From Zero to Goku (Again)"
-      ],
+      "classifications": ["page publique", "article de fond", "contenu non-forum"],
+      "topics": ["A Different Missing Link: From Zero to Goku (Again)"],
       "summary": "Ce long dossier retrace la découverte d’un indice visuel dans une interview de Kara Edwards sur un DVD de Dragon Ball Z, puis mène une enquête sur la possible version de 1994 du doublage FUNimation de Curse of the Blood Rubies. Il présente les sources consultées et les indices réunis autour de cette version rare.",
       "keyInformation": [
         "Enquête fondée sur des éléments du coffret DVD FUNimation et des archives médiatiques."
@@ -353,19 +268,10 @@
       "publishedAt": "2019-09-23T22:56:00",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide d’épisode",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Anime"
-      ],
+      "classifications": ["page publique", "guide d’épisode", "contenu non-forum"],
+      "topics": ["Dragon Ball Super", "Anime"],
       "summary": "Krilin participe au Tournoi du pouvoir et affronte des guerriers de l’univers 4, dont des adversaires invisibles. L’épisode met en scène sa peur et les souvenirs de son entraînement, qu’il doit dépasser pour aider l’équipe de l’univers 7.",
-      "keyInformation": [
-        "Épisode 99 de Dragon Ball Super, diffusé le 16 juillet 2017."
-      ],
+      "keyInformation": ["Épisode 99 de Dragon Ball Super, diffusé le 16 juillet 2017."],
       "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -385,15 +291,8 @@
       "publishedAt": "2019-08-08T14:24:26",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super Bonus Chapter 5"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Super Bonus Chapter 5"],
       "summary": "Dans ce chapitre bonus, Goku informe Merus des événements récents sur Terre et des combats contre Freezer et Broly. Le récit met en place l’intérêt de Merus pour les combattants terriens et la Patrouille Galactique.",
       "keyInformation": [
         "Chapitre de Toyotarō publié dans le guide officiel Jump Victory Carnival 2019."
@@ -417,15 +316,8 @@
       "publishedAt": "2019-07-29T10:56:38",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide d’épisode",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Anime"
-      ],
+      "classifications": ["page publique", "guide d’épisode", "contenu non-forum"],
+      "topics": ["Dragon Ball Super", "Anime"],
       "summary": "Le corps de la page fournit les informations de diffusion et le titre de l’épisode 14 de Super Dragon Ball Heroes, mais indique explicitement que son synopsis est à venir. Aucun résumé d’intrigue supplémentaire n’est disponible dans le texte archivé.",
       "keyInformation": [
         "Épisode diffusé en ligne le 28 juillet 2019.",
@@ -450,15 +342,8 @@
       "publishedAt": "2019-07-11T09:19:58",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide d’épisode",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Anime"
-      ],
+      "classifications": ["page publique", "guide d’épisode", "contenu non-forum"],
+      "topics": ["Dragon Ball Super", "Anime"],
       "summary": "Le corps de la page donne le titre, la date et les informations de diffusion de l’épisode 13 de Super Dragon Ball Heroes, puis affiche un emplacement de synopsis encore en cours de rédaction. La fiche ne décrit pas davantage le déroulement de l’épisode.",
       "keyInformation": [
         "Épisode diffusé en ligne le 11 juillet 2019.",
@@ -483,15 +368,8 @@
       "publishedAt": "2019-06-24T09:41:52",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide d’épisode",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Anime"
-      ],
+      "classifications": ["page publique", "guide d’épisode", "contenu non-forum"],
+      "topics": ["Dragon Ball Super", "Anime"],
       "summary": "La page fournit le titre et les renseignements de diffusion de l’épisode 12 de Super Dragon Ball Heroes. Elle situe l’action autour de la bataille décisive de l’univers 7 dans l’arc Universal Conflict.",
       "keyInformation": [
         "Épisode diffusé le 22 juin 2019 et présenté aussi lors des qualifications nationales Ultimate Tour."
@@ -515,19 +393,10 @@
       "publishedAt": "2019-05-31T11:05:20",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super Chapter 33"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Super Chapter 33"],
       "summary": "Le Tournoi du pouvoir commence dans le chapitre 33, alors que les dix combattants de l’univers 7 entrent en lice. Toyotarō reprend les règles de l’arène et les premiers affrontements entre univers.",
-      "keyInformation": [
-        "Chapitre 33 paru dans V-Jump d’avril 2018."
-      ],
+      "keyInformation": ["Chapitre 33 paru dans V-Jump d’avril 2018."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -547,19 +416,10 @@
       "publishedAt": "2019-05-24T11:51:23",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super Chapter 32"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Super Chapter 32"],
       "summary": "Cabba rassemble les meilleurs combattants de l’univers 6 sous la pression de Champa, tandis que Goku et ses alliés préparent leur équipe. Le chapitre développe la préparation au Tournoi du pouvoir et la détermination des nouveaux participants.",
-      "keyInformation": [
-        "Chapitre 32 de Toyotarō publié dans V-Jump de mars 2018."
-      ],
+      "keyInformation": ["Chapitre 32 de Toyotarō publié dans V-Jump de mars 2018."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -579,19 +439,10 @@
       "publishedAt": "2019-05-14T16:32:41",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super: Galactic Patrol Prisoner arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Super: Galactic Patrol Prisoner arc"],
       "summary": "La fiche récapitule l’arc du Prisonnier de la Patrouille Galactique, de l’arrivée de la Patrouille pour emmener Boo jusqu’à la lutte contre Moro. Elle indique les chapitres, leur période de publication et les grandes étapes du récit.",
-      "keyInformation": [
-        "Arc publié du 21 décembre 2018 au 21 décembre 2020, chapitres 43 à 67."
-      ],
+      "keyInformation": ["Arc publié du 21 décembre 2018 au 21 décembre 2020, chapitres 43 à 67."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -611,19 +462,10 @@
       "publishedAt": "2019-05-14T16:30:48",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super: Universe Survival arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Super: Universe Survival arc"],
       "summary": "Cette page résume l’arc manga Survie de l’Univers, dans lequel Zeno organise un tournoi réunissant les douze univers. Elle détaille les chapitres concernés, les dates de sérialisation et les pages composant l’arc.",
-      "keyInformation": [
-        "Chapitres 27 à 42, publiés d’août 2017 à novembre 2018."
-      ],
+      "keyInformation": ["Chapitres 27 à 42, publiés d’août 2017 à novembre 2018."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -643,19 +485,10 @@
       "publishedAt": "2019-05-14T16:27:22",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super: Future Trunks arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Super: Future Trunks arc"],
       "summary": "La page retrace l’arc manga de Trunks du futur et le retour d’un ennemi nommé Black dans son monde dévasté. Elle recense les chapitres, la période de publication et le nombre de pages.",
-      "keyInformation": [
-        "Arc couvrant les chapitres 14 à 26, de juillet 2016 à juillet 2017."
-      ],
+      "keyInformation": ["Arc couvrant les chapitres 14 à 26, de juillet 2016 à juillet 2017."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -675,19 +508,10 @@
       "publishedAt": "2019-05-14T16:25:37",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super: God of Destruction Champa arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Super: God of Destruction Champa arc"],
       "summary": "Cette fiche résume l’arc de Champa dans le manga, lancé lorsque Champa et Vados rendent visite à Beerus et Whis. Elle précise les chapitres et le contenu couvrant le tournoi des univers 6 et 7.",
-      "keyInformation": [
-        "Chapitres 5 à 13, d’octobre 2015 à juin 2016."
-      ],
+      "keyInformation": ["Chapitres 5 à 13, d’octobre 2015 à juin 2016."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -707,19 +531,10 @@
       "publishedAt": "2019-05-14T16:22:37",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super: God of Destruction Beerus arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Super: God of Destruction Beerus arc"],
       "summary": "La page récapitule l’arc Beerus du manga : après la défaite de Boo, Goku et ses proches reprennent une vie ordinaire avant l’arrivée du Dieu de la Destruction. Elle donne les chapitres et la durée de publication.",
-      "keyInformation": [
-        "Arc constitué des chapitres 1 à 4, de juin à septembre 2015."
-      ],
+      "keyInformation": ["Arc constitué des chapitres 1 à 4, de juin à septembre 2015."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -739,15 +554,8 @@
       "publishedAt": "2019-05-14T16:16:16",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super Bonus Chapters"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Super Bonus Chapters"],
       "summary": "Cette page présente les chapitres bonus de Dragon Ball Super publiés dans les guides du Jump Victory Carnival. Elle explique leur contexte éditorial et leur reprise ultérieure dans les volumes reliés du manga.",
       "keyInformation": [
         "Les chapitres bonus annuels de Toyotarō accompagnent les guides de l’événement."
@@ -771,19 +579,10 @@
       "publishedAt": "2019-05-14T16:13:29",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super Tankōbon Release"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Super Tankōbon Release"],
       "summary": "La fiche expose les informations de publication des volumes reliés de Dragon Ball Super, du lancement dans V-Jump à la supervision de Toriyama et au travail de Toyotarō. Elle sert d’index aux tomes et à leur contenu.",
-      "keyInformation": [
-        "Série mensuelle commencée en juin 2015 dans V-Jump."
-      ],
+      "keyInformation": ["Série mensuelle commencée en juin 2015 dans V-Jump."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -803,19 +602,10 @@
       "publishedAt": "2019-05-14T16:06:25",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "V-Jump Serialization"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "V-Jump Serialization"],
       "summary": "Cette page explique la sérialisation de Dragon Ball Super dans V-Jump, les dates de sortie des numéros et les différences entre date officielle de couverture et date de vente. Elle fournit des repères bibliographiques pour les chapitres.",
-      "keyInformation": [
-        "Série publiée mensuellement par Shueisha depuis juin 2015."
-      ],
+      "keyInformation": ["Série publiée mensuellement par Shueisha depuis juin 2015."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -835,19 +625,10 @@
       "publishedAt": "2019-05-14T16:02:54",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super Chapter List"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Super Chapter List"],
       "summary": "La liste des chapitres de Dragon Ball Super regroupe les dates, auteurs et volumes de rattachement de chaque chapitre. Elle présente la série écrite et dessinée par Toyotarō sous la supervision d’Akira Toriyama.",
-      "keyInformation": [
-        "La page renvoie aussi aux guides de l’adaptation télévisée."
-      ],
+      "keyInformation": ["La page renvoie aussi aux guides de l’adaptation télévisée."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -867,19 +648,10 @@
       "publishedAt": "2019-05-14T15:57:24",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super Manga Series"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Super Manga Series"],
       "summary": "Cette page de référence présente le manga Dragon Ball Super, ses données de publication et son équipe créative. Elle rappelle que Toyotarō écrit et dessine la série sous la supervision et les conseils de Toriyama.",
-      "keyInformation": [
-        "Début dans V-Jump le 20 juin 2015, deux semaines avant l’anime."
-      ],
+      "keyInformation": ["Début dans V-Jump le 20 juin 2015, deux semaines avant l’anime."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -899,19 +671,10 @@
       "publishedAt": "2019-05-14T15:54:13",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball: Majin Boo arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball: Majin Boo arc"],
       "summary": "La fiche résume l’arc Boo du manga, depuis la découverte des projets de Babidi et la recherche d’énergie pour réveiller Boo jusqu’aux combats contre ses différentes formes. Elle donne les chapitres, dates et pagination.",
-      "keyInformation": [
-        "Chapitres 446 à 519, 74 chapitres publiés de novembre 1993 à mai 1995."
-      ],
+      "keyInformation": ["Chapitres 446 à 519, 74 chapitres publiés de novembre 1993 à mai 1995."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -931,19 +694,10 @@
       "publishedAt": "2019-05-14T15:52:22",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball: Great Saiyaman arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball: Great Saiyaman arc"],
       "summary": "Cette page résume l’arc du Great Saiyaman : plusieurs années après Cell, Gohan entre au lycée et adopte une identité de super-héros. Elle répertorie les chapitres et la période de sérialisation.",
-      "keyInformation": [
-        "Chapitres 421 à 445, de mai à novembre 1993."
-      ],
+      "keyInformation": ["Chapitres 421 à 445, de mai à novembre 1993."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -963,19 +717,10 @@
       "publishedAt": "2019-05-14T15:50:15",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball: Cell arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball: Cell arc"],
       "summary": "La fiche retrace l’arc Cell, où l’androïde venu du futur absorbe des humains et affronte Piccolo, les cyborgs et Goku. Elle détaille l’étendue de l’arc et le nombre de chapitres et pages.",
-      "keyInformation": [
-        "Chapitres 357 à 420, 65 chapitres publiés de janvier 1992 à avril 1993."
-      ],
+      "keyInformation": ["Chapitres 357 à 420, 65 chapitres publiés de janvier 1992 à avril 1993."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -995,19 +740,10 @@
       "publishedAt": "2019-05-14T15:47:27",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball: Artificial Human arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball: Artificial Human arc"],
       "summary": "La page résume l’arc des cyborgs, qui s’ouvre avec l’arrivée de Trunks et l’avertissement sur les androïdes de Gero. Elle répertorie les chapitres, les dates et la pagination du récit.",
-      "keyInformation": [
-        "Chapitres 330 à 356, de juin 1991 à janvier 1992."
-      ],
+      "keyInformation": ["Chapitres 330 à 356, de juin 1991 à janvier 1992."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1027,19 +763,10 @@
       "publishedAt": "2019-05-14T15:45:11",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball: Freeza arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball: Freeza arc"],
       "summary": "La fiche retrace l’arc Freezer sur Namek, depuis le départ de Krilin et Gohan à la recherche des Dragon Balls jusqu’à leur affrontement avec Freezer. Elle fournit les dates, chapitres et pages de l’arc.",
-      "keyInformation": [
-        "Chapitres 291 à 329, de septembre 1990 à juin 1991."
-      ],
+      "keyInformation": ["Chapitres 291 à 329, de septembre 1990 à juin 1991."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1059,19 +786,10 @@
       "publishedAt": "2019-05-14T15:42:43",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball: Namek arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball: Namek arc"],
       "summary": "La page résume l’arc Namek après le départ de Vegeta, lorsque Goku et ses alliés cherchent des Dragon Balls et affrontent Freezer et ses forces. Elle répertorie la période et le volume de l’histoire.",
-      "keyInformation": [
-        "Chapitres 242 à 290, de septembre 1989 à septembre 1990."
-      ],
+      "keyInformation": ["Chapitres 242 à 290, de septembre 1989 à septembre 1990."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1091,19 +809,10 @@
       "publishedAt": "2019-05-14T15:31:44",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball: Saiyan arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball: Saiyan arc"],
       "summary": "La fiche présente l’arc des Saiyans, ouvert par l’arrivée de Raditz qui révèle à Goku ses origines. Elle décrit les chapitres menant aux affrontements contre Vegeta et Nappa.",
-      "keyInformation": [
-        "Chapitres 195 à 241, d’octobre 1988 à septembre 1989."
-      ],
+      "keyInformation": ["Chapitres 195 à 241, d’octobre 1988 à septembre 1989."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1123,19 +832,10 @@
       "publishedAt": "2019-05-14T15:29:49",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball: 23rd Tenka’ichi Budōkai arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball: 23rd Tenka’ichi Budōkai arc"],
       "summary": "Trois ans après le tournoi précédent, Goku retrouve ses amis au 23e Tenka’ichi Budōkai, où Piccolo Daimaō réapparaît sous le nom de Ma Junior. La fiche donne le déroulement de l’arc et ses données de publication.",
-      "keyInformation": [
-        "Chapitres 162 à 194, de février à septembre 1988."
-      ],
+      "keyInformation": ["Chapitres 162 à 194, de février à septembre 1988."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1155,19 +855,10 @@
       "publishedAt": "2019-05-14T15:27:44",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball: Demon King Piccolo arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball: Demon King Piccolo arc"],
       "summary": "La page suit Goku dans sa quête de vengeance contre Piccolo Daimaō après la mort de Krilin, puis la lutte contre le roi démon et ses descendants. Elle fournit la chronologie et le nombre de chapitres de l’arc.",
-      "keyInformation": [
-        "Chapitres 135 à 161, de juillet 1987 à février 1988."
-      ],
+      "keyInformation": ["Chapitres 135 à 161, de juillet 1987 à février 1988."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1187,19 +878,10 @@
       "publishedAt": "2019-05-14T15:25:44",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball: 22nd Tenka’ichi Budōkai arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball: 22nd Tenka’ichi Budōkai arc"],
       "summary": "Cette fiche résume le 22e Tenka’ichi Budōkai, où Tenshinhan et Chiaotzu affrontent les élèves de Kame-Sennin et où Goku retrouve ses rivaux. Elle documente la période et le contenu de l’arc.",
-      "keyInformation": [
-        "Chapitres 113 à 134, de février à juillet 1987."
-      ],
+      "keyInformation": ["Chapitres 113 à 134, de février à juillet 1987."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1219,19 +901,10 @@
       "publishedAt": "2019-05-14T15:20:56",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball: Fortuneteller Crone arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball: Fortuneteller Crone arc"],
       "summary": "La page décrit la quête de la dernière Dragon Ball par Goku et ses amis, qui demandent l’aide de la voyante Baba et affrontent ses combattants. Elle recense les chapitres de cet arc intermédiaire.",
-      "keyInformation": [
-        "Chapitres 98 à 112, d’octobre 1986 à février 1987."
-      ],
+      "keyInformation": ["Chapitres 98 à 112, d’octobre 1986 à février 1987."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1251,19 +924,10 @@
       "publishedAt": "2019-05-14T15:16:21",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball: Red Ribbon Army arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball: Red Ribbon Army arc"],
       "summary": "La fiche retrace la nouvelle quête de Goku pour retrouver la Dragon Ball à quatre étoiles, puis sa confrontation avec l’armée du Ruban Rouge. Elle présente les étapes et données de publication de l’arc.",
-      "keyInformation": [
-        "Chapitres 55 à 97, de décembre 1985 à octobre 1986."
-      ],
+      "keyInformation": ["Chapitres 55 à 97, de décembre 1985 à octobre 1986."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1283,19 +947,10 @@
       "publishedAt": "2019-05-14T15:13:24",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball: 21st Tenka’ichi Budōkai arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball: 21st Tenka’ichi Budōkai arc"],
       "summary": "La page suit l’entraînement de Goku et Krilin auprès de Kame-Sennin avant leur participation au 21e Tenka’ichi Budōkai. Elle résume le tournoi et indique les chapitres et la pagination.",
-      "keyInformation": [
-        "Chapitres 24 à 54, de mai à décembre 1985."
-      ],
+      "keyInformation": ["Chapitres 24 à 54, de mai à décembre 1985."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1315,19 +970,10 @@
       "publishedAt": "2019-05-14T15:10:37",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball: Son Goku arc"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball: Son Goku arc"],
       "summary": "La fiche raconte la rencontre de Goku et Bulma, puis leur voyage pour réunir les sept Dragon Balls. Elle présente l’ouverture du manga et fournit les principales données de publication de l’arc.",
-      "keyInformation": [
-        "Chapitres 1 à 23, de novembre 1984 à mai 1985."
-      ],
+      "keyInformation": ["Chapitres 1 à 23, de novembre 1984 à mai 1985."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1347,15 +993,8 @@
       "publishedAt": "2019-05-14T14:26:41",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Manga Series"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Manga Series"],
       "summary": "Cette page de référence présente les données du manga Dragon Ball : 519 chapitres et un récit annexe, auteur, éditeurs, publication et nombre de pages par type de couleur. Elle rappelle la sérialisation hebdomadaire de Toriyama dans Weekly Shōnen Jump.",
       "keyInformation": [
         "Publication du 20 novembre 1984 au 23 mai 1995.",
@@ -1380,19 +1019,10 @@
       "publishedAt": "2019-05-09T13:32:16",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super Chapter 31"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Super Chapter 31"],
       "summary": "Les guerriers de l’univers 7 se préparent au Tournoi du pouvoir, tandis que Goku et Gohan discutent de stratégie et recrutent des combattants. Le chapitre suit aussi la sélection des représentants des autres univers.",
-      "keyInformation": [
-        "Chapitre 31 de Toyotarō paru dans V-Jump de février 2018."
-      ],
+      "keyInformation": ["Chapitre 31 de Toyotarō paru dans V-Jump de février 2018."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1412,19 +1042,10 @@
       "publishedAt": "2019-05-09T09:35:53",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide d’épisode",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Anime"
-      ],
+      "classifications": ["page publique", "guide d’épisode", "contenu non-forum"],
+      "topics": ["Dragon Ball Super", "Anime"],
       "summary": "Vegeta affronte Toppo, tandis que l’univers 11 révèle la puissance de ses combattants. Le chapitre pose les enjeux du combat entre les candidats au rôle de Dieu de la Destruction et les guerriers de l’univers 7.",
-      "keyInformation": [
-        "Épisode 11 de Super Dragon Ball Heroes diffusé en ligne le 9 mai 2019."
-      ],
+      "keyInformation": ["Épisode 11 de Super Dragon Ball Heroes diffusé en ligne le 9 mai 2019."],
       "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1444,14 +1065,8 @@
       "publishedAt": "2019-04-23T23:31:30",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide vidéo",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball The Movies Blu-ray"
-      ],
+      "classifications": ["page publique", "guide vidéo", "contenu non-forum"],
+      "topics": ["Dragon Ball The Movies Blu-ray"],
       "summary": "La page retrace les sorties vidéo et remastérisations HD des 17 films Dragon Ball et DBZ, après leur mise en ligne sur Netflix et Amazon au Japon. Elle documente le travail de Toei pour restaurer les films et leur diffusion en Blu-ray.",
       "keyInformation": [
         "Les remasters HD ont été diffusés en streaming à partir de juillet 2018."
@@ -1475,19 +1090,10 @@
       "publishedAt": "2019-04-18T10:12:14",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide d’épisode",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Anime"
-      ],
+      "classifications": ["page publique", "guide d’épisode", "contenu non-forum"],
+      "topics": ["Dragon Ball Super", "Anime"],
       "summary": "Goku utilise l’Ultra Instinct présage contre les guerriers de la zone centrale, puis Vegeta rejoint la bataille. L’épisode met en avant leur contre-attaque face aux ennemis qui menacent les univers.",
-      "keyInformation": [
-        "Épisode 10 de Super Dragon Ball Heroes diffusé le 18 avril 2019."
-      ],
+      "keyInformation": ["Épisode 10 de Super Dragon Ball Heroes diffusé le 18 avril 2019."],
       "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1507,19 +1113,10 @@
       "publishedAt": "2019-04-11T11:57:57",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide manga",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Manga",
-        "Dragon Ball Super Volume 09"
-      ],
+      "classifications": ["page publique", "guide manga", "contenu non-forum"],
+      "topics": ["Manga", "Dragon Ball Super Volume 09"],
       "summary": "La fiche du volume 9 de Dragon Ball Super décrit sa publication et sa jaquette montrant Goku contre Jiren. Le tome rassemble la fin du Tournoi du pouvoir et les conséquences de la bataille.",
-      "keyInformation": [
-        "Publié le 4 avril 2019; 192 pages; 440 yens hors taxes."
-      ],
+      "keyInformation": ["Publié le 4 avril 2019; 192 pages; 440 yens hors taxes."],
       "editorialRelevance": "Page Kanzenshuu — guide manga; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1539,19 +1136,10 @@
       "publishedAt": "2019-03-14T02:25:40",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide d’épisode",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Anime"
-      ],
+      "classifications": ["page publique", "guide d’épisode", "contenu non-forum"],
+      "topics": ["Dragon Ball Super", "Anime"],
       "summary": "Goku et Krilin affrontent des adversaires qui matérialisent leurs peurs, puis retrouvent l’assurance nécessaire pour s’entraîner avant le Tournoi du pouvoir. L’épisode recentre leur amitié et le passé de Krilin.",
-      "keyInformation": [
-        "Épisode 76 diffusé le 29 janvier 2017."
-      ],
+      "keyInformation": ["Épisode 76 diffusé le 29 janvier 2017."],
       "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1571,19 +1159,10 @@
       "publishedAt": "2019-03-11T12:42:22",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide d’épisode",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Anime"
-      ],
+      "classifications": ["page publique", "guide d’épisode", "contenu non-forum"],
+      "topics": ["Dragon Ball Super", "Anime"],
       "summary": "Trunks et Vegeta affrontent Cumber après le retour de Goku, dont la puissance met fin à une partie du combat sur la planète-prison. L’épisode oppose les deux combattants les plus puissants de l’arc.",
-      "keyInformation": [
-        "Épisode 9 de Super Dragon Ball Heroes diffusé le 7 mars 2019."
-      ],
+      "keyInformation": ["Épisode 9 de Super Dragon Ball Heroes diffusé le 7 mars 2019."],
       "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1603,19 +1182,10 @@
       "publishedAt": "2019-03-11T11:42:32",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide d’épisode",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Anime"
-      ],
+      "classifications": ["page publique", "guide d’épisode", "contenu non-forum"],
+      "topics": ["Dragon Ball Super", "Anime"],
       "summary": "Les guerriers les plus puissants envahissent l’univers 6 dans l’épisode 8; Goku et Vegeta tentent de les arrêter alors que l’univers est ravagé par leur attaque.",
-      "keyInformation": [
-        "Épisode diffusé en ligne le 24 février 2019."
-      ],
+      "keyInformation": ["Épisode diffusé en ligne le 24 février 2019."],
       "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1635,18 +1205,10 @@
       "publishedAt": "2019-03-05T09:32:32",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "article de référence",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Official Fan Fusion Designs: Part 1 (1995)"
-      ],
+      "classifications": ["page publique", "article de référence", "contenu non-forum"],
+      "topics": ["Official Fan Fusion Designs: Part 1 (1995)"],
       "summary": "La page recense des fusions imaginées pour le jeu Dragon Ball Fusions, dont Karoli et Piririn, et donne leur composition à partir des personnages d’origine. Elle présente les dessins officiels issus d’un concours ou d’une sélection de fans.",
-      "keyInformation": [
-        "Fiches de créations associées au jeu Nintendo 3DS de 2016."
-      ],
+      "keyInformation": ["Fiches de créations associées au jeu Nintendo 3DS de 2016."],
       "editorialRelevance": "Page Kanzenshuu — article de référence; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1666,15 +1228,8 @@
       "publishedAt": "2019-02-13T14:52:27",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "translation",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Traduction",
-        "“Dragon Ball Super: Broly” Theatrical Program – Naohiro Shintani"
-      ],
+      "classifications": ["page publique", "translation", "contenu non-forum"],
+      "topics": ["Traduction", "“Dragon Ball Super: Broly” Theatrical Program – Naohiro Shintani"],
       "summary": "Naohiro Shintani présente son travail d’animateur superviseur sur Dragon Ball Super: Broly et commente la conception du film. L’entretien du programme du cinéma porte sur son parcours, la direction artistique et les choix de dessins.",
       "keyInformation": [
         "Interview du programme japonais de Dragon Ball Super: Broly, datée du 14 décembre 2018."
@@ -1698,19 +1253,10 @@
       "publishedAt": "2019-01-23T20:35:42",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "translation",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Traduction",
-        "“Dragon Ball Super: Broly” Theatrical Program – Tatsuya Nagamine"
-      ],
+      "classifications": ["page publique", "translation", "contenu non-forum"],
+      "topics": ["Traduction", "“Dragon Ball Super: Broly” Theatrical Program – Tatsuya Nagamine"],
       "summary": "Le réalisateur Tatsuya Nagamine explique son expérience sur Dragon Ball Super: Broly et son travail à partir du scénario original de Toriyama. L’entretien du programme aborde la réalisation et la façon de représenter les personnages et les combats.",
-      "keyInformation": [
-        "Interview du programme théâtral du film, datée du 14 décembre 2018."
-      ],
+      "keyInformation": ["Interview du programme théâtral du film, datée du 14 décembre 2018."],
       "editorialRelevance": "Page Kanzenshuu — translation; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1730,19 +1276,10 @@
       "publishedAt": "2019-01-16T12:22:33",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide d’épisode",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Anime"
-      ],
+      "classifications": ["page publique", "guide d’épisode", "contenu non-forum"],
+      "topics": ["Dragon Ball Super", "Anime"],
       "summary": "Goku affronte Hearts et les combattants de la zone centrale; après avoir été acculé, il libère l’Ultra Instinct et reprend l’avantage. L’épisode marque l’intensification du conflit universel de Super Dragon Ball Heroes.",
-      "keyInformation": [
-        "Épisode 6 diffusé en ligne le 22 décembre 2018."
-      ],
+      "keyInformation": ["Épisode 6 diffusé en ligne le 22 décembre 2018."],
       "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1762,19 +1299,10 @@
       "publishedAt": "2019-01-16T11:17:10",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide d’épisode",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Anime"
-      ],
+      "classifications": ["page publique", "guide d’épisode", "contenu non-forum"],
+      "topics": ["Dragon Ball Super", "Anime"],
       "summary": "Vegetto Super Saiyan 4 rejoint le combat contre Cumber dans les terres désolées de la planète-prison. L’épisode met en scène la puissance de la fusion face au Saiyan maléfique.",
-      "keyInformation": [
-        "Épisode diffusé en ligne le 28 octobre 2018."
-      ],
+      "keyInformation": ["Épisode diffusé en ligne le 28 octobre 2018."],
       "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1794,11 +1322,7 @@
       "publishedAt": "2019-01-15T09:51:51",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "translation",
-        "contenu non-forum"
-      ],
+      "classifications": ["page publique", "translation", "contenu non-forum"],
       "topics": [
         "Traduction",
         "Sponichi “Dragon Ball Super: Broly” Shinbun – Voice Actor Roundtable"
@@ -1826,19 +1350,10 @@
       "publishedAt": "2019-01-10T12:04:27",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide d’épisode",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Anime"
-      ],
+      "classifications": ["page publique", "guide d’épisode", "contenu non-forum"],
+      "topics": ["Dragon Ball Super", "Anime"],
       "summary": "La fiche résume l’arc Universal Conflict, où les guerriers de la zone centrale apparaissent après la crise de la planète-prison et menacent les univers. Elle donne la période de diffusion et les épisodes concernés.",
-      "keyInformation": [
-        "Arc diffusé de janvier 2019 à février 2020, épisodes 7 à 20."
-      ],
+      "keyInformation": ["Arc diffusé de janvier 2019 à février 2020, épisodes 7 à 20."],
       "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1858,19 +1373,10 @@
       "publishedAt": "2019-01-10T09:00:08",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "guide d’épisode",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Dragon Ball Super",
-        "Anime"
-      ],
+      "classifications": ["page publique", "guide d’épisode", "contenu non-forum"],
+      "topics": ["Dragon Ball Super", "Anime"],
       "summary": "Zamasu est ressuscité et l’arc Universal Conflict commence; Goku et Vegeta se retrouvent face à de nouveaux adversaires liés à la zone centrale. Le synopsis présente les premiers événements après l’effondrement de la planète-prison.",
-      "keyInformation": [
-        "Épisode diffusé en ligne le 10 janvier 2019."
-      ],
+      "keyInformation": ["Épisode diffusé en ligne le 10 janvier 2019."],
       "editorialRelevance": "Page Kanzenshuu — guide d’épisode; source de référence pour Dragon Ball, ses œuvres, publications et équipes créatives.",
       "forumContent": false,
       "source": {
@@ -1890,11 +1396,7 @@
       "publishedAt": "2019-01-08T13:30:03",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "translation",
-        "contenu non-forum"
-      ],
+      "classifications": ["page publique", "translation", "contenu non-forum"],
       "topics": [
         "Traduction",
         "Sponichi “Dragon Ball Super: Broly” Shinbun – Staff & Cast Comments"
@@ -1922,15 +1424,8 @@
       "publishedAt": "2019-01-04T09:37:04",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "translation",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Traduction",
-        "Sponichi “Dragon Ball Super: Broly” Shinbun – Rio Uchida"
-      ],
+      "classifications": ["page publique", "translation", "contenu non-forum"],
+      "topics": ["Traduction", "Sponichi “Dragon Ball Super: Broly” Shinbun – Rio Uchida"],
       "summary": "L’actrice et mannequin Rio Uchida parle de son enthousiasme pour Dragon Ball Super: Broly et de son admiration de longue date pour la franchise. L’article présente sa réaction au film et à son personnage préféré.",
       "keyInformation": [
         "Commentaire de célébrité paru dans le Sponichi Dragon Ball Super: Broly Shinbun."
@@ -1954,15 +1449,8 @@
       "publishedAt": "2019-01-02T14:17:19",
       "categories": [],
       "tags": [],
-      "classifications": [
-        "page publique",
-        "translation",
-        "contenu non-forum"
-      ],
-      "topics": [
-        "Traduction",
-        "Sponichi “Dragon Ball Super: Broly” Shinbun – Toyotarō"
-      ],
+      "classifications": ["page publique", "translation", "contenu non-forum"],
+      "topics": ["Traduction", "Sponichi “Dragon Ball Super: Broly” Shinbun – Toyotarō"],
       "summary": "Toyotarō raconte son parcours de fan de Dragon Ball devenu dessinateur de Dragon Ball Super. Il parle de son apprentissage, de sa collaboration avec Toriyama et de son appréciation de Broly dans le nouveau film.",
       "keyInformation": [
         "Interview spéciale du Sponichi Dragon Ball Super: Broly Shinbun, 12 décembre 2018."

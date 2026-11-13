@@ -6,9 +6,9 @@ import { WIKI_TABLE_SPECS } from "../src/lib/wiki-tables";
 
 test("legacy extent remains unknown; explicit public preview is retained", () => {
   expect(mangaReaderExtent(null)).toEqual({ kind: "unknown" });
-  expect(mangaReaderExtent({ kind: "full", sourceUrl: "https://user:secret@google.com" })).toEqual(
-    { kind: "unknown" },
-  );
+  expect(mangaReaderExtent({ kind: "full", sourceUrl: "https://user:secret@google.com" })).toEqual({
+    kind: "unknown",
+  });
   const extent = {
     kind: "preview" as const,
     sourceUrl: "https://publisher.example/trial",

@@ -16,19 +16,20 @@ L'exécutable x86-64 `DBXV2.exe` étant protégé au repos par SteamStub DRM, la
 
 ## 2. Stack Technique du Port
 
-| Composant | Choix Technique | Rôle & Justification |
-| :--- | :--- | :--- |
-| **Moteur Graphique 3D** | WebGPU (WGPU 30) + Shaders Cel-Shading | Rendu 3D temps réel des arènes géantes (Conton City, Namek, Espace) sans lag. |
-| **Logique de Combat WASM** | Rust 2024 compilé en `wasm32-unknown-unknown` | Traitement déterministe des collisions sphériques, de la physique de vol et du lock-on caméra. |
-| **Parseurs de Formats Dimps** | `packages/engine/src/wasm` & `crates/dragon-pixel` | Désérialisation binaire instantanée de `.emd` (maillages), `.ean` (squelettes), `.bac` (actions). |
-| **Stockage & Streaming VFS** | Cloudflare R2 / Garage S3 + Cache IndexedDB | Téléchargement à la demande des segments d'arène et des costumes sans télécharger 40 Go en une fois. |
-| **Audio & Voix** | Décodeur WebAudio HCA/ADX2 | Rendu audio spatialisé 3D pour les impacts et les répliques japonaises/anglaises. |
+| Composant                     | Choix Technique                                    | Rôle & Justification                                                                                 |
+| :---------------------------- | :------------------------------------------------- | :--------------------------------------------------------------------------------------------------- |
+| **Moteur Graphique 3D**       | WebGPU (WGPU 30) + Shaders Cel-Shading             | Rendu 3D temps réel des arènes géantes (Conton City, Namek, Espace) sans lag.                        |
+| **Logique de Combat WASM**    | Rust 2024 compilé en `wasm32-unknown-unknown`      | Traitement déterministe des collisions sphériques, de la physique de vol et du lock-on caméra.       |
+| **Parseurs de Formats Dimps** | `packages/engine/src/wasm` & `crates/dragon-pixel` | Désérialisation binaire instantanée de `.emd` (maillages), `.ean` (squelettes), `.bac` (actions).    |
+| **Stockage & Streaming VFS**  | Cloudflare R2 / Garage S3 + Cache IndexedDB        | Téléchargement à la demande des segments d'arène et des costumes sans télécharger 40 Go en une fois. |
+| **Audio & Voix**              | Décodeur WebAudio HCA/ADX2                         | Rendu audio spatialisé 3D pour les impacts et les répliques japonaises/anglaises.                    |
 
 ---
 
 ## 3. Schéma de Données & Formats Binaires
 
 ### 3.1 Formats de Données Dimps Traités
+
 - **`.emd`** : Modèles 3D, sous-maillages avec pondération osseuse (Bone Weights) et normales de surface.
 - **`.emb`** : Paquets de textures compressées DXGI (BC1/BC3/BC7) converties à la volée vers KTX2/WebGPU.
 - **`.ean`** : Pistes d'animation squelettique clé-par-clé (Keyframes quaternions et translations).
@@ -37,6 +38,7 @@ L'exécutable x86-64 `DBXV2.exe` étant protégé au repos par SteamStub DRM, la
 - **`.msg`** : Tables de chaînes multilingues (dialogues de quête, noms de techniques).
 
 ### 3.2 Tables PostgreSQL (`schema.sql`)
+
 ```sql
 -- Personnages créés par l'utilisateur (Time Patroller)
 create table if not exists xv2_user_avatars (
@@ -70,34 +72,38 @@ create table if not exists xv2_quest_progress (
 
 ## 4. Matrice des Écrans & Routes
 
-| ID | Écran | Route | Rôle & Fonctionnalités |
-| :--- | :--- | :--- | :--- |
-| **S01** | Hub Conton City | `/games/xenoverse-2` | Exploration 3D libre du hub, marchands, portail de quêtes, classement. |
-| **S02** | Créateur de Patrouilleur | `/games/xenoverse-2/creator` | Sélection de race, personnalisation visuelle, attribution des points d'attributs. |
-| **S03** | Arène de Combat 3D | `/games/xenoverse-2/battle` | Vol à 360°, ciblage de l'ennemi (lock-on), jauges de Ki/Stamina, super frappes. |
-| **S04** | Quêtes Parallèles | `/games/xenoverse-2/quests` | Sélection de missions d'histoire alternative avec conditions secrètes (Ultimate Finish). |
+| ID      | Écran                    | Route                        | Rôle & Fonctionnalités                                                                   |
+| :------ | :----------------------- | :--------------------------- | :--------------------------------------------------------------------------------------- |
+| **S01** | Hub Conton City          | `/games/xenoverse-2`         | Exploration 3D libre du hub, marchands, portail de quêtes, classement.                   |
+| **S02** | Créateur de Patrouilleur | `/games/xenoverse-2/creator` | Sélection de race, personnalisation visuelle, attribution des points d'attributs.        |
+| **S03** | Arène de Combat 3D       | `/games/xenoverse-2/battle`  | Vol à 360°, ciblage de l'ennemi (lock-on), jauges de Ki/Stamina, super frappes.          |
+| **S04** | Quêtes Parallèles        | `/games/xenoverse-2/quests`  | Sélection de missions d'histoire alternative avec conditions secrètes (Ultimate Finish). |
 
 ---
 
 ## 5. Découpage en Tranches Verticales (Build Order)
 
 ### Tranche 1 : Visualiseur d'Arène et Vol Libre 3D (`apps/site/src/app/games/xenoverse-2/page.tsx`)
+
 - Chargement d'une arène canonique (Arène du Tournoi ou Wasteland) via `@aphrody/shenron-engine/glb-scene`.
 - Caméra orbitale à la troisième personne avec contrôles Z/Q/S/D + Espace (Voler haut) / Shift (Descendre).
 - Télémétrie 60 FPS affichée dans le HUD.
 
 ### Tranche 2 : Rendu de Personnage & Animation Osseuse (`S02`)
+
 - Chargement d'un avatar (Goku ou Patrouilleur Saiyan) avec squelette `.ean`.
 - Animation de vol stationnaire (`idle_flight`) et accélération (`boost_dash`).
 - Shaders de contour et d'aura d'énergie en WGSL.
 
 ### Tranche 3 : Système de Combat Aérien 3D (`S03`)
+
 - Verrouillage de cible (Lock-on sur touche `Tab` ou bouton manette R3).
 - Combo au corps à corps (enchaînement de 5 coups avec projection).
 - Téléportation instantanée (Z-Vanish sur `Space` en consommant 1 barre de Stamina).
 - Déclenchement du Kamehameha avec temps de charge et rayon d'énergie volumétrique.
 
 ### Tranche 4 : Quêtes Parallèles & Gestion de Quêtes (`S04`)
+
 - Première quête jouable : « Assaut des Saiyans » (Raditz, Nappa, Vegeta).
 - Détection des conditions d'échec et de victoire avec attribution d'un rang (D à Z).
 

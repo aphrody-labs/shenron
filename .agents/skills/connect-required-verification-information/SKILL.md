@@ -7,7 +7,6 @@ description: >-
   setups; or when they ask which verification fields, documents, or business
   details are required for a particular platform country, account country,
   business type, dashboard, service agreement, or capability.
-
 ---
 
 ## Instructions
@@ -33,13 +32,13 @@ Every time you ask the user to provide a value for a field:
 
 You must follow these rules:
 
-- Ask for a field *only* after all of its prerequisite fields are satisfied.
+- Ask for a field _only_ after all of its prerequisite fields are satisfied.
 - Collect setup fields progressively as the flow advances.
 - Ask for one field at a time, or one group of fields only when they’re dependency-free at that point in the flow.
   - For example, ask for `platformCountry` and `accountCountry` separately: the platform country determines which account countries are valid, so asking both together can produce invalid combinations. But you may ask for `dashboardType`, `tosType`, and `legalEntityType` together in one group because their valid options are already known from the same response.
 - If there is ever a conflict between the user’s request and the validated setup, inform the user of the conflict and ask them to revise their setup choices using the [Interaction contract](#interaction-contract). Keep the validated setup aligned with what the user requested without silently dropping the conflict.
 - Follow the [Interaction contract](#interaction-contract) for every user question.
-- When the number of available options exceeds four, *always* print the full validated reference list before asking the multiple-choice question so the user can see the full option space.
+- When the number of available options exceeds four, _always_ print the full validated reference list before asking the multiple-choice question so the user can see the full option space.
   - When printing countries, always print the full country name followed by its code in parentheses, for example, `Germany (DE)`.
   - In the multiple-choice question, include a small set of suggested options so the user can move forward with immediate clarity. The reference list above remains the authoritative full set.
   - Leave the descriptions for the country suggested options blank.
@@ -48,7 +47,7 @@ You must follow these rules:
 - Never display an option as selectable if you already know it will be removed, rejected, or auto-adjusted later in the flow.
   - Present options that stay valid through the current flow.
 - Ask about `capabilities` after `platformCountry`, `accountCountry`, and the downstream validity constraints for that setup are resolved.
-- *Only* ask about `orrProgram` when it is present in the public `programs` returned for the validated setup.
+- _Only_ ask about `orrProgram` when it is present in the public `programs` returned for the validated setup.
 - If the `businessStructure` map for the chosen `legalEntityType` is empty or contains exactly one key `nil`, skip `businessStructure`. Otherwise, ask for `businessStructure` and always allow a `none` option or leave unselected as a suggested option in the multiple-choice question.
 - If the user decides to change an earlier choice like `platformCountry`, you must invalidate and re-check all downstream fields before continuing.
 - Keep the dependency chain implicit. Share the information the user needs to make progress and keep the experience simple.
@@ -56,18 +55,18 @@ You must follow these rules:
 
 #### Internal fields -> External language
 
-| Internal field | External language |
-| --- | --- |
-| `apiVersion` | Accounts API version |
-| `platformCountry` | Platform country |
-| `accountCountry` | Account country |
-| `dashboardType` | Dashboard type |
-| `tosType` | Service agreement |
-| `legalEntityType` | Business type |
-| `businessStructure` | Business structure |
-| `capabilities` | Capabilities |
-| `orrProgram` | Requirements update |
-| `eu2025` | Europe |
+| Internal field      | External language    |
+| ------------------- | -------------------- |
+| `apiVersion`        | Accounts API version |
+| `platformCountry`   | Platform country     |
+| `accountCountry`    | Account country      |
+| `dashboardType`     | Dashboard type       |
+| `tosType`           | Service agreement    |
+| `legalEntityType`   | Business type        |
+| `businessStructure` | Business structure   |
+| `capabilities`      | Capabilities         |
+| `orrProgram`        | Requirements update  |
+| `eu2025`            | Europe               |
 
 ### Dependency chain
 
@@ -98,7 +97,7 @@ flowchart TD
 
 Interpret the diagram literally:
 
-- Ask for a node *only* after all of its incoming dependencies are resolved.
+- Ask for a node _only_ after all of its incoming dependencies are resolved.
 - Always ask the user for `apiVersion` first. Recommend `v2` by default.
 
 ### Inputs you eventually need
@@ -371,18 +370,14 @@ person: Name: `/(first|last)_name/` Name (kana): `/(first|last)_name_kana/` Name
   ```json
   {
     "requirements": {
-      "currently_due": [
-        "configuration.merchant.mcc",
-        "company.name",
-        "representative.first_name"
-      ],
-      "eventually_due": [
-        "business_profile.url"
-      ]
+      "currently_due": ["configuration.merchant.mcc", "company.name", "representative.first_name"],
+      "eventually_due": ["business_profile.url"]
     }
   }
   ```
+
 Do not use ellipses (`...`) or placeholder strings in the output — list every field name explicitly.
+
 - this shape is a derived summary for comparison and display. It isn’t a raw Accounts API response.
 - If `apiVersion=v2`, inform the user that this JSON is for information only, and doesn’t match the shape of a real API response.
 - derive each field’s due bucket from the requirement’s limit fields in the `get-requirements-for-setups` response:

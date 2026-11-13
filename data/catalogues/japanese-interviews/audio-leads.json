@@ -26,10 +26,7 @@
       "localAudioPath": "data/source-acquisition/kanzenshuu/podcast-audio/site-post-63236-podcast-episode-0455-nycc-interview-compilation.mp3",
       "localFileBytes": 51424625,
       "catalogueEpisode": "#0455",
-      "participants": [
-        "Masako Nozawa / 野沢雅子",
-        "multiple other guests"
-      ],
+      "participants": ["Masako Nozawa / 野沢雅子", "multiple other guests"],
       "possibleInterviewSegments": [
         {
           "start": "00:07:22",

@@ -17,9 +17,7 @@
         "url": "https://www.kanzenshuu.com/2011/07/11/podcast-episode-0264/",
         "publication": "Daizenshuu EX / Kanzenshuu podcast",
         "publicationDate": "2011-07-11",
-        "participants": [
-          "Drabaz"
-        ],
+        "participants": ["Drabaz"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2011.json",
         "audioUrl": "https://www.kanzenshuu.com/generalinfo/podcast/audio/Daizenshuu_EX_-_Episode_0264.mp3",
         "audioTranscriptAvailable": false,
@@ -51,9 +49,7 @@
         "url": "https://www.kanzenshuu.com/2011/03/03/dragon-ball-kai-ending-in-japan-first-solid-confirmation/",
         "publication": "TV Pia — entretien bref résumé",
         "publicationDate": "2011-03-03",
-        "participants": [
-          "Takeshi Kusao"
-        ],
+        "participants": ["Takeshi Kusao"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2011.json",
         "questionAnswerCount": null,
         "formatNote": "Extrait résumé; scan signalé sur forum non consulté; Q/R non dénombrables.",
@@ -80,10 +76,7 @@
         "url": "https://www.kanzenshuu.com/2011/09/09/funimation-dbz-tv-blu-ray-first-comparison-shots/",
         "publication": "ANNCast — Blu-ray TV DBZ",
         "publicationDate": "2011-09-09",
-        "participants": [
-          "Clarine Harp",
-          "Matt O’Hara"
-        ],
+        "participants": ["Clarine Harp", "Matt O’Hara"],
         "rawPath": "data/source-acquisition/kanzenshuu/site/posts/2011.json",
         "questionAnswerCount": null,
         "formatNote": "Notice Kanzenshuu sans transcription ni citations; Q/R non dénombrables.",

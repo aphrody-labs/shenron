@@ -17,6 +17,7 @@ Shenron propulse **dragonballfr.com** au sein du monorepo YOLO (`C:\src\products
 ## 2. Etat de Production et Pile Cible
 
 ### En production aujourd'hui (`ssh prod`)
+
 - **`apps/site`** (Next.js 16.5+ standalone sous Bun v1.4.4+) et **`apps/bot`** (`discordx`) tournent dans des conteneurs legers issus de l'image unifiee `localhost/shenron:<sha>`.
 - **`apps/server`** assemble le site, l'API Shenron et les routes internes en un binaire Bun (`scripts/build/server.ts`).
 - **Base de donnees et Cache** : PostgreSQL 18 avec `pgvector` (`shenron-postgres`, schemas `public` et `bot`) et Redis (`shenron-redis`).
@@ -28,6 +29,7 @@ Shenron propulse **dragonballfr.com** au sein du monorepo YOLO (`C:\src\products
 - **CDN Media** : Worker Cloudflare (`deploy/cloudflare`) adosse au bucket R2 `shenron-cdn` et replique sur Garage S3 (`ssh cdn`).
 
 ### Architecture Cible Full-Rust (`docs/decisions/0001-pile-du-site.md`)
+
 - **Site Web** : Leptos 0.8 SSR avec ilots sur Axum.
 - **Shenron Studio & Desktop** : GPUI / Dioxus 0.8, rendu WGPU 30, Vello, Parley, Taffy, AccessKit.
 - **Moteur & Pipelines Creatifs** : `crates/bun-engine-core`, `packages/bun-blender` (Blender 5.2.3 LTS), `packages/bun-video-project`, `packages/bun-gamestream`.

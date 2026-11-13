@@ -201,12 +201,12 @@ Source unique : `packages/ui/src/toriyama-svg/sphere.ts`, lue par `<DragonBall>`
 `<DragonBallSphere>` et `TORIYAMA_PALETTE.dragonBall` (deux copies divergeables
 du dégradé, des positions et de la fonction d'étoile supprimées le 2026-10-05).
 
-| Grandeur          | Valeur                                                           | Source                                                                                                      |
-| ----------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
-| Disque            | Ø 100 px, centre (444,5 ; 165,8)                                 | tome 1 original, `db_manga_volumes/82.jpg` (1000 × 1500), cordes sur 100 lignes                             |
-| Foyer du dégradé  | (−0,30 ; −0,39) R                                                | idem, 10 arrêts `#FDFFEA` → `#EF9A2B`, médiane sur 180 rayons                                               |
-| Étoile (1 étoile) | rayon externe 0,412 R, interne 0,45 (mesuré 0,479 / 0,45 / 0,45) | idem + ligne de titre                                                                                       |
-| Rouge d'étoile    | `#E81F23` (second relevé `#EA1E24`)                              | médiane sur 758 px                                                                                          |
+| Grandeur          | Valeur                                                           | Source                                                                                                     |
+| ----------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Disque            | Ø 100 px, centre (444,5 ; 165,8)                                 | tome 1 original, `db_manga_volumes/82.jpg` (1000 × 1500), cordes sur 100 lignes                            |
+| Foyer du dégradé  | (−0,30 ; −0,39) R                                                | idem, 10 arrêts `#FDFFEA` → `#EF9A2B`, médiane sur 180 rayons                                              |
+| Étoile (1 étoile) | rayon externe 0,412 R, interne 0,45 (mesuré 0,479 / 0,45 / 0,45) | idem + ligne de titre                                                                                      |
+| Rouge d'étoile    | `#E81F23` (second relevé `#EA1E24`)                              | médiane sur 758 px                                                                                         |
 | Cerne             | 4,5 % du diamètre                                                | logo DBS, `db_manga_volumes/124.jpg` (4 px pour Ø 89) ; absent du tome 1, écart assumé pour le fond sombre |
 
 Manques consignés : la disposition et le rayon des étoiles de 2 à 7 ne sont

@@ -79,6 +79,7 @@ la source de vérité.
 ### Mode RAG naïf, modèles locaux et Persona Akira Toriyama
 
 Le système fonctionne désormais avec un seul bot unifié :
+
 - **Mode YOLO** : le bot adopte par défaut le persona canonique **Akira Toriyama** (Tori-bot), bienveillant, modeste, passionné et autorité suprême sur le manga original.
 - **Mode User** : au premier démarrage, l'utilisateur a la liberté de définir son persona personnalisé (enregistré dans `~/.aphrody/persona.json`), avec repli naturel sur Akira Toriyama.
 - **Recherche documentaire locale** : interroge l'index natif Aphrody (`aphrody rag search`) ou le corpus local (`corpus-databooks.json`) avec scoring par pertinence lexicale et boost d'entités.

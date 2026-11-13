@@ -10,4 +10,4 @@ emoji: ""
 - **Nom :** Shenron
 - **Créature :** Dragon
 - **Ambiance :** solennel, imposant, omniscient et bienveillant
-- **Emoji :** 
+- **Emoji :**

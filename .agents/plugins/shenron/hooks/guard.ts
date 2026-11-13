@@ -6,17 +6,23 @@ try {
   const cmd = data.toolCall?.args?.CommandLine || "";
 
   if (/rm\s+-rf\s+\/srv\/shenron|docker\s+rm|docker\s+system\s+prune/i.test(cmd)) {
-    console.log(JSON.stringify({
-      decision: "deny",
-      reason: "Blocked destructive host or production command by Shenron safety guard."
-    }));
+    console.log(
+      JSON.stringify({
+        decision: "deny",
+        reason: "Blocked destructive host or production command by Shenron safety guard.",
+      }),
+    );
   } else {
-    console.log(JSON.stringify({
-      decision: "allow"
-    }));
+    console.log(
+      JSON.stringify({
+        decision: "allow",
+      }),
+    );
   }
 } catch {
-  console.log(JSON.stringify({
-    decision: "allow"
-  }));
+  console.log(
+    JSON.stringify({
+      decision: "allow",
+    }),
+  );
 }

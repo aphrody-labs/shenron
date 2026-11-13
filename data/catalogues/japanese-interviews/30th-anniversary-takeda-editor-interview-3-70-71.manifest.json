@@ -17,16 +17,10 @@
   "interviewee": "武田冬門",
   "records": [
     {
-      "printedPages": [
-        70,
-        71
-      ],
+      "printedPages": [70, 71],
       "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-takeda-editor-interview-3-70-71.jsonl#L1",
-      "pdfPageIndices": [
-        71,
-        72
-      ],
+      "pdfPageIndices": [71, 72],
       "completeness": "Visible interview body on printed pp.70-71 transcribed; adjacent page-70 fragment separated because attribution/body status is uncertain; visual draft needs independent character-level review.",
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
       "transcriptSha256": "813d0fe1068c6fb4cb7ffe4d70765d3fe004205806f079a7ea586fc021b8a760",

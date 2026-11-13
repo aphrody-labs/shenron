@@ -18,10 +18,7 @@
       "source": {
         "publication": "One Piece Color Walk 1",
         "date": "2001",
-        "participants": [
-          "Eiichirō Oda",
-          "Akira Toriyama"
-        ],
+        "participants": ["Eiichirō Oda", "Akira Toriyama"],
         "url": "https://www.kanzenshuu.com/manga/spin-offs/crossovers/cross-epoch/",
         "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2013.json",
         "sourceRecordId": 24513,

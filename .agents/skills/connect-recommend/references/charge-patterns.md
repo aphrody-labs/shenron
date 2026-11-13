@@ -6,17 +6,17 @@ Connect offers three ways to create charges involving connected accounts. The ch
 
 ### Comparison Table
 
-| Feature | Direct Charges | Destination Charges | Separate Charges & Transfers |
-| --- | --- | --- | --- |
-| **Merchant of record** | Connected account | Platform | Platform |
-| **Payment created on** | Connected account | Platform account | Platform account |
-| **Statement descriptor** | Connected account’s | Platform’s (can set connected account’s) | Platform’s |
-| **Platform fee** | `application_fee_amount` | `application_fee_amount` or calculate using `transfer_data.amount` | Manual calculation |
-| **Refund source** | Connected account’s balance | Platform’s balance | Platform’s balance |
-| **Multi-seller split** | No (one seller per charge) | No (one destination per charge) | Yes (multiple transfers) |
-| **Account requirements** | Most v2 configs — see BLOCKED combinations in the controller compatibility note below; the only charge type with supported `losses_collector: 'stripe'` configurations for the full Dashboard and Express (public preview) | Requires `losses_collector: 'application'` | Requires `losses_collector: 'application'` |
-| **Complexity** | Low | Low | High |
-| **Best for** | SaaS, seller-owned transactions | Marketplaces, on-demand | Multi-seller carts, complex splits |
+| Feature                  | Direct Charges                                                                                                                                                                                                             | Destination Charges                                                | Separate Charges & Transfers               |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------ |
+| **Merchant of record**   | Connected account                                                                                                                                                                                                          | Platform                                                           | Platform                                   |
+| **Payment created on**   | Connected account                                                                                                                                                                                                          | Platform account                                                   | Platform account                           |
+| **Statement descriptor** | Connected account’s                                                                                                                                                                                                        | Platform’s (can set connected account’s)                           | Platform’s                                 |
+| **Platform fee**         | `application_fee_amount`                                                                                                                                                                                                   | `application_fee_amount` or calculate using `transfer_data.amount` | Manual calculation                         |
+| **Refund source**        | Connected account’s balance                                                                                                                                                                                                | Platform’s balance                                                 | Platform’s balance                         |
+| **Multi-seller split**   | No (one seller per charge)                                                                                                                                                                                                 | No (one destination per charge)                                    | Yes (multiple transfers)                   |
+| **Account requirements** | Most v2 configs — see BLOCKED combinations in the controller compatibility note below; the only charge type with supported `losses_collector: 'stripe'` configurations for the full Dashboard and Express (public preview) | Requires `losses_collector: 'application'`                         | Requires `losses_collector: 'application'` |
+| **Complexity**           | Low                                                                                                                                                                                                                        | Low                                                                | High                                       |
+| **Best for**             | SaaS, seller-owned transactions                                                                                                                                                                                            | Marketplaces, on-demand                                            | Multi-seller carts, complex splits         |
 
 ### Direct Charges
 
@@ -30,16 +30,19 @@ The charge is created directly on the connected account. The connected account i
 
 ```javascript
 // Backend: Create PaymentIntent on connected account
-const paymentIntent = await stripe.paymentIntents.create({
-  amount: 10000, // $100.00
-  currency: 'usd',
-  application_fee_amount: 1500, // $15.00 platform fee
-  metadata: {
-    orderId: 'order_123',
+const paymentIntent = await stripe.paymentIntents.create(
+  {
+    amount: 10000, // $100.00
+    currency: "usd",
+    application_fee_amount: 1500, // $15.00 platform fee
+    metadata: {
+      orderId: "order_123",
+    },
   },
-}, {
-  stripeAccount: 'acct_connected_account_id', // Key: stripeAccount header
-});
+  {
+    stripeAccount: "acct_connected_account_id", // Key: stripeAccount header
+  },
+);
 
 // Return client_secret to frontend
 res.json({ clientSecret: paymentIntent.client_secret });
@@ -49,15 +52,15 @@ res.json({ clientSecret: paymentIntent.client_secret });
 
 ```javascript
 // Must initialize Stripe with connected account
-const stripe = await loadStripe('pk_test_...', {
-  stripeAccount: 'acct_connected_account_id',
+const stripe = await loadStripe("pk_test_...", {
+  stripeAccount: "acct_connected_account_id",
 });
 
 // Then confirm payment as usual
 const result = await stripe.confirmPayment({
   elements,
   confirmParams: {
-    return_url: 'https://yoursite.com/success',
+    return_url: "https://yoursite.com/success",
   },
 });
 ```
@@ -75,13 +78,16 @@ Customer pays $100
 
 ```javascript
 // Refund comes from connected account's balance
-const refund = await stripe.refunds.create({
-  charge: 'ch_xxx',
-  // Optionally refund the application fee too:
-  refund_application_fee: true,
-}, {
-  stripeAccount: 'acct_connected_account_id',
-});
+const refund = await stripe.refunds.create(
+  {
+    charge: "ch_xxx",
+    // Optionally refund the application fee too:
+    refund_application_fee: true,
+  },
+  {
+    stripeAccount: "acct_connected_account_id",
+  },
+);
 ```
 
 #### When to use
@@ -107,15 +113,15 @@ The charge is created on the platform’s account. The platform is the merchant 
 // Backend: Create PaymentIntent on platform account
 const paymentIntent = await stripe.paymentIntents.create({
   amount: 10000, // $100.00
-  currency: 'usd',
+  currency: "usd",
   application_fee_amount: 1500, // $15.00 collected; platform net = $15.00 − Stripe processing fees
   transfer_data: {
-    destination: 'acct_connected_account_id', // Funds go here
+    destination: "acct_connected_account_id", // Funds go here
   },
   metadata: {
-    bookingId: 'booking_123',
-    riderId: 'user_456',
-    operatorId: 'user_789',
+    bookingId: "booking_123",
+    riderId: "user_456",
+    operatorId: "user_789",
   },
 });
 
@@ -128,9 +134,9 @@ res.json({ clientSecret: paymentIntent.client_secret });
 ```javascript
 const paymentIntent = await stripe.paymentIntents.create({
   amount: 10000, // $100.00
-  currency: 'usd',
+  currency: "usd",
   transfer_data: {
-    destination: 'acct_connected_account_id',
+    destination: "acct_connected_account_id",
     amount: 8500, // $85.00 goes to connected account (platform keeps $15)
   },
 });
@@ -140,12 +146,12 @@ const paymentIntent = await stripe.paymentIntents.create({
 
 ```javascript
 // Initialize Stripe with platform's publishable key (no stripeAccount needed)
-const stripe = await loadStripe('pk_test_platform_key');
+const stripe = await loadStripe("pk_test_platform_key");
 
 const result = await stripe.confirmPayment({
   elements,
   confirmParams: {
-    return_url: 'https://yoursite.com/success',
+    return_url: "https://yoursite.com/success",
   },
 });
 ```
@@ -164,7 +170,7 @@ Customer pays $100
 ```javascript
 // Refund comes from platform's balance
 const refund = await stripe.refunds.create({
-  payment_intent: 'pi_xxx',
+  payment_intent: "pi_xxx",
   // Optionally:
   reverse_transfer: true, // Claw back from connected account
   refund_application_fee: true, // Refund the platform fee too
@@ -183,9 +189,9 @@ const refund = await stripe.refunds.create({
 #### Destination Charges with on_behalf_of
 
 > **Not covered by this guide.** `on_behalf_of` is an advanced variant that changes the merchant of record to the connected account while the charge lives on the platform. It has narrow use cases and significant complexity.
-> 
+>
 > If your integration requires `on_behalf_of`, consult the [Stripe Connect documentation](https://docs.stripe.com/connect/charges.md) or [contact Stripe sales](https://stripe.com/contact/sales).
-> 
+>
 > **Do NOT use `on_behalf_of` for marketplace use cases** — the platform should be the merchant of record. Use regular destination charges instead.
 
 ### Separate Charges and Transfers
@@ -202,9 +208,9 @@ The charge and transfer are separate API calls. This gives maximum flexibility �
 // Step 1: Create PaymentIntent (no transfer_data)
 const paymentIntent = await stripe.paymentIntents.create({
   amount: 10000, // $100.00
-  currency: 'usd',
+  currency: "usd",
   metadata: {
-    orderId: 'order_123',
+    orderId: "order_123",
   },
 });
 
@@ -215,11 +221,11 @@ const paymentIntent = await stripe.paymentIntents.create({
 const confirmedIntent = event.data.object; // payment_intent.succeeded payload
 const transfer = await stripe.transfers.create({
   amount: 8500, // $85.00 to connected account
-  currency: 'usd',
-  destination: 'acct_connected_account_id',
+  currency: "usd",
+  destination: "acct_connected_account_id",
   source_transaction: confirmedIntent.latest_charge, // charge ID from confirmed PaymentIntent
   metadata: {
-    orderId: 'order_123',
+    orderId: "order_123",
   },
 });
 ```
@@ -230,7 +236,7 @@ const transfer = await stripe.transfers.create({
 // One payment, multiple sellers (for example, a multi-seller cart)
 await stripe.paymentIntents.create({
   amount: 25000, // $250.00 total
-  currency: 'usd',
+  currency: "usd",
 });
 
 // After payment_intent.succeeded webhook fires — latest_charge is null at creation time.
@@ -242,16 +248,16 @@ const chargeId = confirmedIntent.latest_charge;
 // Transfer to seller A
 await stripe.transfers.create({
   amount: 8000,
-  currency: 'usd',
-  destination: 'acct_seller_a',
+  currency: "usd",
+  destination: "acct_seller_a",
   source_transaction: chargeId,
 });
 
 // Transfer to seller B
 await stripe.transfers.create({
   amount: 12000,
-  currency: 'usd',
-  destination: 'acct_seller_b',
+  currency: "usd",
+  destination: "acct_seller_b",
   source_transaction: chargeId,
 });
 
@@ -273,14 +279,14 @@ Customer pays $250
 ```javascript
 // Refund the charge
 const refund = await stripe.refunds.create({
-  charge: 'ch_xxx',
+  charge: "ch_xxx",
 });
 
 // Manually reverse transfers
-await stripe.transfers.createReversal('tr_seller_a', {
+await stripe.transfers.createReversal("tr_seller_a", {
   amount: 8000,
 });
-await stripe.transfers.createReversal('tr_seller_b', {
+await stripe.transfers.createReversal("tr_seller_b", {
   amount: 12000,
 });
 ```

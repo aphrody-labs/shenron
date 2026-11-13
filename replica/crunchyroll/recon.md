@@ -29,16 +29,16 @@ progression) ; seules des structures y sont relevées, aucune donnée personnell
 
 ## Sources
 
-| # | source | URL | notes |
-| --- | --- | --- | --- |
-| 1 | conditions d'utilisation | https://www.crunchyroll.com/tos | lue ; voir l'avertissement |
-| 2 | page « découvrir » | https://www.crunchyroll.com/fr/discover | lue (1 capture, arbre d'accessibilité) |
-| 3 | fiche série | https://www.crunchyroll.com/fr/series/GT00389311/dragon-ball-super-beerus | lue (2 captures, défilement) |
-| 4 | page de lecture | https://www.crunchyroll.com/fr/watch/GE00389316JAJP/the-god-of-saiyans | lue à l'arrêt, 0:00, sans lecture (2 captures) |
-| 5 | liste de suivi | https://www.crunchyroll.com/fr/watchlist | protégée, non lue |
-| 6 | centre d'aide (liste de suivi, historique, audio/sous-titres) | https://help.crunchyroll.com/hc/fr | rendu client vide, non lu |
-| 7 | formules et tarifs | https://www.crunchyroll.com/fr/premium | rendu client vide, non lu |
-| 8 | fiche de la boutique d'applications iOS | https://apps.apple.com/fr/app/crunchyroll/id329913454 | non lue (hors portée web) |
+| #   | source                                                        | URL                                                                       | notes                                          |
+| --- | ------------------------------------------------------------- | ------------------------------------------------------------------------- | ---------------------------------------------- |
+| 1   | conditions d'utilisation                                      | https://www.crunchyroll.com/tos                                           | lue ; voir l'avertissement                     |
+| 2   | page « découvrir »                                            | https://www.crunchyroll.com/fr/discover                                   | lue (1 capture, arbre d'accessibilité)         |
+| 3   | fiche série                                                   | https://www.crunchyroll.com/fr/series/GT00389311/dragon-ball-super-beerus | lue (2 captures, défilement)                   |
+| 4   | page de lecture                                               | https://www.crunchyroll.com/fr/watch/GE00389316JAJP/the-god-of-saiyans    | lue à l'arrêt, 0:00, sans lecture (2 captures) |
+| 5   | liste de suivi                                                | https://www.crunchyroll.com/fr/watchlist                                  | protégée, non lue                              |
+| 6   | centre d'aide (liste de suivi, historique, audio/sous-titres) | https://help.crunchyroll.com/hc/fr                                        | rendu client vide, non lu                      |
+| 7   | formules et tarifs                                            | https://www.crunchyroll.com/fr/premium                                    | rendu client vide, non lu                      |
+| 8   | fiche de la boutique d'applications iOS                       | https://apps.apple.com/fr/app/crunchyroll/id329913454                     | non lue (hors portée web)                      |
 
 Captures de référence (non livrées) : `replica/crunchyroll/screens/` (ignoré par Git). Les captures n'ont pas été écrites sur disque
 (elles restent dans la session) ; les mesures de `design/` en sont tirées, à ±2 px sur une capture de 1475 px (échelle 1,11 vers le viewport 1638 px).
@@ -49,15 +49,15 @@ Ouvrir la plateforme, voir tout de suite quoi reprendre ou quoi lancer, lire un 
 
 ## Écrans
 
-| ID | écran | route / accès | but | composants clés | états vus |
-| --- | --- | --- | --- | --- | --- |
-| S01 | Découvrir | `/discover` (accueil connecté) | point d'entrée, reprise, tendances | en-tête global, bandeau héros à diapositives, rails de cartes | rempli, vignettes en chargement |
-| S02 | Fiche série | `/series/{id}/{slug}` | présenter, lancer ou reprendre, lister les épisodes | héros, méta, bouton principal, grille d'épisodes, rail « titres similaires » | rempli, vignettes en chargement |
-| S03 | Lecture d'épisode | `/watch/{id}/{slug}` | regarder, enchaîner | lecteur 16:9, barre de contrôles, infos épisode, panneau latéral, pied de page | arrêt à 0:00 |
-| S04 | Liste de suivi | `/watchlist` | retrouver les séries sauvegardées | grille de cartes, tri, état vide (inféré) | non lu |
-| S05 | Recherche | `/search` | trouver un titre | champ + résultats | non ouvert (lien vu) |
-| S06 | Listes par genre, nouveautés, populaires | `/videos/{genre, new, popular}` | parcourir | grille ou rail | non ouvert (liens vus) |
-| S07 | Menu utilisateur | déclencheur en en-tête | profils, liste, compte | menu déroulant | non ouvert |
+| ID  | écran                                    | route / accès                   | but                                                 | composants clés                                                                | états vus                       |
+| --- | ---------------------------------------- | ------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------ | ------------------------------- |
+| S01 | Découvrir                                | `/discover` (accueil connecté)  | point d'entrée, reprise, tendances                  | en-tête global, bandeau héros à diapositives, rails de cartes                  | rempli, vignettes en chargement |
+| S02 | Fiche série                              | `/series/{id}/{slug}`           | présenter, lancer ou reprendre, lister les épisodes | héros, méta, bouton principal, grille d'épisodes, rail « titres similaires »   | rempli, vignettes en chargement |
+| S03 | Lecture d'épisode                        | `/watch/{id}/{slug}`            | regarder, enchaîner                                 | lecteur 16:9, barre de contrôles, infos épisode, panneau latéral, pied de page | arrêt à 0:00                    |
+| S04 | Liste de suivi                           | `/watchlist`                    | retrouver les séries sauvegardées                   | grille de cartes, tri, état vide (inféré)                                      | non lu                          |
+| S05 | Recherche                                | `/search`                       | trouver un titre                                    | champ + résultats                                                              | non ouvert (lien vu)            |
+| S06 | Listes par genre, nouveautés, populaires | `/videos/{genre, new, popular}` | parcourir                                           | grille ou rail                                                                 | non ouvert (liens vus)          |
+| S07 | Menu utilisateur                         | déclencheur en en-tête          | profils, liste, compte                              | menu déroulant                                                                 | non ouvert                      |
 
 Hors tranche : jeux, boutique, actualités, agenda, simulcast, compte et facturation.
 
@@ -97,20 +97,20 @@ Clics à battre pour la boucle découvrir -> regarder : 1 depuis une reprise, 3 
 
 ## Composants (termes génériques)
 
-| composant | variantes | états | écrans |
-| --- | --- | --- | --- |
-| En-tête global | liens de rubriques, recherche, liste, menu utilisateur | défaut, lien actif, menu ouvert | tous |
-| Bandeau héros | 6 diapositives, flèches, pastilles de pagination avec progression | auto, pause, focus | S01 |
-| Rail horizontal | cartes 16:9 ou 2:3, flèche de défilement | début, milieu, fin, chargement | S01, S02 |
-| Carte série | vignette portrait, coin « dans ma liste » | défaut, survol, dans la liste, image en chargement | S01, S02, S04 |
-| Carte épisode | vignette 16:9, bouton lecture central, pastille « temps restant », barre de progression, kebab | non vu, en cours, terminé, survol | S02, S03 |
-| Bouton principal et bouton marque-page | « reprendre En » ou « lancer », bascule liste | défaut, reprise, ajouté, chargement | S01, S02, S03 |
-| Bloc méta de série | classification, version, genres en liens, note moyenne | replié, déplié | S02 |
-| Sélecteur de saison, tri, options | libellé de saison, tri, menu options | défaut, ouvert | S02 |
-| Lecteur | barre de lecture, -10 s, lecture, +10 s, volume, langues, vitesse, paramètres, plein écran | arrêt, lecture, pause, tampon, erreur | S03 |
-| Panneau latéral de lecture | épisode précédent, « voir plus d'épisodes » | avec ou sans précédent | S03 |
-| Infos d'épisode | série, titre, classification, date de mise en ligne, j'aime / je n'aime pas, partage, résumé | replié, déplié | S03 |
-| Pied de page | colonnes de liens | statique | S03 |
+| composant                              | variantes                                                                                      | états                                              | écrans        |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------- | -------------------------------------------------- | ------------- |
+| En-tête global                         | liens de rubriques, recherche, liste, menu utilisateur                                         | défaut, lien actif, menu ouvert                    | tous          |
+| Bandeau héros                          | 6 diapositives, flèches, pastilles de pagination avec progression                              | auto, pause, focus                                 | S01           |
+| Rail horizontal                        | cartes 16:9 ou 2:3, flèche de défilement                                                       | début, milieu, fin, chargement                     | S01, S02      |
+| Carte série                            | vignette portrait, coin « dans ma liste »                                                      | défaut, survol, dans la liste, image en chargement | S01, S02, S04 |
+| Carte épisode                          | vignette 16:9, bouton lecture central, pastille « temps restant », barre de progression, kebab | non vu, en cours, terminé, survol                  | S02, S03      |
+| Bouton principal et bouton marque-page | « reprendre En » ou « lancer », bascule liste                                                  | défaut, reprise, ajouté, chargement                | S01, S02, S03 |
+| Bloc méta de série                     | classification, version, genres en liens, note moyenne                                         | replié, déplié                                     | S02           |
+| Sélecteur de saison, tri, options      | libellé de saison, tri, menu options                                                           | défaut, ouvert                                     | S02           |
+| Lecteur                                | barre de lecture, -10 s, lecture, +10 s, volume, langues, vitesse, paramètres, plein écran     | arrêt, lecture, pause, tampon, erreur              | S03           |
+| Panneau latéral de lecture             | épisode précédent, « voir plus d'épisodes »                                                    | avec ou sans précédent                             | S03           |
+| Infos d'épisode                        | série, titre, classification, date de mise en ligne, j'aime / je n'aime pas, partage, résumé   | replié, déplié                                     | S03           |
+| Pied de page                           | colonnes de liens                                                                              | statique                                           | S03           |
 
 ## Modèle de données inféré
 
@@ -153,6 +153,7 @@ Chez nous, progression et liste de suivi existent déjà (`packages/db/src/repos
 ## Taille
 
 Écrans 7 (4 dans la tranche), flux 6, entités 8 (4 existent déjà côté site). Difficultés :
+
 1. Rail horizontal à accrochage (snap), flèches, clavier et lecteur d'écran, sans débordement à 390 px (aucun composant du kit).
 2. Reprise fiable : position, fin d'épisode, fusion appareil / compte, enchaînement automatique (partiel : `watch-sync`).
 3. Lecteur : langues et sous-titres, états erreur et tampon, panneau d'enchaînement ; dépend d'un média autorisé réel (hors DRM).

@@ -7,14 +7,14 @@ est explicitement hors périmètre.
 
 ## Sources observées
 
-| Source | URL | Observation |
-| --- | --- | --- |
-| Page jeu DBFR | https://dragonballfr.com/games/xenoverse-2 | Analyse locale de fichiers ; sélection de dossier, confidentialité, moteur WASM |
-| Fiche wiki DBFR | https://dragonballfr.com/wiki/games/xenoverse-2 | Description, plateformes, galerie, personnages et discussion |
-| Dossier local du jeu | `data/DB Xenoverse 2` | 39 fichiers de lanceur, exécutable et dépendances ; ne contient pas les CPK |
-| Serveur CPK | `docs/operations/dbxv2-serve.md` | Service présent sur le VPS, actuellement limité au mesh ; publication publique demandée, à livrer via Infra |
-| Fork REA demandé | https://github.com/aphrody-labs/rea | Outils de reconnaissance ; source de référence distincte du jeu |
-| Toolkit DBXV2 demandé | https://github.com/aphrody-labs/dbxv2 | Outils et catalogue de formats ; aucune preuve d’un jeu complet en WASM |
+| Source                | URL                                             | Observation                                                                                                 |
+| --------------------- | ----------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| Page jeu DBFR         | https://dragonballfr.com/games/xenoverse-2      | Analyse locale de fichiers ; sélection de dossier, confidentialité, moteur WASM                             |
+| Fiche wiki DBFR       | https://dragonballfr.com/wiki/games/xenoverse-2 | Description, plateformes, galerie, personnages et discussion                                                |
+| Dossier local du jeu  | `data/DB Xenoverse 2`                           | 39 fichiers de lanceur, exécutable et dépendances ; ne contient pas les CPK                                 |
+| Serveur CPK           | `docs/operations/dbxv2-serve.md`                | Service présent sur le VPS, actuellement limité au mesh ; publication publique demandée, à livrer via Infra |
+| Fork REA demandé      | https://github.com/aphrody-labs/rea             | Outils de reconnaissance ; source de référence distincte du jeu                                             |
+| Toolkit DBXV2 demandé | https://github.com/aphrody-labs/dbxv2           | Outils et catalogue de formats ; aucune preuve d’un jeu complet en WASM                                     |
 
 ## Cible
 
@@ -24,12 +24,12 @@ quelques formats et ne constitue pas le jeu. La faisabilité et les étapes de p
 
 ## Écrans
 
-| ID | Écran | Route | Composants | États observés ou à vérifier |
-| --- | --- | --- | --- | --- |
-| S01 | Jeu et explorateur | `/games/xenoverse-2` | Choix de dossier, analyse, résultats | État initial observé ; raccord Play préparé |
-| S02 | Fiche jeu | `/wiki/games/xenoverse-2` | Couverture, galerie, fiche, discussion | Fiche publiée observée ; raccord Play préparé |
-| S03 | Analyse locale | `/games/xenoverse-2` | Sélection et parseurs WASM | Analyse limitée à cinq formats |
-| S04 | Jeu navigateur WASM | à concevoir | Moteur, données, contrôles et rendu | Non implémenté |
+| ID  | Écran               | Route                     | Composants                             | États observés ou à vérifier                  |
+| --- | ------------------- | ------------------------- | -------------------------------------- | --------------------------------------------- |
+| S01 | Jeu et explorateur  | `/games/xenoverse-2`      | Choix de dossier, analyse, résultats   | État initial observé ; raccord Play préparé   |
+| S02 | Fiche jeu           | `/wiki/games/xenoverse-2` | Couverture, galerie, fiche, discussion | Fiche publiée observée ; raccord Play préparé |
+| S03 | Analyse locale      | `/games/xenoverse-2`      | Sélection et parseurs WASM             | Analyse limitée à cinq formats                |
+| S04 | Jeu navigateur WASM | à concevoir               | Moteur, données, contrôles et rendu    | Non implémenté                                |
 
 ## Parcours
 

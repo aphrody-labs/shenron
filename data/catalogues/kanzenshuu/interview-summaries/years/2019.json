@@ -19,9 +19,7 @@
       "source": {
         "publication": "Dragon Ball Official Site",
         "date": "03 December 2019",
-        "participants": [
-          "Toyotarō"
-        ],
+        "participants": ["Toyotarō"],
         "archivedTranslation": "https://www.kanzenshuu.com/translations/dragon-ball-official-site-dbs-vol-11-toyotaro-workspace-interview/",
         "questionAnswerCount": 4,
         "detectedQuestionBlocks": 4,
@@ -157,12 +155,8 @@
         "sourcePageUrl": "https://www.kanzenshuu.com/manga/tv-comics/",
         "sourcePageRawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
         "archivedTranslation": null,
-        "bibliographicYears": [
-          2019
-        ],
-        "participants": [
-          "Katsuyoshi Nakatsuru"
-        ],
+        "bibliographicYears": [2019],
+        "participants": ["Katsuyoshi Nakatsuru"],
         "format": "interview signalée",
         "contentDescription": null,
         "bodyAvailable": false,

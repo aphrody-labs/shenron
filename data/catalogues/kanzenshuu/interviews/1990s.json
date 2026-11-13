@@ -9,15 +9,8 @@
       "publicationType": "Artbook",
       "format": "Interview",
       "publicationDate": "10 January 1990",
-      "participants": [
-        "Akira Toriyama",
-        "Osamu Akimoto"
-      ],
-      "topics": [
-        "Dragon Ball (Manga)",
-        "Characters",
-        "Manga"
-      ],
+      "participants": ["Akira Toriyama", "Osamu Akimoto"],
+      "topics": ["Dragon Ball (Manga)", "Characters", "Manga"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/akira-toriyama-the-world-toriyama-vs-akimoto.html",
       "acquired": true,
       "forumContent": false,
@@ -41,14 +34,8 @@
       "publicationType": "Magazine",
       "format": "Interview",
       "publicationDate": "17 January 1995",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball (Manga)",
-        "Manga",
-        "Production"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball (Manga)", "Manga", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/weekly-playboy-1995-5-akira-toriyama-exclusive-interview.html",
       "acquired": true,
       "forumContent": false,
@@ -56,10 +43,7 @@
       "pageTitle": "Translations | Weekly Playboy 1995 #5 - Akira Toriyama Exclusive Interview",
       "sourceDescription": "An English translation of an Akira Toriyama feature article from the 1995 #5 issue of 'Weekly Playboy' in Japan",
       "questionCount": 0,
-      "sectionHeadings": [
-        "Weekly Playboy , 1995 #5",
-        "Akira Toriyama – Exclusive Interview"
-      ],
+      "sectionHeadings": ["Weekly Playboy , 1995 #5", "Akira Toriyama – Exclusive Interview"],
       "editorialSummary": null,
       "reviewStatus": "source-acquired-summary-pending"
     },
@@ -71,14 +55,8 @@
       "publicationType": "Guidebook",
       "format": "Interview",
       "publicationDate": "20 June 1995",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball (Manga)",
-        "Characters",
-        "Illustrations"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball (Manga)", "Characters", "Illustrations"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-1-akira-toriyama-super-interview.html",
       "acquired": true,
       "forumContent": false,
@@ -102,14 +80,8 @@
       "publicationType": "Guidebook",
       "format": "Interview",
       "publicationDate": "04 August 1995",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball (Manga)",
-        "Characters",
-        "Story"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball (Manga)", "Characters", "Story"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-2-akira-toriyama-super-interview.html",
       "acquired": true,
       "forumContent": false,
@@ -133,14 +105,8 @@
       "publicationType": "Guidebook",
       "format": "Interview",
       "publicationDate": "04 September 1995",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball (Anime)",
-        "Dragon Ball Z",
-        "Animation"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball (Anime)", "Dragon Ball Z", "Animation"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-3-akira-toriyama-super-interview.html",
       "acquired": true,
       "forumContent": false,
@@ -164,14 +130,8 @@
       "publicationType": "Guidebook",
       "format": "Interview",
       "publicationDate": "04 October 1995",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball (Manga)",
-        "Setting",
-        "World"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball (Manga)", "Setting", "World"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-4-akira-toriyama-super-interview.html",
       "acquired": true,
       "forumContent": false,
@@ -195,14 +155,8 @@
       "publicationType": "Guidebook",
       "format": "Interview",
       "publicationDate": "04 November 1995",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball Z",
-        "Animation",
-        "Voice Actor"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball Z", "Animation", "Voice Actor"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-5-akira-toriyama-super-interview.html",
       "acquired": true,
       "forumContent": false,
@@ -226,15 +180,8 @@
       "publicationType": "Guidebook",
       "format": "Interview",
       "publicationDate": "04 December 1995",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball (Anime)",
-        "Dragon Ball Z",
-        "Characters",
-        "Production"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball (Anime)", "Dragon Ball Z", "Characters", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-6-akira-toriyama-super-interview.html",
       "acquired": true,
       "forumContent": false,
@@ -258,15 +205,8 @@
       "publicationType": "Insert Pamphlet",
       "format": "Interview",
       "publicationDate": "05 February 1996",
-      "participants": [
-        "Akira Toriyama",
-        "Masakazu Katsura"
-      ],
-      "topics": [
-        "Dragon Ball (Manga)",
-        "Dragon Ball GT",
-        "Production"
-      ],
+      "participants": ["Akira Toriyama", "Masakazu Katsura"],
+      "topics": ["Dragon Ball (Manga)", "Dragon Ball GT", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/daizenshuu-7-shenlong-times.html",
       "acquired": true,
       "forumContent": false,
@@ -293,15 +233,8 @@
       "publicationType": "Magazine",
       "format": "Interview",
       "publicationDate": "21 November 1996",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball (Manga)",
-        "Manga",
-        "Production",
-        "Video Games"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball (Manga)", "Manga", "Production", "Video Games"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/wired-japan-1997-akira-toriyama-interview.html",
       "acquired": true,
       "forumContent": false,
@@ -325,12 +258,8 @@
       "publicationType": "Guidebook",
       "format": "Interview",
       "publicationDate": "17 December 1997",
-      "participants": [
-        "Masako Nozawa"
-      ],
-      "topics": [
-        "Dragon Ball GT"
-      ],
+      "participants": ["Masako Nozawa"],
+      "topics": ["Dragon Ball GT"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews/dragon-ball-gt-perfect-file-2-masako-nozawa-long-interview.html",
       "acquired": true,
       "forumContent": false,
@@ -338,10 +267,7 @@
       "pageTitle": "Translations | Dragon Ball GT Perfect File 2: Masako Nozawa Long Interview",
       "sourceDescription": "English translation of the Masako Nozawa Long Interview from the second Dragon Ball GT Perfect File book released in 1997",
       "questionCount": 20,
-      "sectionHeadings": [
-        "Dragon Ball GT Perfect File 2",
-        "Masako Nozawa Long Interview"
-      ],
+      "sectionHeadings": ["Dragon Ball GT Perfect File 2", "Masako Nozawa Long Interview"],
       "editorialSummary": null,
       "reviewStatus": "source-acquired-summary-pending"
     },
@@ -362,12 +288,7 @@
         "Akira Toriyama",
         "Minoru Maeda"
       ],
-      "topics": [
-        "Dragon Ball Z",
-        "Animation",
-        "Production",
-        "Voice Actor"
-      ],
+      "topics": ["Dragon Ball Z", "Animation", "Production", "Voice Actor"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/dbz-anime-special-2-super-anime-jin.html",
       "acquired": true,
       "forumContent": false,
@@ -390,16 +311,8 @@
       "publicationType": "Insert Pamphlet",
       "format": "Interview",
       "publicationDate": "20 June 1995",
-      "participants": [
-        "Kazuhiko Torishima",
-        "Yū Kondō",
-        "Fuyuto Takeda"
-      ],
-      "topics": [
-        "Dragon Ball",
-        "Manga",
-        "Editorial"
-      ],
+      "participants": ["Kazuhiko Torishima", "Yū Kondō", "Fuyuto Takeda"],
+      "topics": ["Dragon Ball", "Manga", "Editorial"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-1-shenlong-times.html",
       "acquired": true,
       "forumContent": false,
@@ -422,18 +335,8 @@
       "publicationType": "Insert Pamphlet",
       "format": "Interview",
       "publicationDate": "04 August 1995",
-      "participants": [
-        "Akira Toriyama",
-        "Kazuhiko Torishima",
-        "Yū Kondō",
-        "Fuyuto Takeda"
-      ],
-      "topics": [
-        "Dragon Ball",
-        "Manga",
-        "Story",
-        "Editorial"
-      ],
+      "participants": ["Akira Toriyama", "Kazuhiko Torishima", "Yū Kondō", "Fuyuto Takeda"],
+      "topics": ["Dragon Ball", "Manga", "Story", "Editorial"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-2-shenlong-times.html",
       "acquired": true,
       "forumContent": false,
@@ -465,13 +368,7 @@
         "Tadayoshi Yamamuro",
         "Masako Nozawa"
       ],
-      "topics": [
-        "Dragon Ball",
-        "Dragon Ball Z",
-        "Animation",
-        "Production",
-        "Voice Actor"
-      ],
+      "topics": ["Dragon Ball", "Dragon Ball Z", "Animation", "Production", "Voice Actor"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-3-shenlong-times.html",
       "acquired": true,
       "forumContent": false,
@@ -494,16 +391,8 @@
       "publicationType": "Insert Pamphlet",
       "format": "Interview",
       "publicationDate": "04 October 1995",
-      "participants": [
-        "Toshihiro Suzuki",
-        "Emi Tōnosu",
-        "Hokoto Masumoto"
-      ],
-      "topics": [
-        "Dragon Ball",
-        "World",
-        "Production"
-      ],
+      "participants": ["Toshihiro Suzuki", "Emi Tōnosu", "Hokoto Masumoto"],
+      "topics": ["Dragon Ball", "World", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-4-shenlong-times.html",
       "acquired": true,
       "forumContent": false,
@@ -535,13 +424,7 @@
         "Tadayoshi Yamamuro",
         "Masako Nozawa"
       ],
-      "topics": [
-        "Dragon Ball",
-        "Dragon Ball Z",
-        "Animation",
-        "Production",
-        "Voice Actor"
-      ],
+      "topics": ["Dragon Ball", "Dragon Ball Z", "Animation", "Production", "Voice Actor"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-5-shenlong-times.html",
       "acquired": true,
       "forumContent": false,
@@ -573,13 +456,7 @@
         "Tadayoshi Yamamuro",
         "Masako Nozawa"
       ],
-      "topics": [
-        "Dragon Ball",
-        "Dragon Ball Z",
-        "Animation",
-        "Production",
-        "Voice Actor"
-      ],
+      "topics": ["Dragon Ball", "Dragon Ball Z", "Animation", "Production", "Voice Actor"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/daizenshuu-6-shenlong-times.html",
       "acquired": true,
       "forumContent": false,
@@ -611,11 +488,7 @@
         "Hiromi Tsuru",
         "Hirotaka Suzuoki"
       ],
-      "topics": [
-        "Dragon Ball",
-        "Voice Actor",
-        "Production"
-      ],
+      "topics": ["Dragon Ball", "Voice Actor", "Production"],
       "rawPath": "data/source-acquisition/kanzenshuu/interviews-roundtables/supplemental-daizenshuu-super-voice-talks.html",
       "acquired": true,
       "forumContent": false,
@@ -638,9 +511,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "1995-10-04",
-      "participants": [
-        "Akira Toriyama"
-      ],
+      "participants": ["Akira Toriyama"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/daizenshuu-4-akira-toriyama-best.html",
       "acquired": true,
@@ -650,10 +521,7 @@
       "sourceDescription": "Dragon Ball author Akira Toriyama makes his \"Best of\" selections in Daizenshuu 4.",
       "questionCount": 16,
       "answerBlockCount": 16,
-      "sectionHeadings": [
-        "Dragon Ball Daizenshuu 4: World Guide",
-        "Akira Toriyama’s Best"
-      ],
+      "sectionHeadings": ["Dragon Ball Daizenshuu 4: World Guide", "Akira Toriyama’s Best"],
       "editorialSummary": "Dans cette rubrique de questions thématiques, Toriyama choisit Mister Satan comme protagoniste potentiel d’un manga comique et répond à des questions imaginaires sur les personnages. Il imagine qui ferait un bon parent ou enfant, qui vivrait le plus longtemps et qui il voudrait incarner, avec des réponses mêlant traits narratifs et plaisanteries.",
       "reviewStatus": "source-checked-summary-retained"
     },
@@ -665,9 +533,7 @@
       "publicationType": "Q&A",
       "format": "Q&A interview",
       "publicationDate": "1996-02-05",
-      "participants": [
-        "Akira Toriyama"
-      ],
+      "participants": ["Akira Toriyama"],
       "topics": [],
       "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/daizenshuu-7-secret-stories-of-the-dragon-ball-characters.html",
       "acquired": true,
@@ -692,10 +558,7 @@
       "publicationType": "email-interview",
       "format": "email-interview",
       "publicationDate": "1999-02-06",
-      "participants": [
-        "Adrian Saavedra",
-        "Agent Mai (pseudonyme déclaré; identité non confirmée)"
-      ],
+      "participants": ["Adrian Saavedra", "Agent Mai (pseudonyme déclaré; identité non confirmée)"],
       "topics": [
         "Directe : réponses d’un contact FUNimation sur la production, le doublage et la diffusion américaine de Dragon Ball/Dragon Ball Z."
       ],
@@ -718,10 +581,7 @@
       "publicationType": "email-interview-follow-up",
       "format": "email-interview-follow-up",
       "publicationDate": "1999-04-03",
-      "participants": [
-        "Adrian Saavedra",
-        "Agent Mai (pseudonyme déclaré; identité non confirmée)"
-      ],
+      "participants": ["Adrian Saavedra", "Agent Mai (pseudonyme déclaré; identité non confirmée)"],
       "topics": [
         "Directe : échanges avec un représentant de FUNimation sur l’adaptation, les épisodes, le doublage et les sorties Dragon Ball."
       ],
@@ -744,12 +604,8 @@
       "publicationType": "Guidebook",
       "format": "Profil-entretien imprimé avec citations directes",
       "publicationDate": "1998-03",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
       "acquired": true,
       "forumContent": false,
@@ -772,12 +628,8 @@
       "publicationType": "Guidebook",
       "format": "Entretien imprimé en questions-réponses",
       "publicationDate": "1998-03",
-      "participants": [
-        "Barry Watson"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Barry Watson"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
       "acquired": true,
       "forumContent": false,
@@ -799,13 +651,8 @@
       "publicationType": "Guidebook",
       "format": "Mini-entretien imprimé, questions-réponses numérotées",
       "publicationDate": "1996-11",
-      "participants": [
-        "Gen Fukunaga",
-        "Cindy Brennan Fukunaga"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Gen Fukunaga", "Cindy Brennan Fukunaga"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2016.json",
       "acquired": true,
       "forumContent": false,
@@ -827,14 +674,8 @@
       "publicationType": "Guidebook",
       "format": "conversation audio",
       "publicationDate": "1991-10-21",
-      "participants": [
-        "Akira Toriyama",
-        "Yūji Horii",
-        "Hironobu Sakaguchi"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Akira Toriyama", "Yūji Horii", "Hironobu Sakaguchi"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
       "acquired": false,
       "forumContent": false,
@@ -857,14 +698,8 @@
       "publicationType": "Guidebook",
       "format": "conversation audio",
       "publicationDate": "1991-10-21",
-      "participants": [
-        "Masako Nozawa",
-        "Norio Wakamoto",
-        "Kōzō Shioya"
-      ],
-      "topics": [
-        "Dragon Ball"
-      ],
+      "participants": ["Masako Nozawa", "Norio Wakamoto", "Kōzō Shioya"],
+      "topics": ["Dragon Ball"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
       "acquired": false,
       "forumContent": false,
@@ -888,15 +723,8 @@
       "format": "Recorded interview, full English transcription",
       "publicationDate": "1993",
       "sourceDate": "1993 (CD release; recording date unspecified)",
-      "participants": [
-        "Akira Toriyama"
-      ],
-      "topics": [
-        "Dragon Ball origins",
-        "Goku",
-        "Saiyan background",
-        "manga creation"
-      ],
+      "participants": ["Akira Toriyama"],
+      "topics": ["Dragon Ball origins", "Goku", "Saiyan background", "manga creation"],
       "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2024.json",
       "acquired": true,
       "transcriptAvailable": true,
@@ -905,9 +733,7 @@
       "pageTitle": "Jump Original CD (1993): Akira Toriyama Interview",
       "sourceDescription": "Kanzenshuu publishes the translated transcript of Toriyama speaking on the first Jump Original CD (WJ-0004), released as a giveaway in 1993; the recording date is unspecified. Kanzenshuu publication date: 2024-08-02.",
       "questionCount": null,
-      "sectionHeadings": [
-        "Jump Original CD (1993) Akira Toriyama Interview"
-      ],
+      "sectionHeadings": ["Jump Original CD (1993) Akira Toriyama Interview"],
       "editorialSummary": "Toriyama raconte que l’idée de Dragon Ball naît à la fin de Dr. Slump, lorsque son éditeur Kazuhiko Torishima lui suggère de dessiner une histoire de kung-fu, genre qu’il aime regarder. Il explique avoir voulu un Goku très ordinaire, puis lui avoir ajouté une queue et modifié sa coiffure; son origine extraterrestre n’était pas prévue au départ. Il évoque la difficulté d’inventer des combats toujours plus puissants après Piccolo Daimaō, puis son entrée dans le manga après avoir quitté une agence de publicité et tenté un concours pour gagner un prix.",
       "reviewStatus": "source-page-cross-checked",
       "kanzenshuuPublicationDate": "2024-08-02"

@@ -68,7 +68,8 @@ const ZERO_TRUST_SECURITY_HEADERS: Readonly<Record<string, string>> = {
   "Referrer-Policy": "strict-origin-when-cross-origin",
   "Cross-Origin-Resource-Policy": "cross-origin",
   "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
-  "Permissions-Policy": "accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()",
+  "Permissions-Policy":
+    "accelerometer=(), camera=(), geolocation=(), gyroscope=(), microphone=(), payment=(), usb=()",
 };
 
 function applyZeroTrustHeaders(headers: Headers): Headers {
@@ -80,7 +81,11 @@ function applyZeroTrustHeaders(headers: Headers): Headers {
 
 /** Hashed or static assets receive maximal immutable caching; mutable index.json stays no-store. */
 export function resolveCacheControl(path: string, entryCacheControl: string): string {
-  if (path.endsWith("/index.json") || entryCacheControl === "no-store" || entryCacheControl.includes("no-store")) {
+  if (
+    path.endsWith("/index.json") ||
+    entryCacheControl === "no-store" ||
+    entryCacheControl.includes("no-store")
+  ) {
     return entryCacheControl;
   }
   if (
@@ -98,7 +103,11 @@ export function resolveCacheControl(path: string, entryCacheControl: string): st
 const COMPRESSIBLE_MIME =
   /^(?:text\/|application\/(?:json|javascript|manifest\+json|wasm|xml|xhtml\+xml)|image\/svg\+xml|font\/(?:ttf|otf))(?:;|$)/i;
 
-function negotiateEncoding(request: Request, contentType: string, size: number): "zstd" | "br" | undefined {
+function negotiateEncoding(
+  request: Request,
+  contentType: string,
+  size: number,
+): "zstd" | "br" | undefined {
   if (size < 256 || !COMPRESSIBLE_MIME.test(contentType)) return undefined;
   const accept = request.headers.get("Accept-Encoding");
   if (!accept || accept === "identity") return undefined;
@@ -462,7 +471,9 @@ export async function handleCdn(
   if (request.method !== "GET" && request.method !== "HEAD") {
     return new Response(null, {
       status: 405,
-      headers: applyZeroTrustHeaders(new Headers({ Allow: "GET, HEAD", "Cache-Control": "no-store" })),
+      headers: applyZeroTrustHeaders(
+        new Headers({ Allow: "GET, HEAD", "Cache-Control": "no-store" }),
+      ),
     });
   }
   const dynamic = await dynamicRoute(request, env, fetchOrigin);
@@ -483,7 +494,12 @@ export async function handleCdn(
       entries = manifest?.json
         ? await manifest.json<Record<string, unknown>>()
         : await bootstrapManifest(keyManifest, env, fetchOrigin);
-      if (useIsolateShardCache && entries && typeof entries === "object" && !Array.isArray(entries)) {
+      if (
+        useIsolateShardCache &&
+        entries &&
+        typeof entries === "object" &&
+        !Array.isArray(entries)
+      ) {
         if (manifestShardCache.size >= MAX_CACHED_SHARDS) {
           const oldest = manifestShardCache.keys().next().value;
           if (oldest) manifestShardCache.delete(oldest);
@@ -501,7 +517,9 @@ export async function handleCdn(
       .get("If-None-Match")
       ?.split(",")
       .map((etag) => etag.trim().replace(/^W\//, ""));
-    const isConditionalMatch = Boolean(etags?.includes("*") || etags?.includes(headers.get("ETag")!));
+    const isConditionalMatch = Boolean(
+      etags?.includes("*") || etags?.includes(headers.get("ETag")!),
+    );
 
     if (request.method === "HEAD") {
       let metadata = await env.CDN.head(key);

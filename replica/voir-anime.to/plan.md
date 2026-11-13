@@ -17,13 +17,13 @@ Remplacer l'architecture archaïque et encombrée de publicités (WordPress / PH
 
 ## 2. Stack Technique de Remplacement
 
-| Rôle | Cible Originale (Observée) | Stack Souveraine Shenron | Pourquoi |
-| :--- | :--- | :--- | :--- |
-| **Moteur Web** | WordPress 6.7 + PHP 8 | Bun v1.4.4 + Next.js 16.5 | Temps de réponse divisé par 20, cold start sub-milliseconde. |
-| **Interface & Rendu** | jQuery + Bootstrap 4 + Slick | Tailwind CSS v4 + React 19 | Interface fluide, zéro dépendance jQuery obsolète, mode sombre natif. |
-| **Sécurité Lecteur** | Iframes non filtrées avec popups | Composant Façade Sandboxté (`SafePlayerFacade`) | Neutralise les scripts malveillants, bloque les popunders, préserve la vie privée. |
-| **Base de Données** | MySQL (Madara DB) | PostgreSQL / Bun:sqlite | Modèle relationnel propre, clés UUID, typage strict des miroirs vidéo. |
-| **Recherche** | Ajax Search Pro | MiniSearch en mémoire / Trigrames Postgres | Recherche floue instantanée dès la première lettre saisie. |
+| Rôle                  | Cible Originale (Observée)       | Stack Souveraine Shenron                        | Pourquoi                                                                           |
+| :-------------------- | :------------------------------- | :---------------------------------------------- | :--------------------------------------------------------------------------------- |
+| **Moteur Web**        | WordPress 6.7 + PHP 8            | Bun v1.4.4 + Next.js 16.5                       | Temps de réponse divisé par 20, cold start sub-milliseconde.                       |
+| **Interface & Rendu** | jQuery + Bootstrap 4 + Slick     | Tailwind CSS v4 + React 19                      | Interface fluide, zéro dépendance jQuery obsolète, mode sombre natif.              |
+| **Sécurité Lecteur**  | Iframes non filtrées avec popups | Composant Façade Sandboxté (`SafePlayerFacade`) | Neutralise les scripts malveillants, bloque les popunders, préserve la vie privée. |
+| **Base de Données**   | MySQL (Madara DB)                | PostgreSQL / Bun:sqlite                         | Modèle relationnel propre, clés UUID, typage strict des miroirs vidéo.             |
+| **Recherche**         | Ajax Search Pro                  | MiniSearch en mémoire / Trigrames Postgres      | Recherche floue instantanée dès la première lettre saisie.                         |
 
 ---
 
@@ -76,34 +76,38 @@ create table if not exists anime_directory_bookmarks (
 
 ## 4. API & Endpoints
 
-| Méthode & Chemin | Rôle | Entrée | Sortie | Sécurité |
-| :--- | :--- | :--- | :--- | :--- |
-| GET `/api/directory/anime` | Liste filtrée du catalogue | `genre`, `year`, `page` | JSON paginé | Public (Cache CDN 5 min) |
-| GET `/api/directory/anime/:slug` | Fiche complète et épisodes | `slug` | Métadonnées + liste des épisodes | Public (Cache CDN 10 min) |
-| GET `/api/directory/search` | Recherche floue temps réel | `q=goku` | Array de résultats `{ id, title, slug, poster }` | Public (Sous 10ms) |
-| GET `/api/directory/episodes/:id` | Récupère les miroirs vidéo sains | `id` | Sources filtrées (`is_healthy: true`) | Public, rate-limité |
-| POST `/api/directory/report-dead` | Signale un lecteur HS | `{ episode_id, mirror_url }` | 200 OK | Public (protection anti-flood) |
+| Méthode & Chemin                  | Rôle                             | Entrée                       | Sortie                                           | Sécurité                       |
+| :-------------------------------- | :------------------------------- | :--------------------------- | :----------------------------------------------- | :----------------------------- |
+| GET `/api/directory/anime`        | Liste filtrée du catalogue       | `genre`, `year`, `page`      | JSON paginé                                      | Public (Cache CDN 5 min)       |
+| GET `/api/directory/anime/:slug`  | Fiche complète et épisodes       | `slug`                       | Métadonnées + liste des épisodes                 | Public (Cache CDN 10 min)      |
+| GET `/api/directory/search`       | Recherche floue temps réel       | `q=goku`                     | Array de résultats `{ id, title, slug, poster }` | Public (Sous 10ms)             |
+| GET `/api/directory/episodes/:id` | Récupère les miroirs vidéo sains | `id`                         | Sources filtrées (`is_healthy: true`)            | Public, rate-limité            |
+| POST `/api/directory/report-dead` | Signale un lecteur HS            | `{ episode_id, mirror_url }` | 200 OK                                           | Public (protection anti-flood) |
 
 ---
 
 ## 5. Découpage en Tranches Verticales (Build Order)
 
 ### Tranche 1 : Lecteur Vidéo Sécurisé Façade (`SafePlayerFacade.tsx`)
+
 - Détection du clic utilisateur (« Lancer la vidéo ») avant tout montage de lecteur.
 - Sandbox d'iframe imperméable : `sandbox="allow-scripts allow-same-origin"`, `referrerpolicy="no-referrer"`.
 - Blocage strict de `window.open` et des redirections non sollicitées.
 
 ### Tranche 2 : Catalogue & Moteur de Recherche Instantané
+
 - Page `/anime` avec grille de jaquettes adaptative.
 - Barre de filtres combinés (Genres : Action, Arts Martiaux, Shōnen, Années : 1986 à 2026).
 - Moteur de recherche local avec index pré-chargé (20 Ko zippé pour 1 000 entrées).
 
 ### Tranche 3 : Fiche Série & Sélecteur de Miroirs
+
 - Page `/anime/:slug` affichant synopsis, genres, année et statut.
 - Sélecteur de version audio (VF / VOSTFR) et de lecteur miroir (Miroir Principal CDN, Lecteur HLS de secours).
 - Rétention de l'épisode en cours de visionnage dans le `localStorage`.
 
 ### Tranche 4 : Moniteur de Santé Automatique des Miroirs
+
 - Tâche quotidienne en arrière-plan (`scripts/ops/verify-anime-mirrors.ts`) testant la disponibilité HTTP des flux sans exécuter les trackers publicitaires.
 - Désactivation automatique des sources vidéo renvoyant 404 ou 410.
 

@@ -7,6 +7,7 @@
 ASTC block dimensions
 
 Variants (14):
+
 - `B4x4` — 4x4 block compressed texture. 16 bytes per block (8 bit/px).
 - `B5x4` — 5x4 block compressed texture. 16 bytes per block (6.4 bit/px).
 - `B5x5` — 5x5 block compressed texture. 16 bytes per block (5.12 bit/px).
@@ -29,6 +30,7 @@ Implements: `Clone`, `Copy`, `Debug`, `Eq`, `Hash`, `PartialEq`, `StructuralPart
 ASTC RGBA channel
 
 Variants (3):
+
 - `Unorm` — 8 bit integer RGBA, [0, 255] converted to/from linear-color float [0, 1] in shader.
 - `UnormSrgb` — 8 bit integer RGBA, Srgb-color [0, 255] converted to/from linear-color float [0, 1] in shader.
 - `Hdr` — floating-point RGBA, linear-color float can be outside of the [0, 1] range.
@@ -42,6 +44,7 @@ Represents the different format channels of a texture format.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const RED: Self` — Texture format contains a `red` channel.
 - `const GREEN: Self` — Texture format contains a `green` channel.
 - `const BLUE: Self` — Texture format contains a `blue` channel.
@@ -86,6 +89,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 Format in which a texture’s texels are stored in GPU memory.
 
 Variants (77):
+
 - `R8Unorm` — Red channel only. 8 bit integer per channel. [0, 255] converted to/from float [0, 1] in shader.
 - `R8Snorm` — Red channel only. 8 bit integer per channel. [&minus;127, 127] converted to/from float [&minus;1, 1] in shader.
 - `R8Uint` — Red channel only. 8 bit integer per channel. Unsigned in shader.
@@ -165,6 +169,7 @@ Variants (77):
 - `Astc { block: AstcBlock, channel: AstcChannel }` — block compressed texture. 16 bytes per block.
 
 Methods and constants:
+
 - `fn aspect_specific_format(&self, aspect: TextureAspect) -> Option<Self>` — Returns the aspect-specific format of the original format _[must_use]_
 - `fn is_depth_stencil_component(&self, combined_format: Self) -> bool` — Returns `true` if `self` is a depth or stencil component of the given combined depth-stencil format _[must_use]_
 - `fn is_depth_stencil_format(&self) -> bool` — Returns `true` if the format is a depth and/or stencil format _[must_use]_
@@ -205,6 +210,7 @@ Feature flags for a texture format.
 Opaque (private fields).
 
 Methods and constants:
+
 - `const FILTERABLE: Self` — If not present, the texture can't be sampled with a filtering sampler. This may overwrite TextureSampleType::Float.filterable
 - `const MULTISAMPLE_X2: Self` — Allows [`TextureDescriptor::sample_count`] to be `2`.
 - `const MULTISAMPLE_X4: Self` — Allows [`TextureDescriptor::sample_count`] to be `4`.
@@ -248,6 +254,7 @@ Implements: `Binary`, `BitAnd`, `BitAndAssign`, `BitOr`, `BitOrAssign`, `BitXor`
 Features supported by a given texture format
 
 Fields:
+
 - `allowed_usages: TextureUsages` — Valid bits for `TextureDescriptor::Usage` provided for format creation.
 - `flags: TextureFormatFeatureFlags` — Additional property flags for the format.
 

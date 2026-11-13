@@ -60,7 +60,17 @@ services:
       # Redacted while reading: a path, checked against the host by Infra.
       - ssl_key_file=/etc/postgresql/tls/server.key
     healthcheck:
-      test: ["CMD", "/usr/lib/postgresql/18/bin/pg_isready", "-h", "127.0.0.1", "-p", "5432", "-U", "postgres"]
+      test:
+        [
+          "CMD",
+          "/usr/lib/postgresql/18/bin/pg_isready",
+          "-h",
+          "127.0.0.1",
+          "-p",
+          "5432",
+          "-U",
+          "postgres",
+        ]
       interval: 10s
       timeout: 5s
       retries: 6
@@ -111,7 +121,19 @@ services:
       HOME: /home/ubuntu
     volumes:
       - /srv/shenron/models/e5:/models/e5:ro
-    command: [aphrody-embed, serve, --host, 127.0.0.1, --port, "8085", --threads, "4", --model-dir, /models/e5]
+    command:
+      [
+        aphrody-embed,
+        serve,
+        --host,
+        127.0.0.1,
+        --port,
+        "8085",
+        --threads,
+        "4",
+        --model-dir,
+        /models/e5,
+      ]
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8085/health"]
       interval: 15s
@@ -365,7 +387,16 @@ services:
     volumes:
       # Redacted while reading: the mount of the token file (a path; the token stays on the host).
       - /srv/shenron/config/cloudflare/tunnel-token:/etc/cloudflared/tunnel-token:ro
-    command: [tunnel, --no-autoupdate, --metrics, 127.0.0.1:20243, run, --token-file, /etc/cloudflared/tunnel-token]
+    command:
+      [
+        tunnel,
+        --no-autoupdate,
+        --metrics,
+        127.0.0.1:20243,
+        run,
+        --token-file,
+        /etc/cloudflared/tunnel-token,
+      ]
     depends_on:
       gateway:
         condition: service_healthy

@@ -37,13 +37,13 @@ Japonais : [lexique et traduction](../dragon-ball-japonais/SKILL.md).
 
 Si l'API ou le MCP répondent, ils complètent l'instantané :
 
-| Besoin | MCP `dragonball_*` | API publique |
-| --- | --- | --- |
-| Passage du corpus | `rag_search`, `rag_context` | `/api/public/rag/search` |
-| Fiche du wiki | `wiki_search`, `wiki_get` | `/api/public/wiki/search` |
-| Manga | `manga_search`, puis `manga_page`, `manga_chapter`, `manga_chapter_page` | `/api/public/manga/search` |
-| Databook | `databooks_search`, `databooks_plates`, `databooks_get` | `/api/databooks/search` |
-| Chronologie | `timeline` | `/api/timeline` |
+| Besoin            | MCP `dragonball_*`                                                       | API publique               |
+| ----------------- | ------------------------------------------------------------------------ | -------------------------- |
+| Passage du corpus | `rag_search`, `rag_context`                                              | `/api/public/rag/search`   |
+| Fiche du wiki     | `wiki_search`, `wiki_get`                                                | `/api/public/wiki/search`  |
+| Manga             | `manga_search`, puis `manga_page`, `manga_chapter`, `manga_chapter_page` | `/api/public/manga/search` |
+| Databook          | `databooks_search`, `databooks_plates`, `databooks_get`                  | `/api/databooks/search`    |
+| Chronologie       | `timeline`                                                               | `/api/timeline`            |
 
 Détails : [API REST](references/api.md), [MCP et GraphQL](references/mcp-graphql.md).
 Lire `error`, `mode`, `sources` et `data_coverage` : un index absent ou une

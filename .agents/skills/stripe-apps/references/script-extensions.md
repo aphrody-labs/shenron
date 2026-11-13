@@ -15,12 +15,12 @@ Before changing code, read the guide for the selected extension point and the in
 
 Reference the following docs for the required information:
 
-| Topic | Documentation |
-| --- | --- |
-| Extension points and implementation types | https://docs.stripe.com/extensions/extension-points |
-| Script runtime | https://docs.stripe.com/extensions/how-extensions-work#scripts |
-| Configuration and schemas | https://docs.stripe.com/extensions/scripts/define-config-and-schemas |
-| HTTP calls | https://docs.stripe.com/extensions/invoke-endpoints |
+| Topic                                     | Documentation                                                        |
+| ----------------------------------------- | -------------------------------------------------------------------- |
+| Extension points and implementation types | https://docs.stripe.com/extensions/extension-points                  |
+| Script runtime                            | https://docs.stripe.com/extensions/how-extensions-work#scripts       |
+| Configuration and schemas                 | https://docs.stripe.com/extensions/scripts/define-config-and-schemas |
+| HTTP calls                                | https://docs.stripe.com/extensions/invoke-endpoints                  |
 
 Keep platform requirements separate from the requested business behavior. Don’t change published fixtures, disable checks, or add behavior only to satisfy a fixture.
 

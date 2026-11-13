@@ -9,33 +9,20 @@
   "records": [
     {
       "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nozawa-p129-visual.jsonl#L1",
-      "printedPages": [
-        129
-      ],
-      "pdfPageIndices": [
-        130
-      ],
+      "printedPages": [129],
+      "pdfPageIndices": [130],
       "completeness": "Texte du corps visible sur le folio 129 transcrit; le début de page reprend une phrase commencée sur le folio 128 et est indiqué comme tronqué."
     },
     {
       "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nozawa-p128.jsonl#L1",
-      "printedPages": [
-        128
-      ],
-      "pdfPageIndices": [
-        129
-      ],
+      "printedPages": [128],
+      "pdfPageIndices": [129],
       "completeness": "Le sidecar antérieur ne contient qu'une transcription partielle; il reste distinct et n'est pas remplacé par le présent fichier."
     }
   ],
   "coverage": {
-    "requestedPrintedPages": [
-      128,
-      129
-    ],
-    "coveredByThisSidecar": [
-      129
-    ],
+    "requestedPrintedPages": [128, 129],
+    "coveredByThisSidecar": [129],
     "combinedStatus": "PARTIAL: page 129 transcrite d'après rendu visuel; page 128 reste représentée par un sidecar partiel antérieur.",
     "limits": [
       "L'ouverture du texte de la page 129 commence au fragment visible «のテープ»; le segment précédent est sur la page 128.",

@@ -15,12 +15,8 @@
       "sha256": "1c33d91adeb740d62e356c2bd4f0a0c957e5c0f4f60c7cc231f74914b4137702",
       "rightsStatus": "unknown",
       "reviewStatus": "pending",
-      "participants": [
-        "中澤博之"
-      ],
-      "participantRoles": [
-        "figure sculptor/modeler"
-      ],
+      "participants": ["中澤博之"],
+      "participantRoles": ["figure sculptor/modeler"],
       "crawlEvidence": {
         "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
         "recordUrl": "https://dragon-ball-official.com/news/01_411.html",
@@ -42,12 +38,8 @@
       "sha256": "b0328a1f17f1913cb4e0fae9e22fca57f206b75df682b127b2e93e5057149336",
       "rightsStatus": "unknown",
       "reviewStatus": "pending",
-      "participants": [
-        "田中れいな"
-      ],
-      "participantRoles": [
-        "singer/actor and Dragon Ball fan"
-      ],
+      "participants": ["田中れいな"],
+      "participantRoles": ["singer/actor and Dragon Ball fan"],
       "crawlEvidence": {
         "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
         "recordUrl": "https://dragon-ball-official.com/news/01_1704.html",
@@ -69,12 +61,8 @@
       "sha256": "01b7c8be047183412de715cd6a2c0335b6080e2866d576403b6ea781849d8c4a",
       "rightsStatus": "unknown",
       "reviewStatus": "pending",
-      "participants": [
-        "影山ヒロノブ"
-      ],
-      "participantRoles": [
-        "singer/songwriter"
-      ],
+      "participants": ["影山ヒロノブ"],
+      "participantRoles": ["singer/songwriter"],
       "crawlEvidence": {
         "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
         "recordUrl": "https://dragon-ball-official.com/news/01_4345.html",
@@ -96,12 +84,8 @@
       "sha256": "61c90c11ea074dd9d38f2a4d13f6c63319e45cac216e67191e84018f1be938a0",
       "rightsStatus": "unknown",
       "reviewStatus": "pending",
-      "participants": [
-        "とよたろう"
-      ],
-      "participantRoles": [
-        "manga artist"
-      ],
+      "participants": ["とよたろう"],
+      "participantRoles": ["manga artist"],
       "crawlEvidence": {
         "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
         "recordUrl": "https://dragon-ball-official.com/news/01_3414.html",
@@ -123,12 +107,8 @@
       "sha256": "f987df00530f412a3ea77fdecec8e363e1334fc8a47d1376158d50678a5c1a21",
       "rightsStatus": "unknown",
       "reviewStatus": "pending",
-      "participants": [
-        "原型師チーム"
-      ],
-      "participantRoles": [
-        "figure prototype sculptors"
-      ],
+      "participants": ["原型師チーム"],
+      "participantRoles": ["figure prototype sculptors"],
       "crawlEvidence": {
         "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
         "recordUrl": "https://dragon-ball-official.com/news/01_4326.html",
@@ -150,14 +130,8 @@
       "sha256": "6b6cd44c6ca0fdd042a0413c2fdd9fb902082729e423e52b04eacc53b1c5c817",
       "rightsStatus": "unknown",
       "reviewStatus": "pending",
-      "participants": [
-        "野沢雅子",
-        "古川登志夫"
-      ],
-      "participantRoles": [
-        "voice actor",
-        "voice actor"
-      ],
+      "participants": ["野沢雅子", "古川登志夫"],
+      "participantRoles": ["voice actor", "voice actor"],
       "crawlEvidence": {
         "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
         "recordUrl": "https://dragon-ball-official.com/news/01_1107.html",
@@ -179,12 +153,8 @@
       "sha256": "3d00669eb3baa24b4c9163ab32f5a7fd31b5999bc8841d6773045c65ab3598dd",
       "rightsStatus": "unknown",
       "reviewStatus": "pending",
-      "participants": [
-        "とよたろう"
-      ],
-      "participantRoles": [
-        "manga artist"
-      ],
+      "participants": ["とよたろう"],
+      "participantRoles": ["manga artist"],
       "crawlEvidence": {
         "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
         "recordUrl": "https://dragon-ball-official.com/news/01_1004.html",
@@ -206,12 +176,8 @@
       "sha256": "9c090c603100075b1d75edd203b55fb3c330275429be170338c2de7ba22e6fa8",
       "rightsStatus": "unknown",
       "reviewStatus": "pending",
-      "participants": [
-        "シマダヒデアキ"
-      ],
-      "participantRoles": [
-        "book designer"
-      ],
+      "participants": ["シマダヒデアキ"],
+      "participantRoles": ["book designer"],
       "crawlEvidence": {
         "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
         "recordUrl": "https://dragon-ball-official.com/news/01_962.html",
@@ -233,12 +199,8 @@
       "sha256": "335d955fd333b844b41e06c3ada7a9fe46113efa2d6cb96a0907566ba0aca576",
       "rightsStatus": "unknown",
       "reviewStatus": "pending",
-      "participants": [
-        "宮野真守"
-      ],
-      "participantRoles": [
-        "voice actor"
-      ],
+      "participants": ["宮野真守"],
+      "participantRoles": ["voice actor"],
       "crawlEvidence": {
         "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
         "recordUrl": "https://dragon-ball-official.com/news/01_1106.html",
@@ -260,12 +222,8 @@
       "sha256": "d4df37a5399dfd38b0e646d8bc71ac66ee35bc32e6aeb344b8affa7095c85724",
       "rightsStatus": "unknown",
       "reviewStatus": "pending",
-      "participants": [
-        "古川登志夫"
-      ],
-      "participantRoles": [
-        "voice actor"
-      ],
+      "participants": ["古川登志夫"],
+      "participantRoles": ["voice actor"],
       "crawlEvidence": {
         "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
         "recordUrl": "https://dragon-ball-official.com/news/01_1065.html",
@@ -287,14 +245,8 @@
       "sha256": "1513787997c09fad2e4b7ce3280b8b1c10ad1f1ec34dac9570c85099b3daf24b",
       "rightsStatus": "unknown",
       "reviewStatus": "pending",
-      "participants": [
-        "とよたろう",
-        "牧野真莉愛"
-      ],
-      "participantRoles": [
-        "manga artist",
-        "singer/interviewer"
-      ],
+      "participants": ["とよたろう", "牧野真莉愛"],
+      "participantRoles": ["manga artist", "singer/interviewer"],
       "crawlEvidence": {
         "path": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
         "recordUrl": "https://dragon-ball-official.com/news/01_3370.html",
@@ -317,12 +269,8 @@
       "sha256": null,
       "rightsStatus": "unknown",
       "reviewStatus": "source-verified-local-acquisition-pending",
-      "participants": [
-        "小谷"
-      ],
-      "participantRoles": [
-        "game producer"
-      ]
+      "participants": ["小谷"],
+      "participantRoles": ["game producer"]
     },
     {
       "sourceId": "interview_db_official_2267",
@@ -336,12 +284,8 @@
       "sha256": null,
       "rightsStatus": "unknown",
       "reviewStatus": "source-verified-local-acquisition-pending",
-      "participants": [
-        "小谷"
-      ],
-      "participantRoles": [
-        "game producer"
-      ]
+      "participants": ["小谷"],
+      "participantRoles": ["game producer"]
     },
     {
       "sourceId": "interview_db_official_2172",
@@ -358,9 +302,7 @@
       "participants": [
         "「ドラゴンボール ファイターズ」「ドラゴンボール ゼノバース2」各プロデューサー"
       ],
-      "participantRoles": [
-        "game producer"
-      ]
+      "participantRoles": ["game producer"]
     },
     {
       "sourceId": "interview_db_official_2173",
@@ -377,9 +319,7 @@
       "participants": [
         "「ドラゴンボール ファイターズ」「ドラゴンボール ゼノバース2」各プロデューサー"
       ],
-      "participantRoles": [
-        "game producer"
-      ]
+      "participantRoles": ["game producer"]
     },
     {
       "sourceId": "interview_db_official_1149",
@@ -393,12 +333,8 @@
       "sha256": null,
       "rightsStatus": "unknown",
       "reviewStatus": "source-verified-local-acquisition-pending",
-      "participants": [
-        "開発担当者"
-      ],
-      "participantRoles": [
-        "figure product developer"
-      ]
+      "participants": ["開発担当者"],
+      "participantRoles": ["figure product developer"]
     },
     {
       "sourceId": "interview_db_official_590",
@@ -412,12 +348,8 @@
       "sha256": null,
       "rightsStatus": "unknown",
       "reviewStatus": "source-verified-local-acquisition-pending",
-      "participants": [
-        "企画担当者"
-      ],
-      "participantRoles": [
-        "figure product planner"
-      ]
+      "participants": ["企画担当者"],
+      "participantRoles": ["figure product planner"]
     },
     {
       "sourceId": "interview_db_official_493",
@@ -431,12 +363,8 @@
       "sha256": null,
       "rightsStatus": "unknown",
       "reviewStatus": "source-verified-local-acquisition-pending",
-      "participants": [
-        "企画担当者"
-      ],
-      "participantRoles": [
-        "figure product planner"
-      ]
+      "participants": ["企画担当者"],
+      "participantRoles": ["figure product planner"]
     },
     {
       "sourceId": "interview_db_official_920",
@@ -450,12 +378,8 @@
       "sha256": null,
       "rightsStatus": "unknown",
       "reviewStatus": "source-verified-local-acquisition-pending",
-      "participants": [
-        "浅岡雄也"
-      ],
-      "participantRoles": [
-        "singer/songwriter"
-      ]
+      "participants": ["浅岡雄也"],
+      "participantRoles": ["singer/songwriter"]
     },
     {
       "sourceId": "interview_db_official_1105",
@@ -463,12 +387,8 @@
       "publicationDate": "2022-05-27",
       "language": "ja",
       "sourceType": "official-online-interview",
-      "participants": [
-        "神谷浩史"
-      ],
-      "participantRoles": [
-        "voice actor"
-      ],
+      "participants": ["神谷浩史"],
+      "participantRoles": ["voice actor"],
       "transcriptStatus": "Japanese article body exists in the local crawl cache; exact text is retained there, but body completeness has not been compared against the source page",
       "sourceUrl": "https://dragon-ball-official.com/news/01_1105.html",
       "localWitnessPath": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
@@ -493,12 +413,8 @@
       "publicationDate": "2023-05-25",
       "language": "ja",
       "sourceType": "official-online-interview",
-      "participants": [
-        "牧野真莉愛"
-      ],
-      "participantRoles": [
-        "singer/interviewee"
-      ],
+      "participants": ["牧野真莉愛"],
+      "participantRoles": ["singer/interviewee"],
       "transcriptStatus": "Japanese article body exists in the local crawl cache; exact text is retained there, but body completeness has not been compared against the source page",
       "sourceUrl": "https://dragon-ball-official.com/news/01_1796.html",
       "localWitnessPath": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
@@ -523,12 +439,8 @@
       "publicationDate": "2024-03-21",
       "language": "ja",
       "sourceType": "official-online-interview",
-      "participants": [
-        "とよたろう"
-      ],
-      "participantRoles": [
-        "manga artist"
-      ],
+      "participants": ["とよたろう"],
+      "participantRoles": ["manga artist"],
       "transcriptStatus": "Japanese article body exists in the local crawl cache; exact text is retained there, but body completeness has not been compared against the source page",
       "sourceUrl": "https://dragon-ball-official.com/news/01_2507.html",
       "localWitnessPath": "data/source-acquisition/official-web/aphrody-crawl-documents.json",
