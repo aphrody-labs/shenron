@@ -188,7 +188,7 @@ export function SagaBestOf({
           </div>
 
           {/* Fiche de la saga sélectionnée. */}
-          <article
+          <div
             id={panelId}
             role="tabpanel"
             aria-labelledby={`${id}-tab-${saga.slug}`}
@@ -250,7 +250,7 @@ export function SagaBestOf({
                 )}
               </div>
             </div>
-          </article>
+          </div>
         </div>
       ) : (
         <output className="block py-4 text-os/85">{text("empty")}</output>
