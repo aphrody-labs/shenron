@@ -22,7 +22,7 @@ permissions:
 
 jobs:
   publish:
-    uses: aphrody-labs/src/.github/workflows/npm-publish.yml@main
+    uses: aphrody-labs/src/.github/workflows/npm-publish.yml@6eb361e410c06698aed8b7a695849c497dfa3538 # main
     with:
       packages: ${{ inputs.packages }}
       dry_run: ${{ inputs.dry_run }}
