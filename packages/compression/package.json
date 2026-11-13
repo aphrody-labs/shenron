@@ -23,5 +23,14 @@
   "dependencies": {},
   "devDependencies": {
     "@types/bun": "catalog:"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/compression"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

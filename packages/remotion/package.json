@@ -20,5 +20,14 @@
   "devDependencies": {
     "@types/bun": "catalog:",
     "@types/react": "catalog:"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/remotion"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

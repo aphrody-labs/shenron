@@ -1,0 +1,30 @@
+# Publication npm sans jeton : appelle le workflow réutilisable du monorepo (aphrody-labs/src, docs/infra/NPM.md).
+# Le trusted publisher npm de chaque paquet de ce dépôt pointe sur ce fichier (npm vérifie le workflow appelant).
+name: npm-publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      packages:
+        description: "Dossiers des paquets, relatifs au dépôt, séparés par des espaces"
+        required: true
+      dry_run:
+        description: "npm publish --dry-run"
+        type: boolean
+        default: true
+      tag:
+        description: "dist-tag"
+        default: latest
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    uses: aphrody-labs/src/.github/workflows/npm-publish.yml@main
+    with:
+      packages: ${{ inputs.packages }}
+      dry_run: ${{ inputs.dry_run }}
+      tag: ${{ inputs.tag }}
+    secrets: inherit
