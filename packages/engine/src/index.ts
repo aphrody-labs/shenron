@@ -19,6 +19,5 @@ export * from "./tenkaichi";
 export * from "./games";
 export * from "./arcsys-material";
 export * from "./fighterz-bevy-runtime";
-export * from "./ue-to-web-migrator";
 export * from "./games/canon-scenario";
 export * from "./games/canon-game-engine";
