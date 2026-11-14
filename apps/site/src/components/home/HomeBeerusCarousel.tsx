@@ -26,7 +26,10 @@ import {
 import { HomeBeerusLogo } from "./HomeBeerusLogo";
 import { useHomeMotion } from "./HomeMotion";
 import { HomeSoundCue } from "./HomeSoundCue";
+import { optimizedSrc, optimizedSrcSet } from "@/lib/images";
 import styles from "./HomeHero.module.css";
+
+const HERO_WIDTHS = [640, 828, 1080, 1200, 1920] as const;
 
 const SWIPE_MIN_PX = 48;
 /** Outlasts the incoming fade (CSS --hero-enter) so the outgoing image keeps zooming while it fades. */
@@ -213,7 +216,9 @@ export function HomeBeerusCarousel({ slides }: { slides: readonly BeerusSlide[] 
             >
               {slide.image && (
                 <img
-                  src={slide.image}
+                  src={optimizedSrc(slide.image, 1920)}
+                  srcSet={optimizedSrcSet(slide.image, HERO_WIDTHS) || undefined}
+                  sizes="100vw"
                   alt=""
                   width={1440}
                   height={810}

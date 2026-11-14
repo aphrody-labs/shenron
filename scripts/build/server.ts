@@ -175,7 +175,8 @@ if (flag("--skip-site")) {
     NEXT_OUTPUT: "standalone",
     NEXT_DIST_DIR: DIST_DIR,
     NEXT_TELEMETRY_DISABLED: "1",
-    SHENRON_IMAGES_UNOPTIMIZED: "1",
+    // Production ships sharp in the payload and serves /_next/image; desktop builds serve sources.
+    ...(flavor === "production" ? {} : { SHENRON_IMAGES_UNOPTIMIZED: "1" }),
     SHENRON_SKIP_NEXT_TYPECHECK: process.env.SHENRON_SKIP_NEXT_TYPECHECK ?? "1",
     BUILD_CPUS: process.env.BUILD_CPUS ?? defaultBuildCpus,
     SHENRON_NEXT_BUILD_CACHE: process.env.SHENRON_NEXT_BUILD_CACHE ?? (keepNextCache ? "1" : "0"),
