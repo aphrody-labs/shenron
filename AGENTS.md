@@ -1,6 +1,6 @@
 # Shenron Contributor & Autonomous Agent Rules (`AGENTS.md`)
 
-Shenron (`C:\src\products\shenron`) is the sovereign platform behind **dragonballfr.com**: the web portal, Discord bot, API, editorial pipeline (databook OCR and translation), Shenron Studio (manga translation editor, code name Koharu), 3D/video creative pipelines, RAG, and MCP server. `CLAUDE.md` is a symlink to this file.
+Shenron (`C:\src\apps\shenron`) is the sovereign platform behind **dragonballfr.com**: the web portal, Discord bot, API, editorial pipeline (databook OCR and translation), Shenron Studio (manga translation editor, code name Koharu), 3D/video creative pipelines, RAG, and MCP server. `CLAUDE.md` is a symlink to this file.
 
 ## 1. Mission & Sovereign Architecture
 
@@ -12,14 +12,15 @@ Operate and evolve Shenron on **100% Upstream Bun v1.4.4+ and Rust 2024** with z
 - **Native Studio & Rendering**: GPUI / Dioxus 0.8, WGPU 30, Vello, Parley, Taffy, AccessKit.
 - **Creative & Engine Extensions**: `crates/bun-engine-core`, `packages/bun-blender` (Blender 5.2.3 LTS headless pipeline), `packages/bun-video-project`, `packages/bun-gamestream`.
 - **Tooling, Bot, Scripts & Tests**: Upstream Bun v1.4.4+ only. Zero Node.js, npm, yarn, or pnpm.
+- **Release compile Bun (gotcha)**: `scripts/deploy/build-image.sh` refuses Bun < 1.4.6 (older builds start but cannot launch the Next standalone). The only 1.4.6 is an unpublished local build on `vps` (`~/build/tools/bun-1.4.6`, `1.4.6-canary.1+fd9d7a224`, aphrody-labs/bun commit no longer on any branch); override with `SHENRON_COMPILE_BUN`.
 
 ## 2. Sovereign Fleet Triad (`vps` / `cdn` / `prod`)
 
-All infrastructure is interconnected over the private WireGuard mesh (`10.200.77.0/24`):
+All infrastructure is interconnected over the private WireGuard mesh (`10.200.77.0/24`): prefer `ay ssh exec <fr1|fr2|usa> -- cmd` (vps = fr1, cdn = fr2, prod = usa).
 
 - **`ssh vps` (`10.200.77.1` / `51.77.147.152`)**: 12-core Build Hub, Rust/Bun compilation farm, OCR/RAG batch compute, and mesh hub.
 - **`ssh cdn` (`10.200.77.3` / `51.255.162.6`, alias `bunos`)**: Cloudflare Edge Simulator running Pingora Gateway (`yolo-cf-gateway`), Garage S3 R2 (`yolo-cf-garage`), RQLite D1 (`yolo-cf-rqlite`), `workerd` (`yolo-cf-workerd`), Mail, and Auth sync bridges.
-- **`ssh prod` (`10.200.77.5` / `72.60.186.43`)**: Bare-metal Arch Linux 7.2.11 production host running `shenron-gateway`, `shenron-site`, `shenron-bot`, `shenron-chat`, `shenron-compute`, `shenron-embed`, `shenron-postgres`, `shenron-redis`, and `shenron-cloudflared`.
+- **`ssh prod` (`10.200.77.5` / `72.60.186.43`)**: Arch Linux (kernel 7.2.14, no /dev/kvm) production host running `shenron-gateway`, `shenron-site`, `shenron-bot`, `shenron-chat`, `shenron-compute`, `shenron-embed`, `shenron-postgres`, `shenron-redis`, and `shenron-cloudflared`.
 
 ## 3. Repository Map
 
