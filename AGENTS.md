@@ -12,7 +12,7 @@ Operate and evolve Shenron on **100% Upstream Bun v1.4.4+ and Rust 2024** with z
 - **Native Studio & Rendering**: GPUI / Dioxus 0.8, WGPU 30, Vello, Parley, Taffy, AccessKit.
 - **Creative & Engine Extensions**: `crates/bun-engine-core`, `packages/bun-blender` (Blender 5.2.3 LTS headless pipeline), `packages/bun-video-project`, `packages/bun-gamestream`.
 - **Tooling, Bot, Scripts & Tests**: Upstream Bun v1.4.4+ only. Zero Node.js, npm, yarn, or pnpm.
-- **Release compile Bun (gotcha)**: `scripts/deploy/build-image.sh` refuses Bun < 1.4.6 (older builds start but cannot launch the Next standalone). The only 1.4.6 is an unpublished local build on `vps` (`~/build/tools/bun-1.4.6`, `1.4.6-canary.1+fd9d7a224`, aphrody-labs/bun commit no longer on any branch); override with `SHENRON_COMPILE_BUN`.
+- **Release compile Bun**: `scripts/deploy/build-image.sh` requires Bun >= 1.4.5 (fleet `1.4.5-canary.1+6db952080` works: a compiled server re-spawned with `BUN_BE_BUN=1` serves a child like the Next standalone, same as 1.4.6). Legacy `1.4.6-canary.1+fd9d7a224` is preserved as branch `legacy/1.4.6-fd9d7a224` and prerelease `legacy-1.4.6-fd9d7a224` of aphrody-labs/bun (1366 commits off main, not portable); `Bun.Video` is only needed by offline media scripts. Override with `SHENRON_COMPILE_BUN`.
 
 ## 2. Sovereign Fleet Triad (`vps` / `cdn` / `prod`)
 
