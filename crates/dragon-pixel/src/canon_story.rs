@@ -55,7 +55,7 @@ pub struct CanonDialogue {
     pub text_ja: String,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize)]
 pub struct CanonDramaticFinish {
     pub move_name: String, // serialized from "move"
     pub anim_cutscene: String,
