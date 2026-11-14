@@ -2,6 +2,10 @@ import "server-only";
 import { and, asc, eq, like, ne, sql, inArray, count } from "drizzle-orm";
 import { foldText } from "@aphrody/shenron-config/slug";
 import { escapeLike } from "@aphrody/shenron-db/repos/wiki";
+import {
+  sortCharacterTransformations,
+  stripCharacterVersionSuffix,
+} from "@/lib/character-page-helpers";
 import { db } from "@/lib/db";
 import {
   botCharacters,
@@ -591,10 +595,8 @@ export interface CharacterWithRelations extends DBCharacter {
   voiceActors: CharacterVoiceActor[];
 }
 
-/** Retire les parenthèses de version en fin de nom : « Son Goku (GT) (Xeno) » → « Son Goku ». */
-function stripVersionSuffix(name: string): string {
-  return name.replace(/(?:\s*\([^)]*\))+\s*$/, "").trim();
-}
+/** Strips trailing version suffixes so sibling continuities resolve to a shared root name. */
+const stripVersionSuffix = stripCharacterVersionSuffix;
 
 /** Normalise (accents retirés, casse/espaces) pour comparer des noms racine. */
 const foldName = foldText;
@@ -1527,7 +1529,7 @@ export async function getShenronCharacter(
         .where(eq(botVoiceActors.visible, true)),
     ]);
 
-    const transformations = transfoRows.map(mapTransfo);
+    const transformations = sortCharacterTransformations(transfoRows.map(mapTransfo));
     const originPlanet = planetRow[0] ? mapPlanet(planetRow[0]) : null;
     const versions: RelatedCharacter[] = versionCandidates
       .filter((r) => foldName(stripVersionSuffix(r.name)) === selfRoot)

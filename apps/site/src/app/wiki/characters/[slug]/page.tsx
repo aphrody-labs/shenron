@@ -2,7 +2,7 @@ import { hasEditorialDatabase } from "@/lib/prerender";
 import { clampTitle } from "@/lib/seo-title";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { TrackView } from "@/components/TrackView";
-import { WikiSources } from "@/components/wiki/WikiArticle";
+import { WikiArticle, WikiSources } from "@/components/wiki/WikiArticle";
 import { WikiMarkdown } from "@/components/wiki/WikiMarkdown";
 import { CategorizedAffiliates } from "@/components/wiki/CategorizedAffiliates";
 import { getShenronCharacterRelations, type CharacterRelationItem } from "@/lib/shenron";
@@ -12,9 +12,21 @@ import { WikiSectionsReader, type ReaderPanel } from "@/components/wiki/WikiSect
 import { WikiImg } from "@/components/wiki/WikiImg";
 import { CharacterPortraitWithTransformations } from "@/components/wiki/CharacterPortraitWithTransformations";
 import { DEFAULT_POWER_SCALING_CONFIG } from "@/lib/canon-engine";
+import {
+  buildCharacterLiveVersionChoices,
+  classifyCharacterProfileBucket,
+  isTransformedCharacterForm,
+  normalizeCharacterVersionLabel,
+  resolveCharacterSagaOfficialReadings,
+} from "@/lib/character-page-helpers";
 import { ChevronDown, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { buildWikiContentPanels, normalizeCharacterProfileBody } from "@/lib/wiki-panels";
+import {
+  buildWikiContentPanels,
+  normalizeCharacterProfileBody,
+  type ContentPanel,
+} from "@/lib/wiki-panels";
+import { PWS_GROUP_NAME } from "@/lib/wiki-section-groups";
 import { TECH_SECTION_KEYS, TRANSFO_SECTION_KEYS } from "@/lib/wiki-article-sections";
 import {
   getShenronCharacter,
@@ -179,28 +191,7 @@ const GOKU_RELATION_PREVIEW: Array<
   slug,
 }));
 
-function normalizeVersionLabel(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase()
-    .replace(/\bsaga\b/g, " ")
-    .replace(/[^a-z0-9]/g, "");
-}
-
-function isTransformedCharacterForm(value: string | null | undefined): boolean {
-  const form = value
-    ?.normalize("NFD")
-    .replace(/\p{Diacritic}/gu, "")
-    .toLowerCase()
-    .trim();
-  return Boolean(
-    form &&
-    /super saiyan|super guerrier|\bssj\b|ultra instinct|instinct superieur|great ape|ozaru|kaio.?ken|kaioken|golden great ape|forme bestiale/i.test(
-      form,
-    ),
-  );
-}
+const normalizeVersionLabel = normalizeCharacterVersionLabel;
 
 const TRANSFORMATION_NAMES_JA: Record<string, string> = {
   "super-saiyan": "超サイヤ人",
@@ -503,50 +494,17 @@ export default async function CharacterPage({
   const previewChoices = isGokuMainCharacter
     ? getGokuPreviewTimelines(versionT, character.name)
     : [];
-  const liveTimelineChoices = (
-    continuities.length > 0
-      ? continuities.map(({ id, name, slug: versionSlug, label, isMain }) => ({
-          id,
-          name,
-          slug: versionSlug,
-          label,
-          isMain,
-        }))
-      : character.versions.map(({ id, name, slug: versionSlug }) => ({
-          id,
-          name,
-          slug: versionSlug,
-          label: null,
-          isMain: false,
-        }))
-  )
-    .filter(({ name, label }) => {
-      const identity = normalizeVersionLabel(`${name} ${label ?? ""}`);
-      return (
-        identity.includes("xeno") ||
-        identity.includes("jumpforce") ||
-        identity.includes("gokucc") ||
-        identity.includes("fusion")
-      );
-    })
-    .map(({ id, name, slug: versionSlug, label, isMain }) => {
-      const identity = normalizeVersionLabel(`${name} ${label ?? ""}`);
-      const displayName = identity.includes("xeno")
-        ? versionT("xenoGoku")
-        : identity.includes("jumpforce")
-          ? versionT("gokuJumpForce")
-          : identity.includes("gokucc")
-            ? versionT("gokuCc")
-            : versionT("gokuFusion");
-      return {
-        id,
-        name: displayName,
-        slug: versionSlug,
-        label: displayName,
-        isMain,
-        seriesGroup: undefined,
-      };
-    });
+  const liveTimelineChoices = buildCharacterLiveVersionChoices({
+    currentCharacter: { id: character.id, name: character.name, slug: character.slug },
+    continuities,
+    versions: character.versions,
+    gokuLabels: {
+      xenoGoku: versionT("xenoGoku"),
+      gokuCc: versionT("gokuCc"),
+      gokuFusion: versionT("gokuFusion"),
+      gokuJumpForce: versionT("gokuJumpForce"),
+    },
+  });
   const versionChoices = isGokuMainCharacter
     ? [
         ...(showcasePreview ? [] : getGokuSeriesTimelineChoices((key) => versionT(key))),
@@ -810,26 +768,77 @@ export default async function CharacterPage({
   // Pouvoirs et techniques, Transformations, Anecdotes…) + surcharges/ajouts
   // éditoriaux du studio (db_wiki_sections, ex. PWS). Zéro fabrication : on ne
   // fait que structurer du contenu déjà présent, tout rendu côté serveur.
-  const contentPanels = await buildWikiContentPanels({
-    entityType: "character",
-    entityId: character.id,
-    article: isSummaryVersion
-      ? (summaryArticle ?? character.article)
-      : activeVariant
-        ? activeVariant.article?.trim() ||
-          `## ${versionT("sagaHistoryHeading")}\n\n${versionT("sagaHistoryMissing")}`
-        : character.article,
-    description: isSummaryVersion
-      ? null
-      : activeVariant
-        ? activeVariant.summary
-        : character.description,
-    preferArticle: isSummaryVersion || Boolean(activeVariant),
-    articleTarget:
-      !isSummaryVersion && activeVariant
-        ? { table: "db_character_variants", rowId: activeVariant.id }
-        : undefined,
-  });
+  let contentPanels: ContentPanel[];
+  if (isSummaryVersion && !showcasePreview) {
+    const [articlePanels, dbPanels] = await Promise.all([
+      buildWikiContentPanels({
+        entityType: "character",
+        entityId: character.id,
+        article: character.article,
+        description: character.description,
+        preferArticle: true,
+        articleTarget: { table: "db_characters", rowId: character.id },
+      }),
+      buildWikiContentPanels({
+        entityType: "character",
+        entityId: character.id,
+        article: null,
+        description: null,
+        preferArticle: false,
+      }),
+    ]);
+    const existingKeys = new Set(articlePanels.map((panel) => panel.key));
+    const supplementalDbPanels = dbPanels.filter(
+      (panel) => panel.group === PWS_GROUP_NAME || !existingKeys.has(panel.key),
+    );
+    const summaryDirectoryBody = summaryArticle?.replace(/^##[ \t]+.+\n+/, "").trim() ?? "";
+    const summaryDirectoryPanel: ContentPanel[] = summaryDirectoryBody
+      ? [
+          {
+            key: "histoire-par-saga",
+            label: versionT("sagaHistoryHeading"),
+            accent: "orange",
+            origine: "article",
+            node: (
+              <div className="space-y-4">
+                {character.description?.trim() && (
+                  <div className="dbz-panel border-dbz-orange/25 bg-dbz-orange/[0.04] p-4 text-sm leading-relaxed text-white/85 sm:p-5">
+                    <WikiMarkdown body={character.description.trim()} />
+                  </div>
+                )}
+                <WikiArticle
+                  article={summaryDirectoryBody}
+                  heading={versionT("sagaHistoryHeading")}
+                  accent="orange"
+                />
+              </div>
+            ),
+          },
+        ]
+      : [];
+    contentPanels = [...summaryDirectoryPanel, ...articlePanels, ...supplementalDbPanels];
+  } else {
+    contentPanels = await buildWikiContentPanels({
+      entityType: "character",
+      entityId: character.id,
+      article: isSummaryVersion
+        ? (summaryArticle ?? character.article)
+        : activeVariant
+          ? activeVariant.article?.trim() ||
+            `## ${versionT("sagaHistoryHeading")}\n\n${versionT("sagaHistoryMissing")}`
+          : character.article,
+      description: isSummaryVersion
+        ? null
+        : activeVariant
+          ? activeVariant.summary
+          : character.description,
+      preferArticle: isSummaryVersion || Boolean(activeVariant),
+      articleTarget:
+        !isSummaryVersion && activeVariant
+          ? { table: "db_character_variants", rowId: activeVariant.id }
+          : undefined,
+    });
+  }
 
   // Galeries relationnelles (vignettes de transformations, fiches techniques).
   // `withHeading=false` quand on les fusionne dans une catégorie de l'article
@@ -1404,14 +1413,17 @@ export default async function CharacterPage({
               episodeSingle: versionT("episodeSingle", { number: "{number}" }),
             }}
             powerScalingNodes={activeSagaVariants.map((variant) => {
-              const versionSaga = normalizeVersionLabel(variant.sagaName);
-              const readings = DEFAULT_POWER_SCALING_CONFIG.officialBps.filter((reading) => {
-                const belongsToCharacter =
-                  reading.characterId === character.id ||
-                  (!reading.characterId &&
-                    normalizeVersionLabel(reading.character) ===
-                      normalizeVersionLabel(character.name));
-                return belongsToCharacter && normalizeVersionLabel(reading.saga) === versionSaga;
+              const hasSeparateFreezerSaga = loadedVariants.some((item) => {
+                const token = normalizeVersionLabel(`${item.sagaName} ${item.sagaSlug}`);
+                return token.includes("freezer") || token.includes("frieza");
+              });
+              const readings = resolveCharacterSagaOfficialReadings({
+                characterId: character.id,
+                characterName: character.name,
+                variantSagaName: variant.sagaName,
+                variantSagaSlug: variant.sagaSlug,
+                hasSeparateFreezerSaga,
+                officialBps: DEFAULT_POWER_SCALING_CONFIG.officialBps,
               });
               if (readings.length === 0) return null;
               return (
@@ -2024,16 +2036,7 @@ export default async function CharacterPage({
     additional: [],
   };
   for (const panel of panels) {
-    const key = `${panel.key} ${panel.label}`.toLocaleLowerCase();
-    const group = panel.group?.toLocaleLowerCase() ?? "";
-    let bucket: keyof typeof profileBuckets;
-    if (/histoire|history|chronolog|combat|fight/.test(key)) bucket = "history";
-    else if (/relation|famille|family|ennemi|enemy|ami|friend/.test(key)) bucket = "relations";
-    else if (
-      /pouvoir|power|forme|form|technique|transformation|absorption|\bpws\b/.test(`${key} ${group}`)
-    )
-      bucket = "powers";
-    else bucket = "additional";
+    const bucket = classifyCharacterProfileBucket(panel.key, panel.label, panel.group);
     profileBuckets[bucket].push(
       <div key={panel.key} className="min-w-0">
         {panel.node}
