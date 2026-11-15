@@ -9,7 +9,9 @@
 const join = (...parts: string[]): string => parts.join("/");
 const existsSync = (path: string): boolean => {
   const proc = (globalThis as { process?: { getBuiltinModule?: (id: string) => unknown } }).process;
-  const fs = proc?.getBuiltinModule?.("node:fs") as { existsSync(path: string): boolean } | undefined;
+  const fs = proc?.getBuiltinModule?.("node:fs") as
+    | { existsSync(path: string): boolean }
+    | undefined;
   return fs?.existsSync(path) ?? false;
 };
 
