@@ -168,7 +168,7 @@ if (missing.length)
 const block = `${begin}\n# aphrody-rev: ${REV}\n${lines.join("\n")}\n${end}`;
 const next = alignAphrodyPins(manifest.replace(new RegExp(`${begin}[\\s\\S]*?${end}`), block), REV);
 if (args.includes("--check")) {
-  if (next !== manifest) {
+  if (!Bun.deepEquals(Bun.TOML.parse(next), Bun.TOML.parse(manifest), true)) {
     console.error(
       "Cargo.toml [workspace.dependencies] is stale; run scripts/build/rust/workspace-deps.ts",
     );
