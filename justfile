@@ -267,7 +267,7 @@ container-ovh *args="":
 container-backup:
     bun scripts/ops/container.ts backup
 
-# Connectors: generate ready-to-use configs for Codex, AGY, Claude Code, and Omar
+# Connectors: generate ready-to-use configs for Codex, AGY and Claude Code
 [group('connectors')]
 setup-connectors:
     bun scripts/ops/setup-agent-connectors.ts --write --status

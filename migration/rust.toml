@@ -205,7 +205,7 @@ name = "scripts"
 ts = ["scripts"]
 rust = "crates/shenron-cli"
 state = "ts"
-ts_lines = 75702
+ts_lines = 75658
 note = "build, deploy, ops and data scripts -> shenron subcommands"
 
 [[unit]]
