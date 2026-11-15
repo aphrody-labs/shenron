@@ -1271,14 +1271,28 @@ export function createShenronApi(
         spec.auth === "public" &&
         !spec.binary &&
         typeof spec.cache === "object";
-      const key = cacheable ? publicCacheKey(url) : "";
+      // An answer labelled from Accept-Language (no `lang` in the query): cached per language here,
+      // never by a shared cache, which keys on the URL alone.
+      const byLanguage =
+        cacheable &&
+        (spec.cache as { varyAcceptLanguage?: true }).varyAcceptLanguage === true &&
+        !url.searchParams.has("lang");
+      const key = cacheable
+        ? publicCacheKey(url) + (byLanguage ? `#lang=${acceptedLang(request)}` : "")
+        : "";
+      const cacheHeaders = (ttl: number): Record<string, string> => {
+        if (!byLanguage) return publicCacheHeaders(ttl);
+        const s = Math.max(1, Math.floor(ttl));
+        const vary = [cors.Vary, "Accept-Language"].filter(Boolean).join(", ");
+        return { "Cache-Control": `private, max-age=${s}`, Vary: vary };
+      };
       if (cacheable) {
         const hit = ports.publicCache.get(key);
         if (hit) {
           const headers = {
             ...cors,
             "Content-Type": "application/json; charset=utf-8",
-            ...publicCacheHeaders((spec.cache as { maxAgeSeconds: number }).maxAgeSeconds),
+            ...cacheHeaders((spec.cache as { maxAgeSeconds: number }).maxAgeSeconds),
             ETag: hit.etag,
           };
           if (request.headers.get("if-none-match") === hit.etag)
@@ -1307,7 +1321,7 @@ export function createShenronApi(
         const headers = {
           ...cors,
           "Content-Type": "application/json; charset=utf-8",
-          ...publicCacheHeaders(ttl),
+          ...cacheHeaders(ttl),
           ETag: etag,
         };
         if (request.headers.get("if-none-match") === etag)

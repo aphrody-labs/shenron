@@ -37,6 +37,20 @@ describe("/api/public/lexicon", () => {
     expect(LexiconTerm.parse(await response.json()).label).toBe("フリーザ");
   });
 
+  test("the cache keys Accept-Language answers by language and keeps them out of shared caches", async () => {
+    const fresh = createShenronApi(basePorts({ wiki }), { service: "shenron-site" });
+    const ask = (language: string) =>
+      fresh.request("/api/public/lexicon/frieza", { headers: { "accept-language": language } });
+    const ja = await ask("ja");
+    expect(LexiconTerm.parse(await ja.json()).label).toBe("フリーザ");
+    expect(ja.headers.get("vary")).toContain("Accept-Language");
+    expect(ja.headers.get("cache-control")).toStartWith("private");
+    expect(LexiconTerm.parse(await (await ask("en")).json()).label).toBe("Frieza");
+    const pinned = await fresh.request("/api/public/lexicon/frieza?lang=en");
+    expect(pinned.headers.get("cache-control")).toStartWith("public");
+    expect(pinned.headers.get("vary") ?? "").not.toContain("Accept-Language");
+  });
+
   test("searches every language, filtered by kind, paginated", async () => {
     const body = LexiconListResponse.parse(
       await (await api.request("/api/public/lexicon?q=frieza&lang=fr&limit=5")).json(),

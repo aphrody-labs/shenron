@@ -103,7 +103,11 @@ import {
 
 /** `owner`: the host resolves the conversation owner (session, signed bot user, local desktop). */
 export type EndpointAuth = "public" | "admin" | "acting-user" | "owner" | "reader";
-export type EndpointCache = { maxAgeSeconds: number } | "no-store";
+/**
+ * `varyAcceptLanguage`: the answer follows `Accept-Language` when the query has no `lang`; the host
+ * keys its cache by the resolved language and sends such answers `private` with `Vary`.
+ */
+export type EndpointCache = { maxAgeSeconds: number; varyAcceptLanguage?: true } | "no-store";
 
 export interface EndpointSpec {
   id: string;
@@ -665,7 +669,7 @@ export const endpoints = {
     auth: "public",
     query: LexiconListQuery,
     response: LexiconListResponse,
-    cache: { maxAgeSeconds: 3600 },
+    cache: { maxAgeSeconds: 3600, varyAcceptLanguage: true },
     paginated: true,
   },
   lexiconTerm: {
@@ -677,7 +681,7 @@ export const endpoints = {
     params: LexiconTermParams,
     query: LexiconTermQuery,
     response: LexiconTerm,
-    cache: { maxAgeSeconds: 3600 },
+    cache: { maxAgeSeconds: 3600, varyAcceptLanguage: true },
   },
   createGoal: {
     id: "createGoal",
