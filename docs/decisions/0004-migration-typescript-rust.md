@@ -40,8 +40,8 @@ Ordre de bascule d'une unité :
   - L'avancement se lit avec `cargo run -p shenron-migrate -- status`.
 - Négatives : une unité `dual` doit être tenue des deux côtés ; un changement de l'hôte TypeScript impose de réenregistrer les cas.
 - Travaux induits :
-  - Groupes HTTP suivants par ordre de dépendance : wiki, VFS, compte, puis chat.
-  - Couche HTTP commune : CORS, limite de débit, ETag et 304.
+  - Couche HTTP commune d'abord, car chaque groupe en hérite. Elle comprend : `ApiError` (`IntoResponse`, `WithRejection`), CORS (`tower_http::cors`), CSRF (`tower_http::csrf`), limite de débit par IP, cache public avec ETag et 304, IP cliente (`ConnectInfo`) et traces (`MatchedPath`). Ses cas de référence enregistrent les en-têtes CORS et `ETag`. Correspondance détaillée entre l'hôte TypeScript et Axum : `C:\src\docs\axum\FEATURES.md`. Règles : skill `axum`.
+  - Groupes HTTP suivants par ordre de dépendance : wiki, VFS (`ServeDir`), compte (cookies), puis chat (SSE et WebSocket).
   - Proxy frontal vers `shenron-api` (Infra), puis `apps/server` en Axum, `apps/site` en Leptos (ADR 0001), le bot et les scripts en sous-commandes `shenron`.
 - Premier constat : écrire les cas du lexique a révélé un défaut de l'hôte TypeScript. Le cache public d'une heure était indexé par l'URL seule, alors que la réponse suit `Accept-Language`. Correction : le cache est indexé par langue, et une réponse sans `lang` part en `private` avec `Vary: Accept-Language`.
 
