@@ -1,0 +1,56 @@
+# SPDX-License-Identifier: Apache-2.0
+# TypeScript to Rust migration gate (docs/decisions/0004-migration-typescript-rust.md): on every push,
+# since a TypeScript-only change can break the ratchet of migration/rust.toml.
+#   - every TypeScript file belongs to a unit, no unit grows past its ts_lines
+#   - dual units keep their golden cases, rust units have no TypeScript left
+#   - the golden HTTP cases are what the TypeScript host answers, and the Rust router answers the same
+name: migrate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: migrate-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+
+jobs:
+  ledger:
+    name: Ledger, ratchet, HTTP parity
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: [self-hosted, Linux, X64, shenron-factory]
+    timeout-minutes: 30
+    env:
+      RUSTC_WRAPPER: sccache
+      CARGO_TARGET_DIR: ${{ vars.SHENRON_CARGO_TARGET_DIR || format('{0}/target', github.workspace) }}
+      GIT_TERMINAL_PROMPT: "0"
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Resolve qualified factory tools
+        run: |
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Toolchain
+        run: rustup toolchain install
+      - uses: ./.github/actions/setup-bun
+      - name: Install
+        run: bun ci
+      - name: Golden HTTP cases match the TypeScript host
+        run: bun packages/api/scripts/api-fixtures.ts --check
+      - name: Migration ledger (shenron-migrate check)
+        run: cargo run -q --locked -p shenron-migrate -- check
+      - name: Rust router answers the golden cases
+        run: cargo test -q --locked -p shenron-api -p shenron-migrate

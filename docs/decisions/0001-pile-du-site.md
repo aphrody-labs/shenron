@@ -25,7 +25,7 @@ Nous retenons Leptos 0.8 (SSR et îlots) sur Axum pour le site public, Dioxus po
 
 - Positives : une seule langue côté serveur et rendu, SEO par pages statiques par locale.
 - Négatives : réécriture de `apps/site` et de `packages/ui`.
-- Travaux induits : le bot et les scripts restent en TypeScript sous Bun. Le contrat entre les deux runtimes Rust passe par HTTP, JSON et l'attribut `data-component` des îlots. Aucune nouvelle dépendance Next, Tailwind ou Base UI en attendant.
+- Travaux induits : le bot et les scripts restent en TypeScript sous Bun (étendu par l'ADR 0004 : migration complète vers Rust, `migration/rust.toml`). Le contrat entre les deux runtimes Rust passe par HTTP, JSON et l'attribut `data-component` des îlots. Aucune nouvelle dépendance Next, Tailwind ou Base UI en attendant.
 
 ## Vérification
 

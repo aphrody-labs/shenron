@@ -48,13 +48,24 @@ fmt:
 [group('all')]
 drift: deps-check
     bun packages/api/scripts/openapi.ts --check
+    bun packages/api/scripts/api-fixtures.ts --check
     bun packages/ui/scripts/generate-tokens.ts --check
     bun packages/pipeline/scripts/ai/check-contracts.ts
 
 # What the CI runs (ci.yml and rust.yml), in one go
 [group('all')]
-ci: drift typecheck bun-lint bun-test test-scripts rust-fmt-check rust-lint koharu wasm rust-deny
+ci: drift migrate-check typecheck bun-lint bun-test test-scripts rust-fmt-check rust-lint koharu wasm rust-deny
     bun scripts/build/rust/test.ts --profile ci
+
+# TypeScript to Rust migration gate (migration/rust.toml): every TS file in a unit, ratchet, parity paths
+[group('rust')]
+migrate-check:
+    {{ cargo }} run -q -p shenron-migrate -- check
+
+# Lower the migration ratchet to the TypeScript left
+[group('rust')]
+migrate-ratchet:
+    {{ cargo }} run -q -p shenron-migrate -- ratchet
 
 # Install the Bun dependencies from the lockfile
 [group('bun')]

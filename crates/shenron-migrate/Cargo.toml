@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: Apache-2.0
+[package]
+name = "shenron-migrate"
+description = "Ledger and gate of the TypeScript to Rust migration of Shenron (migration/rust.toml): TypeScript left per unit, ratchet, parity paths, contract coverage."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+name = "shenron_migrate"
+
+[[bin]]
+name = "shenron-migrate"
+path = "src/main.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+shenron-api = { workspace = true }
+toml = { workspace = true }
+walkdir = { workspace = true }

@@ -12,6 +12,7 @@ Operate and evolve Shenron on **100% Upstream Bun v1.4.4+ and Rust 2024** with z
 - **Native Studio & Rendering**: GPUI / Dioxus 0.8, WGPU 30, Vello, Parley, Taffy, AccessKit.
 - **Creative & Engine Extensions**: `crates/bun-engine-core`, `packages/bun-blender` (Blender 5.2.3 LTS headless pipeline), `packages/bun-video-project`, `packages/bun-gamestream`.
 - **Tooling, Bot, Scripts & Tests**: Upstream Bun v1.4.4+ only. Zero Node.js, npm, yarn, or pnpm.
+- **TypeScript to Rust migration** (`docs/decisions/0004-migration-typescript-rust.md`): `migration/rust.toml` assigns every TS file to a unit with a target crate, and its `ts_lines` ratchet fails CI when TS grows (`just migrate-check`), so put new logic in the unit's crate. A ported HTTP route goes in `crates/shenron-api` (`OPERATIONS`), and its golden cases in `data/api/fixtures` are recorded by `bun packages/api/scripts/api-fixtures.ts`. `just migrate-ratchet` lowers the ratchet after a deletion.
 - **Release compile Bun**: `scripts/deploy/build-image.sh` requires Bun >= 1.4.5 (fleet `1.4.5-canary.1+6db952080` works: a compiled server re-spawned with `BUN_BE_BUN=1` serves a child like the Next standalone, same as 1.4.6). Legacy `1.4.6-canary.1+fd9d7a224` is preserved as branch `legacy/1.4.6-fd9d7a224` and prerelease `legacy-1.4.6-fd9d7a224` of aphrody-labs/bun (1366 commits off main, not portable); `Bun.Video` is only needed by offline media scripts. Override with `SHENRON_COMPILE_BUN`.
 
 ## 2. Sovereign Fleet Triad (`vps` / `cdn` / `prod`)
