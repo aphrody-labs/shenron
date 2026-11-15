@@ -266,6 +266,7 @@
       "install.ps1",
       "justfile",
       "llms.txt",
+      "migration",
       "replica",
       "reports",
       "research_notes",
