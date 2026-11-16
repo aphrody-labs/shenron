@@ -142,7 +142,7 @@ services:
     pids_limit: 256
 
   compute:
-    image: aphrody:toolbox-f1346b77156f
+    image: localhost/shenron:${SHENRON_SITE_TAG:-${SHENRON_IMAGE_TAG:?SHENRON_IMAGE_TAG is required}}
     container_name: shenron-compute
     restart: unless-stopped
     user: "1000:1000"
@@ -158,10 +158,10 @@ services:
       - /srv/shenron/config/compute.env
     environment:
       HOME: /home/ubuntu
-      APHRODY_HOME: /srv/shenron/data/workspace
+      SHENRON_HOME: /srv/shenron/data/workspace
     volumes:
       - /srv/shenron/data/workspace:/srv/shenron/data/workspace
-    command: [aphrody-mcp, http, --bind, 127.0.0.1:8789]
+    command: [shenron-mcp, --http, "127.0.0.1:8789"]
     depends_on:
       postgres:
         condition: service_healthy
@@ -346,8 +346,8 @@ services:
     volumes:
       - /srv/shenron/config/tls:/etc/letsencrypt:ro
       - /srv/shenron/current/nginx:/etc/nginx/conf.d:ro
-      - /srv/shenron/data/site/creator:/srv/aphrody-creator:ro
-      - /srv/shenron/data/site/downloads:/srv/aphrody-downloads:ro
+      - /srv/shenron/data/site/creator:/srv/shenron-creator:ro
+      - /srv/shenron/data/site/downloads:/srv/shenron-downloads:ro
       - /srv/shenron/data/bot/assets:/srv/shenron-cdn/assets:ro
       - /srv/shenron/current/public/50x.html:/var/www/shenron/50x.html:ro
       - /srv/shenron/current/public:/srv/shenron-cdn/site:ro

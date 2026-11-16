@@ -1,0 +1,33 @@
+# syntax=docker/dockerfile:1.7
+# SPDX-License-Identifier: Apache-2.0
+# Runtime image of koharu-web (the Koharu manga page service). The binary is built on the
+# build host: cargo build --release -p koharu-web, then copied to dist/koharu-web/linux-x64/.
+# Build from the repository root: docker build -f deploy/docker/Dockerfile.koharu .
+FROM ubuntu:26.10
+
+ENV SHENRON_HOME=/var/lib/koharu \
+    KOHARU_WEB_BIND=0.0.0.0:8890 \
+    KOHARU_WEB_CPU=1
+
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    rm -f /etc/apt/apt.conf.d/docker-clean \
+ && apt-get update \
+ && apt-get install -y --no-install-recommends ca-certificates fonts-noto-cjk fonts-noto-core libfontconfig1 libgcc-s1 libsqlite3-0 libvulkan1 mesa-vulkan-drivers \
+ && (id ubuntu >/dev/null 2>&1 && userdel -r ubuntu || true) \
+ && groupadd --gid 10002 koharu \
+ && useradd --uid 10002 --gid 10002 --home-dir /var/lib/koharu --no-create-home --shell /usr/sbin/nologin koharu \
+ && install -d -o 10002 -g 10002 /var/lib/koharu
+
+ARG SHENRON_REVISION=unknown
+LABEL org.opencontainers.image.title="koharu-web" \
+      org.opencontainers.image.revision="$SHENRON_REVISION" \
+      org.opencontainers.image.source="https://github.com/aphrody-labs/shenron"
+
+COPY --chown=10002:10002 --chmod=755 dist/koharu-web/linux-x64/koharu-web /usr/local/bin/koharu-web
+
+USER 10002:10002
+EXPOSE 8890
+STOPSIGNAL SIGTERM
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s CMD ["/usr/local/bin/koharu-web", "--version"]
+ENTRYPOINT ["/usr/local/bin/koharu-web"]

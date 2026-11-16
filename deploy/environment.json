@@ -235,6 +235,7 @@
       ".claude",
       ".claude-plugin",
       ".codex",
+      ".mcp.json",
       ".config",
       ".editorconfig",
       ".gitattributes",
