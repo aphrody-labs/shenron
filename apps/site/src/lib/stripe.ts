@@ -12,8 +12,8 @@ export function isStripeConfigured(): boolean {
 
 export function getStripe() {
   if (!env.STRIPE_SECRET_KEY) throw new Error("STRIPE_SECRET_KEY is not configured.");
+  // No explicit apiVersion: the SDK pins the API version it was generated for, so bun update keeps both aligned.
   return new StripeClient(env.STRIPE_SECRET_KEY, {
-    apiVersion: "2026-09-30.endive",
     appInfo: {
       name: "Dragon Ball FR",
       version: "2.0.0",

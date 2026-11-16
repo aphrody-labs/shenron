@@ -10,7 +10,7 @@
     ],
     "catalog": {
       "@ai-sdk/openai-compatible": "^3.0.59",
-      "@ai-sdk/provider": "4.0.19",
+      "@ai-sdk/provider": "^4.0.19",
       "@base-ui/react": "^1.8.0",
       "@better-auth/cimd": "1.7.14",
       "@better-auth/mcp": "1.7.14",
