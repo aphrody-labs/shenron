@@ -19,7 +19,7 @@ name = "site"
 ts = ["apps/site"]
 rust = "crates/shenron-site"
 state = "ts"
-ts_lines = 276321
+ts_lines = 276176
 note = "Next.js 16 -> Leptos 0.8 SSR + islands on Axum (ADR 0001)"
 
 [[unit]]
@@ -27,7 +27,7 @@ name = "bot"
 ts = ["apps/bot"]
 rust = "crates/shenron-bot"
 state = "ts"
-ts_lines = 107538
+ts_lines = 107475
 note = "discordx -> Rust Discord gateway client; slash commands and the bot API"
 
 [[unit]]
@@ -35,7 +35,7 @@ name = "server"
 ts = ["apps/server"]
 rust = "crates/shenron-server"
 state = "ts"
-ts_lines = 6998
+ts_lines = 6980
 note = "Bun single binary -> Axum host mounting shenron-api and the sidecars"
 
 [[unit]]
@@ -43,7 +43,7 @@ name = "activity-app"
 ts = ["apps/activity"]
 rust = "crates/shenron-activity"
 state = "ts"
-ts_lines = 7917
+ts_lines = 7904
 note = "Discord Activity server"
 
 [[unit]]
@@ -52,7 +52,7 @@ ts = ["packages/api"]
 rust = "crates/shenron-api"
 state = "dual"
 parity = ["data/api/fixtures"]
-ts_lines = 18648
+ts_lines = 18633
 note = "HTTP contract: ported route groups replay data/api/fixtures"
 
 [[unit]]
@@ -60,7 +60,7 @@ name = "ui"
 ts = ["packages/ui"]
 rust = "crates/shenron-ui"
 state = "ts"
-ts_lines = 48056
+ts_lines = 48018
 note = "React kit -> Leptos components on packages/design tokens"
 
 [[unit]]
@@ -68,7 +68,7 @@ name = "pipeline"
 ts = ["packages/pipeline"]
 rust = "crates/shenron-pipeline"
 state = "ts"
-ts_lines = 44885
+ts_lines = 44725
 note = "editorial pipeline, OCR and translation jobs"
 
 [[unit]]
@@ -76,7 +76,7 @@ name = "db"
 ts = ["packages/db"]
 rust = "crates/shenron-db"
 state = "ts"
-ts_lines = 17242
+ts_lines = 17238
 note = "Drizzle schema and repositories -> SQL migrations stay, repositories in Rust"
 
 [[unit]]
@@ -92,7 +92,7 @@ name = "config"
 ts = ["packages/config"]
 rust = "crates/shenron-config"
 state = "ts"
-ts_lines = 9174
+ts_lines = 9162
 note = "site configuration and constants"
 
 [[unit]]
@@ -116,7 +116,7 @@ name = "media"
 ts = ["packages/media"]
 rust = "crates/shenron-video"
 state = "ts"
-ts_lines = 3471
+ts_lines = 3459
 note = "media probing and transcoding"
 
 [[unit]]
@@ -132,8 +132,8 @@ name = "native"
 ts = ["packages/native"]
 rust = "crates/shenron-ffi"
 state = "ts"
-ts_lines = 3095
-note = "bun:ffi bindings; removed once their consumers are Rust"
+ts_lines = 3230
+note = "bun:ffi bindings; removed once their consumers are Rust. Raised from 3095 when 529305b3 inlined the former @aphrody npm bindings"
 
 [[unit]]
 name = "auth"
@@ -205,7 +205,7 @@ name = "scripts"
 ts = ["scripts"]
 rust = "crates/shenron-cli"
 state = "ts"
-ts_lines = 75658
+ts_lines = 75273
 note = "build, deploy, ops and data scripts -> shenron subcommands"
 
 [[unit]]
@@ -263,3 +263,66 @@ rust = "crates/shenron-cli"
 state = "ts"
 ts_lines = 2045
 note = "agent hooks and skill scripts"
+
+[[unit]]
+name = "kit"
+ts = ["packages/kit"]
+rust = "crates/shenron-cli"
+state = "ts"
+ts_lines = 362
+note = "JSON HTTP transport, filesystem locations, native inference binding"
+
+[[unit]]
+name = "decision"
+ts = ["packages/decision"]
+rust = "crates/shenron-jev"
+state = "ts"
+ts_lines = 425
+note = "typed batched decisions over the TypeSafe AI SDK or a local provider"
+
+[[unit]]
+name = "discord-kit"
+ts = ["packages/discord-kit"]
+rust = "crates/shenron-bot"
+state = "ts"
+ts_lines = 1148
+note = "Discord helpers of the bot; follows the Rust gateway client"
+
+[[unit]]
+name = "m3"
+ts = [
+  "packages/m3-ai",
+  "packages/m3-motion",
+  "packages/m3-primitives",
+  "packages/m3-reader",
+  "packages/m3-theme",
+  "packages/m3-tokens",
+]
+rust = "crates/shenron-ui"
+state = "ts"
+ts_lines = 15606
+note = "Material 3 components, motion and tokens consumed by @shenron/ui"
+
+[[unit]]
+name = "test-dom"
+ts = ["packages/test-dom"]
+rust = "crates/shenron-ui"
+state = "ts"
+ts_lines = 72
+note = "DOM test harness of the UI packages"
+
+[[unit]]
+name = "video"
+ts = ["packages/video"]
+rust = "crates/shenron-video"
+state = "ts"
+ts_lines = 907
+note = "Crunchyroll API and HLS playback helpers"
+
+[[unit]]
+name = "next-host"
+ts = ["packages/next-host"]
+rust = "crates/shenron-site"
+state = "ts"
+ts_lines = 41
+note = "Next host helpers; removed with the Leptos site (ADR 0001)"
