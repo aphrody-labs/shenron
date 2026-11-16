@@ -11,7 +11,7 @@
  * production PostgreSQL: the output lives under `~/var/dbxv2-db/` (700, file 600) and the
  * script refuses any path inside the repository. `build` reads the dump indexes and calls
  * `identify` of `@shenron/dbxv2` (`SHENRON_DBXV2_SRC`, `SHENRON_DBXV2_LIB`); `embed` calls a
- * local `aphrody-embed serve` (multilingual-e5-small) and must run in tmux under the heavy
+ * local `shenron-embed serve` (multilingual-e5-small) and must run in tmux under the heavy
  * lock (`plan` prints the command). Never run `rag:build` on the production bot.
  */
 import { Database } from "bun:sqlite";
@@ -124,7 +124,7 @@ if (command === "build") {
   } else lines.push(`no database at ${dbPath}`);
   lines.push(
     `# tmux, ${lock ? "verrou SHENRON_BUILD_LOCK, " : ""}journal durable :`,
-    `tmux new-session -d -s dbxv2-embed 'aphrody-embed serve --port 18795 --model-dir $HOME/var/models & sleep 25; ${lock ? `flock ${lock} ` : ""}bun scripts/data/build-dbxv2-db.ts embed --batch 16 > ~/var/dbxv2-db/embed.log 2>&1; echo EXIT_CODE=$? >> ~/var/dbxv2-db/embed.log'`,
+    `tmux new-session -d -s dbxv2-embed 'shenron-embed serve --port 18795 --model-dir $HOME/var/models & sleep 25; ${lock ? `flock ${lock} ` : ""}bun scripts/data/build-dbxv2-db.ts embed --batch 16 > ~/var/dbxv2-db/embed.log 2>&1; echo EXIT_CODE=$? >> ~/var/dbxv2-db/embed.log'`,
   );
   console.log(lines.join("\n"));
 } else {

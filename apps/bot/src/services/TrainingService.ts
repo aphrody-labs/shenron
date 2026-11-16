@@ -13,7 +13,7 @@ import {
 import { CanonService } from "~/services/CanonService";
 import { ragTrainingFeedback } from "~/db/schema";
 import { sendAdminLabMessage } from "~/lib/admin-lab";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { ShenronComputeClient } from "@shenron/pipeline/shenron";
 import { resolveDataPath, warnIfEphemeral } from "@shenron/config/paths";
 import { resolveBotApiInternalUrl, resolveSiteInternalUrl } from "@shenron/config/services";
 import { logger } from "~/lib/logger";
@@ -120,9 +120,9 @@ export class TrainingService {
    * Vérifie la disponibilité du backend d'embeddings sélectionné.
    */
   async isSidecarOnline(): Promise<boolean> {
-    if (process.env.RAG_BACKEND === "aphrody") {
+    if (process.env.RAG_BACKEND === "shenron") {
       try {
-        await new AphrodyComputeClient().embed(["ping"]);
+        await new ShenronComputeClient().embed(["ping"]);
         return true;
       } catch {
         return false;
@@ -453,9 +453,9 @@ export class TrainingService {
     // Compteurs du backend RAG actif.
     let totalChunks = 0;
     let totalVectors = 0;
-    if (process.env.RAG_BACKEND === "aphrody") {
+    if (process.env.RAG_BACKEND === "shenron") {
       try {
-        const stats = await new AphrodyComputeClient().ragStats();
+        const stats = await new ShenronComputeClient().ragStats();
         totalChunks = stats.chunks;
         totalVectors = stats.vectors;
       } catch {}

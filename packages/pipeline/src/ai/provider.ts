@@ -10,8 +10,8 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 import type { EmbeddingModelV4, LanguageModelV4 } from "@ai-sdk/provider";
 import { customProvider } from "ai";
-import type { AphrodyCompute } from "./aphrody";
-import { createAphrodyChatModel } from "./chat";
+import type { ShenronCompute } from "./shenron";
+import { createShenronChatModel } from "./chat";
 import type { AiConfig } from "./config";
 import { selectEmbeddingModel } from "./embeddings";
 
@@ -20,16 +20,16 @@ export type ShenronEmbeddingModelId = "e5-query" | "e5-passage";
 
 export function createShenronProvider(
   cfg: Pick<AiConfig, "chatModel" | "embed" | "directChat">,
-  deps: { compute: AphrodyCompute | null; fetch?: typeof fetch },
+  deps: { compute: ShenronCompute | null; fetch?: typeof fetch },
 ) {
   const languageModels: Partial<Record<ShenronLanguageModelId, LanguageModelV4>> = {};
   if (deps.compute) {
     if (!cfg.directChat)
-      languageModels.chat = createAphrodyChatModel(deps.compute, { modelId: cfg.chatModel });
-    languageModels["chat-flash-lite"] = createAphrodyChatModel(deps.compute, {
+      languageModels.chat = createShenronChatModel(deps.compute, { modelId: cfg.chatModel });
+    languageModels["chat-flash-lite"] = createShenronChatModel(deps.compute, {
       modelId: "gemini-web/flash-lite",
     });
-    languageModels["chat-pro"] = createAphrodyChatModel(deps.compute, {
+    languageModels["chat-pro"] = createShenronChatModel(deps.compute, {
       modelId: "gemini-web/pro",
     });
   }
@@ -65,7 +65,7 @@ export function createOpenAICompatibleChat(o: {
   fetch?: typeof fetch;
 }): LanguageModelV4 {
   const provider = createOpenAICompatible({
-    name: "aphrody-openai",
+    name: "shenron-openai",
     baseURL: o.baseUrl.href.replace(/\/+$/, ""),
     ...(o.token ? { apiKey: o.token } : {}),
     ...(o.fetch ? { fetch: o.fetch } : {}),

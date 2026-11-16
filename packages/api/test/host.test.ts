@@ -22,14 +22,14 @@ afterAll(async () => {
 });
 
 let counter = 0;
-/** Isolated environment: private data dir, no aphrody, no chat backend, no MCP tools. */
+/** Isolated environment: private data dir, no shenron, no chat backend, no MCP tools. */
 function baseEnv(over: Record<string, string | undefined> = {}) {
   const dir = join(root, `env-${++counter}`);
   mkdirSync(dir, { recursive: true });
   return {
     HOME: dir,
     SHENRON_DATA_DIR: dir,
-    SHENRON_BIN: join(dir, "absent", "aphrody"),
+    SHENRON_BIN: join(dir, "absent", "shenron"),
     SHENRON_CHAT_BACKENDS: "local",
     SHENRON_CHAT_TOOLS: "0",
     ...over,
@@ -62,7 +62,7 @@ describe("groups", () => {
     expect(LocalApiGroups.parse(api.groups)).toEqual(api.groups);
     expect(Object.values(api.groups).every((group) => !group.available)).toBe(true);
     expect(api.groups.vfs.reason).toBe("aucun VFS Shenron installé");
-    expect(api.groups.ocr.reason).toBe("aphrody introuvable : OCR indisponible");
+    expect(api.groups.ocr.reason).toBe("shenron introuvable : OCR indisponible");
     for (const path of ["/api/v1/vfs", "/api/v1/chat", "/api/public/openapi.json", "/assets/x"])
       expect(api.handles(path)).toBe(false);
   });
@@ -144,7 +144,7 @@ describe("usableChatBackends", () => {
   test("gemini-web needs its client and a cookie store", () => {
     const dir = join(root, "gemini");
     mkdirSync(join(dir, "cookies"), { recursive: true });
-    const binary = join(dir, "aphrody-gemini-web");
+    const binary = join(dir, "shenron-gemini-web");
     const env = {
       SHENRON_CHAT_BACKENDS: "gemini-web",
       SHENRON_HOME: dir,
@@ -278,7 +278,7 @@ describe("public RAG boundary", () => {
 describe("live editorial RAG routing", () => {
   test("search, context and chat use the injected current index without a VFS", async () => {
     const calls: { sourceId?: string; lang?: string }[] = [];
-    const api = host(baseEnv({ RAG_BACKEND: "aphrody", SHENRON_CHAT_BACKENDS: "extractive" }), {
+    const api = host(baseEnv({ RAG_BACKEND: "shenron", SHENRON_CHAT_BACKENDS: "extractive" }), {
       rag: {
         async search(query: RagSearchQuery) {
           calls.push(query);
@@ -358,7 +358,7 @@ describe("live editorial RAG routing", () => {
   });
 
   test("an unavailable explicit live index never falls back to a stale VFS", async () => {
-    const api = host(baseEnv({ RAG_BACKEND: "aphrody" }), {
+    const api = host(baseEnv({ RAG_BACKEND: "shenron" }), {
       rag: {
         search: async () => {
           throw new Error("unavailable");
@@ -372,7 +372,7 @@ describe("live editorial RAG routing", () => {
     } finally {
       await server.stop(true);
     }
-    const invalid = host(baseEnv({ RAG_BACKEND: "aphrody" }), { vfsDatabase: memoryVfs() });
+    const invalid = host(baseEnv({ RAG_BACKEND: "shenron" }), { vfsDatabase: memoryVfs() });
     expect(invalid.groups.rag.available).toBe(false);
     expect(invalid.handles("/api/public/rag/search")).toBe(false);
   });

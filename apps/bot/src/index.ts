@@ -58,7 +58,7 @@ if (visibilityAdded.length > 0) {
   logger.info({ tables: visibilityAdded }, "✓ wiki replica visibility column added");
 }
 
-// Espace d'embedding (contrat aphrody-infra `indexes.shenron-rag`) : un modèle ou
+// Espace d'embedding (contrat shenron-infra `indexes.shenron-rag`) : un modèle ou
 // une dimension configurés qui diffèrent de l'index sont une erreur fatale, jamais
 // un mélange silencieux d'espaces vectoriels.
 try {

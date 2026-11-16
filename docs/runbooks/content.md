@@ -1,6 +1,6 @@
 # Chaînes de contenu
 
-Audit en lecture seule réalisé le 2026-11-05 (environ 06:00-07:30 UTC). Dépôt `C:\aphrody\apps\shenron` à HEAD `2e465772`. La production sert l'image `f04de517` (`/srv/shenron/current` → `releases/docker-f04de517…`).
+Audit en lecture seule réalisé le 2026-11-05 (environ 06:00-07:30 UTC). Dépôt `C:\shenron\apps\shenron` à HEAD `2e465772`. La production sert l'image `f04de517` (`/srv/shenron/current` → `releases/docker-f04de517…`).
 
 Aucune écriture n'a eu lieu :
 
@@ -15,14 +15,14 @@ Les mesures viennent de quatre sources :
 - Requêtes HEAD publiques sur `cdn.dragonballfr.com`.
 - L'inventaire CDN de prod `/srv/shenron/data/cdn/inventory-9a8ecae6371f.json` (246 420 chemins), lu sans écriture et comparé aux références en base.
 
-Les chemins de dépôt sont relatifs à `C:\aphrody\apps\shenron`.
+Les chemins de dépôt sont relatifs à `C:\shenron\apps\shenron`.
 
 ## 0. Constats transverses (à lire avant tout lot massif)
 
 - Le gel databooks est levé. `/srv/shenron/data/server/config/databooks-freeze.json` contient `{"frozen":false}` : décision du propriétaire du 2026-10-11, restaurée le 2026-10-20. Le site le lit par `DATABOOKS_FREEZE_FILE`.
   - Le chemin documenté dans `docs/reference/root/PLAN.md:343` (`/srv/shenron/shared/server/config/…`) est périmé.
   - En production, un fichier absent signifie « gelé » (fail-closed).
-- Les « 59 995 chunks » ne sont pas un retard d'indexation. Ce sont exactement les documents `shenron_compute.aphrody_rag_documents` sans vecteur. Tous sont `visible=false` et n'ont pas de `syncGeneration` : ce sont des générations retirées (tombstones).
+- Les « 59 995 chunks » ne sont pas un retard d'indexation. Ce sont exactement les documents `shenron_compute.shenron_rag_documents` sans vecteur. Tous sont `visible=false` et n'ont pas de `syncGeneration` : ce sont des générations retirées (tombstones).
   - Index réellement servi : 257 436 documents visibles, tous vectorisés avec `Xenova/multilingual-e5-small`.
   - Le vrai écart est la fraîcheur. Dernière synchronisation le 2026-10-20 ; depuis, on compte 12 900 révisions wiki environ (dont 937 épisodes, 899 techniques, 426 databooks et 187 personnages).
 - Prod est le seul hôte Shenron.
@@ -40,7 +40,7 @@ Les chemins de dépôt sont relatifs à `C:\aphrody\apps\shenron`.
   - L'embedding est local : e5-small dans `shenron-embed`.
   - Le service de relecture OCR (`127.0.0.1:8791`, `shenron-relecture-ocr.service`) ne répond pas.
 - Pièges de dry-run
-  - `pipeline ocr databooks` sans `--dry-run` lance `scripts/ops/gpu-continuous-ocr.ts` : une boucle infinie qui pousse en prod (`aphrody ocr dbfr push … --apply`).
+  - `pipeline ocr databooks` sans `--dry-run` lance `scripts/ops/gpu-continuous-ocr.ts` : une boucle infinie qui pousse en prod (`shenron ocr dbfr push … --apply`).
   - Le `--dry-run` de `pipeline <ocr|translation>` (`packages/pipeline/src/cli.ts:797`) ne renvoie qu'un plan. Il ne valide rien.
   - `traduction-boucle.ts`, même en simulation, appelle les moteurs de traduction (coût et quota) et se connecte à la base.
   - `translate-databooks-session.ts` et `depose-transcriptions.ts` écrivent par défaut.
@@ -49,7 +49,7 @@ Les chemins de dépôt sont relatifs à `C:\aphrody\apps\shenron`.
 
 | #   | Chaîne                        | Couverture mesurée                                                                                                                                                                                                                                             | Commande principale                                                                                                                                    | Dry-run                                                                                                 | Hôte                                                | Prochaine étape                                                                                                       |
 | --- | ----------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
-| 1   | OCR databooks + manga         | Databooks : 16 409 / 17 093 pages scannées ont un texte JA (96 %), 683 pages de livres visibles sans OCR. Manga : 12 593 / 53 304 planches transcrites (23,6 %)                                                                                                | `bun packages/pipeline/scripts/run-manga-ocr.ts` ; `bun scripts/ops/gpu-continuous-ocr.ts` (databooks)                                                 | Manga : `--dry-run` réel (manifestes + SHA). Databooks : aucun ; sonde `aphrody ocr dbfr survey --json` | Local RTX 4070 (inférence) → API prod               | Exporter les 683 pages databook restantes avec `export-databooks-ocr.ts --plan`, puis lot GPU borné `--limite-lots 1` |
+| 1   | OCR databooks + manga         | Databooks : 16 409 / 17 093 pages scannées ont un texte JA (96 %), 683 pages de livres visibles sans OCR. Manga : 12 593 / 53 304 planches transcrites (23,6 %)                                                                                                | `bun packages/pipeline/scripts/run-manga-ocr.ts` ; `bun scripts/ops/gpu-continuous-ocr.ts` (databooks)                                                 | Manga : `--dry-run` réel (manifestes + SHA). Databooks : aucun ; sonde `shenron ocr dbfr survey --json` | Local RTX 4070 (inférence) → API prod               | Exporter les 683 pages databook restantes avec `export-databooks-ocr.ts --plan`, puis lot GPU borné `--limite-lots 1` |
 | 2   | Traduction ja→fr/en + lexique | FR : 11 351 / 16 409 pages OCR (69 %), 4 779 pages visibles OCR sans FR. EN : 0. Lexique : 772 termes, 47 avec EN (6 %), 32 techniques seulement                                                                                                               | `bun apps/site/scripts/traduction-boucle.ts [--appliquer]` ; `bun scripts/data/lexicon.ts coverage --json`                                             | Simulation par défaut, mais elle appelle les moteurs                                                    | Prod tmux ou vps (CPU NLLB) ; Gemini web en local   | Enrichir le lexique (techniques, EN), puis lots FR sur les 4 779 pages                                                |
 | 3   | Wiki                          | Visibles : 683 personnages (666 sourcés), 597 techniques (62 `name_ja`, 554 sourcées), 28 transformations (0 description), 20 lieux, 61 planètes, 103/468 variantes (365 masquées à relire, 21 images)                                                         | `bun scripts/ops/wiki-fill-agents.ts inventory                                                                                                         | run                                                                                                     | status`→`publish-wiki-proposals.ts plan             | apply`                                                                                                                | `status` et `plan` sont en lecture seule | Local ou vps (codex) → API wiki-admin                             | `wiki-fill-agents.ts status` puis inventaire ciblé techniques `name_ja` et variantes |
 | 4   | News                          | `bot.db_news` 2 013 lignes (le chiffre « 2 064 » ne se retrouve pas en PG). Dernier fetch le 2026-09-19. 99 % viennent de salons Discord                                                                                                                       | `apps/bot/src/events/NewsScan.ts` (temps réel) ; `db:sync-news`                                                                                        | `sync-news` : aucun                                                                                     | Bot prod (évènement)                                | Diagnostiquer pourquoi NewsScan n'écrit plus depuis le 19/09                                                          |
@@ -59,11 +59,11 @@ Les chemins de dépôt sont relatifs à `C:\aphrody\apps\shenron`.
 | 8   | SVG Toriyama                  | Pas de métrique de couverture : la vectorisation automatique est interdite. 51 SVG de techniques référencés en base sont absents de R2 (servis par le site seulement)                                                                                          | `plugin/skills/toriyama-svg/scripts/*.ts` ; `bun scripts/design/build-toriyama-catalog.ts --check`                                                     | `--check`                                                                                               | Local                                               | Publier les 51 SVG sur R2 (ligne 13)                                                                                  |
 | 9   | Épisodes                      | 878 fiches visibles : 878 avec synopsis FR, 830 avec image, 52 avec lecteurs, 878 avec `availability`, 684 avec `official_source_url`. Sous-titres : JA seulement, 816 épisodes (814 Jimaku), 0 FR/EN                                                          | `bun apps/bot/scripts/ingest/jimaku-subtitles.ts [--appliquer]` ; `scripts/ops/crunchyroll-sync.ts [--apply]` ; `complete-episode.ts --id N [--apply]` | Oui (simulation par défaut)                                                                             | vps ou prod tmux                                    | Combler les 48 SDBH et les 2 Beerus en métadonnées et sous-titres JA                                                  |
 | 10  | Chronologie                   | 32 `db_timeline_events` (0 article), 92 `narrative_events`, 4 frises. RAG : 708 `timeline_episode`                                                                                                                                                             | Curation `/admin/chronologie` ; API `/api/timeline`                                                                                                    | Aucun builder                                                                                           | ,                                                   | Rédiger les 32 articles d'évènements avec sources                                                                     |
-| 11  | Index RAG                     | 257 436 docs visibles vectorisés e5-small (384 dimensions), plus 59 995 tombstones. Dernière synchronisation le 2026-10-20. News et frames ne sont pas indexées                                                                                                | `bun packages/pipeline/scripts/rag-sync-aphrody.ts --toutes [--appliquer]`                                                                             | Oui (sans `--appliquer`)                                                                                | Prod tmux, hors conteneur bot                       | Lancer le dry-run `--toutes` avec rapport, puis `--appliquer` en tmux                                                 |
+| 11  | Index RAG                     | 257 436 docs visibles vectorisés e5-small (384 dimensions), plus 59 995 tombstones. Dernière synchronisation le 2026-10-20. News et frames ne sont pas indexées                                                                                                | `bun packages/pipeline/scripts/rag-sync-shenron.ts --toutes [--appliquer]`                                                                             | Oui (sans `--appliquer`)                                                                                | Prod tmux, hors conteneur bot                       | Lancer le dry-run `--toutes` avec rapport, puis `--appliquer` en tmux                                                 |
 | 12  | Frames                        | 830 / 878 épisodes avec frames (6 736 frames ; moyenne 8, entre 7 et 41). 41 PNG de l'épisode 876 absents de R2. 0 frame pour les 48 SDBH                                                                                                                      | `bun apps/bot/scripts/build-frame-catalog.ts [--check]` ; `scripts/ops/index-frames.ts --dry-run`                                                      | Oui (`--check`, `--dry-run`)                                                                            | vps (téléchargement + ffmpeg)                       | Recaler le catalogue (826 épisodes contre 830 en base) avec `--check`                                                 |
 | 13  | CDN R2                        | Inventaire de 246 420 chemins. Références en base : databooks 17 084/17 084, manga 53 304/53 304, sous-titres 2 738/2 738, personnages 683/683. Manquants : 51 SVG de techniques, 41 frames de l'ép. 876, couverture 486 (introuvable partout)                 | `deploy/cloudflare/cli/transfer.ts status` ; `publish-catalog.ts --options F` ; `scripts/ops/audit-cdn-gaps.ts`                                        | Oui (sans `--apply`)                                                                                    | Prod (origine 9077, `shenron-cdn-origin` actif)     | Plan `publish-catalog.ts` pour les 92 objets manquants                                                                |
 | 14  | Outils média                  | Bun Video épinglé `1.4.4-video.1`. Remotion : libellés seulement. Pas de service d'images autonome (`/_next/image`)                                                                                                                                            | `scripts/video/render.ts` ; `packages/images` (bibliothèque)                                                                                           | Sans objet                                                                                              | Local ou vps                                        | Aucune                                                                                                                |
-| 15  | Fournisseurs IA               | Prod : `shenron-chat-v2` local, puis gemma4-e2b, puis gemini-web (repli désactivé en prod), e5 local. Pas de clé Gemini API (mode web par cookies). Anthropic par HTTP direct (`ANTHROPIC_API_KEY`), pas de SDK Agent. `locally-uncensored` absent de `C:\aphrody` | la configuration du modèle de chat ; `packages/pipeline/src/ai/config.ts`                                                                              | ,                                                                                                       | ,                                                   | Décider quels fournisseurs payants utiliser pour 1, 2 et 3                                                            |
+| 15  | Fournisseurs IA               | Prod : `shenron-chat-v2` local, puis gemma4-e2b, puis gemini-web (repli désactivé en prod), e5 local. Pas de clé Gemini API (mode web par cookies). Anthropic par HTTP direct (`ANTHROPIC_API_KEY`), pas de SDK Agent. `locally-uncensored` absent de `C:\shenron` | la configuration du modèle de chat ; `packages/pipeline/src/ai/config.ts`                                                                              | ,                                                                                                       | ,                                                   | Décider quels fournisseurs payants utiliser pour 1, 2 et 3                                                            |
 
 ## 2. Détail par chaîne
 
@@ -79,11 +79,11 @@ Couverture. Voir aussi les lignes 6 et 7.
 
 Commandes.
 
-- Sonde en lecture seule : `aphrody ocr dbfr survey --json --top 50`, ou le CLI natif `shenron dbfr survey --include-hidden --top 20` (`crates/shenron-cli/src/ocr_dbfr.rs:59`).
+- Sonde en lecture seule : `shenron ocr dbfr survey --json --top 50`, ou le CLI natif `shenron dbfr survey --include-hidden --top 20` (`crates/shenron-cli/src/ocr_dbfr.rs:59`).
 - Export des lots databooks : `bun apps/site/scripts/export-databooks-ocr.ts --sortie <dir> --plan`. Avec `--plan`, rien n'est écrit.
 - Boucle OCR databooks : `bun scripts/ops/gpu-continuous-ocr.ts --limite-lots N`.
-  - Moteur PP-OCR `ppocr-v5-mobile` sur le serveur Aphrody AI, puis `aphrody ocr audit`, puis `aphrody ocr db ingest`, puis `aphrody ocr dbfr push --apply`.
-  - Variables : `SHENRON_ADMIN_TOKEN`, `APHRODY_AI_HTTP_URL`, `APHRODY_AI_HTTP_TOKEN`, `APHRODY_BIN`.
+  - Moteur PP-OCR `ppocr-v5-mobile` sur le serveur Shenron AI, puis `shenron ocr audit`, puis `shenron ocr db ingest`, puis `shenron ocr dbfr push --apply`.
+  - Variables : `SHENRON_ADMIN_TOKEN`, `SHENRON_AI_HTTP_URL`, `SHENRON_AI_HTTP_TOKEN`, `SHENRON_BIN`.
   - Aucun dry-run.
 - Manga :
   1. `bun packages/pipeline/scripts/export-manga-ocr.ts --sortie data/manga-ocr --plan`
@@ -94,10 +94,10 @@ Commandes.
 
 Hôte et ressources.
 
-- Inférence : poste Windows local (RTX 4070), avec `aphrody` compilé avec la feature `ocr`.
+- Inférence : poste Windows local (RTX 4070), avec `shenron` compilé avec la feature `ocr`.
 - Dépôt : par l'API prod.
 - Prod n'a pas de GPU.
-- Relecture : `gemini-web/flash` (`APHRODY_AI_VISION_MODEL`), qui demande des cookies Google.
+- Relecture : `gemini-web/flash` (`SHENRON_AI_VISION_MODEL`), qui demande des cookies Google.
 
 Coûts. PP-OCR est local et gratuit. La relecture Gemini web reste dans le quota du compte Google. Les arbitres `gpt-5.6-luna` et `claude-sonnet-5` sont payants.
 
@@ -125,7 +125,7 @@ Couverture.
   - `machine:fable-5.1` : 319
   - `machine:google` : 312
   - `machine:agy` : 238
-  - `machine:aphrody-translate` : 126
+  - `machine:shenron-translate` : 126
   - `tesseract-5-fra` : 120
   - `shenron-vps-agent` : 86
   - `traducteur-officiel-shenron` : 23
@@ -135,7 +135,7 @@ Couverture.
 
 Commandes.
 
-- `bun apps/site/scripts/traduction-boucle.ts [--lots N --taille N --databook ID --moteur auto|aphrody|aphrody-translate|agy|google|nllb --modele Xenova/nllb-200-distilled-600M --shards K --shard-index i] [--appliquer]`
+- `bun apps/site/scripts/traduction-boucle.ts [--lots N --taille N --databook ID --moteur auto|shenron|shenron-translate|agy|google|nllb --modele Xenova/nllb-200-distilled-600M --shards K --shard-index i] [--appliquer]`
 - Ou la même chose via `bun run --filter @shenron/pipeline pipeline translation …`
 - Statut : `bun scripts/ops/translate-databooks-corpus.ts --statut`
 - Lexique : `bun scripts/data/lexicon.ts coverage --json` (en lecture seule, exécuté pour cet audit), `--check`, `build`
@@ -146,7 +146,7 @@ Lexique réellement consommé. Le lexique par lot est lu en direct depuis `bot.d
 
 Hôte. NLLB tourne sur CPU : prod en tmux (31 Gio) ou vps. Gemini web et `agy` tournent en local, là où sont les cookies.
 
-Coûts. `google`, `agy`/Gemini et sonnet ont des quotas ou sont payants. NLLB et aphrody-translate sont locaux.
+Coûts. `google`, `agy`/Gemini et sonnet ont des quotas ou sont payants. NLLB et shenron-translate sont locaux.
 
 Dépendances. Il faut l'OCR (1). Le lexique dépend du wiki (3) : seules 62 techniques visibles ont un `name_ja`.
 
@@ -241,7 +241,7 @@ Couverture.
 
 - `public.external_source_records` compte 59 248 lignes : media 31 592, reference 18 420, archive 8 692, statistics 207, community 199, official 104, publisher 34.
 - Dernier fetch le 2026-10-15. 0 ligne `canonical_eligible`.
-- `canon_ingest_runs` : derniers runs le 2026-09-20 (manga 523 runs, databooks 853, aphrody 853), sans erreur.
+- `canon_ingest_runs` : derniers runs le 2026-09-20 (manga 523 runs, databooks 853, shenron 853), sans erreur.
 - `bot.db_sources` compte 18 sources sous licence.
 
 Configuration.
@@ -263,7 +263,7 @@ Hôte. vps (YOLO WEB, profils navigateur). Publication par la configuration CDN 
 
 Coûts. Aucun, au-delà de la politesse envers les sites (robots, délais).
 
-Dépendances. Les crawls alimentent 3, 10 et 11 (`--corpus-crawl` de `rag-sync-aphrody.ts`).
+Dépendances. Les crawls alimentent 3, 10 et 11 (`--corpus-crawl` de `rag-sync-shenron.ts`).
 
 Risques. Droit d'auteur : extraits seulement, citation documentaire. Fandom interdit.
 
@@ -447,7 +447,7 @@ Prochaine étape. Rédiger les articles des 32 évènements via l'agent wiki, en
 
 Couverture.
 
-- Index servi : `shenron_compute.aphrody_rag_documents` (317 431 lignes) et `aphrody_shenron_vectors` (257 436 vecteurs `Xenova/multilingual-e5-small`, créés entre le 2026-10-07 et le 2026-10-20).
+- Index servi : `shenron_compute.shenron_rag_documents` (317 431 lignes) et `shenron_vectors` (257 436 vecteurs `Xenova/multilingual-e5-small`, créés entre le 2026-10-07 et le 2026-10-20).
 - Les 59 995 documents sans vecteur sont tous `visible=false` et sans génération ; ce sont des résidus. Leur répartition : databook 33 738, manga_page 10 030, canon 7 512, character_section 1 819, etc.
 - Corpus visibles :
 
@@ -461,17 +461,17 @@ Couverture.
 | db_episodes   | 1 666     |
 | db_characters | 1 311     |
 
-- Le MCP `data_coverage` rapporte `model:"aphrody"`, `dim:null`, `builtAt:null` : les métadonnées d'index sont mal renseignées.
+- Le MCP `data_coverage` rapporte `model:"shenron"`, `dim:null`, `builtAt:null` : les métadonnées d'index sont mal renseignées.
 - Absents de l'index : news, frames, planches 10 031 à 12 593, et toutes les révisions postérieures au 2026-10-20.
 
 Commandes.
 
-- Dry-run, sans `--appliquer` : `bun packages/pipeline/scripts/rag-sync-aphrody.ts --toutes --report=<abs>/rag-dry.json`
+- Dry-run, sans `--appliquer` : `bun packages/pipeline/scripts/rag-sync-shenron.ts --toutes --report=<abs>/rag-dry.json`
 - Écriture : `… --toutes --appliquer`
 - Incrémental : `rag-resync-entites.ts <source> --appliquer`
 - Chaîne complète : `apps/bot/scripts/orchestre-donnees.ts` (dry-run par défaut ; `--appliquer`, `--sans-canon|--sans-rag|--sans-corpus`)
-- Évaluation : `scripts/ops/eval-aphrody-rag.ts --ci`
-- Variables : `APHRODY_MCP_DATABASE_URL` (présente dans `shenron-compute`), `APHRODY_AI_EMBED_BASE_URL`, `APHRODY_AI_HTTP_URL` et `APHRODY_AI_HTTP_TOKEN`. Le bot et le site ont `RAG_BACKEND=aphrody`.
+- Évaluation : `scripts/ops/eval-shenron-rag.ts --ci`
+- Variables : `SHENRON_MCP_DATABASE_URL` (présente dans `shenron-compute`), `SHENRON_AI_EMBED_BASE_URL`, `SHENRON_AI_HTTP_URL` et `SHENRON_AI_HTTP_TOKEN`. Le bot et le site ont `RAG_BACKEND=shenron`.
 
 Hôte. Prod en tmux, jamais au premier plan ni dans le conteneur bot (`AGENTS.md`). L'embedding passe par `shenron-embed` sur CPU.
 
@@ -482,9 +482,9 @@ Dépendances. L'index dépend de tout le reste ; il passe en dernier dans chaque
 Risques.
 
 - Ne pas mélanger les espaces d'embedding (le script refuse).
-- La documentation cite le schéma `aphrody_ai`, alors que la prod utilise `shenron_compute` : vérifier le DSN avant `--appliquer`.
+- La documentation cite le schéma `shenron_ai`, alors que la prod utilise `shenron_compute` : vérifier le DSN avant `--appliquer`.
 
-Prochaine étape. Dry-run `--toutes` avec rapport, puis `--appliquer` en tmux, puis `eval-aphrody-rag.ts --ci`. En option : purger les 59 995 tombstones, ce qui demande une décision.
+Prochaine étape. Dry-run `--toutes` avec rapport, puis `--appliquer` en tmux, puis `eval-shenron-rag.ts --ci`. En option : purger les 59 995 tombstones, ce qui demande une décision.
 
 ### 12. Frames par épisode
 
@@ -562,7 +562,7 @@ Prochaine étape.
 
 ### 14. Outils média
 
-- Bun Video. `@aphrody/bun-video` est épinglé en `1.4.4-video.1` (`package.json:223-231`), avec les exports `/hls`, `/playback` et `/crunchyroll`. Il dispose d'une exception `minimumReleaseAge` accordée par le propriétaire. La version `.6` n'était pas publiée au 25/10, faute de 32 Gio de disque.
+- Bun Video. `@shenron/bun-video` est épinglé en `1.4.4-video.1` (`package.json:223-231`), avec les exports `/hls`, `/playback` et `/crunchyroll`. Il dispose d'une exception `minimumReleaseAge` accordée par le propriétaire. La version `.6` n'était pas publiée au 25/10, faute de 32 Gio de disque.
 - Remotion. Seulement des libellés dans `apps/site/src/app/studio/video/*`. Le vrai rendu est `scripts/video/render.ts` (Bun.WebView vers l'encodeur, `SHENRON_VIDEO_*`).
 - Archives. Scripts `scripts/ops/apply-archive-catalog.ts`, `enrich-internet-archive.ts`, `archive-bot-sqlite-variants.ts [--apply]` et `shenron-offsite-backup.ts`. En base, `bot.archive_catalog_files` compte 62 lignes.
 - Images. `packages/images` est une bibliothèque sharp (hash, variantes, WebP), pas un service. Le redimensionnement passe par `/_next/image` derrière `origin-cdn.dragonballfr.com`. Il n'existe pas de service d'images Bun auto-hébergé.
@@ -572,12 +572,12 @@ Prochaine étape.
 - Chat. La configuration du modèle de chat définit l'ordre : `shenron-chat-v2` (Qwen3-4B Q4_K_M + LoRA), puis `gemma4-e2b`, puis `gemini-web/flash`.
   - En prod, `SHENRON_CHAT_BACKENDS` vaut `local` uniquement (`apps/server/src/chat-model.ts:102`).
   - Sur prod : `/srv/shenron/models/{qwen3/base.gguf, adapter/shenron-chat-v2.gguf, e5, llama}`, restaurés le 2026-11-05 après la purge du 2026-11-04.
-- Embedding. e5-small local (`shenron-embed`, `APHRODY_AI_EMBED_MODEL=Xenova/multilingual-e5-small`).
-- Gemini. Aucune `GEMINI_API_KEY` dans le dépôt. Le mode est web (`aphrody-gemini-web`, cookies `APHRODY_GOOGLE_COOKIES_JSON` ou `~/.aphrody/cookies/gemini-web.json`). Il sert à la relecture OCR (`APHRODY_AI_VISION_MODEL`) et au repli du chat hors prod. Le pair A2A `agycli` (Gemini 3.8 Flash) est décrit dans `config/ai.json`.
+- Embedding. e5-small local (`shenron-embed`, `SHENRON_AI_EMBED_MODEL=Xenova/multilingual-e5-small`).
+- Gemini. Aucune `GEMINI_API_KEY` dans le dépôt. Le mode est web (`shenron-gemini-web`, cookies `SHENRON_GOOGLE_COOKIES_JSON` ou `~/.shenron/cookies/gemini-web.json`). Il sert à la relecture OCR (`SHENRON_AI_VISION_MODEL`) et au repli du chat hors prod. Le pair A2A `agycli` (Gemini 3.8 Flash) est décrit dans `config/ai.json`.
 - Anthropic. Pas de Claude Agent SDK ni de `@anthropic-ai`. Le runner HTTP direct est dans `packages/pipeline/src/auto/workers.ts:104` (`ANTHROPIC_API_KEY`, `claude-haiku-5-5`). Les traductions `machine:sonnet` (1 110 pages) prouvent un usage passé.
 - OpenAI/codex. `gpt-5.6-luna` via `codex exec` (wiki-fill, arbitre OCR). `SHENRON_OPENAI_API_KEY` en option.
-- locally-uncensored. Absent de `C:\aphrody`. Le dépôt GitHub `aphrody-dev/locally-uncensored` n'a pas été consulté (pas d'appel réseau authentifié). Mémoire projet : ne pas utiliser le GGUF Qwen3 « Uncensored » HauhauCS comme base du chat.
-- yolo-ai (`C:\aphrody\yolo-ai`). Crates Rust neutres vis-à-vis des fournisseurs (`yolo-model-client` : Anthropic, Ollama, OpenAI-compatible, vLLM ; `yolo-rag-core`, `yolo-agent-engine`). Aucun pipeline Shenron ne les consomme encore, et ce n'est pas un checkout Git.
+- locally-uncensored. Absent de `C:\shenron`. Le dépôt GitHub `aphrody-dev/locally-uncensored` n'a pas été consulté (pas d'appel réseau authentifié). Mémoire projet : ne pas utiliser le GGUF Qwen3 « Uncensored » HauhauCS comme base du chat.
+- yolo-ai (`C:\shenron\yolo-ai`). Crates Rust neutres vis-à-vis des fournisseurs (`yolo-model-client` : Anthropic, Ollama, OpenAI-compatible, vLLM ; `yolo-rag-core`, `yolo-agent-engine`). Aucun pipeline Shenron ne les consomme encore, et ce n'est pas un checkout Git.
 - A2A. `apps/site/src/app/api/a2a/route.ts`. Carte publique v1.4.5 (`dragonballfr.com/api/a2a`), skills `rag_query`, `ocr_dispatch`, `subagent_task`, `model_infer` et `task_update`. Écriture avec `SHENRON_A2A_TOKEN`. Une tâche reste `submitted` tant qu'un pair ne rend pas de résultat.
 - Agent wiki. Les outils `dragonball.agent_*` demandent `SHENRON_AGENT_API_KEY` ; les contributions passent en modération.
 - Commandes admin du bot. `dragonball.admin_bot_commands` et `…_execute` (`/api/bot/commands/catalog|exec`) demandent `SHENRON_API_ADMIN_TOKEN`. Non appelés, car l'accès élevé est indisponible.
@@ -600,7 +600,7 @@ Règles générales :
 - Prod, lecture seule
   - `databooks.ts etat --json`
   - `translate-databooks-corpus.ts --statut`
-  - `rag-sync-aphrody.ts --toutes --report=…` (dry-run)
+  - `rag-sync-shenron.ts --toutes --report=…` (dry-run)
   - `build-frame-catalog.ts --check`
   - `transfer.ts status`
   - Journaux NewsScan du bot
@@ -643,7 +643,7 @@ Les lignes 2 et 6 ne doivent jamais écrire en même temps sur le même livre : 
 
 | Hôte      | Ligne | Action                                                                                                  |
 | --------- | ----- | ------------------------------------------------------------------------------------------------------- |
-| Prod tmux | 11    | `rag-sync-aphrody.ts --toutes --appliquer`, puis `eval-aphrody-rag.ts --ci`                             |
+| Prod tmux | 11    | `rag-sync-shenron.ts --toutes --appliquer`, puis `eval-shenron-rag.ts --ci`                             |
 | Prod      | 13    | Régénérer le catalogue public CDN (`public-cdn-catalog.ts`)                                             |
 | Local     | ,     | `audit-readers.ts --origin https://dragonballfr.com --embeds`, plus un contrôle Chrome à 1280 et 390 px |
 
@@ -667,8 +667,8 @@ Les lignes 2 et 6 ne doivent jamais écrire en même temps sur le même livre : 
    - `SHENRON_DATABOOKS_API_TOKEN` et `DBFR_TOKEN`
    - `SHENRON_AGENT_API_KEY`
    - `SHENRON_A2A_TOKEN`
-   - `APHRODY_AI_HTTP_URL` et `APHRODY_AI_HTTP_TOKEN` (serveur OCR, vision)
-   - Cookies Gemini web (`~/.aphrody/cookies/gemini-web.json`)
+   - `SHENRON_AI_HTTP_URL` et `SHENRON_AI_HTTP_TOKEN` (serveur OCR, vision)
+   - Cookies Gemini web (`~/.shenron/cookies/gemini-web.json`)
    - `ANTHROPIC_API_KEY` et/ou un abonnement codex (`gpt-5.6-luna`), selon les quotas accordés
    - `JIMAKU_API_KEY` (optionnelle)
    - Identifiants Crunchyroll (`BUN_VIDEO_CRUNCHYROLL_ACCESS_TOKEN`, ou e-mail, mot de passe et `BASIC_AUTHORIZATION`)
@@ -689,6 +689,6 @@ Accès : `ssh prod "docker exec -i shenron-postgres psql -h /run/postgresql -U p
   - `bot.db_characters`, `db_techniques`, `db_transformations`, `db_locations`, `db_planets`, `db_character_variants` (image, name_ja, article, article_sources, origin)
   - `public.wiki_contributions`, `public.wiki_revisions`
 - News : `bot.db_news` (source_id, published_at, fetched_at en epoch).
-- RAG : `shenron_compute.aphrody_rag_documents` (`metadata->>'kind'`, `'visible'`, `'syncGeneration'`), et `shenron_compute.aphrody_shenron_vectors` (model).
+- RAG : `shenron_compute.shenron_rag_documents` (`metadata->>'kind'`, `'visible'`, `'syncGeneration'`), et `shenron_compute.shenron_vectors` (model).
 - Sources : `public.external_source_records`, `public.canon_ingest_runs`, `bot.db_sources`.
 - CDN : clés de `entries` dans `/srv/shenron/data/cdn/inventory-9a8ecae6371f.json`, comparées aux chemins ci-dessus après normalisation `./` → `/`.

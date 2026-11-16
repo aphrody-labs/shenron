@@ -4,7 +4,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import type { NativeCommandExecutor } from "@shenron/pipeline/aphrody/cli";
+import type { NativeCommandExecutor } from "@shenron/pipeline/shenron/cli";
 import { transferOcrResults } from "./envoie-ocr-results";
 
 let temporaryDirectory: string;
@@ -39,12 +39,12 @@ function fakeNativeExecutor(remoteHome = "/home/ocr user's home"): NativeCommand
       if (command.includes("recoit-ocr-results.ts"))
         return { code: 0, stdout: '{"ok":true}\n', stderr: "" };
     }
-    return { code: 1, stdout: "", stderr: "unexpected native Aphrody command" };
+    return { code: 1, stdout: "", stderr: "unexpected native Shenron command" };
   };
 }
 
 describe("envoie-ocr-results", () => {
-  it("rejects a corrupt snapshot before invoking Aphrody SSH", async () => {
+  it("rejects a corrupt snapshot before invoking Shenron SSH", async () => {
     const snapshot = join(temporaryDirectory, "corrupt.db");
     writeFileSync(snapshot, "not sqlite");
 
@@ -79,7 +79,7 @@ describe("envoie-ocr-results", () => {
       expect(commands[offset + 2]?.[0]).toBe("exec");
       const upload = commands[offset + 1]![commands[offset + 1]!.indexOf("--path") + 1]!;
       expect(upload).toMatch(
-        /^\/home\/ocr user's home\/\.aphrody\/ocr\/results\.db\.upload\.[0-9a-f-]{36}$/i,
+        /^\/home\/ocr user's home\/\.shenron\/ocr\/results\.db\.upload\.[0-9a-f-]{36}$/i,
       );
       expect(commands[offset + 1]).toContain(snapshot);
       const receiverCommand = commands[offset + 2]![commands[offset + 2]!.indexOf("--cmd") + 1]!;

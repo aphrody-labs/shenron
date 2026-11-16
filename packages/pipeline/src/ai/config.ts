@@ -4,7 +4,7 @@
  * `@shenron/pipeline/ai/config` — the single resolver of Shenron's AI configuration
  * (docs/architecture/STACK.md §3.4, docs/operations/ENV.md).
  *
- * Runtime class: `pure`. Environment names follow the aphrody-infra local AI
+ * Runtime class: `pure`. Environment names follow the shenron-infra local AI
  * contract v1 (`config/local-ai.json`): the canonical
  * `SHENRON_AI_*` name is read first, then each legacy alias in the contract
  * order; an alias written in another URL form (origin, endpoint) is converted
@@ -27,7 +27,7 @@ import { parseLoopbackHttpUrl } from "@shenron/config/net";
 import { DIRECT_CHAT_MODEL_ID } from "@shenron/config/services";
 import type { generateText } from "ai";
 
-/** The multilingual E5 embedder served by Aphrody (`aphrody-shenron-embed`). */
+/** The multilingual E5 embedder served by Shenron (`shenron-embed`). */
 export const SHENRON_E5 = Object.freeze({
   modelId: "Xenova/multilingual-e5-small",
   dimensions: 384,
@@ -49,23 +49,23 @@ export const SHENRON_RAG_INDEX = Object.freeze({
   dimensions: SHENRON_E5.dimensions,
 } as const);
 
-/** Chat model identifiers understood by `aphrody-ai-http` (identifiers, not addresses). */
-export type AphrodyChatModelId =
+/** Chat model identifiers understood by `shenron-ai-http` (identifiers, not addresses). */
+export type ShenronChatModelId =
   | "gemini-web/flash"
   | "gemini-web/flash-lite"
   | "gemini-web/pro"
   | (string & {});
 
 /** Default chat model id (same default as `apps/bot/src/lib/llm.ts`). */
-export const DEFAULT_CHAT_MODEL: AphrodyChatModelId = "gemini-web/flash";
+export const DEFAULT_CHAT_MODEL: ShenronChatModelId = "gemini-web/flash";
 
-/** Default model of the structured vision review sent to `aphrody-ai-http`. */
+/** Default model of the structured vision review sent to `shenron-ai-http`. */
 export const DEFAULT_VISION_MODEL = "gemini-web/flash";
 
 /** Longest model id accepted by `http_rest.rs` (`model.len() > 128` is rejected). */
 export const MAX_CHAT_MODEL_ID_LENGTH = 128;
 
-/** Shortest accepted `aphrody-ai-http` bearer token. */
+/** Shortest accepted `shenron-ai-http` bearer token. */
 export const MIN_COMPUTE_TOKEN_LENGTH = 32;
 
 export type AiCapability = "compute" | "chat" | "embed" | "ocr" | "rag";
@@ -89,7 +89,7 @@ export const DEFAULT_AI_TIMEOUTS: Readonly<AiTimeouts> = Object.freeze({
   ocr: 280_000,
 });
 
-// ── Environment names (aphrody-infra `config/local-ai.json`, contract v1) ──
+// ── Environment names (shenron-infra `config/local-ai.json`, contract v1) ──
 
 /**
  * URL form of a value (`resolution.urlForms` of the contract): `base` is
@@ -113,9 +113,9 @@ export interface AiEnvSetting {
  * Every AI variable Shenron reads: canonical name, then the legacy aliases in
  * the contract order. `SHENRON_AI_CHAT_BASE_URL` (and aliases) selects a direct
  * OpenAI-compatible chat server (the preloaded Gemma 4 E2B of the vps,
- * {@link resolveDirectChat}); without it, generation goes through `aphrody-ai-http`.
+ * {@link resolveDirectChat}); without it, generation goes through `shenron-ai-http`.
  * `SHENRON_AI_VISION_BASE_URL` is deliberately absent: vision always goes through
- * `aphrody-ai-http`.
+ * `shenron-ai-http`.
  */
 export const AI_ENV = Object.freeze({
   httpUrl: {
@@ -279,15 +279,15 @@ function toBaseUrl(
   return { ok: true, value: url };
 }
 
-// ── aphrody-ai-http (private `/api/v1/shenron/*` gateway) ──
+// ── shenron-ai-http (private `/api/v1/shenron/*` gateway) ──
 
 export interface AiHttpEndpoint {
-  /** Origin of `aphrody-ai-http`; the routes carry their absolute paths. */
+  /** Origin of `shenron-ai-http`; the routes carry their absolute paths. */
   baseUrl: URL;
   token: string;
 }
 
-/** Origin of `aphrody-ai-http`, or `null` when no URL variable is set. */
+/** Origin of `shenron-ai-http`, or `null` when no URL variable is set. */
 export function resolveAiHttpUrl(env: EnvSource): Resolved<URL | null> {
   const hit = readAiEnv(env, AI_ENV.httpUrl);
   if (!hit) return { ok: true, value: null };
@@ -296,25 +296,25 @@ export function resolveAiHttpUrl(env: EnvSource): Resolved<URL | null> {
   return { ok: true, value: new URL(parsed.url.origin) };
 }
 
-/** Origin of `aphrody-ai-http`; throws an {@link AiConfigError} when unset or invalid. */
+/** Origin of `shenron-ai-http`; throws an {@link AiConfigError} when unset or invalid. */
 export function requireAiHttpUrl(env: EnvSource): URL {
-  return required(resolveAiHttpUrl(env), AI_ENV.httpUrl, "aphrody-ai-http URL");
+  return required(resolveAiHttpUrl(env), AI_ENV.httpUrl, "shenron-ai-http URL");
 }
 
-/** Bearer token of `aphrody-ai-http`; throws an {@link AiConfigError} when unset. */
+/** Bearer token of `shenron-ai-http`; throws an {@link AiConfigError} when unset. */
 export function requireAiHttpToken(env: EnvSource): string {
   const hit = readAiEnv(env, AI_ENV.httpToken);
-  if (!hit) throw new AiConfigError("aphrody-ai-http token", [missing(AI_ENV.httpToken)]);
+  if (!hit) throw new AiConfigError("shenron-ai-http token", [missing(AI_ENV.httpToken)]);
   return hit.value;
 }
 
-/** `true` when a token variable of `aphrody-ai-http` is set (value never exposed). */
+/** `true` when a token variable of `shenron-ai-http` is set (value never exposed). */
 export function hasAiHttpToken(env: EnvSource): boolean {
   return readAiEnv(env, AI_ENV.httpToken) !== undefined;
 }
 
 // ── Embeddings ──
-// Embeddings go only through Aphrody `POST /api/v1/shenron/embed`. The direct
+// Embeddings go only through Shenron `POST /api/v1/shenron/embed`. The direct
 // embedder variables below are still read for health probes and legacy scripts,
 // but never select an embedding transport.
 
@@ -331,7 +331,7 @@ export function warnIgnoredEmbedBaseUrl(env: EnvSource): boolean {
   if (!warnedIgnoredEmbedBaseUrl) {
     warnedIgnoredEmbedBaseUrl = true;
     console.warn(
-      `${hit.name} is ignored: embeddings use Aphrody POST /api/v1/shenron/embed (${describeNames(AI_ENV.httpUrl)} and ${describeNames(AI_ENV.httpToken)})`,
+      `${hit.name} is ignored: embeddings use Shenron POST /api/v1/shenron/embed (${describeNames(AI_ENV.httpUrl)} and ${describeNames(AI_ENV.httpToken)})`,
     );
   }
   return true;
@@ -498,8 +498,8 @@ function modelId(
   return hit.value;
 }
 
-/** Chat model id sent to `aphrody-ai-http` (`SHENRON_AI_CHAT_MODEL` or aliases, else the default). */
-export function resolveChatModel(env: EnvSource): AphrodyChatModelId {
+/** Chat model id sent to `shenron-ai-http` (`SHENRON_AI_CHAT_MODEL` or aliases, else the default). */
+export function resolveChatModel(env: EnvSource): ShenronChatModelId {
   return modelId(env, AI_ENV.chatModel, DEFAULT_CHAT_MODEL, []);
 }
 
@@ -518,7 +518,7 @@ export interface DirectChatEndpoint {
 
 /**
  * Direct chat server (llama-server, OpenAI-compatible) when `SHENRON_AI_CHAT_BASE_URL`
- * or an alias is set, else `null` (generation then goes through `aphrody-ai-http`).
+ * or an alias is set, else `null` (generation then goes through `shenron-ai-http`).
  * The URL must be loopback HTTP, like every other AI address.
  */
 export function resolveDirectChat(env: EnvSource): Resolved<DirectChatEndpoint | null> {
@@ -539,15 +539,15 @@ export function resolveDirectChat(env: EnvSource): Resolved<DirectChatEndpoint |
   };
 }
 
-/** Vision model id sent to `aphrody-ai-http` (`SHENRON_AI_VISION_MODEL` or alias, else the default). */
+/** Vision model id sent to `shenron-ai-http` (`SHENRON_AI_VISION_MODEL` or alias, else the default). */
 export function resolveVisionModel(env: EnvSource): string {
   return modelId(env, AI_ENV.visionModel, DEFAULT_VISION_MODEL, []);
 }
 
 // ── Full configuration ──
 
-/** Embedding transport: Aphrody `/api/v1/shenron/embed` only (E5-direct removed). */
-export type EmbedTransport = { transport: "aphrody" };
+/** Embedding transport: Shenron `/api/v1/shenron/embed` only (E5-direct removed). */
+export type EmbedTransport = { transport: "shenron" };
 
 export interface AiConfig {
   compute: AiHttpEndpoint | null;
@@ -557,11 +557,11 @@ export interface AiConfig {
   /** Configured embedding space; compared with the index before any vector is read or written. */
   embedSpace: EmbeddingSpace;
   rerank: RerankEndpoint | null;
-  chatModel: AphrodyChatModelId;
+  chatModel: ShenronChatModelId;
   /** Explicit direct provider, independent of the embedding/RAG compute transport. */
   directChat?: DirectChatEndpoint | null;
   visionModel: string;
-  ragBackend: "aphrody" | "local";
+  ragBackend: "shenron" | "local";
   timeouts: AiTimeouts;
   disabled: readonly { capability: AiCapability; reason: string }[];
 }
@@ -608,12 +608,12 @@ export function resolveAiConfig(
     }
   }
 
-  // ── embed: Aphrody only; a direct embedder URL is ignored (one-time warning) ──
+  // ── embed: Shenron only; a direct embedder URL is ignored (one-time warning) ──
   const e5 = resolveEmbedBaseUrl(env);
   const e5BaseUrl = e5.ok ? e5.value : null;
   warnIgnoredEmbedBaseUrl(env);
   let embed: EmbedTransport | null = null;
-  if (compute) embed = { transport: "aphrody" };
+  if (compute) embed = { transport: "shenron" };
   else disabled.push({ capability: "embed", reason: `requires ${httpNames}` });
 
   const space = resolveEmbeddingSpace(env);
@@ -666,8 +666,8 @@ export function resolveAiConfig(
       chatModel,
       directChat: direct.ok ? direct.value : null,
       visionModel,
-      // Exact match, like the historical `process.env.RAG_BACKEND === "aphrody"`.
-      ragBackend: env.RAG_BACKEND === "aphrody" ? "aphrody" : "local",
+      // Exact match, like the historical `process.env.RAG_BACKEND === "shenron"`.
+      ragBackend: env.RAG_BACKEND === "shenron" ? "shenron" : "local",
       timeouts,
       disabled,
     },

@@ -139,7 +139,7 @@ describe("official crawl migration", () => {
     ]);
   });
 
-  it("resumes an in-flight Aphrody job after the Shenron process restarts", async () => {
+  it("resumes an in-flight Shenron job after the Shenron process restarts", async () => {
     stateDir = await mkdtemp(join(tmpdir(), "shenron-official-crawl-"));
     const planned = await runOfficialCrawl("dry-run", { capture, stateDir });
     const state = {

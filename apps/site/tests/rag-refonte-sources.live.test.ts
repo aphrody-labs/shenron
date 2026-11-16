@@ -6,7 +6,7 @@ import {
   requireLiveRag,
   type LiveRag,
 } from "@shenron/pipeline/testing/live-rag";
-import { prepareSource } from "../../../packages/pipeline/scripts/_rag-aphrody-sync";
+import { prepareSource } from "../../../packages/pipeline/scripts/_rag-shenron-sync";
 import { PG_SOURCES } from "../../../packages/pipeline/scripts/_rag-sources-pg";
 
 loadLiveRagEnv();

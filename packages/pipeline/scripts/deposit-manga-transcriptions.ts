@@ -2,7 +2,7 @@
 /**
  * Dépose les résultats OCR manga dans PostgreSQL (`bot.db_manga_pages`).
  *
- * Sécurité : simulation par défaut, audit Aphrody obligatoire, couverture du
+ * Sécurité : simulation par défaut, audit Shenron obligatoire, couverture du
  * lot complète par défaut, remplissage des cases vides uniquement, transaction
  * verrouillée et une révision réversible par planche modifiée.
  *
@@ -105,7 +105,7 @@ async function audit(resultsPath: string, outputPath: string): Promise<void> {
   }
   try {
     const child = Bun.spawn({
-      cmd: ["aphrody", "ocr", "audit", resultsPath, "--json", "--out", outputPath],
+      cmd: ["shenron", "ocr", "audit", resultsPath, "--json", "--out", outputPath],
       stdout: "ignore",
       stderr: "ignore",
       stdin: "ignore",
@@ -281,7 +281,7 @@ try {
         before: beforeValue === null ? null : tx.json(beforeValue as Parameters<typeof tx.json>[0]),
         after: tx.json(afterValue as Parameters<typeof tx.json>[0]),
         editorId: "agent",
-        editorName: `Aphrody OCR manga · ${corpus.runId}`,
+        editorName: `Shenron OCR manga · ${corpus.runId}`,
       })}`;
     }
   });

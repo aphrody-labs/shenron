@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Exemple de bloc de proxy inverse pour activity.dragonballfr.com (cible du mappage d'URL `/` du
-# portail Discord). L'hébergement appartient à l'Infra d'Aphrody : ce fichier n'est pas installé ici.
+# portail Discord). L'hébergement appartient à l'Infra d'Shenron : ce fichier n'est pas installé ici.
 #
 # Points qui comptent pour une Activité :
 #  - AUCUN `X-Frame-Options`, ni ajouté ici, ni hérité d'un bloc `http` ou d'un snippet de sécurité

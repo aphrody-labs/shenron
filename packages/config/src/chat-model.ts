@@ -50,7 +50,7 @@ export const PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS = 256;
 /** Model answering when a request names none. */
 export const DEFAULT_CHAT_MODEL_ID = CHAT_MODEL_IDS.shenron;
 
-/** Base model: catalog id `qwen3-4b-instruct-2507-q4km` of aphrody-models (same revision). */
+/** Base model: catalog id `qwen3-4b-instruct-2507-q4km` of shenron-models (same revision). */
 export const CHAT_BASE_MODEL = {
   id: "qwen3-4b-instruct-2507-q4km",
   label: "Qwen3-4B Instruct 2507",
@@ -60,7 +60,7 @@ export const CHAT_BASE_MODEL = {
   bytes: 2_497_281_120,
 } as const satisfies PinnedArtifact & { id: string; label: string };
 
-/** Shenron LoRA adapter (`aphrody train run --kind lora`, run `shenron-chat-v2`). */
+/** Shenron LoRA adapter (`shenron train run --kind lora`, run `shenron-chat-v2`). */
 export const CHAT_ADAPTER = {
   id: "shenron-chat-v2",
   file: "shenron-chat-v2.gguf",
@@ -70,19 +70,19 @@ export const CHAT_ADAPTER = {
 } as const satisfies PinnedArtifact & { id: string };
 
 /**
- * Gemma 4 E2B instruct: catalog id `gemma-4-e2b-it-q4km` of aphrody-models (same revision).
+ * Gemma 4 E2B instruct: catalog id `gemma-4-e2b-it-q4km` of shenron-models (same revision).
  * The Hugging Face URL is provisional: the stable URL published beside the VPS server replaces
  * it through SHENRON_GEMMA_MODEL_URL (and SHENRON_GEMMA_MODEL_SHA256 when its digest differs).
  */
 export const GEMMA_MODEL = {
   id: CHAT_MODEL_IDS.gemma,
-  aphrodyId: "gemma-4-e2b-it-q4km",
+  shenronId: "gemma-4-e2b-it-q4km",
   label: "Gemma 4 E2B",
   file: "gemma-4-E2B-it-Q4_K_M.gguf",
   url: "https://huggingface.co/unsloth/gemma-4-E2B-it-GGUF/resolve/0314792d7f1f7e229411f620751375812bb9faf2/gemma-4-E2B-it-Q4_K_M.gguf",
   sha256: "740185b21d22ceb83a11c3aa62ad5842ef32c70f6096d756bbee85a1e4ec34b8",
   bytes: 3_106_738_272,
-} as const satisfies PinnedArtifact & { id: string; label: string; aphrodyId: string };
+} as const satisfies PinnedArtifact & { id: string; label: string; shenronId: string };
 
 export type GemmaMode = "auto" | "manual" | "off";
 
@@ -131,7 +131,7 @@ export const DEFAULT_CHAT_CTX = 8192;
 export interface ChatModelConfig {
   /** `false`: no managed model (explicit `off`, or not the desktop profile without opt-in). */
   enabled: boolean;
-  /** Explicit base GGUF; `null` resolves `<home>/models/`, the Aphrody store, then downloads. */
+  /** Explicit base GGUF; `null` resolves `<home>/models/`, the Shenron store, then downloads. */
   modelPath: string | null;
   modelUrl: string;
   /** Digest checked after a download; `null` for a custom source. */

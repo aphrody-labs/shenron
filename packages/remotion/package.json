@@ -2,7 +2,7 @@
   "name": "@shenron/remotion",
   "version": "1.4.7",
   "private": false,
-  "description": "Aphrody's vendorized, zero-overhead Remotion composition and timeline engine, optimized for Bun and streaming video.",
+  "description": "Shenron's vendorized, zero-overhead Remotion composition and timeline engine, optimized for Bun and streaming video.",
   "homepage": "https://dragonballfr.com",
   "license": "Apache-2.0",
   "repository": {

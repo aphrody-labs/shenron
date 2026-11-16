@@ -14,7 +14,7 @@
  *
  * Positional names restrict the run to those crates (directory or package name). When --write
  * moves a crate to the workspace version, the generated `[workspace.dependencies]` block and the
- * member versions of Cargo.lock are refreshed (workspace-deps.ts, `cargo update --workspace`).
+ * member versions of Cargo.lock are refreshed (`cargo update --workspace`).
  * The edit is textual: comments, order and formatting of the manifests are kept.
  */
 import { join } from "node:path";
@@ -180,7 +180,6 @@ async function main() {
   }
   if (versionChanged) {
     for (const command of [
-      ["bun", join(import.meta.dir, "workspace-deps.ts")],
       ["cargo", "update", "--workspace"],
     ]) {
       console.log(`$ ${command.join(" ")}`);

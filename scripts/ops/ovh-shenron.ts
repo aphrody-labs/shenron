@@ -60,9 +60,9 @@ export async function checkDomainDns(hostname: string): Promise<DnsCheckResult> 
   }
 }
 
-async function runAphrodyOvh(args: string[]): Promise<{ code: number; stdout: string }> {
+async function runShenronOvh(args: string[]): Promise<{ code: number; stdout: string }> {
   try {
-    const proc = Bun.spawn(["aphrody", "ovh", ...args], {
+    const proc = Bun.spawn(["shenron", "ovh", ...args], {
       stdout: "pipe",
       stderr: "ignore",
     });
@@ -75,10 +75,10 @@ async function runAphrodyOvh(args: string[]): Promise<{ code: number; stdout: st
 
 export async function runOvhChecks(): Promise<OvhOpsReport> {
   const timestamp = new Date().toISOString();
-  const auth = await runAphrodyOvh(["auth", "status", "--json"]);
+  const auth = await runShenronOvh(["auth", "status", "--json"]);
   const credentials = {
     configured: auth.code === 0,
-    authType: auth.code === 0 ? "Aphrody OVH credentials" : "Unavailable",
+    authType: auth.code === 0 ? "Shenron OVH credentials" : "Unavailable",
   };
 
   const dnsChecks: DnsCheckResult[] = await Promise.all(
@@ -87,25 +87,25 @@ export async function runOvhChecks(): Promise<OvhOpsReport> {
 
   let vpsStatus: OvhOpsReport["vpsStatus"] = { checked: false };
   if (credentials.configured) {
-    const watch = await runAphrodyOvh(["services", "watch", "--days", "14"]);
+    const watch = await runShenronOvh(["services", "watch", "--days", "14"]);
     if (watch.code === 0) {
       vpsStatus = { checked: true, status: "healthy", alerts: [] };
     } else if (watch.code === 1) {
       vpsStatus = {
         checked: true,
         status: "alerts",
-        alerts: ["Aphrody OVH reports services requiring attention."],
+        alerts: ["Shenron OVH reports services requiring attention."],
       };
     } else {
       vpsStatus = {
         checked: false,
-        error: "Aphrody OVH service check failed; details were withheld.",
+        error: "Shenron OVH service check failed; details were withheld.",
       };
     }
   } else {
     vpsStatus = {
       checked: false,
-      error: "Aphrody OVH credentials or CLI are unavailable.",
+      error: "Shenron OVH credentials or CLI are unavailable.",
     };
   }
 

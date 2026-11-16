@@ -10,7 +10,7 @@
  */
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { randomUUID } from "node:crypto";
-import { AphrodyComputeClient, type AphrodyRagHit } from "@shenron/pipeline/aphrody";
+import { ShenronComputeClient, type ShenronRagHit } from "@shenron/pipeline/shenron";
 import {
   buildGroundedContext,
   DEFAULT_CONTEXT_LIMITS,
@@ -37,7 +37,7 @@ const question = "Quelle est l'origine du Super Saiyan ?";
 const unrelated = "Comment cuire du pain au levain ?";
 const model = "gemini-web/flash";
 
-let client: AphrodyComputeClient;
+let client: ShenronComputeClient;
 let redis: ResilientRedis;
 let store: SemanticCacheStore;
 let deps: SemanticCacheDependencies;
@@ -45,9 +45,9 @@ let scopeA = "";
 let scopeOtherEvidence = "";
 let contextA = "";
 
-const prefixOf = (persona: string) => `dbz:scache:aphrody:${persona}:v4`;
+const prefixOf = (persona: string) => `dbz:scache:shenron:${persona}:v4`;
 
-async function groundedContext(hits: AphrodyRagHit[]): Promise<string> {
+async function groundedContext(hits: ShenronRagHit[]): Promise<string> {
   return buildGroundedContext(
     hits.map((hit) => ({
       id: hit.sourceId ?? hit.url,
@@ -67,7 +67,7 @@ async function send(command: string, ...args: (string | number)[]): Promise<unkn
 
 beforeAll(async () => {
   await requireLiveRag();
-  client = new AphrodyComputeClient();
+  client = new ShenronComputeClient();
   redis = createResilientRedis({ name: `semantic-cache-live-${run}`, url: process.env.REDIS_URL! });
   const owner = resilientSemanticCacheStore(redis);
   // Same owner adapter; only the shared global counters are redirected to a test key.

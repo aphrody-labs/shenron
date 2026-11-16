@@ -28,14 +28,14 @@ A curated list of libraries, tools, engines, decompilers, runtimes, and resource
   ```toml
   mlua = { version = "0.11", features = ["lua52", "vendored"] }
   ```
-- **[depot-re (Sovereign REA)](file:///C:/aphrody/crates/depot/crates/depot-re)**: Integrated Rust 2024 disassembler and triage engine capable of reading precompiled Lua 5.2 chunks (`\x1bLua\x52`), parsing upvalues, prototypes, and disassembling all 40 opcodes.
+- **[depot-re (Sovereign REA)](file:///C:/shenron/crates/depot/crates/depot-re)**: Integrated Rust 2024 disassembler and triage engine capable of reading precompiled Lua 5.2 chunks (`\x1bLua\x52`), parsing upvalues, prototypes, and disassembling all 40 opcodes.
 - **[tree-sitter-lua](https://github.com/tree-sitter-grammars/tree-sitter-lua)**: Fast incremental Tree-Sitter AST grammar supporting full Lua 5.2 syntax (`goto`, `::label::`, `_ENV`).
 
 ---
 
 ## 4. Reverse Engineering & Bytecode Tooling
 
-- **[depot re](file:///C:/aphrody/crates/depot)**: Sovereign CLI with built-in Lua 5.2 chunk reader, opcode formatter, and symbol recovery.
+- **[depot re](file:///C:/shenron/crates/depot)**: Sovereign CLI with built-in Lua 5.2 chunk reader, opcode formatter, and symbol recovery.
 - **[Unluac](https://sourceforge.net/projects/unluac/)**: Java-based decompiler for Lua 5.0 through 5.4 with full Lua 5.2 chunk support.
 - **[LuaDec 5.2](https://github.com/viruscamp/luadec)**: Dedicated Lua 5.2 decompiler fork.
 - **[ChunkSpy 5.2](http://chunkspy.lua-users.org/)**: Bytecode disassembler and structure inspector for understanding compiled binary chunks.
@@ -44,7 +44,7 @@ A curated list of libraries, tools, engines, decompilers, runtimes, and resource
 
 ## 5. Web, Bun & Next.js Ecosystem
 
-- **[`@rosegriffon/lua-plugin`](file:///C:/aphrody/apps/rosegriffon/packages/rg-lua)**:
+- **[`@rosegriffon/lua-plugin`](file:///C:/shenron/apps/rosegriffon/packages/rg-lua)**:
   - Official Bun bundler plugin (`bunPluginLua`) supporting `import script from "./script.lua"`.
   - Next.js webpack/turbopack extension (`withLua`) for isomorphic client/server Lua loading.
   - Zero-dependency Lua 5.2 pure sandbox VM (`Lua52VM`) supporting `_ENV`, `bit32`, `table.pack`, and `rawlen`.

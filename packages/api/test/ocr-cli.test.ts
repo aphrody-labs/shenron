@@ -11,7 +11,7 @@ const PNG = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 1, 2
 const SHA = new Bun.CryptoHasher("sha256").update(PNG).digest("hex");
 
 const result = (over: Record<string, unknown> = {}) => ({
-  schema: "aphrody.ocr.result/v2",
+  schema: "shenron.ocr.result/v2",
   page_id: "/tmp/page.png",
   image: { path: "/tmp/page.png", sha256: SHA },
   attempts: [{ run: { model_id: "ppocr-v5-mobile", backend: "onnx" }, status: "completed" }],
@@ -21,7 +21,7 @@ const result = (over: Record<string, unknown> = {}) => ({
   ...over,
 });
 
-describe("readOcrResult (aphrody.ocr.result/v2)", () => {
+describe("readOcrResult (shenron.ocr.result/v2)", () => {
   test("joins the non-empty blocks and names the engine from the last attempt", () => {
     expect(readOcrResult(result(), SHA)).toEqual({
       engine: "ppocr-v5-mobile",
@@ -48,11 +48,11 @@ describe("createCliOcr", () => {
   const dir = mkdtempSync(join(tmpdir(), "shenron-ocr-cli-"));
   afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
-  test("runs `aphrody ocr ppocr <file> --json` and reads its result", async () => {
+  test("runs `shenron ocr ppocr <file> --json` and reads its result", async () => {
     const answer = JSON.stringify(result());
     const fake = testExecutable(
       dir,
-      "aphrody",
+      "shenron",
       `const [command, engine, file, json] = process.argv.slice(2);
 if (command !== "ocr" || engine !== "ppocr" || !file || json !== "--json") { console.error("bad args"); process.exit(2); }
 process.stdout.write(${JSON.stringify(answer)});`,
@@ -67,11 +67,11 @@ process.stdout.write(${JSON.stringify(answer)});`,
   test("a failing CLI surfaces its exit code and last stderr line", async () => {
     const fake = testExecutable(
       dir,
-      "aphrody-fail",
+      "shenron-fail",
       'console.error("model ppocr-v5-mobile not installed"); process.exit(3);',
     );
     await expect(createCliOcr({ binary: fake }).recognize(PNG, "image/png")).rejects.toThrow(
-      "aphrody ocr ppocr failed (exit 3): model ppocr-v5-mobile not installed",
+      "shenron ocr ppocr failed (exit 3): model ppocr-v5-mobile not installed",
     );
   });
 });

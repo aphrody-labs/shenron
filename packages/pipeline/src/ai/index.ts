@@ -4,9 +4,9 @@ export {
   type AiCapability,
   type AiConfig,
   type AiTimeouts,
-  type AphrodyChatModelId,
+  type ShenronChatModelId,
   SHENRON_E5,
   type ShenronE5,
 } from "./config";
 export { PROMPT_VERSION, type PersonaId } from "./prompts";
-export type { AiFailure, AiResult } from "./aphrody";
+export type { AiFailure, AiResult } from "./shenron";

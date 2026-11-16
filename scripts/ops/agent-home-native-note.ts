@@ -9,14 +9,14 @@ export interface NativeNotePlanInput {
   manifestPath: string;
   expectedSourceSha256: string;
   expectedManifestSha256: string;
-  /** Native dbfr workspace on the owner host (default SHENRON_DBFR_WORKSPACE, else ~/.aphrody/workspaces/dbfr). */
+  /** Native dbfr workspace on the owner host (default SHENRON_DBFR_WORKSPACE, else ~/.shenron/workspaces/dbfr). */
   remoteHome?: string;
 }
 
 export function defaultRemoteHome(env: Record<string, string | undefined> = process.env): string {
   return (
     env.SHENRON_DBFR_WORKSPACE?.trim() ||
-    `${(env.HOME ?? homedir()).replaceAll("\\", "/")}/.aphrody/workspaces/dbfr`
+    `${(env.HOME ?? homedir()).replaceAll("\\", "/")}/.shenron/workspaces/dbfr`
   );
 }
 /** Prepare a verifiable native-owner invocation; never connect, stage remotely or mutate a store. */
@@ -90,11 +90,11 @@ export async function prepareNativeNoteImport(input: NativeNotePlanInput) {
       "Verify the Markdown SHA again immediately before native indexing; preserve canonical vault attachments and relative links outside this staging input",
     ],
     commands: {
-      status: ["aphrody", "home", "--profile", "dbfr", "status"],
-      backup: ["aphrody", "home", "--profile", "dbfr", "backup"],
-      index: ["aphrody", "home", "--profile", "dbfr", "index", "--label", label, indexRoot],
+      status: ["shenron", "home", "--profile", "dbfr", "status"],
+      backup: ["shenron", "home", "--profile", "dbfr", "backup"],
+      index: ["shenron", "home", "--profile", "dbfr", "index", "--label", label, indexRoot],
       query: [
-        "aphrody",
+        "shenron",
         "home",
         "--profile",
         "dbfr",

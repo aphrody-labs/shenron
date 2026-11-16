@@ -97,7 +97,7 @@ export function aotBun(
 const AOT_SUPPORT_CACHE = new Map<string, boolean>();
 
 /**
- * Whether `bun` knows `--aot`. A Bun without it (the Aphrody 1.4.3 runtime of the container
+ * Whether `bun` knows `--aot`. A Bun without it (the Shenron 1.4.3 runtime of the container
  * images) ignores the flag silently and writes a plain bundle, so the mode must be decided
  * from the help text, not from the exit code.
  */

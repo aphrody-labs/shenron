@@ -5,7 +5,7 @@ import { isAbsolute, join } from "node:path";
 import { Database } from "bun:sqlite";
 import { z } from "zod";
 import { createCrawlJobIntent } from "@shenron/pipeline";
-import { AphrodyWebJobs, type NativeMcpTransport } from "@shenron/pipeline/aphrody/jobs";
+import { ShenronWebJobs, type NativeMcpTransport } from "@shenron/pipeline/shenron/jobs";
 
 const CrawlSource = z.enum([
   "official",
@@ -25,7 +25,7 @@ const Config = z
             config: z.string(),
             slots: z.number().int().min(1).max(64),
             workerReady: z.boolean(),
-            server: z.literal("aphrody").optional(),
+            server: z.literal("shenron").optional(),
           })
           .strict(),
       )
@@ -55,7 +55,7 @@ interface Row {
 
 export class AdminWebQueue {
   private db?: Database;
-  private queue?: AphrodyWebJobs;
+  private queue?: ShenronWebJobs;
   private config?: z.infer<typeof Config>;
   private configText?: string;
   constructor(
@@ -91,7 +91,7 @@ export class AdminWebQueue {
         throw new Error("MCP configuration must remain private");
     }
     mkdirSync(home, { recursive: true, mode: 0o700 });
-    const queue = new AphrodyWebJobs(
+    const queue = new ShenronWebJobs(
       join(home, "web-placement.sqlite"),
       config.hosts,
       this.transport,
@@ -200,8 +200,8 @@ export class AdminWebQueue {
         const raw = await transport(
           {
             config: host.config,
-            server: "aphrody",
-            tool: "aphrody_job_status",
+            server: "shenron",
+            tool: "shenron_job_status",
             arguments: { limit: 1 },
           },
           { timeoutMs: 10_000 },

@@ -7,11 +7,11 @@ import {
   resolveDirectChat,
 } from "@shenron/pipeline/ai/config";
 import {
-  AphrodyComputeClient,
-  aphrodyComputeFromChat,
-  type AphrodyRagHit,
+  ShenronComputeClient,
+  shenronComputeFromChat,
+  type ShenronRagHit,
   type ChatFn,
-} from "@shenron/pipeline/aphrody/compute";
+} from "@shenron/pipeline/shenron/compute";
 import { buildGroundingInstructions, resolvePersona } from "@shenron/pipeline/ai/prompts";
 import {
   createOpenAICompatibleChat,
@@ -21,20 +21,20 @@ import { generateText } from "ai";
 import { judgePublicChatHits, jevSourceKind } from "@shenron/api/chat";
 import { siteChatJev } from "./jev";
 
-export function usesAphrodyRag(): boolean {
-  return process.env.RAG_BACKEND === "aphrody";
+export function usesShenronRag(): boolean {
+  return process.env.RAG_BACKEND === "shenron";
 }
 
-function aphrodyRagClient(): AphrodyComputeClient {
-  return new AphrodyComputeClient();
+function shenronRagClient(): ShenronComputeClient {
+  return new ShenronComputeClient();
 }
 
-export async function searchAphrodyRag(
+export async function searchShenronRag(
   query: string,
   limit: number,
   filters: { lang?: string; entity?: string; sourceId?: string } = {},
-  client = aphrodyRagClient(),
-): Promise<{ q: string; mode: string; results: AphrodyRagHit[] }> {
+  client = shenronRagClient(),
+): Promise<{ q: string; mode: string; results: ShenronRagHit[] }> {
   const { results, mode } = await client.ragSearchWithMode(query, limit, filters);
   return { q: query, mode, results };
 }
@@ -42,16 +42,16 @@ export async function searchAphrodyRag(
 /**
  * Fournisseur Shenron dont le modèle `chat` passe par la fonction injectée : le serveur
  * de chat direct (Gemma 4 E2B préchargé du vps, `SHENRON_AI_CHAT_BASE_URL`) s'il est
- * déclaré, sinon la façade `aphrody-ai-http` (ou un double de test).
+ * déclaré, sinon la façade `shenron-ai-http` (ou un double de test).
  */
 function chatProvider(chat: ChatFn, chatModel: string) {
   return createShenronProvider(
     { embed: null, chatModel },
-    { compute: aphrodyComputeFromChat(chat) },
+    { compute: shenronComputeFromChat(chat) },
   );
 }
 
-export async function chatAphrodyRag(
+export async function chatShenronRag(
   query: string,
   persona: string,
   options: {
@@ -61,8 +61,8 @@ export async function chatAphrodyRag(
     sourceId?: string;
     signal?: AbortSignal;
   } = {},
-  client = aphrodyRagClient(),
-): Promise<{ answer: string; hits: AphrodyRagHit[]; mode: string }> {
+  client = shenronRagClient(),
+): Promise<{ answer: string; hits: ShenronRagHit[]; mode: string }> {
   const { results, mode } = await client.ragSearchWithMode(query, 5, {
     lang: options.lang,
     entity: options.entity,
@@ -100,7 +100,7 @@ export async function chatAphrodyRag(
   const context = options.context?.trim()
     ? `[Page consultée] ${options.context.trim().slice(0, 1500)}\n\n${sources}`
     : sources;
-  // Serveur direct déclaré (SHENRON_AI_CHAT_BASE_URL), sinon aphrody-ai-http ; modèle :
+  // Serveur direct déclaré (SHENRON_AI_CHAT_BASE_URL), sinon shenron-ai-http ; modèle :
   // `SHENRON_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @shenron/pipeline/ai/config).
   const direct = resolveDirectChat(process.env);
   if (!direct.ok) throw new AiConfigError("direct chat server", direct.issues);

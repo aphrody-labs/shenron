@@ -175,7 +175,7 @@ export interface AuthPort {
 }
 
 /**
- * Persistent chat memory of each owner (Aphrody `aphrody-memory`, through `shenron-ffi` in
+ * Persistent chat memory of each owner (Shenron `shenron-memory`, through `shenron-ffi` in
  * `shenron-server`). The port maps an owner onto its agent id; ids are the provider's.
  */
 export interface MemoryPort {

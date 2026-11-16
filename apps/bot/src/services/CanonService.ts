@@ -55,7 +55,7 @@ export interface CanonReference {
   source: string;
   year: number | null;
   lang: string;
-  provenance: "aphrody" | "databooks" | "manuel" | "manga";
+  provenance: "shenron" | "databooks" | "manuel" | "manga";
   href: string | null;
 }
 

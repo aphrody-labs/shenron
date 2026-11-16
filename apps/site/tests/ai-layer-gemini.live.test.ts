@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * La couche IA lue par un vrai LLM : le client Gemini web d'Aphrody (`aphrody-gemini-web`,
+ * La couche IA lue par un vrai LLM : le client Gemini web d'Shenron (`shenron-gemini-web`,
  * session du magasin de cookies privé) reçoit ce que le site sert réellement — `llms.txt`,
  * l'index du plugin, la carte d'agent — et doit en tirer la bonne conduite : interroger
  * dragonballfr.com et choisir la bonne skill.
@@ -15,7 +15,7 @@ mock.module("server-only", () => ({}));
 
 const LIVE = process.env.SHENRON_LIVE === "1";
 const gemini = createGeminiWebBackend({
-  binary: process.env.SHENRON_GEMINI_WEB_BIN ?? "aphrody-gemini-web",
+  binary: process.env.SHENRON_GEMINI_WEB_BIN ?? "shenron-gemini-web",
   cookiePaths: geminiCookieCandidates(process.env),
   coolDownMs: 0,
 });

@@ -28,9 +28,9 @@ html:root {
   --font-display: var(--font-sans);
   --font-title: var(--font-sans);
   --font-lettering: "Shenron Lettering", var(--font-sans);
-  --aphrody-font-brand: var(--font-sans);
-  --aphrody-font-plain: var(--font-sans);
-  --aphrody-font-code: var(--font-mono-src), ui-monospace, monospace;
+  --shenron-font-brand: var(--font-sans);
+  --shenron-font-plain: var(--font-sans);
+  --shenron-font-code: var(--font-mono-src), ui-monospace, monospace;
   font-synthesis: none;
 }
 .shenron-lettering {

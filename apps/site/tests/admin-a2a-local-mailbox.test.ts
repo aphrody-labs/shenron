@@ -23,7 +23,7 @@ afterAll(() => {
 
 const { GET } = await import("../src/app/api/admin/a2a/route");
 const { appendFileEnvelope } =
-  await import("../../../packages/pipeline/src/aphrody/a2a-file-store");
+  await import("../../../packages/pipeline/src/shenron/a2a-file-store");
 
 describe("admin A2A durable local mailbox", () => {
   test("reads the real production store without a retired upstream", async () => {

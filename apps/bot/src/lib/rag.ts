@@ -1,27 +1,27 @@
 /**
- * rag.ts — Retrieval Dragon Ball. `RAG_BACKEND=aphrody` delegates search and
- * passage retrieval to Aphrody; the legacy local index remains available
+ * rag.ts — Retrieval Dragon Ball. `RAG_BACKEND=shenron` delegates search and
+ * passage retrieval to Shenron; the legacy local index remains available
  * until corpus quality and deployment are validated.
  *
  * Fusionne deux signaux :
  *   1. Lexical  — FTS5 BM25 sur `rag_chunks` (exact-match, noms propres, rapide).
  *   2. Sémantique — KNN sqlite-vec sur la table virtuelle `vec_chunks` (paraphrases,
- *      questions naturelles), via embeddings denses servis par Aphrody
+ *      questions naturelles), via embeddings denses servis par Shenron
  *      (`POST /api/v1/shenron/embed`).
  *
  * Fusion par Reciprocal Rank Fusion (RRF, k=60) — robuste, sans calibration de
- * scores hétérogènes. Dégradation gracieuse : si Aphrody est indisponible ou non
+ * scores hétérogènes. Dégradation gracieuse : si Shenron est indisponible ou non
  * configuré, ou les vecteurs absents, on retombe sur BM25 seul (l'endpoint reste
  * fonctionnel).
  *
  * Ce module n'importe PAS transformers.js — il ne fait qu'un fetch HTTP local
- * vers Aphrody (`SHENRON_AI_HTTP_URL`, jeton `SHENRON_AI_HTTP_TOKEN`).
+ * vers Shenron (`SHENRON_AI_HTTP_URL`, jeton `SHENRON_AI_HTTP_TOKEN`).
  */
 import type { Database } from "bun:sqlite";
 import { readFileSync } from "node:fs";
 import * as sqliteVec from "sqlite-vec";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
-import { aphrodyNative, isNativeAvailable } from "@shenron/pipeline/aphrody/native";
+import { ShenronComputeClient } from "@shenron/pipeline/shenron";
+import { shenronNative, isNativeAvailable } from "@shenron/pipeline/shenron/native";
 import {
   DEFAULT_AI_TIMEOUTS,
   type EmbeddingSpace,
@@ -37,7 +37,7 @@ import { e5DirectEmbeddingModel, embedQuery } from "@shenron/pipeline/ai/embeddi
 export type QueryEmbeddingModel = ReturnType<typeof e5DirectEmbeddingModel>;
 
 export interface QueryEmbedding {
-  /** `null` : embeddings indisponibles (Aphrody non configuré) → repli lexical. */
+  /** `null` : embeddings indisponibles (Shenron non configuré) → repli lexical. */
   model: QueryEmbeddingModel | null;
   /** Délai du chemin chaud (`EMBED_TIMEOUT_MS`, 3 s par défaut). */
   timeoutMs: number;
@@ -48,7 +48,7 @@ let queryEmbeddingState: QueryEmbedding | undefined;
 /**
  * Modèle d'embedding des requêtes, construit paresseusement au premier usage
  * (B3) : une mauvaise URL ne fait plus planter l'import du module, la recherche
- * retombe simplement en lexical. Transport unique (D10) : Aphrody
+ * retombe simplement en lexical. Transport unique (D10) : Shenron
  * `POST /api/v1/shenron/embed`, adresse et jeton lus par le résolveur unique
  * `@shenron/pipeline/ai/config` (`SHENRON_AI_HTTP_URL` / `SHENRON_AI_HTTP_TOKEN`
  * ou leurs alias ; aucune adresse par défaut : sans configuration, la recherche
@@ -129,11 +129,11 @@ export interface RagHit {
   score: number;
   /** Corpus d'origine (`db_characters`, `manga`, `databooks`, `canon_references`…). */
   sourceId?: string;
-  /** Identifiant canonique unique du document (`shenron:<id>`) quand la frontière Aphrody le fournit. */
+  /** Identifiant canonique unique du document (`shenron:<id>`) quand la frontière Shenron le fournit. */
   documentId?: string;
   /** Langue du passage (`fr`, `en`, `ja`). */
   lang?: string;
-  /** Full passage returned by the Aphrody search boundary when available. */
+  /** Full passage returned by the Shenron search boundary when available. */
   content?: string;
 }
 
@@ -206,12 +206,12 @@ function nativeVectorSearch(
 /**
  * Vecteurs de requête récents. La même question revient souvent (boutons du
  * site, `/ask` rejoué, évaluations) et son embedding coûte un aller-retour à
- * Aphrody.
+ * Shenron.
  */
 const QUERY_VECTOR_CACHE_MAX = 512;
 const queryVectorCache = new Map<string, Float32Array>();
 
-/** Embed la requête via Aphrody. Renvoie null si indisponible (timeout/erreur). */
+/** Embed la requête via Shenron. Renvoie null si indisponible (timeout/erreur). */
 async function embedRemote(text: string): Promise<Float32Array | null> {
   const cached = queryVectorCache.get(text);
   if (cached) {
@@ -740,7 +740,7 @@ export function truthWeight(
   let w = 1.0;
 
   // 1. Primauté des sources de vérité
-  if (sourceId === "aphrody" || kind === "author" || kind === "canon") {
+  if (sourceId === "shenron" || kind === "author" || kind === "canon") {
     // Paroles et interviews directes d'Akira Toriyama, références canon sourcées
     w = 2.4;
   } else if (
@@ -836,7 +836,7 @@ export async function hybridSearch(
   if (process.env.RAG_BACKEND === "bun") {
     return (await import("./bun-rag")).searchBunRag(query, limit, options);
   }
-  if (process.env.RAG_BACKEND === "aphrody" || process.env.RAG_BACKEND === "native") {
+  if (process.env.RAG_BACKEND === "shenron" || process.env.RAG_BACKEND === "native") {
     if (!query) return { results: [], mode: "lexical" };
     if (
       process.env.RAG_BACKEND === "native" &&
@@ -846,7 +846,7 @@ export async function hybridSearch(
       !options?.sourceId
     ) {
       try {
-        const hits = await aphrodyNative.ragSearch(query, {
+        const hits = await shenronNative.ragSearch(query, {
           limit,
           kind: options?.kind,
         });
@@ -871,7 +871,7 @@ export async function hybridSearch(
         // Fallback to HTTP client
       }
     }
-    const { results: hits, mode } = await new AphrodyComputeClient().ragSearchWithMode(
+    const { results: hits, mode } = await new ShenronComputeClient().ragSearchWithMode(
       query,
       limit,
       {
@@ -910,7 +910,7 @@ export async function hybridSearch(
 
   if (!db)
     throw new Error(
-      "Local RAG requires a database; configure RAG_BACKEND=aphrody for remote retrieval",
+      "Local RAG requires a database; configure RAG_BACKEND=shenron for remote retrieval",
     );
   // Récupération des rowids autorisés si des filtres sont présents
   const filters = filterClause(options);
@@ -1252,7 +1252,7 @@ export async function buildRagContext(
   if (results.length === 0) return { q, mode, context: "", sources: [] };
 
   const contents = new Map<number, string>();
-  if (process.env.RAG_BACKEND !== "aphrody" && process.env.RAG_BACKEND !== "bun") {
+  if (process.env.RAG_BACKEND !== "shenron" && process.env.RAG_BACKEND !== "bun") {
     if (!db) throw new Error("Local RAG context requires a database");
     const ph = results.map(() => "?").join(",");
     for (const row of db
@@ -1306,11 +1306,11 @@ export async function generateAnswer(db: Database, query: string, hits: RagHit[]
 
 /**
  * Espace d'embedding de l'index interrogé : le contrat `shenron-rag` en mode
- * Aphrody (le moteur Aphrody l'impose), sinon la ligne `rag_meta` de l'index
+ * Shenron (le moteur Shenron l'impose), sinon la ligne `rag_meta` de l'index
  * SQLite local quand elle existe.
  */
 export function ragIndexSpace(db: Database | null): { space: EmbeddingSpace; label: string } {
-  if (process.env.RAG_BACKEND !== "aphrody" && db) {
+  if (process.env.RAG_BACKEND !== "shenron" && db) {
     try {
       const meta = db.query("SELECT model, dim FROM rag_meta LIMIT 1").get() as {
         model: string | null;
@@ -1346,16 +1346,16 @@ export function assertRagEmbeddingSpace(db: Database | null): EmbeddingSpace {
  * sans aucune alerte. Best-effort — ne jette jamais, n'impacte pas le boot.
  */
 export function logRagHealth(db: Database): void {
-  if (process.env.RAG_BACKEND === "aphrody") {
+  if (process.env.RAG_BACKEND === "shenron") {
     try {
-      void new AphrodyComputeClient()
+      void new ShenronComputeClient()
         .ragStats()
         .then(({ chunks, vectors }) =>
-          console.log(`[RAG] Aphrody — ${chunks} chunks, ${vectors} vecteurs.`),
+          console.log(`[RAG] Shenron — ${chunks} chunks, ${vectors} vecteurs.`),
         )
-        .catch((error) => console.warn("[RAG] Diagnostic Aphrody impossible:", error));
+        .catch((error) => console.warn("[RAG] Diagnostic Shenron impossible:", error));
     } catch (error) {
-      console.warn("[RAG] Diagnostic Aphrody impossible:", error);
+      console.warn("[RAG] Diagnostic Shenron impossible:", error);
     }
     return;
   }

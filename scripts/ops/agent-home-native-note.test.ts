@@ -67,7 +67,7 @@ test("a verified note produces only a private one-note native plan and no store 
   const input = await fixture();
   const plan = await prepareNativeNoteImport({
     ...input,
-    remoteHome: "/srv/owner/.aphrody/workspaces/dbfr",
+    remoteHome: "/srv/owner/.shenron/workspaces/dbfr",
   });
   expect(plan.mode).toBe("prepared-only");
   expect(plan.remoteMutationExecuted).toBe(false);
@@ -76,18 +76,18 @@ test("a verified note produces only a private one-note native plan and no store 
   expect(plan.scope.expectedIndexedDocuments).toBe(1);
   expect(plan.scope.recursiveHomeScan).toBe(false);
   expect(plan.commands.index).toEqual([
-    "aphrody",
+    "shenron",
     "home",
     "--profile",
     "dbfr",
     "index",
     "--label",
     `wiki-reviewed-note-${input.id}`,
-    `/srv/owner/.aphrody/workspaces/dbfr/notes/native-index-input/${input.id}`,
+    `/srv/owner/.shenron/workspaces/dbfr/notes/native-index-input/${input.id}`,
   ]);
   expect(plan.retrieval.semanticHybridQualified).toBe(false);
   expect(await Bun.file(join(input.home, "memory", `${input.id}.md`)).text()).toBe(input.source);
-  expect(await Bun.file(join(input.home, "db", "aphrody.sqlite")).exists()).toBe(false);
+  expect(await Bun.file(join(input.home, "db", "shenron.sqlite")).exists()).toBe(false);
 });
 test("stale source bytes, manifest bytes, review registry or attachment bytes are rejected", async () => {
   const input = await fixture();
@@ -130,5 +130,5 @@ test("the CLI refuses --apply before any file lookup or native invocation", asyn
 
 test("the remote workspace follows SHENRON_DBFR_WORKSPACE, else the home directory", () => {
   expect(defaultRemoteHome({ SHENRON_DBFR_WORKSPACE: "/w/dbfr" })).toBe("/w/dbfr");
-  expect(defaultRemoteHome({ HOME: "/home/owner" })).toBe("/home/owner/.aphrody/workspaces/dbfr");
+  expect(defaultRemoteHome({ HOME: "/home/owner" })).toBe("/home/owner/.shenron/workspaces/dbfr");
 });

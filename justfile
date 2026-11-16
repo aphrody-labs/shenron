@@ -44,9 +44,9 @@ fmt:
     bun fmt apps packages scripts
     cargo fmt --all
 
-# Generated files are up to date (OpenAPI, UI tokens, AI contracts, Cargo workspace dependencies)
+# Generated files are up to date (OpenAPI, UI tokens, AI contracts)
 [group('all')]
-drift: deps-check
+drift:
     bun packages/api/scripts/openapi.ts --check
     bun packages/api/scripts/api-fixtures.ts --check
     bun packages/ui/scripts/generate-tokens.ts --check
@@ -211,16 +211,6 @@ cli *args:
 [group('rust')]
 desktop *args:
     bun scripts/build/desktop.ts {{ args }}
-
-# Regenerate [workspace.dependencies] from the pinned Aphrody revision (--rev <sha> to move it)
-[group('rust')]
-deps *args:
-    bun scripts/build/rust/workspace-deps.ts {{ args }}
-
-# The generated [workspace.dependencies] block is up to date
-[group('rust')]
-deps-check:
-    bun scripts/build/rust/workspace-deps.ts --check
 
 # Crate manifests inherit version, edition, rust-version and lints from the workspace
 [group('rust')]

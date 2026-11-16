@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Persistent chat memory of the owner: facts the chat remembered from earlier turns (Aphrody's
- * `aphrody-memory`, SQLite provider, in the server's data directory). Every route is scoped to
+ * Persistent chat memory of the owner: facts the chat remembered from earlier turns (Shenron's
+ * `shenron-memory`, SQLite provider, in the server's data directory). Every route is scoped to
  * the conversation owner; the agent id behind it never leaves the server. Runtime class: `pure`.
  */
 import { z } from "zod";

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Agent homes of Shenron's users: one instance of the public template `templates/agent-home`
- * per user, in the native format of Aphrody's `aphrody-agent-home` (the seven documents of its
+ * per user, in the native format of Shenron's `shenron-agent-home` (the seven documents of its
  * `sync-contract.json`, the user's fields in the `USER.md` frontmatter that its `UserProfile`
  * parses). Ids are `discord:<user_id>` once the user is known through Discord, `local` for the
  * anonymous home of a desktop install before sign-in.
@@ -35,7 +35,7 @@ export const AGENT_HOME_LIMITS = {
   preferences: 20,
   preference: 200,
   avatar: 512,
-  /** Per-document cap (`aphrody-agent-home` MAX_WORKSPACE_BOOTSTRAP_FILE_BYTES is 2 MiB). */
+  /** Per-document cap (`shenron-agent-home` MAX_WORKSPACE_BOOTSTRAP_FILE_BYTES is 2 MiB). */
   documentBytes: 256 * 1024,
 } as const;
 
@@ -108,7 +108,7 @@ export function discordIdOf(agentId: string): string | null {
 }
 
 /**
- * Directory name of a home, `aphrody-agent-home`'s `sanitize_profile`: ASCII alphanumerics,
+ * Directory name of a home, `shenron-agent-home`'s `sanitize_profile`: ASCII alphanumerics,
  * `-` and `_` kept and lowercased, anything else mapped to `-`, edges trimmed
  * (`discord:123` → `discord-123`).
  */
@@ -170,7 +170,7 @@ export function normalizeProfile(input: AgentHomeProfileInput): AgentHomeProfile
   };
 }
 
-// ── Frontmatter (the subset `aphrody-agent-home`'s frontmatter.rs reads) ──────────────────
+// ── Frontmatter (the subset `shenron-agent-home`'s frontmatter.rs reads) ──────────────────
 
 type FmValue = string | string[];
 
@@ -221,7 +221,7 @@ export function parseFrontmatterBlock(fm: string): Map<string, FmValue> {
 const scalar = (v: FmValue | undefined): string | null =>
   typeof v === "string" && v.trim() ? v.trim() : null;
 
-/** The user's fields of a `USER.md` (aliases of `aphrody-agent-home`'s `UserProfile`). */
+/** The user's fields of a `USER.md` (aliases of `shenron-agent-home`'s `UserProfile`). */
 export function readUserProfile(userMd: string, agentId?: string): AgentHomeProfile {
   const { fm } = splitFrontmatter(userMd);
   const map = fm ? parseFrontmatterBlock(fm) : new Map<string, FmValue>();

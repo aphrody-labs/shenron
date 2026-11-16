@@ -131,7 +131,7 @@ export function describeA2AFailure(status: number, code?: string | null): A2AFai
   if (code === "a2a_upstream_unreachable") {
     return {
       kind: "upstream",
-      text: "Hub A2A injoignable : le serveur `aphrody a2a serve` ne répond pas.",
+      text: "Hub A2A injoignable : le serveur `shenron a2a serve` ne répond pas.",
       terminal: false,
     };
   }

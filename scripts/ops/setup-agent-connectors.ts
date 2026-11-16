@@ -6,8 +6,8 @@
  *
  * Configure l'accès aux serveurs :
  *   1. Shenron MCP & A2A publics (https://dragonballfr.com/mcp & /api/a2a)
- *   2. Aphrody MCP Streamable HTTP (http://127.0.0.1:8793/mcp via tunnel ou VPN)
- *   3. Aphrody A2A Coordination Hub (http://127.0.0.1:8788 via tunnel ou VPN)
+ *   2. Shenron MCP Streamable HTTP (http://127.0.0.1:8793/mcp via tunnel ou VPN)
+ *   3. Shenron A2A Coordination Hub (http://127.0.0.1:8788 via tunnel ou VPN)
  *   4. LLM Gemma4 & Qwen3 Shenron Chat (http://127.0.0.1:8798 / 8799)
  *
  * Usage:
@@ -26,7 +26,7 @@ export interface ConnectorTokens {
   a2aToken?: string;
 }
 
-export function loadAphrodyTokens(): ConnectorTokens {
+export function loadShenronTokens(): ConnectorTokens {
   const tokens: ConnectorTokens = {};
 
   // 1. Env vars
@@ -37,17 +37,17 @@ export function loadAphrodyTokens(): ConnectorTokens {
     tokens.a2aToken = process.env.SHENRON_A2A_COORD_TOKEN;
   }
 
-  // 2. Private host files in ~/.aphrody
+  // 2. Private host files in ~/.shenron
   const mcpEnvPath = join(
     homedir(),
-    ".aphrody",
+    ".shenron",
     "private",
     "shenron",
     "hosts",
     "vps",
     "etc",
-    "aphrody",
-    "aphrody-mcp-http.env",
+    "shenron",
+    "shenron-mcp-http.env",
   );
   if (!tokens.mcpToken && existsSync(mcpEnvPath)) {
     try {
@@ -60,14 +60,14 @@ export function loadAphrodyTokens(): ConnectorTokens {
 
   const a2aEnvPath = join(
     homedir(),
-    ".aphrody",
+    ".shenron",
     "private",
     "shenron",
     "hosts",
     "vps",
     "etc",
-    "aphrody",
-    "aphrody-a2a.env",
+    "shenron",
+    "shenron-a2a.env",
   );
   if (!tokens.a2aToken && existsSync(a2aEnvPath)) {
     try {
@@ -89,14 +89,14 @@ export function buildClaudeMcpConfig(tokens: ConnectorTokens) {
   };
 
   if (tokens.mcpToken) {
-    mcpServers["aphrody-tunnel"] = {
+    mcpServers["shenron-tunnel"] = {
       url: "http://127.0.0.1:8793/mcp",
       headers: {
         Authorization: `Bearer ${tokens.mcpToken}`,
       },
     };
   } else {
-    mcpServers["aphrody-tunnel"] = {
+    mcpServers["shenron-tunnel"] = {
       url: "http://127.0.0.1:8793/mcp",
       headers: {
         Authorization: "Bearer <VOTRE_JETON_SHENRON_MCP_HTTP>",
@@ -115,14 +115,14 @@ export function buildAgyMcpConfig(tokens: ConnectorTokens) {
   };
 
   if (tokens.mcpToken) {
-    mcpServers["aphrody-tunnel"] = {
+    mcpServers["shenron-tunnel"] = {
       serverUrl: "http://127.0.0.1:8793/mcp",
       headers: {
         Authorization: `Bearer ${tokens.mcpToken}`,
       },
     };
   } else {
-    mcpServers["aphrody-tunnel"] = {
+    mcpServers["shenron-tunnel"] = {
       serverUrl: "http://127.0.0.1:8793/mcp",
       headers: {
         Authorization: "Bearer <VOTRE_JETON_SHENRON_MCP_HTTP>",
@@ -135,11 +135,11 @@ export function buildAgyMcpConfig(tokens: ConnectorTokens) {
 
 export function buildCodexTomlConfig(tokens: ConnectorTokens): string {
   const token = tokens.mcpToken ?? "<VOTRE_JETON_SHENRON_MCP_HTTP>";
-  return `# Codex MCP Configuration — Shenron & Aphrody
+  return `# Codex MCP Configuration — Shenron & Shenron
 [mcp_servers.shenron_public]
 url = "https://dragonballfr.com/mcp"
 
-[mcp_servers.aphrody_tunnel]
+[mcp_servers.shenron_tunnel]
 url = "http://127.0.0.1:8793/mcp"
 http_headers = { "Authorization" = "Bearer ${token}" }
 `;
@@ -157,12 +157,12 @@ export async function testEndpointsStatus(_tokens: ConnectorTokens): Promise<voi
       method: "GET",
     },
     {
-      name: "Local Aphrody MCP (via tunnel)",
+      name: "Local Shenron MCP (via tunnel)",
       url: "http://127.0.0.1:8793/healthz",
       method: "GET",
     },
     {
-      name: "Local Aphrody A2A (via tunnel)",
+      name: "Local Shenron A2A (via tunnel)",
       url: "http://127.0.0.1:8788/ping",
       method: "GET",
     },
@@ -197,16 +197,16 @@ if (import.meta.main) {
   const shouldWrite = args.has("--write");
   const checkStatus = args.has("--status");
 
-  const tokens = loadAphrodyTokens();
+  const tokens = loadShenronTokens();
 
   if (tokens.mcpToken) {
-    console.log("✓ Jeton Aphrody MCP détecté.");
+    console.log("✓ Jeton Shenron MCP détecté.");
   } else {
-    console.log("! Aucun jeton Aphrody MCP détecté dans l'environnement local.");
+    console.log("! Aucun jeton Shenron MCP détecté dans l'environnement local.");
   }
 
   if (tokens.a2aToken) {
-    console.log("✓ Jeton Aphrody A2A détecté.");
+    console.log("✓ Jeton Shenron A2A détecté.");
   }
 
   if (shouldWrite) {

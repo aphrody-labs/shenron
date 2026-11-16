@@ -330,8 +330,8 @@ function graphiesDuCorpus(
 
 const API = process.env.SHENRON_API_URL ?? "https://bot.dragonballfr.com";
 // Pas de constante MCP : `mcp.dragonballfr.com` a été retiré le 2026-09-25
-// (shenron-mcp fusionné dans les outils `aphrody-mcp` dragonball.*, sans
-// équivalent HTTP public — aphrody-infra config/nginx-routes.json et
+// (shenron-mcp fusionné dans les outils `shenron-mcp` dragonball.*, sans
+// équivalent HTTP public — shenron-infra config/nginx-routes.json et
 // config/service-catalog.json). L'export ci-dessous échouait silencieusement
 // contre cet hôte mort ; il n'écrit plus `mcp-outils.json`.
 
@@ -874,7 +874,7 @@ Ce dossier est un cliché. Pour interroger l'état courant :
 - REST : \`api/openapi.json\` — base \`https://bot.dragonballfr.com\`
 - GraphQL : \`api/graphql-introspection.json\` — \`https://bot.dragonballfr.com/graphql\` (GraphiQL activé)
 - RAG : \`POST /api/public/rag/search\` — recherche hybride BM25 + embeddings + reranking sur ~40 874 passages
-- MCP : \`mcp.dragonballfr.com\` a été retiré le 2026-09-25 (fusionné dans les outils \`aphrody-mcp\` dragonball.*, sans équivalent HTTP public)
+- MCP : \`mcp.dragonballfr.com\` a été retiré le 2026-09-25 (fusionné dans les outils \`shenron-mcp\` dragonball.*, sans équivalent HTTP public)
 
 ## Rappel de méthode
 

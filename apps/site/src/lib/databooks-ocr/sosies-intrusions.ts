@@ -41,7 +41,7 @@
  * par le caractère : le kanji seul est parfaitement légitime, c'est au milieu
  * d'une suite de katakana qu'il devient une faute.
  *
- * La règle, portée de `aphrody-ocr::japonais::corrige_sosies` (crate Rust, dont
+ * La règle, portée de `shenron-ocr::japonais::corrige_sosies` (crate Rust, dont
  * les seuils sont déjà calibrés), tient en une double condition : la
  * substitution n'est retenue que si elle transforme une suite que le
  * dictionnaire **ignore** en un mot qu'il **connaît**. Sans cette confirmation,

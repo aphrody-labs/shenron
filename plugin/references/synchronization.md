@@ -1,7 +1,7 @@
 # Synchronisation du plugin
 
 Le paquet installé reste autonome. Ces commandes concernent le mainteneur
-disposant du checkout Shenron et du runtime Bun d'Aphrody.
+disposant du checkout Shenron et du runtime Bun d'Shenron.
 
 ```sh
 bun scripts/plugin/sync.ts --check
@@ -22,7 +22,7 @@ générées portent les empreintes, dates et révisions de leurs sources.
 Ne pas les corriger à la main ; lire leur registre avant de citer un fait.
 
 Cette commande ne configure aucun compte GitHub, SSH, Cloudflare ou OVH et
-ne committe ni ne pousse. L'Infra Aphrody conserve la responsabilité des
+ne committe ni ne pousse. L'Infra Shenron conserve la responsabilité des
 authentifications, du DNS et du CDN. Une configuration ne prouve pas un accès.
 
 Les noms MCP de protocole sont `dragonball.*`, par exemple
@@ -31,6 +31,6 @@ Vérifier le catalogue connecté avant appel. Le serveur public filtre les outil
 privés ; sa connexion ne donne aucun droit d'écriture.
 
 A2A reste distinct : le client Shenron de coordination durable utilise le service
-Aphrody configuré par `SHENRON_A2A_COORD_API`. L'absence de cette configuration
+Shenron configuré par `SHENRON_A2A_COORD_API`. L'absence de cette configuration
 est une erreur en production, sans substitution silencieuse d'une boîte locale.
 Une synchronisation du plugin ne prouve pas l'exécution d'une tâche distante.

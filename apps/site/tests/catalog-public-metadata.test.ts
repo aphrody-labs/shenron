@@ -13,9 +13,9 @@ mock.module("@/lib/config", () => ({
   ASSET_BASE: "https://example.test",
 }));
 mock.module("@/lib/site-rag", () => ({
-  chatAphrodyRag: async () => null,
-  searchAphrodyRag: async () => [],
-  usesAphrodyRag: () => false,
+  chatShenronRag: async () => null,
+  searchShenronRag: async () => [],
+  usesShenronRag: () => false,
 }));
 mock.module("@/lib/admin-guard", () => ({ hasValidApiToken: () => false }));
 mock.module("@/lib/databooks-redis", () => ({

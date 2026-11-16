@@ -3,11 +3,11 @@
 /**
  * Container secrets manager for Shenron (dragonballfr.com).
  *
- * Discovers and validates credentials held in the Aphrody private store:
- *   - ~/.aphrody/private/shenron/hosts/{dbfr,vps}
- *   - ~/.aphrody/private/shenron/env
+ * Discovers and validates credentials held in the Shenron private store:
+ *   - ~/.shenron/private/shenron/hosts/{dbfr,vps}
+ *   - ~/.shenron/private/shenron/env
  *   - /etc/rose-griffon
- *   - /etc/aphrody
+ *   - /etc/shenron
  *
  * Emits deployment environment files under `deploy/docker/env/` (gitignored, 0600)
  * without ever printing plain secret values.
@@ -25,13 +25,13 @@ import { join, resolve } from "node:path";
 const ROOT = resolve(import.meta.dir, "../..");
 const DEFAULT_OUT_DIR = join(ROOT, "deploy", "docker", "env");
 
-// Candidate directories for Aphrody private stores
+// Candidate directories for Shenron private stores
 const PRODUCTION_PRIVATE_CANDIDATES = [
-  join(homedir(), ".aphrody", "private", "shenron", "hosts", "dbfr"),
-  join(homedir(), ".aphrody", "private", "shenron", "hosts", "vps"),
-  join(homedir(), ".aphrody", "private", "shenron", "env"),
+  join(homedir(), ".shenron", "private", "shenron", "hosts", "dbfr"),
+  join(homedir(), ".shenron", "private", "shenron", "hosts", "vps"),
+  join(homedir(), ".shenron", "private", "shenron", "env"),
   process.env.SHENRON_ENV_DIR ?? "/etc/rose-griffon",
-  "/etc/aphrody",
+  "/etc/shenron",
 ];
 
 function privateCandidates(isProd: boolean, devSecretsDir?: string): string[] {
@@ -39,7 +39,7 @@ function privateCandidates(isProd: boolean, devSecretsDir?: string): string[] {
   return [
     devSecretsDir
       ? resolve(devSecretsDir)
-      : join(homedir(), ".aphrody", "private", "shenron", "development"),
+      : join(homedir(), ".shenron", "private", "shenron", "development"),
   ];
 }
 
@@ -146,18 +146,18 @@ export async function prepareContainerSecrets(
   const botMap = botFound ? parseEnvText(botFound.content) : new Map<string, string>();
   if (botFound) sourcesFound.push(botFound.path);
 
-  // 3. Compute client secrets (Aphrody AI HTTP)
+  // 3. Compute client secrets (Shenron AI HTTP)
   const computeSources = [
     "shenron-compute-client.env",
-    "etc/aphrody/shenron-compute-client.env",
-    "aphrody/shenron-compute-client.env",
+    "etc/shenron/shenron-compute-client.env",
+    "shenron/shenron-compute-client.env",
   ];
   const computeFound = await findFirstFile(roots, computeSources);
   const computeMap = computeFound ? parseEnvText(computeFound.content) : new Map<string, string>();
   if (computeFound) sourcesFound.push(computeFound.path);
 
   // 4. OVH secrets
-  const ovhSources = ["ovh.env", "etc/aphrody/ovh.env", "aphrody/ovh.env"];
+  const ovhSources = ["ovh.env", "etc/shenron/ovh.env", "shenron/ovh.env"];
   const ovhFound = await findFirstFile(roots, ovhSources);
   const ovhMap = ovhFound ? parseEnvText(ovhFound.content) : new Map<string, string>();
   if (ovhFound) sourcesFound.push(ovhFound.path);
@@ -231,7 +231,7 @@ export async function prepareContainerSecrets(
   outFiles.push(botOut);
 
   const computeOut = join(outDir, "shenron-compute-client.env");
-  await writeFile(computeOut, serializeEnvMap(computeMap, "Aphrody Compute Client"), {
+  await writeFile(computeOut, serializeEnvMap(computeMap, "Shenron Compute Client"), {
     encoding: "utf8",
     mode: 0o600,
   });

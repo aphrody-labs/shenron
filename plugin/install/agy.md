@@ -8,8 +8,8 @@ Usage : agy -i "$(curl -fsSL https://dragonballfr.com/agy.md)"
 # Installer et configurer Shenron dans agy
 
 Tu es agy (Antigravity CLI). Installe et configure Shenron, le Dragon Sacré de
-dragonballfr.com, sur cette machine : Aphrody (CLI et MCP), le plugin `shenron` (skills,
-agents, MCP Shenron), le MCP Aphrody et l'agent home Shenron. Exécute les étapes dans l'ordre,
+dragonballfr.com, sur cette machine : Shenron (CLI et MCP), le plugin `shenron` (skills,
+agents, MCP Shenron), le MCP Shenron et l'agent home Shenron. Exécute les étapes dans l'ordre,
 de bout en bout. Plugin servi : version {{version}}, révision {{revision}}, origine {{origin}}.
 
 ## Règles
@@ -34,34 +34,24 @@ Détecte l'OS : `uname -s` (Linux, Darwin) ; sous Windows, PowerShell (`$env:OS`
 `$HOME` pour `~`. Vérifie que `curl` et `tar` existent (Windows 10 et 11 fournissent
 `curl.exe` et `tar.exe`).
 
-## 2. Aphrody
+## 2. Shenron
 
-1. Lance `aphrody --version` et note la version (ou « absent »).
-2. Installe ou mets à jour avec l'installeur officiel, même si Aphrody est déjà présent :
-   - Linux, macOS : `curl -fsSL https://downloads.aphrody.com/install.sh | sh`
-   - Windows : `irm https://downloads.aphrody.com/install.ps1 | iex`
-3. Vérifie `aphrody --version` et `aphrody-mcp --version`. Si l'un est introuvable, ajoute
+1. Lance `shenron --version` et note la version (ou « absent »).
+2. Installe ou mets à jour avec l'installeur officiel, même si Shenron est déjà présent :
+   - Linux, macOS : télécharge la dernière archive de https://github.com/aphrody-labs/shenron/releases/latest et place `shenron` et `shenron-mcp` dans `~/.local/bin`
+   - Windows : `irm https://raw.githubusercontent.com/aphrody-labs/shenron/main/install.ps1 | iex`
+3. Vérifie `shenron --version` et `shenron-mcp --version`. Si l'un est introuvable, ajoute
    au `PATH` de la session le dossier indiqué par l'installeur, puis réessaie ; ne modifie
    un profil de shell qu'avec l'accord de l'utilisateur.
 
-## 2 bis. Bun et paquets npm Aphrody
+## 2 bis. Bun
 
-1. Lance `bun --version`. Si Bun est absent, installe le fork aphrody-labs/bun :
-   - Linux, macOS : `curl -fsSL https://raw.githubusercontent.com/aphrody-labs/bun/main/scripts/aphrody/install.sh | bash`
-   - Windows : `irm https://raw.githubusercontent.com/aphrody-labs/bun/main/scripts/aphrody/install.ps1 | iex`
+Lance `bun --version`. Si Bun est absent, installe la version officielle :
 
-   Puis ajoute `~/.bun/bin` au `PATH` de la session et vérifie `bun --version`.
+- Linux, macOS : `curl -fsSL https://bun.sh/install | bash`
+- Windows : `powershell -c "irm bun.sh/install.ps1 | iex"`
 
-2. CLI M3 en global : `bun add -g @aphrody/m3@3.3.4`, puis vérifie `m3 --help`.
-3. Kit de paquets Aphrody utilisés par Shenron, dans `~/.shenron-kit` (dossier dédié, aucun
-   autre projet touché) : crée le dossier, `bun init -y` s'il n'a pas de `package.json`, puis
-   dans ce dossier :
-
-   ```sh
-   bun add @aphrody/inference@0.1.0 @aphrody/http@0.1.0 @aphrody/paths@0.1.0 @aphrody/runtime-sdk@0.1.0 @aphrody/messaging@0.1.0 @aphrody/discord-kit@0.1.0 @aphrody/sql@0.1.0 @aphrody/m3-ai@3.3.6 @aphrody/m3-primitives@3.3.6 @aphrody/m3-theme@3.3.6 @aphrody/m3-tokens@3.3.6 @aphrody/m3-reader@3.3.4
-   ```
-
-   Si un paquet est refusé (version absente, réseau), signale-le et continue avec les autres.
+Puis ajoute `~/.bun/bin` au `PATH` de la session et vérifie `bun --version`.
 
 ## 3. Plugin Shenron
 
@@ -91,14 +81,14 @@ Détecte l'OS : `uname -s` (Linux, Darwin) ; sous Windows, PowerShell (`$env:OS`
 4. Seulement si l'installation du plugin a échoué, ajoute le MCP Shenron seul :
    `agy mcp add shenron {{mcp}}`. Sinon ne l'ajoute pas : il ferait doublon.
 
-## 4. MCP Aphrody
+## 4. MCP Shenron
 
-Le binaire `aphrody-mcp` lancé sans argument est le serveur MCP stdio d'Aphrody.
+Le binaire `shenron-mcp` lancé sans argument est le serveur MCP stdio d'Shenron.
 
-1. Si `agy mcp list` ne montre pas `aphrody`, lance `agy mcp add aphrody aphrody-mcp`. S'il
+1. Si `agy mcp list` ne montre pas `shenron`, lance `agy mcp add shenron shenron-mcp`. S'il
    existe déjà, ne le touche pas.
-2. Enregistre le mode d'emploi de ses outils : `aphrody-mcp guide`, sortie standard seule,
-   dans `~/.gemini/shenron/APHRODY.md` (remplacé à chaque relance ; crée le dossier au
+2. Enregistre le mode d'emploi de ses outils : `shenron-mcp guide`, sortie standard seule,
+   dans `~/.gemini/shenron/SHENRON.md` (remplacé à chaque relance ; crée le dossier au
    besoin). Si la commande échoue, n'écris pas ce fichier.
 
 ## 5. Agent home Shenron
@@ -129,14 +119,14 @@ La source est `~/.shenron-plugin/shenron/agent-home/` (gabarit public : `AGENTS.
    @./shenron/TOOLS.md
    @./shenron/BOOT.md
    @./shenron/HEARTBEAT.md
-   @./shenron/APHRODY.md
+   @./shenron/SHENRON.md
    <!-- shenron:end -->
    ```
 
    - Le fichier n'existe pas : crée-le avec ce seul bloc.
    - Un bloc `shenron:begin` … `shenron:end` existe : remplace-le, lui seul.
    - Sinon : ajoute le bloc à la fin, précédé d'une ligne vide.
-   - Retire la ligne `@./shenron/APHRODY.md` si ce fichier n'existe pas.
+   - Retire la ligne `@./shenron/SHENRON.md` si ce fichier n'existe pas.
    - Ne change rien d'autre dans `GEMINI.md`.
 
 3. agy importe un fichier par une ligne `@./chemin.md`, relative à `GEMINI.md`. Si ta
@@ -163,7 +153,7 @@ système, `address_as` vide.
 
 1. `agy plugin list` : `shenron` présent, avec les composants `skills`, `agents` et
    `mcpServers`.
-2. `agy mcp list` : `aphrody` présent et actif (et `shenron` seulement s'il a été
+2. `agy mcp list` : `shenron` présent et actif (et `shenron` seulement s'il a été
    ajouté à la main à l'étape 3).
 3. Pose la question test « Qui a créé Dragon Ball ? » en appelant un outil du MCP
    `shenron` (recherche du site) ; attendu : Akira Toriyama, avec sa source. Si le MCP ne
@@ -178,9 +168,9 @@ système, `address_as` vide.
    un jeton porteur valide), vérifie la présence de `dragonball.a2a_send`, `dbfr_deposit` et des
    outils `dragonball.admin_*` selon le build. Un appelant anonyme reçoit uniquement le catalogue filtré en lecture ; les effectifs peuvent évoluer.
    Rapporte le palier obtenu (anonyme ou élevé) et le nombre d'outils, sans afficher aucun jeton.
-6. Affiche un récapitulatif en tableau : Aphrody (version avant, après), Bun, CLI `m3` et kit
+6. Affiche un récapitulatif en tableau : Shenron (version avant, après), Bun, CLI `m3` et kit
    `~/.shenron-kit` (paquets installés ou refusés), plugin (version {{version}}), MCP
-   `shenron` et `aphrody`, palier MCP (anonyme ou élevé), agent home (`~/.gemini/shenron/`),
+   `shenron` et `shenron`, palier MCP (anonyme ou élevé), agent home (`~/.gemini/shenron/`),
    bloc de `GEMINI.md` (créé, remplacé ou ajouté), profil, questions test (et leurs temps),
    pair A2A, Shenron Studio s'il a été installé, et toute étape en échec.
 

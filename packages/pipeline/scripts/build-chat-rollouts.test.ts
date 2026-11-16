@@ -4,7 +4,7 @@ import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "no
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { testExecutable } from "@shenron/config/testing-executable";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { ShenronComputeClient } from "@shenron/pipeline/shenron";
 import {
   ANTIGRAVITY_TIMEOUT_MS,
   antigravityChat,
@@ -102,7 +102,7 @@ describe("generate with fake fetch", () => {
         headers: { "content-type": "application/json" },
       });
     }) as typeof fetch;
-    const client = new AphrodyComputeClient({ baseUrl: "http://127.0.0.1:9", token: "t", fetcher });
+    const client = new ShenronComputeClient({ baseUrl: "http://127.0.0.1:9", token: "t", fetcher });
     const accepted: RolloutRow[] = [];
     const stats = await generate({
       candidates: [
@@ -155,9 +155,9 @@ describe("options", () => {
     expect(() => parseIntOption("concurrency", "0", 1)).toThrow(/>= 1/);
   });
   test("parseTeacher rejects typos instead of falling back to the local teacher", () => {
-    expect(parseTeacher("aphrody")).toBe("aphrody");
+    expect(parseTeacher("shenron")).toBe("shenron");
     expect(parseTeacher("antigravity")).toBe("antigravity");
-    expect(() => parseTeacher("antigravty")).toThrow(/aphrody\|antigravity/);
+    expect(() => parseTeacher("antigravty")).toThrow(/shenron\|antigravity/);
   });
   test("antigravityTimeoutMs reads a positive override only", () => {
     expect(antigravityTimeoutMs({})).toBe(ANTIGRAVITY_TIMEOUT_MS);
@@ -180,8 +180,8 @@ function scratchDir(): string {
   return dir;
 }
 
-function fakeAphrody(body: string): string {
-  return testExecutable(scratchDir(), "aphrody", body);
+function fakeShenron(body: string): string {
+  return testExecutable(scratchDir(), "shenron", body);
 }
 
 async function withBin<T>(bin: string, run: () => Promise<T>): Promise<T> {
@@ -212,7 +212,7 @@ describe("antigravityChat", () => {
     "passes the prompt and model, drops thought parts",
     async () => {
       const argsPath = join(scratchDir(), "argv.txt");
-      const bin = fakeAphrody(
+      const bin = fakeShenron(
         `import { writeFileSync } from "node:fs";
 writeFileSync(${JSON.stringify(argsPath)}, process.argv.slice(2).join("\\n") + "\\n");
 process.stdout.write(${JSON.stringify(reply("Réponse finale"))});`,
@@ -229,7 +229,7 @@ process.stdout.write(${JSON.stringify(reply("Réponse finale"))});`,
   test(
     "surfaces the exit code with the stderr tail",
     async () => {
-      const bin = fakeAphrody('console.error("quota exceeded"); process.exit(3);');
+      const bin = fakeShenron('console.error("quota exceeded"); process.exit(3);');
       await expect(withBin(bin, () => antigravityChat(messages))).rejects.toThrow(
         /exited 3: quota exceeded/,
       );
@@ -240,7 +240,7 @@ process.stdout.write(${JSON.stringify(reply("Réponse finale"))});`,
   test(
     "rejects non-JSON output",
     async () => {
-      const bin = fakeAphrody('console.log("not json");');
+      const bin = fakeShenron('console.log("not json");');
       await expect(withBin(bin, () => antigravityChat(messages))).rejects.toThrow(/non-JSON/);
     },
     fixtureTimeout,
@@ -249,7 +249,7 @@ process.stdout.write(${JSON.stringify(reply("Réponse finale"))});`,
   test(
     "kills a hung teacher at the timeout",
     async () => {
-      const bin = fakeAphrody("await Bun.sleep(5000);");
+      const bin = fakeShenron("await Bun.sleep(5000);");
       const started = performance.now();
       await expect(withBin(bin, () => antigravityChat(messages, undefined, 200))).rejects.toThrow(
         /timed out after 200 ms/,
@@ -376,7 +376,7 @@ describe("build-chat-rollouts CLI", () => {
       const answer = reply(
         "D'après le Daizenshuu 4 de Shueisha, l'encyclopédie présente les personnages de Namek.",
       );
-      const bin = fakeAphrody(
+      const bin = fakeShenron(
         [
           'import { existsSync, readFileSync, writeFileSync } from "node:fs";',
           `const counter = ${JSON.stringify(counter)};`,

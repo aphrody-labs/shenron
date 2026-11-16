@@ -24,7 +24,7 @@ export async function mintClient(env = process.env): Promise<Bun.S3Client> {
   const account = env.CLOUDFLARE_ACCOUNT_ID;
   if (!token || !account)
     throw new Error(
-      "CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID are required (source ~/.aphrody/config/cloudflare.env)",
+      "CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID are required (source ~/.shenron/config/cloudflare.env)",
     );
   const call = async (path: string, init?: RequestInit) => {
     const response = await fetch(`https://api.cloudflare.com/client/v4${path}`, {

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** Persistent application orchestration; Aphrody owns recursive capture and indexing. */
+/** Persistent application orchestration; Shenron owns recursive capture and indexing. */
 import { chmod, lstat, mkdir, rename, statfs } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
 
@@ -7,7 +7,7 @@ export interface CampaignWorkerConfig {
   schema: "shenron-manga-source-worker/v1";
   job: string;
   campaignConfig: string;
-  aphrody: string;
+  shenron: string;
   sources: string[];
   maxRequests: number;
   dailyRequestBudget: number;
@@ -38,7 +38,7 @@ interface Ports {
 export function validateWorkerConfig(value: unknown): CampaignWorkerConfig {
   const c = value as CampaignWorkerConfig;
   if (!c || c.schema !== "shenron-manga-source-worker/v1") throw Error("Invalid worker config");
-  for (const key of ["job", "campaignConfig", "aphrody", "bibliographyManifest"] as const)
+  for (const key of ["job", "campaignConfig", "shenron", "bibliographyManifest"] as const)
     if (typeof c[key] !== "string" || !isAbsolute(c[key]))
       throw Error("Absolute owner paths required");
   if (
@@ -68,7 +68,7 @@ export function validateWorkerConfig(value: unknown): CampaignWorkerConfig {
 export function crawlCommand(c: CampaignWorkerConfig, source: string, refresh: boolean) {
   if (!c.sources.includes(source)) throw Error("Unknown source");
   return [
-    c.aphrody,
+    c.shenron,
     "web",
     "dragon-ball",
     "crawl",
@@ -209,7 +209,7 @@ export async function workerCycle(c: CampaignWorkerConfig, ports: Ports, signal:
   if (!code && !signal.aborted) {
     await update("indexing");
     const args = [
-      c.aphrody,
+      c.shenron,
       "web",
       "dragon-ball",
       "index",

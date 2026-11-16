@@ -378,7 +378,7 @@ export function preparedPublicationOptions(
     "backupReceiptSha256",
   ];
   if (
-    prepared.schema !== "aphrody-origin-publication-preparation/v1" ||
+    prepared.schema !== "shenron-origin-publication-preparation/v1" ||
     !pins ||
     Object.keys(pins).length !== names.length ||
     names.some((key) => typeof pins[key] !== "string") ||
@@ -789,7 +789,7 @@ if (import.meta.main) {
     },
   });
   if (!values.input || !values.job || !values.owner || !isAbsolute(values.owner))
-    throw Error("Explicit input, private job and qualified aphrody-web owner are required");
+    throw Error("Explicit input, private job and qualified shenron-web owner are required");
   const sources = sourcePlan(await Bun.file(values.input).json());
   const options = {
     sources,

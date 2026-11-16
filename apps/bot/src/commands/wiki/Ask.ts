@@ -30,7 +30,7 @@ import { FeatureEnabled } from "~/guards/FeatureEnabled";
 import { DatabaseService } from "~/db/index";
 import { hybridSearch, hitTruthWeight, type SearchOptions } from "~/lib/rag";
 import { TrainingService } from "~/services/TrainingService";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { ShenronComputeClient } from "@shenron/pipeline/shenron";
 import { isBotStaff } from "~/api/staff-check";
 import { SingleUseTokens } from "~/services/games/anti-farm";
 import { clip, linkLabel, siteLink, wikiFooter } from "~/lib/wiki-embeds";
@@ -90,8 +90,8 @@ export class AskCommands {
 
   private async getRagChunk(rowid: number): Promise<RagChunkDetails | null> {
     if (!Number.isSafeInteger(rowid) || rowid < 1) return null;
-    if (process.env.RAG_BACKEND === "aphrody") {
-      const doc = await new AphrodyComputeClient().ragDocument(`shenron:${rowid}`);
+    if (process.env.RAG_BACKEND === "shenron") {
+      const doc = await new ShenronComputeClient().ragDocument(`shenron:${rowid}`);
       return doc
         ? {
             rowid,

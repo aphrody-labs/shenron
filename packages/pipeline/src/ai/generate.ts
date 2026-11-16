@@ -51,7 +51,7 @@ export interface GroundedHit {
   id: string;
   title: string;
   url: string;
-  /** Inline full text (Aphrody hits carry it); preferred over the chunk port. */
+  /** Inline full text (Shenron hits carry it); preferred over the chunk port. */
   content?: string;
   /** Last-resort text when neither `content` nor the port has the chunk. */
   snippet?: string;

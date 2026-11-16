@@ -1,5 +1,5 @@
 /**
- * test-gemma-multimodal.ts — Teste la MULTIMODALITÉ de Gemma 4 (vision) via Aphrody
+ * test-gemma-multimodal.ts — Teste la MULTIMODALITÉ de Gemma 4 (vision) via Shenron
  * sur (1) les PLANCHES manga (images .webp ↔ OCR de référence) et (2) les VIDÉOS
  * (frames extraites par Bun Video / FilmCraft). Gemma 4 est encoder-free multimodal (projecteur clip).
  *
@@ -9,7 +9,7 @@
  *   scène et identifie les personnages. (L'endpoint ne prend pas la vidéo brute : on passe
  *   des frames. Aucune vidéo locale n'existe par défaut → fournir --video.)
  *
- * Transport : Aphrody `POST /api/v1/shenron/vision/structured` (aphrody-ai-http,
+ * Transport : Shenron `POST /api/v1/shenron/vision/structured` (shenron-ai-http,
  *   Bearer token), une image par requête ; aucun appel direct à un serveur de modèle.
  *
  * Usage : bun apps/bot/scripts/test-gemma-multimodal.ts [--manga N] [--video chemin]

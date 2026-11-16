@@ -2,7 +2,7 @@
 /**
  * CLI unifié @shenron/pipeline
  * Commande d'exécution unique pour tout l'offload : OCR, RAG, IA, Traduction, Crawl.
- * Le serveur MCP Shenron est porté par aphrody-ai (apps/shenron-mcp), plus par ce dépôt.
+ * Le serveur MCP Shenron est porté par shenron-ai (apps/shenron-mcp), plus par ce dépôt.
  * Usage :
  *   bun run pipeline <ocr|rag|ia|translation|crawl> [args...]
  */
@@ -27,10 +27,10 @@ import {
   toNativeMangaReviewCandidateInput,
 } from "./koharu";
 import {
-  toAphrodyDatabookReviewCandidateInput,
-  toAphrodyMangaReviewCandidateInput,
+  toShenronDatabookReviewCandidateInput,
+  toShenronMangaReviewCandidateInput,
   type OcrReviewImage,
-} from "./aphrody-ocr-candidate";
+} from "./shenron-ocr-candidate";
 import { KoharuSdkClient } from "./koharu-sdk-client";
 import { submitCandidateFile } from "./candidate-submit";
 import { parseArgs } from "node:util";
@@ -204,14 +204,14 @@ async function main() {
         await import("./dragon-ball/dataset-inventory");
       const { DragonBallAutomation, createNativeRagPorts, createNativeCollectionPort } =
         await import("./dragon-ball/automation");
-      const { AphrodyWebJobs } = await import("./aphrody/jobs");
+      const { ShenronWebJobs } = await import("./shenron/jobs");
       const { createApprovedTrainingDatasetPort } = await import("./dragon-ball/training-dataset");
       const hostSchema = z.array(
         z
           .object({
             id: z.string(),
             config: z.string(),
-            server: z.literal("aphrody").optional(),
+            server: z.literal("shenron").optional(),
             slots: z.number().int(),
             workerReady: z.boolean(),
           })
@@ -231,7 +231,7 @@ async function main() {
           .strict(),
       );
       const jobs = values.hosts
-        ? new AphrodyWebJobs(
+        ? new ShenronWebJobs(
             values["jobs-ledger"]!,
             hostSchema.parse(await Bun.file(values.hosts).json()),
           )
@@ -327,8 +327,8 @@ async function main() {
         ),
       );
     } else {
-      const { runAphrodyCommand } = await import("./aphrody/native-commands");
-      const result = await runAphrodyCommand(["web", "dragon-ball", ...args], {
+      const { runShenronCommand } = await import("./shenron/native-commands");
+      const result = await runShenronCommand(["web", "dragon-ball", ...args], {
         timeoutMs: 1_800_000,
         json: true,
       });
@@ -474,7 +474,7 @@ async function main() {
     console.log(JSON.stringify(result, null, 2));
     return;
   }
-  if (command === "aphrody-ocr-candidate") {
+  if (command === "shenron-ocr-candidate") {
     const [kind, manifestPath, inputPath, outputPath] = args;
     if (
       (kind !== "manga" && kind !== "databook") ||
@@ -484,7 +484,7 @@ async function main() {
       args.length !== 4
     ) {
       throw new Error(
-        "usage: pipeline aphrody-ocr-candidate <manga|databook> <hash-bearing-manifest.json> <aphrody-ocr-v2.jsonl> <unreviewed-candidates.jsonl>",
+        "usage: pipeline shenron-ocr-candidate <manga|databook> <hash-bearing-manifest.json> <shenron-ocr-v2.jsonl> <unreviewed-candidates.jsonl>",
       );
     }
     if (await Bun.file(outputPath).exists())
@@ -546,12 +546,12 @@ async function main() {
       const image = { mime, width: metadata.width, height: metadata.height };
       const candidate =
         kind === "manga"
-          ? toAphrodyMangaReviewCandidateInput(
+          ? toShenronMangaReviewCandidateInput(
               result,
               entry as ReturnType<typeof parseMangaCandidateManifest>[number],
               image,
             )
-          : toAphrodyDatabookReviewCandidateInput(
+          : toShenronDatabookReviewCandidateInput(
               result,
               entry as ReturnType<typeof parseDatabookCandidateManifest>[number],
               image,
@@ -827,17 +827,17 @@ async function main() {
 Usage: bun run pipeline <module> [options]
 
 Modules unifiés (exécutables hors du VPS principal) :
-	aphrody-ocr-candidate Lie le JSONL OCR v2 Aphrody aux images/manifeste Shenron sans décision éditoriale
-  koharu-candidate Lie des résultats Aphrody Koharu au manifeste et écrit des candidats non arbitrés
+	shenron-ocr-candidate Lie le JSONL OCR v2 Shenron aux images/manifeste Shenron sans décision éditoriale
+  koharu-candidate Lie des résultats Shenron Koharu au manifeste et écrit des candidats non arbitrés
   koharu-databook-candidate Lie les résultats Koharu databooks au manifeste haché et écrit des candidats non arbitrés
   koharu-native-candidate Lit un projet du SDK Rust et lie les images exactes au manifeste Shenron
   ocr          Exécute les tâches OCR Manga et Databooks
   rag          Construit ou évalue l'index vectoriel RAG
   ia           Orchestration des workflows et agents IA
   translation  Lance la supervision Bun des traductions databooks et du RAG
-  crawl        Exécute le module Dragon Ball natif d'Aphrody Web (guides, databooks, official, kanzenshuu, dragonballcn, universal, custom)
+  crawl        Exécute le module Dragon Ball natif d'Shenron Web (guides, databooks, official, kanzenshuu, dragonballcn, universal, custom)
   dragon-ball  Module natif FFI ; coverage vérifie les datasets, ingest-crawl classe les exports natifs, automate reprend les étapes
-  unify        Ingère les exports Aphrody Web dans le store Aphrody RAG
+  unify        Ingère les exports Shenron Web dans le store Shenron RAG
   run          Pipeline unifiée dataset > canon/rag > decision > wiki/agent-home > plugin (--only, --resume, --dry-run, --force)
   plan         Affiche l'ordre d'exécution sans rien lancer
   status       Dernier état enregistré (var/reports/pipeline/last-run.json)

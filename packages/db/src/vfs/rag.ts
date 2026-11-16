@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Hybrid retrieval over the aphrody-rag store embedded in the Shenron VFS database:
+ * Hybrid retrieval over the shenron-rag store embedded in the Shenron VFS database:
  * BM25 lexical (FTS5 `chunks_fts`) fused by reciprocal rank with exact cosine over the
  * corpus vectors (f32 `vectors` or int8 `vectors_i8`), in the multilingual-e5-small space
  * of the Shenron corpus. Without a query embedder the search is lexical only — the
@@ -81,7 +81,7 @@ function snippetOf(content: string, max = 320): string {
   return flat.length > max ? `${flat.slice(0, max - 1)}…` : flat;
 }
 
-/** Symmetric int8 quantisation (`scale = max|v| / 127`), as aphrody-rag-core `quantize_i8`. */
+/** Symmetric int8 quantisation (`scale = max|v| / 127`), as shenron-rag-core `quantize_i8`. */
 export function quantizeI8(v: Float32Array): { codes: Int8Array; scale: number } {
   let max = 0;
   for (const x of v) max = Math.max(max, Math.abs(x));
@@ -374,7 +374,7 @@ export class VfsRag {
 }
 
 /**
- * OpenAI-compatible embeddings client of the corpus space (aphrody-embed `POST /v1/embeddings`,
+ * OpenAI-compatible embeddings client of the corpus space (shenron-embed `POST /v1/embeddings`,
  * model `Xenova/multilingual-e5-small`, `query: ` / `passage: ` prefixes, L2-normalised output).
  */
 export function createE5Embedder(o: {

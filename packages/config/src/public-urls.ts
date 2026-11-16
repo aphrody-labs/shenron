@@ -17,7 +17,7 @@
  * The `NEXT_PUBLIC_*` mirror is read first because it is the value Next bakes
  * into client bundles: server and client must resolve the same origin.
  *
- * The production values are owned by the aphrody-infra service catalog; the
+ * The production values are owned by the shenron-infra service catalog; the
  * defaults below only keep a process without environment usable and are the
  * one place in the workspace allowed to spell them.
  *

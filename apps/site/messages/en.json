@@ -1136,7 +1136,7 @@
       "provenance": {
         "manga": "Original Manga",
         "databooks": "Official Databook",
-        "aphrody": "Author Interview",
+        "shenron": "Author Interview",
         "manuel": "Editorial Note"
       },
       "category": {
@@ -2239,8 +2239,8 @@
     "models": {
       "title": "Models",
       "description": "The chat models of this computer. An online model sends your questions outside this machine.",
-      "catalogTitle": "Aphrody AI catalog",
-      "catalogDescription": "The real Aphrody AI catalog and agents installed on this computer.",
+      "catalogTitle": "Shenron AI catalog",
+      "catalogDescription": "The real Shenron AI catalog and agents installed on this computer.",
       "agentsLabel": "Agents installed on the host",
       "installed": "installed",
       "missing": "missing",

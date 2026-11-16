@@ -1,7 +1,7 @@
 {
-  "$source": "aphrody-ai/crates/aphrody-mcp/src/http_rest.rs:536",
+  "$source": "shenron-ai/crates/shenron-mcp/src/http_rest.rs:536",
   "$anchor": "\"results\": results",
-  "$hitSource": "aphrody-ai/crates/aphrody-mcp/src/http_rest.rs:557",
+  "$hitSource": "shenron-ai/crates/shenron-mcp/src/http_rest.rs:557",
   "route": "ragSearch",
   "schema": "RagSearchResponse",
   "response": {

@@ -226,7 +226,7 @@ beforeEach(() => {
   tables.set(
     "canon_references",
     [
-      ...IDS_FRAGILES.map((id) => citation(id, id.startsWith("seg") ? "aphrody" : "manga")),
+      ...IDS_FRAGILES.map((id) => citation(id, id.startsWith("seg") ? "shenron" : "manga")),
       citation("planche-12-34", "databooks", { textFr: "Traduction relue" }),
     ].map((l) => Object.assign({}, l)),
   );

@@ -45,7 +45,7 @@ interface LocalHit {
 interface HostAiCatalog {
   models: Array<{ id: string; title?: string; task?: string; backend?: string }>;
   agents: {
-    aphrodyCodex: boolean;
+    shenronCodex: boolean;
     installed: Array<{ id: string; path: string }>;
   };
   error?: string;
@@ -403,10 +403,10 @@ export function DesktopHome() {
 
       <section
         className="toriyama-panel flex flex-col gap-4 p-6"
-        aria-labelledby="aphrody-ai-catalog"
+        aria-labelledby="shenron-ai-catalog"
       >
         <div>
-          <h2 id="aphrody-ai-catalog" className="m-0 text-xl font-bold">
+          <h2 id="shenron-ai-catalog" className="m-0 text-xl font-bold">
             {t("models.catalogTitle")}
           </h2>
           <p className="mt-1 text-sm text-os/70">{t("models.catalogDescription")}</p>
@@ -429,7 +429,7 @@ export function DesktopHome() {
         {hostCatalog ? (
           <div className="flex flex-wrap gap-2 text-sm" aria-label={t("models.agentsLabel")}>
             <span className="capsule-badge">
-              Codex: {hostCatalog.agents.aphrodyCodex ? t("models.installed") : t("models.missing")}
+              Codex: {hostCatalog.agents.shenronCodex ? t("models.installed") : t("models.missing")}
             </span>
             {(["claude", "agy", "agy cli", "antigravity"] as const).map((id) => (
               <span key={id} className="capsule-badge">

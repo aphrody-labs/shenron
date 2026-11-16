@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Bun-only adapter: the same grounding/AI SDK contract, backed by the resident native engine. */
 import { NativeInference, type NativeInferenceOptions } from "@shenron/kit/inference";
-import { createAphrodyChatModel } from "./chat";
+import { createShenronChatModel } from "./chat";
 
 export const SHENRON_NATIVE_MODEL = "gemma-4-e2b-it-q4km";
 const sessions = new Map<string, Promise<NativeInference>>();
@@ -22,7 +22,7 @@ function session(options: NativeInferenceOptions) {
 }
 
 export function createNativeShenronChatModel(options: Omit<NativeInferenceOptions, "profile">) {
-  return createAphrodyChatModel(
+  return createShenronChatModel(
     {
       async chat(input) {
         input.signal?.throwIfAborted();

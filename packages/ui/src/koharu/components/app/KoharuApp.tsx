@@ -12,7 +12,7 @@ import { useKoharuStore } from "../../lib/store";
 import { KoharuSurface } from "../../internal/surface";
 import { cn } from "../../../lib/utils";
 
-/** `embedded`: hosted inside another app (Aphrody Studio) — fills its container, no window controls. */
+/** `embedded`: hosted inside another app (Shenron Studio) — fills its container, no window controls. */
 export function KoharuApp({ embedded = false }: { embedded?: boolean } = {}) {
   const { t } = useTranslation();
   const project = useProject().data;

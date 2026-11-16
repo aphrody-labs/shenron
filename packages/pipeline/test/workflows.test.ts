@@ -45,11 +45,11 @@ function env(extra: AgentEnv = {}): AgentEnv {
 beforeAll(() => {
   root = mkdtempSync(join(tmpdir(), "shenron-agent-home-"));
   home = join(root, "user");
-  state = join(home, ".aphrody");
+  state = join(home, ".shenron");
   mkdirSync(state, { recursive: true });
   profile("dbfr", "ton dbfr fixture");
   profile("ie", "ton ie fixture");
-  profile("aphrody", "ton aphrody fixture");
+  profile("shenron", "ton shenron fixture");
 });
 
 afterAll(() => {
@@ -162,9 +162,9 @@ describe("resolveShenronHome", () => {
       status: "foreign-domain",
       domain: "ie",
     });
-    expect(resolveShenronHome(env({ SHENRON_AGENT_DOMAIN: "aphrody" }), home)).toEqual({
+    expect(resolveShenronHome(env({ SHENRON_AGENT_DOMAIN: "shenron" }), home)).toEqual({
       status: "foreign-domain",
-      domain: "aphrody",
+      domain: "shenron",
     });
     expect(resolveShenronHome(env({ SHENRON_PROFILE: "ie" }), home)).toEqual({
       status: "foreign-domain",
@@ -209,11 +209,11 @@ describe("loadShenronHomePersona", () => {
     // SOUL.md est ici un dossier : lire ce profil lèverait EISDIR. `null` prouve qu'il n'est pas ouvert.
     const trap = join(root, "etat-piege");
     mkdirSync(join(trap, "workspaces", "ie", "SOUL.md"), { recursive: true });
-    mkdirSync(join(trap, "workspaces", "aphrody", "SOUL.md"), { recursive: true });
+    mkdirSync(join(trap, "workspaces", "shenron", "SOUL.md"), { recursive: true });
     const ie = join(trap, "workspaces", "ie");
     expect(loadShenronHomePersona({ SHENRON_HOME: trap, SHENRON_WORKSPACE: ie }, home)).toBeNull();
     expect(
-      loadShenronHomePersona({ SHENRON_HOME: trap, SHENRON_AGENT_DOMAIN: "aphrody" }, home),
+      loadShenronHomePersona({ SHENRON_HOME: trap, SHENRON_AGENT_DOMAIN: "shenron" }, home),
     ).toBeNull();
     expect(() => getToriyamaPersona({ SHENRON_HOME: trap, SHENRON_WORKSPACE: ie }, home)).toThrow(
       "indisponible pour le domaine ie",

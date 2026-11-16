@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Boucle continue d'OCR Databooks dont l'inférence PP-OCR est exécutée par Aphrody AI.
+ * Boucle continue d'OCR Databooks dont l'inférence PP-OCR est exécutée par Shenron AI.
  *
  * Utilisation :
  *   bun scripts/ops/gpu-continuous-ocr.ts
@@ -13,9 +13,9 @@ import { requireAiHttpToken, requireAiHttpUrl } from "@shenron/pipeline/ai/confi
 import {
   legacyAuditProjection,
   runRemoteBatch,
-} from "@shenron/pipeline/aphrody/remote-ocr";
+} from "@shenron/pipeline/shenron/remote-ocr";
 
-const SHENRON_BIN = process.env.SHENRON_BIN?.trim() || "aphrody";
+const SHENRON_BIN = process.env.SHENRON_BIN?.trim() || "shenron";
 const WORK_DIR = join(process.cwd(), "data", "ocr-gpu");
 const limitIndex = Bun.argv.indexOf("--limite-lots");
 const limitLots = limitIndex < 0 ? null : Number(Bun.argv[limitIndex + 1]);
@@ -24,7 +24,7 @@ if (limitLots !== null && (!Number.isInteger(limitLots) || limitLots < 1)) {
 }
 const SHENRON_ADMIN_TOKEN = process.env.SHENRON_ADMIN_TOKEN?.trim();
 if (!SHENRON_ADMIN_TOKEN) throw new Error("SHENRON_ADMIN_TOKEN is required.");
-// aphrody-ai-http : adresse et jeton obligatoires (SHENRON_AI_HTTP_URL / _TOKEN ou alias), sans défaut.
+// shenron-ai-http : adresse et jeton obligatoires (SHENRON_AI_HTTP_URL / _TOKEN ou alias), sans défaut.
 requireAiHttpUrl(process.env);
 requireAiHttpToken(process.env);
 
@@ -86,20 +86,20 @@ async function traiterOuvrage(record: WorstRecord): Promise<boolean> {
     return false;
   }
 
-  // 2. L'image est transmise à Aphrody AI. Le JSONL conserve le contrat OCR v2.
-  console.log("2. Inférence PP-OCR sur Aphrody AI...");
+  // 2. L'image est transmise à Shenron AI. Le JSONL conserve le contrat OCR v2.
+  console.log("2. Inférence PP-OCR sur Shenron AI...");
   const t0 = Date.now();
   let added: number;
   try {
     added = await runRemoteBatch(lotDir, outJsonl, "ppocr-v5-mobile", (done, total) =>
-      console.log(`   ${done}/${total} planches lues par Aphrody`),
+      console.log(`   ${done}/${total} planches lues par Shenron`),
     );
   } catch (error) {
     console.error(`❌ Échec de l'OCR distant pour #${record.id}:`, error);
     return false;
   }
   const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
-  console.log(`✓ Lot #${record.id} : ${added} nouvelle(s) planche(s) sur Aphrody en ${elapsed}s.`);
+  console.log(`✓ Lot #${record.id} : ${added} nouvelle(s) planche(s) sur Shenron en ${elapsed}s.`);
 
   // Le dépositaire existant lit le store OCR local. On importe les preuves distantes
   // et on applique son audit avant tout dépôt éditorial.
@@ -180,7 +180,7 @@ async function traiterOuvrage(record: WorstRecord): Promise<boolean> {
 
 async function main() {
   console.log("==========================================================");
-  console.log("   SHENRON DATABOOK OCR VIA APHRODY AI                     ");
+  console.log("   SHENRON DATABOOK OCR VIA SHENRON AI                     ");
   console.log("==========================================================\n");
 
   await mkdir(WORK_DIR, { recursive: true });

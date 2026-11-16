@@ -4,7 +4,7 @@ import { chmodSync, mkdtempSync, renameSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { AdminWebQueue } from "../src/api/admin-web-queue";
-import type { NativeMcpTransport } from "@shenron/pipeline/aphrody/jobs";
+import type { NativeMcpTransport } from "@shenron/pipeline/shenron/jobs";
 
 test("native web placement survives a lost ACK and process restart, with private results", async () => {
   const home = mkdtempSync(join(tmpdir(), "shenron-web-admin-"));
@@ -26,7 +26,7 @@ test("native web placement survives a lost ACK and process restart, with private
     state = "queued";
   const transport: NativeMcpTransport = async (request) => {
     let data: unknown;
-    if (request.tool === "aphrody_job_submit") {
+    if (request.tool === "shenron_job_submit") {
       submissions++;
       expect(request.arguments.idempotency_key).toBe("web-job-001");
       const args = (request.arguments.payload as { args: unknown }).args;
@@ -54,7 +54,7 @@ test("native web placement survives a lost ACK and process restart, with private
         throw new Error("lost ACK private token");
       }
       data = { id: "remote-001", state };
-    } else if (request.tool === "aphrody_job_cancel") {
+    } else if (request.tool === "shenron_job_cancel") {
       state = "cancelled";
       data = { job: { id: "remote-001", state, result: { secret: "private scrape body" } } };
     } else
@@ -155,7 +155,7 @@ test("web queue stays unavailable until an atomic readiness flip, without restar
     return {
       result: {
         structuredContent:
-          request.tool === "aphrody_job_submit"
+          request.tool === "shenron_job_submit"
             ? { id: "remote-1", state: "queued" }
             : { queue: { queued: 0, running: 0 } },
       },
@@ -175,12 +175,12 @@ test("web queue stays unavailable until an atomic readiness flip, without restar
     expect((await queue.status()).actions).toEqual([
       expect.objectContaining({ id: "web-official", available: true }),
     ]);
-    expect(calls).toContain("aphrody_job_status");
+    expect(calls).toContain("shenron_job_status");
     await expect(queue.submit("web-official", "web-job-enabled")).resolves.toMatchObject({
       id: "web-job-enabled",
       state: "queued",
     });
-    expect(calls).toContain("aphrody_job_submit");
+    expect(calls).toContain("shenron_job_submit");
   } finally {
     queue.close();
     rmSync(home, { recursive: true, force: true });

@@ -86,7 +86,7 @@ async function main() {
       "--json",
     ];
     if (!seeded && run === 0) args.push("--sitemaps", "--max-sitemaps", "25");
-    const child = Bun.spawn(["aphrody", ...args], { stdout: "pipe", stderr: "inherit" });
+    const child = Bun.spawn(["shenron", ...args], { stdout: "pipe", stderr: "inherit" });
     const report = await new Response(child.stdout).text();
     const code = await child.exited;
     if (code !== 0) {

@@ -42,7 +42,7 @@ function manifest(): MangaOcrManifest {
       },
     ],
     responseExpected: {
-      format: "aphrody-ocr-jsonl",
+      format: "shenron-ocr-jsonl",
       result: { image: "image.jpg", text: { kind: "text", markdown: "texte" } },
     },
   };

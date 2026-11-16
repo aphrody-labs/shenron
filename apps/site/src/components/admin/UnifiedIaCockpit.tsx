@@ -205,7 +205,7 @@ const TABS: Array<{ key: IaCockpitTab; label: string; icon: LucideIcon }> = [
 ];
 
 const HEADER_SOURCES: Array<{ key: IaSourceKey; name: string }> = [
-  { key: "aphrodyHealth", name: "Aphrody AI" },
+  { key: "shenronHealth", name: "Shenron AI" },
   { key: "yoloWeb", name: "YOLO WEB" },
   { key: "botRag", name: "Bot" },
   { key: "evalHistory", name: "PostgreSQL" },
@@ -477,7 +477,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
                   )}
                 </h1>
                 <p className="text-xs text-white/50">
-                  Aphrody (RAG, LLM, OCR, crawl), doctrine de canonicité, entraînement RAG et agents
+                  Shenron (RAG, LLM, OCR, crawl), doctrine de canonicité, entraînement RAG et agents
                   autonomes
                 </p>
               </div>
@@ -658,7 +658,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
               Corpus éditorial
             </h2>
             <p className="mt-1 max-w-3xl text-sm text-white/55">
-              Aphrody fournit les modèles et le RAG ; Shenron conserve les sources, les arbitrages
+              Shenron fournit les modèles et le RAG ; Shenron conserve les sources, les arbitrages
               OCR, les traductions et la publication. Chaque action ci-dessous ouvre la surface
               réelle de son propriétaire.
             </p>
@@ -686,11 +686,11 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
           <CorpusLiveStatus />
           <Card className="border-dbz-border bg-dbz-card md:col-span-2 xl:col-span-4">
             <CardHeader>
-              <CardTitle className="text-base text-white">Sonde OCR Aphrody</CardTitle>
+              <CardTitle className="text-base text-white">Sonde OCR Shenron</CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
               <p className="text-sm text-white/55">
-                Envoyer une planche à l’endpoint OCR Aphrody réel pour vérifier la chaîne de calcul.
+                Envoyer une planche à l’endpoint OCR Shenron réel pour vérifier la chaîne de calcul.
               </p>
               <div className="flex flex-wrap items-center gap-3">
                 <input
@@ -855,7 +855,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
               </div>
 
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-                <SourceRow report={sources.aphrodyHealth}>
+                <SourceRow report={sources.shenronHealth}>
                   {(health) => (
                     <div className="flex flex-wrap gap-1.5">
                       <Flag label="RAG" on={health.rag} />
@@ -865,7 +865,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
                   )}
                 </SourceRow>
 
-                <SourceRow report={sources.aphrodyRagStats}>
+                <SourceRow report={sources.shenronRagStats}>
                   {(stats) => (
                     <div className="space-y-1 text-[11px] text-white/70">
                       <div>
@@ -887,7 +887,7 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
                   )}
                 </SourceRow>
 
-                <SourceRow report={sources.aphrodyRagProbe}>
+                <SourceRow report={sources.shenronRagProbe}>
                   {(probe) => (
                     <div className="text-[11px] text-white/70">
                       {modeLabel(probe.mode)} · {probe.hits} résultat(s) pour « {probe.query} »
@@ -910,8 +910,8 @@ export function UnifiedIaCockpit({ initialTab = "overview" }: Props) {
                       {fmtInt(bot.chunks)} documents · {fmtInt(bot.vectors)} vecteurs ·{" "}
                       {modeLabel(bot.mode)}
                       {bot.builtAt ? ` · construit le ${fmtDate(bot.builtAt)}` : ""}
-                      {data?.backend.value === "aphrody"
-                        ? " · hors trafic (RAG_BACKEND=aphrody)"
+                      {data?.backend.value === "shenron"
+                        ? " · hors trafic (RAG_BACKEND=shenron)"
                         : " · sert le trafic"}
                     </div>
                   )}

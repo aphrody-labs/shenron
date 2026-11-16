@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * rag.ts on the aphrody-infra AI env contract: reranker dialects (llama-server
+ * rag.ts on the shenron-infra AI env contract: reranker dialects (llama-server
  * for the canonical SHENRON_AI_RERANK_BASE_URL, the Shenron sidecar for the
  * legacy RERANK_URL) and the startup check that refuses to mix embedding spaces.
  */
@@ -110,7 +110,7 @@ describe.if(isLive())("embedding space against the real Shenron PostgreSQL index
     try {
       const rows = await sql<{ model: string; dimensions: number; count: string }[]>`
         SELECT model, vector_dims(embedding) AS dimensions, count(*) AS count
-        FROM aphrody_shenron_vectors GROUP BY 1, 2`;
+        FROM shenron_vectors GROUP BY 1, 2`;
       expect(rows).toHaveLength(1);
       expect(rows[0]?.model).toBe("Xenova/multilingual-e5-small");
       expect(rows[0]?.dimensions).toBe(384);

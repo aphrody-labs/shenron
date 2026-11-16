@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-/** Product checkpoints only; Aphrody owns acquisition, execution and native queues. */
+/** Product checkpoints only; Shenron owns acquisition, execution and native queues. */
 import { Database } from "bun:sqlite";
 import { chmodSync, lstatSync, mkdirSync } from "node:fs";
 import { dirname, isAbsolute } from "node:path";
-import type { AphrodyWebJobs, NativeMcpTransport } from "../aphrody/jobs";
+import type { ShenronWebJobs, NativeMcpTransport } from "../shenron/jobs";
 import {
   auditDatasetCoverage,
   datasetCatalogSchema,
@@ -143,7 +143,7 @@ const requireProof = (valid: boolean, code: string): void => {
 
 /** Existing MCP HTTP client handles authentication/session headers in native code. */
 export function createNativeRagPorts(
-  route: { config: string; server?: "aphrody" },
+  route: { config: string; server?: "shenron" },
   transport: NativeMcpTransport = async (request, options) => {
     const owner = await import("@shenron/native/web/pipeline");
     return owner.mcpTool(request, options);
@@ -159,7 +159,7 @@ export function createNativeRagPorts(
   const call = async (tool: string, args: Record<string, unknown>, context: AutomationContext) => {
     const envelope = record(
       await transport(
-        { config: route.config, server: route.server ?? "aphrody", tool, arguments: args },
+        { config: route.config, server: route.server ?? "shenron", tool, arguments: args },
         { signal: context.signal, timeoutMs: 30_000 },
       ),
     );
@@ -193,7 +193,7 @@ export function createNativeRagPorts(
       for (const item of items) {
         const id = identity(source, item.id);
         const receipt = await call(
-          "aphrody_shenron_rag_ingest",
+          "shenron_rag_ingest",
           {
             sourceId: id,
             originSourceId: id,
@@ -225,7 +225,7 @@ export function createNativeRagPorts(
       for (const item of items) {
         const id = identity(source, item.id);
         const proof = await call(
-          "aphrody_shenron_rag_search",
+          "shenron_rag_search",
           {
             q: title(source, item.id).slice(0, 100),
             sourceId: id,
@@ -257,7 +257,7 @@ export function createNativeRagPorts(
 
 /** Reuses native host placement and durable queue intents; never starts a subprocess. */
 export function createNativeCollectionPort(
-  jobs: AphrodyWebJobs,
+  jobs: ShenronWebJobs,
 ): NonNullable<DragonBallAutomationPorts["collect"]> {
   return async (plan, context) => {
     const current = jobs.get(context.key);
@@ -278,7 +278,7 @@ export function createNativeCollectionPort(
     const campaign = record(payload.campaign);
     const complete =
       plan.args[0] === "dragon-ball"
-        ? campaign.schema === "aphrody-dragon-ball-crawl/v1" &&
+        ? campaign.schema === "shenron-dragon-ball-crawl/v1" &&
           campaign.completed === true &&
           Array.isArray(campaign.errors) &&
           campaign.errors.length === 0

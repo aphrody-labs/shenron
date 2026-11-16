@@ -38,7 +38,7 @@ internes (`internal/`).
 
 ## Styles
 
-`./koharu.css` (`editor.css`) n'est importé que par la route `/studio` : jetons M3 d'Aphrody,
+`./koharu.css` (`editor.css`) n'est importé que par la route `/studio` : jetons M3 d'Shenron,
 puis `styles.css`, dont chaque règle est bornée à `[data-koharu-ui]` et
 `[data-koharu-ui-layer]`. La police Noto Sans CJK variable (japonais, coréen, chinois) est
 livrée sous SIL OFL 1.1 (`assets/OFL.txt`).

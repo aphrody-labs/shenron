@@ -5,13 +5,13 @@
  * environment record: VFS database (file or embedded), RAG with the corpus embedder, chat
  * engine (Gemini web → local llama-server) with the owner's persistent memory when the host
  * process provides it, MCP tools (`shenron-mcp`), OCR
- * (`aphrody ocr ppocr`), conversation store (SQLite or PostgreSQL), owner/admin auth, static
+ * (`shenron ocr ppocr`), conversation store (SQLite or PostgreSQL), owner/admin auth, static
  * assets with precompressed siblings and the MCP reverse proxy. `serveShenronApi(env)` starts
  * it with `Bun.serve`; a front server mounts it with `handles()`, `fetch()` and `websocket`.
  * Hosts: `apps/server` (front of `shenron-server`, desktop sidecar), the bot. Runtime class: `bun`.
  *
  * A capability that is missing disables its group (no route, `groups[name].available` false
- * with a short French reason): no VFS, no usable chat backend, no `aphrody` for the OCR, no
+ * with a short French reason): no VFS, no usable chat backend, no `shenron` for the OCR, no
  * MCP URL, an unwritable conversation store. Nothing here throws for a missing capability.
  *
  * The caller passes the environment (`process.env` in an entry point): nothing is read at
@@ -185,7 +185,7 @@ export function hostPaths(env: EnvSource) {
     conversations: envString(env, "SHENRON_CHAT_STORE") ?? join(data, "conversations.sqlite"),
     agentHome:
       envString(env, "SHENRON_WORKSPACE") ??
-      join(envString(env, "SHENRON_HOME") ?? join(home, ".aphrody"), "workspaces", "dbfr"),
+      join(envString(env, "SHENRON_HOME") ?? join(home, ".shenron"), "workspaces", "dbfr"),
   };
 }
 
@@ -339,7 +339,7 @@ export function staticFileResponse(
 export interface LocalApiOptions {
   /** Explicit private-chat query embedding; never used by the public RAG port. */
   privateQueryEmbedding?: { query: QueryEmbedder; model: string };
-  /** Canonical editorial retrieval assembled by the product when RAG_BACKEND=aphrody. */
+  /** Canonical editorial retrieval assembled by the product when RAG_BACKEND=shenron. */
   rag?: RagPort | null;
   /** Native public-corpus Jev judgments supplied by the product backend. */
   jev?: ChatJevPort | null;
@@ -353,7 +353,7 @@ export interface LocalApiOptions {
   /** `false` leaves the wiki routes to another host (the site on PostgreSQL in production). */
   wiki?: boolean;
   /**
-   * Persistent chat memory (Aphrody `aphrody-memory`), opened by the host process (`bun:ffi`
+   * Persistent chat memory (Shenron `shenron-memory`), opened by the host process (`bun:ffi`
    * lives in `@shenron/native`, outside this package) from the settings of
    * `@shenron/config/memory`. Absent or `null`: the memory group stays disabled.
    */
@@ -371,7 +371,7 @@ export interface LocalApiOptions {
   memoryAliases?: ((agentId: string) => readonly string[]) | null;
   /**
    * Agent home resolver: the directory of an owner's own agent home (`discord:<user_id>`,
-   * `local`; native `aphrody-agent-home` layout), or `null` for the shared persona (the VFS
+   * `local`; native `shenron-agent-home` layout), or `null` for the shared persona (the VFS
    * `/home`, else SHENRON_WORKSPACE).
    */
   agentHome?: ((ownerId: string) => string | null) | null;
@@ -430,7 +430,7 @@ const unavailable = (reason: string): LocalApiGroupStatus => ({ available: false
 
 /**
  * Chat backends this host can call: `local` (built only when its OpenAI-compatible URL is
- * declared: llama-server, aphrody-llama-daemon), `extractive` (only when listed in
+ * declared: llama-server, shenron-llama-daemon), `extractive` (only when listed in
  * `SHENRON_CHAT_BACKENDS`) and `gemini-web` when its client is installed with a cookie store.
  */
 export function usableChatBackends(
@@ -439,7 +439,7 @@ export function usableChatBackends(
 ): LlmBackend[] {
   return backendsFromEnv(env).filter((backend) => {
     if (backend.id !== "gemini-web") return true;
-    const binary = envString(env, "SHENRON_GEMINI_WEB_BIN") ?? "aphrody-gemini-web";
+    const binary = envString(env, "SHENRON_GEMINI_WEB_BIN") ?? "shenron-gemini-web";
     const installed = /[\\/]/.test(binary) ? existsSync(binary) : Bun.which(binary) !== null;
     return installed && geminiCookieCandidates(env, home).some((path) => existsSync(path));
   });
@@ -452,7 +452,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     options.privateQueryEmbedding &&
     (publicOnly ||
       env.SHENRON_PROFILE === "production" ||
-      envString(env, "RAG_BACKEND") === "aphrody")
+      envString(env, "RAG_BACKEND") === "shenron")
   )
     throw new Error("Private query embedding requires a private local VFS host");
   if (options.privateQueryEmbedding && options.privateQueryEmbedding.model !== RAG_EMBED_MODEL)
@@ -537,7 +537,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
           env: existsSync(paths.vfs) ? { SHENRON_VFS_DB: paths.vfs } : {},
         })
       : null;
-  const ocr = createCliOcr({ binary: envString(env, "SHENRON_BIN") ?? "aphrody" });
+  const ocr = createCliOcr({ binary: envString(env, "SHENRON_BIN") ?? "shenron" });
   const ocrPort = ocr.available() ? ocr : null;
 
   // Persistent chat memory: off by SHENRON_MEMORY=off, else opened by the host process.
@@ -577,12 +577,12 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
         agentHome: true,
       })
     : null;
-  const usesAphrodyRag = envString(env, "RAG_BACKEND") === "aphrody";
+  const usesShenronRag = envString(env, "RAG_BACKEND") === "shenron";
   let rag: RagPort | null = null;
   let ragReason = "aucun VFS Shenron installé";
-  if (usesAphrodyRag) {
+  if (usesShenronRag) {
     rag = options.rag ? createPublicRagPort(options.rag) : null;
-    ragReason = "configuration du RAG Aphrody absente ou invalide";
+    ragReason = "configuration du RAG Shenron absente ou invalide";
   } else if (opened) rag = createVfsRagPort(opened, embedder?.query ?? null);
   const engine = createChatEngine({
     jev:
@@ -591,11 +591,11 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
             throw new ChatJevUnavailable();
           })
         : options.jev,
-    rag: usesAphrodyRag ? null : (opened?.rag ?? null),
-    ...(usesAphrodyRag
+    rag: usesShenronRag ? null : (opened?.rag ?? null),
+    ...(usesShenronRag
       ? {
           retrieval: async (query, request) => {
-            if (!rag) throw new Error("RAG Aphrody indisponible");
+            if (!rag) throw new Error("RAG Shenron indisponible");
             const result = await rag.search({
               q: query,
               limit: 25,
@@ -741,7 +741,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
   const store = conversations ? available() : unavailable(storeReason);
   const chatGroup = chat
     ? available()
-    : unavailable("aucun modèle de chat déclaré (llama-server, aphrody-llama-daemon)");
+    : unavailable("aucun modèle de chat déclaré (llama-server, shenron-llama-daemon)");
   const groups: LocalApiGroups = {
     wiki: wiki ? available() : unavailable(opened ? "wiki servi par le site" : vfsMissing),
     rag: rag ? available() : unavailable(ragReason),
@@ -749,7 +749,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     conversations: store,
     sync: { ...store },
     vfs: opened ? available() : unavailable(vfsMissing),
-    ocr: ocrPort ? available() : unavailable("aphrody introuvable : OCR indisponible"),
+    ocr: ocrPort ? available() : unavailable("shenron introuvable : OCR indisponible"),
     mcp: mcpUrl ? available() : unavailable("serveur MCP non configuré"),
     models: { ...chatGroup },
     memory: memory ? available() : unavailable(memoryReason),

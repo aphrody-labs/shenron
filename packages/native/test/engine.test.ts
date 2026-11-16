@@ -142,7 +142,7 @@ describe.if(builtLibrary !== undefined)("with the built shenron-ffi library", ()
   test("shenronLocalSearch returns the decoded corpus answer", () => {
     shenronLoad(builtLibrary as string);
     const answer = shenronLocalSearch("Goku", 2);
-    expect(answer.mode).toBe("aphrody_local_naive");
+    expect(answer.mode).toBe("shenron_local_naive");
     expect(answer.results.length).toBeLessThanOrEqual(2);
     expect(answer.total).toBe(answer.results.length);
     // An empty kind searches every kind, like an absent one.
@@ -159,7 +159,7 @@ describe.if(builtLibrary !== undefined)("with the built shenron-ffi library", ()
     expect(map.caveat).toContain("unreleased");
   });
 
-  test("the chat memory stores, finds and deletes per agent (aphrody-memory)", () => {
+  test("the chat memory stores, finds and deletes per agent (shenron-memory)", () => {
     shenronLoad(builtLibrary as string);
     const db = join(scratch, "memory", "memory.sqlite");
     const added = shenron.shenronMemoryAdd(db, {

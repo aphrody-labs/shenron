@@ -2,7 +2,7 @@
 import { describe, expect, test } from "bun:test";
 import { createRecordingFetch } from "@shenron/config/testing";
 import { generateText } from "ai";
-import { createAphrodyCompute } from "../../src/ai/aphrody";
+import { createShenronCompute } from "../../src/ai/shenron";
 import { resolveAiConfig } from "../../src/ai/config";
 import { createOpenAICompatibleChat, createShenronProvider } from "../../src/ai/provider";
 import { json, loopbackBase, TOKEN, vector } from "./helpers";
@@ -32,7 +32,7 @@ describe("createShenronProvider", () => {
       SHENRON_API_TOKEN: TOKEN,
       SHENRON_LLM_MODEL: "gemini-web/flash",
     });
-    const compute = createAphrodyCompute(cfg.compute ?? { baseUrl: BASE, token: TOKEN }, {
+    const compute = createShenronCompute(cfg.compute ?? { baseUrl: BASE, token: TOKEN }, {
       fetch: rec.fetch,
     });
     const provider = createShenronProvider(cfg, { compute });
@@ -47,7 +47,7 @@ describe("createShenronProvider", () => {
       const { text } = await generateText({ model: lm, prompt: "x", maxRetries: 0 });
       expect(text).toBe(`via ${model}`);
     }
-    expect(provider.embeddingModel("e5-query").provider).toBe("aphrody.shenron");
+    expect(provider.embeddingModel("e5-query").provider).toBe("shenron");
     expect(provider.embeddingModel("e5-passage").modelId).toBe("Xenova/multilingual-e5-small");
   });
 
@@ -82,10 +82,10 @@ describe("createShenronProvider", () => {
       SHENRON_AI_HTTP_URL: BASE.origin,
       SHENRON_AI_HTTP_TOKEN: TOKEN,
     });
-    const compute = createAphrodyCompute(cfg.compute ?? { baseUrl: BASE, token: TOKEN });
+    const compute = createShenronCompute(cfg.compute ?? { baseUrl: BASE, token: TOKEN });
     const provider = createShenronProvider(cfg, { compute });
     expect(provider.languageModel("chat").modelId).toBe("gemma4-e2b-bnb-4bit");
     expect(provider.languageModel("chat-flash-lite").modelId).toBe("gemini-web/flash-lite");
-    expect(provider.embeddingModel("e5-query").provider).toBe("aphrody.shenron");
+    expect(provider.embeddingModel("e5-query").provider).toBe("shenron");
   });
 });

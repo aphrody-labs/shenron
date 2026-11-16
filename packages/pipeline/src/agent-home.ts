@@ -71,7 +71,7 @@ function workspaceDomain(workspace: string, state: string): string | undefined {
  */
 export function resolveShenronHome(env?: AgentEnv, home: string = homedir()): AgentHomeResolution {
   env ??= process.env;
-  const state = setting(env, "SHENRON_HOME") ?? join(home, ".aphrody");
+  const state = setting(env, "SHENRON_HOME") ?? join(home, ".shenron");
   const declared = setting(env, "SHENRON_AGENT_DOMAIN");
   if (declared !== undefined && !DOMAIN_NAME.test(declared))
     throw invalid(`SHENRON_AGENT_DOMAIN=${declared}`);

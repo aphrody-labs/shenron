@@ -10,7 +10,7 @@
 import type { EnvIssue } from "./env";
 
 /**
- * Exactly the loopback host forms accepted today by the Aphrody clients:
+ * Exactly the loopback host forms accepted today by the Shenron clients:
  * the IPv4 loopback literal, the bracketed IPv6 form produced by `URL`, the
  * bare IPv6 form produced by socket addresses, and `localhost`. The rest of
  * `127.0.0.0/8` is deliberately NOT accepted.

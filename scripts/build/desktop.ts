@@ -5,7 +5,7 @@
  * editor engine in process): the native app, the shenron-server sidecar (front app, Shenron API
  * and local APIs, one file), the shenron-bot sidecar (private admin/API services without Discord
  * OAuth in the desktop UI), the shenron-mcp sidecar (MCP tools of the chat and the `/mcp`
- * endpoint), the `shenron` Rust CLI sidecar (OCR, RAG, databooks, manga and Aphrody bridges),
+ * endpoint), the `shenron` Rust CLI sidecar (OCR, RAG, databooks, manga and Shenron bridges),
  * the koharu-sdk sidecar (the editor engine over JSON Lines, for a browser on the
  * local server through `/api/local/koharu` and for `@shenron/pipeline`; the app window itself
  * never uses it), the local chat model runtime (llama.cpp `llama-server` and the Shenron LoRA
@@ -143,7 +143,7 @@ const botSidecar = join(binaries, `shenron-bot-${SPEC.triple}${SPEC.exe}`);
 rmSync(botSidecar, { force: true });
 if (withBot) copyFileSync(bot, botSidecar);
 
-// 1c. Rust capability-owner CLI: the native OCR/RAG/databook/manga/Aphrody bridge used by
+// 1c. Rust capability-owner CLI: the native OCR/RAG/databook/manga/Shenron bridge used by
 // Studio and by support diagnostics. It is kept as a sidecar so the GUI does not shell out to
 // a developer checkout.
 const cliSidecar = join(binaries, `shenron-${SPEC.triple}${SPEC.exe}`);

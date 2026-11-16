@@ -110,11 +110,11 @@ describe("setup-agent-connectors", () => {
     const fakeTokens = { mcpToken: "test-mcp-token", a2aToken: "test-a2a-token" };
     const claude = buildClaudeMcpConfig(fakeTokens);
     expect(claude.mcpServers["shenron-public"].url).toBe("https://dragonballfr.com/mcp");
-    expect(claude.mcpServers["aphrody-tunnel"].headers.Authorization).toBe("Bearer test-mcp-token");
+    expect(claude.mcpServers["shenron-tunnel"].headers.Authorization).toBe("Bearer test-mcp-token");
 
     const agy = buildAgyMcpConfig(fakeTokens);
     expect(agy.mcpServers["shenron-public"].serverUrl).toBe("https://dragonballfr.com/mcp");
-    expect(agy.mcpServers["aphrody-tunnel"].headers.Authorization).toBe("Bearer test-mcp-token");
+    expect(agy.mcpServers["shenron-tunnel"].headers.Authorization).toBe("Bearer test-mcp-token");
 
     const codex = buildCodexTomlConfig(fakeTokens);
     expect(codex).toContain("Bearer test-mcp-token");

@@ -7,7 +7,7 @@
  */
 import { PROMPT_VERSION } from "./prompts";
 
-/** Full chunk text by hit id (bot: `rag_chunks` SQLite; Aphrody: `hit.content`). */
+/** Full chunk text by hit id (bot: `rag_chunks` SQLite; Shenron: `hit.content`). */
 export interface ChunkContentPort {
   contentFor(hitIds: readonly string[]): Promise<ReadonlyMap<string, string>>;
 }

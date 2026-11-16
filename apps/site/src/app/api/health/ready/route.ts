@@ -25,8 +25,8 @@ export interface ReadinessDeps {
  * are healthy and ready to serve live user traffic.
  *
  * Failure semantics:
- * - Database `disabled` is ready only when optional (not with RAG_BACKEND=aphrody / SITE_REQUIRE_DATABASE=1).
- * - With RAG_BACKEND=aphrody, a bounded native RAG search must return real hits (availability only).
+ * - Database `disabled` is ready only when optional (not with RAG_BACKEND=shenron / SITE_REQUIRE_DATABASE=1).
+ * - With RAG_BACKEND=shenron, a bounded native RAG search must return real hits (availability only).
  * - 200 OK: All dependencies are reachable; traffic can be routed to this replica.
  * - 503 Service Unavailable: One or more upstream dependencies are degraded or unreachable.
  *   Load balancers / reverse proxies should temporarily remove this instance from the active

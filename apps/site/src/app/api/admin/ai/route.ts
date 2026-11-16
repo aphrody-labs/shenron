@@ -16,7 +16,7 @@ import {
   parseEvalSamples,
   readJsonObject,
   requireIaAdmin,
-} from "@/lib/ia-aphrody";
+} from "@/lib/ia-shenron";
 import {
   CompleteGoalBody,
   CreateGoalBody,
@@ -30,7 +30,7 @@ import {
   currentRagBackend,
   evaluateConfiguredRag,
   searchConfiguredRag,
-  runAphrodyOcr,
+  runShenronOcr,
 } from "@/lib/ia-cockpit-server";
 
 export const runtime = "nodejs";
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
         probeSource({
           label: backend.engine,
           target:
-            backend.value === "aphrody"
+            backend.value === "shenron"
               ? "GET /api/v1/shenron/rag/search"
               : "GET /api/public/rag/search",
           run: () => searchConfiguredRag(query, 5, backend),
@@ -153,8 +153,8 @@ export async function POST(req: Request) {
       const image = String(body.imageBase64 ?? "").trim();
       const language = String(body.language ?? "ja");
       if (!image) return Response.json({ error: "Image OCR requise." }, { status: 400 });
-      const result = await runAphrodyOcr(image, language);
-      return Response.json({ ok: true, engine: "Aphrody AI", language, result });
+      const result = await runShenronOcr(image, language);
+      return Response.json({ ok: true, engine: "Shenron AI", language, result });
     }
 
     // ── Live RAG evaluation on the gold set ───────────────────────────────

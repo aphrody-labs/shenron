@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Admin IA cockpit retrieval on the preloaded Shenron production services: real Aphrody HTTP
+// Admin IA cockpit retrieval on the preloaded Shenron production services: real Shenron HTTP
 // transport, PostgreSQL corpus, E5 vectors and Redis. Nothing here fakes a retrieval result: the
 // hermetic route suite (admin-ia-cockpit.test.ts) cannot reach retrieval, this suite is its
 // runtime counterpart. Only auth, canon doctrine and Discord stay stubbed (not retrieval); the
@@ -103,7 +103,7 @@ function post(body: unknown) {
 }
 
 /** Real transport towards a loopback port nobody listens on: a genuine connection failure. */
-async function withUnreachableAphrody<T>(run: () => Promise<T>): Promise<T> {
+async function withUnreachableShenron<T>(run: () => Promise<T>): Promise<T> {
   const previous = process.env.SHENRON_AI_HTTP_URL;
   process.env.SHENRON_AI_HTTP_URL = "http://127.0.0.1:1";
   try {
@@ -117,7 +117,7 @@ async function withUnreachableAphrody<T>(run: () => Promise<T>): Promise<T> {
 const urls = (hits: Array<{ url?: string | null }>) => hits.map((hit) => hit.url ?? "");
 
 describe("cockpit IA : sources de récupération réelles", () => {
-  test("GET rend la santé, les statistiques et la sonde du vrai RAG Aphrody", async () => {
+  test("GET rend la santé, les statistiques et la sonde du vrai RAG Shenron", async () => {
     const before = await live.client.ragStats();
     const res = await GET();
     const after = await live.client.ragStats();
@@ -125,11 +125,11 @@ describe("cockpit IA : sources de récupération réelles", () => {
     expect(res.headers.get("cache-control")).toContain("no-store");
     const json = await res.json();
 
-    expect(json.backend).toEqual({ value: "aphrody", raw: "aphrody", engine: "Aphrody AI" });
-    expect(json.sources.aphrodyHealth).toMatchObject({ status: "ok", error: null });
-    expect(json.sources.aphrodyHealth.data.rag).toBe(true);
+    expect(json.backend).toEqual({ value: "shenron", raw: "shenron", engine: "Shenron AI" });
+    expect(json.sources.shenronHealth).toMatchObject({ status: "ok", error: null });
+    expect(json.sources.shenronHealth.data.rag).toBe(true);
 
-    const stats = json.sources.aphrodyRagStats;
+    const stats = json.sources.shenronRagStats;
     expect(stats).toMatchObject({ status: "ok", error: null });
     // Counters move while the editorial sync runs: the route answer sits between two direct reads.
     expect(stats.data.chunks).toBeGreaterThanOrEqual(Math.min(before.chunks, after.chunks));
@@ -139,18 +139,18 @@ describe("cockpit IA : sources de récupération réelles", () => {
     expect(stats.data.sources).toBeGreaterThan(0);
     expect(stats.data.kinds.length).toBeGreaterThan(0);
 
-    const probe = json.sources.aphrodyRagProbe;
+    const probe = json.sources.shenronRagProbe;
     expect(probe).toMatchObject({ status: "ok", error: null });
     expect(probe.data).toEqual({ query: "Son Goku", mode: "hybrid", hits: 1 });
     expect(probe.latencyMs).toBeGreaterThan(0);
 
     expect(json.summary.serving).toEqual({
-      engine: "Aphrody AI",
-      source: "aphrodyRagProbe",
+      engine: "Shenron AI",
+      source: "shenronRagProbe",
       status: "ok",
       error: null,
     });
-    expect(json.summary.countsSource).toBe("aphrodyRagStats");
+    expect(json.summary.countsSource).toBe("shenronRagStats");
     expect(json.summary.documents).toBe(stats.data.chunks);
     expect(json.summary.vectors).toBe(stats.data.vectors);
     expect(json.summary.mode).toBe("hybrid");
@@ -166,8 +166,8 @@ describe("cockpit IA : sources de récupération réelles", () => {
     expect(res.status).toBe(200);
     const json = await res.json();
     expect(json.ok).toBe(true);
-    expect(json.backend.value).toBe("aphrody");
-    expect(json.rag).toMatchObject({ status: "ok", error: null, label: "Aphrody AI" });
+    expect(json.backend.value).toBe("shenron");
+    expect(json.rag).toMatchObject({ status: "ok", error: null, label: "Shenron AI" });
     expect(json.rag.data.mode).toBe("hybrid");
     const hits = json.rag.data.results;
     expect(hits.length).toBeGreaterThan(0);
@@ -194,7 +194,7 @@ describe("cockpit IA : sources de récupération réelles", () => {
   test("searchConfiguredRag borne le nombre de résultats et rend le mode réel", async () => {
     const { searchConfiguredRag } = realServer;
     const backend = resolveRagBackend(process.env.RAG_BACKEND);
-    expect(backend.value).toBe("aphrody");
+    expect(backend.value).toBe("shenron");
     const one = await searchConfiguredRag("Kamehameha", 1, backend);
     const three = await searchConfiguredRag("Kamehameha", 3, backend);
     expect(one.mode).toBe("hybrid");
@@ -222,7 +222,7 @@ describe("cockpit IA : évaluation du jeu doré sur le vrai RAG", () => {
     expect(res.status).toBe(200);
     const { ok, metrics } = await res.json();
     expect(ok).toBe(true);
-    expect(metrics).toMatchObject({ cases: 3, engine: "Aphrody AI", persisted: false });
+    expect(metrics).toMatchObject({ cases: 3, engine: "Shenron AI", persisted: false });
     expect(metrics.durationMs).toBeGreaterThan(0);
     // Recomputed outside the route from the shared client, over the same gold cases and hits.
     expect(metrics.recall).toEqual(expected.recall);
@@ -240,25 +240,25 @@ describe("cockpit IA : évaluation du jeu doré sur le vrai RAG", () => {
   }, 120_000);
 });
 
-describe("cockpit IA : pannes réelles du transport Aphrody", () => {
+describe("cockpit IA : pannes réelles du transport Shenron", () => {
   test("test_prompt signale la recherche en échec au lieu d'une liste vide", async () => {
-    const json = await withUnreachableAphrody(async () =>
+    const json = await withUnreachableShenron(async () =>
       (await post({ action: "test_prompt", query: "Son Goku" })).json(),
     );
     expect(json.ok).toBe(true);
     expect(json.rag.status).toBe("unavailable");
     expect(json.rag.data).toBeNull();
-    expect(json.rag.error).toMatch(/^Aphrody compute /);
+    expect(json.rag.error).toMatch(/^Shenron compute /);
     // One failing source never hides the others.
     expect(json.manga.status).toBe("ok");
   });
 
   test("evaluate_rag renvoie 503 et le cas en cause quand le service est injoignable", async () => {
-    const res = await withUnreachableAphrody(() => post({ action: "evaluate_rag", samples: 1 }));
+    const res = await withUnreachableShenron(() => post({ action: "evaluate_rag", samples: 1 }));
     expect(res.status).toBe(503);
     const json = await res.json();
     expect(json.ok).toBe(false);
-    expect(json.error).toMatch(/^Recherche Aphrody indisponible \(cas « .+ »\) : Aphrody compute /);
+    expect(json.error).toMatch(/^Recherche Shenron indisponible \(cas « .+ »\) : Shenron compute /);
   });
 
   test("le service réel répond de nouveau une fois le transport rétabli", async () => {

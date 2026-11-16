@@ -53,16 +53,16 @@ describe("resolveAiConfig", () => {
     for (const d of cfg.disabled) expect(d.reason).toContain("SHENRON_AI_HTTP_URL");
   });
 
-  test("canonical compute names: origin form, aphrody embed transport", () => {
+  test("canonical compute names: origin form, shenron embed transport", () => {
     const cfg = ok({
       SHENRON_AI_HTTP_URL: `${LOOP}/`,
       SHENRON_AI_HTTP_TOKEN: TOKEN,
-      RAG_BACKEND: "aphrody",
+      RAG_BACKEND: "shenron",
     });
     expect(cfg.compute?.baseUrl.href).toBe(`${LOOP}/`);
     expect(cfg.compute?.token).toBe(TOKEN);
-    expect(cfg.embed).toEqual({ transport: "aphrody" });
-    expect(cfg.ragBackend).toBe("aphrody");
+    expect(cfg.embed).toEqual({ transport: "shenron" });
+    expect(cfg.ragBackend).toBe("shenron");
     expect(cfg.disabled).toEqual([]);
   });
 
@@ -108,7 +108,7 @@ describe("resolveAiConfig", () => {
     }
   });
 
-  test("a direct embed URL never selects a transport: Aphrody only", () => {
+  test("a direct embed URL never selects a transport: Shenron only", () => {
     const cfg = ok({ SHENRON_AI_EMBED_BASE_URL: `${E5}/` });
     expect(cfg.embed).toBeNull();
     expect(cfg.disabled.find((d) => d.capability === "embed")?.reason).toContain(
@@ -121,7 +121,7 @@ describe("resolveAiConfig", () => {
       SHENRON_AI_HTTP_TOKEN: TOKEN,
       SHENRON_AI_EMBED_BASE_URL: E5,
     });
-    expect(both.embed).toEqual({ transport: "aphrody" });
+    expect(both.embed).toEqual({ transport: "shenron" });
     expect(both.e5BaseUrl?.href).toBe(E5);
   });
 
@@ -140,8 +140,8 @@ describe("resolveAiConfig", () => {
   });
 
   test("ragBackend only on exact match; EMBED_TIMEOUT_MS", () => {
-    expect(ok({ RAG_BACKEND: "Aphrody" }).ragBackend).toBe("local");
-    expect(ok({ RAG_BACKEND: " aphrody" }).ragBackend).toBe("local");
+    expect(ok({ RAG_BACKEND: "Shenron" }).ragBackend).toBe("local");
+    expect(ok({ RAG_BACKEND: " shenron" }).ragBackend).toBe("local");
     expect(ok({ EMBED_TIMEOUT_MS: "1500" }).timeouts.embedHot).toBe(1500);
     expect(resolveAiConfig({ EMBED_TIMEOUT_MS: "abc" }).ok).toBe(false);
   });
@@ -196,7 +196,7 @@ describe("embed base URL forms", () => {
   });
 });
 
-describe("aphrody-ai-http require helpers", () => {
+describe("shenron-ai-http require helpers", () => {
   test("missing URL or token is an error naming canonical and legacy names", () => {
     expect(() => requireAiHttpUrl({})).toThrow(/SHENRON_AI_HTTP_URL.*SHENRON_API_URL/);
     expect(() => requireAiHttpToken({})).toThrow(
@@ -296,13 +296,13 @@ describe("rerank dialects", () => {
   });
 });
 
-describe("aphrody-infra contract parity", () => {
-  // Infra configuration belongs to the selected Aphrody workspace, not a fixed host checkout.
+describe("shenron-infra contract parity", () => {
+  // Infra configuration belongs to the selected Shenron workspace, not a fixed host checkout.
   const contractPath =
     process.env.SHENRON_AI_CONTRACT ||
     (process.env.SHENRON_INFRA_ROOT
       ? join(process.env.SHENRON_INFRA_ROOT, "config", "local-ai.json")
-      : join(import.meta.dir, "..", "..", "..", "..", "aphrody-infra", "config", "local-ai.json"));
+      : join(import.meta.dir, "..", "..", "..", "..", "shenron-infra", "config", "local-ai.json"));
   const present = existsSync(contractPath);
 
   test.skipIf(!present)(

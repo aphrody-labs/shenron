@@ -170,7 +170,7 @@ export async function initContainerDatabases(
   const dryRun = options.dryRun ?? false;
   if (!dryRun) {
     throw new Error(
-      "Direct container migrations are disabled. Use the documented Aphrody Infra migration procedure; db:push is prohibited.",
+      "Direct container migrations are disabled. Use the documented Shenron Infra migration procedure; db:push is prohibited.",
     );
   }
   const dbUrl =

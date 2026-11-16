@@ -8,7 +8,7 @@ import { tempPath } from "@shenron/kit/paths";
  * 2. Analyse le contenu de rag_chunks (par type, langue, source).
  * 3. Affiche les métadonnées de la table rag_meta (modèle, dim, date de compilation).
  * 4. Calcule la taille moyenne des chunks.
- * 5. Teste les embeddings via Aphrody `POST /api/v1/shenron/embed`
+ * 5. Teste les embeddings via Shenron `POST /api/v1/shenron/embed`
  *    (SHENRON_AI_HTTP_URL / SHENRON_AI_HTTP_TOKEN obligatoires).
  * 6. Compte les lignes des tables structurées principales (personnages, techniques, planètes).
 
@@ -20,8 +20,8 @@ import { Database } from "bun:sqlite";
 import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import * as sqliteVec from "sqlite-vec";
-import { AphrodyComputeClient, ShenronEmbeddingsClient } from "@shenron/pipeline/aphrody";
-import { requireAphrodyApiUrl } from "./lib/script-env";
+import { ShenronComputeClient, ShenronEmbeddingsClient } from "@shenron/pipeline/shenron";
+import { requireShenronApiUrl } from "./lib/script-env";
 
 const ROOT = Bun.fileURLToPath(new URL("../../../", import.meta.url));
 const DB_PROD = process.env.RAG_DB ?? join(ROOT, "apps/bot/data/bot.db");
@@ -41,7 +41,7 @@ function printHeader(title: string) {
   console.log(`================================================================================`);
 }
 
-/** Embeds one probe query through Aphrody (real round trip, token included). */
+/** Embeds one probe query through Shenron (real round trip, token included). */
 async function checkEmbeddings(
   client: ShenronEmbeddingsClient,
 ): Promise<{ status: string; latency?: number; details?: string }> {
@@ -169,17 +169,17 @@ function analyzeDb(dbPath: string, label: string) {
 }
 
 async function main() {
-  if (process.env.RAG_BACKEND === "aphrody") {
+  if (process.env.RAG_BACKEND === "shenron") {
     // B13 : aucune adresse par défaut.
-    const stats = await new AphrodyComputeClient({
-      baseUrl: requireAphrodyApiUrl(process.env),
+    const stats = await new ShenronComputeClient({
+      baseUrl: requireShenronApiUrl(process.env),
     }).ragStats();
-    console.log(JSON.stringify({ backend: "aphrody", ...stats }, null, 2));
+    console.log(JSON.stringify({ backend: "shenron", ...stats }, null, 2));
     return;
   }
   // B13 : aucune adresse par défaut ; jette si SHENRON_AI_HTTP_URL / _TOKEN manquent.
   const embeddings = new ShenronEmbeddingsClient();
-  printHeader("Embeddings Aphrody");
+  printHeader("Embeddings Shenron");
   const sidecar = await checkEmbeddings(embeddings);
   console.log(`🔌 Status   : ${sidecar.status}`);
   if (sidecar.latency !== undefined) {

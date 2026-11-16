@@ -20,7 +20,7 @@ import {
   type CanonConfig,
 } from "../src/lib/canon-engine";
 
-/** Deux citations du corpus, telles que le chargeur `.aphrody` les écrit. */
+/** Deux citations du corpus, telles que le chargeur `.shenron` les écrit. */
 const CORPUS = [
   {
     id: "piccolo-favori",
@@ -31,7 +31,7 @@ const CORPUS = [
     year: 1995,
     document: "toriyama_toriyama-interviews.md",
     lang: "fr",
-    provenance: "aphrody",
+    provenance: "shenron",
   },
   {
     id: "tome-01",
@@ -42,7 +42,7 @@ const CORPUS = [
     year: 1985,
     document: "toriyama_akira-toriyama-tankobon-introductions.md",
     lang: "en",
-    provenance: "aphrody",
+    provenance: "shenron",
   },
 ];
 
@@ -230,7 +230,7 @@ describe("citations du corpus", () => {
     expect(c.references).toHaveLength(2);
     expect(c.references[0]!.lang).toBe("fr");
     expect(c.references[1]!.lang).toBe("en");
-    expect(c.references[0]!.provenance).toBe("aphrody");
+    expect(c.references[0]!.provenance).toBe("shenron");
   });
 
   test("la citation la plus précise remonte en premier", () => {

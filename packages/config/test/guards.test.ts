@@ -79,7 +79,7 @@ describe("checkPackageRuntimes", () => {
         "src/pure-shenron.ts pure:shenron-server",
         "src/react-node.ts react:node",
         "src/reflect.ts reflect-metadata",
-        "src/aphrody.ts shenron-discord",
+        "src/shenron.ts shenron-discord",
         "src/server-bun.ts server:bun",
         "src/server-only.ts server-only",
         "src/server-react.ts server:react",

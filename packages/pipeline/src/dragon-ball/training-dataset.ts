@@ -29,7 +29,7 @@ export const approvedTrainingDatasetCatalogSchema = z.object({
           review: z.enum(["approved", "pending", "rejected"]),
           compatible: z.boolean(),
         }),
-        // SHA fields retain the existing aphrody_train.bun_finetune manifest contract.
+        // SHA fields retain the existing shenron_train.bun_finetune manifest contract.
         splits: z.object({ train: split, eval: split }),
       }),
     )
@@ -228,8 +228,8 @@ export function createApprovedTrainingDatasetPort(options: {
       if (entry.asOf !== asOf || entry.review !== "approved")
         reject("training-dataset-source-unapproved");
       if (
-        entry.target.owner !== "aphrody-train" ||
-        entry.target.recipe !== "aphrody_train.bun_finetune:train" ||
+        entry.target.owner !== "shenron-train" ||
+        entry.target.recipe !== "shenron_train.bun_finetune:train" ||
         entry.target.runtime !== "python-cuda" ||
         entry.target.format !== "supervised-chat-jsonl" ||
         entry.target.domain !== "dragon-ball" ||

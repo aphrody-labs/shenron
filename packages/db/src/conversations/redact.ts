@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Redaction applied before a conversation feeds the agent home memory, the RAG corpus or a
- * training dataset. Secrets: the patterns of aphrody-train `dataset.redact`
- * (`py/packages/aphrody-train`, aphrody-labs/aphrody) and of yolo-core `redactSecrets`.
+ * training dataset. Secrets: the patterns of shenron-train `dataset.redact`
+ * (`py/packages/shenron-train`, aphrody-labs/shenron) and of yolo-core `redactSecrets`.
  * Personal data: e-mail addresses, phone numbers, IP addresses, Discord mentions and
  * snowflakes, URLs with credentials. Runtime class: `pure`.
  */

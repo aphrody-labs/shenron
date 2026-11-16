@@ -103,7 +103,7 @@ function openNative(path: string, dimensions: number) {
 export function postgresBunRagSource(sql: Bun.SQL): BunRagSource {
   const current = async (query: Bun.SQL | Bun.TransactionSQL) => {
     const rows =
-      await query`SELECT epoch::text,revision::text FROM shenron_compute.aphrody_rag_cache_state WHERE singleton=true`;
+      await query`SELECT epoch::text,revision::text FROM shenron_compute.shenron_rag_cache_state WHERE singleton=true`;
     if (rows.length !== 1) throw Error("Missing RAG generation");
     return { epoch: String(rows[0].epoch), revision: String(rows[0].revision) };
   };
@@ -120,7 +120,7 @@ export function postgresBunRagSource(sql: Bun.SQL): BunRagSource {
             let after = "00000000-0000-0000-0000-000000000000";
             for (;;) {
               const rows =
-                await t`SELECT d.id::text,COALESCE(d.metadata->>'kind','document') AS kind,d.metadata->>'lang' AS lang,COALESCE(d.metadata->>'originSourceId',d.metadata->>'sourceId',d.metadata->>'source_id') AS origin,d.metadata->>'entity' AS entity,(v.model=${SHENRON_RAG_INDEX.model} AND vector_dims(v.embedding)=384 AND d.corpus='shenron' AND d.updated_at<=v.created_at AND COALESCE(d.metadata->>'visible','true')<>'false') AS eligible FROM shenron_compute.aphrody_shenron_vectors v JOIN shenron_compute.aphrody_rag_documents d ON d.id=v.document_id WHERE v.document_id>${after}::uuid ORDER BY v.document_id LIMIT 128`;
+                await t`SELECT d.id::text,COALESCE(d.metadata->>'kind','document') AS kind,d.metadata->>'lang' AS lang,COALESCE(d.metadata->>'originSourceId',d.metadata->>'sourceId',d.metadata->>'source_id') AS origin,d.metadata->>'entity' AS entity,(v.model=${SHENRON_RAG_INDEX.model} AND vector_dims(v.embedding)=384 AND d.corpus='shenron' AND d.updated_at<=v.created_at AND COALESCE(d.metadata->>'visible','true')<>'false') AS eligible FROM shenron_compute.shenron_vectors v JOIN shenron_compute.shenron_rag_documents d ON d.id=v.document_id WHERE v.document_id>${after}::uuid ORDER BY v.document_id LIMIT 128`;
               if (!rows.length) break;
               const batch: BunRagMetadata[] = rows.map((r: BunRagMetadata) => ({
                 id: r.id,
@@ -138,7 +138,7 @@ export function postgresBunRagSource(sql: Bun.SQL): BunRagSource {
             const match = ftsQuery(query);
             if (!match) return [];
             const rows =
-              await t`SELECT id::text FROM shenron_compute.aphrody_rag_documents WHERE corpus IN ('shenron','dragonball_shenron') AND COALESCE(metadata->>'visible','true')<>'false' AND (${f.lang ?? null}::text IS NULL OR metadata->>'lang'=${f.lang ?? null}) AND (${f.kind ?? null}::text IS NULL OR metadata->>'kind'=${f.kind ?? null}) AND (${f.sourceId ?? null}::text IS NULL OR COALESCE(metadata->>'originSourceId',metadata->>'sourceId',metadata->>'source_id')=${f.sourceId ?? null}) AND (${f.entity ?? null}::text IS NULL OR metadata->>'entity'=${f.entity ?? null}) AND to_tsvector('simple',title||' '||content)@@websearch_to_tsquery('simple',${match}) ORDER BY ts_rank_cd(to_tsvector('simple',title||' '||content),websearch_to_tsquery('simple',${match})) DESC,id LIMIT ${limit}`;
+              await t`SELECT id::text FROM shenron_compute.shenron_rag_documents WHERE corpus IN ('shenron','dragonball_shenron') AND COALESCE(metadata->>'visible','true')<>'false' AND (${f.lang ?? null}::text IS NULL OR metadata->>'lang'=${f.lang ?? null}) AND (${f.kind ?? null}::text IS NULL OR metadata->>'kind'=${f.kind ?? null}) AND (${f.sourceId ?? null}::text IS NULL OR COALESCE(metadata->>'originSourceId',metadata->>'sourceId',metadata->>'source_id')=${f.sourceId ?? null}) AND (${f.entity ?? null}::text IS NULL OR metadata->>'entity'=${f.entity ?? null}) AND to_tsvector('simple',title||' '||content)@@websearch_to_tsquery('simple',${match}) ORDER BY ts_rank_cd(to_tsvector('simple',title||' '||content),websearch_to_tsquery('simple',${match})) DESC,id LIMIT ${limit}`;
             return rows.map((row: { id: string }) => row.id);
           },
           async hydrate(ids, f) {
@@ -146,7 +146,7 @@ export function postgresBunRagSource(sql: Bun.SQL): BunRagSource {
               throw Error("Invalid UUID hydration bound");
             if (!ids.length) return [];
             const rows =
-              await t`SELECT id::text,COALESCE(NULLIF(entity_id,''),corpus||':'||id::text) AS "documentId",COALESCE(NULLIF(title,''),NULLIF(entity_id,''),corpus||':'||id::text) AS title,COALESCE(url,'') AS url,left(COALESCE(content,''),65536) AS content,COALESCE(metadata->>'kind','document') AS kind,metadata->>'lang' AS lang,COALESCE(metadata->>'originSourceId',metadata->>'sourceId',metadata->>'source_id') AS origin,metadata->>'entity' AS entity,true AS eligible FROM shenron_compute.aphrody_rag_documents WHERE id IN (SELECT jsonb_array_elements_text(${JSON.stringify(ids)}::text::jsonb)::uuid) AND corpus IN ('shenron','dragonball_shenron') AND COALESCE(metadata->>'visible','true')<>'false' AND (${f.lang ?? null}::text IS NULL OR metadata->>'lang'=${f.lang ?? null}) AND (${f.kind ?? null}::text IS NULL OR metadata->>'kind'=${f.kind ?? null}) AND (${f.sourceId ?? null}::text IS NULL OR COALESCE(metadata->>'originSourceId',metadata->>'sourceId',metadata->>'source_id')=${f.sourceId ?? null}) AND (${f.entity ?? null}::text IS NULL OR metadata->>'entity'=${f.entity ?? null})`;
+              await t`SELECT id::text,COALESCE(NULLIF(entity_id,''),corpus||':'||id::text) AS "documentId",COALESCE(NULLIF(title,''),NULLIF(entity_id,''),corpus||':'||id::text) AS title,COALESCE(url,'') AS url,left(COALESCE(content,''),65536) AS content,COALESCE(metadata->>'kind','document') AS kind,metadata->>'lang' AS lang,COALESCE(metadata->>'originSourceId',metadata->>'sourceId',metadata->>'source_id') AS origin,metadata->>'entity' AS entity,true AS eligible FROM shenron_compute.shenron_rag_documents WHERE id IN (SELECT jsonb_array_elements_text(${JSON.stringify(ids)}::text::jsonb)::uuid) AND corpus IN ('shenron','dragonball_shenron') AND COALESCE(metadata->>'visible','true')<>'false' AND (${f.lang ?? null}::text IS NULL OR metadata->>'lang'=${f.lang ?? null}) AND (${f.kind ?? null}::text IS NULL OR metadata->>'kind'=${f.kind ?? null}) AND (${f.sourceId ?? null}::text IS NULL OR COALESCE(metadata->>'originSourceId',metadata->>'sourceId',metadata->>'source_id')=${f.sourceId ?? null}) AND (${f.entity ?? null}::text IS NULL OR metadata->>'entity'=${f.entity ?? null})`;
             return rows.map((r: BunRagDocument) => ({
               id: r.id,
               documentId: r.documentId,

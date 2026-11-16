@@ -103,17 +103,17 @@ describe("planBackend", () => {
     expect(plan.wiki).toBe(false);
   });
 
-  test("aphrody and shenron-mcp shipped beside the executable", () => {
+  test("shenron and shenron-mcp shipped beside the executable", () => {
     const { paths } = setup();
     expect(planBackend(paths, {}).env.SHENRON_BIN).toBeUndefined();
-    const aphrody = touch(join(paths.exeDir, exe("aphrody")));
+    const shenron = touch(join(paths.exeDir, exe("shenron")));
     const mcp = touch(join(paths.exeDir, "binaries", exe("shenron-mcp")));
     const plan = planBackend(paths, {});
-    expect(plan.env.SHENRON_BIN).toBe(aphrody);
+    expect(plan.env.SHENRON_BIN).toBe(shenron);
     expect(plan.env.SHENRON_MCP_BIN).toBe(mcp);
     expect(plan.mcpSidecar).toBe(mcp);
-    expect(planBackend(paths, { SHENRON_BIN: "/opt/aphrody" }).env.SHENRON_BIN).toBe(
-      "/opt/aphrody",
+    expect(planBackend(paths, { SHENRON_BIN: "/opt/shenron" }).env.SHENRON_BIN).toBe(
+      "/opt/shenron",
     );
   });
 });

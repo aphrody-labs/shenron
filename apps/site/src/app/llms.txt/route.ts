@@ -100,7 +100,7 @@ export async function GET(): Promise<Response> {
     "## Public data (JSON, no authentication)",
     "",
     // Pas de ligne MCP ici : `mcp.dragonballfr.com` a été retiré le 2026-09-25
-    // (shenron-mcp fusionné dans les outils `aphrody-mcp` dragonball.*, sans
+    // (shenron-mcp fusionné dans les outils `shenron-mcp` dragonball.*, sans
     // équivalent HTTP public). Le serveur MCP n'est annoncé plus bas que lorsque
     // `/mcp` est réellement déployé (`SHENRON_MCP_URL`).
     `- [${SITE_URL}/api/search?q=](${SITE_URL}/api/search): cross-wiki search.`,

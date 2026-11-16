@@ -12,9 +12,9 @@ import {
   type KoharuStageProvenance,
   type NativeKoharuPageEvidence,
 } from "@shenron/media/manga";
-import type { AphrodyOcrEvidence } from "@shenron/media/ocr";
+import type { ShenronOcrEvidence } from "@shenron/media/ocr";
 export * from "@shenron/media/manga";
-export type { AphrodyOcrEvidence } from "@shenron/media/ocr";
+export type { ShenronOcrEvidence } from "@shenron/media/ocr";
 const SHA256 = /^[a-f0-9]{64}$/;
 const MANGA_PAGE_ID = /^(DB|DBS):(?:vol|t|ch)[0-9]+:[1-9][0-9]*$/;
 export const SHENRON_MANGA_CANDIDATE_SCHEMA = "shenron.manga.review-candidate/v1" as const;
@@ -135,7 +135,7 @@ export interface MangaReviewCandidateInput {
   artifacts: KoharuPageArtifacts;
   pipeline: KoharuPageResultV1["pipeline"];
   cleanupProvenance?: KoharuStageProvenance | null;
-  ocr?: AphrodyOcrEvidence;
+  ocr?: ShenronOcrEvidence;
   decision: "unreviewed";
 }
 
@@ -149,7 +149,7 @@ export interface DatabookReviewCandidateInput {
   artifacts: KoharuPageArtifacts;
   pipeline: KoharuPageResultV1["pipeline"];
   cleanupProvenance?: KoharuStageProvenance | null;
-  ocr?: AphrodyOcrEvidence;
+  ocr?: ShenronOcrEvidence;
   decision: "unreviewed";
 }
 

@@ -108,7 +108,7 @@ describe("Bun runtime", () => {
         "@shenron/native requires Bun",
       );
     }
-    expect(() => checkBunRuntime("1.4.4-debug+aphrody", ">=1.4.3")).not.toThrow();
+    expect(() => checkBunRuntime("1.4.4-debug+shenron", ">=1.4.3")).not.toThrow();
   });
 });
 

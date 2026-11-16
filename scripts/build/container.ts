@@ -1,26 +1,26 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Build Shenron inside Aphrody's VPS build image (`aphrody-build:latest`, owned by Aphrody:
- * tools/config/container/build/Dockerfile, built by scripts/build/container/aphrody-build.ts image).
+ * Build Shenron inside Shenron's VPS build image (`shenron-build:latest`, owned by Shenron:
+ * tools/config/container/build/Dockerfile, built by scripts/build/container/shenron-build.ts image).
  *
  *   bun scripts/build/container.ts [--target-volume NAME] [--env NAME]… [--host-network] [--no-lock] -- CMD…
  *   bun scripts/build/container.ts --check     # image present, Rust and wasm-bindgen match this checkout
  *
- * Same contract as Aphrody's `aphrody-build.ts run`: the checkout is mounted at its own absolute path,
+ * Same contract as Shenron's `shenron-build.ts run`: the checkout is mounted at its own absolute path,
  * the caller's uid plus the shared build group (1500), named cache volumes
- * aphrody-build-{cargo,sccache,bun,xwin,xdg}, bounded CPU/memory (SHENRON_BUILD_CPUS ≤ 6, default 6;
+ * shenron-build-{cargo,sccache,bun,xwin,xdg}, bounded CPU/memory (SHENRON_BUILD_CPUS ≤ 6, default 6;
  * SHENRON_BUILD_MEMORY, default 16g, no swap) so the llama-server services keep their memory, and the
  * optional build lock named by SHENRON_BUILD_LOCK. Secrets pass by environment NAME only, never as values.
  *
- * Dépendances Git privées (aphrody-labs/aphrody épinglé par révision) : l'aide d'identification Git
+ * Dépendances Git privées (aphrody-labs/shenron épinglé par révision) : l'aide d'identification Git
  * de l'image répond pour github.com avec `SHENRON_GIT_TOKEN`, résolu ici depuis l'appelant
  * (SHENRON_GIT_TOKEN, GH_TOKEN, GITHUB_TOKEN, sinon `gh auth token`) et passé par son nom seulement.
  */
 import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 
-export const IMAGE = "aphrody-build";
+export const IMAGE = "shenron-build";
 export const BUILD_GID = 1500;
 /** Optional build lock shared with other heavy jobs (SHENRON_BUILD_LOCK, an existing file); none by default. */
 export function buildLock(
@@ -136,11 +136,11 @@ export function imageProblems(
   const bindgen = /\[\[package\]\]\r?\nname = "wasm-bindgen"\r?\nversion = "([^"]+)"/.exec(
     cargoLock,
   )?.[1];
-  if (channel && labels["dev.aphrody.rust"] !== channel)
-    problems.push(`Rust ${labels["dev.aphrody.rust"] ?? "?"} ≠ rust-toolchain.toml ${channel}`);
-  if (bindgen && labels["dev.aphrody.wasm-bindgen"] !== bindgen)
+  if (channel && labels["dev.shenron.rust"] !== channel)
+    problems.push(`Rust ${labels["dev.shenron.rust"] ?? "?"} ≠ rust-toolchain.toml ${channel}`);
+  if (bindgen && labels["dev.shenron.wasm-bindgen"] !== bindgen)
     problems.push(
-      `wasm-bindgen ${labels["dev.aphrody.wasm-bindgen"] ?? "?"} ≠ Cargo.lock ${bindgen}`,
+      `wasm-bindgen ${labels["dev.shenron.wasm-bindgen"] ?? "?"} ≠ Cargo.lock ${bindgen}`,
     );
   return problems;
 }
@@ -153,7 +153,7 @@ export async function checkImage(repo = ROOT): Promise<void> {
   );
   if (inspect.exitCode !== 0)
     throw new Error(
-      `${IMAGE}:latest absente : bun scripts/build/container/aphrody-build.ts image (dépôt Aphrody)`,
+      `${IMAGE}:latest absente : bun scripts/build/container/shenron-build.ts image (dépôt Shenron)`,
     );
   const labels = JSON.parse(inspect.stdout.toString()) as Record<string, string>;
   const problems = imageProblems(
@@ -162,7 +162,7 @@ export async function checkImage(repo = ROOT): Promise<void> {
     await Bun.file(join(repo, "Cargo.lock")).text(),
   );
   if (problems.length)
-    throw new Error(`${IMAGE}:latest à reconstruire (Aphrody) : ${problems.join("; ")}`);
+    throw new Error(`${IMAGE}:latest à reconstruire (Shenron) : ${problems.join("; ")}`);
 }
 
 if (import.meta.main) {

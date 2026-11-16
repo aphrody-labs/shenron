@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * VFS path normalisation, ported from `aphrody-shell-vfs` (`crates/shell/vfs/src/path.rs`,
- * aphrody-labs/aphrody). Normal form: `/` or `/a/b` (absolute, no `.`, `..`, empty
+ * VFS path normalisation, ported from `shenron-shell-vfs` (`crates/shell/vfs/src/path.rs`,
+ * aphrody-labs/shenron). Normal form: `/` or `/a/b` (absolute, no `.`, `..`, empty
  * components or trailing slash); `..` at the root stays at the root. Lengths are counted
  * in UTF-8 bytes, like the Rust byte paths. Runtime class: `pure`.
  */
@@ -11,7 +11,7 @@ export const MAX_PATH_LEN = 4096;
 /** Maximum length of one component in bytes. */
 export const MAX_NAME_LEN = 255;
 
-/** Backend-independent error kinds of the Aphrody VFS contract. */
+/** Backend-independent error kinds of the Shenron VFS contract. */
 export type VfsErrorCode =
   | "NotFound"
   | "AlreadyExists"

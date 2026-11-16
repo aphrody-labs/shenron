@@ -108,7 +108,7 @@ describe("product name", () => {
     const hits: string[] = [];
     for (const file of files) {
       const text = await Bun.file(new URL(`../../../${file}`, import.meta.url)).text();
-      if (/import\s*\{[^}]*\bChannel\b[^}]*\}\s*from\s*"@aphrody\/api\/core"/.test(text)) {
+      if (/import\s*\{[^}]*\bChannel\b[^}]*\}\s*from\s*"@shenron\/api\/core"/.test(text)) {
         hits.push(file);
       }
     }

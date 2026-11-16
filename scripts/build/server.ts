@@ -20,7 +20,7 @@
  *    `bun scripts/data/build-vfs.ts --profile public`): wiki, RAG and VFS routes offline. It must
  *    pass the public guard (profile public, no private node or passage, no conversation, no
  *    embedded node); without it the API reports its VFS groups unavailable. Plus the public
- *    agent home template (templates/agent-home: the seven native documents of aphrody-agent-home)
+ *    agent home template (templates/agent-home: the seven native documents of shenron-agent-home)
  *    for the chat persona and the per-user homes, checked like the VFS (no private entry, no
  *    filled-in USER.md, no database or env file).
  * 3c. Public editorial data (scripts/build/server-data.ts): the versioned canonical lexicon

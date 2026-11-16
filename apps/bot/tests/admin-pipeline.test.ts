@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync, chmodSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { AdminPipeline, loadAdminPlans } from "../src/api/admin-pipeline";
-import type { runAphrodyCommand } from "@shenron/pipeline/aphrody/native-commands";
+import type { runShenronCommand } from "@shenron/pipeline/shenron/native-commands";
 
 const success = {
   kind: "exit",
@@ -15,7 +15,7 @@ const success = {
   stderr: "",
   durationMs: 1,
 } as const;
-async function fixture(execute: typeof runAphrodyCommand, target = "dbfr") {
+async function fixture(execute: typeof runShenronCommand, target = "dbfr") {
   const home = mkdtempSync(join(tmpdir(), "shenron-admin-test-"));
   const config = join(home, "plans.json");
   await Bun.write(

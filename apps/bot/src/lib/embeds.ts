@@ -1,5 +1,5 @@
 /**
- * Embed helpers — inspirés de @aphrody/tscord (src/utils/functions/embeds.ts) mais
+ * Embed helpers — inspirés de @shenron/tscord (src/utils/functions/embeds.ts) mais
  * recopiés ici pour éviter de tirer toute la stack mikro-orm/tsed de tscord.
  *
  * Convention couleurs (alignée Discord brand) :

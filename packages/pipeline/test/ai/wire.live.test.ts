@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { beforeAll, describe, expect, test } from "bun:test";
 import { createSql } from "@shenron/db/sql";
-import { prepareSource } from "../../scripts/_rag-aphrody-sync";
+import { prepareSource } from "../../scripts/_rag-shenron-sync";
 import { PG_SOURCES } from "../../scripts/_rag-sources-pg";
 import { requireAiHttpToken, requireAiHttpUrl } from "../../src/ai/config";
 import * as wire from "../../src/ai/wire";
@@ -67,7 +67,7 @@ describe.if(isLive())("RAG wire contracts measured against preloaded Shenron ser
       expect(ingested.vectorIndexed).toBe(true);
       const rows = await index<{ generation: string; count: string }[]>`
         SELECT metadata->>'syncGeneration' AS generation, count(*) AS count
-        FROM aphrody_rag_documents WHERE corpus='shenron'
+        FROM shenron_rag_documents WHERE corpus='shenron'
           AND metadata->>'originSourceId'='db_battles'
           AND coalesce(metadata->>'visible','true') <> 'false' GROUP BY 1`;
       expect(rows).toHaveLength(1);

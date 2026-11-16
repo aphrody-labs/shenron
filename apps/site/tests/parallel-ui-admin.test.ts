@@ -43,8 +43,8 @@ describe("états d'échec du cockpit", () => {
     const forbidden = describeHttpFailure(403, "Accès réservé aux administrateurs.");
     expect(forbidden.kind).toBe("forbidden");
     expect(forbidden.text).toContain("Accès réservé aux administrateurs.");
-    const server = describeHttpFailure(502, "Aphrody injoignable");
-    expect(server).toEqual({ kind: "server", text: "HTTP 502 : Aphrody injoignable" });
+    const server = describeHttpFailure(502, "Shenron injoignable");
+    expect(server).toEqual({ kind: "server", text: "HTTP 502 : Shenron injoignable" });
     expect(describeHttpFailure(500, "  ").text).toBe("HTTP 500 : réponse illisible");
   });
 });

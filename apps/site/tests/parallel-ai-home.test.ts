@@ -4,8 +4,8 @@
 // retrieval, no private profile read. Retrieval checks belong to @shenron/pipeline/testing/live-rag.
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 import { generateText, streamText } from "ai";
-import { createAphrodyCompute } from "@shenron/pipeline/ai/aphrody";
-import { createAphrodyChatModel, ignoredSettingWarnings } from "@shenron/pipeline/ai/chat";
+import { createShenronCompute } from "@shenron/pipeline/ai/shenron";
+import { createShenronChatModel, ignoredSettingWarnings } from "@shenron/pipeline/ai/chat";
 import type { CurrentUser, SiteUser } from "@/lib/session";
 
 mock.module("server-only", () => ({}));
@@ -43,7 +43,7 @@ mock.module("@/lib/ia-cockpit-server", () => ({
   },
   currentRagBackend: () => ({ value: "local", raw: null, engine: "Bot Shenron (index local)" }),
   createIaCockpitFetchers: () => ({}),
-  runAphrodyOcr: async () => ({}),
+  runShenronOcr: async () => ({}),
   searchConfiguredRag: async () => {
     throw new Error("Retrieval requires admin-ia-rag-live.test.ts");
   },
@@ -66,7 +66,7 @@ const {
   requireIaAdmin,
   EVAL_DEFAULT_SAMPLES,
   EVAL_MAX_SAMPLES,
-} = await import("../src/lib/ia-aphrody");
+} = await import("../src/lib/ia-shenron");
 const { GET, POST } = await import("../src/app/api/admin/ai/route");
 const { NextRequest } = await import("next/server");
 
@@ -219,12 +219,12 @@ function chatSetup(modelId: string) {
       headers: { "content-type": "application/json" },
     });
   }) as unknown as typeof fetch;
-  const compute = createAphrodyCompute({ baseUrl: BASE, token: FAKE_TOKEN }, { fetch: fetchStub });
-  return { bodies, model: createAphrodyChatModel(compute, { modelId }) };
+  const compute = createShenronCompute({ baseUrl: BASE, token: FAKE_TOKEN }, { fetch: fetchStub });
+  return { bodies, model: createShenronChatModel(compute, { modelId }) };
 }
 
-describe("createAphrodyChatModel — identifiant de modèle", () => {
-  test("un identifiant vide n'envoie aucun model et laisse Aphrody choisir", async () => {
+describe("createShenronChatModel — identifiant de modèle", () => {
+  test("un identifiant vide n'envoie aucun model et laisse Shenron choisir", async () => {
     for (const blank of ["", "   "]) {
       const { bodies, model } = chatSetup(blank);
       const result = await generateText({ model, prompt: "Salut", maxRetries: 0 });
@@ -242,7 +242,7 @@ describe("createAphrodyChatModel — identifiant de modèle", () => {
   });
 });
 
-describe("createAphrodyChatModel — réglages ignorés", () => {
+describe("createShenronChatModel — réglages ignorés", () => {
   test("aucun avertissement quand rien n'est demandé", async () => {
     const { model } = chatSetup("gemini-web/flash");
     const result = await generateText({ model, prompt: "Salut", maxRetries: 0 });

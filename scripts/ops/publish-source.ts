@@ -766,7 +766,7 @@ async function run() {
   const output = Bun.file(join(root, "crawl.json"));
   const child = Bun.spawn(
     [
-      process.env.SHENRON_CLI ?? "aphrody",
+      process.env.SHENRON_CLI ?? "shenron",
       ...plan.crawl,
       "--sqlite",
       join(root, "frontier.sqlite"),

@@ -1,7 +1,7 @@
 shenron-bot|localhost/shenron:4d53e0131790a1613ed846aae053e9f6939dc6f7
 shenron-chat|ghcr.io/ggml-org/llama.cpp:server
 shenron-cloudflared|cloudflare/cloudflared:latest
-shenron-compute|aphrody:toolbox-f1346b77156f
+shenron-compute|shenron:toolbox-f1346b77156f
 shenron-embed|ghcr.io/huggingface/text-embeddings-inference:cpu-1.9.4
 shenron-gateway|localhost/shenron-gateway:1a27abb61760bd4c7be24f63be9742d0c645cd4e
 shenron-postgres|pgvector/pgvector:pg18

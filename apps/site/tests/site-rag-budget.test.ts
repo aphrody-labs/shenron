@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, mock, test } from "bun:test";
 import { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } from "@shenron/config/chat-model";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody/compute";
+import { ShenronComputeClient } from "@shenron/pipeline/shenron/compute";
 mock.module("server-only", () => ({}));
-const { chatAphrodyRag } = await import("../src/lib/site-rag");
+const { chatShenronRag } = await import("../src/lib/site-rag");
 
 test("the site sends the same bounded generation request after real HTTP retrieval", async () => {
   const savedUrl = process.env.SHENRON_AI_CHAT_BASE_URL;
@@ -47,8 +47,8 @@ test("the site sends the same bounded generation request after real HTTP retriev
   try {
     process.env.SHENRON_AI_CHAT_BASE_URL = new URL("/v1", server.url).href;
     process.env.SHENRON_AI_CHAT_MODEL = "fixture";
-    const client = new AphrodyComputeClient({ baseUrl: server.url.origin, token: "fixture" });
-    const result = await chatAphrodyRag("Qui est Goku ?", "whis", {}, client);
+    const client = new ShenronComputeClient({ baseUrl: server.url.origin, token: "fixture" });
+    const result = await chatShenronRag("Qui est Goku ?", "whis", {}, client);
     expect(budget).toBe(PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS);
     expect(result.answer).toContain("Goku");
     expect(result.hits).toHaveLength(1);

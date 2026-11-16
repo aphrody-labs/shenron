@@ -442,7 +442,7 @@ test("delivery cancellation stops before owner commands and propagates into retr
   }
 });
 
-test.skipIf(!Bun.which("aphrody"))(
+test.skipIf(!Bun.which("shenron"))(
   "owner subprocess cancellation drains its bounded pipes",
   async () => {
     const controller = new AbortController();

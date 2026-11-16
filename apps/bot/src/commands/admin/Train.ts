@@ -46,23 +46,23 @@ export interface TrainJob {
   tail: string;
 }
 
-/** `$SHENRON_HOME`, else `~/.aphrody` (same root as the Rust `state_dir`). */
-export function aphrodyStateDir(env: NodeJS.ProcessEnv = process.env): string {
-  return env.SHENRON_HOME?.trim() || path.join(os.homedir(), ".aphrody");
+/** `$SHENRON_HOME`, else `~/.shenron` (same root as the Rust `state_dir`). */
+export function shenronStateDir(env: NodeJS.ProcessEnv = process.env): string {
+  return env.SHENRON_HOME?.trim() || path.join(os.homedir(), ".shenron");
 }
 
 /** Default dbfr triples: `<state>/workspaces/dbfr/training/triples.jsonl`. */
 export function defaultDbfrTriples(env: NodeJS.ProcessEnv = process.env): string {
-  return path.join(aphrodyStateDir(env), "workspaces", "dbfr", "training", "triples.jsonl");
+  return path.join(shenronStateDir(env), "workspaces", "dbfr", "training", "triples.jsonl");
 }
 
-/** argv for `aphrody train run`; the binary comes from `SHENRON_BIN` (default `aphrody`). */
+/** argv for `shenron train run`; the binary comes from `SHENRON_BIN` (default `shenron`). */
 export function buildTrainRunArgv(
   job: Pick<TrainJob, "id" | "kind" | "input" | "outDir">,
   env: NodeJS.ProcessEnv = process.env,
 ): string[] {
   return [
-    env.SHENRON_BIN?.trim() || "aphrody",
+    env.SHENRON_BIN?.trim() || "shenron",
     "train",
     "run",
     "--kind",
@@ -97,7 +97,7 @@ async function settleWithin(work: Promise<unknown>, ms: number): Promise<void> {
 }
 
 /**
- * Non-blocking `aphrody train run` jobs started from Discord, tracked in memory.
+ * Non-blocking `shenron train run` jobs started from Discord, tracked in memory.
  * One job at a time: embed/rerank take the exclusive GPU lease, which preempts the
  * production llama-server.
  */
@@ -124,7 +124,7 @@ export class TrainJobRunner {
       id,
       kind,
       input: input?.trim() || defaultDbfrTriples(this.env),
-      outDir: path.join(aphrodyStateDir(this.env), "train", id),
+      outDir: path.join(shenronStateDir(this.env), "train", id),
       startedBy,
       startedAt: Date.now(),
       status: "running",
@@ -180,10 +180,10 @@ export class TrainJobRunner {
 
 export const trainJobs = new TrainJobRunner();
 
-/** With `RAG_BACKEND=aphrody` the eval runs on the Aphrody backend: there is no local BM25 fallback to report. */
+/** With `RAG_BACKEND=shenron` the eval runs on the Shenron backend: there is no local BM25 fallback to report. */
 export function embeddingsLabel(active: boolean, remoteRag: boolean): string {
   if (remoteRag)
-    return active ? "🟢 En ligne (Aphrody E5)" : "🔴 Hors-ligne (embeddings Aphrody indisponibles)";
+    return active ? "🟢 En ligne (Shenron E5)" : "🔴 Hors-ligne (embeddings Shenron indisponibles)";
   return active ? "🟢 En ligne (WASM/ONNX)" : "🟠 Repli Lexical BM25";
 }
 
@@ -301,7 +301,7 @@ export class TrainCommands {
           `**nDCG@10 (Qualité de placement) :** \`${ndcgPct}%\``,
           SHENRON_SEPARATORS.solid,
           `⏱️ **Durée d'exécution :** \`${metrics.durationMs} ms\` (${Math.round(metrics.durationMs / (metrics.cases || 1))} ms/req)`,
-          `⚡ **Sidecar Embeddings :** ${embeddingsLabel(metrics.sidecarActive, process.env.RAG_BACKEND === "aphrody")}`,
+          `⚡ **Sidecar Embeddings :** ${embeddingsLabel(metrics.sidecarActive, process.env.RAG_BACKEND === "shenron")}`,
         ].join("\n"),
       });
 
@@ -606,7 +606,7 @@ export class TrainCommands {
   async stats(interaction: CommandInteraction) {
     await this.diagnose(interaction, "Tableau de bord indisponible", async () => {
       const s = await this.training.getStats();
-      const remoteRag = process.env.RAG_BACKEND === "aphrody";
+      const remoteRag = process.env.RAG_BACKEND === "shenron";
       const status = (v: "online" | "offline") =>
         v === "online" ? "🟢 Opérationnel" : "🔴 Hors-ligne";
 
@@ -618,14 +618,14 @@ export class TrainCommands {
           `*Vue d'ensemble des données d'entraînement et de la santé des briques Dragon Ball FR.*`,
           "",
           SHENRON_SEPARATORS.solid,
-          `📚 **Corpus RAG :** \`${s.totalChunks.toLocaleString("fr-FR")} chunks indexés\` (${remoteRag ? "Aphrody" : "FTS5 BM25"})`,
-          `⚡ **Vecteurs denses :** \`${s.totalVectors.toLocaleString("fr-FR")} embeddings\` (${remoteRag ? "Aphrody" : "sqlite-vec"})`,
+          `📚 **Corpus RAG :** \`${s.totalChunks.toLocaleString("fr-FR")} chunks indexés\` (${remoteRag ? "Shenron" : "FTS5 BM25"})`,
+          `⚡ **Vecteurs denses :** \`${s.totalVectors.toLocaleString("fr-FR")} embeddings\` (${remoteRag ? "Shenron" : "sqlite-vec"})`,
           `🎯 **Cas de test Gold :** \`${s.totalGoldCases} questions validées\``,
           `📝 **Feedbacks utilisateurs :** \`${s.totalFeedbacks} retours\` (\`${s.goldFeedbacks} gold\` · \`${s.pendingFeedbacks} en attente\`)`,
           "",
           SHENRON_SEPARATORS.solid,
           `**État des briques de production :**`,
-          `• ${remoteRag ? "Embeddings Aphrody" : "Embeddings E5 (aphrody-shenron-embed)"} : ${status(s.sidecarStatus)}`,
+          `• ${remoteRag ? "Embeddings Shenron" : "Embeddings E5 (shenron-embed)"} : ${status(s.sidecarStatus)}`,
           `• API Site (Canon / Manga) : ${status(s.siteApiStatus)}`,
           `• API Bot Shenron : ${status(s.botApiStatus)}`,
         ].join("\n"),
@@ -635,7 +635,7 @@ export class TrainCommands {
 
   @Slash({
     name: "run",
-    description: "Admin: lance un entraînement embed/rerank (aphrody train run) en arrière-plan",
+    description: "Admin: lance un entraînement embed/rerank (shenron train run) en arrière-plan",
   })
   async run(
     @SlashChoice({ name: "Embeddings", value: "embed" })

@@ -8,10 +8,10 @@
  *     éditoriales, planches manga citables et databooks — le MÊME rendu que
  *     `rag-resync-entites.ts`, qui entretient l'index à chaud ;
  *   - corpus scrapé `data/rag/corpus.json` (Kanzenshuu…) et Xenoverse 2 ;
- *   - corpus d'auteur `.aphrody` (`data/rag/corpus-aphrody.json`).
+ *   - corpus d'auteur `.shenron` (`data/rag/corpus-shenron.json`).
  *
  * Récupération HYBRIDE : BM25 lexical (`rag_chunks`) + embeddings denses
- * multilingues (`vec_chunks`, multilingual-e5-small via Aphrody
+ * multilingues (`vec_chunks`, multilingual-e5-small via Shenron
  * `POST /api/v1/shenron/embed`, SHENRON_AI_HTTP_URL / SHENRON_AI_HTTP_TOKEN). DROP +
  * recreate : ne JAMAIS lancer sur la base servie (cf. docs/architecture/rag-enrichment.md,
  * procédure copy-swap) — pour une mise à jour à chaud, `rag-resync-entites.ts`.
@@ -23,7 +23,7 @@ import * as sqliteVec from "sqlite-vec";
 import postgres from "postgres";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { ShenronEmbeddingsClient } from "@shenron/pipeline/aphrody";
+import { ShenronEmbeddingsClient } from "@shenron/pipeline/shenron";
 import { PG_SOURCES, resolveEntity, urlPostgres } from "./_rag-sources-pg";
 import { corpusDir, loadCorpusDocs, renderCorpusDocs } from "./_rag-corpus-sources";
 import {
@@ -32,17 +32,17 @@ import {
   requireScriptEmbeddingSpace,
 } from "./lib/script-env";
 
-if (process.env.RAG_BACKEND === "aphrody") {
+if (process.env.RAG_BACKEND === "shenron") {
   if (!process.argv.includes("--toutes")) process.argv.push("--toutes");
   if (!process.argv.includes("--dry-run") && !process.argv.includes("--appliquer"))
     process.argv.push("--appliquer");
-  await import("./rag-sync-aphrody.ts");
+  await import("./rag-sync-shenron.ts");
   process.exit(process.exitCode ?? 0);
 }
 
 // Règle 9 (CLAUDE.md) : DROP + recreate — RAG_DB explicite, jamais la base servie.
 // B13 : pas d'adresse par défaut ; hors --no-vectors, les embeddings passent par
-// Aphrody (SHENRON_AI_HTTP_URL / SHENRON_AI_HTTP_TOKEN obligatoires).
+// Shenron (SHENRON_AI_HTTP_URL / SHENRON_AI_HTTP_TOKEN obligatoires).
 // Espace d'embedding : celui du contrat (index shenron-rag), jamais un autre.
 let DBP: string;
 let embeddingsConfigured: ShenronEmbeddingsClient | null = null;
@@ -136,7 +136,7 @@ console.log(`✓ corpus scrapé : ${scraped.length} documents`);
 if (renderedScraped.refusedFandom > 0)
   console.warn(`⚠ ${renderedScraped.refusedFandom} document(s) Fandom refusés (source interdite).`);
 
-const author = loadCorpusDocs(resolve(corpusDir(), "corpus-aphrody.json"));
+const author = loadCorpusDocs(resolve(corpusDir(), "corpus-shenron.json"));
 if (author) {
   const renderedAuthor = renderCorpusDocs(author, true);
   db.transaction(() => {
@@ -166,10 +166,10 @@ const chunks = db.query(`SELECT rowid, title, content FROM rag_chunks ORDER BY r
   title: string;
   content: string;
 }[];
-if (!embeddingsConfigured) throw new Error("embeddings Aphrody non configurés");
+if (!embeddingsConfigured) throw new Error("embeddings Shenron non configurés");
 const embeddingsClient = embeddingsConfigured;
 console.log(
-  `→ embeddings via Aphrody ${embeddingsClient.baseUrl.origin}/api/v1/shenron/embed sur ${chunks.length} chunks…`,
+  `→ embeddings via Shenron ${embeddingsClient.baseUrl.origin}/api/v1/shenron/embed sur ${chunks.length} chunks…`,
 );
 const t0 = Date.now();
 const BATCH = 32;

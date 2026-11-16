@@ -168,8 +168,8 @@ export function A2AViewer() {
           </span>
           <div className="text-xl font-bold mt-1 text-primary">Shenron Core</div>
           {/* mcp.dragonballfr.com a été retiré le 2026-09-25 (shenron-mcp fusionné
-					    dans aphrody-mcp dragonball.*, sans hôte HTTP public). */}
-          <div className="text-xs text-muted-foreground mt-0.5">aphrody-mcp (dragonball.*)</div>
+					    dans shenron-mcp dragonball.*, sans hôte HTTP public). */}
+          <div className="text-xs text-muted-foreground mt-0.5">shenron-mcp (dragonball.*)</div>
         </div>
         <div className="p-4 rounded-xl border border-border bg-card/60">
           <span className="text-xs text-muted-foreground uppercase font-bold tracking-wider">

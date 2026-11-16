@@ -7,7 +7,7 @@
  * apps/bot/src/workers/indexer.ts). Here the client is disposable: once it is
  * dead it is dropped and a new one is built after a backoff. Commands issued
  * while no live client may be built (the dead window) reject with an explicit
- * error — never a silent no-op. Clients are built by `@aphrody/sql/redis`.
+ * error — never a silent no-op. Clients are built by `postgres`/`ioredis`-style clients in this module.
  */
 
 export interface RedisLike {

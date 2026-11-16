@@ -101,7 +101,7 @@ export async function configuredProvider(
   if (env.SHENRON_JEV === "off") return null;
   const key =
     env.TYPESAFE_API_KEY?.trim() ||
-    (await Bun.secrets.get({ service: "aphrody.typesafe", name: "api-key" }).catch(() => null));
+    (await Bun.secrets.get({ service: "shenron.typesafe", name: "api-key" }).catch(() => null));
   if (!key) return null;
   const client = new TypeSafeClient({
     apiKey: key,

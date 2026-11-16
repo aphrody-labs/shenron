@@ -261,7 +261,7 @@ describe("/api/local/rag/search", () => {
     const paths = serverPaths();
     libraryAt(join(paths.exeDir, SHENRON_FFI_FILE));
     const native = fakeNative({
-      search: (query) => ({ q: query, mode: "aphrody_local_naive", results: [{ title: "Goku" }] }),
+      search: (query) => ({ q: query, mode: "shenron_local_naive", results: [{ title: "Goku" }] }),
     });
     const api = localApi(paths, NO_FACTS, {}, native);
     const res = (await call(api, "/api/local/rag/search?q=%20Go%00ku%20&kind=wi%00ki"))!;
@@ -271,7 +271,7 @@ describe("/api/local/rag/search", () => {
     const body = await read(res);
     expect(body).toMatchObject({
       q: "Goku",
-      mode: "aphrody_local_naive",
+      mode: "shenron_local_naive",
       results: [{ title: "Goku" }],
     });
     expect(typeof body.tookMs).toBe("number");

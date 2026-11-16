@@ -17,7 +17,7 @@ import postgres from "postgres";
 import sharp from "sharp";
 import { mkdir, statfs, unlink } from "node:fs/promises";
 import { join } from "node:path";
-import { recogniseRemotePage } from "@shenron/pipeline/aphrody/remote-ocr";
+import { recogniseRemotePage } from "@shenron/pipeline/shenron/remote-ocr";
 
 const NEON_URL = process.env.DATABASE_URL;
 if (!NEON_URL) {
@@ -58,7 +58,7 @@ async function readerImages(volume: number): Promise<string[]> {
   return cfg.sources?.flatMap((s) => s.images ?? []) ?? [];
 }
 
-/** Aphrody OCR → true si la planche est une pub/crédits (à retirer). */
+/** Shenron OCR → true si la planche est une pub/crédits (à retirer). */
 async function isPromo(absPath: string): Promise<boolean> {
   try {
     const png = await new Bun.Image(absPath).resize(1100).png().bytes();

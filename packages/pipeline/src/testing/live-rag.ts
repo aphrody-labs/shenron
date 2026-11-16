@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { lastAssignment } from "@shenron/db/env";
 import { createSql } from "@shenron/db/sql";
 import { createResilientRedis } from "@shenron/db/redis";
-import { AphrodyComputeClient, type AphrodyRagStats } from "../aphrody/compute";
+import { ShenronComputeClient, type ShenronRagStats } from "../shenron/compute";
 
 /**
  * Live qualification switch, read at call time. `rag:test` sets SHENRON_LIVE=1 and then
@@ -52,13 +52,13 @@ export const EDITORIAL_RAG_SOURCES = [
   "wiki_pages",
   "manga",
   "databooks",
-  "aphrody",
+  "shenron",
 ] as const;
 
 /** Read credentials from their existing private store; never return or print them. */
 export function loadLiveRagEnv(): void {
   const path =
-    process.env.SHENRON_RAG_ENV ?? join(homedir(), ".aphrody/private/shenron/ai-http.env");
+    process.env.SHENRON_RAG_ENV ?? join(homedir(), ".shenron/private/shenron/ai-http.env");
   if ((statSync(path).mode & 0o077) !== 0)
     throw new Error("SHENRON_RAG_ENV must be private (0600)");
   const text = readFileSync(path, "utf8");
@@ -69,8 +69,8 @@ export function loadLiveRagEnv(): void {
     const value = lastAssignment(text, name);
     if (process.env[name] === undefined && value !== undefined) process.env[name] = value;
   }
-  if (process.env.RAG_BACKEND !== "aphrody")
-    throw new Error("Live Shenron tests require RAG_BACKEND=aphrody");
+  if (process.env.RAG_BACKEND !== "shenron")
+    throw new Error("Live Shenron tests require RAG_BACKEND=shenron");
   for (const name of ["DATABASE_URL", "SHENRON_MCP_DATABASE_URL", "REDIS_URL"]) {
     if (!process.env[name]?.trim()) throw new Error(`Live Shenron tests require ${name}`);
   }
@@ -86,8 +86,8 @@ interface SyncReport {
 }
 
 export interface LiveRag {
-  client: AphrodyComputeClient;
-  stats: AphrodyRagStats;
+  client: ShenronComputeClient;
+  stats: ShenronRagStats;
   completedAt: string;
 }
 
@@ -96,7 +96,7 @@ export async function requireLiveRag(): Promise<LiveRag> {
   loadLiveRagEnv();
   const reportPath =
     process.env.SHENRON_RAG_REPORT ??
-    join(homedir(), ".aphrody/workspaces/dbfr/indexes/shenron-rag-latest.json");
+    join(homedir(), ".shenron/workspaces/dbfr/indexes/shenron-rag-latest.json");
   let report: SyncReport;
   try {
     report = JSON.parse(readFileSync(reportPath, "utf8")) as SyncReport;
@@ -108,7 +108,7 @@ export async function requireLiveRag(): Promise<LiveRag> {
   const maxAge = Number(process.env.SHENRON_RAG_MAX_AGE_SECONDS ?? 3600) * 1000;
   const age = Date.now() - Date.parse(report.generatedAt);
   if (
-    report.schema !== "shenron-aphrody-rag-sync/v1" ||
+    report.schema !== "shenron-rag-sync/v1" ||
     report.mode !== "apply" ||
     report.failed ||
     !Number.isFinite(age) ||
@@ -157,7 +157,7 @@ export async function requireLiveRag(): Promise<LiveRag> {
   for (const [name, author] of [
     ["corpus.json", false],
     ["corpus-xv2.json", false],
-    ["corpus-aphrody.json", true],
+    ["corpus-shenron.json", true],
   ] as const) {
     const docs = loadCorpusDocs(join(corpusDir, name));
     if (!docs) throw new Error(`Shenron RAG export ${name} is missing; run rag:prepare`);
@@ -168,7 +168,7 @@ export async function requireLiveRag(): Promise<LiveRag> {
     if (!report.sources.some((item) => item.source === source && item.rendered >= count))
       throw new Error(`Shenron ${source}: configured export is not fully preloaded`);
   }
-  const client = new AphrodyComputeClient();
+  const client = new ShenronComputeClient();
   const editorial = createSql({ applicationName: "shenron-rag-live-editorial", max: 1 });
   const index = createSql({
     applicationName: "shenron-rag-live-index",
@@ -186,7 +186,7 @@ export async function requireLiveRag(): Promise<LiveRag> {
       index<{ source: string; count: string; vectors: string }[]>`
 				SELECT d.metadata->>'originSourceId' AS source, count(*) AS count,
 				count(v.document_id) FILTER (WHERE v.model = 'Xenova/multilingual-e5-small' AND vector_dims(v.embedding) = 384 AND v.created_at >= d.updated_at) AS vectors
-				FROM aphrody_rag_documents d LEFT JOIN aphrody_shenron_vectors v ON v.document_id=d.id
+				FROM shenron_rag_documents d LEFT JOIN shenron_vectors v ON v.document_id=d.id
 				WHERE d.corpus='shenron' AND coalesce(d.metadata->>'visible','true') <> 'false' GROUP BY 1`,
       redis.send("PING", []),
     ]);

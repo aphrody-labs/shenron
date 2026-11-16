@@ -1,5 +1,5 @@
 {
-  "$source": "aphrody-ai/crates/aphrody-mcp/src/http_rest.rs:1171",
+  "$source": "shenron-ai/crates/shenron-mcp/src/http_rest.rs:1171",
   "$anchor": "\"answer\":answer",
   "route": "chat",
   "schema": "ChatResponse",

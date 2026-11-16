@@ -3,8 +3,8 @@ import { afterEach, beforeEach, describe, it, expect } from "bun:test";
 import { isChitchat, persona, generateLlmAnswer } from "../src/lib/llm";
 import { Database } from "bun:sqlite";
 
-// No address default since the AI env contract (aphrody-infra local-ai.json): the
-// tests pin the aphrody-ai-http origin through its canonical name.
+// No address default since the AI env contract (shenron-infra local-ai.json): the
+// tests pin the shenron-ai-http origin through its canonical name.
 const savedAiHttpUrl = process.env.SHENRON_AI_HTTP_URL;
 const savedInference = process.env.SHENRON_INFERENCE;
 const savedChatBaseUrl = process.env.SHENRON_AI_CHAT_BASE_URL;
@@ -79,19 +79,19 @@ describe("persona (normalisation + défaut)", () => {
 });
 
 describe("generateLlmAnswer (chemin conversationnel & repli)", () => {
-  it("envoie le contexte à l'API privée Aphrody", async () => {
+  it("envoie le contexte à l'API privée Shenron", async () => {
     const originalFetch = globalThis.fetch;
     const originalToken = process.env.SHENRON_API_TOKEN;
     process.env.SHENRON_API_TOKEN = "test-token";
     let calledBody: unknown;
     globalThis.fetch = chatOnly((init) => {
       calledBody = JSON.parse(String(init?.body));
-      return Response.json({ answer: "Réponse Aphrody", model: "fixture" });
+      return Response.json({ answer: "Réponse Shenron", model: "fixture" });
     });
     const db = new Database(":memory:");
     try {
       const answer = await generateLlmAnswer(db, "Salut !", [], "whis");
-      expect(answer).toBe("Réponse Aphrody");
+      expect(answer).toBe("Réponse Shenron");
       expect(
         (calledBody as { messages: Array<{ role: string }> }).messages.map(
           (message) => message.role,
@@ -106,7 +106,7 @@ describe("generateLlmAnswer (chemin conversationnel & repli)", () => {
     }
   });
 
-  it("génère une réponse de repli appropriée si Aphrody est injoignable", async () => {
+  it("génère une réponse de repli appropriée si Shenron est injoignable", async () => {
     const originalFetch = globalThis.fetch;
     const originalToken = process.env.SHENRON_API_TOKEN;
     process.env.SHENRON_API_TOKEN = "test-token";
@@ -123,7 +123,7 @@ describe("generateLlmAnswer (chemin conversationnel & repli)", () => {
     }
   });
 
-  it("renvoie la réponse du repli Beerus en cas d'erreur Aphrody", async () => {
+  it("renvoie la réponse du repli Beerus en cas d'erreur Shenron", async () => {
     const originalFetch = globalThis.fetch;
     const originalToken = process.env.SHENRON_API_TOKEN;
     process.env.SHENRON_API_TOKEN = "test-token";

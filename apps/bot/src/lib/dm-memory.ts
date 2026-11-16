@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Persistent memory of the DM chat: the user's agent home memory (agent id `discord:<id>`),
- * the same Aphrody `aphrody-memory` provider as `shenron-server` (`shenron-ffi` ABI 3 through
+ * the same Shenron `shenron-memory` provider as `shenron-server` (`shenron-ffi` ABI 3 through
  * `@shenron/native`), in `SHENRON_MEMORY_DB` or `memory.sqlite` beside the bot's database.
  * Which facts are kept and which memories a message recalls come from the chat engine
  * (`@shenron/api/chat`). Without the native library (`SHENRON_FFI_LIB`) the memory is off and

@@ -93,7 +93,7 @@ Changements à faire sur l'hôte, dans cet ordre :
    donc le groupe `docker`, qui équivaut à root sur l'hôte : c'est le prix du chemin natif, à
    accepter explicitement. Le workflow ne s'exécute
    que sur `push` vers `main` et `workflow_dispatch`, jamais sur une pull request.
-4. Désenregistrer l'ancien runner `aphrody-vps-shenron` (hors ligne). `shenron-autodeploy.timer`
+4. Désenregistrer l'ancien runner `shenron-vps-shenron` (hors ligne). `shenron-autodeploy.timer`
    reste désactivé : son script vise encore la fabrique VPS purgée (`10.200.77.1`).
 5. Facultatif : épingler `cloudflare/cloudflared` par digest.
 

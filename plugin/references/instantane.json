@@ -1,105 +1,105 @@
 {
   "_genere": "Généré par scripts/plugin/build-references.ts — ne pas éditer. Registre des instantanés hors ligne du plugin.",
-  "bun": "1.4.4",
+  "bun": "1.4.5",
   "sorties": {
     "plugin/skills/dragon-ball-canon/references/doctrine.md": {
-      "revision": "aa6240b0",
+      "revision": "aa6240b0+modifications",
       "date": "2026-10-15",
       "sources": {
-        "apps/site/src/lib/canon-engine.ts": "64fe8f7f9092b4d46cd66c60d0e78a5c79a9676bb6d938b007cfdfa965ef5b5d",
-        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
+        "apps/site/src/lib/canon-engine.ts": "d611bfc31d4762d0409c898062b13170b76bbc5eee518ac8fa7a30dfd63647f9",
+        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
       },
-      "sha256": "3306d4d8fe78d1358edde4c0b725980fbddbd6483bb05eeb1e0ec68935d93281"
+      "sha256": "923214a01d9d091f0a0c31e2c984dace82e15b13c19196490a1866cdd823615f"
     },
     "plugin/skills/dragon-ball-canon/scripts/canon.js": {
-      "revision": "aa6240b0",
+      "revision": "aa6240b0+modifications",
       "date": "2026-10-15",
       "sources": {
-        "apps/site/src/lib/canon-engine.ts": "64fe8f7f9092b4d46cd66c60d0e78a5c79a9676bb6d938b007cfdfa965ef5b5d",
+        "apps/site/src/lib/canon-engine.ts": "d611bfc31d4762d0409c898062b13170b76bbc5eee518ac8fa7a30dfd63647f9",
         "scripts/plugin/src/canon.ts": "cb45d2b0a2d7710eceb86e5d1ca5cd0adda6a42236734ec20402e045f8012c18"
       },
-      "sha256": "505933afdcf66b3380561890ca0455b0a23e7bde0a03166a310737f2f40163e1",
+      "sha256": "c71115061e1b6832435a7240680ce4a7105776c40473fc0f068345f955dde4fd",
       "paquet": true
     },
     "plugin/skills/dragon-ball-japonais/references/lexique-canonique.json": {
-      "revision": "11f7dbc",
-      "date": "2026-10-05",
+      "revision": "6ad93e79",
+      "date": "2026-11-13",
       "sources": {
-        "data/lexicon/terms.json": "f9d3f37e15c1830b0224f0a876d8843b2b724f379138f9353356d99a50433cc3",
-        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
+        "data/lexicon/terms.json": "e3ed079515e911cf2020275c1862a719ac887754359bcd57f66a496ef59f950c",
+        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
       },
-      "sha256": "0141fad4003863fa6814d28d410b436bb3946f80865e916cf3ca478b5e1a4cec"
+      "sha256": "17694ebe552869676da30e7732154d0a015c4f7d629e570d5a589de08cf75d97"
     },
     "plugin/skills/dragon-ball-japonais/references/lexique-canonique.md": {
-      "revision": "11f7dbc",
-      "date": "2026-10-05",
+      "revision": "6ad93e79",
+      "date": "2026-11-13",
       "sources": {
-        "data/lexicon/terms.json": "f9d3f37e15c1830b0224f0a876d8843b2b724f379138f9353356d99a50433cc3",
-        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
+        "data/lexicon/terms.json": "e3ed079515e911cf2020275c1862a719ac887754359bcd57f66a496ef59f950c",
+        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
       },
-      "sha256": "9a30ca6ec3af5eecb56168b8d9e4a276781d5b83f3d24f9b7827b043149cdfd6"
+      "sha256": "77f71a4ad866640c79c379b3c0aafbe44fdd36bbe18765de410e3730a6517145"
     },
     "plugin/skills/dragon-ball-japonais/scripts/lexique.js": {
-      "revision": "11f7dbc",
-      "date": "2026-10-05",
+      "revision": "6ad93e79",
+      "date": "2026-11-13",
       "sources": {
-        "data/lexicon/terms.json": "f9d3f37e15c1830b0224f0a876d8843b2b724f379138f9353356d99a50433cc3",
+        "data/lexicon/terms.json": "e3ed079515e911cf2020275c1862a719ac887754359bcd57f66a496ef59f950c",
         "packages/lexicon/src/fold.ts": "631e52bbeb5fa9836e90299070f69271e299fbf6eeb966aa163efdda9c9f131c",
-        "packages/lexicon/src/index.ts": "f5d153755929d01195b80b3402221dce0e1733f815741393b214893758e402ed",
+        "packages/lexicon/src/index.ts": "60415246de2784c0b3dd743e3836aad72a531f7a92f9fea17b22a7ae0d6ef62b",
         "packages/lexicon/src/lexicon.ts": "d600f7bd89a5d979027b66b43b05a69b8b862fd6fe325bb21d2810e949d5a233",
         "packages/lexicon/src/mask.ts": "4ad41d4c3c11bd64b66108b3a8732ebc435caa49c022b1edb1713db636f55f65",
         "packages/lexicon/src/types.ts": "b8c222a0d0d8785ee2931e6da406c1a4485b7cde8d3d5e720cf7b3fafe36be11",
-        "scripts/plugin/src/lexique.ts": "14e87e8c1db9769f2c4d4c89cb01f90b4aad896c55cc9f07fe47b24b3cb8c135"
+        "scripts/plugin/src/lexique.ts": "d23481af17a7a435a7a112e11818af4dc6ed388cf764be73de0d461a46ce11f6"
       },
-      "sha256": "ecec045f3f627ca95b194ccb2694063065a5ec43916c50d81e3f3974b645306c",
+      "sha256": "710a521b580f56a7eb258a898a6acac37c22285dbea3e002f9bc6ae85a5fa161",
       "paquet": true
     },
     "plugin/skills/dragon-ball/references/faits.json": {
-      "revision": "54be171b",
-      "date": "2026-10-26",
+      "revision": "6ad93e79+modifications",
+      "date": "2026-11-13",
       "sources": {
         "apps/bot/data/manga-spin-offs-manifest.json": "3f60e80771792afc426dce8a79dc2eb28c322d8b477e8e891446f05332d71b28",
         "apps/site/data/illustrations-lieux-objets.json": "742b9fbf223be6215658acf27d6c3592e6ec5d5fffe434e79cc4e006f75e48f2",
         "apps/site/scripts/_technique-lexicon.ts": "6e63744996a42e6d38409005c1c683bd833710904d88454d6522ae2de695f404",
         "apps/site/scripts/inventaires/canon-citations-fr.json": "616b0d3ea0f77c22835c557506f7989d3982bd7407a906d08ac85b329ed0c5d9",
-        "apps/site/src/lib/canon-engine.ts": "64fe8f7f9092b4d46cd66c60d0e78a5c79a9676bb6d938b007cfdfa965ef5b5d",
-        "data/ja-identities-2026-09-23.json": "9c7025a2f3301c0bc0943f73ade56d7e96558f7fbc8b7b792bf4b7426bcf1b9a",
-        "packages/config/src/aphrody-corpus.ts": "a5a6d7e3355ed5393c98e91ba662dbc010c9218b7dd870f7e2dd8562958ef95d",
+        "apps/site/src/lib/canon-engine.ts": "d611bfc31d4762d0409c898062b13170b76bbc5eee518ac8fa7a30dfd63647f9",
+        "data/ja-identities-2026-09-23.json": "fb172cdcaad32808b07891f55dff50b249028e6b42059d7bb73e951c1c96cffb",
         "packages/config/src/economy-canon.ts": "a7e66d707f8ca1730f3cd2a25ae27516eeeb46582add8859aeec9fbc7bac60cb",
+        "packages/config/src/shenron-corpus.ts": "24063bf4cf4d53f8940c6f638ed138c8d963bf3ef84beba339e54de34d55af6f",
         "scripts/plugin/faits.ts": "4b43483cf9142968c5b3f671cd72118c9ffbf0b480f46c8639ac915503ffbd74",
-        "scripts/plugin/src/faits-sources.ts": "03b39d6da6868341b3a3637b2adc5a8a28571e25ed7d1e24d957ff0a83107627"
+        "scripts/plugin/src/faits-sources.ts": "8cb527beb11aff0b6687fea023178fdb06923e816ef158569d3a9ed7d81e5312"
       },
-      "sha256": "e7d0b8ccf17fb8d28ea5a96cf9d10fabafa8d5978a27532989cd52a7ca34d1ed"
+      "sha256": "41a1fae86ea191f2169818f3332979385322bef8089b7bd6def8d9a860b01d03"
     },
     "plugin/skills/dragon-ball/references/faits.md": {
-      "revision": "54be171b",
-      "date": "2026-10-26",
+      "revision": "6ad93e79+modifications",
+      "date": "2026-11-13",
       "sources": {
         "apps/bot/data/manga-spin-offs-manifest.json": "3f60e80771792afc426dce8a79dc2eb28c322d8b477e8e891446f05332d71b28",
         "apps/site/data/illustrations-lieux-objets.json": "742b9fbf223be6215658acf27d6c3592e6ec5d5fffe434e79cc4e006f75e48f2",
         "apps/site/scripts/_technique-lexicon.ts": "6e63744996a42e6d38409005c1c683bd833710904d88454d6522ae2de695f404",
         "apps/site/scripts/inventaires/canon-citations-fr.json": "616b0d3ea0f77c22835c557506f7989d3982bd7407a906d08ac85b329ed0c5d9",
-        "apps/site/src/lib/canon-engine.ts": "64fe8f7f9092b4d46cd66c60d0e78a5c79a9676bb6d938b007cfdfa965ef5b5d",
-        "data/ja-identities-2026-09-23.json": "9c7025a2f3301c0bc0943f73ade56d7e96558f7fbc8b7b792bf4b7426bcf1b9a",
-        "packages/config/src/aphrody-corpus.ts": "a5a6d7e3355ed5393c98e91ba662dbc010c9218b7dd870f7e2dd8562958ef95d",
+        "apps/site/src/lib/canon-engine.ts": "d611bfc31d4762d0409c898062b13170b76bbc5eee518ac8fa7a30dfd63647f9",
+        "data/ja-identities-2026-09-23.json": "fb172cdcaad32808b07891f55dff50b249028e6b42059d7bb73e951c1c96cffb",
         "packages/config/src/economy-canon.ts": "a7e66d707f8ca1730f3cd2a25ae27516eeeb46582add8859aeec9fbc7bac60cb",
+        "packages/config/src/shenron-corpus.ts": "24063bf4cf4d53f8940c6f638ed138c8d963bf3ef84beba339e54de34d55af6f",
         "scripts/plugin/faits.ts": "4b43483cf9142968c5b3f671cd72118c9ffbf0b480f46c8639ac915503ffbd74"
       },
-      "sha256": "08c5eb3a01d139e4b1a340ff047f2a583545c3adbce0c344cbaec2190e2d76d2"
+      "sha256": "c7407fbac5bd7f1048c0112786281115c1c911d45c97fc9f394e1647ef941e9d"
     },
     "plugin/skills/toriyama-svg/references/mesures/couverture-analyse-visuelle.md": {
       "revision": "inconnue",
       "date": "inconnue",
       "sources": {
-        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
+        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
       },
-      "sha256": "70c654f6c570c920516ce53fae3f8d44b9103cd4789746fc6c8406ad387a77b7"
+      "sha256": "57e68e17073ed9a2ea6ec8733d2fc50db1408364f37df441047b77d15cd96517"
     },
     "plugin/skills/toriyama-svg/references/mesures/gohan-ultime-analyse-visuelle.md": {
       "revision": "inconnue",
       "date": "inconnue",
       "sources": {
-        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
+        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
       },
       "sha256": "6e47924e33dce431342e2a0a48d77bbfed2fc059b8b7a9824efde25b6ef92554"
     },
@@ -107,7 +107,7 @@
       "revision": "inconnue",
       "date": "inconnue",
       "sources": {
-        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
+        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
       },
       "sha256": "be1e0e7b28237fdbfc936119281e6df2b43e49bbfa9a99498c174f58481b3f5b"
     },
@@ -115,7 +115,7 @@
       "revision": "inconnue",
       "date": "inconnue",
       "sources": {
-        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
+        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
       },
       "sha256": "44fecf92a42d341c404127de8a9341181a303fef22b8fbd003ec8ec11a0dcada"
     },
@@ -123,7 +123,7 @@
       "revision": "inconnue",
       "date": "inconnue",
       "sources": {
-        "scripts/plugin/build-references.ts": "26fcfef6427d1d28ecd9900edc298b188f6560d6ef8f3fac66f60a66d1e72299"
+        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
       },
       "sha256": "808401eef60340c493e23af9380bd806e3f46528f5b0b492ec33a98ffb6969df"
     },
@@ -142,7 +142,7 @@
         "packages/ui/src/toriyama-svg/potara.ts": "e0d2f40c58b92850437b00a5380cc42ca1a40987e2f0ae0ac235769ff3636863",
         "packages/ui/src/toriyama-svg/senzu.ts": "20e9c4d397d4a7dd4fa4c151ddbec8250c1866e543eded730fbbb425a275381a",
         "packages/ui/src/toriyama-svg/sphere.ts": "7feed0aba0942253273204814be68bcfad44cbd1f64897f1d45eadf18959b8df",
-        "scripts/plugin/src/toriyama.ts": "6ced9b484051c16b7deffefec12c44f4b870781e1a82a7bbd4917a5ab92054dd"
+        "scripts/plugin/src/toriyama.ts": "da5c27a2e114bad307aeb6461c7aa2566859a683052e51f2c9f4e0940abf936a"
       },
       "sha256": "db830d9a508d2c6d20e0287816986f736ae40eaad2189a1fbd6a57b4a7025f3f",
       "paquet": true

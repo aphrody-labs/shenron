@@ -72,7 +72,7 @@ if (!existsSync(dossierLot)) {
   process.exit(1);
 }
 
-// The active path performs both visual passes on Aphrody AI. The prepare and
+// The active path performs both visual passes on Shenron AI. The prepare and
 // sceller commands remain for importing already produced offline reviews.
 if (commande === "run") {
   const command = [
@@ -146,7 +146,7 @@ async function candidatsDuLot(
     }
     if (
       candidat.ocr &&
-      (candidat.ocr.schema !== "aphrody.ocr.result/v2" ||
+      (candidat.ocr.schema !== "shenron.ocr.result/v2" ||
         !["text", "needs-review"].includes(candidat.ocr.status) ||
         !Array.isArray(candidat.ocr.blocks))
     ) {

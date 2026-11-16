@@ -2,7 +2,7 @@
 /**
  * @shenron/remotion
  *
- * Aphrody's vendorized Remotion composition, player, and sequencing engine.
+ * Shenron's vendorized Remotion composition, player, and sequencing engine.
  */
 
 import React, { createContext, useContext, useState, useEffect, useMemo } from "react";

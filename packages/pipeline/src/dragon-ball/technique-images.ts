@@ -375,7 +375,7 @@ export function techniqueDocumentsFromNativeCrawl(
   );
 }
 
-/** Use Bun's native Markdown callbacks on Aphrody's complete-page conversion, not an HTML reparser. */
+/** Use Bun's native Markdown callbacks on Shenron's complete-page conversion, not an HTML reparser. */
 export function techniqueDocumentsFromNativeMarkdown(value: {
   url: string;
   markdown: string;

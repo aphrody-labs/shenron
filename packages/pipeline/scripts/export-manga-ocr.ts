@@ -294,7 +294,7 @@ for (let lot = 1; lot <= totalLots; lot++) {
     imagePipeline: { width: WIDTH, quality: QUALITY, format: "jpeg" },
     entries,
     responseExpected: {
-      format: "aphrody-ocr-jsonl",
+      format: "shenron-ocr-jsonl",
       result: {
         image: "images/DB-vol1-0001-….jpg",
         text: { kind: "text", markdown: "…" },

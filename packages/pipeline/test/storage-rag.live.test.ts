@@ -23,7 +23,7 @@ beforeAll(async () => {
   live = await requireLiveRag();
   const reportPath =
     process.env.SHENRON_RAG_REPORT ??
-    join(homedir(), ".aphrody/workspaces/dbfr/indexes/shenron-rag-latest.json");
+    join(homedir(), ".shenron/workspaces/dbfr/indexes/shenron-rag-latest.json");
   reportSources = JSON.parse(readFileSync(reportPath, "utf8")).sources;
   index = createSql({
     applicationName: "shenron-storage-live-index",
@@ -72,12 +72,12 @@ describe.if(isLive())("real PostgreSQL index storage", () => {
     >`SELECT c.relname AS name, c.relpersistence AS persistence, n.nspname AS schema, c.relkind AS kind
       FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
       WHERE c.oid = ANY (ARRAY[
-        to_regclass('aphrody_rag_documents'), to_regclass('aphrody_shenron_vectors'),
-        to_regclass('aphrody_rag_cache_state')]::oid[])`;
+        to_regclass('shenron_rag_documents'), to_regclass('shenron_vectors'),
+        to_regclass('shenron_rag_cache_state')]::oid[])`;
     expect(rows.map((r) => r.name).toSorted()).toEqual([
-      "aphrody_rag_cache_state",
-      "aphrody_rag_documents",
-      "aphrody_shenron_vectors",
+      "shenron_rag_cache_state",
+      "shenron_rag_documents",
+      "shenron_vectors",
     ]);
     for (const row of rows) {
       expect(row.persistence).toBe("p");
@@ -90,8 +90,8 @@ describe.if(isLive())("real PostgreSQL index storage", () => {
     const indexes = await index<{ persistence: string }[]>`
       SELECT c.relpersistence AS persistence FROM pg_index i
       JOIN pg_class c ON c.oid = i.indexrelid
-      WHERE i.indrelid = ANY (ARRAY[to_regclass('aphrody_rag_documents'),
-        to_regclass('aphrody_shenron_vectors')]::oid[])`;
+      WHERE i.indrelid = ANY (ARRAY[to_regclass('shenron_rag_documents'),
+        to_regclass('shenron_vectors')]::oid[])`;
     expect(indexes.length).toBeGreaterThan(0);
     expect(indexes.every((i) => i.persistence === "p")).toBe(true);
   });
@@ -110,7 +110,7 @@ describe.if(isLive())("real PostgreSQL index storage", () => {
     >`SELECT current_schema() AS schema, current_setting('search_path') AS path,
         r.rolsuper AS superuser, r.rolcreatedb AS createdb, r.rolcreaterole AS createrole,
         (SELECT n.nspname FROM pg_class c JOIN pg_namespace n ON n.oid = c.relnamespace
-          WHERE c.oid = to_regclass('aphrody_rag_documents')) AS doc_schema,
+          WHERE c.oid = to_regclass('shenron_rag_documents')) AS doc_schema,
         coalesce((SELECT bool_or(a.grantee = 0) FROM pg_namespace n,
           LATERAL aclexplode(coalesce(n.nspacl, acldefault('n', n.nspowner))) a
           WHERE n.nspname = current_schema()), false) AS public_acl
@@ -142,13 +142,13 @@ describe.if(isLive())("real PostgreSQL index storage", () => {
     expect(ext!.installed).toBe(true);
     const [col] = await index<{ type: string }[]>`
       SELECT format_type(a.atttypid, a.atttypmod) AS type FROM pg_attribute a
-      WHERE a.attrelid = to_regclass('aphrody_shenron_vectors') AND a.attname = 'embedding'`;
+      WHERE a.attrelid = to_regclass('shenron_vectors') AND a.attname = 'embedding'`;
     expect(col!.type).toBe("vector(384)");
     const [vec] = await index<{ total: string; current: string; models: string }[]>`
       SELECT count(*) AS total,
         count(*) FILTER (WHERE model = 'Xenova/multilingual-e5-small' AND vector_dims(embedding) = 384) AS current,
         count(DISTINCT model) AS models
-      FROM aphrody_shenron_vectors v JOIN aphrody_rag_documents d ON d.id = v.document_id
+      FROM shenron_vectors v JOIN shenron_rag_documents d ON d.id = v.document_id
       WHERE d.corpus = 'shenron' AND coalesce(d.metadata->>'visible','true') <> 'false'`;
     const expected = reportSources.reduce((sum, s) => sum + s.rendered, 0);
     expect(Number(vec!.models)).toBe(1);
@@ -157,8 +157,8 @@ describe.if(isLive())("real PostgreSQL index storage", () => {
     expect(live.stats.vectors).toBe(expected);
     const hnsw = await index<{ n: string }[]>`
       SELECT count(*) AS n FROM pg_indexes
-      WHERE schemaname = current_schema() AND tablename = 'aphrody_shenron_vectors'
-      AND indexname = 'aphrody_shenron_vectors_cosine' AND indexdef ILIKE '%hnsw%'
+      WHERE schemaname = current_schema() AND tablename = 'shenron_vectors'
+      AND indexname = 'shenron_vectors_cosine' AND indexdef ILIKE '%hnsw%'
       AND indexdef ILIKE '%vector_cosine_ops%'`;
     expect(Number(hnsw[0]!.n)).toBe(1);
   });
@@ -166,7 +166,7 @@ describe.if(isLive())("real PostgreSQL index storage", () => {
   test("per-source index counts equal the private report counts", async () => {
     const rows = await index<{ source: string; count: string }[]>`
       SELECT d.metadata->>'originSourceId' AS source, count(*) AS count
-      FROM aphrody_rag_documents d
+      FROM shenron_rag_documents d
       WHERE d.corpus = 'shenron' AND coalesce(d.metadata->>'visible','true') <> 'false' GROUP BY 1`;
     const counts = new Map(rows.map((r) => [r.source, Number(r.count)]));
     expect(counts.size).toBe(reportSources.length);

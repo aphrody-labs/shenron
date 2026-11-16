@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 /**
- * Dépose dans l'API databooks les transcriptions produites par `aphrody ocr`.
+ * Dépose dans l'API databooks les transcriptions produites par `shenron ocr`.
  *
- * Entrée : le JSONL qu'écrit `aphrody ocr batch`, une ligne par planche :
+ * Entrée : le JSONL qu'écrit `shenron ocr batch`, une ligne par planche :
  *
  *   {"image":"…/1-0001.jpg","text":{"kind":"none"},"elapsed_ms":5223}
  *   {"image":"…/2-0015.jpg","text":{"kind":"text","markdown":"## …"},"elapsed_ms":4100}

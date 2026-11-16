@@ -265,10 +265,10 @@ describe("plugin endpoints", () => {
     for (const needle of [
       "https://dragonballfr.com/api/public/plugin/archive.tar.gz",
       "https://dragonballfr.com/mcp",
-      "https://downloads.aphrody.com/install.sh",
-      "https://downloads.aphrody.com/install.ps1",
+      "https://github.com/aphrody-labs/shenron/releases/latest",
+      "https://raw.githubusercontent.com/aphrody-labs/shenron/main/install.ps1",
       "agy plugin install ~/.shenron-plugin/shenron",
-      "agy mcp add aphrody aphrody-mcp",
+      "agy mcp add shenron shenron-mcp",
       "<!-- shenron:begin",
       "<!-- shenron:end -->",
       "@./shenron/SOUL.md",

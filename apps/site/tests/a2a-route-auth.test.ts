@@ -1,5 +1,5 @@
 /**
- * S5 (docs/architecture/STACK.md D14) : garde d'écriture de `/api/a2a`, proxy vers `aphrody a2a serve`.
+ * S5 (docs/architecture/STACK.md D14) : garde d'écriture de `/api/a2a`, proxy vers `shenron a2a serve`.
  * L'amont Rust est simulé par un serveur Bun local (SHENRON_A2A_URL).
  */
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
@@ -19,7 +19,7 @@ const upstream = Bun.serve({
     const { pathname } = new URL(req.url);
     calls.push(`${req.method} ${pathname}`);
     if (pathname === "/.well-known/agent-card.json") {
-      return Response.json({ name: "aphrody", url: "http://127.0.0.1:8788/" });
+      return Response.json({ name: "shenron", url: "http://127.0.0.1:8788/" });
     }
     if (pathname === "/coord") {
       return new Response('{"id":"e1","from":"codex"}\nnot-json\n{"id":"e2","from":"agy"}\n');
@@ -139,7 +139,7 @@ describe("S5 — enforce actif", () => {
     setEnv("1", TOKEN);
     const card = await GET(new Request(URL_BASE));
     expect(card.status).toBe(200);
-    expect(await card.json()).toEqual({ name: "aphrody", url: "http://127.0.0.1:8788/" });
+    expect(await card.json()).toEqual({ name: "shenron", url: "http://127.0.0.1:8788/" });
     expect((await OPTIONS()).status).toBe(204);
     setEnv("1", undefined);
     expect((await GET(new Request(URL_BASE))).status).toBe(200);

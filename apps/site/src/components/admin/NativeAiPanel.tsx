@@ -2,7 +2,7 @@
 "use client";
 
 // Desktop-only panel: when the admin runs in the native window that shenron-desktop opens,
-// `window.aphrodyNative` (injected by crates/shenron-studio/src/studio.rs) gives direct IPC access
+// `window.shenronNative` (injected by crates/shenron-studio/src/studio.rs) gives direct IPC access
 // to the local models and the Shenron RAG. The answer is grounded on retrieved passages and cites them.
 import { useEffect, useState } from "react";
 import { EMPTY_RETRIEVAL_NOTICE, formatRagContext } from "./ia-cockpit-view";
@@ -20,7 +20,7 @@ interface RagHit {
   snippet?: string;
 }
 
-interface AphrodyNative {
+interface ShenronNative {
   desktop: true;
   status(): Promise<NativeStatus>;
   chat(
@@ -32,7 +32,7 @@ interface AphrodyNative {
 
 declare global {
   interface Window {
-    aphrodyNative?: AphrodyNative;
+    shenronNative?: ShenronNative;
   }
 }
 
@@ -40,7 +40,7 @@ const SYSTEM =
   "Tu es l'assistant éditorial de Shenron (Dragon Ball). Réponds en français, uniquement à partir des passages fournis ; cite-les par leur numéro [n]. Si les passages ne suffisent pas, dis-le.";
 
 export function NativeAiPanel() {
-  const [native, setNative] = useState<AphrodyNative | null>(null);
+  const [native, setNative] = useState<ShenronNative | null>(null);
   const [status, setStatus] = useState<NativeStatus | null>(null);
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState<string | null>(null);
@@ -50,13 +50,13 @@ export function NativeAiPanel() {
 
   useEffect(() => {
     const attach = () => {
-      if (!window.aphrodyNative) return;
-      setNative(window.aphrodyNative);
-      window.aphrodyNative.status().then(setStatus, (cause: unknown) => setError(String(cause)));
+      if (!window.shenronNative) return;
+      setNative(window.shenronNative);
+      window.shenronNative.status().then(setStatus, (cause: unknown) => setError(String(cause)));
     };
     attach();
-    window.addEventListener("aphrody-native-ready", attach);
-    return () => window.removeEventListener("aphrody-native-ready", attach);
+    window.addEventListener("shenron-native-ready", attach);
+    return () => window.removeEventListener("shenron-native-ready", attach);
   }, []);
 
   if (!native) return null;
@@ -98,7 +98,7 @@ export function NativeAiPanel() {
   return (
     <section className="mb-6 space-y-3 rounded-xl border border-white/10 bg-black/30 p-4">
       <header className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold">IA locale (application Aphrody)</h2>
+        <h2 className="text-lg font-semibold">IA locale (application Shenron)</h2>
         <div className="flex flex-wrap gap-2 text-xs">
           {roles.map(([label, role]) => (
             <span

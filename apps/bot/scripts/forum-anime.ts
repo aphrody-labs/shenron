@@ -58,7 +58,7 @@ const CHEMIN_PLAN = join(RACINE, "plan.json");
  * Le registre `clé du plan → identifiant de fil`.
  *
  * Retrouver un fil par son NOM casse au premier renommage — et un nom se fait
- * renommer (parti pris repris de `@aphrody/wonderbot`, qui l'a vécu). Le nom
+ * renommer (parti pris repris de `@shenron/wonderbot`, qui l'a vécu). Le nom
  * reste un repli pour les fils créés avant ce registre.
  */
 const CHEMIN_REGISTRE = join(RACINE, "fils.json");
@@ -1026,7 +1026,7 @@ async function annoncer(): Promise<void> {
     console.log("[annonce] aucun --salon donné : rien n'a été publié.");
     return;
   }
-  // Texte seul : canal de messagerie d'Aphrody (les fils, eux, portent des embeds).
+  // Texte seul : canal de messagerie d'Shenron (les fils, eux, portent des embeds).
   const messagerie = new DiscordChannel(await jetonDiscord("GRAND_PRETRE"));
   const lignes = aPublier.map((u) => `• ${u}`).join("\n");
   await messagerie.sendText(

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Embedding pass of the private DBXV2 database: chunks without a vector are embedded by a
- * local `aphrody-embed serve` (multilingual-e5-small, no external API) and stored as int8
+ * local `shenron-embed serve` (multilingual-e5-small, no external API) and stored as int8
  * vectors, resumable (a rerun only embeds what is missing). Runtime class: `bun`.
  */
 import type { Database } from "bun:sqlite";

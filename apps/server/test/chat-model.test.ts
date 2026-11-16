@@ -226,7 +226,7 @@ describe("startChatModel", () => {
       available: true,
       reason: `${CHAT_BASE_MODEL.label} + ${CHAT_ADAPTER.id}`,
     });
-    // router.json: catalog ids of aphrody-models, the shipped adapter used in place, digest pinned.
+    // router.json: catalog ids of shenron-models, the shipped adapter used in place, digest pinned.
     const [router] = fake.routers;
     expect(router!.request.bind).toBe(`127.0.0.1:${plan.port}`);
     expect(router!.request.modelsDir).toBe(join(paths.home, "models"));
@@ -239,7 +239,7 @@ describe("startChatModel", () => {
         CHAT_BASE_MODEL.id,
         [{ spec: `file:${adapter}`, sha256: CHAT_ADAPTER.sha256 }],
       ],
-      [GEMMA_MODEL.id, GEMMA_MODEL.aphrodyId, []],
+      [GEMMA_MODEL.id, GEMMA_MODEL.shenronId, []],
     ]);
     // Provisioned with the router's own request (its first start then finds everything there).
     expect(fake.provisions[0]).toMatchObject({

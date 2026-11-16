@@ -25,7 +25,7 @@ describe("wire fixtures", () => {
   for (const file of files) {
     test(`${file} parses and cites its source line`, () => {
       const fx = JSON.parse(readFileSync(join(FIXTURES, file), "utf8"));
-      expect(fx.$source).toMatch(/^aphrody-ai\/crates\/aphrody-mcp\/src\/http_rest\.rs:\d+$/);
+      expect(fx.$source).toMatch(/^shenron-ai\/crates\/shenron-mcp\/src\/http_rest\.rs:\d+$/);
       expect(schemas[fx.schema]?.safeParse(fx.response).success).toBe(true);
       if (fx.request !== undefined)
         expect(schemas[fx.requestSchema]?.safeParse(fx.request).success).toBe(true);

@@ -70,7 +70,7 @@ export class AutoEvalCronEvent {
                     `• **Recall@5 :** \`${((metrics.recall[5] ?? 0) * 100).toFixed(1)}%\``,
                     `• **MRR :** \`${(metrics.mrr * 100).toFixed(1)}%\``,
                     `• **nDCG@10 :** \`${(metrics.ndcg * 100).toFixed(1)}%\``,
-                    `• **Embeddings :** ${embeddingsLabel(metrics.sidecarActive, process.env.RAG_BACKEND === "aphrody")}`,
+                    `• **Embeddings :** ${embeddingsLabel(metrics.sidecarActive, process.env.RAG_BACKEND === "shenron")}`,
                     `• **Misses :** \`${metrics.misses.length} / ${metrics.cases}\``,
                   ].join("\n"),
                 }).toJSON(),

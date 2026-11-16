@@ -1,5 +1,5 @@
 /**
- * llm.ts — Réponses conversationnelles ancrées sur le RAG, générées par Aphrody.
+ * llm.ts — Réponses conversationnelles ancrées sur le RAG, générées par Shenron.
  *
  * Le RAG fournit les FAITS ; le modèle
  * RÉFORMULE dans la voix du persona, comme une vraie conversation — il ne recopie jamais les chunks.
@@ -9,13 +9,13 @@
  * - Mémoire : historique des derniers échanges par session (Redis résilient, B8), injecté dans le prompt.
  * - Chitchat : un simple "bonjour" reçoit une vraie réponse chaleureuse, sans réciter de faits.
  * - Cache sémantique : portée liée au modèle, à `PROMPT_VERSION` et aux preuves (B7).
- * - Jamais de dump d'archives. Repli persona si Aphrody est indisponible.
+ * - Jamais de dump d'archives. Repli persona si Shenron est indisponible.
  */
 import type { Database } from "bun:sqlite";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { ShenronComputeClient } from "@shenron/pipeline/shenron";
 import { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } from "@shenron/config/chat-model";
 import { createOpenAICompatibleChat } from "@shenron/pipeline/ai/provider";
-import { createAphrodyChatModel } from "@shenron/pipeline/ai/chat";
+import { createShenronChatModel } from "@shenron/pipeline/ai/chat";
 import {
   chatTimeoutMs,
   resolveChatModel,
@@ -165,12 +165,12 @@ function createRedisHistoryPort(
   };
 }
 
-/** Texte complet des chunks `rag_chunks` (SQLite) par rowid ; vide en mode Aphrody. */
+/** Texte complet des chunks `rag_chunks` (SQLite) par rowid ; vide en mode Shenron. */
 function createSqliteChunkPort(db: Database): ChunkContentPort {
   return {
     async contentFor(hitIds) {
       const out = new Map<string, string>();
-      if (process.env.RAG_BACKEND === "aphrody") return out;
+      if (process.env.RAG_BACKEND === "shenron") return out;
       const rowids = hitIds.map(Number).filter((r) => Number.isInteger(r) && r >= 0);
       if (rowids.length === 0) return out;
       const ph = rowids.map(() => "?").join(",");
@@ -211,7 +211,7 @@ const lazySemanticCache: SemanticCachePort = {
 };
 
 /** `SHENRON_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @shenron/pipeline/ai/config). */
-function aphrodyModel(): string {
+function shenronModel(): string {
   return resolveChatModel(process.env);
 }
 
@@ -289,7 +289,7 @@ export async function generateLlmGrounded(
       });
     } else if (backend === "http") {
       // Serveur de chat direct (Gemma 4 E2B préchargé du vps) quand SHENRON_AI_CHAT_BASE_URL
-      // est déclaré, sinon aphrody-ai-http.
+      // est déclaré, sinon shenron-ai-http.
       const direct = resolveDirectChat(process.env);
       if (!direct.ok)
         throw new Error(direct.issues.map((i) => `${i.name} ${i.problem}`).join("; "));
@@ -299,15 +299,15 @@ export async function generateLlmGrounded(
             modelId: direct.value.model,
             ...(direct.value.apiKey ? { token: direct.value.apiKey } : {}),
           })
-        : createAphrodyChatModel(new AphrodyComputeClient().compute, {
-            modelId: aphrodyModel(),
+        : createShenronChatModel(new ShenronComputeClient().compute, {
+            modelId: shenronModel(),
           });
     } else {
       throw new Error("SHENRON_INFERENCE must be native or http");
     }
   } catch (err) {
     console.error(
-      "[LLM] Échec génération Aphrody:",
+      "[LLM] Échec génération Shenron:",
       err instanceof Error ? err.message : String(err),
     );
   }
@@ -321,7 +321,7 @@ export async function generateLlmGrounded(
     kind: h.kind,
   }));
   if (!model) {
-    // Aphrody non configuré : même repli persona (et même mémoire) qu'une génération en échec.
+    // Shenron non configuré : même repli persona (et même mémoire) qu'une génération en échec.
     const fallback = PERSONAS[pid].fallback;
     if (opts.sessionId) {
       await createRedisHistoryPort()
@@ -364,12 +364,12 @@ export async function generateLlmGrounded(
     abortSignal: opts.abortSignal
       ? AbortSignal.any([
           opts.abortSignal,
-          AbortSignal.timeout(opts.timeoutMs ?? chatTimeoutMs(aphrodyModel())),
+          AbortSignal.timeout(opts.timeoutMs ?? chatTimeoutMs(shenronModel())),
         ])
-      : AbortSignal.timeout(opts.timeoutMs ?? chatTimeoutMs(aphrodyModel())),
+      : AbortSignal.timeout(opts.timeoutMs ?? chatTimeoutMs(shenronModel())),
     onError: (stage, err) => {
       const message = err instanceof Error ? err.message : String(err);
-      if (stage === "generate") console.error("[LLM] Échec génération Aphrody:", message);
+      if (stage === "generate") console.error("[LLM] Échec génération Shenron:", message);
       else if (stage === "cache") console.error("[LLM] Erreur du cache sémantique:", message);
       // chunks / history : best-effort, comme avant.
     },

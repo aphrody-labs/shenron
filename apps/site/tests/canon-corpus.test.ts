@@ -1,5 +1,5 @@
 /**
- * L'extraction du corpus `.aphrody` vers les citations de `/wiki/canon`.
+ * L'extraction du corpus `.shenron` vers les citations de `/wiki/canon`.
  *
  * Trois formats cohabitent dans la base de connaissance locale, et aucun n'est
  * sous notre contrôle : les notes françaises curées (citations entre
@@ -12,7 +12,7 @@
  * ressort avec sa source et son année.
  */
 import { describe, expect, test } from "bun:test";
-import { DOCUMENTS, PARSEURS, REFUSÉ, motsCles } from "../scripts/_aphrody-corpus";
+import { DOCUMENTS, PARSEURS, REFUSÉ, motsCles } from "../scripts/_shenron-corpus";
 
 const FR = `---
 source_file: X
@@ -60,7 +60,7 @@ source_file: X
 ![](/guides/manga/tankobon/02/toriyama.jpg)Happy New Year. Which means that I, who made my debut at my 23rd New Year’s, have now come to my 30th. I’ve thoroughly managed to become a real cartoonist.
 `;
 
-describe("extraction du corpus .aphrody", () => {
+describe("extraction du corpus .shenron", () => {
   test("une citation française ressort avec son texte, sa source et son année", () => {
     const [citation] = PARSEURS.citations(FR);
     expect(citation).toBeDefined();

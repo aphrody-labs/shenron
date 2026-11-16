@@ -1,4 +1,4 @@
-/** Shenron's stable input/output contract over Aphrody's canonical RAG chunker. */
+/** Shenron's stable input/output contract over Shenron's canonical RAG chunker. */
 import { shenronRagChunk } from "@shenron/native/shenron";
 
 export interface Chunk {

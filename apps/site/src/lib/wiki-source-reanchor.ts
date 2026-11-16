@@ -16,7 +16,7 @@ export interface WikiSourceReference {
   canonReferenceId: string;
 }
 
-const PRIMARY_PROVENANCE = new Set(["aphrody", "databook", "databooks", "manga"]);
+const PRIMARY_PROVENANCE = new Set(["shenron", "databook", "databooks", "manga"]);
 
 export function normalizeEntityName(value: string): string {
   return value

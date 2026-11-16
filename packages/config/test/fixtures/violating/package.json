@@ -8,7 +8,7 @@
     "./alias": "./src/alias.ts",
     "./tsyringe": "./src/tsyringe.ts",
     "./reflect": "./src/reflect.ts",
-    "./shenron-discord": "./src/aphrody.ts",
+    "./shenron-discord": "./src/shenron.ts",
     "./ffi": "./src/ffi.ts",
     "./dlopen": "./src/dlopen.ts",
     "./apps": "./src/apps.ts",

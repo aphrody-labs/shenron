@@ -14,7 +14,7 @@
  *   shenron-gemini.md            un seul fichier : GEMINI.md, agent home, toutes les
  *                                pages du plugin et les déclarations d'auteur intégrales
  *   shenron-chunks.jsonl         corpus découpé `{id, title, text, doc_id, source_path, url?}`,
- *                                entrée de `aphrody shenron train triples`
+ *                                entrée de `shenron shenron train triples`
  *   manifest.json                empreintes SHA-256, version, révision
  */
 import { mkdir, rm } from "node:fs/promises";
@@ -377,7 +377,7 @@ export async function construire(sortie: string) {
       gemini:
         "téléverser shenron-gemini.md (un fichier) ou shenron-plugin.zip, puis demander de suivre GEMINI.md",
       entrainement:
-        "aphrody shenron train triples --input shenron-chunks.jsonl --gold <gold.jsonl> --out triples.jsonl",
+        "shenron shenron train triples --input shenron-chunks.jsonl --gold <gold.jsonl> --out triples.jsonl",
     },
     fichiers: Object.fromEntries(fichiers.map((f) => [f.chemin, sha256(lireTexte(f))])),
     sorties: {

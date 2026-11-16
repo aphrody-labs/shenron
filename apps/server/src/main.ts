@@ -68,7 +68,7 @@ export async function main(
   const paths = resolvePaths();
   if (command === LLAMA_DAEMON_VERB) {
     // The model supervisor of the local chat (./chat-model.ts) re-executes this server as its
-    // daemon: Aphrody's daemon in the native library (`--library` from the parent, else the
+    // daemon: Shenron's daemon in the native library (`--library` from the parent, else the
     // usual resolution).
     const named = rest[0] === "--library" ? rest[1] : undefined;
     const library = named ?? libraryPath(paths, process.env);

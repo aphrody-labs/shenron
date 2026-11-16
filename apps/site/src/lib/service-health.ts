@@ -44,7 +44,7 @@ export async function probeDatabase(
 
 /** Database is mandatory when the native RAG backend is selected or explicitly required. */
 export function databaseRequired(env: EnvSource = process.env): boolean {
-  return env.RAG_BACKEND === "aphrody" || env.SITE_REQUIRE_DATABASE === "1";
+  return env.RAG_BACKEND === "shenron" || env.SITE_REQUIRE_DATABASE === "1";
 }
 
 /** `disabled` only passes readiness when the database is optional. */
@@ -76,7 +76,7 @@ export async function probeRag(
   search?: RagSearchProbe,
   now: () => number = Date.now,
 ): Promise<ServiceHealth["checks"][string]> {
-  if (env.RAG_BACKEND !== "aphrody") return "disabled";
+  if (env.RAG_BACKEND !== "shenron") return "disabled";
   if (!search && now() < ragOkUntil) return "ok";
   if (!search && ragInFlight) return ragInFlight;
   const check = (async (): Promise<ServiceHealth["checks"][string]> => {
@@ -86,9 +86,9 @@ export async function probeRag(
       const run =
         search ??
         (async (q, limit) => {
-          const [{ searchAphrodyRag }, { AphrodyComputeClient }] = await Promise.all([
+          const [{ searchShenronRag }, { ShenronComputeClient }] = await Promise.all([
             import("@/lib/site-rag"),
-            import("@shenron/pipeline/aphrody/compute"),
+            import("@shenron/pipeline/shenron/compute"),
           ]);
           const fetcher = ((input: RequestInfo | URL, init?: RequestInit) =>
             fetch(input, {
@@ -97,7 +97,7 @@ export async function probeRag(
                 ? AbortSignal.any([init.signal, controller.signal])
                 : controller.signal,
             })) as typeof fetch;
-          return searchAphrodyRag(q, limit, {}, new AphrodyComputeClient({ fetcher }));
+          return searchShenronRag(q, limit, {}, new ShenronComputeClient({ fetcher }));
         });
       const deadline = new Promise<never>((_, reject) => {
         timer = setTimeout(() => {

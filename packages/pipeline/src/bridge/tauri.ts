@@ -61,7 +61,7 @@ export async function tauriInvoke<T>(command: string, args?: Record<string, unkn
   }
 
   throw new Error(
-    `[PIPELINE-IPC] Tauri 2.0 environment not detected. Command '${command}' requires Aphrody Rust Backend or fallback HTTP transport.`,
+    `[PIPELINE-IPC] Tauri 2.0 environment not detected. Command '${command}' requires Shenron Rust Backend or fallback HTTP transport.`,
   );
 }
 

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-// Shared Aphrody/Koharu wire contract. Editorial identity is a consumer policy.
+// Shared Shenron/Koharu wire contract. Editorial identity is a consumer policy.
 import { sha256Hex } from "./sha256";
-export const KOHARU_PAGE_RESULT_SCHEMA = "aphrody.manga.page-result/v1" as const;
+export const KOHARU_PAGE_RESULT_SCHEMA = "shenron.manga.page-result/v1" as const;
 const SHA256 = /^[a-f0-9]{64}$/;
 const IMAGE_MIME = new Set(["image/jpeg", "image/png", "image/webp"]);
 export interface KoharuImageSource {

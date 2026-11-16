@@ -21,11 +21,11 @@ mock.module("@shenron/pipeline/ai/config", () => ({
 mock.module("@shenron/pipeline/ai/provider", () => ({
   createShenronProvider: () => ({ languageModel: () => ({ modelId: "local-model" }) }),
 }));
-mock.module("@shenron/pipeline/aphrody/compute", () => ({
-  AphrodyComputeClient: class {
+mock.module("@shenron/pipeline/shenron/compute", () => ({
+  ShenronComputeClient: class {
     chat = async () => "";
   },
-  aphrodyComputeFromChat: () => null,
+  shenronComputeFromChat: () => null,
 }));
 mock.module("@shenron/pipeline/ai/generate", () => ({
   generateGroundedAnswer: async (input: Record<string, unknown>) => {

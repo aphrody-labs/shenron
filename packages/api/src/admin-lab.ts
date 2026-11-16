@@ -3,7 +3,7 @@
  * Salon admin du lab IA (Discord), partagé par le bot et le site.
  *
  * Le salon vient de `resolveDiscordAi` (`ADMIN_LAB_CHANNEL_ID`, sinon le salon général de la
- * guilde Aphrody). Les transports Discord (`@shenron/discord-kit`, `@shenron/discord-kit/messaging`) sont
+ * guilde Shenron). Les transports Discord (`@shenron/discord-kit`, `@shenron/discord-kit/messaging`) sont
  * fournis par l'application qui les déclare : ce paquet ne les importe pas.
  */
 import { readFile } from "node:fs/promises";
@@ -134,12 +134,12 @@ export function createAdminLab(transports: AdminLabTransports): AdminLab {
   }
 
   function requireChannel(id: string | undefined): string {
-    if (!id) throw new Error("ADMIN_LAB_CHANNEL_ID is required outside the Aphrody guild");
+    if (!id) throw new Error("ADMIN_LAB_CHANNEL_ID is required outside the Shenron guild");
     return id;
   }
 
   /**
-   * Poste un message dans un salon. Texte seul : canal de messagerie d'Aphrody
+   * Poste un message dans un salon. Texte seul : canal de messagerie d'Shenron
    * (`@shenron/discord-kit/messaging`, `@discordjs/rest` : seaux de rate-limit, reprises). Avec embeds :
    * client REST de `@shenron/discord-kit`, car `DiscordChannel` 0.1.0 n'envoie que du texte
    * ou un fichier. `transport` remplace `fetch` (tests).

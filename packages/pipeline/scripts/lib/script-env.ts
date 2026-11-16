@@ -80,9 +80,9 @@ export function requireEmbedBaseUrl(env: EnvSource): {
   return { name, baseUrl: url.toString(), origin: url.origin };
 }
 
-/** Origin of `aphrody-ai-http` (`SHENRON_AI_HTTP_URL`, alias `SHENRON_API_URL`). No default (B13). */
-export function requireAphrodyApiUrl(env: EnvSource): string {
-  requireAiSetting(env, AI_ENV.httpUrl, "API de calcul Aphrody");
+/** Origin of `shenron-ai-http` (`SHENRON_AI_HTTP_URL`, alias `SHENRON_API_URL`). No default (B13). */
+export function requireShenronApiUrl(env: EnvSource): string {
+  requireAiSetting(env, AI_ENV.httpUrl, "API de calcul Shenron");
   return requireAiHttpUrl(env).href;
 }
 

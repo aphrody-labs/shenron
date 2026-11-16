@@ -174,7 +174,7 @@
     },
     {
       "nom": "canon",
-      "role": "corpus .aphrody + planches traduites → public.canon_references",
+      "role": "corpus .shenron + planches traduites → public.canon_references",
       "statut": "ok",
       "detail": "4613 → 4613 preuves",
       "duree_ms": 4751

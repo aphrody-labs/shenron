@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Partitionne les planches de databooks sans transcription japonaise
- * en lots JSONL normalisés prêts pour inférence GPU locale (PP-OCRv5 / Qwen2.5-VL / Aphrody).
+ * en lots JSONL normalisés prêts pour inférence GPU locale (PP-OCRv5 / Qwen2.5-VL / Shenron).
  *
  * Utilisation :
  *   bun scripts/ops/batch-databooks-ocr.ts --statut

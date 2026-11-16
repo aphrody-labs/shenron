@@ -11,8 +11,8 @@ This document specifies the end-to-end architecture for synchronizing the comple
 - **Source Root**: `C:\Program Files (x86)\Steam\steamapps\common\DRAGON BALL FighterZ`
 - **Total Tracked Files**: 63 files
 - **Total Payload Size**: **6,951,922,626 bytes** (6.474 GB / 6.95 GiB)
-- **Manifest Location**: [`docs/games/dbfz-r2-manifest.json`](file:///C:/aphrody/apps/shenron/docs/games/dbfz-r2-manifest.json)
-- **Sync Tool**: [`scripts/ops/sync-dbfz-to-r2.ts`](file:///C:/aphrody/apps/shenron/scripts/ops/sync-dbfz-to-r2.ts)
+- **Manifest Location**: [`docs/games/dbfz-r2-manifest.json`](file:///C:/shenron/apps/shenron/docs/games/dbfz-r2-manifest.json)
+- **Sync Tool**: [`scripts/ops/sync-dbfz-to-r2.ts`](file:///C:/shenron/apps/shenron/scripts/ops/sync-dbfz-to-r2.ts)
 
 ### Primary Asset Inventory
 
@@ -130,10 +130,10 @@ wasm-opt = ["-O4", "--enable-simd", "--enable-bulk-memory"]
 
 ## 4. Verification & Status
 
-1. **Manifest Generated**: [`docs/games/dbfz-r2-manifest.json`](file:///C:/aphrody/apps/shenron/docs/games/dbfz-r2-manifest.json) (63 files, 6,951,922,626 bytes).
-2. **Runtime Implemented**: [`packages/engine/src/games/fighterz-bevy-runtime.ts`](file:///C:/aphrody/apps/shenron/packages/engine/src/games/fighterz-bevy-runtime.ts).
-3. **WebUI Component**: [`apps/site/src/components/games/FighterZBrowserRuntime.tsx`](file:///C:/aphrody/apps/shenron/apps/site/src/components/games/FighterZBrowserRuntime.tsx).
-4. **Mounted on Route**: `/wiki/games/fighterz` in [`apps/site/src/app/wiki/games/[slug]/page.tsx`](file:///C:/aphrody/apps/shenron/apps/site/src/app/wiki/games/[slug]/page.tsx).
+1. **Manifest Generated**: [`docs/games/dbfz-r2-manifest.json`](file:///C:/shenron/apps/shenron/docs/games/dbfz-r2-manifest.json) (63 files, 6,951,922,626 bytes).
+2. **Runtime Implemented**: [`packages/engine/src/games/fighterz-bevy-runtime.ts`](file:///C:/shenron/apps/shenron/packages/engine/src/games/fighterz-bevy-runtime.ts).
+3. **WebUI Component**: [`apps/site/src/components/games/FighterZBrowserRuntime.tsx`](file:///C:/shenron/apps/shenron/apps/site/src/components/games/FighterZBrowserRuntime.tsx).
+4. **Mounted on Route**: `/wiki/games/fighterz` in [`apps/site/src/app/wiki/games/[slug]/page.tsx`](file:///C:/shenron/apps/shenron/apps/site/src/app/wiki/games/[slug]/page.tsx).
 5. **Unit Tests Passing**:
    - `packages/engine/test/fighterz-bevy-runtime.test.ts` (3/3 pass).
    - `packages/engine/test/dbfz-r2-manifest.test.ts` (2/2 pass).

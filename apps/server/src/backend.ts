@@ -12,7 +12,7 @@
  *                  until Discord sign-in, then `discord:<user_id>`; SHENRON_LOCAL_OWNER follows);
  *                  shared persona: the VFS `/home`, else SHENRON_WORKSPACE, else (outside
  *                  production) the public template of the payload (`home/`)
- *   OCR            SHENRON_BIN, else `aphrody` beside the executable, else on PATH
+ *   OCR            SHENRON_BIN, else `shenron` beside the executable, else on PATH
  *   MCP            SHENRON_MCP_URL, else the `shenron-mcp` sidecar shipped beside the
  *                  executable (SHENRON_MCP_BIN, `./`, `./binaries/`, as `shenron-desktop`
  *                  finds `shenron-server`), started on `--http 127.0.0.1:<free port> --public`
@@ -21,21 +21,21 @@
  *   lexicon        SHENRON_LEXIQUE, else the payload's `data/lexique-db-canonique.json` (the
  *                  canonical glossary of French translation and of the editor's agent)
  *   memory         one per agent home (`discord:<id>`, `local`): `memoryLocation`, else
- *                  `<home>/data/memory.sqlite` (SHENRON_MEMORY_DB, SHENRON_MEMORY=off); Aphrody's
- *                  aphrody-memory through the native library (./memory.ts); none → group disabled
+ *                  `<home>/data/memory.sqlite` (SHENRON_MEMORY_DB, SHENRON_MEMORY=off); Shenron's
+ *                  shenron-memory through the native library (./memory.ts); none → group disabled
  *   chat           SHENRON_CHAT_BACKENDS (default `local,gemini-web` outside production): the
  *                  OpenAI-compatible server declared by SHENRON_AI_CHAT_BASE_URL,
  *                  SHENRON_LLM_BASE_URL or SHENRON_LOCAL_MODEL_URL (llama-server,
- *                  aphrody-llama-daemon); none → the chat and models groups stay disabled.
+ *                  shenron-llama-daemon); none → the chat and models groups stay disabled.
  *                  Desktop profile without such a URL: the managed models of ./chat-model.ts
- *                  (Qwen3-4B + LoRA shenron-chat-v2, Gemma 4 E2B; Aphrody's local chat router in
+ *                  (Qwen3-4B + LoRA shenron-chat-v2, Gemma 4 E2B; Shenron's local chat router in
  *                  the native library, ABI 4; SHENRON_CHAT_MODEL)
  *
  * Production keeps the editorial wiki on the site (PostgreSQL), serves only public VFS nodes
  * and has no implicit loopback owner (nginx forwards every request from 127.0.0.1).
  * A missing capability never stops the server: its group reports why in `/api/local/health`.
  */
-import { createAphrodyRagPort } from "./editorial-rag";
+import { createShenronRagPort } from "./editorial-rag";
 import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import {
@@ -121,8 +121,8 @@ export function planBackend(
       .find((dir) => isFile(join(dir, "SOUL.md")));
     if (template) out.SHENRON_WORKSPACE = template;
   }
-  const aphrody = siblingBinary(paths, "aphrody");
-  if (!env.SHENRON_BIN?.trim() && aphrody) out.SHENRON_BIN = aphrody;
+  const shenron = siblingBinary(paths, "shenron");
+  if (!env.SHENRON_BIN?.trim() && shenron) out.SHENRON_BIN = shenron;
   const mcp = siblingBinary(paths, "shenron-mcp", env.SHENRON_MCP_BIN);
   // The chat's own MCP tools (stdio) use the same shipped binary.
   if (mcp) out.SHENRON_MCP_BIN = mcp;
@@ -327,10 +327,10 @@ export async function startBackend(
     }
   }
   const sidecarFailed = () => plan.mcpSidecar !== null && sidecarState === "failed";
-  let editorialRag: ReturnType<typeof createAphrodyRagPort> | null = null;
-  if (plan.env.RAG_BACKEND === "aphrody") {
+  let editorialRag: ReturnType<typeof createShenronRagPort> | null = null;
+  if (plan.env.RAG_BACKEND === "shenron") {
     try {
-      editorialRag = createAphrodyRagPort(plan.env);
+      editorialRag = createShenronRagPort(plan.env);
     } catch {
       console.error(JSON.stringify({ event: "shenron.rag.configuration_unavailable" }));
     }
@@ -340,7 +340,7 @@ export async function startBackend(
     host = (o.createHost ?? createLocalApi)(plan.env, {
       service: profile === "desktop" ? "shenron-desktop" : "shenron-server",
       wiki: plan.wiki,
-      ...(plan.env.RAG_BACKEND === "aphrody" ? { rag: editorialRag } : {}),
+      ...(plan.env.RAG_BACKEND === "shenron" ? { rag: editorialRag } : {}),
       ...(chatModel ? { chatModels: chatModel.catalog } : {}),
       memory: nativeMemory(paths, plan.env),
       jev: nativeChatJev(plan.env, libraryPath(paths, plan.env)),

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * OCR port over the Aphrody CLI, the capability owner: `aphrody ocr ppocr <file> --json`
- * (aphrody-ocr PP-OCRv5, deterministic ONNX, Japanese and Latin scripts; weights installed by
- * `aphrody model pull ppocr-v5-mobile`). It answers the shared `aphrody.ocr.result/v2`
+ * OCR port over the Shenron CLI, the capability owner: `shenron ocr ppocr <file> --json`
+ * (shenron-ocr PP-OCRv5, deterministic ONNX, Japanese and Latin scripts; weights installed by
+ * `shenron model pull ppocr-v5-mobile`). It answers the shared `shenron.ocr.result/v2`
  * contract. The image goes through a private temporary file that is always removed.
  * Runtime class: `bun`.
  */
@@ -17,7 +17,7 @@ const EXT: Record<string, string> = {
   "image/webp": "webp",
 };
 
-const RESULT_SCHEMA = "aphrody.ocr.result/v2";
+const RESULT_SCHEMA = "shenron.ocr.result/v2";
 
 interface OcrResultV2 {
   schema?: unknown;
@@ -28,7 +28,7 @@ interface OcrResultV2 {
   attempts?: Array<{ run?: { model_id?: unknown } }>;
 }
 
-/** Text of an `aphrody.ocr.result/v2` answer, bound to the bytes that were sent. */
+/** Text of an `shenron.ocr.result/v2` answer, bound to the bytes that were sent. */
 export function readOcrResult(raw: unknown, sha256: string): Omit<OcrResponse, "ms"> {
   const top = (raw ?? {}) as OcrResultV2 & { result?: OcrResultV2 };
   const result = top.schema === undefined && top.result ? top.result : top;
@@ -52,7 +52,7 @@ export function readOcrResult(raw: unknown, sha256: string): Omit<OcrResponse, "
 }
 
 export function createCliOcr(o: { binary?: string; timeoutMs?: number } = {}) {
-  const binary = o.binary ?? "aphrody";
+  const binary = o.binary ?? "shenron";
   return {
     available(): boolean {
       return /[\\/]/.test(binary) ? Bun.file(binary).size > 0 : Bun.which(binary) !== null;
@@ -78,7 +78,7 @@ export function createCliOcr(o: { binary?: string; timeoutMs?: number } = {}) {
         ]);
         if (code !== 0)
           throw new Error(
-            `aphrody ocr ppocr failed (exit ${code}): ${err.trim().split("\n").at(-1) ?? ""}`,
+            `shenron ocr ppocr failed (exit ${code}): ${err.trim().split("\n").at(-1) ?? ""}`,
           );
         return {
           ...readOcrResult(JSON.parse(out), sha256),

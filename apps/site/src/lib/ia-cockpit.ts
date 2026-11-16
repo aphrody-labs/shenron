@@ -1,7 +1,7 @@
 /**
  * IA & Canon Cockpit (/admin/ai) — pure status aggregation.
  *
- * Aphrody owns RAG, LLM, OCR, embeddings and crawl for Shenron. The cockpit
+ * Shenron owns RAG, LLM, OCR, embeddings and crawl for Shenron. The cockpit
  * reports what each owner actually answers, source by source:
  *   - `ok`           the source answered and its payload was validated;
  *   - `unavailable`  the source failed (HTTP error, timeout, invalid payload),
@@ -87,7 +87,7 @@ export async function probeSource<T>(
 
 // ── Serving engine (RAG_BACKEND) ─────────────────────────────────────────────
 
-type RagBackend = "aphrody" | "local";
+type RagBackend = "shenron" | "local";
 
 export interface RagBackendInfo {
   value: RagBackend;
@@ -97,31 +97,31 @@ export interface RagBackendInfo {
   engine: string;
 }
 
-/** Same rule as `usesAphrodyRag()` in `site-rag.ts`: only the exact value `aphrody` switches. */
+/** Same rule as `usesShenronRag()` in `site-rag.ts`: only the exact value `shenron` switches. */
 export function resolveRagBackend(raw: string | undefined | null): RagBackendInfo {
-  const value: RagBackend = raw === "aphrody" ? "aphrody" : "local";
+  const value: RagBackend = raw === "shenron" ? "shenron" : "local";
   return {
     value,
     raw: raw ?? null,
-    engine: value === "aphrody" ? "Aphrody AI" : "Bot Shenron (index local)",
+    engine: value === "shenron" ? "Shenron AI" : "Bot Shenron (index local)",
   };
 }
 
 // ── Payloads ─────────────────────────────────────────────────────────────────
 
-interface AphrodyHealthData {
+interface ShenronHealthData {
   rag: boolean;
   llm: boolean;
   ocr: boolean;
 }
 
-export interface AphrodyRagStatsData {
+export interface ShenronRagStatsData {
   chunks: number;
   /** Vectors aligned with visible documents (usable by the hybrid fusion). */
   vectors: number;
   /** Every stored vector row, aligned or not; null when not reported. */
   vectorsStored: number | null;
-  /** Number of distinct source groups reported by Aphrody. */
+  /** Number of distinct source groups reported by Shenron. */
   sources: number;
   kinds: Array<{ kind: string; count: number; vectors: number }>;
 }
@@ -248,13 +248,13 @@ function epochMsToIso(value: unknown, column: string): string | null {
   return date.toISOString();
 }
 
-/** Groups Aphrody `/rag/stats` sources by kind (largest first). */
-export function summarizeAphrodyRagStats(stats: {
+/** Groups Shenron `/rag/stats` sources by kind (largest first). */
+export function summarizeShenronRagStats(stats: {
   chunks: number;
   vectors: number;
   vectorsStored?: number;
   sources: Array<{ kind: string; count: number; vectors?: number }>;
-}): AphrodyRagStatsData {
+}): ShenronRagStatsData {
   const byKind = new Map<string, { count: number; vectors: number }>();
   for (const source of stats.sources) {
     const entry = byKind.get(source.kind) ?? { count: 0, vectors: 0 };
@@ -497,9 +497,9 @@ export function computeRetrievalMetrics(
 // ── Aggregation ──────────────────────────────────────────────────────────────
 
 export interface IaCockpitFetchers {
-  aphrodyHealth: SourceSpec<AphrodyHealthData>;
-  aphrodyRagStats: SourceSpec<AphrodyRagStatsData>;
-  aphrodyRagProbe: SourceSpec<RagProbeData>;
+  shenronHealth: SourceSpec<ShenronHealthData>;
+  shenronRagStats: SourceSpec<ShenronRagStatsData>;
+  shenronRagProbe: SourceSpec<RagProbeData>;
   yoloWeb: SourceSpec<WebCrawlData>;
   botRag: SourceSpec<BotRagData>;
   evalHistory: SourceSpec<EvalSnapshot[]>;
@@ -549,9 +549,9 @@ export interface IaCockpitReport {
 }
 
 const SOURCE_KEYS: IaSourceKey[] = [
-  "aphrodyHealth",
-  "aphrodyRagStats",
-  "aphrodyRagProbe",
+  "shenronHealth",
+  "shenronRagStats",
+  "shenronRagProbe",
   "yoloWeb",
   "botRag",
   "evalHistory",
@@ -575,19 +575,19 @@ function summarizeIaCockpit(backend: RagBackendInfo, sources: IaCockpitSources):
   let vectors: number | null;
   let mode: string | null;
   let countsSource: IaSourceKey;
-  if (backend.value === "aphrody") {
-    const probe = sources.aphrodyRagProbe;
-    const stats = sources.aphrodyRagStats.data;
+  if (backend.value === "shenron") {
+    const probe = sources.shenronRagProbe;
+    const stats = sources.shenronRagStats.data;
     serving = {
       engine: backend.engine,
-      source: "aphrodyRagProbe",
+      source: "shenronRagProbe",
       status: probe.status,
       error: probe.error,
     };
     documents = stats?.chunks ?? null;
     vectors = stats?.vectors ?? null;
     mode = probe.data?.mode ?? null;
-    countsSource = "aphrodyRagStats";
+    countsSource = "shenronRagStats";
   } else {
     const bot = sources.botRag;
     serving = { engine: backend.engine, source: "botRag", status: bot.status, error: bot.error };

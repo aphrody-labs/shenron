@@ -32,7 +32,7 @@ function processEnv(): Record<string, string | undefined> {
   return typeof process !== "undefined" ? process.env : {};
 }
 
-/** Site origin on the loopback (aphrody-infra service catalog: site = 5011); overridable. */
+/** Site origin on the loopback (shenron-infra service catalog: site = 5011); overridable. */
 const defaultSiteUrl = () => resolveSiteInternalUrl(processEnv());
 
 const defaultBotApiUrl = () => resolveBotApiInternalUrl(processEnv());
@@ -70,10 +70,10 @@ export class DbuiBridge {
         // 1. Tentative d'appel direct sur la commande
         return await tauriInvoke<T>(cmd, args);
       } catch (err) {
-        // 2. Si commande non trouvée, délégation via aphrody_exec (shell universel Aphrody App)
+        // 2. Si commande non trouvée, délégation via shenron_exec (shell universel Shenron App)
         try {
           const res = await tauriInvoke<{ code: number; stdout: string; stderr: string }>(
-            "aphrody_exec",
+            "shenron_exec",
             {
               args: [cmd, JSON.stringify(args)],
             },
@@ -94,23 +94,23 @@ export class DbuiBridge {
   }
 
   private async fallbackHttp<T>(cmd: string, args: Record<string, unknown>): Promise<T> {
-    if (cmd === "aphrody_rag_search") return (await this.fallbackRagSearch(args)) as T;
+    if (cmd === "shenron_rag_search") return (await this.fallbackRagSearch(args)) as T;
     const baseUrl = this.config.fallbackApiUrl?.replace(/\/$/, "") || "";
     const endpointMap: Record<string, { method: "GET" | "POST"; path: string }> = {
-      aphrody_chat_send: { method: "POST", path: "/api/chat" },
-      aphrody_models: { method: "GET", path: "/api/models" },
-      aphrody_rag_stats: { method: "GET", path: "/api/admin/ia" },
-      aphrody_canon_evaluate: { method: "GET", path: "/api/canon" },
-      aphrody_canon_doctrine: { method: "GET", path: "/api/canon-config" },
-      aphrody_canon_save: { method: "POST", path: "/api/canon-config" },
-      aphrody_ocr_overview: { method: "GET", path: "/api/admin/transcriptions?mode=overview" },
-      aphrody_translation_batches: {
+      shenron_chat_send: { method: "POST", path: "/api/chat" },
+      shenron_models: { method: "GET", path: "/api/models" },
+      shenron_rag_stats: { method: "GET", path: "/api/admin/ia" },
+      shenron_canon_evaluate: { method: "GET", path: "/api/canon" },
+      shenron_canon_doctrine: { method: "GET", path: "/api/canon-config" },
+      shenron_canon_save: { method: "POST", path: "/api/canon-config" },
+      shenron_ocr_overview: { method: "GET", path: "/api/admin/transcriptions?mode=overview" },
+      shenron_translation_batches: {
         method: "GET",
         path: "/api/admin/transcriptions?mode=batches",
       },
-      aphrody_a2a_messages: { method: "GET", path: "/api/admin/ia" },
-      aphrody_ia_health: { method: "GET", path: "/api/admin/ia" },
-      aphrody_ia_objectives: { method: "GET", path: "/api/admin/ia" },
+      shenron_a2a_messages: { method: "GET", path: "/api/admin/ia" },
+      shenron_ia_health: { method: "GET", path: "/api/admin/ia" },
+      shenron_ia_objectives: { method: "GET", path: "/api/admin/ia" },
     };
 
     const mapping = endpointMap[cmd];
@@ -153,7 +153,7 @@ export class DbuiBridge {
     if (mode === "dense" || mode === "lexical") {
       // The public route always serves hybrid: it ignores lexicalOnly and has no dense-only switch.
       throw new Error(
-        `Échec du bridge HTTP aphrody_rag_search: mode ${String(mode)} seul non supporté par la route publique`,
+        `Échec du bridge HTTP shenron_rag_search: mode ${String(mode)} seul non supporté par la route publique`,
       );
     }
     const query = String(args.query ?? "");
@@ -168,21 +168,21 @@ export class DbuiBridge {
         headers: { Accept: "application/json" },
         signal: AbortSignal.timeout(this.config.timeoutMs ?? 30_000),
       });
-      if (!res.ok) throw new Error(`HTTP ${res.status} on aphrody_rag_search`);
+      if (!res.ok) throw new Error(`HTTP ${res.status} on shenron_rag_search`);
       body = await res.json();
     } catch (error) {
       throw new Error(
-        `Échec du bridge HTTP aphrody_rag_search: ${error instanceof Error ? error.message : String(error)}`,
+        `Échec du bridge HTTP shenron_rag_search: ${error instanceof Error ? error.message : String(error)}`,
         { cause: error },
       );
     }
     const malformed = (why: string) =>
-      new Error(`Échec du bridge HTTP aphrody_rag_search: réponse invalide (${why})`);
+      new Error(`Échec du bridge HTTP shenron_rag_search: réponse invalide (${why})`);
     if (typeof body !== "object" || body === null || Array.isArray(body))
       throw malformed("corps non objet");
     const record = body as Record<string, unknown>;
     if (record.error !== undefined && record.error !== null && record.error !== "") {
-      throw new Error(`Échec du bridge HTTP aphrody_rag_search: ${String(record.error)}`);
+      throw new Error(`Échec du bridge HTTP shenron_rag_search: ${String(record.error)}`);
     }
     if (typeof record.q !== "string") throw malformed("q absent");
     const servedMode = record.mode;
@@ -202,10 +202,10 @@ export class DbuiBridge {
   // ── Chat API ─────────────────────────────────────────────────────────────
 
   public async sendPrompt(req: SendPromptRequest): Promise<ChatMessage> {
-    return this.invokeCommand<ChatMessage>("aphrody_chat_send", {
+    return this.invokeCommand<ChatMessage>("shenron_chat_send", {
       prompt: req.prompt,
       persona: req.persona || "whis",
-      modelId: req.modelId || "aphrody-local",
+      modelId: req.modelId || "shenron-local",
       context: req.context,
       sessionId: req.sessionId,
       entityFilter: req.entityFilter,
@@ -213,7 +213,7 @@ export class DbuiBridge {
   }
 
   public async getModels(): Promise<ModelOption[]> {
-    return this.invokeCommand<ModelOption[]>("aphrody_models", {});
+    return this.invokeCommand<ModelOption[]>("shenron_models", {});
   }
 
   // ── RAG API ──────────────────────────────────────────────────────────────
@@ -222,7 +222,7 @@ export class DbuiBridge {
     query: string,
     options: { limit?: number; mode?: "hybrid" | "lexical" | "dense" } = {},
   ): Promise<RagSearchResult> {
-    return this.invokeCommand<RagSearchResult>("aphrody_rag_search", {
+    return this.invokeCommand<RagSearchResult>("shenron_rag_search", {
       query,
       limit: options.limit || 6,
       mode: options.mode || "hybrid",
@@ -230,13 +230,13 @@ export class DbuiBridge {
   }
 
   public async getRagStats(): Promise<RagStats> {
-    return this.invokeCommand<RagStats>("aphrody_rag_stats", {});
+    return this.invokeCommand<RagStats>("shenron_rag_stats", {});
   }
 
   // ── Canon API ────────────────────────────────────────────────────────────
 
   public async evaluateCanon(query: string): Promise<CanonVerdict> {
-    return this.invokeCommand<CanonVerdict>("aphrody_canon_evaluate", { query });
+    return this.invokeCommand<CanonVerdict>("shenron_canon_evaluate", { query });
   }
 
   public async getCanonVerdict(query: string): Promise<CanonVerdict> {
@@ -244,21 +244,21 @@ export class DbuiBridge {
   }
 
   public async getCanonDoctrine(): Promise<CanonDoctrineConfig> {
-    return this.invokeCommand<CanonDoctrineConfig>("aphrody_canon_doctrine", {});
+    return this.invokeCommand<CanonDoctrineConfig>("shenron_canon_doctrine", {});
   }
 
   public async saveCanonDoctrine(config: Partial<CanonDoctrineConfig>): Promise<boolean> {
-    return this.invokeCommand<boolean>("aphrody_canon_save", { config });
+    return this.invokeCommand<boolean>("shenron_canon_save", { config });
   }
 
   // ── Transcriptions & OCR API ─────────────────────────────────────────────
 
   public async getOcrOverview(): Promise<OcrOverview> {
-    return this.invokeCommand<OcrOverview>("aphrody_ocr_overview", {});
+    return this.invokeCommand<OcrOverview>("shenron_ocr_overview", {});
   }
 
   public async inspectPlate(databookId: number, pageNumber: number): Promise<OcrPlate | null> {
-    return this.invokeCommand<OcrPlate | null>("aphrody_ocr_inspect_plate", {
+    return this.invokeCommand<OcrPlate | null>("shenron_ocr_inspect_plate", {
       databookId,
       pageNumber,
     });
@@ -270,7 +270,7 @@ export class DbuiBridge {
     textJa: string,
     textFr?: string,
   ): Promise<boolean> {
-    return this.invokeCommand<boolean>("aphrody_ocr_validate_plate", {
+    return this.invokeCommand<boolean>("shenron_ocr_validate_plate", {
       databookId,
       pageNumber,
       textJa,
@@ -281,11 +281,11 @@ export class DbuiBridge {
   // ── Traduction & Lexique API ─────────────────────────────────────────────
 
   public async getTranslationBatches(): Promise<TranslationBatch[]> {
-    return this.invokeCommand<TranslationBatch[]>("aphrody_translation_batches", {});
+    return this.invokeCommand<TranslationBatch[]>("shenron_translation_batches", {});
   }
 
   public async searchLexique(query: string, category?: string): Promise<LexiqueEntry[]> {
-    return this.invokeCommand<LexiqueEntry[]>("aphrody_translation_lexique_search", {
+    return this.invokeCommand<LexiqueEntry[]>("shenron_translation_lexique_search", {
       query,
       category,
     });
@@ -296,7 +296,7 @@ export class DbuiBridge {
   }
 
   public async alignBilingual(textJa: string, textFr: string): Promise<BilingualAlignment> {
-    return this.invokeCommand<BilingualAlignment>("aphrody_translation_align", {
+    return this.invokeCommand<BilingualAlignment>("shenron_translation_align", {
       textJa,
       textFr,
     });
@@ -305,36 +305,36 @@ export class DbuiBridge {
   // ── A2A & Agents API ─────────────────────────────────────────────────────
 
   public async getA2aMessages(): Promise<A2aMessage[]> {
-    return this.invokeCommand<A2aMessage[]>("aphrody_a2a_messages", {});
+    return this.invokeCommand<A2aMessage[]>("shenron_a2a_messages", {});
   }
 
   public async sendA2aMessage(to: string, subject: string, content: string): Promise<boolean> {
-    return this.invokeCommand<boolean>("aphrody_a2a_send", { to, subject, content });
+    return this.invokeCommand<boolean>("shenron_a2a_send", { to, subject, content });
   }
 
   public async getAgentHeartbeats(): Promise<AgentHeartbeat[]> {
-    return this.invokeCommand<AgentHeartbeat[]>("aphrody_a2a_heartbeats", {});
+    return this.invokeCommand<AgentHeartbeat[]>("shenron_a2a_heartbeats", {});
   }
 
   public async getAgentTasks(): Promise<AgentTask[]> {
-    return this.invokeCommand<AgentTask[]>("aphrody_a2a_tasks", {});
+    return this.invokeCommand<AgentTask[]>("shenron_a2a_tasks", {});
   }
 
   // ── IA Cockpit API ───────────────────────────────────────────────────────
 
   public async getIaHealth(): Promise<IaHealthStatus> {
-    return this.invokeCommand<IaHealthStatus>("aphrody_ia_health", {});
+    return this.invokeCommand<IaHealthStatus>("shenron_ia_health", {});
   }
 
   public async getIaObjectives(): Promise<IaObjective[]> {
-    return this.invokeCommand<IaObjective[]>("aphrody_ia_objectives", {});
+    return this.invokeCommand<IaObjective[]>("shenron_ia_objectives", {});
   }
 
   public async saveIaObjective(objective: Partial<IaObjective>): Promise<boolean> {
-    return this.invokeCommand<boolean>("aphrody_ia_save_objective", { objective });
+    return this.invokeCommand<boolean>("shenron_ia_save_objective", { objective });
   }
 
   public async runAutoEval(sampleSize = 25): Promise<AutoEvalMetric> {
-    return this.invokeCommand<AutoEvalMetric>("aphrody_ia_auto_eval", { sampleSize });
+    return this.invokeCommand<AutoEvalMetric>("shenron_ia_auto_eval", { sampleSize });
   }
 }

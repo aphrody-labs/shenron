@@ -23,7 +23,7 @@ describe("readers: generic ones shared with M3, the databook reader owned by She
     expect(shenron.DatabookReader).toBe(DatabookReader);
     const source = await read("reader/DatabookReader.tsx");
     expect(source).toContain('from "./use-focus-trap"');
-    expect(source).not.toMatch(/from ["']@aphrody\/m3-reader/);
+    expect(source).not.toMatch(/from ["']@shenron\/m3-reader/);
   });
   test("generic reader styles come from M3, the Dragon Ball skin lives here", async () => {
     expect(await read("reader-styles.css")).toContain('@import "@shenron/m3-reader/styles.css"');

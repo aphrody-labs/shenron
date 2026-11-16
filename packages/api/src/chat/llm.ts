@@ -2,10 +2,10 @@
 /**
  * LLM backends of the chat, tried in order with a clean fallback:
  *
- * - `gemini-web`: the Gemini web app through Aphrody's native client (`aphrody-gemini-web`,
- *   crate `aphrody-gemini-web`, aphrody-labs/aphrody): one JSON request on stdin, cookies read
+ * - `gemini-web`: the Gemini web app through Shenron's native client (`shenron-gemini-web`,
+ *   crate `shenron-gemini-web`, aphrody-labs/shenron): one JSON request on stdin, cookies read
  *   from the private cookie store, never from arguments or the repository;
- * - `local`: an OpenAI-compatible server (llama-server managed by Aphrody), streamed;
+ * - `local`: an OpenAI-compatible server (llama-server managed by Shenron), streamed;
  * - `extractive`: no model — the answer is the cited passages, explicitly labelled.
  *
  * A backend that fails before its first token hands over to the next one; the failure is
@@ -163,7 +163,7 @@ export function createOpenAiBackend(o: {
   };
 }
 
-// ── Gemini web app (aphrody-gemini-web) ─────────────────────────────────────
+// ── Gemini web app (shenron-gemini-web) ─────────────────────────────────────
 
 /** Cookie stores of the Gemini web client, in the crate's resolution order. */
 export function geminiCookieCandidates(
@@ -171,7 +171,7 @@ export function geminiCookieCandidates(
   home = homedir(),
 ): string[] {
   const explicit = env.SHENRON_GOOGLE_COOKIES_JSON?.trim();
-  const dir = env.SHENRON_HOME?.trim() || join(home, ".aphrody");
+  const dir = env.SHENRON_HOME?.trim() || join(home, ".shenron");
   return [
     ...(explicit ? [explicit] : []),
     join(dir, "cookies", "gemini-web.json"),
@@ -308,7 +308,7 @@ export function backendsFromEnv(env: Record<string, string | undefined>): LlmBac
     if (id === "gemini-web") {
       out.push(
         createGeminiWebBackend({
-          binary: env.SHENRON_GEMINI_WEB_BIN?.trim() || "aphrody-gemini-web",
+          binary: env.SHENRON_GEMINI_WEB_BIN?.trim() || "shenron-gemini-web",
           cookiePaths: geminiCookieCandidates(env),
           ...(env.SHENRON_GEMINI_MODEL ? { model: env.SHENRON_GEMINI_MODEL } : {}),
         }),

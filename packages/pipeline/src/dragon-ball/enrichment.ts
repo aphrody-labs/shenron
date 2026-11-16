@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** Shenron owns editorial deposits; Aphrody owns acquisition and parsing. */
+/** Shenron owns editorial deposits; Shenron owns acquisition and parsing. */
 import { rename } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import postgres from "postgres";

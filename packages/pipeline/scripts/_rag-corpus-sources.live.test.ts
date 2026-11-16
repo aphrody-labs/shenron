@@ -2,7 +2,7 @@
 import { beforeAll, describe, expect, test } from "bun:test";
 import { join } from "node:path";
 import { isLive, loadLiveRagEnv, requireLiveRag, type LiveRag } from "../src/testing/live-rag";
-import { prepareSource } from "./_rag-aphrody-sync";
+import { prepareSource } from "./_rag-shenron-sync";
 
 let corpus: typeof import("./_rag-corpus-sources");
 let live: LiveRag;
@@ -15,13 +15,13 @@ describe.if(isLive())("documentary RAG rendered from the actual private Shenron 
     live = await requireLiveRag();
   }, 120_000);
 
-  for (const file of ["corpus.json", "corpus-xv2.json", "corpus-aphrody.json"]) {
+  for (const file of ["corpus.json", "corpus-xv2.json", "corpus-shenron.json"]) {
     test(`${file}: real exported passages resolve to the preloaded PostgreSQL corpus`, async () => {
       const { corpusDir, isFandom, loadCorpusDocs, renderCorpusDocs } = corpus;
       const docs = loadCorpusDocs(join(corpusDir(), file));
       expect(docs?.length).toBeGreaterThan(0);
       if (!docs) throw new Error("Real Shenron corpus export is missing");
-      const { passages, refusedFandom } = renderCorpusDocs(docs, file.includes("aphrody"));
+      const { passages, refusedFandom } = renderCorpusDocs(docs, file.includes("shenron"));
       expect(passages.length).toBeGreaterThan(0);
       expect(refusedFandom).toBe(docs.filter(isFandom).length);
       expect(passages.every((passage) => !/fandom\.com/i.test(passage.url))).toBe(true);
@@ -31,7 +31,7 @@ describe.if(isLive())("documentary RAG rendered from the actual private Shenron 
       const stored = await live.client.ragDocument(expected.sourceId);
       expect(stored?.title).toBe(expected.title);
       expect(stored?.url).toBe(expected.url);
-      expect(stored?.kind).toBe(file.includes("aphrody") ? "author" : "source");
+      expect(stored?.kind).toBe(file.includes("shenron") ? "author" : "source");
       const retrieval = await live.client.ragSearchWithMode(passage.title, 3, {
         sourceId: passage.sourceId,
         lang: passage.lang,

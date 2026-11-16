@@ -53,7 +53,7 @@
     min-height: 100%;
     font-size: 18px;
     line-height: 1.2;
-    font-family: var(--aphrody-font-brand, "Koharu Noto Sans CJK", system-ui, sans-serif);
+    font-family: var(--shenron-font-brand, "Koharu Noto Sans CJK", system-ui, sans-serif);
     color: var(--md-sys-color-on-surface);
     background-color: var(--md-sys-color-surface);
     scrollbar-color: var(--md-sys-color-outline) var(--md-sys-color-surface-container);
@@ -63,7 +63,7 @@
   [data-koharu-ui-layer] {
     font-size: 18px;
     line-height: 1.2;
-    font-family: var(--aphrody-font-brand, "Koharu Noto Sans CJK", system-ui, sans-serif);
+    font-family: var(--shenron-font-brand, "Koharu Noto Sans CJK", system-ui, sans-serif);
     color: var(--md-sys-color-on-surface);
   }
 

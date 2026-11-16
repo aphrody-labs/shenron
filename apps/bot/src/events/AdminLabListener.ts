@@ -188,7 +188,7 @@ export class AdminLabListener {
               `• **Recall@10 :** ${pct(metrics.recall[10])}`,
               `• **MRR :** ${pct(metrics.mrr)}`,
               `• **nDCG@10 :** ${pct(metrics.ndcg)}`,
-              `• **Embeddings :** ${embeddingsLabel(metrics.sidecarActive, process.env.RAG_BACKEND === "aphrody")}`,
+              `• **Embeddings :** ${embeddingsLabel(metrics.sidecarActive, process.env.RAG_BACKEND === "shenron")}`,
               `• **Misses :** \`${metrics.misses.length} cas en échec\``,
             ].join("\n"),
           }),
@@ -203,7 +203,7 @@ export class AdminLabListener {
 
   private async statusCommand(message: Message) {
     const stats = await this.training.getStats();
-    const remoteRag = process.env.RAG_BACKEND === "aphrody";
+    const remoteRag = process.env.RAG_BACKEND === "shenron";
     await message.reply({
       embeds: [
         panel({
@@ -217,7 +217,7 @@ export class AdminLabListener {
             `• Retours d'entraînement : \`${stats.totalFeedbacks}\` (${stats.pendingFeedbacks} en attente)`,
             "",
             "**Services & Connectivité :**",
-            `• ${remoteRag ? "Embeddings Aphrody" : "Embeddings E5 (aphrody-shenron-embed)"} : ${online(stats.sidecarStatus)}`,
+            `• ${remoteRag ? "Embeddings Shenron" : "Embeddings E5 (shenron-embed)"} : ${online(stats.sidecarStatus)}`,
             `• API Site Next.js : ${online(stats.siteApiStatus)}`,
             `• API Bot Shenron : ${online(stats.botApiStatus)}`,
           ].join("\n"),

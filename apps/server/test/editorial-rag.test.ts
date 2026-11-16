@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { createAphrodyRagPort } from "../src/editorial-rag";
+import { createShenronRagPort } from "../src/editorial-rag";
 
 test("the live adapter uses the declared private transport and preserves editorial filters", async () => {
   const seen: URL[] = [];
@@ -36,7 +36,7 @@ test("the live adapter uses the declared private transport and preserves editori
     },
     { preconnect: fetch.preconnect },
   ) as typeof fetch;
-  const port = createAphrodyRagPort(
+  const port = createShenronRagPort(
     { SHENRON_AI_HTTP_URL: "http://127.0.0.1:8789", SHENRON_AI_HTTP_TOKEN: "fixture-private" },
     fetcher,
   );

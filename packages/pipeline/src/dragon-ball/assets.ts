@@ -4,7 +4,7 @@ import { mkdir, realpath, writeFile } from "node:fs/promises";
 import { extname, isAbsolute, join, relative, resolve } from "node:path";
 import type postgres from "postgres";
 import { createDatabooksFreezeGate } from "@shenron/db/guards";
-import { runAphrodyCommand, type NativeCommandExecutor } from "../aphrody/native-commands";
+import { runShenronCommand, type NativeCommandExecutor } from "../shenron/native-commands";
 
 export interface NativeAcquiredAsset {
   url: string;
@@ -191,7 +191,7 @@ export async function importDragonBallCovers(
   if (options.stateDir) args.push("--state", resolve(options.stateDir));
   if (options.collection) args.push("--collection", options.collection);
   if (options.did) args.push("--did", options.did);
-  const result = await runAphrodyCommand(args, {
+  const result = await runShenronCommand(args, {
     json: true,
     nativeExecutor: options.nativeExecutor,
     timeoutMs: options.timeoutMs ?? 3_600_000,

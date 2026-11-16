@@ -450,7 +450,7 @@ export function mangaWorkerPorts(config: WorkerConfig, signal?: AbortSignal): Ma
         const { runDeliveryOwner } = await import("./lib/bun-source-delivery");
         for (const dry of [false, true]) {
           const command =
-            "sudo -n docker exec aphrody-bot-1 /usr/local/bin/shenron-bot --replica-sync " +
+            "sudo -n docker exec shenron-bot-1 /usr/local/bin/shenron-bot --replica-sync " +
             (dry ? "--dry-run " : "") +
             "--tables db_manga_volumes,db_manga_chapters";
           const text = await runDeliveryOwner(

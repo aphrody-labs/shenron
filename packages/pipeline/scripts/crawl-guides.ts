@@ -48,7 +48,7 @@ if (!existsSync(OUT_DIR)) {
   mkdirSync(OUT_DIR, { recursive: true });
 }
 
-async function runAphrodyScrape(url: string): Promise<string> {
+async function runShenronScrape(url: string): Promise<string> {
   console.log(`[CRAWL GUIDE] Ingestion via YOLO WEB : ${url}`);
   return await yoloWebScrape(url, {});
 }
@@ -118,7 +118,7 @@ async function main() {
   for (const src of SOURCES) {
     const finalPath = join(OUT_DIR, `${src.slug}.md`);
 
-    const rawText = await runAphrodyScrape(src.url);
+    const rawText = await runShenronScrape(src.url);
     if (!rawText) {
       console.error(`✗ Échec de la récupération pour ${src.slug}`);
       continue;

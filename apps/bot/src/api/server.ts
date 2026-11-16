@@ -171,7 +171,7 @@ import { LevelService, rankOrdering, rankedMembersOnly } from "~/services/LevelS
 import { getLevelThresholds, levelForXP, xpProgress, type LevelThreshold } from "~/lib/xp";
 import { hybridSearch, logRagHealth } from "~/lib/rag";
 import { contextPublicRag, searchPublicRag } from "./public-rag";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { ShenronComputeClient } from "@shenron/pipeline/shenron";
 import { generateLlmGrounded, isFallbackAnswer, rankRagHits } from "~/lib/llm";
 import { graphqlHandler } from "~/api/graphql";
 import {
@@ -1047,7 +1047,7 @@ export class ApiServer {
       idleTimeout: 120,
 
       routes: {
-        // Administration is served once by the authenticated Aphrody M3 web host.
+        // Administration is served once by the authenticated Shenron M3 web host.
         ...Object.fromEntries(
           Object.keys(ADMIN_ROUTES).map((path) => [
             path,
@@ -1273,8 +1273,8 @@ export class ApiServer {
           try {
             const client = container.resolve(Client);
             const stats = this.stats.getLatency();
-            if (process.env.RAG_BACKEND === "aphrody") {
-              const rag = await new AphrodyComputeClient().ragStats();
+            if (process.env.RAG_BACKEND === "shenron") {
+              const rag = await new ShenronComputeClient().ragStats();
               return Response.json({
                 gatewayReady: client.isReady(),
                 wsLatency: stats.ws,
@@ -2373,7 +2373,7 @@ export class ApiServer {
           publicCachedJson(req, 0, () =>
             searchPublicRag(
               req,
-              process.env.RAG_BACKEND === "aphrody"
+              process.env.RAG_BACKEND === "shenron"
                 ? null
                 : container.resolve(DatabaseService).sqlite,
             ),
@@ -2382,7 +2382,7 @@ export class ApiServer {
           publicCachedJson(req, 0, () =>
             contextPublicRag(
               req,
-              process.env.RAG_BACKEND === "aphrody"
+              process.env.RAG_BACKEND === "shenron"
                 ? null
                 : container.resolve(DatabaseService).sqlite,
             ),
@@ -2818,12 +2818,12 @@ export class ApiServer {
         "/api/public/data/coverage": (req) =>
           publicCachedJson(req, 5 * 60_000, async () => {
             const dbs = container.resolve(DatabaseService);
-            const aphrodyRag =
-              process.env.RAG_BACKEND === "aphrody"
-                ? await new AphrodyComputeClient().ragStats().catch(() => null)
+            const shenronRag =
+              process.env.RAG_BACKEND === "shenron"
+                ? await new ShenronComputeClient().ragStats().catch(() => null)
                 : null;
             const meta =
-              process.env.RAG_BACKEND === "aphrody"
+              process.env.RAG_BACKEND === "shenron"
                 ? null
                 : (dbs.sqlite
                     .query<
@@ -2836,11 +2836,11 @@ export class ApiServer {
                       []
                     >("SELECT model, dim, count, built_at FROM rag_meta LIMIT 1")
                     .get() ?? null);
-            const index = aphrodyRag
+            const index = shenronRag
               ? {
-                  model: "aphrody",
+                  model: "shenron",
                   dim: null,
-                  chunks: aphrodyRag.chunks,
+                  chunks: shenronRag.chunks,
                   builtAt: null,
                 }
               : meta
@@ -2852,8 +2852,8 @@ export class ApiServer {
                   }
                 : null;
             const sources =
-              process.env.RAG_BACKEND === "aphrody"
-                ? (aphrodyRag?.sources ?? []).map((s) => ({
+              process.env.RAG_BACKEND === "shenron"
+                ? (shenronRag?.sources ?? []).map((s) => ({
                     source_id: s.sourceId,
                     kind: s.kind,
                     n: s.count,
@@ -3005,7 +3005,7 @@ export class ApiServer {
           ),
 
         // ── A2A — Agent2Agent protocol (Claude ↔ Gemini bridge) ──────
-        // Relais vers le serveur Rust `aphrody a2a serve` (./a2a-proxy.ts) :
+        // Relais vers le serveur Rust `shenron a2a serve` (./a2a-proxy.ts) :
         // agent card, JSON-RPC (message/send → /a2a, reste → racine A2A 1.0)
         // et SSE du mailbox (/coord). Plus d'implémentation locale.
         "/.well-known/agent-card.json": (req) => a2aAgentCard(req),
@@ -6543,8 +6543,8 @@ async function mapLimitDeadline<T, R>(
 
 // ── A2A bridge ────────────────────────────────────────────────────────────
 // Le bot n'implémente pas A2A. Avec SHENRON_A2A_URL, tout est relayé vers le
-// serveur Rust `aphrody a2a serve` (./a2a-proxy.ts). Sans lui (production depuis
-// le retrait du service Aphrody), la carte et le JSON-RPC sont relayés au hub du
+// serveur Rust `shenron a2a serve` (./a2a-proxy.ts). Sans lui (production depuis
+// le retrait du service Shenron), la carte et le JSON-RPC sont relayés au hub du
 // site (`/api/a2a`, seul propriétaire des tâches) et `/api/a2a/events` diffuse
 // les événements publics du bot (EventBus) : le flux de la home.
 
@@ -6722,7 +6722,7 @@ export async function a2aJsonRpc(req: Request): Promise<Response> {
     return a2aRpcError(
       id,
       -32601,
-      "Method not found: tasks/update has no A2A 1.0 equivalent on the aphrody a2a server",
+      "Method not found: tasks/update has no A2A 1.0 equivalent on the shenron a2a server",
     );
   }
 

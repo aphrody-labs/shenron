@@ -108,7 +108,7 @@ Base : `https://dragonballfr.com` (API du site, pas du bot). Lecture seule, CORS
 | --------------------------- | ----------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | `GET /api/canon`            | —                                                                             | la doctrine : `tiers`, `doctrine`, `admittedSources`, `forbiddenSources`, `heuristics`, `entries`, `stats` |
 | `GET /api/canon?q=`         | `q` (≤ 400 car.)                                                              | `{ question, verdict, references, plates, records, suggestions, mode }`                                    |
-| `GET /api/canon/references` | `q`, `provenance` (aphrody\|databooks\|manuel\|manga), `limit` ≤100, `offset` | `{ total, items: CanonReference[] }`                                                                       |
+| `GET /api/canon/references` | `q`, `provenance` (shenron\|databooks\|manuel\|manga), `limit` ≤100, `offset` | `{ total, items: CanonReference[] }`                                                                       |
 
 `verdict` = `{ tier, tierLabel, tierDefinition, score (0-100), verdict, explanation, sources, matchedKeywords, doctrine, origin, nature, color, toriyamaQuote, suggestions }` (clés relevées le 2026-10-05 ; `references` et `plates` peuvent être vides, ce qui ne prouve rien : cite alors seulement la doctrine).
 `origin` ∈ `entry:<id>` (sujet tranché) · `heuristic:<id>` (famille de formulations) · `fallback` (la doctrine ne sait pas — ne pas inventer).

@@ -3,12 +3,12 @@
  * SQLite schema of the Shenron VFS database (`shenron-vfs.sqlite`), the single file embedded
  * in the Shenron binaries (`import db from "…" with { type: "sqlite", embed: "true" }`).
  *
- * - `vfs_meta`, `vfs_nodes`: file tree of the Aphrody VFS contract (agent home, assets, data).
+ * - `vfs_meta`, `vfs_nodes`: file tree of the Shenron VFS contract (agent home, assets, data).
  *   A node's bytes are `inline` (BLOB), `embedded` (a `Bun.embeddedFiles` entry of the
  *   compiled binary) or `cdn` (index only, fetched lazily from the Shenron CDN).
- * - `docs`, `chunks`, `chunks_fts`, `vectors`, `meta`: the aphrody-rag store schema
- *   (`crates/ai/rag/src/schema.rs`, aphrody-labs/aphrody) verbatim, so `shenron rag`,
- *   `shenron-mcp` and aphrody-rag read the same index. `rag_doc_attrs` and `vectors_i8`
+ * - `docs`, `chunks`, `chunks_fts`, `vectors`, `meta`: the shenron-rag store schema
+ *   (`crates/ai/rag/src/schema.rs`, aphrody-labs/shenron) verbatim, so `shenron rag`,
+ *   `shenron-mcp` and shenron-rag read the same index. `rag_doc_attrs` and `vectors_i8`
  *   are Shenron side tables (kind/url/visibility, int8 vectors of the public profile).
  * - `wiki_categories`, `wiki_entities`: the visible rows of the public wiki categories.
  *
@@ -17,7 +17,7 @@
 
 export const VFS_SCHEMA_VERSION = 1;
 
-/** Embedding space of the Shenron RAG corpus (config/local-ai.json, aphrody-labs/aphrody). */
+/** Embedding space of the Shenron RAG corpus (config/local-ai.json, aphrody-labs/shenron). */
 export const RAG_EMBED_MODEL = "Xenova/multilingual-e5-small";
 export const RAG_EMBED_DIMENSIONS = 384;
 
@@ -45,7 +45,7 @@ INSERT OR IGNORE INTO vfs_nodes (path, parent, name, kind, size, mtime_ms)
 VALUES ('/', '', '', 'dir', 0, 0);
 `;
 
-/** aphrody-rag `initialize_schema`, unchanged (foreign keys enabled by the opener). */
+/** shenron-rag `initialize_schema`, unchanged (foreign keys enabled by the opener). */
 export const RAG_STORE_DDL = `
 CREATE TABLE IF NOT EXISTS docs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

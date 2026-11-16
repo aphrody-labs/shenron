@@ -1,17 +1,17 @@
 /**
  * semantic-cache.ts — Cache sémantique intelligent basé sur Redis.
  *
- * Utilise les embeddings d'Aphrody (ou du sidecar avant bascule) pour comparer les nouvelles questions
+ * Utilise les embeddings d'Shenron (ou du sidecar avant bascule) pour comparer les nouvelles questions
  * aux questions déjà répondues. Si une similarité sémantique élevée (cosinus >= 0.92)
  * est trouvée, retourne la réponse du cache en moins de 5ms, économisant des appels API.
  *
  * Clients construits paresseusement (B3) : aucune URL n'est lue à l'import.
- * Redis résilient (B8). Chemin Aphrody via la façade de calcul (B18 : lots de
+ * Redis résilient (B8). Chemin Shenron via la façade de calcul (B18 : lots de
  * 16, 384 dimensions vérifiées, espaces réduits). Espace de noms `v3` (B7) :
  * la portée inclut désormais `PROMPT_VERSION`.
  */
 import { createHash } from "node:crypto";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { ShenronComputeClient } from "@shenron/pipeline/shenron";
 import { createResilientRedis, type ResilientRedis } from "@shenron/db/redis";
 import { embedQueryVector } from "./rag";
 import { resolveRedisUrl } from "@shenron/config/services";
@@ -88,12 +88,12 @@ function cosineSimilarity(a: Float32Array | number[], b: Float32Array | number[]
 
 function cachePrefix(persona: string): string {
   const backendPrefix =
-    process.env.RAG_BACKEND === "aphrody"
-      ? `dbz:scache:aphrody:${persona}`
+    process.env.RAG_BACKEND === "shenron"
+      ? `dbz:scache:shenron:${persona}`
       : `dbz:scache:${persona}`;
   // B7: the scope now binds PROMPT_VERSION; v3 kept v2 answers (older prompts) out.
   // v4 drops the answers cached before the Gemini Web restart-draft fix
-  // (aphrody-gemini-web `strip_restarted_drafts`): some began with a cut, duplicated
+  // (shenron-gemini-web `strip_restarted_drafts`): some began with a cut, duplicated
   // opening ("…bien fascinOh oh ! …"). Older keys expire with their TTL.
   return `${backendPrefix}:v4`;
 }
@@ -101,8 +101,8 @@ function cachePrefix(persona: string): string {
 /** Embed la question via le backend RAG sélectionné. */
 async function getQueryEmbedding(query: string): Promise<Float32Array | null> {
   try {
-    if (process.env.RAG_BACKEND === "aphrody") {
-      const vectors = await new AphrodyComputeClient().embed([query]);
+    if (process.env.RAG_BACKEND === "shenron") {
+      const vectors = await new ShenronComputeClient().embed([query]);
       return Float32Array.from(vectors[0]!);
     }
     const v = await embedQueryVector(query, EMBED_TIMEOUT_MS);

@@ -3,7 +3,7 @@
 /**
  * Adds entries to the inventory served by shenron-cdn-origin and restarts it. Run as root on dbfr:
  *
- *   sudo bun cdn-origin-add.ts <entries.json> [--config /etc/aphrody/cloudflare/origin-cdn.json]
+ *   sudo bun cdn-origin-add.ts <entries.json> [--config /etc/shenron/cloudflare/origin-cdn.json]
  *
  * entries.json is {"/path": {sha256,size,contentType,cacheControl}}. Existing paths are never changed. The new
  * inventory is written next to the old one (0600), the config is updated atomically with a backup, the service is
@@ -18,7 +18,7 @@ const [entriesPath, ...rest] = process.argv.slice(2);
 if (!entriesPath) throw new Error("usage: cdn-origin-add.ts <entries.json> [--config path]");
 const defaultConfigPath = existsSync("/srv/shenron/config/cloudflare/origin-cdn.json")
   ? "/srv/shenron/config/cloudflare/origin-cdn.json"
-  : "/etc/aphrody/cloudflare/origin-cdn.json";
+  : "/etc/shenron/cloudflare/origin-cdn.json";
 const configPath =
   rest.includes("--config") && rest[rest.indexOf("--config") + 1]
     ? rest[rest.indexOf("--config") + 1]!

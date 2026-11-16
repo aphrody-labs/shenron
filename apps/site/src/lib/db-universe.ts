@@ -25,7 +25,7 @@ import { escapeLike } from "@shenron/db/repos/wiki";
 import { db } from "@/lib/db";
 import { API_URL } from "@/lib/config";
 import { verifyWikimediaImages, withVerifiedImages } from "@/lib/wikimedia-images";
-import { chatAphrodyRag, searchAphrodyRag, usesAphrodyRag } from "@/lib/site-rag";
+import { chatShenronRag, searchShenronRag, usesShenronRag } from "@/lib/site-rag";
 import {
   botArcs,
   botBattles,
@@ -2542,8 +2542,8 @@ export const dbUniverse = {
     },
   ) => {
     try {
-      if (usesAphrodyRag()) {
-        return await searchAphrodyRag(q, limit, options);
+      if (usesShenronRag()) {
+        return await searchShenronRag(q, limit, options);
       }
       let url = `${apiBase()}/api/public/rag/search?q=${encodeURIComponent(q)}&limit=${limit}`;
       if (options?.lang) url += `&lang=${encodeURIComponent(options.lang)}`;
@@ -2574,8 +2574,8 @@ export const dbUniverse = {
 
   ragChat: async (q: string, persona = "whis") => {
     try {
-      if (usesAphrodyRag()) {
-        return await chatAphrodyRag(q, persona);
+      if (usesShenronRag()) {
+        return await chatShenronRag(q, persona);
       }
       const url = `${apiBase()}/api/public/rag/chat?q=${encodeURIComponent(q)}&persona=${encodeURIComponent(persona)}`;
       const r = await fetch(url, {

@@ -2,7 +2,7 @@
  * Jeu d'évaluation OCR databooks, construit depuis les planches relues.
  *
  * Le corpus complet contient des OCR historiques : s'en servir comme vérité
- * ferait optimiser Aphrody vers les mêmes hallucinations. Ce script n'exporte
+ * ferait optimiser Shenron vers les mêmes hallucinations. Ce script n'exporte
  * donc que les planches `verifiee: true`, avec un scan présent et un texte que
  * le juge canonique considère sain. Le lot est portable vers la machine GPU.
  *
@@ -91,7 +91,7 @@ try {
   await Bun.write(
     join(sortie, "README.txt"),
     `Benchmark databooks : ${references.length} planches relues, saines et hachées SHA-256.\n` +
-      "Ne pas déposer benchmark.jsonl : il sert uniquement à mesurer une sortie Aphrody.\n",
+      "Ne pas déposer benchmark.jsonl : il sert uniquement à mesurer une sortie Shenron.\n",
   );
   console.log(
     `✓ benchmark : ${references.length} planche(s) → ${sortie} (${basename(images)}/ + benchmark.jsonl)`,

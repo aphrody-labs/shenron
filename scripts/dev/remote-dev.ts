@@ -93,13 +93,13 @@ export const VITAL = {
     "apps/bot/data",
     ".coord/claims",
   ],
-  home: [".aphrody/private/shenron", ".claude/projects/-home-aphro-shenron/memory"],
+  home: [".shenron/private/shenron", ".claude/projects/-home-aphro-shenron/memory"],
   /** Large or regenerable parts left out of the archive (models are re-downloaded or retrained). */
   exclude: [
     "data/home/models",
     "*/checkpoints",
-    ".aphrody/private/shenron/home",
-    ".aphrody/private/shenron/qualification",
+    ".shenron/private/shenron/home",
+    ".shenron/private/shenron/qualification",
     "*.db-shm",
     "*.db-wal",
   ],

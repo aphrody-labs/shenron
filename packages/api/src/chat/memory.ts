@@ -2,8 +2,8 @@
 /**
  * Persistent memory of the chat, the Shenron side of it: which facts of a user message are worth
  * remembering, which stored memories a turn recalls, and how they reach the model (as data
- * beside the sources, never as instructions). Storage, ids and search belong to Aphrody's
- * `aphrody-memory` behind the `MemoryPort`. Runtime class: `pure`.
+ * beside the sources, never as instructions). Storage, ids and search belong to Shenron's
+ * `shenron-memory` behind the `MemoryPort`. Runtime class: `pure`.
  */
 import type { MemoryEntry } from "../contract/memory";
 

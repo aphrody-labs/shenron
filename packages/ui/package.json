@@ -87,7 +87,7 @@
   },
   "scripts": {
     "lint": "bun lint -c ../../.oxlintrc.json src",
-    "test": "bun test --path-ignore-patterns='test/koharu/**' --path-ignore-patterns='test/dom/**' && bun test/koharu/run.ts && bun test --preload @aphrody/bun-test-dom ./test/dom",
+    "test": "bun test --path-ignore-patterns='test/koharu/**' --path-ignore-patterns='test/dom/**' && bun test/koharu/run.ts && bun test --preload @shenron/test-dom ./test/dom",
     "tokens": "bun scripts/generate-tokens.ts",
     "tokens:check": "bun scripts/generate-tokens.ts --check",
     "css:equivalence": "bun scripts/check-css-equivalence.ts",
@@ -128,6 +128,7 @@
     "zustand": "catalog:"
   },
   "devDependencies": {
+    "@shenron/kit": "workspace:*",
     "@shenron/test-dom": "workspace:*",
     "@tailwindcss/postcss": "catalog:",
     "@testing-library/jest-dom": "catalog:",

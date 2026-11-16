@@ -1136,7 +1136,7 @@
       "provenance": {
         "manga": "原作漫画",
         "databooks": "公式データブック",
-        "aphrody": "作者インタビュー",
+        "shenron": "作者インタビュー",
         "manuel": "公式設定覚書"
       },
       "category": {
@@ -2239,8 +2239,8 @@
     "models": {
       "title": "モデル",
       "description": "このパソコンのチャットモデルです。オンラインモデルは質問をこのマシンの外へ送信します。",
-      "catalogTitle": "Aphrody AI カタログ",
-      "catalogDescription": "このパソコンに実際にある Aphrody AI カタログとエージェントです。",
+      "catalogTitle": "Shenron AI カタログ",
+      "catalogDescription": "このパソコンに実際にある Shenron AI カタログとエージェントです。",
       "agentsLabel": "ホストにインストールされたエージェント",
       "installed": "インストール済み",
       "missing": "未検出",

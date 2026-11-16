@@ -4,8 +4,8 @@ import { mkdir, chmod, lstat, realpath } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join, resolve, isAbsolute } from "node:path";
 
-/** Native Aphrody Web binary (SHENRON_WEB_BIN, default ~/.local/bin/aphrody-web). */
-const SHENRON_WEB = process.env.SHENRON_WEB_BIN ?? join(homedir(), ".local/bin/aphrody-web");
+/** Native Shenron Web binary (SHENRON_WEB_BIN, default ~/.local/bin/shenron-web). */
+const SHENRON_WEB = process.env.SHENRON_WEB_BIN ?? join(homedir(), ".local/bin/shenron-web");
 type Rect = { x: number; y: number; width: number; height: number; right: number; bottom: number };
 type Image = { src: string; w: number; h: number; rect: Rect };
 export function previewIdentity(source: string) {

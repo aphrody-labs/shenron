@@ -78,8 +78,8 @@ async function fixture() {
     asOf: manifest.asOf,
     review: "approved",
     target: {
-      owner: "aphrody-train",
-      recipe: "aphrody_train.bun_finetune:train",
+      owner: "shenron-train",
+      recipe: "shenron_train.bun_finetune:train",
       runtime: "python-cuda",
       format: "supervised-chat-jsonl",
       domain: "dragon-ball",
@@ -232,7 +232,7 @@ test("a selected incompatible recipe or malformed chat never receives approval",
     state: "blocked",
     code: "training-dataset-recipe-unapproved",
   });
-  f.entry.target.recipe = "aphrody_train.bun_finetune:train";
+  f.entry.target.recipe = "shenron_train.bun_finetune:train";
   f.entry.target.format = "raw-documents";
   await f.save();
   expect(await f.port(f.source, f.context)).toEqual({

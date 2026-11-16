@@ -297,7 +297,7 @@ export function protectedAdminToken(inspected: string): string {
   return token;
 }
 async function protectedInventory() {
-  const inspected = Bun.spawnSync(["docker", "inspect", "aphrody-site-1"], {
+  const inspected = Bun.spawnSync(["docker", "inspect", "shenron-site-1"], {
     stdout: "pipe",
     stderr: "ignore",
     stdin: "ignore",
@@ -370,9 +370,9 @@ async function main() {
   if (
     !args.values.job ||
     !isAbsolute(args.values.job) ||
-    !job.startsWith(resolve(process.env.HOME!, ".aphrody") + "/")
+    !job.startsWith(resolve(process.env.HOME!, ".shenron") + "/")
   )
-    throw Error("Existing private Aphrody job required");
+    throw Error("Existing private Shenron job required");
   await mkdir(job, { recursive: true, mode: 0o700 });
   await quota(job);
   if (await Bun.file(join(job, "supervisor.pause")).exists()) {

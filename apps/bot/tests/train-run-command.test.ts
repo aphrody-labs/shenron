@@ -12,7 +12,7 @@ import {
   type TrainRunKind,
 } from "../src/commands/admin/Train";
 
-const env = { SHENRON_HOME: "/state", SHENRON_BIN: "/bin/aphrody" } as NodeJS.ProcessEnv;
+const env = { SHENRON_HOME: "/state", SHENRON_BIN: "/bin/shenron" } as NodeJS.ProcessEnv;
 
 function stream(text: string): ReadableStream<Uint8Array> {
   return new Response(text).body as ReadableStream<Uint8Array>;
@@ -41,11 +41,11 @@ describe("train run", () => {
     expect(defaultDbfrTriples(env)).toBe(join("/state", "workspaces/dbfr/training/triples.jsonl"));
   });
 
-  it("builds the aphrody train run argv", () => {
+  it("builds the shenron train run argv", () => {
     expect(
       buildTrainRunArgv({ id: "j1", kind: "rerank", input: "/t.jsonl", outDir: "/o" }, env),
     ).toEqual([
-      "/bin/aphrody",
+      "/bin/shenron",
       "train",
       "run",
       "--kind",
@@ -107,7 +107,7 @@ describe("train run", () => {
   it("marks a job failed when the spawn throws, and does not block the next start", () => {
     let attempts = 0;
     const runner = new TrainJobRunner(() => {
-      if (++attempts === 1) throw new Error("ENOENT: aphrody not found");
+      if (++attempts === 1) throw new Error("ENOENT: shenron not found");
       return { exited: new Promise<number>(() => {}), stdout: null, stderr: null };
     }, env);
     expect(() => runner.start("embed", undefined, "42")).toThrow("ENOENT");
@@ -167,8 +167,8 @@ describe("train job messages", () => {
 });
 
 describe("eval embeddings label", () => {
-  it("does not report a BM25 fallback when the Aphrody backend is in use", () => {
-    expect(embeddingsLabel(true, true)).toContain("Aphrody E5");
+  it("does not report a BM25 fallback when the Shenron backend is in use", () => {
+    expect(embeddingsLabel(true, true)).toContain("Shenron E5");
     expect(embeddingsLabel(false, true)).not.toContain("BM25");
     expect(embeddingsLabel(false, false)).toContain("BM25");
     expect(embeddingsLabel(true, false)).toContain("ONNX");

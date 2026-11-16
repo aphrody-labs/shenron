@@ -97,7 +97,7 @@ export interface CanonHeuristic {
 
 /**
  * Une déclaration d'auteur citée telle quelle, chargée depuis le corpus local
- * (`.aphrody`) par `scripts/canon-ingest.ts`.
+ * (`.shenron`) par `scripts/canon-ingest.ts`.
  *
  * Une référence n'est **pas** un verdict : elle ne dit pas si un fait est
  * canonique, elle donne la phrase imprimée sur laquelle on peut trancher. C'est
@@ -123,11 +123,11 @@ export interface CanonReference {
   document: string;
   lang: "fr" | "en" | "ja";
   /**
-   * `aphrody` = corpus local de guides ; `databooks` = planche transcrite et
+   * `shenron` = corpus local de guides ; `databooks` = planche transcrite et
    * traduite par le site, avec son scan ; `manuel` = saisie dans l'éditeur ;
    * `manga` = tomes et chapitres du manga original et de DBS.
    */
-  provenance: "aphrody" | "databooks" | "manuel" | "manga";
+  provenance: "shenron" | "databooks" | "manuel" | "manga";
   /** Lien vers la pièce elle-même (planche de databook, scan manga) quand elle existe. */
   href?: string;
   /**
@@ -229,7 +229,7 @@ export interface CanonConfig {
   tiers: CanonTierConfig[];
   entries: CanonTopicEntry[];
   heuristics: CanonHeuristic[];
-  /** Le corpus de déclarations d'auteur, chargé depuis `.aphrody`. */
+  /** Le corpus de déclarations d'auteur, chargé depuis `.shenron`. */
   references: CanonReference[];
   /** Configuration du Power Scaling officiel canonique */
   powerScaling: PowerScalingConfig;
@@ -2179,7 +2179,7 @@ export const DEFAULT_CANON_CONFIG: CanonConfig = {
   tiers: DEFAULT_CANON_TIERS,
   entries: CANON_DATABASE,
   heuristics: DEFAULT_CANON_HEURISTICS,
-  // Vide par défaut : le corpus se charge depuis `.aphrody` (voir
+  // Vide par défaut : le corpus se charge depuis `.shenron` (voir
   // `scripts/canon-ingest.ts`), il n'est pas recopié dans le dépôt.
   references: [],
   powerScaling: DEFAULT_POWER_SCALING_CONFIG,
@@ -2260,7 +2260,7 @@ function contientMotCle(texte: string, motCle: string): boolean {
  * citations les plus bavardes sur le personnage cité.
  *
  * Le calcul balaie tout le corpus (plusieurs milliers de citations chargées
- * depuis `.aphrody`) : il est mémoïsé sur le tableau lui-même, qui est figé pour
+ * depuis `.shenron`) : il est mémoïsé sur le tableau lui-même, qui est figé pour
  * la durée d'une doctrine résolue. Sans cela, chaque question posée le refaisait
  * — jusqu'à trois fois pour un même verdict.
  */
@@ -2881,7 +2881,7 @@ export function resolveCanonConfig(patch: unknown): CanonConfig {
         provenance:
           r.provenance === "manuel" || r.provenance === "databooks" || r.provenance === "manga"
             ? r.provenance
-            : "aphrody",
+            : "shenron",
         // Une route interne, et rien d'autre : cette valeur devient un `href`.
         ...(typeof r.href === "string" && /^\/[\w/#?=&.-]*$/.test(r.href)
           ? { href: r.href.slice(0, 300) }

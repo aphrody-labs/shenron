@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * a2a-hub.ts — client of the Rust A2A server served by `aphrody a2a serve`
+ * a2a-hub.ts — client of the Rust A2A server served by `shenron a2a serve`
  * (crates/os/a2a-coord listener + crates/os/a2a-server routers).
  *
  * Upstream routes used:
@@ -12,13 +12,13 @@
  *
  * Base URL: `SHENRON_A2A_URL`. Read per call, never at module load.
  *
- * Without `SHENRON_A2A_URL` (production since the Aphrody A2A service was retired on 2026-09-25),
- * the site answers itself with the in-process Shenron hub (`@shenron/pipeline/aphrody/a2a`):
+ * Without `SHENRON_A2A_URL` (production since the Shenron A2A service was retired on 2026-09-25),
+ * the site answers itself with the in-process Shenron hub (`@shenron/pipeline/shenron/a2a`):
  * legacy `message/send`, `tasks/*` and the A2A 1.0 `SendMessage`, `GetTask`, `ListTasks`, with
  * tasks and envelopes kept in the durable store of `A2A_COORD_DIR`.
  */
 
-import { ShenronA2AHub, type AdminNotifier } from "@shenron/pipeline/aphrody/a2a";
+import { ShenronA2AHub, type AdminNotifier } from "@shenron/pipeline/shenron/a2a";
 import { resolveSiteUrl } from "@shenron/config/public-urls";
 import {
   A2A_DEFAULT_URL,
@@ -30,7 +30,7 @@ import {
   postA2AEnvelope,
   postA2AJsonRpc,
   type UpstreamReply,
-} from "@shenron/pipeline/aphrody/a2a-transport";
+} from "@shenron/pipeline/shenron/a2a-transport";
 
 export { A2A_DEFAULT_URL, A2A_URL_ENV, LEGACY_SEND_METHOD, a2aBaseUrl };
 export type { UpstreamReply };

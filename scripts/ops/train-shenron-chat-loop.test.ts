@@ -24,7 +24,7 @@ function fixture() {
     input: join(root, "triples.jsonl"),
     soul: join(root, "SOUL.md"),
     out: root,
-    aphrody: join(root, "aphrody"),
+    shenron: join(root, "shenron"),
     baseModel: join(root, "hf"),
     ggufModel: join(root, "base.gguf"),
     baselineAdapter: join(root, "baseline.gguf"),
@@ -32,7 +32,7 @@ function fixture() {
     batch: 50,
     steps: 20,
     evalLimit: 30,
-    teacher: "aphrody",
+    teacher: "shenron",
     port: 8090,
   };
   writeFileSync(options.soul, "Shenron persona");
@@ -53,7 +53,7 @@ function fixture() {
       } else {
         const out = args[args.indexOf("--output-dir") + 1];
         mkdirSync(out, { recursive: true });
-        await Bun.write(join(out, "adapter.gguf"), "GGUFverified-by-aphrody");
+        await Bun.write(join(out, "adapter.gguf"), "GGUFverified-by-shenron");
       }
     },
     evaluate: async (adapter, _label, gold) => {
@@ -73,7 +73,7 @@ describe("training cycle", () => {
       "uv",
       "run",
       "--package",
-      "aphrody-train",
+      "shenron-train",
       "--extra",
       "full",
       "--locked",

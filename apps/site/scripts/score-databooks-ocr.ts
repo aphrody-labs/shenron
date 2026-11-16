@@ -1,5 +1,5 @@
 /**
- * Compare une sortie Aphrody au benchmark databooks relu.
+ * Compare une sortie Shenron au benchmark databooks relu.
  *
  * Lecture seule : ce score n'écrit ni en base ni dans Redis. Il rend visible
  * une régression avant qu'un modèle ne passe sur un lot de production.

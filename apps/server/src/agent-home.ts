@@ -3,11 +3,11 @@
  * The agent homes of `shenron-server` on a user's machine (Shenron Studio, local profile): the
  * single resolution point of the active agent home of the chat.
  *
- *   `<SHENRON_HOME>/agents/<id>/`  one home per user in the native `aphrody-agent-home` layout
+ *   `<SHENRON_HOME>/agents/<id>/`  one home per user in the native `shenron-agent-home` layout
  *                                  (`@shenron/db/agent-homes` DirAgentHomeStore), instantiated
  *                                  from the embedded public template `templates/agent-home`
  *   `<SHENRON_HOME>/agents/active.json`  `{ agentId }` of the active home
- *   `<home>/.aphrody/memory.sqlite`      the persistent chat memory of that home
+ *   `<home>/.shenron/memory.sqlite`      the persistent chat memory of that home
  *
  * First start: an anonymous `local` home (language and timezone of the system). Discord
  * sign-in (`POST /api/local/agent-home/login`, system browser, loopback callback
@@ -273,7 +273,7 @@ export function openAgentHomes(
     memoryLocation: (agentId) =>
       join(
         isAgentHomeId(agentId) ? store.dirOf(agentId) : store.dirOf(LOCAL_AGENT_ID),
-        ".aphrody",
+        ".shenron",
         MEMORY_FILE,
       ),
     memoryAliases: (agentId) => (agentId.startsWith("discord:") ? [LOCAL_AGENT_ID] : []),

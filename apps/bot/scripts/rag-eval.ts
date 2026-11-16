@@ -8,13 +8,13 @@
  * Deux passes par cas :
  *   - `lexical` — BM25 seul (baseline reproductible, sans embeddings) ;
  *   - `served`  — le pipeline tel que servi en production (hybride + rerank si le
- *                 Aphrody répond). Un cas dégradé en lexical reste compté ici,
+ *                 Shenron répond). Un cas dégradé en lexical reste compté ici,
  *                 dans la passe servie : le mélanger à la baseline faussait les
  *                 deux lignes (« 82/68 cas servis en lexical »).
  *
  * Métriques : Recall@{1,3,5,10}, MRR, nDCG@10, latence p50/p95, ventilation par tag.
  *
- * Lecture seule sur apps/bot/data/bot.db (ou RAG_DB). Embeddings via Aphrody
+ * Lecture seule sur apps/bot/data/bot.db (ou RAG_DB). Embeddings via Shenron
  * `POST /api/v1/shenron/embed` : SHENRON_AI_HTTP_URL et SHENRON_AI_HTTP_TOKEN
  * obligatoires hors --lexical-only (B13).
  *
@@ -35,7 +35,7 @@ import {
 } from "@shenron/pipeline/ai/eval";
 import { resolveDataPath } from "@shenron/config/paths";
 import { hybridSearch } from "../src/lib/rag";
-import { ShenronEmbeddingsClient } from "@shenron/pipeline/aphrody";
+import { ShenronEmbeddingsClient } from "@shenron/pipeline/shenron";
 import {
   repoRootFromScript,
   servedBotDbPath,
@@ -60,7 +60,7 @@ const arg = (name: string) =>
   process.argv.find((a) => a.startsWith(`--${name}=`))?.slice(name.length + 3);
 const flag = (name: string) => process.argv.includes(`--${name}`);
 
-/** Embeds one probe query through Aphrody (real round trip, token included). */
+/** Embeds one probe query through Shenron (real round trip, token included). */
 async function embeddingsUp(client: ShenronEmbeddingsClient): Promise<boolean> {
   try {
     await client.embed(["Son Goku"], "query", { timeoutMs: 3_000 });
@@ -169,7 +169,7 @@ async function main(): Promise<void> {
   const embeddings = flag("lexical-only") ? null : new ShenronEmbeddingsClient();
   const sidecar = embeddings !== null && (await embeddingsUp(embeddings));
   console.log(
-    `→ index : ${chunkCount} chunks · embeddings Aphrody ${sidecar ? "OK" : "absent"} (${embeddings ? embeddings.baseUrl.origin : "--lexical-only"})\n`,
+    `→ index : ${chunkCount} chunks · embeddings Shenron ${sidecar ? "OK" : "absent"} (${embeddings ? embeddings.baseUrl.origin : "--lexical-only"})\n`,
   );
 
   const lexical: CaseResult[] = [];

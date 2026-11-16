@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
 import { createRecordingFetch } from "@shenron/config/testing";
-import { createAphrodyCompute } from "../../src/ai/aphrody";
+import { createShenronCompute } from "../../src/ai/shenron";
 import type { AiConfig } from "../../src/ai/config";
 import { DEFAULT_AI_TIMEOUTS, SHENRON_RAG_INDEX } from "../../src/ai/config";
 import {
-  aphrodyEmbeddingModel,
+  shenronEmbeddingModel,
   e5DirectEmbeddingModel,
   embedPassages,
   embedQuery,
@@ -17,7 +17,7 @@ const BASE = loopbackBase();
 const E5_BASE = loopbackBase(18794, "/v1");
 const ENV = { SHENRON_AI_HTTP_URL: BASE.href, SHENRON_AI_HTTP_TOKEN: TOKEN };
 
-function aphrodyServer() {
+function shenronServer() {
   return createRecordingFetch({
     "POST /api/v1/shenron/embed": async (req) => {
       const body = (await req.json()) as { texts: string[] };
@@ -31,11 +31,11 @@ function aphrodyServer() {
 
 const bodies = (calls: { body: string | null }[]) => calls.map((c) => JSON.parse(c.body ?? "null"));
 
-describe("aphrody transport", () => {
+describe("shenron transport", () => {
   test("no 'query: '/'passage: ' prefix, whitespace collapsed", async () => {
-    const rec = aphrodyServer();
-    const compute = createAphrodyCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });
-    const r = await embedQuery(aphrodyEmbeddingModel(compute, "query"), "  Qui   est\nGoku ? ", {
+    const rec = shenronServer();
+    const compute = createShenronCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });
+    const r = await embedQuery(shenronEmbeddingModel(compute, "query"), "  Qui   est\nGoku ? ", {
       timeoutMs: 1000,
     });
     expect(r.ok && r.value.length).toBe(384);
@@ -43,10 +43,10 @@ describe("aphrody transport", () => {
   });
 
   test("40 passages -> 3 sequential calls 16/16/8", async () => {
-    const rec = aphrodyServer();
-    const compute = createAphrodyCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });
+    const rec = shenronServer();
+    const compute = createShenronCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });
     const texts = Array.from({ length: 40 }, (_, i) => `passage ${i}`);
-    const r = await embedPassages(aphrodyEmbeddingModel(compute, "passage"), texts, {
+    const r = await embedPassages(shenronEmbeddingModel(compute, "passage"), texts, {
       timeoutMs: 5000,
     });
     expect(r.ok && r.value.length).toBe(40);
@@ -60,8 +60,8 @@ describe("aphrody transport", () => {
     const rec = createRecordingFetch({
       "POST /api/v1/shenron/embed": () => json({ error: "x" }, { status: 503 }),
     });
-    const compute = createAphrodyCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });
-    const r = await embedQuery(aphrodyEmbeddingModel(compute, "query"), "Goku", {
+    const compute = createShenronCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });
+    const r = await embedQuery(shenronEmbeddingModel(compute, "query"), "Goku", {
       timeoutMs: 1000,
     });
     expect(r).toMatchObject({ ok: false, kind: "http", status: 503 });
@@ -69,21 +69,21 @@ describe("aphrody transport", () => {
   });
 });
 
-describe("e5DirectEmbeddingModel (now routed to Aphrody)", () => {
+describe("e5DirectEmbeddingModel (now routed to Shenron)", () => {
   test("posts to /api/v1/shenron/embed with the Bearer token, never /v1/embeddings", async () => {
-    const rec = aphrodyServer();
+    const rec = shenronServer();
     const model = e5DirectEmbeddingModel({ baseUrl: E5_BASE }, "query", {
       fetch: rec.fetch,
       env: ENV,
     });
-    expect(model.provider).toBe("aphrody.shenron");
+    expect(model.provider).toBe("shenron");
     const r = await embedQuery(model, "  Qui   est\tGoku ? ", { timeoutMs: 1000 });
     expect(r.ok && r.value.length).toBe(384);
     expect(rec.calls.map((c) => new URL(c.url).pathname)).toEqual(["/api/v1/shenron/embed"]);
     expect(bodies(rec.calls)).toEqual([{ texts: ["Qui est Goku ?"], kind: "query" }]);
   });
 
-  test("direct embedder URL is ignored; missing Aphrody config throws naming the variables", () => {
+  test("direct embedder URL is ignored; missing Shenron config throws naming the variables", () => {
     expect(() =>
       e5DirectEmbeddingModel({ baseUrl: E5_BASE }, "passage", {
         env: { SHENRON_AI_EMBED_BASE_URL: E5_BASE.href },
@@ -92,7 +92,7 @@ describe("e5DirectEmbeddingModel (now routed to Aphrody)", () => {
   });
 
   test("40 inputs -> 3 sequential calls 16/16/8", async () => {
-    const rec = aphrodyServer();
+    const rec = shenronServer();
     const model = e5DirectEmbeddingModel(null, "passage", { fetch: rec.fetch, env: ENV });
     const texts = Array.from({ length: 40 }, (_, i) => `texte ${i}`);
     const r = await embedPassages(model, texts, { timeoutMs: 5000 });
@@ -100,7 +100,7 @@ describe("e5DirectEmbeddingModel (now routed to Aphrody)", () => {
     expect(bodies(rec.calls).map((b) => b.texts.length)).toEqual([16, 16, 8]);
   });
 
-  test("one fetch only on a 503 (no retry), Aphrody path reported", async () => {
+  test("one fetch only on a 503 (no retry), Shenron path reported", async () => {
     const rec = createRecordingFetch({
       "POST /api/v1/shenron/embed": () => json({ error: "down" }, { status: 503 }),
     });
@@ -131,13 +131,13 @@ describe("selectEmbeddingModel", () => {
   };
   test("chosen by configuration", () => {
     expect(selectEmbeddingModel(base, "query", { compute: null })).toBeNull();
-    const compute = createAphrodyCompute({ baseUrl: BASE, token: TOKEN });
+    const compute = createShenronCompute({ baseUrl: BASE, token: TOKEN });
     expect(
-      selectEmbeddingModel({ ...base, embed: { transport: "aphrody" } }, "query", { compute })
+      selectEmbeddingModel({ ...base, embed: { transport: "shenron" } }, "query", { compute })
         ?.provider,
-    ).toBe("aphrody.shenron");
+    ).toBe("shenron");
     expect(
-      selectEmbeddingModel({ ...base, embed: { transport: "aphrody" } }, "query", {
+      selectEmbeddingModel({ ...base, embed: { transport: "shenron" } }, "query", {
         compute: null,
       }),
     ).toBeNull();

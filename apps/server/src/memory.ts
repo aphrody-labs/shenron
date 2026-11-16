@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * The persistent chat memory of `shenron-server`: Aphrody's `aphrody-memory` SQLite provider in
+ * The persistent chat memory of `shenron-server`: Shenron's `shenron-memory` SQLite provider in
  * the native library (`shenron-ffi` ABI 3, `@shenron/native`), behind the `MemoryPort` of the
  * API host. One memory per agent home: agent id `discord:<user_id>` or `local`, database chosen
  * by the host's `memoryLocation` (agent home resolver), else `<SHENRON_HOME>/data/memory.sqlite`

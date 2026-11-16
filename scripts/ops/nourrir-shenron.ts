@@ -188,7 +188,7 @@ async function main() {
     // 3. Ingestion d'ocr/results.db (lecture seule, contrôlée)
     const resultsDbPath = resolveOcrResultsPath();
     if (existsSync(resultsDbPath)) {
-      console.log(`\n--- 2. INGESTION DES TRANSCRIPTIONS DEPUIS APHRODY (${resultsDbPath}) ---`);
+      console.log(`\n--- 2. INGESTION DES TRANSCRIPTIONS DEPUIS SHENRON (${resultsDbPath}) ---`);
       // Lecture seule + `PRAGMA quick_check` : une base corrompue lève ici, AVANT
       // toute écriture. Le 2026-09-14, l'ancienne version lisait une base dont
       // l'`integrity_check` échouait et en recopiait le contenu en PostgreSQL.
@@ -212,10 +212,10 @@ async function main() {
     }
 
     // 4. Ingestion de Knowledge.db ou memory/ vers le Wiki / RAG de Shenron
-    const aphrodyWorkspace =
-      process.env.SHENRON_WORKSPACE?.trim() || join(homedir(), ".aphrody", "workspace");
-    const knowledgeDbPaths = [join(aphrodyWorkspace, "knowledge.db")];
-    const memoryDirs = [join(aphrodyWorkspace, "memory")];
+    const shenronWorkspace =
+      process.env.SHENRON_WORKSPACE?.trim() || join(homedir(), ".shenron", "workspace");
+    const knowledgeDbPaths = [join(shenronWorkspace, "knowledge.db")];
+    const memoryDirs = [join(shenronWorkspace, "memory")];
 
     const outDir = join(
       import.meta.dir,
@@ -226,7 +226,7 @@ async function main() {
       "data",
       "rag",
       "raw",
-      "aphrody",
+      "shenron",
     );
     if (!existsSync(outDir)) {
       const { mkdirSync } = await import("node:fs");
@@ -236,7 +236,7 @@ async function main() {
     let insertedDocs = 0;
     let knowledgePath = knowledgeDbPaths.find((p) => existsSync(p));
     if (knowledgePath) {
-      console.log(`\n--- 3. INGESTION DES DOCUMENTS KNOWLEDGE APHRODY (${knowledgePath}) ---`);
+      console.log(`\n--- 3. INGESTION DES DOCUMENTS KNOWLEDGE SHENRON (${knowledgePath}) ---`);
       try {
         const kDb = new Database(knowledgePath);
         const hasDocsTable = kDb
@@ -251,7 +251,7 @@ async function main() {
           console.log(`Documents trouvés dans knowledge.db : ${docs.length}`);
           for (const doc of docs) {
             const outPath = join(outDir, `${doc.filename || `doc-${doc.id}`}.md`);
-            const header = `---\ntitle: "${doc.title?.replace(/"/g, '\\"') || doc.filename}"\ncategory: "${doc.category}"\nsource: "aphrody-knowledge"\n---\n\n`;
+            const header = `---\ntitle: "${doc.title?.replace(/"/g, '\\"') || doc.filename}"\ncategory: "${doc.category}"\nsource: "shenron-knowledge"\n---\n\n`;
             await Bun.write(outPath, header + doc.content);
             insertedDocs++;
           }
@@ -277,7 +277,7 @@ async function main() {
       }
     }
     console.log(
-      `✓ Synchronisé ${insertedDocs} documents Aphrody dans apps/bot/data/rag/raw/aphrody/`,
+      `✓ Synchronisé ${insertedDocs} documents Shenron dans apps/bot/data/rag/raw/shenron/`,
     );
 
     // Le même propriétaire assure collecte, reprise et vérification DB/CDN/RAG.

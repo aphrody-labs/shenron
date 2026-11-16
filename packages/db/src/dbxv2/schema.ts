@@ -2,7 +2,7 @@
 /**
  * Schema of the private DBXV2 database (`dbxv2.sqlite`). Game data (Bandai Namco / Dimps) is
  * private: this file lives on the build host only, never in the public VFS, a build artifact,
- * Git or the production PostgreSQL. The search store is the aphrody-rag schema of the VFS
+ * Git or the production PostgreSQL. The search store is the shenron-rag schema of the VFS
  * (`docs`, `chunks`, `chunks_fts`, `vectors`, `meta` + side tables) so one contract serves both.
  * Runtime class: `pure` (DDL strings only).
  */

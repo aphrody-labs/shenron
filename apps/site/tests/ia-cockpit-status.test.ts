@@ -9,7 +9,7 @@ import {
   parseGoldSet,
   probeSource,
   resolveRagBackend,
-  summarizeAphrodyRagStats,
+  summarizeShenronRagStats,
   summarizeYoloWebProbe,
   type IaCockpitFetchers,
   type SourceSpec,
@@ -62,15 +62,15 @@ const EVAL_ROW = {
 /** Every source answers with synthetic data; the two engines get distinct counters on purpose. */
 function syntheticFetchers(): IaCockpitFetchers {
   return {
-    aphrodyHealth: ok("Aphrody AI — santé", { rag: true, llm: false, ocr: false }),
-    aphrodyRagStats: ok("Aphrody RAG — statistiques", {
+    shenronHealth: ok("Shenron AI — santé", { rag: true, llm: false, ocr: false }),
+    shenronRagStats: ok("Shenron RAG — statistiques", {
       chunks: 1_000,
       vectors: 900,
       vectorsStored: 1_000,
       sources: 2,
       kinds: [{ kind: "synthetic", count: 1_000, vectors: 900 }],
     }),
-    aphrodyRagProbe: ok("Aphrody RAG — sonde", {
+    shenronRagProbe: ok("Shenron RAG — sonde", {
       query: "synthetic query",
       mode: "hybrid",
       hits: 1,
@@ -116,14 +116,14 @@ describe("probeSource — chaque source rend son propre état", () => {
   test("échec : indisponible avec le message d'erreur, jamais de données de repli", async () => {
     const report = await probeSource(
       failing(
-        "Aphrody RAG — statistiques",
-        new Error("Aphrody compute HTTP 404 on /api/v1/shenron/rag/stats"),
+        "Shenron RAG — statistiques",
+        new Error("Shenron compute HTTP 404 on /api/v1/shenron/rag/stats"),
       ),
       steppingClock(),
     );
     expect(report.status).toBe("unavailable");
     expect(report.data).toBeNull();
-    expect(report.error).toBe("Aphrody compute HTTP 404 on /api/v1/shenron/rag/stats");
+    expect(report.error).toBe("Shenron compute HTTP 404 on /api/v1/shenron/rag/stats");
     expect(report.latencyMs).toBe(7);
   });
 
@@ -147,7 +147,7 @@ describe("probeSource — chaque source rend son propre état", () => {
   });
 });
 
-describe("resolveRagBackend — même règle que usesAphrodyRag()", () => {
+describe("resolveRagBackend — même règle que usesShenronRag()", () => {
   test("non défini → moteur local du bot", () => {
     expect(resolveRagBackend(undefined)).toEqual({
       value: "local",
@@ -155,15 +155,15 @@ describe("resolveRagBackend — même règle que usesAphrodyRag()", () => {
       engine: "Bot Shenron (index local)",
     });
   });
-  test("aphrody → Aphrody AI", () => {
-    expect(resolveRagBackend("aphrody")).toEqual({
-      value: "aphrody",
-      raw: "aphrody",
-      engine: "Aphrody AI",
+  test("shenron → Shenron AI", () => {
+    expect(resolveRagBackend("shenron")).toEqual({
+      value: "shenron",
+      raw: "shenron",
+      engine: "Shenron AI",
     });
   });
   test("toute autre valeur reste locale mais est affichée telle quelle", () => {
-    expect(resolveRagBackend(" aphrody")).toMatchObject({ value: "local", raw: " aphrody" });
+    expect(resolveRagBackend(" shenron")).toMatchObject({ value: "local", raw: " shenron" });
   });
 });
 
@@ -191,26 +191,26 @@ describe("collectIaCockpit — règles d'agrégation sur des rapports de sources
     expect(report.summary.activeGoals).toBe(2);
   });
 
-  test("backend aphrody : compteurs de la source statistiques, mode de la source sonde", async () => {
-    const report = await collectIaCockpit(syntheticFetchers(), resolveRagBackend("aphrody"));
-    expect(report.summary.serving.source).toBe("aphrodyRagProbe");
-    expect(report.summary.countsSource).toBe("aphrodyRagStats");
+  test("backend shenron : compteurs de la source statistiques, mode de la source sonde", async () => {
+    const report = await collectIaCockpit(syntheticFetchers(), resolveRagBackend("shenron"));
+    expect(report.summary.serving.source).toBe("shenronRagProbe");
+    expect(report.summary.countsSource).toBe("shenronRagStats");
     expect(report.summary.documents).toBe(1_000);
     expect(report.summary.vectors).toBe(900);
     expect(report.summary.mode).toBe("hybrid");
   });
 
-  test("backend aphrody, sonde en échec : moteur servi indisponible, compteurs conservés", async () => {
+  test("backend shenron, sonde en échec : moteur servi indisponible, compteurs conservés", async () => {
     const fetchers = syntheticFetchers();
-    fetchers.aphrodyRagProbe = failing(
-      "Aphrody RAG — sonde",
-      new Error("Aphrody compute HTTP 503 on /api/v1/shenron/rag/search"),
+    fetchers.shenronRagProbe = failing(
+      "Shenron RAG — sonde",
+      new Error("Shenron compute HTTP 503 on /api/v1/shenron/rag/search"),
     );
-    const report = await collectIaCockpit(fetchers, resolveRagBackend("aphrody"));
+    const report = await collectIaCockpit(fetchers, resolveRagBackend("shenron"));
     expect(report.summary.serving).toMatchObject({
-      source: "aphrodyRagProbe",
+      source: "shenronRagProbe",
       status: "unavailable",
-      error: "Aphrody compute HTTP 503 on /api/v1/shenron/rag/search",
+      error: "Shenron compute HTTP 503 on /api/v1/shenron/rag/search",
     });
     expect(report.summary.documents).toBe(1_000);
     expect(report.summary.mode).toBeNull();
@@ -219,11 +219,11 @@ describe("collectIaCockpit — règles d'agrégation sur des rapports de sources
 
   test("sources en échec ou non configurées : signalées une à une, jamais remplacées par une valeur", async () => {
     const fetchers = syntheticFetchers();
-    fetchers.aphrodyRagStats = failing(
-      "Aphrody RAG — statistiques",
-      new Error("Aphrody compute HTTP 404 on /api/v1/shenron/rag/stats"),
+    fetchers.shenronRagStats = failing(
+      "Shenron RAG — statistiques",
+      new Error("Shenron compute HTTP 404 on /api/v1/shenron/rag/stats"),
     );
-    fetchers.aphrodyRagProbe = ok("Aphrody RAG — sonde", {
+    fetchers.shenronRagProbe = ok("Shenron RAG — sonde", {
       query: "synthetic query",
       mode: "lexical",
       hits: 1,
@@ -234,11 +234,11 @@ describe("collectIaCockpit — règles d'agrégation sur des rapports de sources
     );
     fetchers.feedbacks = failing("Retours", new Error("connect ECONNREFUSED"));
 
-    const report = await collectIaCockpit(fetchers, resolveRagBackend("aphrody"));
+    const report = await collectIaCockpit(fetchers, resolveRagBackend("shenron"));
 
     expect(report.summary.status).toBe("degraded");
     expect(report.summary.failing.map((f) => [f.key, f.status])).toEqual([
-      ["aphrodyRagStats", "unavailable"],
+      ["shenronRagStats", "unavailable"],
       ["yoloWeb", "unconfigured"],
       ["feedbacks", "unavailable"],
     ]);
@@ -250,7 +250,7 @@ describe("collectIaCockpit — règles d'agrégation sur des rapports de sources
     expect(report.summary.pendingFeedbacks).toBeNull();
     expect(report.sources.feedbacks.data).toBeNull();
     // Other sources are unaffected by the failures.
-    expect(report.sources.aphrodyHealth.data).toEqual({ rag: true, llm: false, ocr: false });
+    expect(report.sources.shenronHealth.data).toEqual({ rag: true, llm: false, ocr: false });
     expect(report.sources.botRag.status).toBe("ok");
     expect(report.summary.latestEval?.casesCount).toBe(172);
   });
@@ -331,9 +331,9 @@ describe("parseurs de charges utiles d'exemple", () => {
     expect(() => parseBotIaStatus({ ok: true })).toThrow("Statut RAG du bot invalide");
   });
 
-  test("Aphrody /rag/stats : regroupement par type d'un relevé d'exemple", () => {
+  test("Shenron /rag/stats : regroupement par type d'un relevé d'exemple", () => {
     expect(
-      summarizeAphrodyRagStats({
+      summarizeShenronRagStats({
         chunks: 10,
         vectors: 6,
         vectorsStored: 8,

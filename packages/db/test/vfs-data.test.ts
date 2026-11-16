@@ -194,13 +194,13 @@ function seedRag(db: Database): void {
   });
 }
 
-describe("RAG over the aphrody-rag store", () => {
+describe("RAG over the shenron-rag store", () => {
   test("FTS query drops stopwords and quotes terms", () => {
     expect(ftsQuery("Qui est le père de Son Gohan ?")).toBe('"père" OR "son" OR "gohan"');
     expect(ftsQuery("le la les")).toBeNull();
   });
 
-  test("int8 quantisation matches aphrody-rag-core (scale = max|v| / 127)", () => {
+  test("int8 quantisation matches shenron-rag-core (scale = max|v| / 127)", () => {
     const { codes, scale } = quantizeI8(Float32Array.from([0.5, -1, 0.25]));
     expect(scale).toBeCloseTo(1 / 127, 8);
     expect([...codes]).toEqual([64, -127, 32]);

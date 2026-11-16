@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * _ocr-results-db.ts — Read-side guard for the Aphrody OCR corpus (`~/.aphrody/ocr/results.db`).
+ * _ocr-results-db.ts — Read-side guard for the Shenron OCR corpus (`~/.shenron/ocr/results.db`).
  *
  * The corpus is produced on the Windows GPU host (PP-OCRv5) and shipped to the VPS.
  * On 2026-09-14 a raw `ssh dbfr "cat > results.db"` truncated the live file while it was
@@ -43,9 +43,9 @@ export class OcrResultsCorruptError extends Error {
 const SQLITE_MAGIC = "SQLite format 3\u0000";
 const REQUIRED_TABLES = ["ocr_pages", "ocr_blocks"] as const;
 
-/** Default corpus location: `$OCR_RESULTS_DB`, else `~/.aphrody/ocr/results.db`. */
+/** Default corpus location: `$OCR_RESULTS_DB`, else `~/.shenron/ocr/results.db`. */
 export function resolveOcrResultsPath(): string {
-  return process.env.OCR_RESULTS_DB || join(homedir(), ".aphrody", "ocr", "results.db");
+  return process.env.OCR_RESULTS_DB || join(homedir(), ".shenron", "ocr", "results.db");
 }
 
 /** True when the first 16 bytes carry the SQLite 3 magic header. */

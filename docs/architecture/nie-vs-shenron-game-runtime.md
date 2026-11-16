@@ -1,17 +1,17 @@
 # Architectural & Deployment Comparison: NIE vs Shenron Game Runtime
 
-This document provides a comparative analysis of the architecture, game runtimes, reverse-engineering pipelines, and deployment systems between **NIE** (`C:\aphrody\apps\rosegriffon`) and **Shenron** (`C:\aphrody\apps\shenron`), establishing a convergence roadmap.
+This document provides a comparative analysis of the architecture, game runtimes, reverse-engineering pipelines, and deployment systems between **NIE** (`C:\shenron\apps\rosegriffon`) and **Shenron** (`C:\shenron\apps\shenron`), establishing a convergence roadmap.
 
 ---
 
 ## 1. Executive Topology Matrix
 
-| Dimension               | NIE (`C:\aphrody\apps\rosegriffon`)                                                         | Shenron (`C:\aphrody\apps\shenron`)                                                                  |
+| Dimension               | NIE (`C:\shenron\apps\rosegriffon`)                                                         | Shenron (`C:\shenron\apps\shenron`)                                                                  |
 | :---------------------- | :-------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------- |
 | **Primary Domain**      | Game engine exploration, deep reverse-engineering (IEVR / CPK / Steam), 3D world engine | Sovereign Dragon Ball portal, encyclopedia, streaming engine, WebGPU mini-games, manga OCR       |
-| **Runtime Core**        | Rust 2024 (`aphrody-nie-*`) + Bun v1.4.4 (`nie-sre-server.ts`)                          | Upstream Bun v1.4.4 + Next.js 16.5 standalone + Rust 2024 (`crates/*`)                           |
-| **Graphics Engine**     | WGPU 30, Vello, Bevy ECS (`aphrody-nie-bevy`), Softraster fallback                      | WebGPU native WGSL Cel-Shader (`FighterZWasmPlayer`), Canvas 2D/3D ECS, CSS-first Tailwind v4    |
-| **RE & Asset Pipeline** | CPK Virtual File System (`aphrody-nie-pe`), Ghidra Sleigh, Magika ML                    | Depot RE Engine (`depot-cli`), UE4 Pak reader, `bun:sqlite` + Redis telemetry                    |
+| **Runtime Core**        | Rust 2024 (`shenron-nie-*`) + Bun v1.4.4 (`nie-sre-server.ts`)                          | Upstream Bun v1.4.4 + Next.js 16.5 standalone + Rust 2024 (`crates/*`)                           |
+| **Graphics Engine**     | WGPU 30, Vello, Bevy ECS (`shenron-nie-bevy`), Softraster fallback                      | WebGPU native WGSL Cel-Shader (`FighterZWasmPlayer`), Canvas 2D/3D ECS, CSS-first Tailwind v4    |
+| **RE & Asset Pipeline** | CPK Virtual File System (`shenron-nie-pe`), Ghidra Sleigh, Magika ML                    | Depot RE Engine (`depot-cli`), UE4 Pak reader, `bun:sqlite` + Redis telemetry                    |
 | **Target Game Systems** | INAZUMA ELEVEN: Victory Road, Steamworks P2P, Lua 5.2 VM                                | DRAGON BALL FighterZ, Sparking! ZERO, Xenoverse 2, RetroArch DB games                            |
 | **Deployment Model**    | Micro-SRE bridge (`deploy/nie-sre`, HTTP/WS port 8899, systemd)                         | Sovereign Fleet Triad (`vps`/`cdn`/`prod`), Zstd streaming, Docker BuildKit, zero-downtime lanes |
 
@@ -21,16 +21,16 @@ This document provides a comparative analysis of the architecture, game runtimes
 
 ### NIE: Rust-Centric Native World Engine
 
-NIE is architected as a modular cluster of 45+ specialized Rust crates operating around `aphrody-nie-core` and `aphrody-nie-render3d`:
+NIE is architected as a modular cluster of 45+ specialized Rust crates operating around `shenron-nie-core` and `shenron-nie-render3d`:
 
 ```mermaid
 flowchart TD
-    subgraph NIE_Architecture["NIE Engine (C:/aphrody/apps/rosegriffon)"]
-        CORE["aphrody-nie-core"]
-        BEVY["aphrody-nie-bevy (ECS)"]
-        RENDER["aphrody-nie-render3d (WGPU 30)"]
-        VFS["aphrody-nie-pe / CPK VFS"]
-        LUA["aphrody-nie-lua (Lua 5.2 VM)"]
+    subgraph NIE_Architecture["NIE Engine (C:/shenron/apps/rosegriffon)"]
+        CORE["shenron-nie-core"]
+        BEVY["shenron-nie-bevy (ECS)"]
+        RENDER["shenron-nie-render3d (WGPU 30)"]
+        VFS["shenron-nie-pe / CPK VFS"]
+        LUA["shenron-nie-lua (Lua 5.2 VM)"]
         SRE["nie-sre-server (Bun HTTP/WS Bridge)"]
 
         CORE --> BEVY
@@ -40,7 +40,7 @@ flowchart TD
         SRE --> VFS
     end
 
-    subgraph Shenron_Architecture["Shenron Platform (C:/aphrody/apps/shenron)"]
+    subgraph Shenron_Architecture["Shenron Platform (C:/shenron/apps/shenron)"]
         SITE["apps/site (Next.js 16.5 + Bun)"]
         SERVER["apps/server (Single Bun Binary)"]
         WGPU_PLAYER["FighterZWasmPlayer (WebGPU / WGSL)"]
@@ -103,7 +103,7 @@ Shenron prioritizes instantaneous web delivery, zero client-side installation, a
 To unify the strengths of NIE and Shenron without code duplication or architectural drift:
 
 1. **Telemetry & RE Engine Unification**:
-   - Both platforms use `C:\aphrody\crates\depot` (`depot-cli`) as the canonical binary triage and AST engine.
+   - Both platforms use `C:\shenron\crates\depot` (`depot-cli`) as the canonical binary triage and AST engine.
    - Shenron's `packages/db/src/re-telemetry.ts` serves as the centralized SQLite/Redis telemetry store for all game assets.
 2. **WebGPU Shader Sharing**:
    - The ArcSys cel-shading pipeline documented in `docs/games/dbfz-modding-ecosystem.md` is standardized into WGSL shaders shared across `FighterZWasmPlayer` and NIE's browser viewport.

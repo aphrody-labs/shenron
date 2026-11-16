@@ -1,5 +1,5 @@
 {
-  "$source": "aphrody-ai/crates/aphrody-mcp/src/http_rest.rs:158",
+  "$source": "shenron-ai/crates/shenron-mcp/src/http_rest.rs:158",
   "$anchor": "\"error\": message",
   "route": null,
   "schema": "ErrorBody",

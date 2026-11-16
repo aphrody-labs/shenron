@@ -1,25 +1,25 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * The local chat models of `shenron-server` (Shenron Studio), on Aphrody's local chat
- * (`aphrody-llama-server`, contract `crates/ai/llama-server/LOCAL-CHAT.md`) linked in the native
+ * The local chat models of `shenron-server` (Shenron Studio), on Shenron's local chat
+ * (`shenron-llama-server`, contract `crates/ai/llama-server/LOCAL-CHAT.md`) linked in the native
  * library (`shenron-ffi` ABI 4, `@shenron/native`): nothing of it is reimplemented here.
  *
  *   provisioning  `shenron_llama_provision_job` on the worker pool: catalog ids of
- *                 aphrody-models (pinned revision and digest), resumed and digest-checked
+ *                 shenron-models (pinned revision and digest), resumed and digest-checked
  *                 downloads into the store `<SHENRON_HOME>/models` (`registry.json`)
  *   router        `shenron_llama_router_start`: one OpenAI-compatible endpoint on the loopback
  *                 port of `SHENRON_LOCAL_MODEL_URL`, over `shenron-chat-v2` (Qwen3-4B + the
  *                 Shenron LoRA) and `gemma4-e2b`; one `llama-server` at a time, started on first
  *                 use, `/health` per model
  *   daemon        the supervisor re-executes this server as `llama-daemon` (`main.ts`), so no
- *                 Aphrody executable ships beside it
+ *                 Shenron executable ships beside it
  *
  * Shenron decides only which files: the base GGUF (SHENRON_CHAT_MODEL path, a file left in
  * `<home>/models/` by an earlier release, SHENRON_CHAT_MODEL_URL, else the catalog id), the
  * adapter (SHENRON_CHAT_LORA, `<home>/models/`, `models/` shipped beside the app,
  * SHENRON_CHAT_LORA, SHENRON_CHAT_LORA_URL), Gemma 4 E2B alike. `llama-server` is
- * SHENRON_LLAMA_BIN, else Aphrody's lookup (SHENRON_LLAMA_BIN, `llama/` in SHENRON_RESOURCE_DIR
- * or beside the executable, Aphrody runtimes, PATH).
+ * SHENRON_LLAMA_BIN, else Shenron's lookup (SHENRON_LLAMA_BIN, `llama/` in SHENRON_RESOURCE_DIR
+ * or beside the executable, Shenron runtimes, PATH).
  *
  * Nothing blocks the server: provisioning and loading run in the background and the chat
  * group reports the step (download progress, loading, failure) until the model answers.
@@ -72,7 +72,7 @@ export interface ChatModelPlan {
   /** Loopback origin the router listens on (`SHENRON_LOCAL_MODEL_URL`). */
   url: string;
   port: number;
-  /** Aphrody model store (`registry.json` and the files). */
+  /** Shenron model store (`registry.json` and the files). */
   modelsDir: string;
   /** Router configuration and per-model server state. */
   stateDir: string;
@@ -249,7 +249,7 @@ export function adapterSpec(
     : null;
 }
 
-/** `router.json` of the Aphrody router (LOCAL-CHAT.md) over the slots that have a model. */
+/** `router.json` of the Shenron router (LOCAL-CHAT.md) over the slots that have a model. */
 export function routerConfig(slots: readonly Slot[], ctx: number): unknown {
   return {
     models: slots
@@ -322,7 +322,7 @@ export function startChatModel(
               ? fileSpec(legacyGemma, GEMMA_MODEL.sha256)
               : gemma.url !== GEMMA_MODEL.url
                 ? { spec: gemma.url, ...(gemma.sha256 ? { sha256: gemma.sha256 } : {}) }
-                : { spec: GEMMA_MODEL.aphrodyId },
+                : { spec: GEMMA_MODEL.shenronId },
           lora: null,
           // Gemma 4 thinks before answering by default: tens of seconds per turn on a laptop,
           // and an empty answer when the budget runs out first. The chat wants the answer.

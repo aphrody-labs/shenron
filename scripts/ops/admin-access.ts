@@ -5,7 +5,7 @@
  *
  * Liste = l'IP publique de ce poste (Windows et WSL sortent par la même), les adresses
  * publiques des deux VPS (`vps`, `dbfr`), le sous-réseau WireGuard 10.8.0.0/24, plus le fichier
- * privé `~/.aphrody/private/shenron-admin-ips.json` : `extra` (adresses fixes) et `accounts`
+ * privé `~/.shenron/private/shenron-admin-ips.json` : `extra` (adresses fixes) et `accounts`
  * (`ba_user.id` dont la dernière IP de session, sur 14 jours, est reprise à chaque passage).
  * Elle est appliquée sur chaque VPS par `admin-access-host.ts` (ufw, fail2ban, PostgreSQL,
  * `SHENRON_ADMIN_IPS` du site, `SHENRON_MCP_ALLOWED_IPS` du MCP) : SSH, base, MCP, pages et
@@ -18,7 +18,7 @@
  *
  * Idempotent : sans changement d'adresse, `--apply` ne touche rien ; quand l'IP de la box
  * change, l'ancienne est retirée et la nouvelle ajoutée. Redis reste en boucle locale :
- * `aphrody-infra ssh tunnel` depuis un poste admin.
+ * `shenron-infra ssh tunnel` depuis un poste admin.
  */
 import { homedir } from "node:os";
 import { join } from "node:path";
@@ -32,8 +32,8 @@ const restartPostgres = args.has("--restart-postgres");
 
 function infraCommand(infraArgs: string[]): string[] {
   return process.platform === "win32"
-    ? ["aphrody", "infra", ...infraArgs]
-    : ["aphrody-infra", ...infraArgs];
+    ? ["shenron", "infra", ...infraArgs]
+    : ["shenron-infra", ...infraArgs];
 }
 
 async function publicIp(url: string): Promise<string | null> {
@@ -45,7 +45,7 @@ async function publicIp(url: string): Promise<string | null> {
   }
 }
 
-/** Exécute `admin-access-host.ts` sur `host` avec `arg`, via `aphrody-infra ssh exec`. */
+/** Exécute `admin-access-host.ts` sur `host` avec `arg`, via `shenron-infra ssh exec`. */
 function onHost(host: string, script: string, arg: string): string {
   const b64 = Buffer.from(script).toString("base64");
   const quoted = `'${arg.replace(/'/g, `'\\''`)}'`;
@@ -124,7 +124,7 @@ if (!v4 && !v6) throw new Error("IP publique de ce poste introuvable : rien n'es
 for (const ip of [v4, v6]) if (ip) ips.add(ip);
 for (const host of HOSTS)
   for (const ip of JSON.parse(onHost(host, script, "addresses")) as string[]) ips.add(ip);
-const extraFile = Bun.file(join(homedir(), ".aphrody", "private", "shenron-admin-ips.json"));
+const extraFile = Bun.file(join(homedir(), ".shenron", "private", "shenron-admin-ips.json"));
 const extra = (await extraFile.exists())
   ? ((await extraFile.json()) as { extra?: string[]; accounts?: string[] })
   : {};

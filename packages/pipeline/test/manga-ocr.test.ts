@@ -48,7 +48,7 @@ test("manifest validation accepts canonical French and Japanese color series", (
       imagePipeline: { width: 1800, quality: 86, format: "jpeg" },
       entries: [entry("DBFC"), entry("DBKZ")],
       responseExpected: {
-        format: "aphrody-ocr-jsonl",
+        format: "shenron-ocr-jsonl",
         result: { image: "string", text: { kind: "none" } },
       },
     }),

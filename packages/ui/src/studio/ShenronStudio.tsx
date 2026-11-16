@@ -111,7 +111,7 @@ function Pilotage({
           <ul className="grid gap-3 md:grid-cols-2">
             <ProbeRow name="Site" probe={health.site} />
             <ProbeRow name="Bot" probe={health.bot} />
-            <ProbeRow name="IA Aphrody" probe={health.aphrody_ai_http} />
+            <ProbeRow name="IA Shenron" probe={health.shenron_ai_http} />
             <li className={rowClass}>
               <span>Agent Home dbfr</span>
               <StatusChip ok={health.agent_home.valid}>
@@ -264,7 +264,7 @@ export function ShenronStudio() {
           <section className="flex flex-col gap-4">
             <SectionHeading
               level={3}
-              title="Pipeline Aphrody natif"
+              title="Pipeline Shenron natif"
               standfirst="Capacités réellement fournies par les sidecars locaux."
               actions={
                 <button

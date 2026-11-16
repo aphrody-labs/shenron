@@ -19,7 +19,7 @@
  * wasm-bindgen) et des sorties ; `rust.yml` refuse un module périmé (`--check`).
  *
  * Le Cargo passe par `scripts/build/rust/cargo-runner.ts` : sous WSL, il part sur le tunnel VPS
- * d'Aphrody et le module revient dans `target/wasm` ; ailleurs, Cargo local.
+ * d'Shenron et le module revient dans `target/wasm` ; ailleurs, Cargo local.
  *
  * Outillage assuré sans root et de façon idempotente : cible `wasm32-unknown-unknown` (rustup)
  * et CLI `wasm-bindgen` de la version exacte de la crate dans Cargo.lock, installé au besoin par

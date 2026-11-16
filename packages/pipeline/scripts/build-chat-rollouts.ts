@@ -4,16 +4,16 @@
  * Builds Shenron chat LoRA rollouts from retrieval triples.
  *
  * Input: `{query, positive, negative}` JSONL (default
- * `~/.aphrody/workspaces/dbfr/training/triples.jsonl`). Queries are deduped on
+ * `~/.shenron/workspaces/dbfr/training/triples.jsonl`). Queries are deduped on
  * their normalized form and split deterministically by sha256 BEFORE any
  * generation: ~10 % go to `gold.jsonl` (`{query, expect}`), the rest become
- * candidates answered by the Aphrody teacher (`llm/chat`) with the positive
- * passage as the only evidence. Accepted rows match the aphrody-train
+ * candidates answered by the Shenron teacher (`llm/chat`) with the positive
+ * passage as the only evidence. Accepted rows match the shenron-train
  * `lora.load_examples` contract and are anti-joined against the gold set with
- * a port of `aphrody_train.hashing.segment_hashes`.
+ * a port of `shenron_train.hashing.segment_hashes`.
  *
  * Usage: bun scripts/build-chat-rollouts.ts [--input F] [--out DIR]
- *        [--soul F] [--limit N] [--concurrency 2] [--model ID] [--teacher aphrody|antigravity]
+ *        [--soul F] [--limit N] [--concurrency 2] [--model ID] [--teacher shenron|antigravity]
  *        [--split-only] [--control-stdin] (send a "stop" line for a graceful Windows shutdown)
  */
 import { normalizeText, goldKeys, overlapsGold, sha256 } from "../src/ai/training-hashes";
@@ -23,7 +23,7 @@ import { homedir } from "node:os";
 import { createInterface } from "node:readline";
 import { dirname, join } from "node:path";
 import { parseArgs } from "node:util";
-import type { AphrodyChatMessage } from "@shenron/pipeline/aphrody";
+import type { ShenronChatMessage } from "@shenron/pipeline/shenron";
 
 export interface Triple {
   query: string;
@@ -44,7 +44,7 @@ export interface RolloutRow {
   ];
 }
 
-export type ChatFn = (messages: AphrodyChatMessage[]) => Promise<{ answer: string; model: string }>;
+export type ChatFn = (messages: ShenronChatMessage[]) => Promise<{ answer: string; model: string }>;
 
 export const GOLD_PERCENT = 10;
 export const MAX_ANSWER_CHARS = 1200;
@@ -138,7 +138,7 @@ export function teacherMessages(
   tone: string,
   question: string,
   evidence: string,
-): AphrodyChatMessage[] {
+): ShenronChatMessage[] {
   return [
     {
       role: "system",
@@ -252,7 +252,7 @@ export function killTeachers(): void {
   for (const proc of liveTeachers) proc.kill("SIGKILL");
 }
 
-/** Teacher through `aphrody antigravity chat` (network model, no local GPU). */
+/** Teacher through `shenron antigravity chat` (network model, no local GPU). */
 export async function antigravityChat(
   messages: Array<{ role: string; content: string }>,
   model?: string,
@@ -260,7 +260,7 @@ export async function antigravityChat(
 ): Promise<{ answer: string; model: string }> {
   const prompt = messages.map((message) => `[${message.role}]\n${message.content}`).join("\n\n");
   const args = ["antigravity", "chat", "--prompt", prompt, ...(model ? ["--model", model] : [])];
-  const proc = Bun.spawn([Bun.env.SHENRON_BIN ?? "aphrody", ...args], {
+  const proc = Bun.spawn([Bun.env.SHENRON_BIN ?? "shenron", ...args], {
     stdout: "pipe",
     stderr: "pipe",
     stdin: "ignore",
@@ -305,7 +305,7 @@ export async function antigravityChat(
 
 // --- options ----------------------------------------------------------------
 
-export const TEACHERS = ["aphrody", "antigravity"] as const;
+export const TEACHERS = ["shenron", "antigravity"] as const;
 export type Teacher = (typeof TEACHERS)[number];
 
 /** Strict integer option: NaN, fractions and values below `min` are errors, never silent defaults. */
@@ -433,14 +433,14 @@ async function main(): Promise<void> {
     options: {
       input: {
         type: "string",
-        default: join(home, ".aphrody/workspaces/dbfr/training/triples.jsonl"),
+        default: join(home, ".shenron/workspaces/dbfr/training/triples.jsonl"),
       },
-      out: { type: "string", default: join(home, ".aphrody/private/training/shenron/chat") },
-      soul: { type: "string", default: join(home, ".aphrody/workspaces/dbfr/SOUL.md") },
+      out: { type: "string", default: join(home, ".shenron/private/training/shenron/chat") },
+      soul: { type: "string", default: join(home, ".shenron/workspaces/dbfr/SOUL.md") },
       limit: { type: "string" },
       concurrency: { type: "string", default: "2" },
       model: { type: "string" },
-      teacher: { type: "string", default: "aphrody" },
+      teacher: { type: "string", default: "shenron" },
       "split-only": { type: "boolean", default: false },
       "control-stdin": { type: "boolean", default: false },
     },
@@ -473,8 +473,8 @@ async function main(): Promise<void> {
       teacher === "antigravity"
         ? (messages) => antigravityChat(messages, values.model)
         : await (async () => {
-            const { AphrodyComputeClient } = await import("@shenron/pipeline/aphrody");
-            const client = new AphrodyComputeClient();
+            const { ShenronComputeClient } = await import("@shenron/pipeline/shenron");
+            const client = new ShenronComputeClient();
             return (messages) => client.chat(messages, values.model);
           })();
     // Interrupting a run keeps the rows accepted since the last periodic flush.

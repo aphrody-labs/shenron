@@ -473,7 +473,7 @@ async function Resultat({ question }: { question: string }) {
                 source={verdict.toriyamaQuote.source}
                 annee={verdict.toriyamaQuote.year}
                 auteur="Akira Toriyama"
-                provenance="aphrody"
+                provenance="shenron"
               />
             </div>
           )}
@@ -651,7 +651,7 @@ async function Resultat({ question }: { question: string }) {
  * Une citation d'auteur ou de guide, avec sa source.
  *
  * Le même bloc servait deux fois — la citation attachée au verdict et celles du
- * corpus `.aphrody` — dans deux copies qui avaient déjà divergé : `lang`
+ * corpus `.shenron` — dans deux copies qui avaient déjà divergé : `lang`
  * n'était posé que d'un côté. Une seule implémentation, et la langue est
  * TOUJOURS déclarée, sinon une synthèse vocale francophone prononce le japonais
  * et l'anglais avec la phonétique française.
@@ -696,7 +696,7 @@ function Citation({
                 ? "bg-dbz-orange/20 text-dbz-orange"
                 : provenance === "databooks"
                   ? "bg-dbz-gold/20 text-dbz-gold"
-                  : provenance === "aphrody"
+                  : provenance === "shenron"
                     ? "bg-sky-500/20 text-sky-300"
                     : "bg-purple-500/20 text-purple-200"
             }`}

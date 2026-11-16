@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+import { decodeRgba } from "@shenron/kit/image";
 import { describe, expect, test } from "bun:test";
 import { TECHNIQUE_ARTWORK, resolveTechniqueArtwork } from "../src/lib/technique-artwork";
 import { uiAssetPaths } from "../../../packages/ui/src/assets";
@@ -58,11 +59,7 @@ describe("primary-source technique artwork", () => {
         expect(uiAssetPaths.includes(path.slice(1) as (typeof uiAssetPaths)[number])).toBe(true);
       }
       const prefix = `${import.meta.dir}/../../../packages/ui/assets`;
-      // The runtime RGBA terminal is newer than the pinned Bun declaration package.
-      const decoder = new Bun.Image(`${prefix}${artwork.image}`) as Bun.Image & {
-        rgba(): Promise<{ width: number; height: number; data: Uint8Array }>;
-      };
-      const image = await decoder.rgba();
+      const image = await decodeRgba(`${prefix}${artwork.image}`);
       expect(image.width).toBeGreaterThan(250);
       expect(image.height).toBeGreaterThan(250);
       expect(image.width * image.height).toBeGreaterThan(180_000);

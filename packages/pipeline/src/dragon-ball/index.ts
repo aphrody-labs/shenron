@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** Bun product policy; acquisition and portable parsing remain owned by Aphrody Web. */
+/** Bun product policy; acquisition and portable parsing remain owned by Shenron Web. */
 export { enrichCatalogue, validateCatalogue } from "./catalogue";
 export type { DragonBallCatalogue, CatalogueCollection, CatalogueVolume } from "./catalogue";
 export { enrichDragonBallCatalogue } from "./enrichment";

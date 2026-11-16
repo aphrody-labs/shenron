@@ -18,7 +18,7 @@ function fauxDiscord() {
   return { transport, requetes };
 }
 
-describe("admin-lab — transports Aphrody", () => {
+describe("admin-lab — transports Shenron", () => {
   test("un texte seul part par DiscordChannel (@shenron/discord-kit/messaging)", async () => {
     const { transport, requetes } = fauxDiscord();
     const sent = await postAdminLabMessage("jeton", "123", { content: "Rapport prêt" }, transport);

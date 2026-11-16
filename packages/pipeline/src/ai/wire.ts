@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * `@shenron/pipeline/ai/wire` — zod mirrors of the private Shenron workload boundary
- * served by `aphrody-ai-http` (`crates/ai/mcp/src/http_rest.rs`).
+ * served by `shenron-ai-http` (`crates/ai/mcp/src/http_rest.rs`).
  *
  * Runtime class: `pure`. Request schemas mirror the Rust `Deserialize`
  * structs (field names after serde renaming); response schemas mirror the
@@ -238,7 +238,7 @@ export const VisionResponse = z.object({
 
 // ── client-side value types (normalised: `null` becomes absent) ──
 
-export interface AphrodyRagHit {
+export interface ShenronRagHit {
   title: string;
   url: string;
   snippet: string;
@@ -251,9 +251,9 @@ export interface AphrodyRagHit {
   content?: string;
 }
 
-export type AphrodyRagMode = z.infer<typeof RagMode>;
+export type ShenronRagMode = z.infer<typeof RagMode>;
 
-export interface AphrodyRagDocument {
+export interface ShenronRagDocument {
   sourceId: string;
   title: string;
   url: string;
@@ -263,16 +263,16 @@ export interface AphrodyRagDocument {
   originSourceId?: string;
 }
 
-export interface AphrodyRagStats {
+export interface ShenronRagStats {
   chunks: number;
   vectors: number;
   vectorsStored?: number;
   sources: { sourceId: string; kind: string; count: number; vectors?: number }[];
 }
 
-export type AphrodyIngestDoc = z.infer<typeof IngestRequest>;
+export type ShenronIngestDoc = z.infer<typeof IngestRequest>;
 
-export interface AphrodyOcrResult {
+export interface ShenronOcrResult {
   text: string;
   language: string;
   textless: boolean;

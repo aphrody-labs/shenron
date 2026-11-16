@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Explicit CPU-only native integration; fails when its host artifacts are not qualified. */
 import { expect, test } from "bun:test";
-import { openAphrodyPython } from "../../src/runtime/python";
+import { openShenronPython } from "../../src/runtime/python";
 
 test.if(Boolean(process.env.SHENRON_SHENRON_PYTHON_SOURCE))(
-  "real fork aliases and the complete lazy Aphrody SDK share the Shenron Bun PID",
+  "real fork aliases and the complete lazy Shenron SDK share the Shenron Bun PID",
   async () => {
     const source = process.env.SHENRON_SHENRON_PYTHON_SOURCE;
     if (!source) throw new Error("Set the selected qualified SHENRON_SHENRON_PYTHON_SOURCE");
@@ -14,15 +14,15 @@ test.if(Boolean(process.env.SHENRON_SHENRON_PYTHON_SOURCE))(
     const [python, b, p] = await Promise.all([import(builtin), import(buv), import(pyjs)]);
     expect(b.Python).toBe(python.Python);
     expect(p.Python).toBe(python.Python);
-    await using sdk = await openAphrodyPython({ sourceRoots: [source] });
+    await using sdk = await openShenronPython({ sourceRoots: [source] });
     expect(sdk.info()).toMatchObject({ pid: process.pid, nativeInProcess: true });
-    expect(await sdk.read("aphrody", "__version__")).toBe("0.1.0");
+    expect(await sdk.read("shenron", "__version__")).toBe("0.1.0");
     const exports = await sdk.exports();
-    expect(exports).toContain("AphrodyClient");
+    expect(exports).toContain("ShenronClient");
     expect(exports).toContain("DoclingExtractor");
-    const result = await sdk.invoke("aphrody.command_guard", "normalize_command", ["café🐍\u0000"]);
+    const result = await sdk.invoke("shenron.command_guard", "normalize_command", ["café🐍\u0000"]);
     expect(result).toBe("café🐍");
-    await using guard = await sdk.construct("aphrody", "CommandGuard");
+    await using guard = await sdk.construct("shenron", "CommandGuard");
     // Construction exercises a real SDK class without command execution or provider import.
     expect(guard).toBeDefined();
     expect(await guard.call("verify_command", ["bun --version"])).toEqual([true, ""]);

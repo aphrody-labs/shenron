@@ -4,8 +4,8 @@ import type { LanguageModelV4 } from "@ai-sdk/provider";
 import { UnsupportedFunctionalityError } from "@ai-sdk/provider";
 import { createRecordingFetch } from "@shenron/config/testing";
 import { generateText, jsonSchema, streamText, tool } from "ai";
-import { createAphrodyCompute } from "../../src/ai/aphrody";
-import { chatModelTimeoutMs, createAphrodyChatModel } from "../../src/ai/chat";
+import { createShenronCompute } from "../../src/ai/shenron";
+import { chatModelTimeoutMs, createShenronChatModel } from "../../src/ai/chat";
 import { json, loopbackBase, TOKEN } from "./helpers";
 
 const BASE = loopbackBase();
@@ -14,12 +14,12 @@ function setup(modelId = "gemini-web/flash") {
   const rec = createRecordingFetch({
     "POST /api/v1/shenron/llm/chat": () => json({ answer: " Oh oh, bonjour. ", model: modelId }),
   });
-  const compute = createAphrodyCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });
-  const model = createAphrodyChatModel(compute, { modelId });
+  const compute = createShenronCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });
+  const model = createShenronChatModel(compute, { modelId });
   return { rec, model };
 }
 
-describe("createAphrodyChatModel", () => {
+describe("createShenronChatModel", () => {
   test("the OpenAI chat budget reaches the private boundary and is reported as supported", async () => {
     const { rec, model } = setup("shenron-chat-v2");
     const result = await generateText({
@@ -51,7 +51,7 @@ describe("createAphrodyChatModel", () => {
     const { model } = setup();
     const typed = model satisfies LanguageModelV4;
     expect(typed.specificationVersion).toBe("v4");
-    expect(typed.provider).toBe("aphrody.shenron");
+    expect(typed.provider).toBe("shenron");
     expect(typed.supportedUrls).toEqual({});
   });
 
@@ -179,8 +179,8 @@ describe("createAphrodyChatModel", () => {
 
   test("HTTP failures surface as errors without the token", async () => {
     const rec = createRecordingFetch({ "*": () => json({ error: "x" }, { status: 502 }) });
-    const compute = createAphrodyCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });
-    const model = createAphrodyChatModel(compute, { modelId: "gemini-web/flash" });
+    const compute = createShenronCompute({ baseUrl: BASE, token: TOKEN }, { fetch: rec.fetch });
+    const model = createShenronChatModel(compute, { modelId: "gemini-web/flash" });
     const error = await generateText({ model, prompt: "x", maxRetries: 0 }).catch(
       (e: unknown) => e,
     );

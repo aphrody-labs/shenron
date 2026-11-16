@@ -7,7 +7,7 @@ import { join } from "node:path";
 import { createRagWriter } from "@shenron/db/vfs/build";
 import { openShenronVfs, type OpenedVfs } from "@shenron/db/vfs";
 import { ownedDirectory, resolveNotesHome, sha256 } from "./agent-home-notes";
-import { createAphrodyCompute, type AphrodyCompute } from "@shenron/pipeline/ai/aphrody";
+import { createShenronCompute, type ShenronCompute } from "@shenron/pipeline/ai/shenron";
 import {
   assertEmbeddingSpace,
   requireAiHttpToken,
@@ -24,7 +24,7 @@ export function renderObservationProjection(note: ObservationNote): string {
 }
 
 export interface PrivateVectorOptions {
-  compute: Pick<AphrodyCompute, "embed">;
+  compute: Pick<ShenronCompute, "embed">;
   projection?: {
     version: 1;
     kind: "observations-markdown-v1";
@@ -44,7 +44,7 @@ export interface PrivateVectorOptions {
   };
 }
 
-export function privateQueryEmbedder(compute: Pick<AphrodyCompute, "embed">) {
+export function privateQueryEmbedder(compute: Pick<ShenronCompute, "embed">) {
   return async (query: string): Promise<Float32Array> => {
     const result = await compute.embed({
       texts: [query],
@@ -75,11 +75,11 @@ function checkedPrivateVectors(
   });
 }
 
-/** Native Aphrody core, same shenron_parity owner as shenronRagChunk; no handwritten chunker. */
+/** Native Shenron core, same shenron_parity owner as shenronRagChunk; no handwritten chunker. */
 export async function chunkReviewedMarkdown(text: string): Promise<{ text: string }[]> {
   const child = Bun.spawn(
     [
-      "aphrody",
+      "shenron",
       "pure",
       "rag",
       "chunk",
@@ -105,19 +105,19 @@ export async function chunkReviewedMarkdown(text: string): Promise<{ text: strin
     child.exited,
   ]);
   if (code)
-    throw new Error(`Native Aphrody chunker failed (${code}; stderr bytes ${stderr.length})`);
+    throw new Error(`Native Shenron chunker failed (${code}; stderr bytes ${stderr.length})`);
   let chunks: unknown;
   try {
     chunks = JSON.parse(stdout);
   } catch {
-    throw new Error("Native Aphrody chunker returned invalid JSON; private output suppressed");
+    throw new Error("Native Shenron chunker returned invalid JSON; private output suppressed");
   }
   if (
     !Array.isArray(chunks) ||
     chunks.length === 0 ||
     chunks.some((chunk) => typeof chunk.text !== "string" || !chunk.text.trim())
   )
-    throw new Error("Native Aphrody chunker returned invalid chunks");
+    throw new Error("Native Shenron chunker returned invalid chunks");
   return chunks;
 }
 
@@ -397,10 +397,10 @@ if (import.meta.main) {
   };
   let vectors: PrivateVectorOptions | undefined;
   if (args.includes("--embedding")) {
-    if (value("--embedding") !== "aphrody")
-      throw new Error("Only the existing Aphrody embedding client is supported");
+    if (value("--embedding") !== "shenron")
+      throw new Error("Only the existing Shenron embedding client is supported");
     vectors = {
-      compute: createAphrodyCompute({
+      compute: createShenronCompute({
         baseUrl: requireAiHttpUrl(process.env),
         token: requireAiHttpToken(process.env),
       }),

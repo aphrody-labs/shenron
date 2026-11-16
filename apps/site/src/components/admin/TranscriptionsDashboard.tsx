@@ -391,7 +391,7 @@ export function TranscriptionsDashboard({
               <div className="space-y-4 text-sm">
                 <div className="flex items-center justify-between rounded-lg border border-white/5 bg-white/[0.02] p-3">
                   <div>
-                    <div className="font-semibold text-white">PP-OCRv5 Core (Aphrody)</div>
+                    <div className="font-semibold text-white">PP-OCRv5 Core (Shenron)</div>
                     <div className="text-xs text-white/50">
                       Détection déterministe CPU · ~1s par planche
                     </div>

@@ -4,7 +4,7 @@
  * build-vfs.ts — builds the Shenron VFS database embedded in the Shenron binaries, and its
  * generated entry module.
  *
- *   bun --env-file=$HOME/.aphrody/private/shenron/ai-http.env scripts/data/build-vfs.ts \
+ *   bun --env-file=$HOME/.shenron/private/shenron/ai-http.env scripts/data/build-vfs.ts \
  *     --profile public|complet [--out DIR] [--rag-limit N] [--rag-source postgres|wiki] [--vectors f32|i8|none]
  *     [--skip rag,wiki,home,data,assets,cdn,conversations] [--embed-assets] [--assets-dir DIR]...
  *     [--probe-cdn N]
@@ -12,11 +12,11 @@
  * Profiles:
  *   public   schema + content already public on dragonballfr.com (visible site RAG rows,
  *            visible wiki rows, public data files, agent home template, asset index); int8 vectors.
- *   complet  + private corpus (every Aphrody RAG row), the live agent home (persona, memory)
- *            and opted-in conversations; f32 vectors (aphrody-rag readable). Delivered directly,
- *            NEVER attached to a public release nor committed (default out: ~/.aphrody/private).
+ *   complet  + private corpus (every Shenron RAG row), the live agent home (persona, memory)
+ *            and opted-in conversations; f32 vectors (shenron-rag readable). Delivered directly,
+ *            NEVER attached to a public release nor committed (default out: ~/.shenron/private).
  *
- * Sources (read only): the Aphrody RAG store (`SHENRON_RAG_PG_URL`, else `SHENRON_MCP_DATABASE_URL`),
+ * Sources (read only): the Shenron RAG store (`SHENRON_RAG_PG_URL`, else `SHENRON_MCP_DATABASE_URL`),
  * the site database (`SHENRON_WIKI_PG_URL`, else `DATABASE_URL`, `default_transaction_read_only`),
  * the corpus embedder (`SHENRON_AI_EMBED_BASE_URL`) for agent-home chunks, the conversation store
  * (`SHENRON_CHAT_STORE`). Outputs: `shenron-vfs.<profile>.sqlite`, `vfs-entry.<profile>.ts`,
@@ -86,7 +86,7 @@ const skip = new Set(
 const out = resolve(
   values.out ??
     (profile === "complet"
-      ? join(homedir(), ".aphrody", "private", "shenron", "vfs")
+      ? join(homedir(), ".shenron", "private", "shenron", "vfs")
       : join(ROOT, "dist", "vfs")),
 );
 mkdirSync(out, { recursive: true });
@@ -152,7 +152,7 @@ const HOME_FILES = [
 const homeDir =
   profile === "complet"
     ? (process.env.SHENRON_WORKSPACE ??
-      join(process.env.SHENRON_HOME ?? join(homedir(), ".aphrody"), "workspaces", "dbfr"))
+      join(process.env.SHENRON_HOME ?? join(homedir(), ".shenron"), "workspaces", "dbfr"))
     : join(ROOT, "templates/agent-home");
 const embedBase = process.env.SHENRON_AI_EMBED_BASE_URL;
 const embedder = embedBase ? createE5Embedder({ baseUrl: embedBase }) : null;

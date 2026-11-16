@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Live qualification of `generateLlmAnswer` over the real preloaded Shenron RAG.
- * Hits come from the actual `hybridSearch(null, query)` (native PG, RAG_BACKEND=aphrody);
+ * Hits come from the actual `hybridSearch(null, query)` (native PG, RAG_BACKEND=shenron);
  * no retrieval source, snippet or rowid is fabricated. Only the `llm/chat` request is
  * captured and answered; every other HTTP call (RAG, E5, Redis gateway) is delegated untouched.
  * Runs only behind the full `requireLiveRag` gate; there is no bypass.
@@ -60,7 +60,7 @@ describe("generateLlmAnswer with the real preloaded Shenron RAG (B17)", () => {
     expect(results.length).toBeGreaterThan(0);
 
     captureChat("Sur Namek.");
-    const db = new Database(":memory:"); // no rag_chunks: the Aphrody backend carries the content
+    const db = new Database(":memory:"); // no rag_chunks: the Shenron backend carries the content
     try {
       const answer = await generateLlmAnswer(db, question, results, "beerus", { cache: noCache });
       expect(answer).toBe("Sur Namek.");

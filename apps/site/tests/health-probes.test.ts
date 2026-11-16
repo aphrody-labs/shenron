@@ -131,14 +131,14 @@ describe("S2 — Site Liveness & Readiness Separation", () => {
       }
     });
 
-    it("probeRag is disabled unless RAG_BACKEND=aphrody", async () => {
+    it("probeRag is disabled unless RAG_BACKEND=shenron", async () => {
       expect(await probeRag({})).toBe("disabled");
     });
 
     it("cancels a stalled availability request at its deadline", async () => {
       let cancelled = false;
       const state = await probeRag(
-        { RAG_BACKEND: "aphrody" },
+        { RAG_BACKEND: "shenron" },
         (_q, _limit, signal) =>
           new Promise((_resolve, reject) => {
             signal!.addEventListener(
@@ -156,7 +156,7 @@ describe("S2 — Site Liveness & Readiness Separation", () => {
     }, 10_000);
 
     it("probeRag fails on empty hits, error bodies, HTTP errors and invalid shapes", async () => {
-      const env = { RAG_BACKEND: "aphrody" };
+      const env = { RAG_BACKEND: "shenron" };
       resetRagProbeCache();
       expect(await probeRag(env, async () => ({ results: [] }))).toBe("empty");
       expect(await probeRag(env, async () => ({ results: [{}] }))).toBe("unreachable");
@@ -166,7 +166,7 @@ describe("S2 — Site Liveness & Readiness Separation", () => {
       expect(await probeRag(env, async () => ({}) as { results: unknown[] })).toBe("unreachable");
       expect(
         await probeRag(env, async () => {
-          throw new Error("Aphrody compute HTTP 401 on /rag/search");
+          throw new Error("Shenron compute HTTP 401 on /rag/search");
         }),
       ).toBe("http_401");
       expect(

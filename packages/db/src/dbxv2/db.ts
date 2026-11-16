@@ -75,7 +75,7 @@ export interface Dbxv2Db {
 
 export interface OpenDbxv2Options {
   readOnly?: boolean;
-  /** Query embedder; a string is the `/v1` base URL of an `aphrody-embed serve`. */
+  /** Query embedder; a string is the `/v1` base URL of an `shenron-embed serve`. */
   embedder?: QueryEmbedder | string | null;
 }
 

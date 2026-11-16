@@ -98,15 +98,15 @@ test("a remote snapshot drops the checkout of a removed submodule", () => {
 describe("vitalTarArgs", () => {
   test("archives existing vital paths relative to / and excludes models", () => {
     const root = tree(["data/home/memory", "data/home/models/embed", "apps/bot/data"]);
-    const home = tree([".aphrody/private/shenron/home"]);
+    const home = tree([".shenron/private/shenron/home"]);
     const args = vitalTarArgs(root, home);
     const members = args.slice(args.indexOf("-C") + 2);
     expect(members).toContain(fromRoot(join(root, "data/home")));
     expect(members).toContain(fromRoot(join(root, "apps/bot/data")));
-    expect(members).toContain(fromRoot(join(home, ".aphrody/private/shenron")));
+    expect(members).toContain(fromRoot(join(home, ".shenron/private/shenron")));
     expect(members.some((m) => m.includes("source-acquisition"))).toBe(false);
     expect(args).toContain(`--exclude=${fromRoot(join(root, "data/home/models"))}`);
-    expect(args).toContain(`--exclude=${fromRoot(join(home, ".aphrody/private/shenron/home"))}`);
+    expect(args).toContain(`--exclude=${fromRoot(join(home, ".shenron/private/shenron/home"))}`);
   });
 });
 

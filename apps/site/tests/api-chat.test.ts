@@ -14,8 +14,8 @@ mock.module("@/lib/memory-rate-limit", () => ({
 
 // Mock site-rag before importing the route
 mock.module("@/lib/site-rag", () => ({
-  usesAphrodyRag: () => true,
-  chatAphrodyRag: async (query: string, persona: string) => ({
+  usesShenronRag: () => true,
+  chatShenronRag: async (query: string, persona: string) => ({
     answer: `Réponse de ${persona} pour: ${query}`,
     hits: [
       {

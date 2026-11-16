@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `ShenronVfs`: the Aphrody VFS contract (`aphrody-shell-vfs` `Vfs` trait: read, write, stat,
+ * `ShenronVfs`: the Shenron VFS contract (`shenron-shell-vfs` `Vfs` trait: read, write, stat,
  * read_dir, mkdir, remove, rename and the append/mkdir_all/remove_all helpers, same error
  * kinds and precedence as `MemVfs`) over the `vfs_nodes` table of a Shenron VFS database.
  *

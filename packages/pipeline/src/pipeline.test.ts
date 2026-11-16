@@ -34,9 +34,9 @@ describe("@shenron/pipeline — exécution vérifiable", () => {
     expect(called).toBe(false);
   });
 
-  it("synchronise toutes les sources vers Aphrody par défaut", async () => {
+  it("synchronise toutes les sources vers Shenron par défaut", async () => {
     const result = await buildRagIndex({ runner: okRunner });
-    expect(result.command.at(1)?.endsWith("rag-sync-aphrody.ts")).toBe(true);
+    expect(result.command.at(1)?.endsWith("rag-sync-shenron.ts")).toBe(true);
     expect(result.command).toContain("--toutes");
     expect(result.command).toContain("--appliquer");
   });
@@ -63,7 +63,7 @@ describe("@shenron/pipeline — exécution vérifiable", () => {
     });
     expect(manga.command.at(1)?.endsWith("run-manga-ocr.ts")).toBe(true);
     expect(databooks.command.at(1)?.endsWith("gpu-continuous-ocr.ts")).toBe(true);
-    expect(rag.command.at(1)?.endsWith("eval-aphrody-rag.ts")).toBe(true);
+    expect(rag.command.at(1)?.endsWith("eval-shenron-rag.ts")).toBe(true);
     expect(rag.command).toContain("--ci");
     expect(crawl.command.slice(1, 4)).toEqual(["web", "dragon-ball", "crawl"]);
     expect(crawl.command).toContain("kanzenshuu");

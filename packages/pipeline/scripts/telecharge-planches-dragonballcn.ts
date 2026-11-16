@@ -26,7 +26,7 @@ const CATALOGUE = join(DOSSIER_CATALOGUES, "dragonballcn.json");
 const INVENTAIRE = join(DOSSIER_CATALOGUES, "dragonballcn-inventaire.json");
 const SORTIE = join(RACINE_BOT, "assets", "dragonballcn", "planches");
 
-const MAISON = process.env.DRAGONBALLCN_ETAT_DIR ?? join(process.env.HOME ?? "/tmp", ".aphrody");
+const MAISON = process.env.DRAGONBALLCN_ETAT_DIR ?? join(process.env.HOME ?? "/tmp", ".shenron");
 const JOURNAL = join(MAISON, "dragonballcn-planches.json");
 
 const RACINE = "https://comic.dragonballcn.com";
@@ -201,9 +201,9 @@ async function verifiePrealables(sonde: boolean) {
   if (!Bun.which("curl"))
     manques.push("`curl` absent du PATH — c'est le client HTTP du script (apt install curl).");
 
-  if (!process.env.SHENRON_BIN?.trim() && !Bun.which("aphrody"))
+  if (!process.env.SHENRON_BIN?.trim() && !Bun.which("shenron"))
     manques.push(
-      "Aphrody CLI absent du PATH — définir SHENRON_BIN ou installer le binaire aphrody.",
+      "Shenron CLI absent du PATH — définir SHENRON_BIN ou installer le binaire shenron.",
     );
 
   try {

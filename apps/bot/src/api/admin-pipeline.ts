@@ -4,8 +4,8 @@ import { Database } from "bun:sqlite";
 import { chmodSync, existsSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, isAbsolute, join } from "node:path";
 import { z } from "zod";
-import { runAphrodyCommand } from "@shenron/pipeline/aphrody/native-commands";
-import { nativeAbiVersion, nativeVersion } from "@shenron/pipeline/aphrody/native";
+import { runShenronCommand } from "@shenron/pipeline/shenron/native-commands";
+import { nativeAbiVersion, nativeVersion } from "@shenron/pipeline/shenron/native";
 import { shenronWorkerPool } from "@shenron/native/worker";
 import { shenronLoad, SHENRON_FFI_FILE } from "@shenron/native/shenron";
 import { AdminWebQueue } from "./admin-web-queue";
@@ -27,13 +27,13 @@ const Plan = z
     args: Args,
     probe: Args,
     target: z.enum(["vps", "dbfr"]),
-    engine: z.enum(["aphrody", "shenron"]).default("aphrody"),
+    engine: z.enum(["shenron", "shenron"]).default("shenron"),
     timeoutMs: z.number().int().min(1000).max(86_400_000).default(3_600_000),
   })
   .strict();
 const Config = z.object({ plans: z.array(Plan).max(32) }).strict();
 type InstalledPlan = z.infer<typeof Plan>;
-type Execute = typeof runAphrodyCommand;
+type Execute = typeof runShenronCommand;
 interface JobRow {
   id: string;
   action: string;
@@ -111,7 +111,7 @@ export class AdminPipeline {
   private web: AdminWebQueue;
   constructor(
     private env: NodeJS.ProcessEnv = process.env,
-    private execute: Execute = runAphrodyCommand,
+    private execute: Execute = runShenronCommand,
   ) {
     this.web = new AdminWebQueue(env);
   }

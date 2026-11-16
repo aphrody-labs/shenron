@@ -206,7 +206,7 @@ const nextConfig: NextConfig = {
     qualities: [70, 75],
     // Plancher du cache disque (`.next/cache/images`). Le TTL réel est le
     // MAXIMUM de cette valeur (4 h, défaut Next 16) et du `max-age` de la source : 1 jour pour
-    // `/assets/**`, un an pour `/db/**` (immuable). `aphrody-infra` conserve
+    // `/assets/**`, un an pour `/db/**` (immuable). `shenron-infra` conserve
     // le cache mutable hors release :
     // sans ça, chaque mise en ligne repartait d'un cache froid et refaisait
     // toutes les transformations sur un VPS déjà juste en mémoire.

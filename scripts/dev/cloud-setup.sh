@@ -22,19 +22,19 @@ done
 [[ "${CLAUDE_CODE_REMOTE:-}" == "true" || $force == 1 || $dry == 1 ]] || exit 0
 
 root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
-log_dir="${XDG_STATE_HOME:-$HOME/.local/state}/aphrody"
+log_dir="${XDG_STATE_HOME:-$HOME/.local/state}/shenron"
 log="$log_dir/cloud-setup.log"
 mkdir -p "$log_dir" "$HOME/.local/bin" "$HOME/.cargo/bin" "$HOME/.bun/bin"
 export PATH="$HOME/.cargo/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH"
 # Later Bash calls of the session find the tools without a shell profile.
 if [[ -n "${CLAUDE_ENV_FILE:-}" ]]; then
-  grep -q 'aphrody-cloud-path' "$CLAUDE_ENV_FILE" 2>/dev/null ||
-    echo 'export PATH="$HOME/.cargo/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH" # aphrody-cloud-path' >>"$CLAUDE_ENV_FILE"
+  grep -q 'shenron-cloud-path' "$CLAUDE_ENV_FILE" 2>/dev/null ||
+    echo 'export PATH="$HOME/.cargo/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH" # shenron-cloud-path' >>"$CLAUDE_ENV_FILE"
 fi
 
 if [[ $mode == background && $dry == 0 ]]; then
   nohup bash "$0" --wait >>"$log" 2>&1 </dev/null &
-  echo "aphrody cloud setup started in the background (log: $log)"
+  echo "shenron cloud setup started in the background (log: $log)"
   exit 0
 fi
 
@@ -65,7 +65,7 @@ fi
 
 step "bun"
 if ! have bun; then
-  run bash -c "curl -fsSL https://raw.githubusercontent.com/aphrody-labs/bun/main/scripts/aphrody/install.sh | bash -s ${bun_pin:+aphrody-v$bun_pin}"
+  run bash -c "curl -fsSL https://raw.githubusercontent.com/aphrody-labs/bun/main/scripts/shenron/install.sh | bash -s ${bun_pin:+shenron-v$bun_pin}"
 fi
 
 step "uv and Graphify"
@@ -92,7 +92,7 @@ if [[ -f "$root/bun.lock" ]] && (have bun || (( dry == 1 ))); then
   run bash -c "cd '$root' && bun install --frozen-lockfile"
 fi
 
-step "Aphrody and Yolo binaries (download server, when announced)"
+step "Shenron and Yolo binaries (download server, when announced)"
 if [[ -n "${SHENRON_DOWNLOAD_BASE:-}" ]]; then
   run bash -c "curl -fsSL '$SHENRON_DOWNLOAD_BASE/install.sh' | sh"
 else

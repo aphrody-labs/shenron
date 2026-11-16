@@ -3,7 +3,7 @@
 /**
  * Scores the live Shenron chat route on the held-out gold questions written by
  * `build-chat-rollouts.ts`. A deterministic sample of gold rows is asked through
- * Aphrody `POST /api/v1/shenron/llm/chat` with the Shenron persona; an answer
+ * Shenron `POST /api/v1/shenron/llm/chat` with the Shenron persona; an answer
  * counts as grounded when it shares at least MIN_OVERLAP_TOKENS significant
  * tokens with the row's expected passage line. Refusals, AI mentions and
  * latency are reported; the report is written next to the gold file. The route
@@ -122,9 +122,9 @@ async function main(): Promise<void> {
     options: {
       gold: {
         type: "string",
-        default: join(home, ".aphrody/private/training/shenron/chat/gold.jsonl"),
+        default: join(home, ".shenron/private/training/shenron/chat/gold.jsonl"),
       },
-      soul: { type: "string", default: join(home, ".aphrody/workspaces/dbfr/SOUL.md") },
+      soul: { type: "string", default: join(home, ".shenron/workspaces/dbfr/SOUL.md") },
       limit: { type: "string", default: "40" },
       label: { type: "string", default: "live" },
       out: { type: "string" },
@@ -137,8 +137,8 @@ async function main(): Promise<void> {
   const tone = soulTone(
     existsSync(values.soul as string) ? readFileSync(values.soul as string, "utf8") : "",
   );
-  const { AphrodyComputeClient } = await import("@shenron/pipeline/aphrody");
-  const client = new AphrodyComputeClient();
+  const { ShenronComputeClient } = await import("@shenron/pipeline/shenron");
+  const client = new ShenronComputeClient();
   const score = await runEval(
     sample,
     tone,

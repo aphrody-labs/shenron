@@ -17,17 +17,17 @@ import {
   type SharedV4Warning,
   UnsupportedFunctionalityError,
 } from "@ai-sdk/provider";
-import { AiFailureError, type AphrodyChatRole, type AphrodyCompute } from "./aphrody";
+import { AiFailureError, type ShenronChatRole, type ShenronCompute } from "./shenron";
 import {
   type AiTimeouts,
-  type AphrodyChatModelId,
+  type ShenronChatModelId,
   chatTimeoutMs,
   DEFAULT_AI_TIMEOUTS,
 } from "./config";
 import { SHENRON_LIMITS } from "./wire";
 
-export interface AphrodyChatWireMessage {
-  role: AphrodyChatRole;
+export interface ShenronChatWireMessage {
+  role: ShenronChatRole;
   content: string;
 }
 
@@ -50,9 +50,9 @@ function emptyUsage(): LanguageModelV4Usage {
  * message is merged into one leading `system` message; user and assistant
  * text parts are concatenated. Anything else is unsupported.
  */
-export function toAphrodyMessages(prompt: LanguageModelV4Prompt): AphrodyChatWireMessage[] {
+export function toShenronMessages(prompt: LanguageModelV4Prompt): ShenronChatWireMessage[] {
   const system: string[] = [];
-  const turns: AphrodyChatWireMessage[] = [];
+  const turns: ShenronChatWireMessage[] = [];
   for (const message of prompt) {
     if (message.role === "system") {
       if (message.content) system.push(message.content);
@@ -80,12 +80,12 @@ export function toAphrodyMessages(prompt: LanguageModelV4Prompt): AphrodyChatWir
     }
     turns.push({ role: message.role, content: text });
   }
-  const messages: AphrodyChatWireMessage[] =
+  const messages: ShenronChatWireMessage[] =
     system.length > 0 ? [{ role: "system", content: system.join("\n\n") }, ...turns] : turns;
   if (messages.length === 0 || messages.length > SHENRON_LIMITS.chatMessages) {
     throw new InvalidPromptError({
       prompt,
-      message: `Aphrody chat accepts 1 to ${SHENRON_LIMITS.chatMessages} messages, received ${messages.length}`,
+      message: `Shenron chat accepts 1 to ${SHENRON_LIMITS.chatMessages} messages, received ${messages.length}`,
     });
   }
   for (const message of messages) {
@@ -93,7 +93,7 @@ export function toAphrodyMessages(prompt: LanguageModelV4Prompt): AphrodyChatWir
     if (bytes === 0 || bytes > SHENRON_LIMITS.chatMessageBytes) {
       throw new InvalidPromptError({
         prompt,
-        message: `Aphrody chat messages must hold 1 to ${SHENRON_LIMITS.chatMessageBytes} bytes`,
+        message: `Shenron chat messages must hold 1 to ${SHENRON_LIMITS.chatMessageBytes} bytes`,
       });
     }
   }
@@ -146,8 +146,8 @@ function rejectUnsupported(options: LanguageModelV4CallOptions): void {
   }
 }
 
-export interface AphrodyChatModelOptions {
-  modelId: AphrodyChatModelId;
+export interface ShenronChatModelOptions {
+  modelId: ShenronChatModelId;
 }
 
 /** Timeout chosen for a chat model: 125 s for `gemini-web/*`, 90 s otherwise. */
@@ -159,12 +159,12 @@ export function chatModelTimeoutMs(
 }
 
 /** `LanguageModelV4` over `llm/chat`. */
-export function createAphrodyChatModel(
-  compute: Pick<AphrodyCompute, "chat">,
-  o: AphrodyChatModelOptions,
+export function createShenronChatModel(
+  compute: Pick<ShenronCompute, "chat">,
+  o: ShenronChatModelOptions,
 ): LanguageModelV4 {
   const modelId = o.modelId;
-  // A blank id sends no `model`: Aphrody keeps its default (compute rejects `model: ""`).
+  // A blank id sends no `model`: Shenron keeps its default (compute rejects `model: ""`).
   const wireModel = modelId.trim();
   const forwardsOutputBudget = !wireModel.startsWith("gemini-web");
 
@@ -172,7 +172,7 @@ export function createAphrodyChatModel(
     options: LanguageModelV4CallOptions,
   ): Promise<LanguageModelV4GenerateResult> {
     rejectUnsupported(options);
-    const messages = toAphrodyMessages(options.prompt);
+    const messages = toShenronMessages(options.prompt);
     const outputBudget =
       forwardsOutputBudget && options.maxOutputTokens !== undefined
         ? { maxOutputTokens: options.maxOutputTokens }
@@ -197,7 +197,7 @@ export function createAphrodyChatModel(
 
   const model = {
     specificationVersion: "v4",
-    provider: "aphrody.shenron",
+    provider: "shenron",
     modelId,
     supportedUrls: {},
     doGenerate,

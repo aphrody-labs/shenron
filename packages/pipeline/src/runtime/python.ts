@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** One lazy native CPython owner for all Shenron consumers; the SDK remains in Aphrody. */
+/** One lazy native CPython owner for all Shenron consumers; the SDK remains in Shenron. */
 import { existsSync, statSync } from "node:fs";
 import { isAbsolute, join, relative, resolve } from "node:path";
 
@@ -15,7 +15,7 @@ export type PythonArgument =
   | boolean
   | number
   | string
-  | AphrodyPythonObject
+  | ShenronPythonObject
   | PythonArgument[]
   | { [key: string]: PythonArgument };
 export interface PythonSession {
@@ -32,7 +32,7 @@ export interface PythonOwner {
   pythonHostLibraryPath(): string;
   buvLibpython(): string | null;
 }
-export interface AphrodyPythonOptions {
+export interface ShenronPythonOptions {
   /** Selected source roots or qualified installed packages, never copied providers or stores. */
   sourceRoots?: readonly string[];
   libraryPath?: string;
@@ -56,7 +56,7 @@ interface State {
 }
 interface Entry {
   key: string;
-  loadOwner?: AphrodyPythonOptions["loadOwner"];
+  loadOwner?: ShenronPythonOptions["loadOwner"];
   state: Promise<State>;
   leases: number;
   closing?: Promise<void>;
@@ -81,7 +81,7 @@ def _shenron_python_sdk_dispatch_v1(encoded):
     try:
         operation = request['operation']
         if operation == 'exports':
-            value = list(getattr(_ss_importlib.import_module('aphrody'), '__all__', []))
+            value = list(getattr(_ss_importlib.import_module('shenron'), '__all__', []))
         elif operation == 'release':
             obj = _ss_objects.pop(request['handle'], None)
             close = getattr(obj, 'aclose', None) or getattr(obj, 'close', None)
@@ -115,17 +115,17 @@ def _shenron_python_sdk_dispatch_v1(encoded):
 
 function moduleName(name: string) {
   if (
-    !/^(aphrody|aphrody_train|aphrody_cli|aphrody_embedding_fixtures)(?:\.[A-Za-z_][A-Za-z0-9_]*)*$/.test(
+    !/^(shenron|shenron_train|shenron_cli|shenron_embedding_fixtures)(?:\.[A-Za-z_][A-Za-z0-9_]*)*$/.test(
       name,
     )
   )
-    throw new TypeError("Select an Aphrody SDK module explicitly");
+    throw new TypeError("Select an Shenron SDK module explicitly");
 }
 function publicName(name: string) {
   if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(name) && name !== "__version__")
     throw new TypeError("Select a public SDK member");
 }
-function configuration(options: AphrodyPythonOptions) {
+function configuration(options: ShenronPythonOptions) {
   const roots = options.sourceRoots ?? [];
   if (roots.length > 32) throw new Error("Too many Python source roots");
   for (const root of roots) {
@@ -142,7 +142,7 @@ function configuration(options: AphrodyPythonOptions) {
     virtualEnv: options.virtualEnv,
   };
 }
-async function initialize(options: AphrodyPythonOptions): Promise<State> {
+async function initialize(options: ShenronPythonOptions): Promise<State> {
   const config = configuration(options);
   const owner = await (options.loadOwner?.() ?? import(BUILTIN));
   if (!owner.Python?.async || !owner.pythonHostLibraryPath || !owner.buvLibpython)
@@ -169,8 +169,8 @@ async function initialize(options: AphrodyPythonOptions): Promise<State> {
     const pid = await py.evalJSON<number>("os.getpid()");
     if (pid !== process.pid) throw new Error("SDK Python must execute in the Shenron Bun process");
     // The SDK root exposes lazy public exports; optional modules load only on explicit invocation.
-    await py.exec("import aphrody");
-    const sdkPath = await py.evalJSON<string>("str(aphrody.__file__)");
+    await py.exec("import shenron");
+    const sdkPath = await py.evalJSON<string>("str(shenron.__file__)");
     if (
       config.roots.length &&
       !config.roots.some((root) => {
@@ -178,7 +178,7 @@ async function initialize(options: AphrodyPythonOptions): Promise<State> {
         return local && !local.startsWith("..") && !isAbsolute(local);
       })
     )
-      throw new Error("Loaded Aphrody SDK differs from the selected source roots");
+      throw new Error("Loaded Shenron SDK differs from the selected source roots");
     await py.exec(BOOTSTRAP);
     return {
       py,
@@ -198,7 +198,7 @@ async function initialize(options: AphrodyPythonOptions): Promise<State> {
   }
 }
 
-export class AphrodyPythonSdk implements AsyncDisposable {
+export class ShenronPythonSdk implements AsyncDisposable {
   private closed = false;
   constructor(
     private readonly state: State,
@@ -211,7 +211,7 @@ export class AphrodyPythonSdk implements AsyncDisposable {
     if (this.closed) throw new Error("The Python SDK lease is closed");
     if (this.state.pending >= 64) throw new Error("The Python SDK queue is saturated");
     const payload = JSON.stringify(request, (_key, value) => {
-      if (value instanceof AphrodyPythonObject) return value.argument(this.state);
+      if (value instanceof ShenronPythonObject) return value.argument(this.state);
       if (typeof value === "number" && !Number.isFinite(value))
         throw new TypeError("SDK numeric arguments must be finite");
       return value;
@@ -221,7 +221,7 @@ export class AphrodyPythonSdk implements AsyncDisposable {
     try {
       const receipt = JSON.parse(await this.state.py.call("__main__", DISPATCH, payload));
       if (!receipt || receipt.ok !== true)
-        throw new Error(`Aphrody SDK invocation failed (${receipt?.error ?? "invalid-receipt"})`);
+        throw new Error(`Shenron SDK invocation failed (${receipt?.error ?? "invalid-receipt"})`);
       return receipt.value as PythonJson;
     } finally {
       this.state.pending--;
@@ -261,7 +261,7 @@ export class AphrodyPythonSdk implements AsyncDisposable {
       kwargs,
       retain: true,
     })) as { handle: string };
-    return new AphrodyPythonObject(result.handle, this.state, (request) => this.dispatch(request));
+    return new ShenronPythonObject(result.handle, this.state, (request) => this.dispatch(request));
   }
   async close() {
     if (this.closed) return;
@@ -272,7 +272,7 @@ export class AphrodyPythonSdk implements AsyncDisposable {
     return this.close();
   }
 }
-export class AphrodyPythonObject implements AsyncDisposable {
+export class ShenronPythonObject implements AsyncDisposable {
   private closed = false;
   constructor(
     private readonly handle: string,
@@ -304,7 +304,7 @@ export class AphrodyPythonObject implements AsyncDisposable {
       kwargs,
       retain: true,
     })) as { handle: string };
-    return new AphrodyPythonObject(result.handle, this.state, this.dispatch);
+    return new ShenronPythonObject(result.handle, this.state, this.dispatch);
   }
   async close() {
     if (this.closed) return;
@@ -317,12 +317,12 @@ export class AphrodyPythonObject implements AsyncDisposable {
 }
 
 /** All packages acquire this owner rather than starting independent interpreters. */
-export async function openAphrodyPython(
-  options: AphrodyPythonOptions = {},
-): Promise<AphrodyPythonSdk> {
+export async function openShenronPython(
+  options: ShenronPythonOptions = {},
+): Promise<ShenronPythonSdk> {
   if (active?.closing) {
     await active.closing;
-    return openAphrodyPython(options);
+    return openShenronPython(options);
   }
   const key = JSON.stringify(configuration(options));
   if (active && (active.key !== key || active.loadOwner !== options.loadOwner))
@@ -341,7 +341,7 @@ export async function openAphrodyPython(
     if (--entry.leases === 0) active = undefined;
     throw error;
   }
-  return new AphrodyPythonSdk(state, async () => {
+  return new ShenronPythonSdk(state, async () => {
     if (--entry.leases > 0) return;
     const closing = (async () => {
       try {

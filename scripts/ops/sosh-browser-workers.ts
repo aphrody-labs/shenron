@@ -5,8 +5,8 @@ import { mkdir, chmod, readlink, realpath } from "node:fs/promises";
 import { homedir } from "node:os";
 import { isAbsolute, join } from "node:path";
 
-/** Native Aphrody Web binary (SHENRON_WEB_BIN, default ~/.local/bin/aphrody-web). */
-const SHENRON_WEB = process.env.SHENRON_WEB_BIN ?? join(homedir(), ".local/bin/aphrody-web");
+/** Native Shenron Web binary (SHENRON_WEB_BIN, default ~/.local/bin/shenron-web). */
+const SHENRON_WEB = process.env.SHENRON_WEB_BIN ?? join(homedir(), ".local/bin/shenron-web");
 
 const targets = [
   ["https://books.shueisha.co.jp/items/contents.html?isbn=978-4-08-111166-4"],

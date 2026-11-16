@@ -2,7 +2,7 @@
   "$schema": "https://a2a-protocol.org/latest/schema/agent-card.json",
   "version": "1.0.0",
   "name": "shenron-dragon-ball-factual-workflow",
-  "description": "Contrat local entre Shenron, Aphrody A2A et les sous-agents Codex Luna économes pour exploiter le manga et les databooks sans source web.",
+  "description": "Contrat local entre Shenron, Shenron A2A et les sous-agents Codex Luna économes pour exploiter le manga et les databooks sans source web.",
   "protocol": {
     "version": "1.0",
     "bindings": ["JSONRPC", "file+jsonl"]
@@ -14,7 +14,7 @@
       "skills": ["partition", "source-policy", "review", "wiki-proposals"]
     },
     {
-      "id": "aphrody",
+      "id": "shenron",
       "role": "coordination-peer",
       "endpoint": "http://127.0.0.1:8788",
       "skills": ["a2a", "heartbeat", "delivery-status"]

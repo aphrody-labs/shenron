@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Exemple d'unité systemd de l'Activité « Arène Shenron ». L'hébergement appartient à l'Infra
-# d'Aphrody (aphrody-infra) : ce fichier n'est ni installé ni activé par ce dépôt.
+# d'Shenron (shenron-infra) : ce fichier n'est ni installé ni activé par ce dépôt.
 #
 # Livrable : le binaire unique de `bun run --filter @shenron/activity-app compile --target linux-x64`
 # (dist/bin/shenron-activity), ou `bun src/main.ts` avec dist/client à côté.

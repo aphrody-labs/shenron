@@ -20,7 +20,7 @@ import { userHome } from "@shenron/kit/paths";
  *           └─▶ index RAG `rag_chunks` (ce script, à chaud, différentiel)
  *                 └─▶ /api/public/rag/search, /ask, MCP, recherche du site
  *
- *   PostgreSQL (planches + corpus .aphrody)
+ *   PostgreSQL (planches + corpus .shenron)
  *     └─▶ public.canon_references      (service `shenron-canon-ingest`, /15 min)
  *           └─▶ /api/canon, MCP canon_check, /wiki/canon
  *
@@ -38,7 +38,7 @@ import { userHome } from "@shenron/kit/paths";
 import { Database } from "bun:sqlite";
 import postgres from "postgres";
 import { join } from "node:path";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { ShenronComputeClient } from "@shenron/pipeline/shenron";
 
 const ROOT = new URL("..", import.meta.url).pathname; // apps/bot/
 const DEPOT = join(ROOT, "..", "..");
@@ -50,10 +50,10 @@ const APPLIQUER = args.has("--appliquer");
 const SANS_CANON = args.has("--sans-canon");
 const SANS_RAG = args.has("--sans-rag");
 const SANS_CORPUS = args.has("--sans-corpus");
-const RAG_APHRODY = process.env.RAG_BACKEND === "aphrody";
+const RAG_SHENRON = process.env.RAG_BACKEND === "shenron";
 async function remoteRagStats() {
   try {
-    return await new AphrodyComputeClient().ragStats();
+    return await new ShenronComputeClient().ragStats();
   } catch {
     return null;
   }
@@ -188,7 +188,7 @@ if (SANS_CANON) {
   if (!APPLIQUER) {
     journal({
       nom: "canon",
-      role: "corpus .aphrody + planches traduites → public.canon_references",
+      role: "corpus .shenron + planches traduites → public.canon_references",
       statut: "ok",
       detail: `${avant!.total} preuves indexées (${avant!.traduites} traduites) — le service shenron-canon-ingest repasse toutes les 15 min`,
     });
@@ -199,7 +199,7 @@ if (SANS_CANON) {
 		`) as unknown as { total: number }[];
     journal({
       nom: "canon",
-      role: "corpus .aphrody + planches traduites → public.canon_references",
+      role: "corpus .shenron + planches traduites → public.canon_references",
       statut: r.ok ? "ok" : "échec",
       detail: `${avant!.total} → ${apres!.total} preuves`,
       duree_ms: r.duree,
@@ -209,15 +209,15 @@ if (SANS_CANON) {
 
 // ── 3. Le corpus databooks versionné (pour le build hebdomadaire) ───────────
 
-if (SANS_CORPUS || RAG_APHRODY || !APPLIQUER) {
+if (SANS_CORPUS || RAG_SHENRON || !APPLIQUER) {
   const f = Bun.file(join(ROOT, "data/rag/corpus-databooks.json"));
   const age = (await f.exists()) ? Date.now() - f.lastModified : null;
   journal({
     nom: "corpus databooks",
     role: "PostgreSQL → data/rag/corpus-databooks.json (lu par rag-build)",
-    statut: SANS_CORPUS || RAG_APHRODY ? "ignoré" : "ok",
-    detail: RAG_APHRODY
-      ? "Aphrody ingère directement les sources PostgreSQL"
+    statut: SANS_CORPUS || RAG_SHENRON ? "ignoré" : "ok",
+    detail: RAG_SHENRON
+      ? "Shenron ingère directement les sources PostgreSQL"
       : age === null
         ? "absent"
         : `écrit il y a ${Math.round(age / 3_600_000)} h — le build hebdomadaire lit ce fichier, pas la base`,
@@ -240,7 +240,7 @@ if (SANS_CORPUS || RAG_APHRODY || !APPLIQUER) {
 // graphies anglaise et japonaise dès la prochaine recherche (lu au démarrage
 // du bot par `lib/rag.ts`).
 
-if (!SANS_RAG && !RAG_APHRODY && APPLIQUER) {
+if (!SANS_RAG && !RAG_SHENRON && APPLIQUER) {
   const r = await lance("rag-lexique", ["packages/pipeline/scripts/rag-lexique.ts"]);
   journal({
     nom: "lexique des requêtes",
@@ -253,22 +253,22 @@ if (!SANS_RAG && !RAG_APHRODY && APPLIQUER) {
 
 // ── 4. L'index RAG, à chaud et en différentiel ──────────────────────────────
 
-const remoteAvant = RAG_APHRODY ? await remoteRagStats() : null;
-const chunksAvant = RAG_APHRODY
+const remoteAvant = RAG_SHENRON ? await remoteRagStats() : null;
+const chunksAvant = RAG_SHENRON
   ? (remoteAvant?.chunks ?? 0)
   : (db.query("SELECT count(*) n FROM rag_chunks").get() as { n: number }).n;
-if (RAG_APHRODY && !remoteAvant)
+if (RAG_SHENRON && !remoteAvant)
   journal({
-    nom: "Aphrody RAG",
+    nom: "Shenron RAG",
     role: "statistiques du corpus distant",
     statut: "échec",
-    detail: "API Aphrody indisponible",
+    detail: "API Shenron indisponible",
   });
 
 if (SANS_RAG) {
   journal({
     nom: "index RAG",
-    role: RAG_APHRODY ? "→ Aphrody" : "→ rag_chunks",
+    role: RAG_SHENRON ? "→ Shenron" : "→ rag_chunks",
     statut: "ignoré",
     detail: "--sans-rag",
   });
@@ -287,8 +287,8 @@ if (SANS_RAG) {
     .map((l) => l.trim());
   journal({
     nom: "index RAG",
-    role: RAG_APHRODY
-      ? "PostgreSQL éditorial → Aphrody RAG"
+    role: RAG_SHENRON
+      ? "PostgreSQL éditorial → Shenron RAG"
       : "PostgreSQL éditorial → rag_chunks + vec_chunks",
     statut: r.ok ? "ok" : "échec",
     detail: resume.at(-1) ?? "aucune sortie",
@@ -299,25 +299,25 @@ if (SANS_RAG) {
 
 // ── 5. Rapport ──────────────────────────────────────────────────────────────
 
-const dbLecture = RAG_APHRODY ? null : new Database(DBP, { readonly: true });
-const remoteApres = RAG_APHRODY ? await remoteRagStats() : null;
+const dbLecture = RAG_SHENRON ? null : new Database(DBP, { readonly: true });
+const remoteApres = RAG_SHENRON ? await remoteRagStats() : null;
 const meta = dbLecture?.query("SELECT * FROM rag_meta LIMIT 1").get() as
   | { model: string; dim: number; count: number; built_at: number }
   | undefined;
-const parSource = RAG_APHRODY
+const parSource = RAG_SHENRON
   ? (remoteApres?.sources.map((s) => ({ source_id: s.sourceId, kind: s.kind, n: s.count })) ?? [])
   : (dbLecture!
       .query("SELECT source_id, kind, count(*) n FROM rag_chunks GROUP BY 1,2 ORDER BY n DESC")
       .all() as { source_id: string; kind: string; n: number }[]);
-const chunksApres = RAG_APHRODY
+const chunksApres = RAG_SHENRON
   ? (remoteApres?.chunks ?? 0)
   : (dbLecture!.query("SELECT count(*) n FROM rag_chunks").get() as { n: number }).n;
-if (RAG_APHRODY && !remoteApres)
+if (RAG_SHENRON && !remoteApres)
   journal({
-    nom: "Aphrody RAG",
+    nom: "Shenron RAG",
     role: "statistiques après synchronisation",
     statut: "échec",
-    detail: "API Aphrody indisponible",
+    detail: "API Shenron indisponible",
   });
 dbLecture?.close();
 
@@ -326,9 +326,9 @@ const rapport = {
   joueLe: new Date().toISOString(),
   applique: APPLIQUER,
   duree_ms: Date.now() - t0,
-  index: RAG_APHRODY
+  index: RAG_SHENRON
     ? remoteApres
-      ? { model: "aphrody", dim: null, chunks: chunksApres, builtAt: null }
+      ? { model: "shenron", dim: null, chunks: chunksApres, builtAt: null }
       : null
     : meta
       ? {

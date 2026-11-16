@@ -7,7 +7,7 @@
  *
  *   bun scripts/ops/publish-gecko-cdn.ts [--dry-run]
  *
- * Needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID (~/.aphrody/config/cloudflare.env) and ssh access to dbfr.
+ * Needs CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID (~/.shenron/config/cloudflare.env) and ssh access to dbfr.
  */
 import { createHash } from "node:crypto";
 import { readdirSync } from "node:fs";

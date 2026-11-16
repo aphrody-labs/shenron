@@ -199,7 +199,7 @@ export async function GET() {
       planchesTranscrites: transcribed,
       exemples: examples,
       // Pas de champ `mcp` : `mcp.dragonballfr.com` a été retiré le 2026-09-25
-      // (shenron-mcp fusionné dans les outils `aphrody-mcp` dragonball.*, qui ne
+      // (shenron-mcp fusionné dans les outils `shenron-mcp` dragonball.*, qui ne
       // sont pas exposés en HTTP public — cf. yolo
       // config/host/nginx/routes.json et config/service-catalog.json). Republier
       // cette URL la ferait 404 pour quiconque l'appelle depuis cette réponse.

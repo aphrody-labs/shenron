@@ -2,7 +2,7 @@
 /**
  * Persistent chat memory: fact extraction and recall (`src/chat/memory.ts`), the chat engine
  * turn (recall into the prompt, facts written after the answer), the `/api/v1/memory*` routes
- * and the host group. The port is an in-memory fake of Aphrody's provider.
+ * and the host group. The port is an in-memory fake of Shenron's provider.
  */
 import { afterAll, describe, expect, test } from "bun:test";
 import { mkdirSync, mkdtempSync, rmSync } from "node:fs";

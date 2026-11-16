@@ -8,7 +8,7 @@ if (!Number.isFinite(maxAgeMs) || maxAgeMs <= 0)
   throw new Error("SHENRON_RAG_MAX_AGE_SECONDS must be positive");
 async function synchronize(): Promise<void> {
   const sync = Bun.spawn(
-    [process.execPath, `${import.meta.dir}/rag-sync-aphrody.ts`, "--toutes", "--appliquer"],
+    [process.execPath, `${import.meta.dir}/rag-sync-shenron.ts`, "--toutes", "--appliquer"],
     { stdout: "inherit", stderr: "inherit", env: process.env },
   );
   if ((await sync.exited) !== 0) throw new Error("Full Shenron RAG preload failed");
@@ -25,7 +25,7 @@ const { stats, completedAt } = await requireLiveRag();
 console.log(
   JSON.stringify({
     status: "ready",
-    backend: "aphrody",
+    backend: "shenron",
     chunks: stats.chunks,
     vectors: stats.vectors,
     completedAt,

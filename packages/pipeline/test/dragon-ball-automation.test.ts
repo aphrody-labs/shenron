@@ -3,7 +3,7 @@ import { afterEach, expect, test } from "bun:test";
 import { chmod, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { AphrodyWebJobs, type NativeMcpTransport } from "../src/aphrody/jobs";
+import { ShenronWebJobs, type NativeMcpTransport } from "../src/shenron/jobs";
 import {
   AutomationBlocked,
   DragonBallAutomation,
@@ -159,8 +159,8 @@ test("native RAG lost acknowledgement retries stable documents after restart and
   const keys: string[] = [];
   const transport: NativeMcpTransport = async (request) => {
     expect(request.config).toBe(join(root, "protected-mcp.toml"));
-    expect(request.server).toBe("aphrody");
-    if (request.tool === "aphrody_shenron_rag_ingest") {
+    expect(request.server).toBe("shenron");
+    if (request.tool === "shenron_rag_ingest") {
       writes.set(String(request.arguments.sourceId), String(request.arguments.content));
       if (lost) {
         lost = false;
@@ -215,7 +215,7 @@ test("503, lexical ingest and absent post-ingest retrieval proof block dataset p
       async (request) => {
         if (failure === "503")
           return envelope({ error: { code: "503", message: "RAG database unavailable" } });
-        if (request.tool === "aphrody_shenron_rag_ingest")
+        if (request.tool === "shenron_rag_ingest")
           return envelope({
             sourceId: request.arguments.sourceId,
             indexed: true,
@@ -328,7 +328,7 @@ test("collection uses existing durable native placement through lost ACK and req
   const routes: string[] = [];
   const transport: NativeMcpTransport = async (request) => {
     routes.push(request.config);
-    if (request.tool === "aphrody_job_submit") {
+    if (request.tool === "shenron_job_submit") {
       const key = String(request.arguments.idempotency_key);
       if (!intents.has(key)) intents.set(key, { id: "job-1", state: "succeeded" });
       if (lost) {
@@ -344,7 +344,7 @@ test("collection uses existing durable native placement through lost ACK and req
           state: "succeeded",
           result: {
             profile: "dbfr",
-            campaign: { schema: "aphrody-dragon-ball-crawl/v1", completed: true, errors: [] },
+            campaign: { schema: "shenron-dragon-ball-crawl/v1", completed: true, errors: [] },
           },
         },
         queue: { queued: 0, running: 0 },
@@ -353,7 +353,7 @@ test("collection uses existing durable native placement through lost ACK and req
   };
   const hosts = [{ id: "vps", config: join(root, "vps-mcp.toml"), slots: 4, workerReady: true }];
   for (let pass = 0; pass < 2; pass++) {
-    using jobs = new AphrodyWebJobs(join(root, "web-jobs.sqlite"), hosts, transport);
+    using jobs = new ShenronWebJobs(join(root, "web-jobs.sqlite"), hosts, transport);
     using automation = new DragonBallAutomation(ledger, {
       collect: createNativeCollectionPort(jobs),
     });
@@ -461,7 +461,7 @@ test("restart with a stale RAG proof rechecks the backend and never reuses it to
     { config: join(root, "mcp.toml") },
     async (request) => {
       if (!online) return envelope({ error: { code: "503" } });
-      if (request.tool === "aphrody_shenron_rag_ingest")
+      if (request.tool === "shenron_rag_ingest")
         return envelope({
           sourceId: request.arguments.sourceId,
           indexed: true,

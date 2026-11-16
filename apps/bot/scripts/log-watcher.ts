@@ -14,7 +14,7 @@
  *
  * Env requises :
  *   GITHUB_TOKEN          PAT ou GITHUB_TOKEN CI avec scope `repo`
- *   GITHUB_REPOSITORY     "owner/repo" (défaut : aphrody-code/shenron)
+ *   GITHUB_REPOSITORY     "owner/repo" (défaut : aphrody-labs/shenron)
  *
  * Options :
  *   --dry-run             logge sans créer/commenter sur GitHub
@@ -48,7 +48,7 @@ if (opts.help) {
   process.exit(0);
 }
 
-const REPO = Bun.env.GITHUB_REPOSITORY ?? "aphrody-code/shenron";
+const REPO = Bun.env.GITHUB_REPOSITORY ?? "aphrody-labs/shenron";
 const TOKEN = Bun.env.GITHUB_TOKEN;
 const DRY = opts["dry-run"];
 

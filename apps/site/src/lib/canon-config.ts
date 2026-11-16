@@ -114,7 +114,7 @@ async function readReferences(client: CanonDatabase | typeof db): Promise<CanonR
         document: r.document,
         lang: r.lang === "en" || r.lang === "ja" ? r.lang : "fr",
         provenance:
-          r.provenance === "aphrody" || r.provenance === "databooks" || r.provenance === "manga"
+          r.provenance === "shenron" || r.provenance === "databooks" || r.provenance === "manga"
             ? r.provenance
             : "manuel",
       },

@@ -4,7 +4,7 @@
  *   GET /api/canon/references?q=&provenance=&limit=&offset=
  *
  * `q` filtre sur le sujet, les mots-clés et le texte (ILIKE) ; `provenance` ∈
- * aphrody | databooks | manuel. Lecture seule, CORS ouvert. La table est
+ * shenron | databooks | manuel. Lecture seule, CORS ouvert. La table est
  * alimentée 24h/24 par `scripts/canon-ingest.ts`.
  */
 import { sql } from "drizzle-orm";
@@ -24,7 +24,7 @@ export function OPTIONS() {
   return new Response(null, { status: 204, headers: CORS });
 }
 
-const PROVENANCES = new Set(["aphrody", "databooks", "manuel", "manga"]);
+const PROVENANCES = new Set(["shenron", "databooks", "manuel", "manga"]);
 
 export async function GET(req: Request) {
   const p = new URL(req.url).searchParams;

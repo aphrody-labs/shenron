@@ -5,7 +5,7 @@
   "exports": {
     "./lib/wiki-slugs": "./src/lib/wiki-slugs.ts",
     "./lib/databooks-defauts": "./src/lib/databooks-defauts.ts",
-    "./scripts/aphrody-corpus": "./scripts/_aphrody-corpus.ts"
+    "./scripts/shenron-corpus": "./scripts/_shenron-corpus.ts"
   },
   "scripts": {
     "predev": "bun ../../scripts/dev/check-node-modules.ts && bun ../../packages/ui/scripts/sync-assets.ts --to public",
@@ -21,7 +21,7 @@
     "wiki:repair-interviews": "bun scripts/repair-interview-databook-links.ts",
     "manga:populate": "bun scripts/populate-manga-pages.ts",
     "db:migrate": "drizzle-kit migrate",
-    "db:push": "echo \"db:push est interdit : migrations via le runbook aphrody-infra (docs/architecture/STACK.md D5)\" >&2 && exit 1",
+    "db:push": "echo \"db:push est interdit : migrations via le runbook shenron-infra (docs/architecture/STACK.md D5)\" >&2 && exit 1",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
     "typecheck": "bun check && bun check -p tsconfig.tests.json"
@@ -113,6 +113,7 @@
   },
   "devDependencies": {
     "@huggingface/transformers": "catalog:",
+    "@shenron/kit": "workspace:*",
     "@shenron/test-dom": "workspace:*",
     "@tailwindcss/postcss": "catalog:",
     "@types/howler": "catalog:",

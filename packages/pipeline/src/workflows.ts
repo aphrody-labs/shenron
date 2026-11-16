@@ -3,9 +3,9 @@
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { wrapLanguageModel } from "ai";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
-import { aphrodyComputeFromChat } from "@shenron/pipeline/aphrody/compute";
-import { createAphrodyChatModel } from "@shenron/pipeline/ai/chat";
+import { ShenronComputeClient } from "@shenron/pipeline/shenron";
+import { shenronComputeFromChat } from "@shenron/pipeline/shenron/compute";
+import { createShenronChatModel } from "@shenron/pipeline/ai/chat";
 import { SHENRON_E5 } from "@shenron/pipeline/ai/config";
 import {
   generateGroundedAnswer,
@@ -15,7 +15,7 @@ import {
 import { withHomePersona, type HomePersona } from "@shenron/pipeline/ai/prompts";
 import { loadShenronHomePersona, type AgentEnv } from "./agent-home";
 import { executeCommand, type CommandRunner, type PipelineExecution } from "./execution";
-import { crawlJobOutputDirectory, type WebJobIntent } from "./aphrody/jobs";
+import { crawlJobOutputDirectory, type WebJobIntent } from "./shenron/jobs";
 
 export { getToriyamaPersona } from "./agent-home";
 
@@ -80,7 +80,7 @@ function withHomeInstructions(
  * style du profil Agent Home du domaine (`./agent-home`) s'y ajoutent quand le
  * profil existe ; sinon la persona canonique seule. Aucun repli silencieux :
  * une configuration d'Agent Home invalide, une génération en échec rejettent avec
- * l'erreur d'origine, une réponse vide avec « Agent Aphrody terminé sans réponse ».
+ * l'erreur d'origine, une réponse vide avec « Agent Shenron terminé sans réponse ».
  */
 export async function runIaTask(options: IaTaskOptions): Promise<ShenronAgentResponse> {
   const prompt = options.prompt ?? options.task;
@@ -102,7 +102,7 @@ export async function runIaTask(options: IaTaskOptions): Promise<ShenronAgentRes
     }
   }
 
-  // 2. Modèle : injecté, sinon fonction `chat` héritée, sinon la façade Aphrody.
+  // 2. Modèle : injecté, sinon fonction `chat` héritée, sinon la façade Shenron.
   let modelUsed = "";
   const record = (value: { answer: string; model: string }) => {
     modelUsed = value.model;
@@ -110,17 +110,17 @@ export async function runIaTask(options: IaTaskOptions): Promise<ShenronAgentRes
   };
   const model =
     options.languageModel ??
-    createAphrodyChatModel(
-      aphrodyComputeFromChat(async (messages, selectedModel) => {
+    createShenronChatModel(
+      shenronComputeFromChat(async (messages, selectedModel) => {
         if (options.chat) {
           // Contrat historique : une seule chaîne de prompt.
           return record(
             await options.chat(messages.map((m) => m.content).join("\n\n"), selectedModel),
           );
         }
-        return record(await new AphrodyComputeClient().chat(messages, selectedModel));
+        return record(await new ShenronComputeClient().chat(messages, selectedModel));
       }),
-      // Chaîne vide = aucun `model` envoyé : Aphrody garde son modèle par défaut, comme avant.
+      // Chaîne vide = aucun `model` envoyé : Shenron garde son modèle par défaut, comme avant.
       { modelId: options.model ?? "" },
     );
 
@@ -137,7 +137,7 @@ export async function runIaTask(options: IaTaskOptions): Promise<ShenronAgentRes
   });
   if (failure !== undefined) throw failure;
   const assistantReply = result.fallback ? "" : result.answer.trim();
-  if (!assistantReply) throw new Error("Agent Aphrody terminé sans réponse");
+  if (!assistantReply) throw new Error("Agent Shenron terminé sans réponse");
 
   return {
     role: "assistant",
@@ -177,7 +177,7 @@ export async function runDatabooksOcr(options: OcrJobOptions = {}): Promise<Pipe
 
 /**
  * E5 constants of the RAG index, read from `@shenron/ai/config` (single
- * source: `aphrody-shenron-embed` model, 384 dimensions, 16 inputs per call).
+ * source: `shenron-embed` model, 384 dimensions, 16 inputs per call).
  */
 export const RAG_EMBED_MODEL: string = SHENRON_E5.modelId;
 export const RAG_EMBED_DIMENSIONS: number = SHENRON_E5.dimensions;
@@ -204,7 +204,7 @@ export async function buildRagIndex(options: RagBuildOptions = {}): Promise<Pipe
   return executeCommand(
     [
       "bun",
-      join(root, "packages/pipeline/scripts/rag-sync-aphrody.ts"),
+      join(root, "packages/pipeline/scripts/rag-sync-shenron.ts"),
       "--toutes",
       ...(options.dryRun ? [] : ["--appliquer"]),
     ],
@@ -217,14 +217,14 @@ export async function buildRagIndex(options: RagBuildOptions = {}): Promise<Pipe
 }
 
 export async function searchRagIndex(query: string, limit = 5): Promise<RagSearchResultItem[]> {
-  return new AphrodyComputeClient().ragSearch(query, limit);
+  return new ShenronComputeClient().ragSearch(query, limit);
 }
 
 export async function evaluateRag(
   options: { dryRun?: boolean; runner?: CommandRunner } = {},
 ): Promise<PipelineExecution> {
   const root = join(import.meta.dir, "../../..");
-  return executeCommand(["bun", join(root, "scripts/ops/eval-aphrody-rag.ts"), "--ci"], {
+  return executeCommand(["bun", join(root, "scripts/ops/eval-shenron-rag.ts"), "--ci"], {
     cwd: root,
     dryRun: options.dryRun,
     runner: options.runner,
@@ -248,7 +248,7 @@ export interface CrawlTarget {
   runner?: CommandRunner;
 }
 
-/** Canonical Aphrody Web campaign identifiers selected by Shenron's source catalog. */
+/** Canonical Shenron Web campaign identifiers selected by Shenron's source catalog. */
 export const CRAWL_SOURCE_IDS: Readonly<
   Partial<Record<Exclude<CrawlTarget["source"], "custom" | "universal">, string>>
 > = Object.freeze({
@@ -260,7 +260,7 @@ export const CRAWL_SOURCE_IDS: Readonly<
 });
 
 /**
- * Builds the native web-pipeline arguments for a remote Aphrody Jobs worker.
+ * Builds the native web-pipeline arguments for a remote Shenron Jobs worker.
  * Output/state paths stay on the worker host; callers pass only catalogued sources,
  * URL seeds and bounded request parameters through the authenticated queue.
  */
@@ -312,7 +312,7 @@ export function createCrawlJobArgs(target: CrawlTarget): string[] {
   return args;
 }
 
-/** Creates the idempotent queue intent consumed by `AphrodyWebJobs.submit`. */
+/** Creates the idempotent queue intent consumed by `ShenronWebJobs.submit`. */
 export function createCrawlJobIntent(key: string, target: CrawlTarget): WebJobIntent {
   const args = createCrawlJobArgs(target);
   if (target.source !== "custom") {
@@ -323,13 +323,13 @@ export function createCrawlJobIntent(key: string, target: CrawlTarget): WebJobIn
 }
 
 /**
- * Aphrody-owned Dragon Ball crawl and RAG locations for the Shenron profile.
+ * Shenron-owned Dragon Ball crawl and RAG locations for the Shenron profile.
  */
 export function corpusLocations(_root: string, env?: Record<string, string | undefined>) {
   env ??= process.env;
   const crawlDir =
     env.SHENRON_CORPUS_CRAWL_DIR?.trim() ||
-    join(env.SHENRON_HOME?.trim() || join(homedir(), ".aphrody"), "workspaces", "dbfr", "crawl");
+    join(env.SHENRON_HOME?.trim() || join(homedir(), ".shenron"), "workspaces", "dbfr", "crawl");
   return {
     crawlDir,
     corpusDir: join(crawlDir, "corpus"),
@@ -337,14 +337,14 @@ export function corpusLocations(_root: string, env?: Record<string, string | und
   };
 }
 
-/** Ingests every Aphrody Web corpus JSONL export into the Aphrody RAG owner. */
+/** Ingests every Shenron Web corpus JSONL export into the Shenron RAG owner. */
 export async function runCorpusIngest(
   options: { dryRun?: boolean; outDir?: string; runner?: CommandRunner } = {},
 ): Promise<PipelineExecution> {
   const root = join(import.meta.dir, "../../..");
   const loc = corpusLocations(root);
   const command = [
-    process.env.SHENRON_BIN?.trim() || "aphrody",
+    process.env.SHENRON_BIN?.trim() || "shenron",
     "web",
     "dragon-ball",
     "index",
@@ -360,7 +360,7 @@ export async function runCorpusIngest(
 export async function runCrawl(target: CrawlTarget): Promise<PipelineExecution> {
   const root = join(import.meta.dir, "../../..");
   const loc = corpusLocations(root);
-  const bin = process.env.SHENRON_BIN?.trim() || "aphrody";
+  const bin = process.env.SHENRON_BIN?.trim() || "shenron";
   if (target.url && target.source !== "custom")
     throw new Error("A seed URL requires the custom crawl source");
   if (target.outDir !== undefined && !target.outDir.trim())
@@ -437,7 +437,7 @@ export async function runTranslation(
       status: "planned",
       entrypoint: supervisor,
       scope:
-        "eligible databook pages -> Aphrody Rust translation -> Shenron editorial gate and deposit",
+        "eligible databook pages -> Shenron Rust translation -> Shenron editorial gate and deposit",
     };
   }
 

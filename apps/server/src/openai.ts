@@ -51,7 +51,7 @@ function transportHeaders(source: Headers): Headers {
 }
 
 /**
- * The explicitly selected OpenAI provider, or the existing Aphrody local provider.
+ * The explicitly selected OpenAI provider, or the existing Shenron local provider.
  * A remote caller must present the Shenron gateway token; that token never reaches the model.
  * A backend without Responses/compact keeps its real error response, rather than a fake summary.
  */
@@ -95,7 +95,7 @@ export function openAiApi(
         base.hash
       )
         return error("Invalid OpenAI provider configuration", 503, "server_error");
-      // Provider URLs include /v1; Aphrody's managed router advertises its origin.
+      // Provider URLs include /v1; Shenron's managed router advertises its origin.
       const path = base.pathname.replace(/\/+$/, "");
       base.pathname = `${path.endsWith("/v1") ? path : `${path}/v1`}${url.pathname.slice(3)}`;
       base.search = url.search;

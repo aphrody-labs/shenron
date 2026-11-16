@@ -18,13 +18,13 @@ beforeAll(async () => {
 }, 120_000);
 
 // :memory: ne stocke que les retours/historique ; aucun chunk RAG fabriqué,
-// le backend RAG est l'index Aphrody réel.
+// le backend RAG est l'index Shenron réel.
 const fresh = () => {
   const dbs = DatabaseService.forPath(":memory:");
   return { dbs, service: new TrainingService(dbs, new CanonService(null as any)) };
 };
 
-describe("TrainingService — runtime réel (RAG_BACKEND=aphrody)", () => {
+describe("TrainingService — runtime réel (RAG_BACKEND=shenron)", () => {
   test("isSidecarOnline sonde l'embedding réel après le préchargement complet", async () => {
     expect(await fresh().service.isSidecarOnline()).toBe(true);
   }, 60_000);
@@ -82,7 +82,7 @@ describe("TrainingService — runtime réel (RAG_BACKEND=aphrody)", () => {
     expect(dbs.sqlite.query("SELECT count(*) AS c FROM rag_eval_history").get()).toEqual({ c: 0 });
   }, 180_000);
 
-  test("getStats reflète exactement l'index Aphrody entièrement chargé", async () => {
+  test("getStats reflète exactement l'index Shenron entièrement chargé", async () => {
     const stats = await fresh().service.getStats();
     expect(stats.totalChunks).toBe(live.stats.chunks);
     expect(stats.totalVectors).toBe(live.stats.vectors);

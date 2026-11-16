@@ -3,8 +3,8 @@ import { Database } from "bun:sqlite";
 import { generateLlmAnswer } from "../src/lib/llm";
 import { AI_ENV } from "@shenron/pipeline/ai/config";
 
-// No address default since the AI env contract (aphrody-infra local-ai.json): the
-// tests pin the aphrody-ai-http origin through its canonical name.
+// No address default since the AI env contract (shenron-infra local-ai.json): the
+// tests pin the shenron-ai-http origin through its canonical name.
 const environmentNames = [
   "SHENRON_INFERENCE",
   "RAG_BACKEND",
@@ -34,7 +34,7 @@ afterEach(() => {
 });
 
 test("the same question only reuses a cached answer with the same evidence and model", async () => {
-  process.env.RAG_BACKEND = "aphrody";
+  process.env.RAG_BACKEND = "shenron";
   const answers = new Map<string, string>();
   const scopes: string[] = [];
   const cache = {
@@ -111,7 +111,7 @@ test("the same question only reuses a cached answer with the same evidence and m
 test("B7: the cache scope binds the model, PROMPT_VERSION and the evidence", async () => {
   const { semanticCacheScope } = await import("@shenron/pipeline/ai/ports");
   const { PROMPT_VERSION } = await import("@shenron/pipeline/ai/prompts");
-  process.env.RAG_BACKEND = "aphrody";
+  process.env.RAG_BACKEND = "shenron";
   const scopes: string[] = [];
   const cache = {
     getSemanticCache: async (_query: string, _persona: string, scope: string) => {

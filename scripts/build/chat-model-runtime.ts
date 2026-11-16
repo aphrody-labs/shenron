@@ -10,7 +10,7 @@
  *                                           [--chat-lora <adapter.gguf>]
  *
  * Writes `<out>/llama/` and `<out>/models/shenron-chat-v2.gguf`. The adapter comes from
- * --chat-lora, SHENRON_CHAT_LORA or SHENRON_CHAT_LORA (Aphrody training output); the
+ * --chat-lora, SHENRON_CHAT_LORA or SHENRON_CHAT_LORA (Shenron training output); the
  * weights never enter Git. Downloads are cached under `target/llama-runtime/`.
  */
 import {

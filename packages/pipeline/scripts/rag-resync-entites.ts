@@ -11,8 +11,8 @@
  * corrigée sur le site restait donc fausse dans les réponses du bot.
  *
  * Le script n'embarque plus rien en local et n'écrit plus `rag_chunks` /
- * `vec_chunks` : il délègue à `rag-sync-aphrody.ts`, qui envoie les chunks
- * rendus de chaque source à `POST /api/v1/shenron/rag/ingest` (Aphrody embarque
+ * `vec_chunks` : il délègue à `rag-sync-shenron.ts`, qui envoie les chunks
+ * rendus de chaque source à `POST /api/v1/shenron/rag/ingest` (Shenron embarque
  * et indexe) sous une génération, puis la valide par
  * `POST /api/v1/shenron/rag/sync/finish` (retrait des disparus après contrôle
  * du compte). Une source inchangée (manifeste) n'est pas renvoyée.
@@ -55,8 +55,8 @@ if (inconnues.length > 0) {
   process.exit(1);
 }
 
-// Embeddings et index : uniquement Aphrody (/api/v1/shenron/rag/ingest puis /rag/sync/finish).
+// Embeddings et index : uniquement Shenron (/api/v1/shenron/rag/ingest puis /rag/sync/finish).
 warnIgnoredEmbedBaseUrl(process.env);
 if (REPARER && !TOUTES && CIBLES.length === 0) process.argv.push("--toutes");
-await import("./rag-sync-aphrody.ts");
+await import("./rag-sync-shenron.ts");
 process.exit(process.exitCode ?? 0);

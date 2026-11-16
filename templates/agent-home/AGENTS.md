@@ -8,7 +8,7 @@ template_version: "2"
 # Directives opérationnelles — DBFR / Shenron
 
 Gabarit public et versionné de l'agent home du domaine `dbfr` (dragonballfr.com), au format
-natif d'`aphrody-agent-home` (AGENTS, SOUL, IDENTITY, USER, TOOLS, HEARTBEAT, BOOT). Chaque
+natif d'`shenron-agent-home` (AGENTS, SOUL, IDENTITY, USER, TOOLS, HEARTBEAT, BOOT). Chaque
 utilisateur en reçoit une instance : `discord:<user_id>` après connexion Discord (Shenron
 Studio ou message privé au bot), `local` sans connexion. Le gabarit ne contient aucune donnée
 privée ; `USER.md` y est vide et l'instance le remplit.

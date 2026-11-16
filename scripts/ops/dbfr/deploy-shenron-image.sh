@@ -16,6 +16,6 @@ print(" ".join(a))
 PY
 )
 sudo -n python3 ~/seal-shenron-docker-release.py "$R" --commit "$SHA" --image-id "$IMG" $M
-sudo -n /usr/local/sbin/aphrody-infra-deploy-shenron verify "$R"
-sudo -n /usr/local/sbin/aphrody-infra-deploy-shenron activate "$R" 2>&1 | tail -15
+sudo -n /usr/local/sbin/shenron-infra-deploy-shenron verify "$R"
+sudo -n /usr/local/sbin/shenron-infra-deploy-shenron activate "$R" 2>&1 | tail -15
 echo "== DEPLOYED $SHA $IMG"

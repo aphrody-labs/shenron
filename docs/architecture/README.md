@@ -2,7 +2,7 @@
 
 ## 1. Vue d'ensemble et Triade Souveraine
 
-Shenron propulse **dragonballfr.com** au sein du monorepo YOLO (`C:\aphrody\products\shenron`) et s'appuie sur la triade d'infrastructure souveraine interconnectee via WireGuard (`10.200.77.0/24`) :
+Shenron propulse **dragonballfr.com** au sein du monorepo YOLO (`C:\shenron\products\shenron`) et s'appuie sur la triade d'infrastructure souveraine interconnectee via WireGuard (`10.200.77.0/24`) :
 
 - **`ssh vps` (`10.200.77.1` / `51.77.147.152`)** : Hub de maillage WireGuard et usine de compilation (12 coeurs, sccache, builds Rust/Bun, pipelines OCR et indexation RAG).
 - **`ssh cdn` (`10.200.77.3` / `51.255.162.6`, alias `bunos`)** : Simulateur Cloudflare Edge de bout en bout executant :
@@ -24,7 +24,7 @@ Shenron propulse **dragonballfr.com** au sein du monorepo YOLO (`C:\aphrody\prod
 - **IA Locale & MCP** :
   - `shenron-chat` : serveur d'inference LLaMA (`llama-server` sur `127.0.0.1:8799`).
   - `shenron-embed` : serveur d'embeddings vectoriels `e5-small`.
-  - `shenron-compute` : serveur MCP HTTP (`aphrody-mcp`).
+  - `shenron-compute` : serveur MCP HTTP (`shenron-mcp`).
 - **Bibliotheque Native** : `shenron-ffi` appelee en zero-copy depuis Bun via `packages/native`.
 - **CDN Media** : Worker Cloudflare (`deploy/cloudflare`) adosse au bucket R2 `shenron-cdn` et replique sur Garage S3 (`ssh cdn`).
 

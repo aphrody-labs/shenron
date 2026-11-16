@@ -21,19 +21,19 @@
  *
  * Quatre moteurs, dans cet ordre de préférence :
  *
- *   `aphrody` — le CLI local (`aphrody chat --prompt`). Quand sa session est
+ *   `shenron` — le CLI local (`shenron chat --prompt`). Quand sa session est
  *               valide, c'est un modèle d'instruction : il comprend une consigne,
  *               un lexique et une mise en page, donc il rend des planches
  *               structurées (tableaux de puissance, fiches de personnage) que la
  *               traduction automatique classique massacre.
- *   `google`  — backend Google de `aphrody-translate` ; Aphrody Web Rust est
+ *   `google`  — backend Google de `shenron-translate` ; Shenron Web Rust est
  *               essayé avant les replis RPC, sans daemon BXC dans Shenron.
  *   `nllb`    — NLLB-200 distillé, **hors ligne**, via `@huggingface/transformers`
  *               (le même cache de modèles que le RAG). Aucune clé, aucun compte,
  *               aucun réseau. Il traduit de la prose correctement et bute sur les
  *               listes : le juge en refuse une bonne part, c'est voulu.
  *
- * `--moteur auto` (défaut) sonde `aphrody-translate`, puis `aphrody`, `agy` et
+ * `--moteur auto` (défaut) sonde `shenron-translate`, puis `shenron`, `agy` et
  * le backend Google de la crate Rust. NLLB reste le dernier recours local.
  * Un moteur indisponible n'interrompt jamais la boucle : il la fait basculer.
  *
@@ -74,25 +74,25 @@ const TAILLE = Math.max(1, Math.min(60, Number(opt("taille", "20")) || 20));
 const DATABOOK = opt("databook");
 const MOTEUR_DEMANDE = (opt("moteur", "auto") ?? "auto") as
   | "auto"
-  | "aphrody"
-  | "aphrody-translate"
+  | "shenron"
+  | "shenron-translate"
   | "agy"
   | "google"
   | "nllb";
 const MODELE = opt("modele") ?? "Xenova/nllb-200-distilled-600M";
-/** Rust translator: Aphrody Web Google, then its configured native fallbacks. */
+/** Rust translator: Shenron Web Google, then its configured native fallbacks. */
 const SHENRON_TRANSLATE_BACKEND = process.env.SHENRON_TRANSLATE_BACKEND ?? "auto";
 const SHENRON_TRANSLATE_CANDIDATES = [
   process.env.SHENRON_TRANSLATE_BIN,
-  Bun.which("aphrody") ?? (process.platform === "win32" ? "aphrody.exe" : "aphrody"),
+  Bun.which("shenron") ?? (process.platform === "win32" ? "shenron.exe" : "shenron"),
   join(
     DEPOT,
     "target",
     "release",
-    process.platform === "win32" ? "aphrody-translate.exe" : "aphrody-translate",
+    process.platform === "win32" ? "shenron-translate.exe" : "shenron-translate",
   ),
-  process.platform === "win32" ? "aphrody-translate.exe" : "aphrody-translate",
-  "/srv/aphrody/current/bin/aphrody-translate",
+  process.platform === "win32" ? "shenron-translate.exe" : "shenron-translate",
+  "/srv/shenron/current/bin/shenron-translate",
 ].filter((value): value is string => Boolean(value));
 const SHENRON_TOKEN_PREFIX = "QXZ";
 /** Four digits make `QXZ0001` unambiguous when a source digit follows it. */
@@ -218,44 +218,44 @@ function consigne(p: Planche, lexique: Terme[]): string {
     .join("\n");
 }
 
-/** Le moteur `aphrody` est-il utilisable maintenant ? Une seule sonde, au démarrage. */
-async function aphrodyDisponible(): Promise<boolean> {
-  const r = await execute(["aphrody", "chat", "--prompt", "Réponds exactement : ok"], 90_000);
+/** Le moteur `shenron` est-il utilisable maintenant ? Une seule sonde, au démarrage. */
+async function shenronDisponible(): Promise<boolean> {
+  const r = await execute(["shenron", "chat", "--prompt", "Réponds exactement : ok"], 90_000);
   return r.ok && /\bok\b/i.test(r.sortie);
 }
 
 type Traducteur = (p: Planche, lexique: Terme[]) => Promise<string>;
 
-async function moteurAphrody(): Promise<Traducteur> {
+async function moteurShenron(): Promise<Traducteur> {
   return async (p, lexique) => {
-    const r = await execute(["aphrody", "chat", "--prompt", consigne(p, lexique)], 240_000);
-    if (!r.ok) throw new Error(`aphrody : ${r.sortie.trim().slice(0, 200)}`);
+    const r = await execute(["shenron", "chat", "--prompt", consigne(p, lexique)], 240_000);
+    if (!r.ok) throw new Error(`shenron : ${r.sortie.trim().slice(0, 200)}`);
     return r.sortie.trim();
   };
 }
 
-function isAphrodyCli(bin: string): boolean {
-  return /(?:^|[\\/])aphrody(?:\.exe)?$/i.test(bin) && !/aphrody-translate/i.test(bin);
+function isShenronCli(bin: string): boolean {
+  return /(?:^|[\\/])shenron(?:\.exe)?$/i.test(bin) && !/shenron-translate/i.test(bin);
 }
 
-function commandeAphrodyTranslate(
+function commandeShenronTranslate(
   bin: string,
   text: string,
   backend = SHENRON_TRANSLATE_BACKEND,
 ): string[] {
-  if (isAphrodyCli(bin)) {
+  if (isShenronCli(bin)) {
     return [bin, "translate", "-s", "ja", "-t", "fr", "-b", backend, "--", text];
   }
   return [bin, "--source", "ja", "--target", "fr", "--backend", backend, "--", text];
 }
 
-function extraireTraductionAphrody(raw: string): string {
+function extraireTraductionShenron(raw: string): string {
   const marker = /Traduction\s*:\s*([\s\S]*)$/i.exec(raw);
   return marker ? marker[1].trim() : raw.trim();
 }
 
-/** Locate Aphrody's dedicated one-shot translator without requiring Node or a global install. */
-async function cheminAphrodyTranslate(): Promise<string | undefined> {
+/** Locate Shenron's dedicated one-shot translator without requiring Node or a global install. */
+async function cheminShenronTranslate(): Promise<string | undefined> {
   for (const candidate of SHENRON_TRANSLATE_CANDIDATES) {
     if (candidate.includes("\\") || candidate.includes("/")) {
       if (!(await Bun.file(candidate).exists())) continue;
@@ -267,22 +267,22 @@ async function cheminAphrodyTranslate(): Promise<string | undefined> {
   return undefined;
 }
 
-/** Probe the actual JA→FR contract, not the unrelated Aphrody chat command. */
-async function aphrodyTranslateDisponible(backend = SHENRON_TRANSLATE_BACKEND): Promise<boolean> {
-  const bin = await cheminAphrodyTranslate();
+/** Probe the actual JA→FR contract, not the unrelated Shenron chat command. */
+async function shenronTranslateDisponible(backend = SHENRON_TRANSLATE_BACKEND): Promise<boolean> {
+  const bin = await cheminShenronTranslate();
   if (!bin) return false;
   const r = await execute(
-    commandeAphrodyTranslate(bin, "孫悟空は界王拳を使った。", backend),
+    commandeShenronTranslate(bin, "孫悟空は界王拳を使った。", backend),
     90_000,
   );
-  const text = extraireTraductionAphrody(r.sortie);
+  const text = extraireTraductionShenron(r.sortie);
   return r.ok && !contientJaponais(text) && /Goku|悟空/i.test(text);
 }
 
-/** Aphrody's dedicated translator with Dragon Ball lexicon protection. */
-async function moteurAphrodyTranslate(backend = SHENRON_TRANSLATE_BACKEND): Promise<Traducteur> {
-  const bin = await cheminAphrodyTranslate();
-  if (!bin) throw new Error("binaire aphrody-translate introuvable");
+/** Shenron's dedicated translator with Dragon Ball lexicon protection. */
+async function moteurShenronTranslate(backend = SHENRON_TRANSLATE_BACKEND): Promise<Traducteur> {
+  const bin = await cheminShenronTranslate();
+  if (!bin) throw new Error("binaire shenron-translate introuvable");
   return async (p, lexique) => {
     const lex = trierLexique(
       lexique.map((t) => ({ ja: t.dansLaPlanche ?? t.ja, fr: t.fr, kind: t.kind }) as TermeLexique),
@@ -297,9 +297,9 @@ async function moteurAphrodyTranslate(backend = SHENRON_TRANSLATE_BACKEND): Prom
         prefixe: SHENRON_TOKEN_PREFIX,
         largeur: SHENRON_TOKEN_WIDTH,
       });
-      const r = await execute(commandeAphrodyTranslate(bin, masque, backend), 120_000);
-      if (!r.ok) throw new Error(`aphrody-translate : ${r.sortie.trim().slice(0, 200)}`);
-      const texteTraduit = extraireTraductionAphrody(r.sortie);
+      const r = await execute(commandeShenronTranslate(bin, masque, backend), 120_000);
+      if (!r.ok) throw new Error(`shenron-translate : ${r.sortie.trim().slice(0, 200)}`);
+      const texteTraduit = extraireTraductionShenron(r.sortie);
       const { texte: restauree, residuels } = restaurerJetons(
         texteTraduit,
         table,
@@ -315,9 +315,9 @@ async function moteurAphrodyTranslate(backend = SHENRON_TRANSLATE_BACKEND): Prom
 }
 
 /**
- * Le CLI Antigravity (`aphrody agy`), mesuré le 2026-09-11.
+ * Le CLI Antigravity (`shenron agy`), mesuré le 2026-09-11.
  *
- * C'est le moteur d'instruction qui reste debout quand `aphrody chat` tombe :
+ * C'est le moteur d'instruction qui reste debout quand `shenron chat` tombe :
  * ce jour-là, `chat` rendait un HTTP 401 (« the Google AI session has expired »)
  * sur le VPS comme sur le poste, tandis que `agy -p` répondait normalement sur
  * les deux. Les deux commandes ne partagent donc pas le même chemin
@@ -330,20 +330,20 @@ async function moteurAphrodyTranslate(backend = SHENRON_TRANSLATE_BACKEND): Prom
 function nettoieAgy(sortie: string): string {
   return sortie
     .split(/\r?\n/)
-    .filter((ligne) => !ligne.trim().startsWith("aphrody agy:"))
+    .filter((ligne) => !ligne.trim().startsWith("shenron agy:"))
     .join("\n")
     .trim();
 }
 
 /** Le moteur `agy` est-il utilisable maintenant ? Une seule sonde, au démarrage. */
 async function agyDisponible(): Promise<boolean> {
-  const r = await execute(["aphrody", "agy", "-p", "Réponds exactement : ok"], 120_000);
+  const r = await execute(["shenron", "agy", "-p", "Réponds exactement : ok"], 120_000);
   return r.ok && /\bok\b/i.test(nettoieAgy(r.sortie));
 }
 
 async function moteurAgy(): Promise<Traducteur> {
   return async (p, lexique) => {
-    const r = await execute(["aphrody", "agy", "-p", consigne(p, lexique)], 240_000);
+    const r = await execute(["shenron", "agy", "-p", consigne(p, lexique)], 240_000);
     if (!r.ok) throw new Error(`agy : ${r.sortie.trim().slice(0, 200)}`);
     return nettoieAgy(r.sortie);
   };
@@ -351,7 +351,7 @@ async function moteurAgy(): Promise<Traducteur> {
 
 /**
  * Backend Google sans clé ni compte, via le propriétaire Rust
- * `aphrody-translate` et son adaptateur Aphrody Web.
+ * `shenron-translate` et son adaptateur Shenron Web.
  *
  * Sa place dans l'ordre de repli n'est pas arbitraire. Mesuré le 2026-09-12 :
  * L'adaptateur Web répond sans authentification et rend correctement les
@@ -364,12 +364,12 @@ async function moteurAgy(): Promise<Traducteur> {
  * seule la forme officielle du wiki doit atterrir en base.
  */
 async function googleDisponible(): Promise<boolean> {
-  return aphrodyTranslateDisponible("web");
+  return shenronTranslateDisponible("web");
 }
 
 async function moteurGoogle(): Promise<Traducteur> {
-  if (!(await googleDisponible())) throw new Error("Aphrody Web / Google translate indisponible");
-  return moteurAphrodyTranslate("web");
+  if (!(await googleDisponible())) throw new Error("Shenron Web / Google translate indisponible");
+  return moteurShenronTranslate("web");
 }
 
 /**
@@ -417,20 +417,20 @@ console.log(
     `(${(depart.part * 100).toFixed(1)} %) — objectif 100 %`,
 );
 
-let moteur: "aphrody" | "aphrody-translate" | "agy" | "google" | "nllb";
+let moteur: "shenron" | "shenron-translate" | "agy" | "google" | "nllb";
 if (MOTEUR_DEMANDE === "auto") {
-  process.stdout.write("sonde du moteur aphrody-translate… ");
-  moteur = (await aphrodyTranslateDisponible())
-    ? "aphrody-translate"
-    : (await aphrodyDisponible())
-      ? "aphrody"
+  process.stdout.write("sonde du moteur shenron-translate… ");
+  moteur = (await shenronTranslateDisponible())
+    ? "shenron-translate"
+    : (await shenronDisponible())
+      ? "shenron"
       : (await agyDisponible())
         ? "agy"
         : "google";
   console.log(
-    moteur === "aphrody-translate"
+    moteur === "shenron-translate"
       ? "disponible (JA→FR dédié)"
-      : moteur === "aphrody"
+      : moteur === "shenron"
         ? "disponible"
         : moteur === "agy"
           ? "chat indisponible, repli sur agy (Antigravity)"
@@ -442,10 +442,10 @@ if (MOTEUR_DEMANDE === "auto") {
 /** Un moteur qui ne se lève pas fait basculer la boucle, il ne l'arrête pas. */
 async function traducteur(m: typeof moteur): Promise<Traducteur> {
   switch (m) {
-    case "aphrody-translate":
-      return moteurAphrodyTranslate();
-    case "aphrody":
-      return moteurAphrody();
+    case "shenron-translate":
+      return moteurShenronTranslate();
+    case "shenron":
+      return moteurShenron();
     case "agy":
       return moteurAgy();
     case "google":
@@ -464,8 +464,8 @@ try {
   traduire = await moteurNllb();
 }
 const SIGNATURES: Record<typeof moteur, string> = {
-  "aphrody-translate": "machine:aphrody-translate",
-  aphrody: "machine:aphrody",
+  "shenron-translate": "machine:shenron-translate",
+  shenron: "machine:shenron",
   agy: "machine:agy",
   google: "machine:google",
   nllb: "machine:nllb-200",

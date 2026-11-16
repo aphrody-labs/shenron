@@ -8,7 +8,7 @@ import { describe, expect, it } from "bun:test";
 import {
   MissingEnvError,
   repoRootFromScript,
-  requireAphrodyApiUrl,
+  requireShenronApiUrl,
   requireEmbedBaseUrl,
   requireOfflineRagDb,
   requireScriptEmbeddingSpace,
@@ -57,7 +57,7 @@ describe("script environment contract (B13, rule 9)", () => {
     expect(() => requireEmbedBaseUrl({})).toThrow(
       /SHENRON_AI_EMBED_BASE_URL ou SHENRON_EMBED_BASE_URL ou EMBED_URL ou SHENRON_RAG_EMBED_ENDPOINT/,
     );
-    expect(() => requireAphrodyApiUrl({})).toThrow(
+    expect(() => requireShenronApiUrl({})).toThrow(
       /SHENRON_AI_HTTP_URL ou SHENRON_API_URL/,
     );
   });
@@ -74,7 +74,7 @@ describe("script environment contract (B13, rule 9)", () => {
       origin: "http://127.0.0.1:9002",
     });
     expect(
-      requireAphrodyApiUrl({
+      requireShenronApiUrl({
         SHENRON_AI_HTTP_URL: "http://127.0.0.1:9003",
         SHENRON_API_URL: "http://127.0.0.1:1",
       }),

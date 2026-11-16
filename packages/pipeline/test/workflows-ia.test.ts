@@ -102,7 +102,7 @@ describe("runIaTask (B5)", () => {
     const { model } = mockModel("");
     await expect(
       runIaTask({ task: "Qui est Kami ?", withRag: false, languageModel: model }),
-    ).rejects.toThrow("Agent Aphrody terminé sans réponse");
+    ).rejects.toThrow("Agent Shenron terminé sans réponse");
   });
 
   test("the legacy chat function receives the grounded prompt and names the model", async () => {

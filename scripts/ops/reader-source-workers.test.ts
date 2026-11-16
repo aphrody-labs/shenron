@@ -105,7 +105,7 @@ test("native preparation rejects substituted pins and relative backup receipts",
     backupReceiptSha256: hash("backup"),
   };
   const prepared = {
-    schema: "aphrody-origin-publication-preparation/v1",
+    schema: "shenron-origin-publication-preparation/v1",
     configuration,
     configurationSha256: hash(JSON.stringify(configuration)),
     modulePath: input.activationModulePath,

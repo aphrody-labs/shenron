@@ -4,7 +4,7 @@
  * module `"use client"` d'`apps/site/src`, le graphe d'imports statiques
  * (relatifs, alias `@/`, et entrées source des paquets `@shenron/*`) ne doit
  * jamais atteindre `@shenron/pipeline/ai`, `@shenron/db/{postgres-js,sql,bun-sql,redis}`,
- * `@shenron/api/server` ni `@shenron/pipeline/aphrody`.
+ * `@shenron/api/server` ni `@shenron/pipeline/shenron`.
  *
  * Les imports `import type` sont effacés à la compilation et ne comptent pas ;
  * un module `"use server"` n'est jamais embarqué côté client (Next ne transmet
@@ -34,7 +34,7 @@ const FORBIDDEN = [
   "@shenron/db/bun-sql",
   "@shenron/db/redis",
   "@shenron/api/server",
-  "@shenron/pipeline/aphrody",
+  "@shenron/pipeline/shenron",
 ];
 
 const EXTENSIONS = [".ts", ".tsx", ".js", ".jsx", ".mts", ".mjs"];
@@ -231,7 +231,7 @@ describe("client bundle purity (docs/architecture/STACK.md §4.2)", () => {
   );
 
   it(
-    "no 'use client' module reaches a server-only @aphrody/shenron entry",
+    "no 'use client' module reaches a server-only @shenron/shenron entry",
     () => {
       // Share immutable file analyses only within this graph snapshot.
       const cache = new Map<string, GraphNode>();
@@ -252,7 +252,7 @@ describe("client bundle purity (docs/architecture/STACK.md §4.2)", () => {
       );
       writeFileSync(
         join(dir, "typed.ts"),
-        'import type { X } from "@shenron/pipeline/aphrody";\nexport type Y = X;\n',
+        'import type { X } from "@shenron/pipeline/shenron";\nexport type Y = X;\n',
       );
       writeFileSync(
         join(dir, "action.ts"),

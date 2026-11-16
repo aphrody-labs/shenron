@@ -2,12 +2,12 @@
  * IA & Canon Cockpit (/admin/ai) — concrete data sources.
  *
  * Owners, never local files of another process:
- *   - Aphrody AI private HTTP (`SHENRON_AI_HTTP_URL`, loopback, bearer
+ *   - Shenron AI private HTTP (`SHENRON_AI_HTTP_URL`, loopback, bearer
  *     `SHENRON_AI_HTTP_TOKEN`, legacy aliases accepted): health, RAG statistics, search mode;
  *   - YOLO WEB (`YOLO_WEB_CLI` spawned as `web-cli mcp` over stdio, then the CDP endpoint of
  *     `YOLO_CDP_ENDPOINT`/`YOLO_CDP_PORT`): MCP handshake, tool list and CDP version;
  *   - the bot process over HTTP (`BOT_INTERNAL_URL`, else the configured bot
- *     API URL): its local index while `RAG_BACKEND` is not `aphrody`, and
+ *     API URL): its local index while `RAG_BACKEND` is not `shenron`, and
  *     every write on its runtime tables (admin bearer `SHENRON_ADMIN_TOKEN`);
  *   - PostgreSQL `bot.*`, the mirror of the bot runtime tables, for reads;
  *   - the versioned gold set shipped with the release.
@@ -18,7 +18,7 @@ import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { sql } from "drizzle-orm";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody/compute";
+import { ShenronComputeClient } from "@shenron/pipeline/shenron/compute";
 import { hasAiHttpToken } from "@shenron/pipeline/ai/config";
 import { probeYoloWeb, YoloWebNotConfiguredError } from "@shenron/pipeline/yolo-web";
 import { createShenronApiClient, type ApiResult } from "@shenron/api/client";
@@ -33,7 +33,7 @@ import { db } from "@/lib/db";
 import { botApiBaseUrl } from "@/lib/config";
 import { listAgentKeys } from "@/lib/agent-keys";
 import { getAdminLabRecentMessages } from "@/lib/admin-lab";
-import { searchAphrodyRag } from "@/lib/site-rag";
+import { searchShenronRag } from "@/lib/site-rag";
 import {
   SourceNotConfiguredError,
   computeRetrievalMetrics,
@@ -47,7 +47,7 @@ import {
   parseBotIaStatus,
   parseGoldSet,
   resolveRagBackend,
-  summarizeAphrodyRagStats,
+  summarizeShenronRagStats,
   toNumber,
   type CockpitEvalResult,
   type GoldCase,
@@ -95,29 +95,29 @@ function fetchWithTimeout(timeoutMs: number): typeof fetch {
   return Object.assign(bounded, { preconnect: fetch.preconnect }) as typeof fetch;
 }
 
-/** Aphrody AI client; a missing or invalid configuration is reported as such. */
-function aphrodyCompute(timeoutMs = SHENRON_TIMEOUT_MS): AphrodyComputeClient {
+/** Shenron AI client; a missing or invalid configuration is reported as such. */
+function shenronCompute(timeoutMs = SHENRON_TIMEOUT_MS): ShenronComputeClient {
   if (!hasAiHttpToken(process.env)) {
     throw new SourceNotConfiguredError(
       "SHENRON_AI_HTTP_TOKEN (ou SHENRON_API_TOKEN) absent de l'environnement du site",
     );
   }
   try {
-    return new AphrodyComputeClient({ fetcher: fetchWithTimeout(timeoutMs) });
+    return new ShenronComputeClient({ fetcher: fetchWithTimeout(timeoutMs) });
   } catch (error) {
     throw new SourceNotConfiguredError(describeError(error));
   }
 }
 
-/** Runs one administrator-supplied image through Aphrody's OCR endpoint. */
-export async function runAphrodyOcr(imageBase64: string, language = "ja") {
+/** Runs one administrator-supplied image through Shenron's OCR endpoint. */
+export async function runShenronOcr(imageBase64: string, language = "ja") {
   if (!/^[A-Za-z0-9+/=\r\n]+$/.test(imageBase64) || imageBase64.length > 8_000_000) {
     throw new CockpitActionError(400, "Image OCR invalide ou trop volumineuse.");
   }
   if (!/^(ja|fr|en)$/.test(language)) {
     throw new CockpitActionError(400, "Langue OCR non prise en charge.");
   }
-  return aphrodyCompute(30_000).ocr(imageBase64, language);
+  return shenronCompute(30_000).ocr(imageBase64, language);
 }
 
 async function fetchBotJson(path: string, timeoutMs = BOT_TIMEOUT_MS): Promise<unknown> {
@@ -180,21 +180,21 @@ async function rows(query: ReturnType<typeof sql>): Promise<Record<string, unkno
 
 export function createIaCockpitFetchers(): IaCockpitFetchers {
   return {
-    aphrodyHealth: {
-      label: "Aphrody AI — santé",
+    shenronHealth: {
+      label: "Shenron AI — santé",
       target: "GET /api/v1/shenron/health",
-      run: () => aphrodyCompute().health(),
+      run: () => shenronCompute().health(),
     },
-    aphrodyRagStats: {
-      label: "Aphrody RAG — statistiques",
+    shenronRagStats: {
+      label: "Shenron RAG — statistiques",
       target: "GET /api/v1/shenron/rag/stats",
-      run: async () => summarizeAphrodyRagStats(await aphrodyCompute().ragStats()),
+      run: async () => summarizeShenronRagStats(await shenronCompute().ragStats()),
     },
-    aphrodyRagProbe: {
-      label: "Aphrody RAG — sonde de recherche",
+    shenronRagProbe: {
+      label: "Shenron RAG — sonde de recherche",
       target: `GET /api/v1/shenron/rag/search?q=${RAG_PROBE_QUERY}`,
       run: async () => {
-        const { results, mode } = await aphrodyCompute().ragSearchWithMode(RAG_PROBE_QUERY, 1);
+        const { results, mode } = await shenronCompute().ragSearchWithMode(RAG_PROBE_QUERY, 1);
         return { query: RAG_PROBE_QUERY, mode, hits: results.length };
       },
     },
@@ -321,12 +321,12 @@ export async function searchConfiguredRag(
   limit: number,
   backend: RagBackendInfo,
 ): Promise<{ mode: string; results: RetrievalHit[] }> {
-  if (backend.value === "aphrody") {
-    const { mode, results } = await searchAphrodyRag(
+  if (backend.value === "shenron") {
+    const { mode, results } = await searchShenronRag(
       query,
       limit,
       {},
-      aphrodyCompute(SHENRON_SEARCH_TIMEOUT_MS),
+      shenronCompute(SHENRON_SEARCH_TIMEOUT_MS),
     );
     return { mode, results };
   }
@@ -404,7 +404,7 @@ export const botCockpit = {
 // ── Live evaluation ─────────────────────────────────────────────────────────
 
 /**
- * Aphrody: measured here against Aphrody search, not historised (the history
+ * Shenron: measured here against Shenron search, not historised (the history
  * table belongs to the bot). Local engine: delegated to the bot, which runs
  * the same measure on its own index and records the snapshot itself.
  */
@@ -412,7 +412,7 @@ export async function evaluateConfiguredRag(
   samples: number,
   backend: RagBackendInfo,
 ): Promise<CockpitEvalResult> {
-  if (backend.value !== "aphrody") {
+  if (backend.value !== "shenron") {
     const result = await botCockpit.runEval(samples);
     // `metrics` is a loose object in the contract: the retrieval fields are checked here.
     const raw = result.metrics;
@@ -454,7 +454,7 @@ export async function evaluateConfiguredRag(
     } catch (error) {
       throw new CockpitActionError(
         503,
-        `Recherche Aphrody indisponible (cas « ${c.q} ») : ${describeError(error)}`,
+        `Recherche Shenron indisponible (cas « ${c.q} ») : ${describeError(error)}`,
       );
     }
   }

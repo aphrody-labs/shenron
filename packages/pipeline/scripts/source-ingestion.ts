@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { verifySource, type SourceManifest } from "./source-coverage";
 
-/** Adapters must use existing editorial transactions/revisions and Aphrody ingestion. */
+/** Adapters must use existing editorial transactions/revisions and Shenron ingestion. */
 export interface IngestionPorts {
   deposit(source: SourceManifest, manifestDigest: string): Promise<void>;
   verifyDatabase(source: SourceManifest, manifestDigest: string): Promise<boolean>;

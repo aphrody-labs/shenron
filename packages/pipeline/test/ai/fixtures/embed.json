@@ -1,5 +1,5 @@
 {
-  "$source": "aphrody-ai/crates/aphrody-mcp/src/http_rest.rs:1138",
+  "$source": "shenron-ai/crates/shenron-mcp/src/http_rest.rs:1138",
   "$anchor": "\"vectors\": vectors",
   "route": "embed",
   "schema": "EmbedResponse",

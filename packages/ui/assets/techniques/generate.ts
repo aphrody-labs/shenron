@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+import { cropToWebp } from "@shenron/kit/image";
 import { radialSpeedlines } from "../../src/toriyama-svg/geometry";
 import references from "./references.json";
 
@@ -106,15 +107,13 @@ for (const reference of colorReferences) {
   if (metadata.width !== reference.width || metadata.height !== reference.height)
     throw new Error(`Source dimensions changed: ${reference.slug}`);
   const [left, top, width, height] = reference.crop;
-  // The qualified runtime exposes extract; the pinned declaration package predates it.
-  const image = new Bun.Image(bytes) as Bun.Image & {
-    extract(rectangle: { left: number; top: number; width: number; height: number }): Bun.Image;
-  };
-  await image
-    .extract({ left, top, width, height })
-    .resize(Math.min(width, 768), Math.round((height * Math.min(width, 768)) / width))
-    .webp({ quality: 88 })
-    .write(`${outputDirectory}/${reference.slug}.webp`);
+  await cropToWebp(
+    bytes,
+    { left, top, width, height },
+    Math.min(width, 768),
+    88,
+    `${outputDirectory}/${reference.slug}.webp`,
+  );
   const drawing = drawings[reference.slug];
   if (!drawing) throw new Error(`Missing icon: ${reference.slug}`);
   const coloredDrawing = drawing

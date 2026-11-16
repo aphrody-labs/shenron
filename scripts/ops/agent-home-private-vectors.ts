@@ -6,7 +6,7 @@ import { join } from "node:path";
 import { createLocalApi } from "@shenron/api/host";
 import { openShenronVfs } from "@shenron/db/vfs";
 import type { RagHit } from "@shenron/db/vfs/rag";
-import { createAphrodyCompute, type AphrodyCompute } from "@shenron/pipeline/ai/aphrody";
+import { createShenronCompute, type ShenronCompute } from "@shenron/pipeline/ai/shenron";
 import {
   requireAiHttpToken,
   requireAiHttpUrl,
@@ -63,7 +63,7 @@ async function privateWrite(path: string, value: unknown) {
   await Bun.write(temporary, JSON.stringify(value, null, 2) + "\n");
   renameSync(temporary, path);
 }
-function ownerCompute(container: string): AphrodyCompute {
+function ownerCompute(container: string): ShenronCompute {
   if (!/^[a-zA-Z0-9_.-]+$/.test(container))
     throw new Error("Invalid owner configuration container");
   const p = Bun.spawnSync(["docker", "inspect", container], { stdout: "pipe", stderr: "pipe" });
@@ -78,7 +78,7 @@ function ownerCompute(container: string): AphrodyCompute {
   const baseUrl = requireAiHttpUrl(env);
   if (!["127.0.0.1", "localhost", "[::1]", "::1"].includes(baseUrl.hostname))
     throw new Error("Private vector job only permits the configured loopback owner API");
-  return createAphrodyCompute({ baseUrl, token: requireAiHttpToken(env) });
+  return createShenronCompute({ baseUrl, token: requireAiHttpToken(env) });
 }
 function metadata(hit: RagHit, expected: string | null) {
   return {
@@ -170,7 +170,7 @@ export async function runPrivateVectorJob(job: PrivateVectorJob) {
     const owner = ownerCompute(job.ownerConfigContainer);
     let passageRequests = 0;
     let queryRequests = 0;
-    const compute: Pick<AphrodyCompute, "embed"> = {
+    const compute: Pick<ShenronCompute, "embed"> = {
       embed: async (input) => {
         if (input.requireModel !== SHENRON_E5.modelId)
           throw new Error("Private embedding must require the exact qualified model");
@@ -278,7 +278,7 @@ export async function runPrivateVectorJob(job: PrivateVectorJob) {
           http = {
             status: response.status,
             homeCitation,
-            queryEmbedding: "existing Aphrody client",
+            queryEmbedding: "existing Shenron client",
             publicStatus: publicResponse.status,
             publicHits: 0,
             externalGeneration: false,

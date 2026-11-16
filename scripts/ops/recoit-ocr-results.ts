@@ -4,7 +4,7 @@
  * recoit-ocr-results.ts — Atomic, verified reception of the OCR corpus `results.db` on the VPS.
  *
  * Why: on 2026-09-14 the Windows GPU host shipped its corpus with
- * `ssh dbfr "cat > ~/.aphrody/ocr/results.db"`. `cat >` truncates the live file first and
+ * `ssh dbfr "cat > ~/.shenron/ocr/results.db"`. `cat >` truncates the live file first and
  * rewrites it in place, so any reader (nourrir-shenron.ts) or a dropped connection sees a
  * half-written B-tree: "Tree 4 page 9823 cell 0: invalid page number 10386".
  *
@@ -15,16 +15,16 @@
  *   4. hard-link the current file to `<target>.prev` (instant rollback), then rename() over.
  *   Readers that already had the old file open keep their inode and finish cleanly.
  *
- * Sender side from the Aphrody monorepo — take a consistent snapshot, never copy a live DB:
+ * Sender side from the Shenron monorepo — take a consistent snapshot, never copy a live DB:
  *   sqlite3 <ocr-workspace>/results.db "VACUUM INTO '<ocr-workspace>/results.snapshot.db'"
  *   bun scripts/ops/envoie-ocr-results.ts --snapshot <ocr-workspace>/results.snapshot.db
- *   # Transfer goes through Aphrody SSH (in-process SFTP + its SSH command adapter).
+ *   # Transfer goes through Shenron SSH (in-process SFTP + its SSH command adapter).
  * The imported Shenron checkout remains the remote receiver at `shenron/scripts/ops/recoit-ocr-results.ts`;
- * the sender is owned by this Aphrody monorepo and is not expected in the legacy Shenron checkout.
+ * the sender is owned by this Shenron monorepo and is not expected in the legacy Shenron checkout.
  *
  * Options:
  *   --depuis <file>   take an already uploaded file instead of stdin (internal receiver option; moved, not copied)
- *   --cible <file>    target database (default: $OCR_RESULTS_DB or ~/.aphrody/ocr/results.db)
+ *   --cible <file>    target database (default: $OCR_RESULTS_DB or ~/.shenron/ocr/results.db)
  *   --force           accept a corpus with fewer pages than the current one
  *   --verifier        only inspect the target (read-only) and exit 0 when healthy
  *

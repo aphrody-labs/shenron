@@ -130,7 +130,7 @@ export type LocalHit = {
 export type LocalSearchResponse = {
 	/**  The query as received. */
 	q: string,
-	/**  Search mode (`aphrody_local_naive`). */
+	/**  Search mode (`shenron_local_naive`). */
 	mode: string,
 	/**  Number of `results`. */
 	total: number,
@@ -139,8 +139,8 @@ export type LocalSearchResponse = {
 };
 
 /**
- *  One memory of the persistent chat memory (`shenron_memory_*`, ABI 3): a record of Aphrody's
- *  `aphrody-memory` SQLite provider.
+ *  One memory of the persistent chat memory (`shenron_memory_*`, ABI 3): a record of Shenron's
+ *  `shenron-memory` SQLite provider.
  */
 export type MemoryEntry = {
 	/**  Provider id (UUID v4). */
@@ -167,7 +167,7 @@ export type RagChunk = {
 
 /**
  *  One hit of the serving RAG (`shenron_rag_search_job`): the bot's `/api/public/rag/search`
- *  or Aphrody's `/api/v1/shenron/rag/search`, normalised by the library.
+ *  or Shenron's `/api/v1/shenron/rag/search`, normalised by the library.
  */
 export type RagHit = {
 	/**  Title (empty when the backend gave none). */
@@ -216,7 +216,7 @@ export type RagSourceStats = {
 
 /**  Statistics of the serving RAG (`shenron_rag_stats_job`), normalised over both backends. */
 export type RagStats = {
-	/**  Serving backend: `local` (the bot) or `aphrody`. */
+	/**  Serving backend: `local` (the bot) or `shenron`. */
 	backend: string,
 	/**  Indexed passages. */
 	chunks: number,
@@ -230,6 +230,6 @@ export type RagStats = {
 	builtAt: string | null,
 	/**  Whether the bot reports its RAG as ready. */
 	ragReady: boolean | null,
-	/**  Per-source counts (Aphrody backend). */
+	/**  Per-source counts (Shenron backend). */
 	sources: RagSourceStats[],
 };

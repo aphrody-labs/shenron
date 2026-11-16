@@ -54,7 +54,7 @@ mock.module("@/lib/db", () => ({
         throw new Error("Unexpected SQL in hermetic canon contract suite");
       let rows = [...fixtureReferences];
       const provenance = params.find((value) =>
-        ["aphrody", "databooks", "manuel", "manga"].includes(String(value)),
+        ["shenron", "databooks", "manuel", "manga"].includes(String(value)),
       );
       if (provenance) rows = rows.filter((row) => row.provenance === provenance);
       const pattern = params.find((value) => typeof value === "string" && value.startsWith("%"));

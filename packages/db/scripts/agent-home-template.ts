@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Embed the public agent home template (`templates/agent-home`, the seven native documents of
- * aphrody-agent-home) into `src/agent-homes/template.generated.ts`, so that the package and the
+ * shenron-agent-home) into `src/agent-homes/template.generated.ts`, so that the package and the
  * compiled binaries (bot, shenron-server) carry it without reading the repository.
  *
  *   bun packages/db/scripts/agent-home-template.ts           # regenerate

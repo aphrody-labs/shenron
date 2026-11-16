@@ -640,7 +640,7 @@
     "manga"
   ],
   "materialSymbols": {
-    "owner": "@aphrody/material-design-icons",
+    "owner": "material-symbols",
     "version": "1.0.0",
     "style": "rounded",
     "names": [
@@ -679,6 +679,6 @@
     "plain": "Shenron Text",
     "code": "JetBrains Mono",
     "japanese": "Noto Sans JP",
-    "m3Roles": ["--aphrody-font-brand", "--aphrody-font-plain", "--aphrody-font-code"]
+    "m3Roles": ["--shenron-font-brand", "--shenron-font-plain", "--shenron-font-code"]
   }
 }

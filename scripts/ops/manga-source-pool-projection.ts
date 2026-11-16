@@ -442,11 +442,11 @@ async function indexDocuments(
   output: string,
   signal?: AbortSignal,
 ) {
-  const aphrody = Bun.which("aphrody");
-  if (!aphrody) throw Error("Installed native index owner unavailable");
+  const shenron = Bun.which("shenron");
+  if (!shenron) throw Error("Installed native index owner unavailable");
   const child = Bun.spawn(
     [
-      aphrody,
+      shenron,
       "home",
       "index",
       documents,

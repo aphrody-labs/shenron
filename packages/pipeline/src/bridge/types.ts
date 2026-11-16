@@ -1,5 +1,5 @@
 /**
- * Type definitions for the Shenron pipeline and Aphrody IPC bridge (Tauri 2.0 / local web fallback).
+ * Type definitions for the Shenron pipeline and Shenron IPC bridge (Tauri 2.0 / local web fallback).
  */
 
 // ── Bridge Transport & Config ───────────────────────────────────────────────
@@ -60,7 +60,7 @@ export type ChatPersona = "whis" | "shenron" | "toriyama" | "kaio" | "vegeta" | 
 export interface ModelOption {
   id: string;
   name: string;
-  provider: "aphrody-local" | "anthropic" | "openai" | "google" | "mistral";
+  provider: "shenron-local" | "anthropic" | "openai" | "google" | "mistral";
   description: string;
   supportsStreaming: boolean;
   contextWindow: number;
@@ -117,7 +117,7 @@ export interface RagSearchResult {
 export interface RagStats {
   totalChunks: number;
   totalVectors: number;
-  ragSource: "bot" | "replica" | "local-aphrody";
+  ragSource: "bot" | "replica" | "local-shenron";
   ragMode: "hybrid" | "lexical" | "unavailable";
   ragBuiltAt: string | null;
   embeddingsModel: string;
@@ -213,7 +213,7 @@ export interface OcrBatch {
   totalPages: number;
   processedPages: number;
   defectsCount: number;
-  engine: "manga-ocr" | "paddle-ocr" | "aphrody-vision";
+  engine: "manga-ocr" | "paddle-ocr" | "shenron-vision";
   startedAt: string;
 }
 

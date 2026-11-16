@@ -34,5 +34,5 @@ both packages and the consuming site/app. Strict scoped lint and format pass.
 The five-entry production browser build and Tailwind compilation pass; bundles
 externalize dependencies, so their smaller entry size is not a payload saving.
 
-Receipts and screenshots remain in the enclosing Aphrody checkout's ignored
-`.coord/runs/shenron-aphrody-dedup`. No publication or host activation.
+Receipts and screenshots remain in the enclosing Shenron checkout's ignored
+`.coord/runs/shenron-dedup`. No publication or host activation.

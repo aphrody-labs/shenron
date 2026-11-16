@@ -2,7 +2,7 @@
  * La mémoire de traduction des citations d'auteur
  * (`scripts/inventaires/canon-citations-fr.json`).
  *
- * Le corpus `.aphrody` vit hors du dépôt ; les traductions, elles, sont notre
+ * Le corpus `.shenron` vit hors du dépôt ; les traductions, elles, sont notre
  * travail et sont versionnées ici. Ce fichier est donc la seule chose qui
  * survive à une base réinitialisée — et il est réinjecté tel quel dans
  * `CanonConfig`. Ce qu'on vérifie : qu'il ne se dégrade pas silencieusement.

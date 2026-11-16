@@ -966,14 +966,14 @@ export default function CanonEditor({
       {/* Corpus d'auteur --------------------------------------------------- */}
       <Section
         titre="Corpus d'auteur"
-        sous="Les déclarations d'Akira Toriyama et des guides Shueisha, chargées depuis la base locale .aphrody. Elles ne tranchent rien : elles s'affichent à côté du verdict comme pièces à conviction."
+        sous="Les déclarations d'Akira Toriyama et des guides Shueisha, chargées depuis la base locale .shenron. Elles ne tranchent rien : elles s'affichent à côté du verdict comme pièces à conviction."
       >
         {config.references.length === 0 ? (
           <p className="rounded-lg border border-dbz-border bg-black/20 p-3 text-[13px] leading-relaxed text-white/50">
             Aucune citation chargée. Depuis <code>apps/site</code> :{" "}
-            <code className="text-dbz-orange">bun run canon:aphrody --appliquer</code> lit les
+            <code className="text-dbz-orange">bun run canon:shenron --appliquer</code> lit les
             introductions des 42 tomes, le Super Exciting Guide, les Daizenshuu et les interviews
-            conservés dans <code>.aphrody</code>.
+            conservés dans <code>.shenron</code>.
           </p>
         ) : (
           <>
@@ -1093,7 +1093,7 @@ export default function CanonEditor({
               </button>
             )}
             <p className="text-[11px] leading-relaxed text-white/35">
-              Un nouveau chargement (<code>bun run canon:aphrody --appliquer</code>) remplace ces
+              Un nouveau chargement (<code>bun run canon:shenron --appliquer</code>) remplace ces
               citations et conserve celles saisies à la main.
             </p>
           </>

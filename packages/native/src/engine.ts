@@ -418,7 +418,7 @@ export function shenronRagStats(): CapturedResult {
   );
 }
 
-/** Chunk Markdown with the Shenron-parity chunker of the Aphrody RAG core. */
+/** Chunk Markdown with the Shenron-parity chunker of the Shenron RAG core. */
 export function shenronRagChunk(markdown: string, maxChars = 1400, overlapPct = 0.15): RagChunk[] {
   if (!Number.isInteger(maxChars) || maxChars < 1)
     throw new RangeError("maxChars must be positive");
@@ -457,7 +457,7 @@ export function shenronPersonaAsk(question: string): CapturedResult {
   );
 }
 
-// --- ABI 3: persistent chat memory (Aphrody `aphrody-memory`, SQLite provider) ---
+// --- ABI 3: persistent chat memory (Shenron `shenron-memory`, SQLite provider) ---
 
 /** A stored memory; `createdAtMs` is always a number here. */
 export type ShenronMemory = Omit<MemoryEntry, "createdAtMs"> & { createdAtMs: number };
@@ -535,7 +535,7 @@ export function shenronMemoryClear(dbPath: string, agentId: string): number {
   );
 }
 
-// --- ABI 4: local chat models (Aphrody `aphrody-llama-server` local chat, in process) ---
+// --- ABI 4: local chat models (Shenron `shenron-llama-server` local chat, in process) ---
 
 /** One model file: catalog id or reference (`hf:`, `https://`, `file:`) with its digest. */
 export interface ShenronLlamaArtifact {
@@ -556,7 +556,7 @@ export interface ShenronLlamaProvision {
 
 /** Request of `shenronLlamaRouterStart`. */
 export interface ShenronLlamaRouterStart {
-  /** `router.json` (crates/ai/llama-server/LOCAL-CHAT.md in Aphrody). */
+  /** `router.json` (crates/ai/llama-server/LOCAL-CHAT.md in Shenron). */
   config: string;
   modelsDir: string;
   stateDir: string;

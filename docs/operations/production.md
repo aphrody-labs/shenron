@@ -18,7 +18,7 @@ Tous les conteneurs tournent avec le statut `healthy` :
 - `shenron-site` : Portail web Next.js 16.5+ standalone sur Bun (`localhost/shenron:<sha>`).
 - `shenron-bot` : Bot Discord communautaire et worker d'indexation Redis (`localhost/shenron:<sha>`).
 - `shenron-chat` : image upstream `ghcr.io/ggml-org/llama.cpp:server` (`127.0.0.1:8799`).
-- `shenron-compute` : Serveur MCP HTTP (`aphrody-mcp`).
+- `shenron-compute` : Serveur MCP HTTP (`shenron-mcp`).
 - `shenron-embed` : image upstream Hugging Face `text-embeddings-inference` (`multilingual-e5-small`, `127.0.0.1:8085`).
 - `shenron-postgres` : image upstream `pgvector/pgvector:pg18`, base `shenron_site`, schemas `public` et `bot`.
 - `shenron-redis` : image upstream `redis:8-alpine`, Cache haute vitesse et files d'indexation temps reel.

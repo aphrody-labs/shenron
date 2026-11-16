@@ -87,7 +87,7 @@
       "type": "object",
       "required": ["format", "result"],
       "properties": {
-        "format": { "const": "aphrody-ocr-jsonl" },
+        "format": { "const": "shenron-ocr-jsonl" },
         "result": { "type": "object" }
       }
     }

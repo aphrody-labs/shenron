@@ -2,7 +2,7 @@
 
 Le plugin fonctionne **hors ligne d'abord** : il ne suppose ni l'accès à
 dragonballfr.com, ni l'API, ni le MCP `dragonball.*`, ni le RAG, ni un checkout du
-code Shenron ou d'Aphrody. Tout ce qu'il faut pour répondre voyage dans le dossier
+code Shenron ou d'Shenron. Tout ce qu'il faut pour répondre voyage dans le dossier
 du plugin.
 
 ## Ordre des sources

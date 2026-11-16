@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import { crawlJobOutputDirectory } from "../src/aphrody/jobs";
+import { crawlJobOutputDirectory } from "../src/shenron/jobs";
 import { createCrawlJobArgs, createCrawlJobIntent } from "../src/workflows";
 
 describe("createCrawlJobArgs", () => {
@@ -39,7 +39,7 @@ describe("createCrawlJobArgs", () => {
     ]);
   });
 
-  test("leaves the universal catalog selection to Aphrody Web", () => {
+  test("leaves the universal catalog selection to Shenron Web", () => {
     const args = createCrawlJobArgs({ source: "universal", maxRequests: 12 });
     expect(args).not.toContain("--source");
     expect(args).toEqual([
@@ -60,7 +60,7 @@ describe("createCrawlJobArgs", () => {
     expect(args[0]).toBe("dragon-ball");
   });
 
-  test("creates a one-attempt idempotent intent for AphrodyWebJobs", () => {
+  test("creates a one-attempt idempotent intent for ShenronWebJobs", () => {
     const key = "catalog-official-20261101";
     const intent = createCrawlJobIntent(key, { source: "official" });
     const expectedArgs = createCrawlJobArgs({ source: "official" });

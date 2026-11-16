@@ -20,10 +20,10 @@ const COMMANDS: Record<string, (payload: unknown) => unknown> = {
     status: "operational",
     site: { reachable: true },
     bot: { reachable: false },
-    aphrody_ai_http: { configured: false },
+    shenron_ai_http: { configured: false },
     serving_rag: { reachable: true, ready: true },
     agent_home: { valid: true, files: 3 },
-    rag_backend: "aphrody",
+    rag_backend: "shenron",
   }),
   studio_shenron_rag_stats: () => ({ chunks: 12, vectors: 10, sources: [] }),
   studio_shenron_training: () => ({

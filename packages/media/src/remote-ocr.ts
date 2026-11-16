@@ -59,7 +59,7 @@ async function postImage(
       { timeoutMs, fetch: options.fetch },
     );
     if (!response.ok)
-      throw new Error(`Aphrody ${path === "ocr" ? "PP-OCR" : "vision"} HTTP ${response.status}`);
+      throw new Error(`Shenron ${path === "ocr" ? "PP-OCR" : "vision"} HTTP ${response.status}`);
     return value;
   } catch (error) {
     // Preserve the historical thrown network/JSON errors at this compatibility boundary.
@@ -70,7 +70,7 @@ async function postImage(
 
 function validateResult(value: unknown): RemoteOcrResult {
   if (!value || typeof value !== "object")
-    throw new Error("Aphrody returned an invalid OCR result");
+    throw new Error("Shenron returned an invalid OCR result");
   const result = value as Record<string, unknown>;
   if (
     typeof result.text !== "string" ||
@@ -82,7 +82,7 @@ function validateResult(value: unknown): RemoteOcrResult {
     !Number.isFinite(result.elapsed_ms) ||
     result.elapsed_ms < 0
   ) {
-    throw new Error("Aphrody returned an incomplete PP-OCR result");
+    throw new Error("Shenron returned an incomplete PP-OCR result");
   }
   const quality = result.quality as Record<string, unknown> | undefined;
   if (
@@ -92,7 +92,7 @@ function validateResult(value: unknown): RemoteOcrResult {
     quality.mean_confidence < 0 ||
     quality.mean_confidence > 1
   )
-    throw new Error("Aphrody returned no PP-OCR quality score");
+    throw new Error("Shenron returned no PP-OCR quality score");
   for (const block of result.blocks) {
     if (
       !block ||
@@ -110,14 +110,14 @@ function validateResult(value: unknown): RemoteOcrResult {
           point.some((n: unknown) => typeof n !== "number" || !Number.isFinite(n)),
       )
     ) {
-      throw new Error("Aphrody returned invalid PP-OCR geometry");
+      throw new Error("Shenron returned invalid PP-OCR geometry");
     }
   }
   if (
     result.textless !== (result.blocks.length === 0) ||
     result.textless !== (result.text.trim().length === 0)
   ) {
-    throw new Error("Aphrody returned contradictory PP-OCR status");
+    throw new Error("Shenron returned contradictory PP-OCR status");
   }
   return result as unknown as RemoteOcrResult;
 }
@@ -158,7 +158,7 @@ export async function reviewRemoteImage<T>(
     typeof value.result !== "object" ||
     Array.isArray(value.result)
   ) {
-    throw new Error("Aphrody returned an invalid structured vision result or model");
+    throw new Error("Shenron returned an invalid structured vision result or model");
   }
   return value.result as T;
 }
@@ -166,10 +166,10 @@ export async function reviewRemoteImage<T>(
 export function toOcrResultV2(imagePath: string, imageBytes: Uint8Array, result: RemoteOcrResult) {
   const quality = {
     mean_confidence: result.quality.mean_confidence,
-    reasons: result.suspect ? ["aphrody OCR audit flagged this page"] : [],
+    reasons: result.suspect ? ["shenron OCR audit flagged this page"] : [],
   };
   return {
-    schema: "aphrody.ocr.result/v2",
+    schema: "shenron.ocr.result/v2",
     page_id: imagePath,
     image: {
       path: imagePath,
@@ -179,7 +179,7 @@ export function toOcrResultV2(imagePath: string, imageBytes: Uint8Array, result:
       {
         run: {
           model_id: result.model,
-          backend: "aphrody-ppocr-http",
+          backend: "shenron-ppocr-http",
           provider: null,
           model_digest: null,
           prompt_digest: null,

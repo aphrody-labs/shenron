@@ -3,7 +3,7 @@
 /**
  * Launches the local `shenron-mcp` (stdio) against the production APIs of dbfr.
  *
- *   bun scripts/ops/mcp-dbfr.ts [--host dbfr] [--container aphrody-site-1]
+ *   bun scripts/ops/mcp-dbfr.ts [--host dbfr] [--container shenron-site-1]
  *   claude mcp add shenron-dbfr -- bun scripts/ops/mcp-dbfr.ts
  *
  * The admin token is read over SSH from the environment of the running site container at each
@@ -17,7 +17,7 @@ const flag = (name: string, fallback: string) => {
   return at >= 0 && args[at + 1] ? args[at + 1] : fallback;
 };
 const host = flag("host", "dbfr");
-const container = flag("container", "aphrody-site-1");
+const container = flag("container", "shenron-site-1");
 const KEYS = ["SHENRON_ADMIN_TOKEN", "SHENRON_API_ADMIN_TOKEN", "DBFR_TOKEN"] as const;
 
 const read = Bun.spawnSync(

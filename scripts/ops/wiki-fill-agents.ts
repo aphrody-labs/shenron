@@ -1116,7 +1116,7 @@ async function main() {
   const dbPath = resolve(option("db") ?? "var/reports/wiki-fill-agents/queue.sqlite");
   if (
     !dbPath.startsWith(resolve("var/reports") + "/") &&
-    !dbPath.startsWith(resolve(process.env.HOME!, ".aphrody") + "/")
+    !dbPath.startsWith(resolve(process.env.HOME!, ".shenron") + "/")
   )
     throw new Error("Queue must remain in private reports or profile");
   await mkdir(resolve(dbPath, ".."), { recursive: true, mode: 0o700 });

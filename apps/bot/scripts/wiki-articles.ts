@@ -26,7 +26,7 @@
  *
  * Types : characters | planets | sagas | arcs | techniques | transformations | races
  *
- * Grounding : recherche manga via Aphrody en mode RAG_BACKEND=aphrody ;
+ * Grounding : recherche manga via Shenron en mode RAG_BACKEND=shenron ;
  * l'index FTS5 local reste disponible pour les déploiements antérieurs.
  *
  * Env : DATABASE_URL = PG du site (via ~/.shenron-neon.env). BOT_DB = chemin sqlite.
@@ -36,7 +36,7 @@ import { Database } from "bun:sqlite";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import postgres from "postgres";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { ShenronComputeClient } from "@shenron/pipeline/shenron";
 import {
   applyIllustration,
   illustrationTypeFor,
@@ -199,7 +199,7 @@ interface Hit {
 }
 
 async function remoteManga(query: string, limit: number): Promise<Hit[]> {
-  const hits = await new AphrodyComputeClient().ragSearch(query, limit, { sourceId: "manga" });
+  const hits = await new ShenronComputeClient().ragSearch(query, limit, { sourceId: "manga" });
   return hits.map((hit, index) => ({
     rowid: Number(hit.sourceId?.match(/^shenron:(\d+)$/)?.[1] ?? index + 1),
     sourceId: hit.sourceId,
@@ -306,7 +306,7 @@ async function cmdContext(typeName: string, idArg: string) {
   const desc = String(row.description ?? "");
   const existing = String(row.article ?? "");
 
-  const remote = process.env.RAG_BACKEND === "aphrody";
+  const remote = process.env.RAG_BACKEND === "shenron";
   const db = remote ? null : new Database(BOT_DB, { readonly: true });
   const namePhrase = phrase(name);
   const seen = new Map<string, Hit>();

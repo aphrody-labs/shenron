@@ -46,7 +46,7 @@ export interface MangaOcrManifest {
   };
   entries: MangaManifestEntry[];
   responseExpected: {
-    format: "aphrody-ocr-jsonl";
+    format: "shenron-ocr-jsonl";
     result: {
       image: string;
       text: { kind: "text"; markdown: string } | { kind: "none" };

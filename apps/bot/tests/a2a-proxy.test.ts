@@ -23,7 +23,7 @@ beforeAll(() => {
         body,
       });
       if (url.pathname === "/.well-known/agent-card.json")
-        return Response.json({ name: "aphrody-a2a" });
+        return Response.json({ name: "shenron-a2a" });
       if (url.pathname === "/coord") {
         return new Response('data: {"id":"e1"}\n\n', {
           headers: { "content-type": "text/event-stream" },
@@ -65,7 +65,7 @@ function rpc(method: string, params: unknown = {}): Request {
   });
 }
 
-describe("bot A2A proxy to aphrody a2a serve", () => {
+describe("bot A2A proxy to shenron a2a serve", () => {
   it("base URL defaults to 127.0.0.1:8788 and trims trailing slashes", () => {
     expect(a2aBaseUrl({})).toBe("http://127.0.0.1:8788");
     expect(a2aBaseUrl({ [A2A_URL_ENV]: "http://h:1//" })).toBe("http://h:1");
@@ -113,7 +113,7 @@ describe("bot A2A proxy to aphrody a2a serve", () => {
   it("agent card is relayed", async () => {
     const res = await a2aAgentCard(new Request("http://localhost/.well-known/agent-card.json"));
     expect(res.status).toBe(200);
-    expect(await res.json()).toEqual({ name: "aphrody-a2a" });
+    expect(await res.json()).toEqual({ name: "shenron-a2a" });
   });
 
   it("upstream down -> 502 a2a_upstream_unreachable", async () => {

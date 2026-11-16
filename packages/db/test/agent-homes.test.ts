@@ -68,7 +68,7 @@ describe("template", () => {
 });
 
 describe("ids and profile", () => {
-  test("discord:<id> or local, sanitised like aphrody-agent-home", () => {
+  test("discord:<id> or local, sanitised like shenron-agent-home", () => {
     expect(agentHomeId(ID)).toBe(`discord:${ID}`);
     expect(agentHomeId("abc")).toBe("local");
     expect(agentHomeId(null)).toBe("local");
@@ -132,7 +132,7 @@ describe("DirAgentHomeStore", () => {
     for (const name of AGENT_HOME_DOCUMENTS) expect(existsSync(join(dir, name))).toBe(true);
     expect(existsSync(join(dir, "memory"))).toBe(true);
     expect(existsSync(join(dir, "skills"))).toBe(true);
-    const state = JSON.parse(readFileSync(join(dir, ".aphrody/workspace-state.json"), "utf8"));
+    const state = JSON.parse(readFileSync(join(dir, ".shenron/workspace-state.json"), "utf8"));
     expect(state).toMatchObject({ version: 1, setup_completed_at: home.createdAt });
     const read = await store.get("local");
     expect(read).toEqual(home);

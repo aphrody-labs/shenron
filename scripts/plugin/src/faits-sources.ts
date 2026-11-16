@@ -17,4 +17,4 @@ export {
   CANON_PRICES,
   ZENI_YEN_PARITY,
 } from "@shenron/config/economy-canon";
-export { DOCUMENTS, REFUSÉ } from "@shenron/config/aphrody-corpus";
+export { DOCUMENTS, REFUSÉ } from "@shenron/config/shenron-corpus";

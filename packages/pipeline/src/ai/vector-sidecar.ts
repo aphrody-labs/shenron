@@ -68,7 +68,7 @@ export function postgresVectorSource(sql: Bun.SQL, batchSize = 128): VectorSourc
     throw Error("Invalid vector batch size");
   const current = async (query: Bun.SQL | Bun.TransactionSQL) => {
     const rows =
-      await query`SELECT epoch::text,revision::text FROM shenron_compute.aphrody_rag_cache_state WHERE singleton=true`;
+      await query`SELECT epoch::text,revision::text FROM shenron_compute.shenron_rag_cache_state WHERE singleton=true`;
     if (rows.length !== 1) throw Error("Missing owner vector generation");
     return generation({ epoch: rows[0].epoch, revision: rows[0].revision });
   };
@@ -80,7 +80,7 @@ export function postgresVectorSource(sql: Bun.SQL, batchSize = 128): VectorSourc
         await transaction`SET LOCAL statement_timeout = '30000'`;
         const pin = await current(transaction);
         const counts =
-          await transaction`SELECT count(*)::int AS count FROM shenron_compute.aphrody_shenron_vectors`;
+          await transaction`SELECT count(*)::int AS count FROM shenron_compute.shenron_vectors`;
         return consume({
           generation: pin,
           count: counts[0].count,
@@ -88,7 +88,7 @@ export function postgresVectorSource(sql: Bun.SQL, batchSize = 128): VectorSourc
             let after = "00000000-0000-0000-0000-000000000000";
             for (;;) {
               const rows =
-                await transaction`SELECT document_id::text AS id,model,embedding::text AS embedding FROM shenron_compute.aphrody_shenron_vectors WHERE document_id > ${after}::uuid ORDER BY document_id LIMIT ${batchSize}`;
+                await transaction`SELECT document_id::text AS id,model,embedding::text AS embedding FROM shenron_compute.shenron_vectors WHERE document_id > ${after}::uuid ORDER BY document_id LIMIT ${batchSize}`;
               if (!rows.length) break;
               const batch = rows.map(
                 (row: { id: unknown; model: unknown; embedding: unknown }) => ({

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { openAphrodyPython, type PythonOwner, type PythonSession } from "../../src/runtime/python";
+import { openShenronPython, type PythonOwner, type PythonSession } from "../../src/runtime/python";
 
 function fixture(options: { wrongPid?: boolean; delayedClose?: Promise<void> } = {}) {
   const calls: Record<string, unknown>[] = [];
@@ -13,7 +13,7 @@ function fixture(options: { wrongPid?: boolean; delayedClose?: Promise<void> } =
         ? options.wrongPid
           ? -1
           : process.pid
-        : "qualified-installed-sdk/aphrody/__init__.py") as T,
+        : "qualified-installed-sdk/shenron/__init__.py") as T,
     version: async () => "3.12.15",
     call: async (_module, _name, encoded) => {
       const request = JSON.parse(encoded!);
@@ -46,20 +46,20 @@ test("one lazy interpreter is shared until all leases close, and public calls pr
   const host = fixture();
   expect(host.counts()).toEqual({ opened: 0, closed: 0 });
   const [first, second] = await Promise.all([
-    openAphrodyPython({ loadOwner: host.loadOwner }),
-    openAphrodyPython({ loadOwner: host.loadOwner }),
+    openShenronPython({ loadOwner: host.loadOwner }),
+    openShenronPython({ loadOwner: host.loadOwner }),
   ]);
   try {
     expect(host.counts().opened).toBe(1);
     expect(first.info()).toMatchObject({ pid: process.pid, nativeInProcess: true });
     expect(
-      await first.invoke("aphrody.command_guard", "normalize_command", ["été🐍"], { flags: [] }),
+      await first.invoke("shenron.command_guard", "normalize_command", ["été🐍"], { flags: [] }),
     ).toBe(42);
     expect(host.calls[0]).toMatchObject({ args: ["été🐍"], kwargs: { flags: [] } });
     await first.close();
     expect(host.counts().closed).toBe(0);
-    await expect(first.invoke("aphrody", "Something")).rejects.toThrow("closed");
-    await second.read("aphrody", "__version__");
+    await expect(first.invoke("shenron", "Something")).rejects.toThrow("closed");
+    await second.read("shenron", "__version__");
   } finally {
     await first.close();
     await second.close();
@@ -69,29 +69,29 @@ test("one lazy interpreter is shared until all leases close, and public calls pr
 
 test("foreign modules/configurations and out-of-process Python are rejected with cleanup", async () => {
   const wrong = fixture({ wrongPid: true });
-  await expect(openAphrodyPython({ loadOwner: wrong.loadOwner })).rejects.toThrow(
+  await expect(openShenronPython({ loadOwner: wrong.loadOwner })).rejects.toThrow(
     "Shenron Bun process",
   );
   expect(wrong.counts()).toEqual({ opened: 1, closed: 1 });
   const host = fixture();
-  await using sdk = await openAphrodyPython({ loadOwner: host.loadOwner });
+  await using sdk = await openShenronPython({ loadOwner: host.loadOwner });
   expect(() => sdk.invoke("os", "system", ["invalid"])).toThrow();
-  expect(() => sdk.invoke("aphrody", "__getattribute__")).toThrow();
-  await expect(openAphrodyPython({ loadOwner: fixture().loadOwner })).rejects.toThrow("different");
-  await expect(sdk.invoke("aphrody", "Something", [NaN])).rejects.toThrow("finite");
+  expect(() => sdk.invoke("shenron", "__getattribute__")).toThrow();
+  await expect(openShenronPython({ loadOwner: fixture().loadOwner })).rejects.toThrow("different");
+  await expect(sdk.invoke("shenron", "Something", [NaN])).rejects.toThrow("finite");
 });
 
 test("native object ownership carries arguments and explicitly releases resources", async () => {
   const host = fixture();
-  await using sdk = await openAphrodyPython({ loadOwner: host.loadOwner });
-  const object = await sdk.construct("aphrody", "AphrodyClient", [], {
+  await using sdk = await openShenronPython({ loadOwner: host.loadOwner });
+  const object = await sdk.construct("shenron", "ShenronClient", [], {
     base_url: "https://dragonballfr.com",
   });
-  await sdk.invoke("aphrody", "Something", [object]);
+  await sdk.invoke("shenron", "Something", [object]);
   expect(host.calls.at(-1)?.args).toEqual([{ $shenronObject: "owned-object" }]);
   await object.close();
   expect(host.calls.at(-1)?.operation).toBe("release");
-  await expect(sdk.invoke("aphrody", "Something", [object])).rejects.toThrow("closed");
+  await expect(sdk.invoke("shenron", "Something", [object])).rejects.toThrow("closed");
 });
 
 test("acquisition during final cleanup waits rather than attaching to a closing interpreter", async () => {
@@ -101,9 +101,9 @@ test("acquisition during final cleanup waits rather than attaching to a closing 
       finish = resolve;
     }),
   });
-  const first = await openAphrodyPython({ loadOwner: host.loadOwner });
+  const first = await openShenronPython({ loadOwner: host.loadOwner });
   const closing = first.close();
-  const next = openAphrodyPython({ loadOwner: host.loadOwner });
+  const next = openShenronPython({ loadOwner: host.loadOwner });
   expect(host.counts().opened).toBe(1);
   finish();
   await closing;
@@ -127,9 +127,9 @@ test("bounded queued work drains before native host release", async () => {
   };
   owner.Python.async = async () => py;
   const loadOwner = async () => owner;
-  const sdk = await openAphrodyPython({ loadOwner });
-  const queued = Array.from({ length: 64 }, () => sdk.invoke("aphrody", "Something"));
-  await expect(sdk.invoke("aphrody", "Something")).rejects.toThrow("saturated");
+  const sdk = await openShenronPython({ loadOwner });
+  const queued = Array.from({ length: 64 }, () => sdk.invoke("shenron", "Something"));
+  await expect(sdk.invoke("shenron", "Something")).rejects.toThrow("saturated");
   const closing = sdk.close();
   expect(host.counts().closed).toBe(0);
   finish();

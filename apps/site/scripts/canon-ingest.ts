@@ -2,14 +2,14 @@
 /**
  * Ingestion continue du corpus de canonicité → `public.canon_references`.
  *
- * Remplace `canon-charge-aphrody.ts` et `canon-charge-planches.ts`, qui
+ * Remplace `canon-charge-shenron.ts` et `canon-charge-planches.ts`, qui
  * écrivaient les citations dans le blob JSON de `CanonConfig` (plafonné à 120
  * planches pour ne pas noyer l'éditeur). Ici chaque preuve est une LIGNE :
  * la page, l'API `/api/canon`, le MCP et l'éditeur lisent la table ; la
  * doctrine (rangs, règles, sujets tranchés) reste dans `CanonConfig`.
  *
  * Sources ingérées, toutes hébergées, aucune requête sortante :
- *   - `aphrody`   : déclarations d'Akira Toriyama du corpus local `.aphrody`
+ *   - `shenron`   : déclarations d'Akira Toriyama du corpus local `.shenron`
  *                   (interviews Daizenshuu, introductions des tankōbon, SEG…),
  *                   garde-fou `REFUSÉ` contre tout miroir de wiki de fans ;
  *   - `databooks` : toutes les planches de databooks transcrites ET traduites
@@ -39,7 +39,7 @@ import { homedir } from "node:os";
 import { readdir } from "node:fs/promises";
 import { slugCanon, type CanonReference } from "../src/lib/canon-engine";
 import { defautCertain } from "../src/lib/databooks-audit-traductions";
-import { DOCUMENTS, PARSEURS, REFUSÉ, motsCles, normaliser } from "./_aphrody-corpus";
+import { DOCUMENTS, PARSEURS, REFUSÉ, motsCles, normaliser } from "./_shenron-corpus";
 
 const args = process.argv.slice(2);
 const flag = (n: string) => args.includes(`--${n}`);
@@ -52,7 +52,7 @@ const BOUCLE = flag("boucle");
 const INTERVALLE = Math.max(60, Number(opt("intervalle", "900")) || 900);
 const SOURCE = opt("source", "toutes")!;
 
-type Provenance = "aphrody" | "databooks" | "manga";
+type Provenance = "shenron" | "databooks" | "manga";
 
 async function urlBase(): Promise<string> {
   const direct = process.env.DATABASE_URL?.trim();
@@ -74,8 +74,8 @@ async function urlBase(): Promise<string> {
 async function corpusDir(): Promise<string | null> {
   const candidats = [
     process.env.SHENRON_HOME,
-    join(homedir(), ".aphrody", "workspace"),
-    join(homedir(), ".aphrody", "workspaces", "dbfr"),
+    join(homedir(), ".shenron", "workspace"),
+    join(homedir(), ".shenron", "workspaces", "dbfr"),
   ].filter((c): c is string => Boolean(c));
   for (const base of candidats) {
     if (await Bun.file(join(base, "ai.json")).exists()) return join(base, "memory");
@@ -166,10 +166,10 @@ function hashDe(r: CanonReference): string {
 
 // ── Collecte ────────────────────────────────────────────────────────────────
 
-async function collecteAphrody(lexique: string[]): Promise<CanonReference[]> {
+async function collecteShenron(lexique: string[]): Promise<CanonReference[]> {
   const memoire = await corpusDir();
   if (!memoire) {
-    console.warn("corpus .aphrody introuvable, source ignorée");
+    console.warn("corpus .shenron introuvable, source ignorée");
     return [];
   }
   const fichiers = await readdir(memoire);
@@ -206,7 +206,7 @@ async function collecteAphrody(lexique: string[]): Promise<CanonReference[]> {
         ...(annee ? { year: annee } : {}),
         document: fichier,
         lang: doc.lang,
-        provenance: "aphrody",
+        provenance: "shenron",
       });
     }
   }
@@ -541,7 +541,7 @@ export async function ecrire(
   for (const id of [...plan.nouvelles, ...plan.modifiees]) {
     const { ref: r, hash } = parId.get(id)!;
     // `visible` n'est écrit qu'à l'insertion : le conflit ne le touche pas.
-    // Une traduction posée à la main sur une citation aphrody survit tant que
+    // Une traduction posée à la main sur une citation shenron survit tant que
     // le texte source n'a pas bougé (même hash) ; sinon elle est abandonnée.
     await db`
 			insert into public.canon_references
@@ -575,7 +575,7 @@ export async function ecrire(
 }
 
 /**
- * Première passe : les citations aphrody/databooks encore rangées dans le blob
+ * Première passe : les citations shenron/databooks encore rangées dans le blob
  * de `CanonConfig` en sont retirées (elles vivent désormais en table). Les
  * traductions manuelles qu'elles portaient sont reportées sur la ligne.
  */
@@ -614,7 +614,7 @@ async function migrerBlob(): Promise<void> {
 async function passe(): Promise<void> {
   const lexique = await lexiqueWiki();
   const sources: Provenance[] =
-    SOURCE === "toutes" ? ["aphrody", "databooks", "manga"] : [SOURCE as Provenance];
+    SOURCE === "toutes" ? ["shenron", "databooks", "manga"] : [SOURCE as Provenance];
   for (const source of sources) {
     const [run] = SIMULER
       ? [{ id: 0 }]
@@ -623,8 +623,8 @@ async function passe(): Promise<void> {
         }[]);
     try {
       const refs =
-        source === "aphrody"
-          ? await collecteAphrody(lexique)
+        source === "shenron"
+          ? await collecteShenron(lexique)
           : source === "databooks"
             ? await collecteDatabooks(lexique)
             : await collecteManga(lexique);

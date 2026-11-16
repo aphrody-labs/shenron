@@ -8,7 +8,7 @@ import { initApplicationCommandsSafe } from "@shenron/discord-kit";
 
 /**
  * LabSyncCron — Cron périodique de synchronisation et télémétrie des commandes
- * pour le laboratoire IA Aphrody (1554189180030947338).
+ * pour le laboratoire IA Shenron (1554189180030947338).
  */
 @Discord()
 @Bot("shenron")
@@ -26,21 +26,21 @@ export class LabSyncCronEvent {
 
     this.cron.register({
       name: "lab-guild-sync",
-      description: "Synchronisation périodique des commandes et état du laboratoire IA Aphrody",
+      description: "Synchronisation périodique des commandes et état du laboratoire IA Shenron",
       intervalMs: THIRTY_MINUTES_MS,
       fn: async () => {
         const labGuild = this.client.guilds.cache.get(SHENRON_DISCORD.guildId);
         if (!labGuild) {
           logger.debug(
             { guildId: SHENRON_DISCORD.guildId },
-            "[LabSyncCron] Guilde Aphrody non présente dans le cache — attente d'invitation",
+            "[LabSyncCron] Guilde Shenron non présente dans le cache — attente d'invitation",
           );
           return;
         }
 
         logger.info(
           { guildId: labGuild.id, memberCount: labGuild.memberCount },
-          "[LabSyncCron] Synchronisation des commandes sur le laboratoire Aphrody...",
+          "[LabSyncCron] Synchronisation des commandes sur le laboratoire Shenron...",
         );
 
         try {

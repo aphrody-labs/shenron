@@ -3,7 +3,7 @@
  * Internal (loopback) service endpoints shared by the bot, the site and the
  * pipeline. Each resolver keeps the historical variable names; the defaults
  * are the local development addresses and the one place in the workspace
- * allowed to spell them. Production values come from the aphrody-infra
+ * allowed to spell them. Production values come from the shenron-infra
  * service catalog through the environment.
  *
  * | service        | read order                      | default                   |
@@ -42,7 +42,7 @@ export const DEFAULT_INTERNAL_SERVICES = {
 
 /**
  * Model id of the direct OpenAI-compatible chat server when `SHENRON_AI_CHAT_MODEL` is unset:
- * Gemma 4 E2B instruct preloaded on the vps (aphrody-infra unit `aphrody-llama-gemma4`,
+ * Gemma 4 E2B instruct preloaded on the vps (shenron-infra unit `shenron-llama-gemma4`,
  * llama-server alias `gemma4-e2b`).
  */
 export const DIRECT_CHAT_MODEL_ID = "gemma4-e2b";

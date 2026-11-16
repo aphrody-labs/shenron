@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * TypeScript port of the `aphrody-shell-vfs` conformance suite (`crates/shell/vfs/src/conformance.rs`,
- * aphrody-labs/aphrody) run against `ShenronVfs`. The only divergence is the non-UTF-8 name case:
+ * TypeScript port of the `shenron-shell-vfs` conformance suite (`crates/shell/vfs/src/conformance.rs`,
+ * aphrody-labs/shenron) run against `ShenronVfs`. The only divergence is the non-UTF-8 name case:
  * SQLite TEXT paths are UTF-8, so the binary-name check uses a non-ASCII UTF-8 name instead.
  */
 import { Database } from "bun:sqlite";

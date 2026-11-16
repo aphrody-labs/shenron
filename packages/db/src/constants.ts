@@ -57,7 +57,7 @@ export type WikiCategoryName =
 
 /**
  * Public wiki categories in Shenron's canonical editorial/API order. The
- * Aphrody MCP mirrors the names for routing, but does not own these labels.
+ * Shenron MCP mirrors the names for routing, but does not own these labels.
  */
 export const WIKI_CATEGORIES: readonly {
   readonly name: WikiCategoryName;

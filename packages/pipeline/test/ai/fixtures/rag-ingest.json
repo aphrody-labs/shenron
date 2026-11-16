@@ -1,5 +1,5 @@
 {
-  "$source": "aphrody-ai/crates/aphrody-mcp/src/http_rest.rs:931",
+  "$source": "shenron-ai/crates/shenron-mcp/src/http_rest.rs:931",
   "$anchor": "\"indexed\": true",
   "route": "ragIngest",
   "schema": "IngestResponse",

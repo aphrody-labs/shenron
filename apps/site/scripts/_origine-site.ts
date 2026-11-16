@@ -3,7 +3,7 @@
  *
  * Les scripts d'ops (dépôt de transcriptions, corrections OCR) écrivent par
  * l'API du site en loopback. L'adresse canonique vient du catalogue
- * `aphrody-infra` (`127.0.0.1:5011`) ; les développeurs et tâches de preview
+ * `shenron-infra` (`127.0.0.1:5011`) ; les développeurs et tâches de preview
  * peuvent la remplacer par `SITE_INTERNAL_URL` ou `DATABOOKS_API_BASE`.
  */
 

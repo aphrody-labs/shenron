@@ -34,7 +34,7 @@ describe("agent homes of the desktop", () => {
     expect(homes.active().profile).toMatchObject({ language: "ja", timezone: "Asia/Tokyo" });
     const dir = homes.dirOf("local")!;
     expect(existsSync(join(dir, "SOUL.md"))).toBe(true);
-    expect(homes.memoryLocation("local")).toBe(join(dir, ".aphrody", "memory.sqlite"));
+    expect(homes.memoryLocation("local")).toBe(join(dir, ".shenron", "memory.sqlite"));
     expect(homes.memoryAliases(`discord:${ID}`)).toEqual(["local"]);
     expect(homes.dirOf(`discord:${ID}`)).toBeNull();
     expect(homes.dirOf("../etc")).toBeNull();

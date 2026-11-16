@@ -16,7 +16,7 @@ const SUBPATHS = [
   ...[
     "config",
     "wire",
-    "aphrody",
+    "shenron",
     "embeddings",
     "chat",
     "provider",
@@ -76,7 +76,7 @@ describe("@shenron/pipeline/ai manifest", () => {
       expect(source).not.toMatch(/from\s+["'](?:node:|bun(?::|["']))/);
       expect(source).not.toMatch(/\bprocess\.|\bBun\.|\bimport\.meta\b/);
       expect(source).not.toMatch(
-        /@shenron\/(?:pipeline\/aphrody|db)|sqlite|redis|@huggingface/i,
+        /@shenron\/(?:pipeline\/shenron|db)|sqlite|redis|@huggingface/i,
       );
       expect(source).not.toMatch(/127\.0\.0\.1|localhost/);
       const mod = (await import(file)) as Record<string, unknown>;

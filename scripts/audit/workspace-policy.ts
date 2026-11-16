@@ -39,7 +39,7 @@ export function protectedPackagePath(path: string): boolean {
         "..",
         ".env",
         ".git",
-        ".aphrody",
+        ".shenron",
         ".codex",
         ".claude",
         "cookies",

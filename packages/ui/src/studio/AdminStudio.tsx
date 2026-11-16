@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Shenron administration: the complete admin dashboard opens in its own native window
-// (`studio_open_shenron_admin`), where `window.aphrodyNative` reaches the desktop's local
+// (`studio_open_shenron_admin`), where `window.shenronNative` reaches the desktop's local
 // models (`studio_native_*`, crates/shenron-studio/src/studio.rs). Outside the desktop app the
 // dashboard opens in place.
 import { useCallback, useEffect, useState } from "react";

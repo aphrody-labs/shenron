@@ -1,5 +1,5 @@
 {
-  "$source": "aphrody-ai/crates/aphrody-mcp/src/http_rest.rs:1016",
+  "$source": "shenron-ai/crates/shenron-mcp/src/http_rest.rs:1016",
   "$anchor": "\"retired\"",
   "route": "ragSyncFinish",
   "schema": "SyncFinishResponse",

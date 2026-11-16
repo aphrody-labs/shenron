@@ -12,8 +12,8 @@ const PKG = Bun.fileURLToPath(new URL("..", import.meta.url));
 
 /** Upper bound: every entry excluded when the gate was introduced. */
 const BASELINE = [
-  "scripts/_aphrody-remote-ocr.test.ts",
-  "scripts/_rag-aphrody-sync.live.test.ts",
+  "scripts/_shenron-remote-ocr.test.ts",
+  "scripts/_rag-shenron-sync.live.test.ts",
   "scripts/crawl-guides.ts",
   "scripts/ingest-databooks-rag.ts",
   "scripts/rag-harvest.ts",
@@ -26,7 +26,7 @@ const MUST_BE_CHECKED = [
   "scripts/rag-build.ts",
   "scripts/rag-embed-vectors.ts",
   "scripts/rag-lexique.ts",
-  "scripts/ingest-aphrody-rag.ts",
+  "scripts/ingest-shenron-rag.ts",
   "scripts/rag-resync-entites.ts",
   "scripts/rag-status.ts",
   "scripts/lib/script-env.ts",

@@ -75,7 +75,7 @@ describe("protection du lexique — cas « Capsule Cell Corporation »", () => {
     expect([...table.values()]).toEqual(["Cell"]);
   });
 
-  test("un marqueur Aphrody à largeur fixe reste restaurable avant un chiffre", () => {
+  test("un marqueur Shenron à largeur fixe reste restaurable avant un chiffre", () => {
     const { masque, table } = protegerTermes(
       "超サイヤ人3",
       [{ ja: "サイヤ人", fr: "Saiyan", kind: "race" }],

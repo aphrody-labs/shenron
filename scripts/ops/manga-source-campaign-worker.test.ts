@@ -22,7 +22,7 @@ async function config(): Promise<CampaignWorkerConfig> {
     schema: "shenron-manga-source-worker/v1",
     job,
     campaignConfig: join(job, "campaign.json"),
-    aphrody: "/qualified/aphrody",
+    shenron: "/qualified/shenron",
     sources: ["official", "publisher"],
     maxRequests: 128,
     dailyRequestBudget: 256,
@@ -94,7 +94,7 @@ test("native collection and private indexing preserve one output and record publ
   };
   const r = await workerCycle(c, ports, new AbortController().signal);
   expect(commands).toHaveLength(2);
-  expect(commands[0]![0]).toBe(c.aphrody);
+  expect(commands[0]![0]).toBe(c.shenron);
   expect(commands[0]).not.toContain("sudo");
   expect(commands[0]).toContain(c.campaignConfig);
   expect(commands[1]).toContain("index");

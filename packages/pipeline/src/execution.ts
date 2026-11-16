@@ -32,9 +32,9 @@ async function defaultRunner(
 ): Promise<CommandOutput> {
   const program = command[0];
   if (!program) throw new Error("A pipeline command requires a program");
-  if (/(?:^|[/\\])aphrody(?:\.exe)?$/.test(program)) {
-    const { runAphrodyCommand } = await import("./aphrody/native-commands");
-    const result = await runAphrodyCommand(command.slice(1), {
+  if (/(?:^|[/\\])shenron(?:\.exe)?$/.test(program)) {
+    const { runShenronCommand } = await import("./shenron/native-commands");
+    const result = await runShenronCommand(command.slice(1), {
       timeoutMs: controls.timeoutMs ?? 1_800_000,
       signal: controls.signal,
     });

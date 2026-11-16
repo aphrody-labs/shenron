@@ -3,7 +3,7 @@
  * publication du forum (`scripts/forum-anime.ts`) et par le handler qui répond
  * aux clics (`commands/wiki/ForumEpisodes.ts`).
  *
- * Parti pris repris de `@aphrody/wonderbot` (`src/forum.ts`) : le menu remplace
+ * Parti pris repris de `@shenron/wonderbot` (`src/forum.ts`) : le menu remplace
  * la liste de liens. Un fil de saga porte jusqu'à des dizaines d'épisodes ; les
  * lister tous avec leurs lecteurs déborde des 4 096 signes d'une description et
  * des 6 000 signes d'un message. Un membre choisit son épisode, le bot lui

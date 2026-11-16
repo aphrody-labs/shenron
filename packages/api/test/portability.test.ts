@@ -119,7 +119,7 @@ describe("@shenron/api manifest", () => {
     for (const key of ["./server", "./next"]) {
       const offending = bareImports(key).filter(
         ({ specifier, typeOnly }) =>
-          /^(?:next(?:\/|$)|server-only$|tsyringe$|@aphrody\/di$|discord\.js$)/.test(specifier) ||
+          /^(?:next(?:\/|$)|server-only$|tsyringe$|@shenron\/di$|discord\.js$)/.test(specifier) ||
           (!typeOnly && /^bun(?::|$)/.test(specifier)),
       );
       expect(offending).toEqual([]);

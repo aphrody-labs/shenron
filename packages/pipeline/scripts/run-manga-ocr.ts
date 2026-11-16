@@ -8,7 +8,7 @@
  *   4. seules les revues confirmées par les deux lectures deviennent déposables.
  *
  * Un verrou interdit deux consommateurs simultanés. Les détections et revues
- * sont deux JSONL distincts, normalisés avec sauvegarde avant reprise. Aphrody
+ * sont deux JSONL distincts, normalisés avec sauvegarde avant reprise. Shenron
  * audite le JSONL final ; le dépôt réapplique ensuite les gardes de revue.
  *
  * Usage :
@@ -24,7 +24,7 @@ import { resolveVisionModel } from "@shenron/pipeline/ai/config";
 import {
   recogniseRemotePage,
   reviewRemoteImage,
-} from "@shenron/pipeline/aphrody/remote-ocr";
+} from "@shenron/pipeline/shenron/remote-ocr";
 import {
   atomicWriteJson,
   atomicWriteText,
@@ -63,7 +63,7 @@ const integer = (name: string, fallback: number, min: number, max: number): numb
 
 const BOT_ROOT = join(import.meta.dir, "..");
 const ROOT = resolve(option("root") ?? join(BOT_ROOT, "..", "..", "data", "manga-ocr"));
-const APHRODY = option("aphrody") ?? "aphrody";
+const SHENRON = option("shenron") ?? "shenron";
 const PP_MODEL = option("pp-model") ?? "ppocr-v5-mobile";
 // SHENRON_AI_VISION_MODEL, puis l'alias hérité ; défaut gemini-web/flash (résolveur unique).
 const REVIEW_MODEL = resolveVisionModel(process.env);
@@ -288,7 +288,7 @@ function imageMime(path: string): "image/jpeg" | "image/png" | "image/webp" {
   throw new Error(`format d'image non supporté: ${extension}`);
 }
 
-async function reviewWithAphrody(
+async function reviewWithShenron(
   imagePath: string,
   pageId: string,
   detection: MangaOcrDetectionLine,
@@ -327,7 +327,7 @@ Une adaptation latine lisible comme « CRAAK » n'autorise jamais à ignorer les
 Ne traduis rien, ne complète rien par connaissance de Dragon Ball, ne décris pas les personnages et ne propose pas une nouvelle transcription complète. pageId doit être exactement ${pageId}. Réponds uniquement selon le schéma JSON fourni.`;
 }
 
-async function auditCoverageWithAphrody(
+async function auditCoverageWithShenron(
   result: MangaOcrResultLine,
   imagePath: string,
   pageId: string,
@@ -500,7 +500,7 @@ try {
           await appendFile(detectionsPath, `${JSON.stringify(detection)}\n`, "utf8");
           detections.set(key, detection);
         }
-        const primary = await reviewWithAphrody(
+        const primary = await reviewWithShenron(
           imagePath,
           entry.id,
           detection,
@@ -509,7 +509,7 @@ try {
         const result =
           primary.review?.decision === "needs_human"
             ? primary
-            : await auditCoverageWithAphrody(
+            : await auditCoverageWithShenron(
                 primary,
                 imagePath,
                 entry.id,
@@ -532,7 +532,7 @@ try {
       });
       const auditPath = join(lotRoot, "audit.json");
       state.auditExitCode = await runCommand(
-        [APHRODY, "ocr", "audit", resultsPath, "--json", "--out", auditPath],
+        [SHENRON, "ocr", "audit", resultsPath, "--json", "--out", auditPath],
         lotRoot,
       );
       if (state.auditExitCode !== 0)

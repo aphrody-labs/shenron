@@ -27,7 +27,7 @@ if [[ -z "$key_b64" || ( -z "$vps" && -z "$dbfr" ) ]]; then
 fi
 umask 077
 mkdir -p "$HOME/.ssh"
-key="$HOME/.ssh/aphrody_hosts"
+key="$HOME/.ssh/shenron_hosts"
 printf '%s' "$key_b64" | base64 -d >"$key" 2>/dev/null && chmod 600 "$key" || {
   echo "cloud-ssh: SHENRON_SSH_KEY_B64 is not valid base64"
   exit 0
@@ -41,9 +41,9 @@ host_block() { # alias address user port
   printf '    ControlPath ~/.ssh/cm/%%C\n    ControlPersist 8h\n'
 }
 mkdir -p "$HOME/.ssh/cm"
-if ! grep -q '# aphrody-hosts' "$config" 2>/dev/null; then
+if ! grep -q '# shenron-hosts' "$config" 2>/dev/null; then
   {
-    echo "# aphrody-hosts"
+    echo "# shenron-hosts"
     [[ -z "$vps" ]] || host_block vps "$vps" "$user" 22
     [[ -z "$dbfr" ]] || host_block dbfr "$dbfr" "$user" 22
     [[ -z "${SHENRON_WSL_HOST:-}" ]] || host_block wsl "$SHENRON_WSL_HOST" "${SHENRON_WSL_USER:-aphro}" "${SHENRON_WSL_PORT:-22}"

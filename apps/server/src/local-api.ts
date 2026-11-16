@@ -11,7 +11,7 @@
  *                                         loopback-only OpenAI-compatible local chat model
  *   GET /api/local/models                 managed chat models and their state; POST
  *   /api/local/models/{id}/install|import download Gemma 4 E2B, import the adapter (./chat-model.ts)
- *   GET /api/local/ai/catalog              Aphrody's host catalog and installed coding agents
+ *   GET /api/local/ai/catalog              Shenron's host catalog and installed coding agents
  *   POST /api/local/koharu/candidates      submit a Koharu result to the local Shenron catalog
  *   GET /api/local/rag/search?q=&limit=&kind=
  *                                         offline Shenron corpus (embedded canon and guide, the
@@ -147,11 +147,11 @@ async function koharuSearch(
   }
 }
 
-async function aphrodyHostCatalog(): Promise<Record<string, unknown>> {
-  const aphrody = Bun.which("aphrody");
-  const command = aphrody ? [aphrody, "model", "catalog", "--json"] : null;
+async function shenronHostCatalog(): Promise<Record<string, unknown>> {
+  const shenron = Bun.which("shenron");
+  const command = shenron ? [shenron, "model", "catalog", "--json"] : null;
   let models: unknown[] = [];
-  let error: string | null = command ? null : "aphrody CLI introuvable";
+  let error: string | null = command ? null : "shenron CLI introuvable";
   if (command) {
     const child = Bun.spawn(command, { stdout: "pipe", stderr: "pipe", windowsHide: true });
     const timeout = setTimeout(() => child.kill(), 10_000);
@@ -164,7 +164,7 @@ async function aphrodyHostCatalog(): Promise<Record<string, unknown>> {
       if (code === 0) {
         const parsed = JSON.parse(stdout) as { entries?: unknown };
         models = Array.isArray(parsed.entries) ? parsed.entries : [];
-      } else error = stderr.trim() || `aphrody exited ${code}`;
+      } else error = stderr.trim() || `shenron exited ${code}`;
     } catch (cause) {
       error = cause instanceof Error ? cause.message : String(cause);
     } finally {
@@ -177,11 +177,11 @@ async function aphrodyHostCatalog(): Promise<Record<string, unknown>> {
       return path ? [{ id: name, path }] : [];
     });
   return {
-    source: "aphrody",
+    source: "shenron",
     models,
     ...(error ? { error } : {}),
     agents: {
-      aphrodyCodex: Boolean(Bun.which("aphrody")),
+      shenronCodex: Boolean(Bun.which("shenron")),
       installed: installed(["claude", "codex", "agy", "agycli", "antigravity"]),
     },
   };
@@ -266,7 +266,7 @@ export function localApi(
     if (url.pathname === "/api/local/ai/catalog" && request.method === "GET") {
       if (peer && !/^127\.0\.0\.1$|^::1$/.test(peer))
         return Response.json({ error: "loopback_only" }, { status: 403, headers });
-      return Response.json(await aphrodyHostCatalog(), { headers });
+      return Response.json(await shenronHostCatalog(), { headers });
     }
     if (url.pathname === "/api/local/koharu/candidates" && request.method === "POST") {
       if (peer && !/^127\.0\.0\.1$|^::1$/.test(peer))

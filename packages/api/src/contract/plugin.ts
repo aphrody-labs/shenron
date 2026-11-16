@@ -31,7 +31,7 @@ export const PluginIndexResponse = z
     install: z.object({
       claude: z.string(),
       agy: z.string(),
-      /** One prompt that makes agy install and configure everything (Aphrody, plugin, MCP, agent home). */
+      /** One prompt that makes agy install and configure everything (Shenron, plugin, MCP, agent home). */
       agyPrompt: z.string(),
       /** `agy -i "$(curl …agy.md)"`. */
       agyFull: z.string(),

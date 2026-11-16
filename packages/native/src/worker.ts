@@ -189,7 +189,7 @@ export class ShenronWorkerPool {
     }, options.signal);
   }
 
-  /** Search the serving RAG (bot or Aphrody backend), normalised by the library. */
+  /** Search the serving RAG (bot or Shenron backend), normalised by the library. */
   ragSearch(query: string, options: SearchCallOptions = {}): Promise<RagSearchResponse> {
     return this.#call(() => {
       const limit = options.limit ?? 10;
@@ -256,7 +256,7 @@ export class ShenronWorkerPool {
   }
 
   /**
-   * Make the chat model files of `request` present (Aphrody local chat provisioning: catalog,
+   * Make the chat model files of `request` present (Shenron local chat provisioning: catalog,
    * resumed and digest-checked transfers). `onProgress` receives the latest progress every
    * `progressMs` (default 500) while the transfer runs; aborting stops it (resumable).
    */

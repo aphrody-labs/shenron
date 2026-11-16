@@ -77,7 +77,7 @@ async function cmdBuild(allInOne: boolean) {
 async function cmdUp(allInOne: boolean, isProd: boolean) {
   if (isProd) {
     throw new Error(
-      "Production containers are activated by the Aphrody Infra release adapter, not from a local checkout.",
+      "Production containers are activated by the Shenron Infra release adapter, not from a local checkout.",
     );
   }
   const secrets = await prepareContainerSecrets({ isProd: false });
@@ -275,7 +275,7 @@ async function main() {
     case "db-init":
       const report = await initContainerDatabases({ dryRun: true });
       console.log(JSON.stringify(report, null, 2));
-      console.log("Dry run only; apply database changes through Aphrody Infra.");
+      console.log("Dry run only; apply database changes through Shenron Infra.");
       break;
     case "ovh":
       const ovhReport = await runOvhChecks();

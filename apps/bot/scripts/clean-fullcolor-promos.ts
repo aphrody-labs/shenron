@@ -4,7 +4,7 @@
  * blanches. C'est exactement le « renvoi sur un autre site » que l'utilisateur
  * ne veut pas voir.
  *
- * Détection conservatrice par OCR Aphrody :
+ * Détection conservatrice par OCR Shenron :
  *   - pub      : texte contient « sushiscan » OU (« lisez » & « chapitres »)
  *   - crédits  : « lettering » / « translator » / « traduction » / « interior »
  *   - blanche  : image quasi uniforme blanche (mean > 250, stdev < 4)
@@ -21,7 +21,7 @@ import postgres from "postgres";
 import sharp from "sharp";
 import { unlink } from "node:fs/promises";
 import { join } from "node:path";
-import { recogniseRemotePage } from "@shenron/pipeline/aphrody/remote-ocr";
+import { recogniseRemotePage } from "@shenron/pipeline/shenron/remote-ocr";
 
 const NEON_URL = process.env.DATABASE_URL;
 if (!NEON_URL) {
@@ -41,7 +41,7 @@ async function ocr(absPath: string): Promise<string> {
   const png = await sharp(absPath).resize(1100).png().toBuffer();
   const result = await recogniseRemotePage(new Uint8Array(png));
   if (result.suspect || result.quality.mean_confidence < 0.8) {
-    throw new Error("Aphrody OCR requires review before removing a page");
+    throw new Error("Shenron OCR requires review before removing a page");
   }
   return result.text.toLowerCase().replace(/\s+/g, " ");
 }

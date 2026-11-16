@@ -26,7 +26,7 @@ export interface ShenronHealth {
   status: "operational" | "degraded";
   site: ShenronProbe;
   bot: ShenronProbe;
-  aphrody_ai_http: ShenronProbe;
+  shenron_ai_http: ShenronProbe;
   serving_rag: {
     reachable: boolean;
     ready: boolean;

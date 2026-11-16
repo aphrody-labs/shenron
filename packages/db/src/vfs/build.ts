@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Builders of the Shenron VFS database (used by `scripts/data/build-vfs.ts`): RAG export from
- * the Aphrody RAG store (PostgreSQL `aphrody_ai`), wiki export through the public read
+ * the Shenron RAG store (PostgreSQL `shenron_ai`), wiki export through the public read
  * repository, agent home and data files, asset index (local trees and CDN-only assets) and
  * the generated entry module that embeds the database and the selected assets in a compiled
  * binary. Runtime class: `bun`.
@@ -24,7 +24,7 @@ import { writeWikiRows } from "./wiki";
 
 export type VectorMode = "f32" | "i8" | "none";
 
-/** Origin sources of the Aphrody RAG corpus rendered from content public on dragonballfr.com. */
+/** Origin sources of the Shenron RAG corpus rendered from content public on dragonballfr.com. */
 export const PUBLIC_RAG_SOURCES: ReadonlySet<string> = new Set([
   "wiki_pages",
   "databooks",
@@ -86,7 +86,7 @@ export interface RagWriter {
   finish(): void;
 }
 
-/** Writer of RAG rows into the aphrody-rag tables of a VFS database (one transaction per batch). */
+/** Writer of RAG rows into the shenron-rag tables of a VFS database (one transaction per batch). */
 export function createRagWriter(db: Database, vectors: VectorMode): RagWriter {
   const insertDoc = db.query(
     `INSERT INTO docs (path, hash, title, language, mtime_ms, size_bytes) VALUES (?, ?, ?, ?, ?, ?)
@@ -202,7 +202,7 @@ export interface SqlLike {
   unsafe(query: string, params?: unknown[]): Promise<unknown[]>;
 }
 
-/** Stream the Aphrody RAG store (keyset pages) into the VFS, filtered by profile. */
+/** Stream the Shenron RAG store (keyset pages) into the VFS, filtered by profile. */
 export async function exportRag(
   sql: SqlLike,
   db: Database,
@@ -231,8 +231,8 @@ export async function exportRag(
     const rows = (await sql.unsafe(
       `SELECT d.id::text AS id, d.corpus, d.entity_id, d.title, d.url, d.content, d.metadata, d.updated_at,
               ${o.vectors === "none" ? "NULL" : "v.embedding::text"} AS embedding, v.model
-       FROM aphrody_ai.aphrody_rag_documents d
-       LEFT JOIN aphrody_ai.aphrody_shenron_vectors v ON v.document_id = d.id
+       FROM shenron_ai.shenron_rag_documents d
+       LEFT JOIN shenron_ai.shenron_vectors v ON v.document_id = d.id
        WHERE d.id > $1::uuid ORDER BY d.id LIMIT $2`,
       [after, page],
     )) as (RagRow & { id: string })[];

@@ -4,11 +4,11 @@
  *
  * Runtime class: `pure`.
  *
- * Single transport: Aphrody `POST /api/v1/shenron/embed` (Bearer token of
- * `aphrody-ai-http`). The server adds the E5 prefix, so the client adds NONE.
+ * Single transport: Shenron `POST /api/v1/shenron/embed` (Bearer token of
+ * `shenron-ai-http`). The server adds the E5 prefix, so the client adds NONE.
  * Whitespace is collapsed, at most 16 inputs go per call, sequentially, and
  * count, 384 dimensions and finite values are checked. The former E5-direct
- * sidecar transport (`aphrody-shenron-embed` `/v1/embeddings`) is removed: a
+ * sidecar transport (`shenron-embed` `/v1/embeddings`) is removed: a
  * configured direct embedder URL is ignored with a one-time warning.
  */
 import {
@@ -23,10 +23,10 @@ import {
   type AiFailure,
   AiFailureError,
   type AiResult,
-  type AphrodyCompute,
+  type ShenronCompute,
   collapseWhitespace,
-  createAphrodyCompute,
-} from "./aphrody";
+  createShenronCompute,
+} from "./shenron";
 import {
   type AiConfig,
   requireAiHttpToken,
@@ -64,10 +64,10 @@ function assertVectors(embeddings: readonly unknown[], expected: number): void {
 }
 
 /** Model on `/api/v1/shenron/embed`. No client prefix: the server adds it. */
-export function aphrodyEmbeddingModel(compute: AphrodyCompute, kind: EmbedKind): EmbeddingModelV4 {
+export function shenronEmbeddingModel(compute: ShenronCompute, kind: EmbedKind): EmbeddingModelV4 {
   return {
     specificationVersion: "v4",
-    provider: "aphrody.shenron",
+    provider: "shenron",
     modelId: SHENRON_E5.modelId,
     maxEmbeddingsPerCall: SHENRON_E5.maxInputs,
     supportsParallelCalls: false,
@@ -126,11 +126,11 @@ export function e5Middleware(kind: EmbedKind): EmbeddingModelV4Middleware {
 }
 
 /**
- * Embedding model on Aphrody `/api/v1/shenron/embed`, resolved from `env`
+ * Embedding model on Shenron `/api/v1/shenron/embed`, resolved from `env`
  * (`SHENRON_AI_HTTP_URL` / `SHENRON_AI_HTTP_TOKEN` or their aliases). The name
  * is kept for existing callers; the former direct sidecar transport is gone,
  * so `e5.baseUrl` and any direct embedder variable are ignored (one warning).
- * Throws an `AiConfigError` naming the variables when Aphrody is not configured.
+ * Throws an `AiConfigError` naming the variables when Shenron is not configured.
  */
 export function e5DirectEmbeddingModel(
   e5: { baseUrl?: URL | string } | null | undefined,
@@ -142,21 +142,21 @@ export function e5DirectEmbeddingModel(
   warnIgnoredEmbedBaseUrl(
     e5?.baseUrl !== undefined ? { ...env, SHENRON_AI_EMBED_BASE_URL: String(e5.baseUrl) } : env,
   );
-  const compute = createAphrodyCompute(
+  const compute = createShenronCompute(
     { baseUrl: requireAiHttpUrl(env), token: requireAiHttpToken(env) },
     o.fetch ? { fetch: o.fetch } : {},
   );
-  return aphrodyEmbeddingModel(compute, kind);
+  return shenronEmbeddingModel(compute, kind);
 }
 
 /** Model chosen by configuration (D10); `null` when embeddings are disabled. */
 export function selectEmbeddingModel(
   cfg: Pick<AiConfig, "embed">,
   kind: EmbedKind,
-  deps: { compute: AphrodyCompute | null; fetch?: typeof fetch },
+  deps: { compute: ShenronCompute | null; fetch?: typeof fetch },
 ): EmbeddingModelV4 | null {
   if (!cfg.embed || !deps.compute) return null;
-  return aphrodyEmbeddingModel(deps.compute, kind);
+  return shenronEmbeddingModel(deps.compute, kind);
 }
 
 function findCause<T>(error: unknown, test: (e: unknown) => e is T): T | undefined {

@@ -4,7 +4,7 @@
  * `GET /api/local/health`, answered before the front app on the same origin. Outside the
  * public OpenAPI document (a local route, never proxied by the site). `groups` says which API
  * groups of this contract the server answers right now; a missing capability (no VFS, no chat
- * model, no `aphrody` for the OCR, no `shenron-mcp`) is `available: false` with a short French
+ * model, no `shenron` for the OCR, no `shenron-mcp`) is `available: false` with a short French
  * `reason`, never an internal path or a secret.
  *
  * Runtime class: `pure`.

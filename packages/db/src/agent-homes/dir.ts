@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Agent homes as directories, the native layout of `aphrody-agent-home` (what `aphrody home`
+ * Agent homes as directories, the native layout of `shenron-agent-home` (what `shenron home`
  * and its `AgentHome::open` read): `<root>/<dir>/` holds the seven documents, `memory/`,
- * `skills/` and `.aphrody/workspace-state.json` (schema v1; `setup_completed_at` set, since the
+ * `skills/` and `.shenron/workspace-state.json` (schema v1; `setup_completed_at` set, since the
  * instance is personalised at creation and needs no BOOTSTRAP ritual). `<dir>` is the
  * sanitised id (`discord-<user_id>`, `local`). The user's fields, `updated_at` and the
  * template revision live in the `USER.md` frontmatter. Writes go through a temporary file and
@@ -35,8 +35,8 @@ import {
   splitFrontmatter,
 } from "./types";
 
-/** `aphrody-agent-home` WORKSPACE_STATE_DIRNAME / WORKSPACE_STATE_FILENAME / version. */
-export const WORKSPACE_STATE = { dir: ".aphrody", file: "workspace-state.json", version: 1 };
+/** `shenron-agent-home` WORKSPACE_STATE_DIRNAME / WORKSPACE_STATE_FILENAME / version. */
+export const WORKSPACE_STATE = { dir: ".shenron", file: "workspace-state.json", version: 1 };
 
 export class DirAgentHomeStore implements AgentHomeStore {
   constructor(readonly root: string) {}

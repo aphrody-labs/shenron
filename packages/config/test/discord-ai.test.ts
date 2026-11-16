@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { SHENRON_DISCORD, guildAiPrompt, resolveDiscordAi } from "../src/discord-ai";
 
-describe("Aphrody Discord migration", () => {
+describe("Shenron Discord migration", () => {
   const message = {
     guildId: SHENRON_DISCORD.guildId,
     channelId: SHENRON_DISCORD.generalChannelId,
@@ -38,7 +38,7 @@ describe("Aphrody Discord migration", () => {
       expect(guildAiPrompt({ ...message, ...change }, botId, {})).toBeUndefined();
   });
 
-  test("accepts messages across admitted multi-guild setup in Aphrody lab channels", () => {
+  test("accepts messages across admitted multi-guild setup in Shenron lab channels", () => {
     const multiGuildEnv = {
       GUILD_ID: "934894610545770506",
       ADDITIONAL_GUILD_IDS: SHENRON_DISCORD.guildId,

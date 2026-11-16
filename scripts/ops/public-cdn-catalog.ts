@@ -72,7 +72,7 @@ export function validateAssetPath(path: string): void {
           !part ||
           part === "." ||
           part === ".." ||
-          /^(?:_objects|_migration|private|cookies|node_modules|\.ssh|\.git|\.codex|\.claude|\.aphrody|\.env(?:\..*)?)$/i.test(
+          /^(?:_objects|_migration|private|cookies|node_modules|\.ssh|\.git|\.codex|\.claude|\.shenron|\.env(?:\..*)?)$/i.test(
             part,
           ),
       )

@@ -46,8 +46,8 @@ transformations, fiches de personnages, texte des databooks, planches du manga) 
 ## Installation dans Antigravity (`agy`)
 
 Tout en une commande : agy suit le prompt `install/agy.md` (servi à
-`https://dragonballfr.com/agy.md`) et installe ou met à jour Aphrody, ce plugin, le MCP
-Aphrody et l'agent home Shenron (`agent-home/` de l'archive, copié dans `~/.gemini/shenron/`
+`https://dragonballfr.com/agy.md`) et installe ou met à jour Shenron, ce plugin, le MCP
+Shenron et l'agent home Shenron (`agent-home/` de l'archive, copié dans `~/.gemini/shenron/`
 et importé par un bloc délimité de `~/.gemini/GEMINI.md`). La relancer met tout à jour.
 
 ```sh

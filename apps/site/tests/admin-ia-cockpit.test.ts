@@ -12,7 +12,7 @@ import {
 // the bot SQLite database any more; it reads its sources through
 // `ia-cockpit-server` and delegates writes to the bot API.
 //
-// Retrieval is out of scope here, and nothing fakes it: the Aphrody RAG and the manga search
+// Retrieval is out of scope here, and nothing fakes it: the Shenron RAG and the manga search
 // are guarded, so a test that reaches them fails instead of receiving invented hits. Their
 // runtime coverage (search, probe, evaluation, failures) is admin-ia-rag-live.test.ts, which
 // runs on the preloaded Shenron PostgreSQL/E5/Redis services.
@@ -119,9 +119,9 @@ const notExercised = (label: string) =>
 
 function fakeFetchers(): IaCockpitFetchers {
   return {
-    aphrodyHealth: notExercised("Aphrody AI — santé"),
-    aphrodyRagStats: notExercised("Aphrody RAG — statistiques"),
-    aphrodyRagProbe: notExercised("Aphrody RAG — sonde"),
+    shenronHealth: notExercised("Shenron AI — santé"),
+    shenronRagStats: notExercised("Shenron RAG — statistiques"),
+    shenronRagProbe: notExercised("Shenron RAG — sonde"),
     yoloWeb: unconfigured("YOLO WEB — crawl", "YOLO_WEB_CLI absent de l'environnement du site"),
     botRag: notExercised("Bot Shenron — index local"),
     evalHistory: ok("Historique", []),
@@ -137,7 +137,7 @@ mock.module("@/lib/ia-cockpit-server", () => ({
   CockpitActionError: FakeCockpitActionError,
   currentRagBackend: () => backend,
   createIaCockpitFetchers: fakeFetchers,
-  runAphrodyOcr: async (image: string, language: string) => ({
+  runShenronOcr: async (image: string, language: string) => ({
     text: `${language}:${image.slice(0, 4)}`,
   }),
   searchConfiguredRag: retrievalOutOfScope("searchConfiguredRag"),
@@ -221,16 +221,16 @@ describe("Cockpit Admin IA — route /api/admin/ai", () => {
       raw: null,
       engine: "Bot Shenron (index local)",
     });
-    for (const key of ["aphrodyHealth", "aphrodyRagStats", "aphrodyRagProbe", "botRag"]) {
+    for (const key of ["shenronHealth", "shenronRagStats", "shenronRagProbe", "botRag"]) {
       expect(json.sources[key]).toMatchObject({ status: "unconfigured", data: null });
     }
     expect(json.sources.yoloWeb).toMatchObject({ status: "unconfigured", data: null });
     expect(json.sources.goldSet).toMatchObject({ status: "ok", data: { cases: 3 } });
     expect(json.summary.status).toBe("degraded");
     expect(json.summary.failing.map((f: { key: string }) => f.key)).toEqual([
-      "aphrodyHealth",
-      "aphrodyRagStats",
-      "aphrodyRagProbe",
+      "shenronHealth",
+      "shenronRagStats",
+      "shenronRagProbe",
       "yoloWeb",
       "botRag",
     ]);
@@ -354,13 +354,13 @@ describe("Cockpit Admin IA — route /api/admin/ai", () => {
     expect(source.split("revalidatePath(").length - 1).toBe(2);
   });
 
-  test("ocr_probe délègue l'image et la langue à runAphrodyOcr (substitut hermétique, hors récupération)", async () => {
+  test("ocr_probe délègue l'image et la langue à runShenronOcr (substitut hermétique, hors récupération)", async () => {
     const json = await (
       await post({ action: "ocr_probe", imageBase64: "aW1n", language: "ja" })
     ).json();
     expect(json).toMatchObject({
       ok: true,
-      engine: "Aphrody AI",
+      engine: "Shenron AI",
       language: "ja",
       result: { text: "ja:aW1n" },
     });

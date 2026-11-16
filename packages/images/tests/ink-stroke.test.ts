@@ -8,7 +8,7 @@ import { measureInkStroke } from "../src/ink-stroke";
 const dir = mkdtempSync(join(tmpdir(), "ink-stroke-"));
 afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
-/** Verbatim copy of the former AphrodyNativeBridge.measureInkStroke body (reference). */
+/** Verbatim copy of the former ShenronNativeBridge.measureInkStroke body (reference). */
 async function legacyMeasure(imagePath: string) {
   const { data, info } = await sharp(imagePath).raw().toBuffer({ resolveWithObject: true });
   const W = info.width;

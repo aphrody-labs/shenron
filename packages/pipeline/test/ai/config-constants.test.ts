@@ -4,7 +4,7 @@ import { SHENRON_E5 } from "../../src/ai/config";
 import { SHENRON_E5 as fromRoot, PROMPT_VERSION } from "../../src/ai/index";
 
 describe("SHENRON_E5", () => {
-  test("matches the embedder served by aphrody-shenron-embed", () => {
+  test("matches the embedder served by shenron-embed", () => {
     expect(SHENRON_E5).toEqual({
       modelId: "Xenova/multilingual-e5-small",
       dimensions: 384,

@@ -2,7 +2,7 @@
 /**
  * route.ts — Route API A2A de Dragon Ball FR (Next.js 16 App Router).
  *
- * Avec `SHENRON_A2A_URL` : proxy mince vers le serveur A2A Rust (`aphrody a2a serve`) ; amont
+ * Avec `SHENRON_A2A_URL` : proxy mince vers le serveur A2A Rust (`shenron a2a serve`) ; amont
  * injoignable : 502 `a2a_upstream_unreachable`. Sans lui (production) : le hub Shenron en
  * processus répond (`@/lib/a2a-hub`), dialecte historique et A2A 1.0 (`SendMessage`, `GetTask`,
  * `ListTasks`), stockage durable sous `A2A_COORD_DIR`.

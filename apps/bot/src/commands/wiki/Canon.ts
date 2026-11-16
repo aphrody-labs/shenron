@@ -39,7 +39,7 @@ import {
  */
 
 const PROVENANCE_LABEL: Record<CanonReference["provenance"], string> = {
-  aphrody: "déclaration d'auteur",
+  shenron: "déclaration d'auteur",
   databooks: "planche de databook",
   manga: "manga original",
   manuel: "saisie par l'équipe",
@@ -391,7 +391,7 @@ export class CanonCommands {
       maxLength: 100,
     })
     terme: string,
-    @SlashChoice({ name: "Déclarations d'auteur (interviews, préfaces)", value: "aphrody" })
+    @SlashChoice({ name: "Déclarations d'auteur (interviews, préfaces)", value: "shenron" })
     @SlashChoice({ name: "Planches de databooks traduites", value: "databooks" })
     @SlashOption({
       name: "provenance",

@@ -11,7 +11,7 @@ vectoriel : aucun bitmap, décalquage automatique, filtre ou dépendance distant
 
 ## Reproduction
 
-Depuis la racine du dépôt, avec le runtime Aphrody :
+Depuis la racine du dépôt, avec le runtime Shenron :
 
 ```sh
 bun scripts/build/wiki-objects.ts

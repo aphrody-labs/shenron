@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import { sha256Hex } from "./sha256";
 /** OCR evidence is separate from an approved transcription. */
-export interface AphrodyOcrEvidence {
-  schema: "aphrody.ocr.result/v2";
+export interface ShenronOcrEvidence {
+  schema: "shenron.ocr.result/v2";
   pageId: string;
   imagePath: string;
   status: "text" | "needs-review";
@@ -30,7 +30,7 @@ export interface AphrodyOcrEvidence {
   rawSha256: string | null;
 }
 
-const OCR_SCHEMA = "aphrody.ocr.result/v2" as const;
+const OCR_SCHEMA = "shenron.ocr.result/v2" as const;
 const SHA256 = /^[a-f0-9]{64}$/;
 type ImageMime = "image/jpeg" | "image/png" | "image/webp";
 
@@ -59,7 +59,7 @@ function confidence(value: unknown, label: string): number | null {
   return value;
 }
 
-function quality(value: unknown, label: string): AphrodyOcrEvidence["quality"] {
+function quality(value: unknown, label: string): ShenronOcrEvidence["quality"] {
   const input = object(value, label);
   const reasons = input.reasons ?? [];
   if (!Array.isArray(reasons) || reasons.length > 100)
@@ -96,10 +96,10 @@ export function parseOcrEvidence(
   mime: ImageMime,
   width: number,
   height: number,
-): AphrodyOcrEvidence {
-  const result = object(input, "Aphrody OCR result");
+): ShenronOcrEvidence {
+  const result = object(input, "Shenron OCR result");
   if (result.schema !== OCR_SCHEMA)
-    throw new Error(`unsupported Aphrody OCR schema: ${String(result.schema)}`);
+    throw new Error(`unsupported Shenron OCR schema: ${String(result.schema)}`);
   const pageId = text(result.page_id, "OCR page_id", 4096);
   const image = object(result.image, "OCR image");
   const imagePath = text(image.path, "OCR image.path", 4096);
@@ -141,8 +141,8 @@ export function parseOcrEvidence(
   const rawAttempts = result.attempts ?? [];
   if (!Array.isArray(rawAttempts) || rawAttempts.length > 20)
     throw new Error("OCR attempts must have at most 20 entries");
-  const attempts: AphrodyOcrEvidence["attempts"] = rawAttempts.map(
-    (value, index): AphrodyOcrEvidence["attempts"][number] => {
+  const attempts: ShenronOcrEvidence["attempts"] = rawAttempts.map(
+    (value, index): ShenronOcrEvidence["attempts"][number] => {
       const attempt = object(value, `OCR attempts[${index}]`);
       const run = object(attempt.run, `OCR attempts[${index}].run`);
       const status = attempt.status;

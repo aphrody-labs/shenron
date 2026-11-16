@@ -3,8 +3,8 @@ import postgres from "postgres";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { createDatabooksFreezeGate } from "@shenron/db/guards";
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
-import { prepareSource, syncSource } from "./_rag-aphrody-sync";
+import { ShenronComputeClient } from "@shenron/pipeline/shenron";
+import { prepareSource, syncSource } from "./_rag-shenron-sync";
 import type { SourceChunk } from "./_rag-sources-pg";
 import { digest, sourceManifestSchema, verifySource, type SourceManifest } from "./source-coverage";
 import { ingestSource, type IngestionPorts } from "./source-ingestion";
@@ -256,7 +256,7 @@ export async function databaseSourceAudit(sql: postgres.Sql, source: SourceManif
 
 export function postgresIngestionPorts(
   sql: postgres.Sql,
-  client: AphrodyComputeClient,
+  client: ShenronComputeClient,
   repoRoot: string,
 ): IngestionPorts {
   const acknowledged = new Set<string>();
@@ -494,7 +494,7 @@ if (import.meta.main && Bun.argv[2] === "--bibliography-audit") {
             await ingestSource(
               source,
               assetRoot,
-              postgresIngestionPorts(sql, new AphrodyComputeClient(), repoRoot),
+              postgresIngestionPorts(sql, new ShenronComputeClient(), repoRoot),
               { apply: true, editorialFrozen: frozen },
             ),
           ),

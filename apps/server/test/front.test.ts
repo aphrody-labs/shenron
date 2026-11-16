@@ -19,7 +19,7 @@ import { localApi } from "../src/local-api";
 import { testPaths, writeTestVfs } from "./support";
 
 const root = mkdtempSync(join(tmpdir(), "shenron-front-"));
-const ABSENT_APHRODY = join(root, "absent", "aphrody");
+const ABSENT_SHENRON = join(root, "absent", "shenron");
 
 /** Fake Next upstream: echoes the path; `/stream` writes an SSE comment every 300 ms. */
 const next = Bun.serve({
@@ -91,7 +91,7 @@ async function start(
     writeFileSync(binary, `#!${process.execPath}\n${o.mcpScript}`);
     chmodSync(binary, 0o755);
   }
-  const fullEnv = { HOME: dir, SHENRON_BIN: ABSENT_APHRODY, SHENRON_CHAT_TOOLS: "0", ...env };
+  const fullEnv = { HOME: dir, SHENRON_BIN: ABSENT_SHENRON, SHENRON_CHAT_TOOLS: "0", ...env };
   const backend = await startBackend(paths, fullEnv, { payloadDir });
   const front = serveFront({
     hostname: "127.0.0.1",
@@ -152,7 +152,7 @@ describe("desktop profile: the front mounts the API host", () => {
     );
     expect(body.groups.ocr).toEqual({
       available: false,
-      reason: "aphrody introuvable : OCR indisponible",
+      reason: "shenron introuvable : OCR indisponible",
     });
     expect(body.groups.mcp).toEqual({ available: false, reason: "serveur MCP non configuré" });
     // Reasons are short French texts, never an internal path.
@@ -299,16 +299,16 @@ describe("absent capabilities: groups disabled, the server keeps serving", () =>
       rag: { available: false, reason: "aucun VFS Shenron installé" },
       chat: {
         available: false,
-        reason: "aucun modèle de chat déclaré (llama-server, aphrody-llama-daemon)",
+        reason: "aucun modèle de chat déclaré (llama-server, shenron-llama-daemon)",
       },
       conversations: { available: false, reason: "stockage des conversations désactivé" },
       sync: { available: false, reason: "stockage des conversations désactivé" },
       vfs: { available: false, reason: "aucun VFS Shenron installé" },
-      ocr: { available: false, reason: "aphrody introuvable : OCR indisponible" },
+      ocr: { available: false, reason: "shenron introuvable : OCR indisponible" },
       mcp: { available: false, reason: "serveur MCP non configuré" },
       models: {
         available: false,
-        reason: "aucun modèle de chat déclaré (llama-server, aphrody-llama-daemon)",
+        reason: "aucun modèle de chat déclaré (llama-server, shenron-llama-daemon)",
       },
       memory: { available: false, reason: "bibliothèque native absente : mémoire indisponible" },
       auth: { available: false, reason: "DATABASE_URL absente : authentification indisponible" },

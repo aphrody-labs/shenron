@@ -24,7 +24,7 @@ export function templateProblems(
   for (const name of AGENT_HOME_DOCUMENTS)
     if (!files[name]?.trim()) problems.push(`missing ${name}`);
   for (const entry of extraEntries)
-    if (/(?:^|\/)(?:MEMORY\.md|memory|\.aphrody)(?:\/|$)|\.(?:sqlite|db|env)$/i.test(entry))
+    if (/(?:^|\/)(?:MEMORY\.md|memory|\.shenron)(?:\/|$)|\.(?:sqlite|db|env)$/i.test(entry))
       problems.push(`private entry ${entry}`);
   const userMd = files["USER.md"] ?? "";
   for (const key of [

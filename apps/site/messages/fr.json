@@ -1136,7 +1136,7 @@
       "provenance": {
         "manga": "Manga original",
         "databooks": "Databook officiel",
-        "aphrody": "Interview d'auteur",
+        "shenron": "Interview d'auteur",
         "manuel": "Note éditoriale"
       },
       "category": {
@@ -2239,8 +2239,8 @@
     "models": {
       "title": "Modèles",
       "description": "Les modèles de discussion de cet ordinateur. Un modèle en ligne envoie vos questions hors de cette machine.",
-      "catalogTitle": "Catalogue Aphrody AI",
-      "catalogDescription": "Catalogue réel Aphrody AI et agents installés sur cet ordinateur.",
+      "catalogTitle": "Catalogue Shenron AI",
+      "catalogDescription": "Catalogue réel Shenron AI et agents installés sur cet ordinateur.",
       "agentsLabel": "Agents installés sur l’hôte",
       "installed": "installé",
       "missing": "absent",

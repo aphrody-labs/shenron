@@ -2,7 +2,7 @@
 /**
  * The persistent chat memory of `shenron-server` (./memory.ts): the native port over a fake of
  * `@shenron/native`, then (SHENRON_FFI_DEV=1 after `cargo build -p shenron-ffi`) the real
- * Aphrody provider through the host, from `<SHENRON_HOME>/data/memory.sqlite` to the routes.
+ * Shenron provider through the host, from `<SHENRON_HOME>/data/memory.sqlite` to the routes.
  */
 import { afterAll, describe, expect, test } from "bun:test";
 import { existsSync, mkdtempSync, rmSync, statSync, writeFileSync } from "node:fs";

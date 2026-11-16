@@ -12,7 +12,7 @@ import { API_URL, SITE_URL, clip, linkRow, wikiFooter } from "~/lib/wiki-embeds"
  * Le forum est une VUE de la base (`scripts/forum-anime.ts`) : un fil par saga,
  * saison ou film. Chaque fil porte des menus construits par
  * `lib/episode-menus.ts` ; c'est ici qu'on répond au clic. Parti pris repris de
- * `@aphrody/wonderbot` : le membre choisit son épisode et reçoit sa fiche, au
+ * `@shenron/wonderbot` : le membre choisit son épisode et reçoit sa fiche, au
  * lieu de faire défiler une liste de liens que Discord tronque de toute façon.
  *
  * ── POURQUOI LE GRAND PRÊTRE ───────────────────────────────────────────────

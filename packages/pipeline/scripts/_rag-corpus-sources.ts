@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** Shared rendering of licensed JSON corpora for legacy build and Aphrody sync. */
+/** Shared rendering of licensed JSON corpora for legacy build and Shenron sync. */
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { chunkDocument } from "./_rag-chunk";
@@ -58,7 +58,7 @@ export function corpusSourceId(docId: string): string {
 }
 
 /**
- * Aphrody refuses an ingestion body over 512 KiB (HTTP 413) and E5 reads the first 512 tokens
+ * Shenron refuses an ingestion body over 512 KiB (HTTP 413) and E5 reads the first 512 tokens
  * only: a passage the chunker could not cut (one endless line) is cut here, never sent whole.
  */
 export const MAX_PASSAGE_CHARS = 8_000;
@@ -98,7 +98,7 @@ export function renderCorpusDocs(
       ? doc.markdown
       : doc.markdown.replace(/^#.*$/gm, "").replace(/\[[^\]]*\]\([^)]*\)/g, "");
     const lang = author ? doc.lang || "fr" : detectLang(doc.id, doc.name, doc.url, markdown);
-    const sourceId = author ? "aphrody" : corpusSourceId(doc.id);
+    const sourceId = author ? "shenron" : corpusSourceId(doc.id);
     for (const chunk of chunkDocument(markdown, 1400, 0.15)) {
       const content = chunk.content.replace(/\s+/g, " ").trim();
       if (content.length < 12) continue;

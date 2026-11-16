@@ -9,9 +9,9 @@ import {
 import { generateGroundedAnswer } from "@shenron/pipeline/ai/generate";
 import { createShenronProvider } from "@shenron/pipeline/ai/provider";
 import {
-  AphrodyComputeClient,
-  aphrodyComputeFromChat,
-} from "@shenron/pipeline/aphrody/compute";
+  ShenronComputeClient,
+  shenronComputeFromChat,
+} from "@shenron/pipeline/shenron/compute";
 import { wikiDraftSourcesMarkdown, type WikiDraftSource } from "./wiki-ai-draft";
 
 /** Uses the existing inference owner and citation verifier; never writes editorial data. */
@@ -25,11 +25,11 @@ export async function generateWikiDraft(input: {
   const direct = resolveDirectChat(process.env);
   if (!direct.ok) throw new AiConfigError("wiki draft model", direct.issues);
   const chatModel = direct.value?.model ?? resolveChatModel(process.env);
-  const client = direct.value ? null : new AphrodyComputeClient();
+  const client = direct.value ? null : new ShenronComputeClient();
   const provider = createShenronProvider(
     { embed: null, chatModel, directChat: direct.value },
     {
-      compute: client ? aphrodyComputeFromChat((messages, id) => client.chat(messages, id)) : null,
+      compute: client ? shenronComputeFromChat((messages, id) => client.chat(messages, id)) : null,
     },
   );
   const response = await generateGroundedAnswer({

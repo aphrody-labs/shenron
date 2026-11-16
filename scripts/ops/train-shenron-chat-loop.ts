@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
-/** Generate guarded rollouts, train with Aphrody, then compare the actual adapters. */
+/** Generate guarded rollouts, train with Shenron, then compare the actual adapters. */
 import { createHash } from "node:crypto";
 import {
   closeSync,
@@ -39,7 +39,7 @@ export interface TrainingOptions {
   input: string;
   soul: string;
   out: string;
-  aphrody: string;
+  shenron: string;
   baseModel: string;
   ggufModel: string;
   baselineAdapter: string;
@@ -125,13 +125,13 @@ export async function runTrainingCycle(
       "uv",
       "run",
       "--package",
-      "aphrody-train",
+      "shenron-train",
       "--extra",
       "full",
       "--locked",
       "python",
       "-m",
-      "aphrody_train.lora",
+      "shenron_train.lora",
       "--job-id",
       runId,
       "--rollout-dir",
@@ -145,7 +145,7 @@ export async function runTrainingCycle(
       "--steps",
       String(options.steps),
     ],
-    cwd: join(options.aphrody, "py"),
+    cwd: join(options.shenron, "py"),
     log: join(runDir, "training.events.jsonl"),
   });
   const adapter = join(adapterDir, "adapter.gguf");
@@ -274,11 +274,11 @@ async function main(): Promise<void> {
     options: {
       input: {
         type: "string",
-        default: join(home, ".aphrody/workspaces/dbfr/training/triples.jsonl"),
+        default: join(home, ".shenron/workspaces/dbfr/training/triples.jsonl"),
       },
-      soul: { type: "string", default: join(home, ".aphrody/workspaces/dbfr/SOUL.md") },
-      out: { type: "string", default: join(home, ".aphrody/private/training/shenron/chat") },
-      aphrody: { type: "string" },
+      soul: { type: "string", default: join(home, ".shenron/workspaces/dbfr/SOUL.md") },
+      out: { type: "string", default: join(home, ".shenron/private/training/shenron/chat") },
+      shenron: { type: "string" },
       "base-model": { type: "string" },
       "gguf-model": { type: "string" },
       "baseline-adapter": { type: "string" },
@@ -295,7 +295,7 @@ async function main(): Promise<void> {
     },
   });
   const required = (
-    name: "aphrody" | "base-model" | "gguf-model" | "baseline-adapter" | "llama-server",
+    name: "shenron" | "base-model" | "gguf-model" | "baseline-adapter" | "llama-server",
   ) => {
     const value = values[name];
     if (!value || !existsSync(value)) throw new Error(`--${name} must name an existing path`);
@@ -307,7 +307,7 @@ async function main(): Promise<void> {
     input: resolve(values.input),
     soul: resolve(values.soul),
     out: resolve(values.out),
-    aphrody: required("aphrody"),
+    shenron: required("shenron"),
     baseModel: required("base-model"),
     ggufModel: required("gguf-model"),
     baselineAdapter: required("baseline-adapter"),

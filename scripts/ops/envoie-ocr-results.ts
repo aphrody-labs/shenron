@@ -1,19 +1,19 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
-/** Upload a verified SQLite snapshot through Aphrody SSH, then invoke Shenron's atomic receiver. */
+/** Upload a verified SQLite snapshot through Shenron SSH, then invoke Shenron's atomic receiver. */
 import { resolve } from "node:path";
 import { randomUUID } from "node:crypto";
 import { inspectOcrResults } from "./_ocr-results-db";
 import {
-  runAphrodyCli,
+  runShenronCli,
   type CliResult,
   type NativeCommandExecutor,
-} from "@shenron/pipeline/aphrody/cli";
+} from "@shenron/pipeline/shenron/cli";
 
 export interface OcrResultsTransferOptions {
   host?: string;
   repository?: string;
-  /** In-process command seam for tests; production always uses Aphrody's native FFI. */
+  /** In-process command seam for tests; production always uses Shenron's native FFI. */
   nativeExecutor?: NativeCommandExecutor;
 }
 
@@ -40,7 +40,7 @@ export async function transferOcrResults(
     throw new Error("--repository must be a relative path without parent traversal");
   }
   const cli = (sshArgs: string[]) =>
-    runAphrodyCli(sshArgs, {
+    runShenronCli(sshArgs, {
       timeoutMs: 10 * 60_000,
       ...(options.nativeExecutor ? { nativeExecutor: options.nativeExecutor } : {}),
     });
@@ -58,7 +58,7 @@ export async function transferOcrResults(
             : result.kind === "timeout"
               ? `timeout after ${result.timeoutMs} ms`
               : result.error;
-      throw new Error(`Aphrody SSH ${operation} failed: ${detail}`);
+      throw new Error(`Shenron SSH ${operation} failed: ${detail}`);
     }
     return result;
   }
@@ -70,16 +70,16 @@ export async function transferOcrResults(
       "--host",
       host,
       "--cmd",
-      'printf \'%s\\n\' "$HOME"; test -d "$HOME/.aphrody/ocr"',
+      'printf \'%s\\n\' "$HOME"; test -d "$HOME/.shenron/ocr"',
     ]),
     "remote OCR directory check",
   );
   const remoteHome = homeResult.stdout.trim();
   if (!remoteHome.startsWith("/") || remoteHome.includes("\n") || remoteHome.includes("\r")) {
-    throw new Error("Aphrody SSH returned an invalid remote home directory");
+    throw new Error("Shenron SSH returned an invalid remote home directory");
   }
   const transferId = randomUUID();
-  const remoteUpload = `${remoteHome}/.aphrody/ocr/results.db.upload.${transferId}`;
+  const remoteUpload = `${remoteHome}/.shenron/ocr/results.db.upload.${transferId}`;
   checked(
     await cli(["sftp", "--host", host, "--path", remoteUpload, "--put", localPath]),
     "snapshot upload",

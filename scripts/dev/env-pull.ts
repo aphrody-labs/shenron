@@ -1,9 +1,9 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Development environment files derived from the production secrets held by the Aphrody Infra.
+ * Development environment files derived from the production secrets held by the Shenron Infra.
  * The production unit env files (`/etc/rose-griffon/shenron-{site,bot}.env`) are read over
- * `aphrody-infra ssh exec`, kept verbatim in the private store (`~/.aphrody/private/shenron/env`,
+ * `shenron-infra ssh exec`, kept verbatim in the private store (`~/.shenron/private/shenron/env`,
  * outside Git) and checked against the Infra secrets contract, then rewritten for development:
  * localhost origins, no analytics, and no production Discord gateway token (a second session on
  * the production bot would answer twice). Values are never printed.
@@ -24,7 +24,7 @@ import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dir, "../..");
-const STORE = join(homedir(), ".aphrody", "private", "shenron", "env");
+const STORE = join(homedir(), ".shenron", "private", "shenron", "env");
 const REMOTE_DIR = process.env.SHENRON_ENV_DIR ?? "/etc/rose-griffon";
 const REMOTE_WORKSPACE = "shenron-dev";
 const DEV_PORT = Number(process.env.SHENRON_DEV_PORT ?? 3000);
@@ -146,7 +146,7 @@ async function run(cmd: string[], stdin?: string): Promise<string> {
 }
 
 async function readRemote(host: string, unit: string): Promise<string> {
-  // `ssh` directly: aphrody-infra ssh exec prefixes its own diagnostics on stdout.
+  // `ssh` directly: shenron-infra ssh exec prefixes its own diagnostics on stdout.
   return run(["ssh", host, `sudo -n cat ${REMOTE_DIR}/${unit}.env`]);
 }
 
@@ -157,8 +157,8 @@ async function writePrivate(path: string, text: string): Promise<void> {
 
 async function contractCheck(service: Service, path: string): Promise<string> {
   const proc = Bun.spawn(
-    ["aphrody-infra", "secrets", "check", "--service", SERVICES[service].unit, "--env-file", path],
-    // aphrody-infra resolves its own checkout; SHENRON_INFRA_ROOT, when set, passes through.
+    ["shenron-infra", "secrets", "check", "--service", SERVICES[service].unit, "--env-file", path],
+    // shenron-infra resolves its own checkout; SHENRON_INFRA_ROOT, when set, passes through.
     { stdout: "pipe", stderr: "pipe" },
   );
   const [out, err, code] = await Promise.all([

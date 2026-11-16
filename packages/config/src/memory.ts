@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Persistent chat memory of the Shenron API host: Aphrody's `aphrody-memory` SQLite provider,
+ * Persistent chat memory of the Shenron API host: Shenron's `shenron-memory` SQLite provider,
  * reached through `shenron-ffi` (ABI 3). The one place that spells its defaults.
  *
  * | variable                | role                                                  | default                |

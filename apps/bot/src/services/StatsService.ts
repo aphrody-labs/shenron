@@ -9,7 +9,7 @@ import { env } from "~/lib/env";
 /**
  * Stats agrégées exposées par l'API REST (`/health/*`, `/stats/*`).
  *
- * Surface compatible avec [`@aphrody/tscord`'s `Stats` service](../../packages/tscord/src/services/Stats.ts)
+ * Surface compatible avec [`@shenron/tscord`'s `Stats` service](../../packages/tscord/src/services/Stats.ts)
  * pour qu'un dashboard tscord-shaped (ex. `barthofu/tscord-dashboard`) puisse
  * consommer l'API shenron sans adapter le client.
  *

@@ -428,7 +428,7 @@ if (import.meta.main) {
         const descriptor = file === result.descriptorPath;
         const process = Bun.spawn(
           [
-            "aphrody",
+            "shenron",
             "infra",
             "ssh",
             "sftp",
@@ -456,7 +456,7 @@ if (import.meta.main) {
         "))";
       const quoted = "'" + code.replaceAll("'", "'\\''") + "'";
       const publish = Bun.spawn(
-        ["aphrody", "infra", "ssh", "exec", "--host", "dbfr", "-c", "bun -e " + quoted],
+        ["shenron", "infra", "ssh", "exec", "--host", "dbfr", "-c", "bun -e " + quoted],
         { stdout: "pipe", stderr: "pipe", timeout: 30000 },
       );
       await Promise.all([new Response(publish.stdout).text(), new Response(publish.stderr).text()]);

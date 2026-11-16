@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { AphrodyComputeClient } from "@shenron/pipeline/aphrody/compute";
+import { ShenronComputeClient } from "@shenron/pipeline/shenron/compute";
 import {
   crawlIngestPolicySchema,
   nativeDocumentSchema,
@@ -33,12 +33,12 @@ export interface SourceDeliveryReceipt {
 export interface SourceDeliveryPorts {
   signal?: AbortSignal;
   run?: (args: string[], controls: { signal?: AbortSignal; timeoutMs: number }) => Promise<string>;
-  compute?: Pick<AphrodyComputeClient, "ragIngest">;
+  compute?: Pick<ShenronComputeClient, "ragIngest">;
   fetcher?: (input: RequestInfo | URL, init?: RequestInit) => Promise<Response>;
 }
 const digest = (value: string | Uint8Array) =>
   new Bun.CryptoHasher("sha256").update(value).digest("hex");
-const adapter = "/usr/local/sbin/aphrody-infra-deploy-shenron";
+const adapter = "/usr/local/sbin/shenron-infra-deploy-shenron";
 function validate(config: SourceDeliveryConfig) {
   if (!config.rag && !config.deployment) throw new Error("An explicit delivery stage is required");
   const timeout = config.timeoutMs ?? 300000;
@@ -103,7 +103,7 @@ export async function runDeliveryOwner(
   controls: { signal?: AbortSignal; timeoutMs: number },
 ) {
   controls.signal?.throwIfAborted();
-  const process = Bun.spawn(["aphrody", ...args], {
+  const process = Bun.spawn(["shenron", ...args], {
     stdout: "pipe",
     stderr: "pipe",
     env: {
@@ -257,7 +257,7 @@ export async function deliver(
     const eligible = new Set(context.ragEligibleUrls);
     const compute = context.verifyOnly
       ? undefined
-      : (ports.compute ?? new AphrodyComputeClient({ fetcher: boundedFetch }));
+      : (ports.compute ?? new ShenronComputeClient({ fetcher: boundedFetch }));
     let probeSourceId: string | undefined;
     let probePresent = false;
     // Validate the complete export before the first RAG mutation.

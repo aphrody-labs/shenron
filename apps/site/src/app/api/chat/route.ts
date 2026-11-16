@@ -1,7 +1,7 @@
 import { API_URL } from "@/lib/config";
 import { createMemoryRateLimiter } from "@/lib/memory-rate-limit";
 import { clientIp } from "@/app/api/_client-ip";
-import { chatAphrodyRag, usesAphrodyRag } from "@/lib/site-rag";
+import { chatShenronRag, usesShenronRag } from "@/lib/site-rag";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -83,8 +83,8 @@ export async function GET(req: Request) {
   }
 
   try {
-    if (usesAphrodyRag()) {
-      const result = await chatAphrodyRag(q, persona, {
+    if (usesShenronRag()) {
+      const result = await chatShenronRag(q, persona, {
         context,
         lang,
         entity,
@@ -183,8 +183,8 @@ export async function POST(req: Request) {
   }
 
   try {
-    if (usesAphrodyRag()) {
-      const result = await chatAphrodyRag(q, persona, {
+    if (usesShenronRag()) {
+      const result = await chatShenronRag(q, persona, {
         context,
         lang,
         entity,
