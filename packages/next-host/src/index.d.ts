@@ -14,4 +14,4 @@ export declare function withBun<T>(
     tauri?: boolean | "auto" | { devHost?: string; devPort?: number; env?: Record<string, string> };
     bundler?: "turbopack";
   },
-): (phase: string, ctx: any) => Promise<any>;
+): (phase: string, ctx: any) => Promise<import("next").NextConfig>;

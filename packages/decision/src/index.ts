@@ -182,7 +182,7 @@ export function code(
   evaluate: (request: Request, options: ProviderOptions) => unknown | PromiseLike<unknown>,
 ): Provider {
   return {
-    systemOne: (request, options) =>
+    systemOne: async (request, options) =>
       evaluate(
         request,
         options ?? { signal: new AbortController().signal, timeout: DEFAULT_TIMEOUT, retry: { maxRetries: 0 } },

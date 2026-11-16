@@ -64,7 +64,6 @@ export async function run(): Promise<void> {
           : await lookup(registryUrl("npm", manifest.name, manifest.version)),
     });
   }
-  };
   for (const folder of (await readdir(join(root, "crates"))).toSorted()) {
     const file = Bun.file(join(root, "crates", folder, "Cargo.toml"));
     if (!(await file.exists())) continue;

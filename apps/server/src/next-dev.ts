@@ -112,7 +112,7 @@ export function frontWebSockets(
       ws.data.pendingBytes = 0;
     },
     message(ws, message) {
-      if (!isDevSocket(ws)) return chat.message(chatSocket(ws), message);
+      if (!isDevSocket(ws)) return chat.message?.(chatSocket(ws), message);
       if (ws.data.upstream.readyState !== WebSocket.OPEN)
         return ws.close(1011, "Development socket unavailable");
       if (ws.data.upstream.bufferedAmount + Buffer.byteLength(message) > BUFFER_LIMIT) {

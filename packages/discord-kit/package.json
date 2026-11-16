@@ -12,9 +12,7 @@
   },
   "dependencies": {
     "@discordjs/rest": "^2.6.3",
-    "discord-api-types": "^0.38.56",
-    "discord.js": "^14.28.1",
-    "discordx": "11.13.3"
+    "discord-api-types": "^0.38.56"
   },
   "devDependencies": {
     "@types/bun": "catalog:"
@@ -25,5 +23,9 @@
       "./rest": "server",
       "./messaging": "server"
     }
+  },
+  "peerDependencies": {
+    "discord.js": "catalog:",
+    "discordx": "catalog:"
   }
 }

@@ -30,6 +30,7 @@ const names = [
   "skip_next",
 ] as const;
 export async function materialSubset(owner: string) {
+  const metadata = await Bun.file(`${owner}/package.json`).json();
   const catalog = await import(`${owner}/src/index.ts`);
   const icons: Record<string, { viewBox: string; body: string; sha256: string }> = {};
   for (const name of names) {
