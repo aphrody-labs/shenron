@@ -7,7 +7,7 @@ FROM ubuntu:26.10
 
 ENV SHENRON_HOME=/var/lib/koharu \
     KOHARU_WEB_BIND=0.0.0.0:8890 \
-    KOHARU_WEB_CPU=1
+    KOHARU_WEB_CPU=true
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \

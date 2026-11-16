@@ -17,7 +17,7 @@ services:
     tmpfs: ["/tmp:size=1g"]
     environment:
       KOHARU_WEB_BIND: 127.0.0.1:8890
-      KOHARU_WEB_CPU: "1"
+      KOHARU_WEB_CPU: "true"
       KOHARU_WEB_TARGET_LANGUAGE: fr-FR
       # Translation goes through the llama.cpp server of the shenron stack (loopback).
       KOHARU_WEB_TRANSLATE_URL: http://127.0.0.1:8799/v1
