@@ -29,4 +29,4 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - name: Deploy shenron-cdn
         working-directory: deploy/cloudflare
-        run: bunx wrangler@4.161.0 deploy -c wrangler.jsonc --keep-vars
+        run: bun x wrangler@4.161.0 deploy -c wrangler.jsonc --keep-vars
