@@ -169,6 +169,7 @@
     "@shenron/db": "workspace:*",
     "@shenron/filmcraft": "workspace:*",
     "@shenron/hyperframes": "workspace:*",
+    "@shenron/kit": "workspace:*",
     "@shenron/next-host": "workspace:*",
     "@shenron/pipeline": "workspace:*",
     "@shenron/remotion": "workspace:*",

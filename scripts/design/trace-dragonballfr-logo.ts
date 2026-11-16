@@ -10,6 +10,7 @@
  * Writes packages/ui/assets/brand/dragonballfr-logo.svg, its PNG renders and the site module
  * apps/site/src/lib/dragonballfr-logo.generated.ts (OpenGraph image) with --write.
  */
+import { decodeRgba } from "@shenron/kit/image";
 import { resolve } from "node:path";
 
 type Point = readonly [number, number];
@@ -135,18 +136,7 @@ function components(mask: Uint8Array, width: number, height: number) {
 }
 
 async function rgba(path: string) {
-  const image = new Bun.Image(path) as Bun.Image & {
-    rgba?: () => Promise<{ width: number; height: number; data: Uint8Array }>;
-  };
-  if (typeof image.rgba === "function") return image.rgba();
-  // Runtimes without Bun.Image.rgba: decode through ImageMagick.
-  const size = Bun.spawnSync(["magick", path, "-format", "%w %h", "info:"]).stdout.toString();
-  const [width, height] = size.trim().split(" ").map(Number) as [number, number];
-  const data = Bun.spawnSync(["magick", path, "-depth", "8", "rgba:-"], {
-    stdout: "pipe",
-  }).stdout;
-  if (data.length !== width * height * 4) throw new Error("RGBA decode failed");
-  return { width, height, data: new Uint8Array(data) };
+  return decodeRgba(path);
 }
 
 export async function traceLogo(path: string) {

@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
+import { decodeRgba } from "@shenron/kit/image";
 import { mkdir, open, readdir, rename, rm } from "node:fs/promises";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { encoderPng } from "../../../plugin/skills/toriyama-svg/scripts/png";
@@ -258,10 +259,6 @@ function inside(parent: string, path: string) {
   const rel = relative(parent, path);
   return rel === "" || (!rel.startsWith("..") && !isAbsolute(rel));
 }
-type NativeImage = Bun.Image & {
-  extract(rect: { left: number; top: number; width: number; height: number }): NativeImage;
-  rgba(): Promise<{ width: number; height: number; channels: number; data: Uint8Array }>;
-};
 type VerifiedVideo = {
   decoder: ReturnType<typeof nativeVideo>;
   metadata: VideoMetadata;
@@ -445,10 +442,7 @@ async function exportAssets(
   const cropPixels = new Map<string, { width: number; height: number; data: Uint8Array }>();
   for (const crop of manifest.crops) {
     const bytes = sourceData.get(crop.sourceId)!;
-    const native = new Bun.Image(bytes, { maxPixels: MAX_PIXELS }) as NativeImage;
-    if (typeof native.rgba !== "function" || typeof native.extract !== "function")
-      throw new Error("Qualified native Bun.Image extraction required");
-    const pixels = await native.extract(crop.rect).rgba();
+    const pixels = await decodeRgba(bytes, { rect: crop.rect, maxPixels: MAX_PIXELS });
     if (
       pixels.channels !== 4 ||
       pixels.width !== crop.rect.width ||

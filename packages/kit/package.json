@@ -8,7 +8,8 @@
   "exports": {
     "./http": "./src/http.ts",
     "./paths": "./src/paths.ts",
-    "./inference": "./src/inference.ts"
+    "./inference": "./src/inference.ts",
+    "./image": "./src/image.ts"
   },
   "devDependencies": {
     "@types/bun": "catalog:"
@@ -17,7 +18,11 @@
     "runtime": {
       "./http": "pure",
       "./paths": "bun",
-      "./inference": "bun"
+      "./inference": "bun",
+      "./image": "bun"
     }
+  },
+  "dependencies": {
+    "sharp": "catalog:"
   }
 }

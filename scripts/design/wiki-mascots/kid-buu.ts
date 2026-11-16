@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Original vector construction from the inspected FighterZ pose; no bitmap tracing. */
+import { decodeRgba } from "@shenron/kit/image";
 import { mkdir } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { arcs, inkStroke } from "../../../packages/ui/src/toriyama-svg/geometry";
@@ -351,11 +352,7 @@ if (import.meta.main) {
   const source = await Bun.file(reference).bytes();
   if (Bun.CryptoHasher.hash("sha256", source, "hex") !== referenceSha)
     throw new Error("Kid Buu reference changed");
-  const image = new Bun.Image(source) as Bun.Image & {
-    rgba(): Promise<{ width: number; height: number; channels: number; data: Uint8Array }>;
-  };
-  if (typeof image.rgba !== "function") throw new Error("Qualified native RGBA decoding required");
-  const decoded = await image.rgba();
+  const decoded = await decodeRgba(source);
   if (decoded.width !== 512 || decoded.height !== 939 || decoded.channels !== 4)
     throw new Error("Unexpected reference dimensions");
   const sampled = Object.fromEntries(

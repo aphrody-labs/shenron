@@ -38,7 +38,7 @@ export async function toriyamaCatalog() {
       plain: "Shenron Text",
       code: "JetBrains Mono",
       japanese: "Noto Sans JP",
-      m3Roles: ["--aphrody-font-brand", "--aphrody-font-plain", "--aphrody-font-code"],
+      m3Roles: ["--shenron-font-brand", "--shenron-font-plain", "--shenron-font-code"],
     },
   };
 }

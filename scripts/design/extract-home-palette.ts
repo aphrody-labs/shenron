@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+import { decodeRgba } from "@shenron/kit/image";
 /** Bounded pixel modes from the official key visual, with readable M3 tones. */
 export function mix(hex: string, target: string, amount: number): string {
   return (
@@ -72,11 +73,7 @@ export async function extractHomePalette(path: string) {
   const file = Bun.file(path);
   if (!(await file.exists()) || file.size > 16_000_000)
     throw new Error("Invalid bounded key visual");
-  const image = new Bun.Image(path, { maxPixels: 16_000_000 }) as Bun.Image & {
-    rgba?: () => Promise<{ width: number; height: number; channels: number; data: Uint8Array }>;
-  };
-  if (typeof image.rgba !== "function") throw new Error("Qualified native Bun.Image.rgba required");
-  const p = await image.rgba();
+  const p = await decodeRgba(path, { maxPixels: 16_000_000 });
   if (
     p.channels !== 4 ||
     p.width * p.height > 16_000_000 ||

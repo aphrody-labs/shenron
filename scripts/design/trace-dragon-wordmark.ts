@@ -1,3 +1,4 @@
+import { decodeRgba } from "@shenron/kit/image";
 import { resolve } from "node:path";
 
 type Point = readonly [number, number];
@@ -95,11 +96,7 @@ async function main() {
   const reference = Bun.file(resolve(input));
   if (!(await reference.exists()) || reference.size > 8_000_000)
     throw new Error("Invalid bounded reference");
-  const image = new Bun.Image(resolve(input), { maxPixels: 1_000_000 }) as Bun.Image & {
-    rgba?: () => Promise<{ width: number; height: number; channels: number; data: Uint8Array }>;
-  };
-  if (typeof image.rgba !== "function") throw new Error("Qualified native Bun.Image.rgba required");
-  const source = await image.rgba();
+  const source = await decodeRgba(resolve(input), { maxPixels: 1_000_000 });
   if (
     source.width !== 1233 ||
     source.height !== 563 ||

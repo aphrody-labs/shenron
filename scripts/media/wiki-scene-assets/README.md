@@ -5,7 +5,7 @@ JSON directement compatible avec `PIXI.Spritesheet`. Il ne publie rien dans le s
 ne lance ni build ni serveur et ne modifie jamais les sources.
 
 ```powershell
-$sceneBun = 'C:/Users/aphro/.local/opt/bun-aphrody/bin/bun.exe'
+$sceneBun = 'C:/Users/aphro/.local/opt/bun-shenron/bin/bun.exe'
 & $sceneBun scripts/media/wiki-scene-assets/index.ts scripts/media/wiki-scene-assets/archives-production.json var/exports/wiki-archives-v1
 & $sceneBun scripts/media/wiki-scene-assets/index.ts scripts/media/wiki-scene-assets/archives-production.json var/exports/wiki-archives-v1 --check
 ```
@@ -114,7 +114,7 @@ Le décodeur appartient au runtime : le petit adaptateur `video.ts` appelle dire
 `Bun.Video.frames({start,end,step,maxFrames:1})`, séquentiellement, à résolution source.
 Le service HTTP existant renvoie du WebP sans PTS ; il ne permet donc pas d'attester le
 temps décodé. Il reste inchangé. Aucun décodeur ou extracteur FFmpeg n'est ajouté.
-`packages/pipeline/src/aphrody/frames.ts` possède
+`packages/pipeline/src/shenron/frames.ts` possède
 l'indexation/recherche MPEG-7, et ne constitue pas un extracteur PNG.
 
 ```powershell
