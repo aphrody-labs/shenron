@@ -27,8 +27,8 @@ name = "bot"
 ts = ["apps/bot"]
 rust = "crates/shenron-bot"
 state = "ts"
-ts_lines = 107475
-note = "discordx -> Rust Discord gateway client; slash commands and the bot API"
+ts_lines = 107476
+note = "discordx -> Rust Discord gateway client; slash commands and the bot API. Raised from 107475 by the render-text test fix of 39c4007d"
 
 [[unit]]
 name = "server"
@@ -205,8 +205,8 @@ name = "scripts"
 ts = ["scripts"]
 rust = "crates/shenron-cli"
 state = "ts"
-ts_lines = 75273
-note = "build, deploy, ops and data scripts -> shenron subcommands"
+ts_lines = 75297
+note = "build, deploy, ops and data scripts -> shenron subcommands. Raised from 75273 by the uv helper and the native-runtime guard of 9d8b6701"
 
 [[unit]]
 name = "cloudflare"
