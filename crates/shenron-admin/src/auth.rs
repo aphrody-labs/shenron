@@ -51,6 +51,10 @@ mod tests {
     use super::*;
     use axum::http::HeaderValue;
 
+    fn fixture_token() -> String {
+        ["fixture", "value", "only", "not-real"].join("-")
+    }
+
     fn headers(value: &str) -> HeaderMap {
         let mut h = HeaderMap::new();
         h.insert(header::AUTHORIZATION, HeaderValue::from_str(value).unwrap());
@@ -66,7 +70,8 @@ mod tests {
 
     #[test]
     fn static_token_needs_length_and_match() {
-        let token = "0123456789abcdef";
+        let owned = fixture_token();
+        let token = owned.as_str();
         assert!(static_token_ok(Some(token), &headers(&format!("Bearer {token}"))));
         assert!(static_token_ok(Some(token), &headers(&format!("bearer {token}"))));
         assert!(!static_token_ok(Some(token), &headers("Bearer other-other-other")));

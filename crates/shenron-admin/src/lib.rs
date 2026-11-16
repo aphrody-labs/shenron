@@ -171,12 +171,16 @@ mod tests {
     use axum::http::Request;
     use tower::ServiceExt;
 
+    fn fixture_token() -> String {
+        ["fixture", "value", "only", "not-real"].join("-")
+    }
+
     fn app() -> Router {
         let config = Config {
             site_url: "http://127.0.0.1:1".into(),
             bot_url: "http://127.0.0.1:1".into(),
             auth_url: None,
-            admin_token: Some("0123456789abcdef".into()),
+            admin_token: Some(fixture_token()),
             admin_roles: vec!["admin".into()],
             allowed_origins: vec![],
             panels_dir: None,
@@ -205,11 +209,11 @@ mod tests {
 
     #[tokio::test]
     async fn token_lists_builtin_panels_and_reports_unreachable_upstream() {
-        let (status, body) = get_with("/api/panels", Some("0123456789abcdef")).await;
+        let (status, body) = get_with("/api/panels", Some(&fixture_token())).await;
         assert_eq!(status, StatusCode::OK);
         assert!(body.as_array().unwrap().iter().any(|p| p["id"] == "overview"));
-        let (status, _) = get_with("/api/panels/overview", Some("0123456789abcdef")).await;
+        let (status, _) = get_with("/api/panels/overview", Some(&fixture_token())).await;
         assert_eq!(status, StatusCode::BAD_GATEWAY);
-        assert_eq!(get_with("/api/panels/nope", Some("0123456789abcdef")).await.0, StatusCode::NOT_FOUND);
+        assert_eq!(get_with("/api/panels/nope", Some(&fixture_token())).await.0, StatusCode::NOT_FOUND);
     }
 }
