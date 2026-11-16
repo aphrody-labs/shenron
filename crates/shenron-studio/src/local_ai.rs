@@ -49,10 +49,9 @@ pub fn discover_running(role: Role) -> Option<Running> {
     let authority = base.split_once("://").map_or(base.as_str(), |(_, rest)| rest);
     let authority = authority.split('/').next().unwrap_or(authority);
     let port = authority.rsplit_once(':').and_then(|(_, port)| port.parse().ok()).unwrap_or(80);
-    let ready = authority
-        .to_socket_addrs()
-        .ok()
-        .and_then(|mut addrs| addrs.next())
-        .is_some_and(|addr| std::net::TcpStream::connect_timeout(&addr, Duration::from_millis(250)).is_ok());
+    let ready =
+        authority.to_socket_addrs().ok().and_then(|mut addrs| addrs.next()).is_some_and(|addr| {
+            std::net::TcpStream::connect_timeout(&addr, Duration::from_millis(250)).is_ok()
+        });
     Some(Running { ready, alias: model.unwrap_or_else(|| "local".to_owned()), port, base })
 }

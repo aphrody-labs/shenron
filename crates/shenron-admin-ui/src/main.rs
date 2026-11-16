@@ -18,7 +18,8 @@ fn default_base() -> String {
     }
     #[cfg(not(target_arch = "wasm32"))]
     {
-        std::env::var("SHENRON_ADMIN_URL").unwrap_or_else(|_| "https://admin.dragonballfr.com".into())
+        std::env::var("SHENRON_ADMIN_URL")
+            .unwrap_or_else(|_| "https://admin.dragonballfr.com".into())
     }
 }
 

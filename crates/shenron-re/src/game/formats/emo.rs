@@ -372,8 +372,11 @@ impl EmoFile {
                 Ok(EmoPart { name, meshes })
             })
             .collect::<Result<Vec<_>>>()?;
-        let (nodes, skeleton_id) =
-            if skeleton == 0 { (Vec::new(), 0) } else { parse_node_skeleton(buffer, skeleton, part_count)? };
+        let (nodes, skeleton_id) = if skeleton == 0 {
+            (Vec::new(), 0)
+        } else {
+            parse_node_skeleton(buffer, skeleton, part_count)?
+        };
         Ok(Self { version, parts, nodes, skeleton_id })
     }
 }
@@ -404,9 +407,8 @@ pub(crate) mod tests {
         put(out, base + 8, &le32(0x40));
         put(out, base + 12, &le32(0x40 + 2 * 80));
         put(out, base + 0x38, &0x1234_5678_9abc_def0u64.to_le_bytes());
-        for (i, links) in [[u16::MAX, 1, u16::MAX, u16::MAX], [0, u16::MAX, u16::MAX, 0]]
-            .iter()
-            .enumerate()
+        for (i, links) in
+            [[u16::MAX, 1, u16::MAX, u16::MAX], [0, u16::MAX, u16::MAX, 0]].iter().enumerate()
         {
             let node = base + 0x40 + i * 80;
             for (k, link) in links.iter().enumerate() {

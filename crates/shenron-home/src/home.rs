@@ -98,7 +98,7 @@ impl AgentHome {
             Some(w) => w,
             None => {
                 crate::paths::resolve_workspace(opts.profile.as_deref(), opts.agent_id.as_deref())?
-            }
+            },
         };
         let guard = WorkspaceGuard::new(&root);
         let cache = FileCache::new();
@@ -146,14 +146,14 @@ impl AgentHome {
                         Soul::parse_lenient(content)
                     };
                     docs.soul = Some(soul);
-                }
+                },
                 BootstrapFile::Identity => {
                     docs.identity = Identity::parse(content);
                     has_identity_file = true;
-                }
+                },
                 BootstrapFile::User => docs.user = Some(UserProfile::parse(content)),
                 BootstrapFile::Tools => docs.tools = Some(ToolsDoc::parse(content)),
-                _ => {}
+                _ => {},
             }
         }
 
@@ -304,7 +304,6 @@ impl AgentHome {
     pub fn complete_bootstrap(&self) -> Result<bool, HomeError> {
         crate::onboard::complete_bootstrap(&self.inner.root)
     }
-
 }
 
 #[cfg(test)]
@@ -341,16 +340,10 @@ mod tests {
         let view = home.system_prompt(&BootstrapBudget::default());
         let prompt = view.render();
         // The seeded IDENTITY.md body identifies the agent as shenron.
-        assert!(
-            prompt.contains("Identité (IDENTITY.md)"),
-            "identity section missing:\n{prompt}"
-        );
+        assert!(prompt.contains("Identité (IDENTITY.md)"), "identity section missing:\n{prompt}");
         assert!(prompt.contains("shenron"), "agent name missing");
         assert!(prompt.contains("Règles d'opération"), "agents missing");
-        assert!(
-            prompt.contains("agent d'ingénierie souverain"),
-            "soul body missing"
-        );
+        assert!(prompt.contains("agent d'ingénierie souverain"), "soul body missing");
     }
 
     #[test]
@@ -367,10 +360,7 @@ mod tests {
         let prompt = home.system_prompt(&BootstrapBudget::default()).render();
         // Subagent gets rules + tools, never the identity/soul persona.
         assert!(prompt.contains("Règles d'opération"));
-        assert!(
-            !prompt.contains("Identité (IDENTITY.md)"),
-            "subagent must not see identity"
-        );
+        assert!(!prompt.contains("Identité (IDENTITY.md)"), "subagent must not see identity");
     }
 
     #[test]
@@ -394,11 +384,8 @@ mod tests {
     fn open_missing_workspace_yields_minimal_default() {
         let td = tempdir().unwrap();
         let ws = td.path().join("does-not-exist");
-        let home = AgentHome::open(HomeOptions {
-            workspace: Some(ws),
-            ..HomeOptions::default()
-        })
-        .unwrap();
+        let home =
+            AgentHome::open(HomeOptions { workspace: Some(ws), ..HomeOptions::default() }).unwrap();
         assert_eq!(home.identity().name, "shenron");
         assert!(home.soul().is_none());
         let prompt = home.system_prompt(&BootstrapBudget::default()).render();
@@ -411,11 +398,7 @@ mod tests {
         let td = tempdir().unwrap();
         let ws = td.path().join("workspace");
         std::fs::create_dir_all(&ws).unwrap();
-        std::fs::write(
-            ws.join("SOUL.md"),
-            "---\ntone: x\n---\n## v1.0.0\n- shipped\n",
-        )
-        .unwrap();
+        std::fs::write(ws.join("SOUL.md"), "---\ntone: x\n---\n## v1.0.0\n- shipped\n").unwrap();
         let err = AgentHome::open(HomeOptions {
             workspace: Some(ws.clone()),
             strict_soul: true,

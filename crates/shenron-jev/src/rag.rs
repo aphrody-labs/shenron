@@ -51,11 +51,7 @@ pub struct GuardPolicy {
 
 impl Default for GuardPolicy {
     fn default() -> Self {
-        Self {
-            max_injection: 0.5,
-            max_contradiction: 0.5,
-            min_relevance: 0.0,
-        }
+        Self { max_injection: 0.5, max_contradiction: 0.5, min_relevance: 0.0 }
     }
 }
 
@@ -65,10 +61,7 @@ impl GuardPolicy {
     /// in every verdict for callers to explain the correction.
     #[must_use]
     pub fn evidence() -> Self {
-        Self {
-            max_contradiction: 1.0,
-            ..Self::default()
-        }
+        Self { max_contradiction: 1.0, ..Self::default() }
     }
 }
 
@@ -115,28 +108,18 @@ pub async fn judge_passages(
     query: &str,
     passages: &[impl AsRef<str>],
 ) -> Result<Vec<PassageVerdict>, JevError> {
-    let calls = passages
-        .iter()
-        .enumerate()
-        .map(|(index, passage)| async move {
-            let decision = router
-                .decide(&passage_request(query, passage.as_ref()))
-                .await?;
-            let answers = &decision.response.answers;
-            Ok(PassageVerdict {
-                index,
-                relevance: noul(answers, RELEVANT),
-                injection: noul(answers, INJECTION),
-                contradiction: noul(answers, CONTRADICTION),
-                served_by: decision.served_by,
-            })
-        });
-    stream::iter(calls)
-        .buffered(8)
-        .collect::<Vec<_>>()
-        .await
-        .into_iter()
-        .collect()
+    let calls = passages.iter().enumerate().map(|(index, passage)| async move {
+        let decision = router.decide(&passage_request(query, passage.as_ref())).await?;
+        let answers = &decision.response.answers;
+        Ok(PassageVerdict {
+            index,
+            relevance: noul(answers, RELEVANT),
+            injection: noul(answers, INJECTION),
+            contradiction: noul(answers, CONTRADICTION),
+            served_by: decision.served_by,
+        })
+    });
+    stream::iter(calls).buffered(8).collect::<Vec<_>>().await.into_iter().collect()
 }
 
 /// Drop unsafe or irrelevant passages and order the rest by relevance
@@ -151,11 +134,7 @@ pub fn filter_and_rerank(verdicts: &[PassageVerdict], policy: GuardPolicy) -> Ve
                 && v.relevance >= policy.min_relevance
         })
         .collect();
-    kept.sort_by(|a, b| {
-        b.relevance
-            .total_cmp(&a.relevance)
-            .then(a.index.cmp(&b.index))
-    });
+    kept.sort_by(|a, b| b.relevance.total_cmp(&a.relevance).then(a.index.cmp(&b.index)));
     kept.into_iter().map(|v| v.index).collect()
 }
 
@@ -164,13 +143,7 @@ mod tests {
     use super::*;
 
     fn verdict(index: usize, relevance: f64, injection: f64, contradiction: f64) -> PassageVerdict {
-        PassageVerdict {
-            index,
-            relevance,
-            injection,
-            contradiction,
-            served_by: Backend::Local,
-        }
+        PassageVerdict { index, relevance, injection, contradiction, served_by: Backend::Local }
     }
 
     #[test]
@@ -182,23 +155,14 @@ mod tests {
             verdict(3, 0.95, 0.0, 0.7),
             verdict(4, 0.4, 0.0, 0.0),
         ];
-        assert_eq!(
-            filter_and_rerank(&verdicts, GuardPolicy::default()),
-            vec![2, 0, 4]
-        );
-        let strict = GuardPolicy {
-            min_relevance: 0.5,
-            ..GuardPolicy::default()
-        };
+        assert_eq!(filter_and_rerank(&verdicts, GuardPolicy::default()), vec![2, 0, 4]);
+        let strict = GuardPolicy { min_relevance: 0.5, ..GuardPolicy::default() };
         assert_eq!(filter_and_rerank(&verdicts, strict), vec![2]);
     }
 
     #[test]
     fn evidence_policy_preserves_relevant_refutations() {
         let verdicts = [verdict(0, 0.8, 0.0, 0.99), verdict(1, 0.9, 0.99, 0.0)];
-        assert_eq!(
-            filter_and_rerank(&verdicts, GuardPolicy::evidence()),
-            vec![0]
-        );
+        assert_eq!(filter_and_rerank(&verdicts, GuardPolicy::evidence()), vec![0]);
     }
 }

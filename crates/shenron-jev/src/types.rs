@@ -51,10 +51,7 @@ pub enum Question {
 impl Question {
     /// Build a Noul question without criteria.
     pub fn noul(instructions: impl Into<Entry>) -> Self {
-        Self::Noul {
-            instructions: instructions.into(),
-            criteria: None,
-        }
+        Self::Noul { instructions: instructions.into(), criteria: None }
     }
 
     /// Build a Choice question from `(option, description)` pairs.
@@ -68,10 +65,7 @@ impl Question {
     {
         Self::Choice {
             instructions: instructions.into(),
-            criteria: options
-                .into_iter()
-                .map(|(k, v)| (k.into(), v.into()))
-                .collect(),
+            criteria: options.into_iter().map(|(k, v)| (k.into(), v.into())).collect(),
         }
     }
 
@@ -113,11 +107,7 @@ pub struct Request {
 impl Request {
     /// Start a request for `state` on the default model.
     pub fn new(state: impl Into<serde_json::Value>) -> Self {
-        Self {
-            state: state.into(),
-            model: DEFAULT_MODEL.to_owned(),
-            questions: BTreeMap::new(),
-        }
+        Self { state: state.into(), model: DEFAULT_MODEL.to_owned(), questions: BTreeMap::new() }
     }
 
     /// Add a named question.

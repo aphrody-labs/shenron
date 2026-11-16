@@ -7,8 +7,8 @@
 use std::{fs, path::Path};
 
 use anyhow::{Context, Result, ensure};
-use koharu_torch::{Device, Kind, Tensor};
 use image::DynamicImage;
+use koharu_torch::{Device, Kind, Tensor};
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 

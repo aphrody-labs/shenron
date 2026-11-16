@@ -52,11 +52,7 @@ impl Endpoint {
     /// # Errors
     /// [`JevError::Config`] when `base` is not a URL.
     pub fn saas(base: &str, api_key: impl Into<String>) -> Result<Self, JevError> {
-        Ok(Self {
-            base: parse_base(base)?,
-            token: Some(api_key.into()),
-            account_id: None,
-        })
+        Ok(Self { base: parse_base(base)?, token: Some(api_key.into()), account_id: None })
     }
 
     /// Cloudflare Workers AI endpoint.
@@ -80,11 +76,7 @@ impl Endpoint {
     /// # Errors
     /// [`JevError::Config`] when `base` is not a URL.
     pub fn local(base: &str, api_key: Option<String>) -> Result<Self, JevError> {
-        Ok(Self {
-            base: parse_base(base)?,
-            token: api_key,
-            account_id: None,
-        })
+        Ok(Self { base: parse_base(base)?, token: api_key, account_id: None })
     }
 
     fn url(&self, backend: Backend) -> Result<Url, JevError> {
@@ -95,18 +87,12 @@ impl Endpoint {
                 self.account_id.as_deref().unwrap_or_default()
             ),
         };
-        self.base
-            .join(&path)
-            .map_err(|e| JevError::Config(e.to_string()))
+        self.base.join(&path).map_err(|e| JevError::Config(e.to_string()))
     }
 }
 
 fn parse_base(base: &str) -> Result<Url, JevError> {
-    let with_slash = if base.ends_with('/') {
-        base.to_owned()
-    } else {
-        format!("{base}/")
-    };
+    let with_slash = if base.ends_with('/') { base.to_owned() } else { format!("{base}/") };
     Url::parse(&with_slash).map_err(|e| JevError::Config(format!("{base}: {e}")))
 }
 
@@ -269,15 +255,7 @@ impl JevRouter {
             .user_agent(concat!("shenron_jev/", env!("CARGO_PKG_VERSION")))
             .build()
             .map_err(|e| JevError::Config(e.to_string()))?;
-        Ok(Self {
-            http,
-            saas,
-            edge,
-            local,
-            native,
-            policy,
-            health: Mutex::new(Health::default()),
-        })
+        Ok(Self { http, saas, edge, local, native, policy, health: Mutex::new(Health::default()) })
     }
 
     /// Build from the environment. `SHENRON_JEV_MODE` picks the mode
@@ -371,10 +349,10 @@ impl JevRouter {
             None if var("CLOUDFLARE_API_TOKEN").is_some() => JevMode::Keyless,
             None if var("SHENRON_JEV_ENGINE_URL").is_some() || endpoint.is_some() => {
                 JevMode::Native
-            }
+            },
             None if local.is_some() => {
                 return Self::new(None, None, local, RoutingPolicy::default());
-            }
+            },
             None => return Err(JevError::NoBackend),
         };
         let missing = |what: &str| JevError::Config(format!("mode {mode} requires {what}"));
@@ -399,16 +377,16 @@ impl JevRouter {
             JevMode::Native => {
                 let engine = native(true)?.ok_or_else(|| missing("a native engine"))?;
                 return Self::native(engine, policy);
-            }
+            },
             JevMode::Keyless => {
                 let edge =
                     edge.ok_or_else(|| missing("CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_API_TOKEN"))?;
                 Self::new(None, Some(edge), local, policy)?
-            }
+            },
             JevMode::ApiKey => {
                 let saas = saas.ok_or_else(|| missing("TYPESAFE_API_KEY"))?;
                 Self::new(Some(saas), edge, local, policy)?
-            }
+            },
         };
         Ok(match native(false)? {
             Some(engine) => router.with_native(engine),
@@ -430,44 +408,30 @@ impl JevRouter {
         let tokens = request.estimated_tokens();
         let (primary, skipped) = self.primary(tokens).await?;
 
-        let mut failover = skipped.map(|(from, reason)| Failover {
-            from,
-            to: primary,
-            reason,
-        });
+        let mut failover = skipped.map(|(from, reason)| Failover { from, to: primary, reason });
         if let Some(event) = &failover {
             log_failover(event);
         }
 
         match self.attempt(primary, request).await? {
-            Attempt::Done(response, latency) => Ok(Decision {
-                response,
-                served_by: primary,
-                latency,
-                failover,
-            }),
+            Attempt::Done(response, latency) => {
+                Ok(Decision { response, served_by: primary, latency, failover })
+            },
             Attempt::Unavailable(reason) => {
                 let fallback = self.fallback_for(primary)?;
-                let event = Failover {
-                    from: primary,
-                    to: fallback,
-                    reason,
-                };
+                let event = Failover { from: primary, to: fallback, reason };
                 log_failover(&event);
                 failover = Some(event);
                 match self.attempt(fallback, request).await? {
-                    Attempt::Done(response, latency) => Ok(Decision {
-                        response,
-                        served_by: fallback,
-                        latency,
-                        failover,
-                    }),
+                    Attempt::Done(response, latency) => {
+                        Ok(Decision { response, served_by: fallback, latency, failover })
+                    },
                     Attempt::Unavailable(reason) => Err(JevError::Unavailable(format!(
                         "{primary}: {}; {fallback}: {reason}",
                         failover.map(|f| f.reason).unwrap_or_default()
                     ))),
                 }
-            }
+            },
         }
     }
 
@@ -486,18 +450,14 @@ impl JevRouter {
         if self.saas.is_some() {
             let mut health = self.health.lock().await;
             health.requests += 1;
-            let degraded = health
-                .p99(self.policy.min_samples)
-                .filter(|p| *p > self.policy.p99_budget);
+            let degraded =
+                health.p99(self.policy.min_samples).filter(|p| *p > self.policy.p99_budget);
             let probe = health.requests % self.policy.probe_every.max(1) == 0;
             drop(health);
             return match (degraded, self.fallback_for(Backend::Saas).ok(), probe) {
                 (Some(p99), Some(fallback), false) => Ok((
                     fallback,
-                    Some((
-                        Backend::Saas,
-                        format!("p99 {}ms over budget", p99.as_millis()),
-                    )),
+                    Some((Backend::Saas, format!("p99 {}ms over budget", p99.as_millis()))),
                 )),
                 _ => Ok((Backend::Saas, None)),
             };
@@ -519,7 +479,7 @@ impl JevRouter {
             Backend::Saas | Backend::Edge if self.local.is_some() => Ok(Backend::Local),
             Backend::Saas | Backend::Edge | Backend::Local if self.native.is_some() => {
                 Ok(Backend::Native)
-            }
+            },
             _ => Err(JevError::Unavailable(format!(
                 "{primary} failed and no fallback is configured"
             ))),
@@ -542,7 +502,7 @@ impl JevRouter {
             Ok(response) => {
                 check_response(request, &response)?;
                 Ok(Attempt::Done(response, started.elapsed()))
-            }
+            },
             Err(JevError::Unavailable(reason)) => Ok(Attempt::Unavailable(reason)),
             Err(error) => Err(error),
         }
@@ -577,7 +537,7 @@ impl JevRouter {
                     "timeout after {}ms",
                     timeout.as_millis()
                 )));
-            }
+            },
             Err(_) => return Ok(Attempt::Unavailable("transport_error".into())),
         };
         let status = reply.status();
@@ -588,10 +548,7 @@ impl JevRouter {
         let latency = started.elapsed();
 
         if backend == Backend::Saas {
-            self.health
-                .lock()
-                .await
-                .record(latency, self.policy.window.max(1));
+            self.health.lock().await.record(latency, self.policy.window.max(1));
         }
         if status.is_server_error() {
             return Ok(Attempt::Unavailable(format!("http {}", status.as_u16())));
@@ -628,9 +585,7 @@ fn parse_response(backend: Backend, body: &[u8]) -> Result<Response, JevError> {
         if value.get("result").is_some() {
             let envelope: EdgeEnvelope = serde_json::from_value(value).map_err(bad)?;
             if !envelope.success {
-                return Err(JevError::Format(
-                    "edge: envelope reports success=false".into(),
-                ));
+                return Err(JevError::Format("edge: envelope reports success=false".into()));
             }
             return Ok(envelope.result);
         }

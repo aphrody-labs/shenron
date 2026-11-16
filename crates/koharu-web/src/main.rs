@@ -269,14 +269,19 @@ async fn process(app: &Shared, id: Uuid, bytes: Bytes) -> Result<(Vec<u8>, PageO
             })
         })
         .collect();
-    let output =
-        PageOutput { width: result.width, height: result.height, regions: result.regions.len(), texts };
+    let output = PageOutput {
+        width: result.width,
+        height: result.height,
+        regions: result.regions.len(),
+        texts,
+    };
     Ok((png, output))
 }
 
 async fn submit(State(app): State<Shared>, body: Bytes) -> Response {
     if body.is_empty() {
-        return (StatusCode::BAD_REQUEST, "empty body: send a PNG, JPEG or WebP page").into_response();
+        return (StatusCode::BAD_REQUEST, "empty body: send a PNG, JPEG or WebP page")
+            .into_response();
     }
     let id = Uuid::now_v7();
     let view = JobView {
@@ -316,7 +321,9 @@ async fn job(State(app): State<Shared>, Path(id): Path<Uuid>) -> Response {
 
 async fn result_png(State(app): State<Shared>, Path(id): Path<Uuid>) -> Response {
     match lookup(&app, id, |job| job.png.clone()) {
-        Some(Some(png)) => ([(header::CONTENT_TYPE, "image/png")], png.as_ref().clone()).into_response(),
+        Some(Some(png)) => {
+            ([(header::CONTENT_TYPE, "image/png")], png.as_ref().clone()).into_response()
+        },
         Some(None) => StatusCode::CONFLICT.into_response(),
         None => StatusCode::NOT_FOUND.into_response(),
     }
@@ -397,7 +404,8 @@ async fn main() -> Result<()> {
         .route("/openapi.json", get(openapi))
         .layer(DefaultBodyLimit::max(limit))
         .with_state(app);
-    let listener = tokio::net::TcpListener::bind(bind).await.with_context(|| format!("bind {bind}"))?;
+    let listener =
+        tokio::net::TcpListener::bind(bind).await.with_context(|| format!("bind {bind}"))?;
     eprintln!("koharu-web listening on http://{bind}");
     axum::serve(listener, router).await?;
     Ok(())

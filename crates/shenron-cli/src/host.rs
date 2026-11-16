@@ -11,9 +11,7 @@ use std::{
 pub const BUN_BIN_ENV: &str = "SHENRON_BUN_BIN";
 
 fn bun_program() -> std::ffi::OsString {
-    std::env::var_os(BUN_BIN_ENV)
-        .filter(|value| !value.is_empty())
-        .unwrap_or_else(|| "bun".into())
+    std::env::var_os(BUN_BIN_ENV).filter(|value| !value.is_empty()).unwrap_or_else(|| "bun".into())
 }
 
 /// A `bun` command with `args`.
@@ -48,6 +46,9 @@ pub fn gpu_count() -> usize {
         .ok()
         .filter(|output| output.status.success())
         .map_or(0, |output| {
-            String::from_utf8_lossy(&output.stdout).lines().filter(|line| !line.trim().is_empty()).count()
+            String::from_utf8_lossy(&output.stdout)
+                .lines()
+                .filter(|line| !line.trim().is_empty())
+                .count()
         })
 }

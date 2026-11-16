@@ -240,8 +240,7 @@ fn checked_slice(data: &[u8], offset: usize, size: usize) -> Result<&[u8]> {
         context: "cpk_utf",
         details: "offset overflow".into(),
     })?;
-    data.get(offset..end)
-        .ok_or(ReError::BufferTooSmall { required: end, available: data.len() })
+    data.get(offset..end).ok_or(ReError::BufferTooSmall { required: end, available: data.len() })
 }
 
 fn be_u16(data: &[u8], off: usize) -> Result<u16> {
@@ -446,25 +445,29 @@ impl CpkStreamReader {
             if region.len() != size {
                 return Err(ReError::BufferTooSmall { required: size, available: region.len() });
             }
-            if is_encrypted
-                && let Some(k) = file_key
-            {
+            if is_encrypted && let Some(k) = file_key {
                 decrypt_cri_block(&mut region, offset, k);
             }
             Ok(region)
         };
 
         let header_prefix = read_region(0, 24)?;
-        let container_len =
-            u32::from_le_bytes([header_prefix[8], header_prefix[9], header_prefix[10], header_prefix[11]])
-                as usize;
+        let container_len = u32::from_le_bytes([
+            header_prefix[8],
+            header_prefix[9],
+            header_prefix[10],
+            header_prefix[11],
+        ]) as usize;
         // Support both CRI 16-byte LE container (`size` at +8) and direct `@UTF` at +16 (`size` BE at +20).
         let header_body_size = if container_len > 0 && container_len <= MAX_METADATA_BYTES {
             container_len
         } else {
-            let utf_be =
-                u32::from_be_bytes([header_prefix[20], header_prefix[21], header_prefix[22], header_prefix[23]])
-                    as usize;
+            let utf_be = u32::from_be_bytes([
+                header_prefix[20],
+                header_prefix[21],
+                header_prefix[22],
+                header_prefix[23],
+            ]) as usize;
             utf_be.saturating_add(8)
         };
         let header_data = read_region(0, 16usize.saturating_add(header_body_size))?;
@@ -511,16 +514,11 @@ impl CpkStreamReader {
                 .get_str(i, "FileName")
                 .map(str::to_owned)
                 .unwrap_or_else(|| format!("file_{i}"));
-            let dir = toc_utf
-                .get_str(i, "DirName")
-                .filter(|d| !d.is_empty())
-                .map(str::to_owned);
+            let dir = toc_utf.get_str(i, "DirName").filter(|d| !d.is_empty()).map(str::to_owned);
             let rel_off = toc_utf.get_i64(i, "FileOffset").unwrap_or(0);
             let file_size = toc_utf.get_i64(i, "FileSize").unwrap_or(0).max(0) as u64;
-            let extract_size = toc_utf
-                .get_i64(i, "ExtractSize")
-                .map(|v| v.max(0) as u64)
-                .unwrap_or(file_size);
+            let extract_size =
+                toc_utf.get_i64(i, "ExtractSize").map(|v| v.max(0) as u64).unwrap_or(file_size);
             let id = toc_utf.get_i64(i, "ID").map(|v| v as u32).unwrap_or(i as u32);
             let file_offset = rel_off
                 .checked_add(content_offset)
@@ -555,7 +553,9 @@ impl CpkStreamReader {
         self.entries
             .iter()
             .find(|e| full_path(e) == normalized)
-            .or_else(|| self.entries.iter().find(|e| full_path(e).eq_ignore_ascii_case(&normalized)))
+            .or_else(|| {
+                self.entries.iter().find(|e| full_path(e).eq_ignore_ascii_case(&normalized))
+            })
             .or_else(|| self.entries.iter().find(|e| e.name == basename))
             .or_else(|| self.entries.iter().find(|e| e.name.eq_ignore_ascii_case(basename)))
     }

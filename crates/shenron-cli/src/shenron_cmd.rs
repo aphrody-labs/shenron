@@ -430,10 +430,11 @@ fn endpoint(value: String) -> miette::Result<reqwest::Url> {
 }
 
 fn ai_base() -> miette::Result<reqwest::Url> {
-    let value = config_alias(&["SHENRON_AI_HTTP_URL", "SHENRON_API_URL"])
-        .ok_or_else(|| miette::miette!(
+    let value = config_alias(&["SHENRON_AI_HTTP_URL", "SHENRON_API_URL"]).ok_or_else(|| {
+        miette::miette!(
             "SHENRON_AI_HTTP_URL absent ; générer le profil Shenron dev ou exporter cette variable"
-        ))?;
+        )
+    })?;
     endpoint(value)
 }
 
@@ -602,8 +603,8 @@ pub async fn doctor_report() -> miette::Result<serde_json::Value> {
         }),
         Err(error) => json!({"reachable": false, "ready": false, "reason": error.to_string()}),
     };
-    let state = shenron_home::paths::state_dir()
-        .map_err(|error| miette::miette!("Agent Home: {error}"))?;
+    let state =
+        shenron_home::paths::state_dir().map_err(|error| miette::miette!("Agent Home: {error}"))?;
     let workspace = shenron_home::paths::named_profile_workspace(&state, "dbfr");
     let agent_home = match shenron_home::SyncSnapshot::capture(&workspace) {
         Ok(snapshot) => {
@@ -963,8 +964,8 @@ async fn handle_infra(action: ShenronInfraAction) -> miette::Result<()> {
 }
 
 async fn handle_persona(action: ShenronPersonaAction) -> miette::Result<()> {
-    let state = shenron_home::paths::state_dir()
-        .map_err(|error| miette::miette!("Agent Home: {error}"))?;
+    let state =
+        shenron_home::paths::state_dir().map_err(|error| miette::miette!("Agent Home: {error}"))?;
     let workspace = shenron_home::paths::named_profile_workspace(&state, "dbfr");
     // Read one coherent revision; never generate from a partially edited home.
     shenron_home::SyncSnapshot::capture(&workspace)

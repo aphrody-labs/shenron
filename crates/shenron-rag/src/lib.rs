@@ -19,7 +19,7 @@ pub use corpus::{
     ShenronCorpusDoc, ShenronIngestOptions, ShenronIngestStats, ingest_shenron_docs,
     load_shenron_corpus,
 };
+pub use dragonball::{LocalCorpus, LocalHit, LocalSearchOptions};
 pub use embedder::{Embedder, OpenAiCompatEmbedder, StubEmbedder};
 pub use error::{RagError, Result};
 pub use store::{ChunkRecord, DocRecord, RagStats, RagStore, ScoredChunk};
-pub use dragonball::{LocalCorpus, LocalHit, LocalSearchOptions};

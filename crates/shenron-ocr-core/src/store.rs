@@ -197,10 +197,7 @@ impl OcrStore {
         {
             std::fs::create_dir_all(parent)?;
         }
-        let store = Self {
-            conn: Connection::open(path)?,
-            path: Some(path.to_path_buf()),
-        };
+        let store = Self { conn: Connection::open(path)?, path: Some(path.to_path_buf()) };
         store.migrate()?;
         Ok(store)
     }
@@ -211,10 +208,7 @@ impl OcrStore {
     ///
     /// [`StoreError`] when the schema cannot be applied.
     pub fn in_memory() -> Result<Self> {
-        let store = Self {
-            conn: Connection::open_in_memory()?,
-            path: None,
-        };
+        let store = Self { conn: Connection::open_in_memory()?, path: None };
         store.migrate()?;
         Ok(store)
     }
@@ -268,8 +262,7 @@ impl OcrStore {
                      REFERENCES ocr_pages (page_id, content_key) ON DELETE CASCADE
              );",
         )?;
-        self.conn
-            .pragma_update(None, "user_version", SCHEMA_VERSION)?;
+        self.conn.pragma_update(None, "user_version", SCHEMA_VERSION)?;
         Ok(())
     }
 
@@ -356,10 +349,8 @@ impl OcrStore {
                 params![result.page_id, content_key],
             )?;
             for (idx, block) in result.blocks.iter().enumerate() {
-                let polygon = block
-                    .polygon
-                    .map(|polygon| serde_json::to_string(&polygon))
-                    .transpose()?;
+                let polygon =
+                    block.polygon.map(|polygon| serde_json::to_string(&polygon)).transpose()?;
                 tx.execute(
                     "INSERT INTO ocr_blocks
                         (page_id, content_key, idx, text, confidence, role, polygon)
@@ -408,13 +399,11 @@ impl OcrStore {
     ///
     /// [`StoreError`] on read failure.
     pub fn stats(&self) -> Result<StoreStats> {
-        let mut stmt = self
-            .conn
-            .prepare("SELECT status, COUNT(*) FROM ocr_pages GROUP BY status")?;
+        let mut stmt =
+            self.conn.prepare("SELECT status, COUNT(*) FROM ocr_pages GROUP BY status")?;
         let mut stats = StoreStats::default();
-        let rows = stmt.query_map([], |row| {
-            Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?))
-        })?;
+        let rows =
+            stmt.query_map([], |row| Ok((row.get::<_, String>(0)?, row.get::<_, i64>(1)?)))?;
         for row in rows {
             let (key, rows) = row?;
             let count = u64::try_from(rows).unwrap_or(0);
@@ -468,9 +457,7 @@ impl OcrStore {
             Some(status) => stmt
                 .query_map(params![status_key(status)], map)?
                 .collect::<rusqlite::Result<Vec<_>>>()?,
-            None => stmt
-                .query_map([], map)?
-                .collect::<rusqlite::Result<Vec<_>>>()?,
+            None => stmt.query_map([], map)?.collect::<rusqlite::Result<Vec<_>>>()?,
         };
         Ok(pages)
     }
@@ -489,8 +476,7 @@ impl OcrStore {
                 |row| row.get(0),
             )
             .optional()?;
-        raw.map(|raw| serde_json::from_str(&raw).map_err(StoreError::Encode))
-            .transpose()
+        raw.map(|raw| serde_json::from_str(&raw).map_err(StoreError::Encode)).transpose()
     }
 }
 
@@ -558,10 +544,7 @@ mod tests {
                 confidence: Some(0.9),
                 role: Some("text".into()),
             }],
-            quality: Quality {
-                mean_confidence: Some(0.9),
-                reasons: Vec::new(),
-            },
+            quality: Quality { mean_confidence: Some(0.9), reasons: Vec::new() },
             raw: None,
         }
     }
@@ -570,25 +553,10 @@ mod tests {
     fn deposit_is_idempotent_for_the_same_bytes() {
         let mut store = OcrStore::in_memory().unwrap();
         let first = store.deposit(&sample("p1", OcrStatus::Text, Some("abc"), "hello"), None);
-        assert_eq!(
-            first.unwrap(),
-            DepositReport {
-                inserted: 1,
-                replaced: 0
-            }
-        );
+        assert_eq!(first.unwrap(), DepositReport { inserted: 1, replaced: 0 });
 
-        let again = store.deposit(
-            &sample("p1", OcrStatus::Text, Some("abc"), "hello again"),
-            None,
-        );
-        assert_eq!(
-            again.unwrap(),
-            DepositReport {
-                inserted: 0,
-                replaced: 1
-            }
-        );
+        let again = store.deposit(&sample("p1", OcrStatus::Text, Some("abc"), "hello again"), None);
+        assert_eq!(again.unwrap(), DepositReport { inserted: 0, replaced: 1 });
 
         assert_eq!(store.stats().unwrap().total(), 1);
         let stored = store.record("p1", Some("abc")).unwrap().unwrap();
@@ -598,12 +566,8 @@ mod tests {
     #[test]
     fn a_replaced_image_keeps_both_reads() {
         let mut store = OcrStore::in_memory().unwrap();
-        store
-            .deposit(&sample("p1", OcrStatus::Text, Some("abc"), "old"), None)
-            .unwrap();
-        store
-            .deposit(&sample("p1", OcrStatus::Text, Some("def"), "new"), None)
-            .unwrap();
+        store.deposit(&sample("p1", OcrStatus::Text, Some("abc"), "old"), None).unwrap();
+        store.deposit(&sample("p1", OcrStatus::Text, Some("def"), "new"), None).unwrap();
         assert_eq!(store.stats().unwrap().total(), 2);
         assert!(store.contains("p1", Some("abc")).unwrap());
         assert!(!store.contains("p1", Some("zzz")).unwrap());
@@ -629,9 +593,7 @@ mod tests {
         assert_eq!(stats.depositable(), 1);
         assert_eq!(stats.processing_error, 1);
 
-        let review = store
-            .list(&ListFilter::default().status(OcrStatus::NeedsReview))
-            .unwrap();
+        let review = store.list(&ListFilter::default().status(OcrStatus::NeedsReview)).unwrap();
         assert_eq!(review.len(), 1);
         assert_eq!(review[0].page_id, "d");
         assert_eq!(review[0].source.as_deref(), Some("lot-001.jsonl"));
@@ -640,19 +602,13 @@ mod tests {
     #[test]
     fn blocks_do_not_survive_a_second_read() {
         let mut store = OcrStore::in_memory().unwrap();
-        store
-            .deposit(&sample("p1", OcrStatus::Text, Some("abc"), "one"), None)
-            .unwrap();
+        store.deposit(&sample("p1", OcrStatus::Text, Some("abc"), "one"), None).unwrap();
         let mut second = sample("p1", OcrStatus::NoText, Some("abc"), "");
         second.blocks.clear();
         store.deposit(&second, None).unwrap();
         let count: i64 = store
             .conn
-            .query_row(
-                "SELECT COUNT(*) FROM ocr_blocks WHERE page_id = 'p1'",
-                [],
-                |row| row.get(0),
-            )
+            .query_row("SELECT COUNT(*) FROM ocr_blocks WHERE page_id = 'p1'", [], |row| row.get(0))
             .unwrap();
         assert_eq!(count, 0);
     }

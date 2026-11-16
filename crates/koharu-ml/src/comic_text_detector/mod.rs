@@ -2,8 +2,8 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result};
-use koharu_torch::Device;
 use image::DynamicImage;
+use koharu_torch::Device;
 
 use crate::backend::TryIntoDevice;
 

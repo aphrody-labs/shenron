@@ -510,7 +510,8 @@ mod tests {
         else {
             return;
         };
-        let layout = crate::game::formats::fmp::FmpFile::parse(&std::fs::read(map).unwrap()).unwrap();
+        let layout =
+            crate::game::formats::fmp::FmpFile::parse(&std::fs::read(map).unwrap()).unwrap();
         let indices: std::collections::BTreeSet<usize> = layout
             .objects
             .iter()
@@ -522,7 +523,8 @@ mod tests {
         for index in indices {
             let name = layout.resources.nsk[index].replace('\\', "/");
             let path = std::path::Path::new(&root).join(&name);
-            let nsk = crate::game::formats::nsk::NskFile::parse(&std::fs::read(&path).unwrap()).unwrap();
+            let nsk =
+                crate::game::formats::nsk::NskFile::parse(&std::fs::read(&path).unwrap()).unwrap();
             let model = crate::game::formats::AssembledCharacterModel::assemble_nsk_primitives(
                 &nsk.model,
                 &nsk.skeleton,

@@ -11,9 +11,6 @@ use std::{
     time::Duration,
 };
 
-use shenron_jev::{
-    Answer, Backend, Endpoint, JevError, JevRouter, Question, Request, RoutingPolicy,
-};
 use axum::{
     Router,
     extract::State,
@@ -21,6 +18,9 @@ use axum::{
     routing::post,
 };
 use serde_json::{Value, json};
+use shenron_jev::{
+    Answer, Backend, Endpoint, JevError, JevRouter, Question, Request, RoutingPolicy,
+};
 
 #[derive(Clone)]
 struct Fake {
@@ -136,10 +136,7 @@ async fn saas_serves_typed_answers_with_bearer_auth() {
 
 #[tokio::test]
 async fn overload_529_fails_over_to_local() {
-    let saas = fake(
-        StatusCode::from_u16(529).unwrap(),
-        json!({ "error": "overloaded" }),
-    );
+    let saas = fake(StatusCode::from_u16(529).unwrap(), json!({ "error": "overloaded" }));
     let local = fake(StatusCode::OK, answers("technical"));
     let local_hits = Arc::clone(&local.hits);
     let saas_base = serve("/v1/systemone", saas).await;
@@ -155,10 +152,7 @@ async fn overload_529_fails_over_to_local() {
     let decision = router.decide(&request(TICKET)).await.unwrap();
     assert_eq!(decision.served_by, Backend::Local);
     let failover = decision.failover.unwrap();
-    assert_eq!(
-        (failover.from, failover.to),
-        (Backend::Saas, Backend::Local)
-    );
+    assert_eq!((failover.from, failover.to), (Backend::Saas, Backend::Local));
     assert_eq!(failover.reason, "http 529");
     assert_eq!(local_hits.load(Ordering::SeqCst), 1);
 }
@@ -206,10 +200,7 @@ async fn degraded_p99_routes_to_local_and_probes_saas() {
     .unwrap();
 
     for _ in 0..3 {
-        assert_eq!(
-            router.decide(&request(TICKET)).await.unwrap().served_by,
-            Backend::Saas
-        );
+        assert_eq!(router.decide(&request(TICKET)).await.unwrap().served_by, Backend::Saas);
     }
     assert!(router.saas_p99().await.unwrap() > Duration::from_millis(10));
 
@@ -218,10 +209,7 @@ async fn degraded_p99_routes_to_local_and_probes_saas() {
     assert!(skipped.failover.unwrap().reason.contains("over budget"));
 
     // Request 5 is a probe that still measures the SaaS.
-    assert_eq!(
-        router.decide(&request(TICKET)).await.unwrap().served_by,
-        Backend::Saas
-    );
+    assert_eq!(router.decide(&request(TICKET)).await.unwrap().served_by, Backend::Saas);
     assert_eq!(saas_hits.load(Ordering::SeqCst), 4);
 }
 
@@ -271,11 +259,7 @@ async fn non_conforming_answer_is_rejected() {
 
 #[tokio::test]
 async fn text_output_is_rejected() {
-    let base = serve(
-        "/v1/systemone",
-        fake(StatusCode::OK, json!({ "text": "billing" })),
-    )
-    .await;
+    let base = serve("/v1/systemone", fake(StatusCode::OK, json!({ "text": "billing" }))).await;
     let router = JevRouter::new(
         Some(Endpoint::saas(&base, "key").unwrap()),
         None,
@@ -283,21 +267,16 @@ async fn text_output_is_rejected() {
         RoutingPolicy::default(),
     )
     .unwrap();
-    assert!(matches!(
-        router.decide(&request(TICKET)).await,
-        Err(JevError::Format(_))
-    ));
+    assert!(matches!(router.decide(&request(TICKET)).await, Err(JevError::Format(_))));
 }
 
 #[tokio::test]
 async fn client_error_is_not_failed_over() {
     let local = fake(StatusCode::OK, answers("billing"));
     let local_hits = Arc::clone(&local.hits);
-    let saas_base = serve(
-        "/v1/systemone",
-        fake(StatusCode::UNPROCESSABLE_ENTITY, json!({ "error": "bad" })),
-    )
-    .await;
+    let saas_base =
+        serve("/v1/systemone", fake(StatusCode::UNPROCESSABLE_ENTITY, json!({ "error": "bad" })))
+            .await;
     let local_base = serve("/v1/systemone", local).await;
     let router = JevRouter::new(
         Some(Endpoint::saas(&saas_base, "key").unwrap()),
@@ -307,10 +286,7 @@ async fn client_error_is_not_failed_over() {
     )
     .unwrap();
     let err = router.decide(&request(TICKET)).await.unwrap_err();
-    assert!(
-        matches!(err, JevError::Rejected { status: 422, .. }),
-        "{err}"
-    );
+    assert!(matches!(err, JevError::Rejected { status: 422, .. }), "{err}");
     assert_eq!(local_hits.load(Ordering::SeqCst), 0);
 }
 
@@ -325,12 +301,6 @@ async fn malformed_requests_never_leave_the_process() {
     .unwrap();
     let one_option =
         Request::new(TICKET).question("d", Question::choice("Which?", [("only", "one")]));
-    assert!(matches!(
-        router.decide(&one_option).await,
-        Err(JevError::InvalidRequest(_))
-    ));
-    assert!(matches!(
-        router.decide(&Request::new(TICKET)).await,
-        Err(JevError::InvalidRequest(_))
-    ));
+    assert!(matches!(router.decide(&one_option).await, Err(JevError::InvalidRequest(_))));
+    assert!(matches!(router.decide(&Request::new(TICKET)).await, Err(JevError::InvalidRequest(_))));
 }

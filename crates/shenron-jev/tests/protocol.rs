@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-use shenron_jev::{Question, Request, Response, check_request, check_response, protocol};
 use serde_json::{Value, json};
+use shenron_jev::{Question, Request, Response, check_request, check_response, protocol};
 
 fn request() -> Value {
     json!({"state": {"ticket": ["refund", null]}, "questions": {
@@ -62,10 +62,7 @@ fn structured_entries_optional_instructions_and_unknown_usage_share_typed_and_ra
     check_request(&typed_request).unwrap();
     check_response(&typed_request, &typed_response).unwrap();
     assert!(typed_response.usage.is_none());
-    assert_eq!(
-        serde_json::to_value(&typed_request.questions).unwrap(),
-        raw_request["questions"]
-    );
+    assert_eq!(serde_json::to_value(&typed_request.questions).unwrap(), raw_request["questions"]);
     assert_eq!(
         protocol::primitive(
             &serde_json::to_value(&typed_response.answers["accepted"]).unwrap(),
@@ -83,10 +80,7 @@ fn invalid_entries_unknown_fields_and_prototype_names_are_rejected() {
         ("bad", json!({"type":"noul", "extra":null})),
         ("__proto__", json!({"type":"noul"})),
         ("constructor", json!({"type":"noul"})),
-        (
-            "bad",
-            json!({"type":"choice", "criteria":{"prototype":null,"ok":null}}),
-        ),
+        ("bad", json!({"type":"choice", "criteria":{"prototype":null,"ok":null}})),
     ] {
         let request = json!({"state":null,"questions":{name:question}});
         assert!(protocol::request(&request).is_err(), "{request}");
@@ -99,12 +93,9 @@ fn invalid_entries_unknown_fields_and_prototype_names_are_rejected() {
 
 #[test]
 fn model_names_share_nonblank_utf8_bounds_for_typed_and_raw_validation() {
-    for model in [
-        "".to_owned(),
-        " \t\r\n".to_owned(),
-        "\u{2003}\u{feff}".to_owned(),
-        "é".repeat(129),
-    ] {
+    for model in
+        ["".to_owned(), " \t\r\n".to_owned(), "\u{2003}\u{feff}".to_owned(), "é".repeat(129)]
+    {
         let mut raw_request = request();
         raw_request["model"] = json!(model);
         assert!(protocol::request(&raw_request).is_err(), "{model:?}");
@@ -114,16 +105,10 @@ fn model_names_share_nonblank_utf8_bounds_for_typed_and_raw_validation() {
         let raw_request = request();
         let mut raw_response = response();
         raw_response["model"] = json!(model);
-        assert!(
-            protocol::response(&raw_response, &raw_request).is_err(),
-            "{model:?}"
-        );
+        assert!(protocol::response(&raw_response, &raw_request).is_err(), "{model:?}");
         let typed_request: Request = serde_json::from_value(raw_request).unwrap();
         let typed_response: Response = serde_json::from_value(raw_response).unwrap();
-        assert!(
-            check_response(&typed_request, &typed_response).is_err(),
-            "{model:?}"
-        );
+        assert!(check_response(&typed_request, &typed_response).is_err(), "{model:?}");
     }
 
     let model = "é".repeat(128);
@@ -143,10 +128,7 @@ fn answer_distributions_legends_and_safe_usage_counts_are_checked() {
     for response in [
         {
             let mut value = response();
-            value["answers"]["route"]["probabilities"]
-                .as_object_mut()
-                .unwrap()
-                .remove("search");
+            value["answers"]["route"]["probabilities"].as_object_mut().unwrap().remove("search");
             value
         },
         {
@@ -170,10 +152,7 @@ fn answer_distributions_legends_and_safe_usage_counts_are_checked() {
             value
         },
     ] {
-        assert!(
-            protocol::response(&response, &request).is_err(),
-            "{response}"
-        );
+        assert!(protocol::response(&response, &request).is_err(), "{response}");
     }
 }
 
@@ -184,9 +163,8 @@ fn parser_and_question_counts_keep_the_existing_bun_bounds() {
         .map(|index| (index.to_string(), json!({"type":"noul"})))
         .collect::<serde_json::Map<_, _>>();
     assert!(protocol::request(&json!({"state":null,"questions":questions})).is_err());
-    let criteria = (0..256)
-        .map(|index| (index.to_string(), Value::Null))
-        .collect::<serde_json::Map<_, _>>();
+    let criteria =
+        (0..256).map(|index| (index.to_string(), Value::Null)).collect::<serde_json::Map<_, _>>();
     assert!(protocol::question(&json!({"type":"choice","criteria":criteria})).is_err());
     assert!(protocol::question(&json!({"type":"score","criteria":vec![Value::Null;11]})).is_err());
     let too_large = Request::new("x".repeat(protocol::MAX_JSON_BYTES))

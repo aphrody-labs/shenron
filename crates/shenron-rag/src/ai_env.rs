@@ -49,10 +49,8 @@ pub const CHAT_BASE_URL: CanonicalEnv = CanonicalEnv {
 };
 
 /// Model id served at [`CHAT_BASE_URL`].
-pub const CHAT_MODEL: CanonicalEnv = CanonicalEnv {
-    canonical: "SHENRON_AI_CHAT_MODEL",
-    aliases: &["SHENRON_LLM_MODEL"],
-};
+pub const CHAT_MODEL: CanonicalEnv =
+    CanonicalEnv { canonical: "SHENRON_AI_CHAT_MODEL", aliases: &["SHENRON_LLM_MODEL"] };
 
 /// Base URL of the embeddings endpoint.
 pub const EMBED_BASE_URL: CanonicalEnv =

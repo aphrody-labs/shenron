@@ -57,7 +57,7 @@ pub fn JsonView(value: Value, depth: usize) -> Element {
                     }
                 }
             }
-        }
+        },
         Value::Array(items) => rsx! {
             ul { class: "list",
                 for (index, item) in items.into_iter().enumerate() {

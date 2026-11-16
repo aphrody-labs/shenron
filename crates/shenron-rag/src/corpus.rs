@@ -9,9 +9,9 @@
 
 use std::{collections::HashSet, path::Path, sync::Arc, time::Instant};
 
-use shenron_rag_core::{ChunkOptions, chunker_for_path};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest as _, Sha256};
+use shenron_rag_core::{ChunkOptions, chunker_for_path};
 use tracing::info;
 
 use crate::{Embedder, RagError, RagStore, Result};

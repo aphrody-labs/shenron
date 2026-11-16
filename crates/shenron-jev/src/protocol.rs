@@ -16,9 +16,7 @@ pub fn parse(input: &[u8]) -> Result<Value> {
 }
 
 fn object<'a>(value: &'a Value, name: &str) -> Result<&'a Map<String, Value>> {
-    value
-        .as_object()
-        .ok_or_else(|| format!("Yolo {name} must be an object"))
+    value.as_object().ok_or_else(|| format!("Yolo {name} must be an object"))
 }
 
 fn string<'a>(value: &'a Value, name: &str) -> Result<&'a str> {
@@ -30,10 +28,7 @@ fn string<'a>(value: &'a Value, name: &str) -> Result<&'a str> {
 
 fn model_name(value: &Value, name: &str) -> Result<()> {
     let value = string(value, name)?;
-    if value
-        .chars()
-        .all(|character| character.is_whitespace() || character == '\u{feff}')
-    {
+    if value.chars().all(|character| character.is_whitespace() || character == '\u{feff}') {
         return Err(format!("Yolo {name} must be a nonempty string"));
     }
     if value.len() > 256 {
@@ -54,9 +49,7 @@ fn entry(value: &Value, name: &str) -> Result<()> {
     if value.is_null() || value.is_string() || value.is_object() || value.is_array() {
         Ok(())
     } else {
-        Err(format!(
-            "Yolo {name} must be text, an object, an array or null"
-        ))
+        Err(format!("Yolo {name} must be text, an object, an array or null"))
     }
 }
 
@@ -86,12 +79,10 @@ pub fn question(value: &Value) -> Result<()> {
                     entry(value, "noul criterion")?;
                 }
             }
-        }
+        },
         Some("choice") => {
-            let criteria = object(
-                fields.get("criteria").unwrap_or(&Value::Null),
-                "choice criteria",
-            )?;
+            let criteria =
+                object(fields.get("criteria").unwrap_or(&Value::Null), "choice criteria")?;
             if !(2..=255).contains(&criteria.len()) {
                 return Err("Yolo choice requires 2 to 255 options".into());
             }
@@ -99,7 +90,7 @@ pub fn question(value: &Value) -> Result<()> {
                 identifier(name)?;
                 entry(value, "choice criterion")?;
             }
-        }
+        },
         Some("score") => {
             let criteria = fields
                 .get("criteria")
@@ -109,13 +100,10 @@ pub fn question(value: &Value) -> Result<()> {
             for value in criteria {
                 entry(value, "score criterion")?;
             }
-        }
+        },
         _ => return Err("Yolo question type must be noul, choice or score".into()),
     }
-    if fields
-        .keys()
-        .any(|key| !matches!(key.as_str(), "type" | "instructions" | "criteria"))
-    {
+    if fields.keys().any(|key| !matches!(key.as_str(), "type" | "instructions" | "criteria")) {
         return Err("Yolo question contains an unknown field".into());
     }
     Ok(())
@@ -123,10 +111,7 @@ pub fn question(value: &Value) -> Result<()> {
 
 pub fn request(value: &Value) -> Result<()> {
     let fields = object(value, "request")?;
-    entry(
-        fields.get("state").ok_or("Yolo request requires state")?,
-        "state",
-    )?;
+    entry(fields.get("state").ok_or("Yolo request requires state")?, "state")?;
     let questions = object(fields.get("questions").unwrap_or(&Value::Null), "questions")?;
     if !(1..=MAX_QUESTIONS).contains(&questions.len()) {
         return Err("Yolo requires 1 to 64 named questions".into());
@@ -138,10 +123,7 @@ pub fn request(value: &Value) -> Result<()> {
     if let Some(model) = fields.get("model") {
         model_name(model, "model")?;
     }
-    if fields
-        .keys()
-        .any(|key| !matches!(key.as_str(), "state" | "questions" | "model"))
-    {
+    if fields.keys().any(|key| !matches!(key.as_str(), "state" | "questions" | "model")) {
         return Err("Yolo request contains an unknown field".into());
     }
     Ok(())
@@ -154,10 +136,8 @@ pub fn answer(value: &Value, question_value: &Value) -> Result<()> {
 
 fn answer_validated(value: &Value, question: &Value) -> Result<()> {
     let answer = object(value, "answer")?;
-    let kind = question
-        .get("type")
-        .and_then(Value::as_str)
-        .ok_or("Yolo question type is missing")?;
+    let kind =
+        question.get("type").and_then(Value::as_str).ok_or("Yolo question type is missing")?;
     if answer.get("type").and_then(Value::as_str) != Some(kind) {
         return Err("Yolo answer type differs from its question".into());
     }
@@ -165,17 +145,11 @@ fn answer_validated(value: &Value, question: &Value) -> Result<()> {
         "noul" => {
             number(answer.get("noul").unwrap_or(&Value::Null), "noul", 1.0)?;
             &["type", "noul"]
-        }
+        },
         "choice" | "score" => {
-            number(
-                answer.get("confidence").unwrap_or(&Value::Null),
-                "confidence",
-                1.0,
-            )?;
-            let probabilities = object(
-                answer.get("probabilities").unwrap_or(&Value::Null),
-                "probabilities",
-            )?;
+            number(answer.get("confidence").unwrap_or(&Value::Null), "confidence", 1.0)?;
+            let probabilities =
+                object(answer.get("probabilities").unwrap_or(&Value::Null), "probabilities")?;
             let expected: Vec<String> = if kind == "choice" {
                 let criteria = object(&question["criteria"], "choice criteria")?;
                 let choice = string(answer.get("choice").unwrap_or(&Value::Null), "choice")?;
@@ -184,9 +158,8 @@ fn answer_validated(value: &Value, question: &Value) -> Result<()> {
                 }
                 criteria.keys().cloned().collect()
             } else {
-                let criteria = question["criteria"]
-                    .as_array()
-                    .ok_or("Yolo score criteria are missing")?;
+                let criteria =
+                    question["criteria"].as_array().ok_or("Yolo score criteria are missing")?;
                 number(
                     answer.get("score").unwrap_or(&Value::Null),
                     "score",
@@ -216,7 +189,7 @@ fn answer_validated(value: &Value, question: &Value) -> Result<()> {
             } else {
                 &["type", "score", "confidence", "legend", "probabilities"]
             }
-        }
+        },
         _ => return Err("Yolo answer type is unknown".into()),
     };
     if answer.keys().any(|key| !allowed.contains(&key.as_str())) {
@@ -228,13 +201,8 @@ fn answer_validated(value: &Value, question: &Value) -> Result<()> {
 pub fn response(value: &Value, request_value: &Value) -> Result<()> {
     request(request_value)?;
     let fields = object(value, "response")?;
-    model_name(
-        fields.get("model").unwrap_or(&Value::Null),
-        "response model",
-    )?;
-    let usage = fields
-        .get("usage")
-        .ok_or("Yolo response requires usage, or null when unknown")?;
+    model_name(fields.get("model").unwrap_or(&Value::Null), "response model")?;
+    let usage = fields.get("usage").ok_or("Yolo response requires usage, or null when unknown")?;
     if !usage.is_null() {
         let usage = object(usage, "usage")?;
         for name in ["input_tokens", "output_tokens"] {
@@ -279,11 +247,7 @@ pub fn choice_selections(
             let choice = string(&answer["choice"], "choice")?;
             Ok((
                 name.clone(),
-                if confidence >= minimum {
-                    Value::String(choice.to_owned())
-                } else {
-                    Value::Null
-                },
+                if confidence >= minimum { Value::String(choice.to_owned()) } else { Value::Null },
             ))
         })
         .collect()
@@ -293,16 +257,12 @@ pub fn choice_selections(
 pub fn primitive(answer: &Value, threshold_value: f64) -> Result<Value> {
     let threshold = threshold(&Value::from(threshold_value))?;
     match answer["type"].as_str() {
-        Some("noul") => Ok(Value::Bool(
-            number(&answer["noul"], "noul", 1.0)? > threshold,
-        )),
-        Some("choice") => Ok(Value::String(
-            string(&answer["choice"], "choice")?.to_owned(),
-        )),
+        Some("noul") => Ok(Value::Bool(number(&answer["noul"], "noul", 1.0)? > threshold)),
+        Some("choice") => Ok(Value::String(string(&answer["choice"], "choice")?.to_owned())),
         Some("score") => {
             number(&answer["score"], "score", 9.0)?;
             Ok(answer["score"].clone())
-        }
+        },
         _ => Err("Yolo primitive answer type is unknown".into()),
     }
 }

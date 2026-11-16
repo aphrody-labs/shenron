@@ -56,7 +56,7 @@ impl Py {
             // Python writes NaN/Infinity tokens; JSON has no such literal, so they become null.
             Self::Float(value) => {
                 serde_json::Number::from_f64(*value).map_or(Value::Null, Value::Number)
-            }
+            },
             Self::Bytes(bytes) => Value::String(hex::encode(bytes)),
         }
     }
@@ -71,19 +71,12 @@ struct Record {
 
 impl Record {
     fn get(&self, name: &str) -> &Py {
-        let index = self
-            .fields
-            .iter()
-            .position(|field| *field == name)
-            .expect("known field");
+        let index = self.fields.iter().position(|field| *field == name).expect("known field");
         &self.values[index]
     }
 
     fn zero(fields: &'static [&'static str]) -> Self {
-        Self {
-            fields,
-            values: vec![Py::Int(0); fields.len()],
-        }
+        Self { fields, values: vec![Py::Int(0); fields.len()] }
     }
 
     fn json(&self) -> Value {
@@ -106,11 +99,7 @@ struct File<'a> {
 
 impl<'a> File<'a> {
     fn new(data: &'a [u8]) -> Self {
-        Self {
-            data,
-            position: 0,
-            big_endian: false,
-        }
+        Self { data, position: 0, big_endian: false }
     }
 
     fn seek(&mut self, position: i128) -> Load<()> {
@@ -230,7 +219,7 @@ fn unpack(format: &str, bytes: &[u8], big_endian: bool) -> Vec<Py> {
                 'x' => {
                     cursor += 1;
                     continue;
-                }
+                },
                 'b' => Py::Int(i128::from(take(&mut cursor, 1)[0] as i8)),
                 'B' | 'c' | '?' => Py::Int(i128::from(take(&mut cursor, 1)[0])),
                 'h' => Py::Int(i128::from(i16::from_le_bytes(
@@ -279,17 +268,14 @@ fn decode(value: &Py) -> Load<String> {
     match value {
         Py::Bytes(bytes) => {
             String::from_utf8(bytes.clone()).map_err(|_| error("invalid UTF-8 field"))
-        }
+        },
         other => Ok(other.int().to_string()),
     }
 }
 
 fn top(entries: Vec<(&str, Value)>) -> Value {
     Value::Object(
-        entries
-            .into_iter()
-            .map(|(key, value)| (key.to_owned(), value))
-            .collect::<Map<_, _>>(),
+        entries.into_iter().map(|(key, value)| (key.to_owned(), value)).collect::<Map<_, _>>(),
     )
 }
 
@@ -302,12 +288,7 @@ fn endian_of(file: &mut File<'_>) -> &'static str {
 
 // ----------------------------------------------------------------------------------- EMM ----
 
-const EMM_HEADER: &[&str] = &[
-    "endianess_check",
-    "u_06",
-    "num_entries",
-    "material_base_address",
-];
+const EMM_HEADER: &[&str] = &["endianess_check", "u_06", "num_entries", "material_base_address"];
 const EMM_MATERIAL: &[&str] = &["name", "shader_name", "param_count", "u_42"];
 
 fn emm(data: &[u8], filename: &str) -> Load<Loaded> {
@@ -326,12 +307,8 @@ fn emm(data: &[u8], filename: &str) -> Load<Loaded> {
     for offset in offsets {
         file.seek(base + offset)?;
         let material = file.record(EMM_MATERIAL, "32s32sHH")?;
-        let name = decode(material.get("name"))?
-            .trim_end_matches('\0')
-            .to_owned();
-        let shader = decode(material.get("shader_name"))?
-            .trim_end_matches('\0')
-            .to_owned();
+        let name = decode(material.get("name"))?.trim_end_matches('\0').to_owned();
+        let shader = decode(material.get("shader_name"))?.trim_end_matches('\0').to_owned();
         for _ in 0..material.get("param_count").int() {
             let parameter = file.unpack("32sIf")?;
             decode(&parameter[0])?;
@@ -460,7 +437,7 @@ fn ean(data: &[u8]) -> Load<Loaded> {
                     match index_size {
                         0 => drop(file.unpack("B")?),
                         1 => drop(file.unpack("H")?),
-                        _ => {}
+                        _ => {},
                     }
                 }
                 file.seek(keyframed_base + keyframed[2].int())?;
@@ -486,11 +463,7 @@ const BDM_TYPE1: &str = "HHHHfhhhhhHhhhHffHHHHHHffffHHfHHHHHHHHHHHhHhhH";
 /// `to_serial` of the pyxenoverse `Type0`/`Type1` sub-entry classes, as written by dbxv2.
 fn bdm_type_json(type1: bool) -> Value {
     let record = if type1 { "BDMType1" } else { "BDMType0" };
-    let fields: &[&str] = if type1 {
-        BDM_TYPE1_FIELDS
-    } else {
-        BDM_TYPE0_FIELDS
-    };
+    let fields: &[&str] = if type1 { BDM_TYPE1_FIELDS } else { BDM_TYPE0_FIELDS };
     let descriptors: Map<String, Value> = fields
         .iter()
         .map(|field| {
@@ -710,13 +683,7 @@ fn bcm(data: &[u8], filename: &str) -> Load<Loaded> {
         let address = if index == 0 { 0 } else { file.tell() as i128 };
         let mut values = vec![Py::Int(address)];
         values.extend(file.unpack("IIIIIhhIIHHHHHHHHIIIIIIIIIIIIfhhHHI")?);
-        entries.push(
-            Record {
-                fields: BCM_ENTRY,
-                values,
-            }
-            .json(),
-        );
+        entries.push(Record { fields: BCM_ENTRY, values }.json());
     }
     Ok(Loaded::Json(top(vec![
         ("header", header.json()),
@@ -728,15 +695,8 @@ fn bcm(data: &[u8], filename: &str) -> Load<Loaded> {
 
 // ----------------------------------------------------------------------------------- BSA ----
 
-const BSA_HEADER: &[&str] = &[
-    "endianess_check",
-    "header_size",
-    "i_08",
-    "i_12",
-    "i_16",
-    "num_entries",
-    "data_start",
-];
+const BSA_HEADER: &[&str] =
+    &["endianess_check", "header_size", "i_08", "i_12", "i_16", "num_entries", "data_start"];
 const BSA_ENTRY: &[&str] = &[
     "i_00",
     "collision_count",
@@ -784,9 +744,8 @@ fn bsa(data: &[u8], filename: &str) -> Load<Loaded> {
     let endian = endian_of(&mut file);
     file.seek(4)?;
     let header = file.record(BSA_HEADER, "HHIIHHI")?;
-    let offsets: Vec<i128> = (0..header.get("num_entries").int())
-        .map(|_| file.u32())
-        .collect::<Load<_>>()?;
+    let offsets: Vec<i128> =
+        (0..header.get("num_entries").int()).map(|_| file.u32()).collect::<Load<_>>()?;
     let mut entries = Vec::new();
     for offset in offsets.into_iter().filter(|offset| *offset != 0) {
         file.seek(offset)?;
@@ -866,13 +825,7 @@ const BAC_HEADER: &[&str] = &[
     "u_58",
     "u_5c",
 ];
-const BAC_ENTRY: &[&str] = &[
-    "flags",
-    "num_sub_entries",
-    "unk_06",
-    "sub_entry_offset",
-    "unk_0C",
-];
+const BAC_ENTRY: &[&str] = &["flags", "num_sub_entries", "unk_06", "sub_entry_offset", "unk_0C"];
 
 /// BAC item sizes per sub-entry type (type 17 grows by 12 bytes unless the file uses the small form).
 fn bac_item_size(kind: i128, type17_small: bool) -> Option<usize> {
@@ -890,7 +843,7 @@ fn bac_item_size(kind: i128, type17_small: bool) -> Option<usize> {
             } else {
                 32
             }
-        }
+        },
         24 => 56,
         26 => 80,
         27 => 24,
@@ -917,10 +870,7 @@ fn bac(data: &[u8], filename: &str) -> Load<Loaded> {
         .map(|entry| entry.get("sub_entry_offset").int())
         .find(|offset| *offset != 0)
         .ok_or_else(|| error("BAC has no sub-entry table (IndexError)"))?;
-    let total: i128 = entries
-        .iter()
-        .map(|entry| entry.get("num_sub_entries").int())
-        .sum();
+    let total: i128 = entries.iter().map(|entry| entry.get("num_sub_entries").int()).sum();
     let mut type17_small = false;
     let mut owner = 0usize;
     let mut filled = vec![0i128; entries.len()];
@@ -951,9 +901,7 @@ fn bac(data: &[u8], filename: &str) -> Load<Loaded> {
                 return Err(error("short BAC throw displacement"));
             }
         }
-        while filled
-            .get(owner)
-            .ok_or_else(|| error("BAC sub-entry owner overflow (IndexError)"))?
+        while filled.get(owner).ok_or_else(|| error("BAC sub-entry owner overflow (IndexError)"))?
             >= &entries[owner].get("num_sub_entries").int()
         {
             owner += 1;
@@ -966,10 +914,7 @@ fn bac(data: &[u8], filename: &str) -> Load<Loaded> {
     Ok(Loaded::Json(top(vec![
         ("header", header.json()),
         ("endian", Value::from(endian)),
-        (
-            "entries",
-            Value::Array(entries.iter().map(Record::json).collect()),
-        ),
+        ("entries", Value::Array(entries.iter().map(Record::json).collect())),
         ("has_comments", Value::Bool(false)),
         ("filename", Value::from(filename)),
     ])))
@@ -1049,16 +994,7 @@ fn bcs_part(file: &mut File<'_>) -> Load<()> {
     let address = file.tell() as i128;
     let part = file.unpack("HHHHQHHIIIIffII4sIIIIHHIHHI")?;
     decode(&part[15])?;
-    bcs_names(
-        file,
-        address,
-        &[
-            part[16].int(),
-            part[17].int(),
-            part[18].int(),
-            part[19].int(),
-        ],
-    )?;
+    bcs_names(file, address, &[part[16].int(), part[17].int(), part[18].int(), part[19].int()])?;
     for index in 0..part[6].int() {
         file.seek(address + part[7].int() + index * 4)?;
         file.unpack("HH")?;
@@ -1208,10 +1144,7 @@ fn bcs(data: &[u8], filename: &str) -> Load<Loaded> {
     if header.get("additional_skeleton_table_offset").int() != 0 {
         for _ in 0..header.get("num_additional_skeletons").int() {
             // pyxenoverse re-reads the first table slot for every additional skeleton.
-            match read_skeleton(
-                &mut file,
-                header.get("additional_skeleton_table_offset").int(),
-            )? {
+            match read_skeleton(&mut file, header.get("additional_skeleton_table_offset").int())? {
                 Some(skeleton) => skeletons.push(skeleton),
                 None => skeletons.push(Record::zero(BCS_SKELETON).json()),
             }

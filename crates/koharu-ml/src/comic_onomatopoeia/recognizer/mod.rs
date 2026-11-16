@@ -5,8 +5,8 @@ mod processor;
 use std::path::Path;
 
 use anyhow::{Context, Result};
-use koharu_torch::Device;
 use image::DynamicImage;
+use koharu_torch::Device;
 
 use crate::backend::TryIntoDevice;
 

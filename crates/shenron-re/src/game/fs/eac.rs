@@ -35,14 +35,8 @@ pub const EAC_PATCH_OFFSET_3: usize = 7;
 pub const EAC_MODULES_CDN_BASE_URL: &str = "https://modules-cdn.eac-prod.on.epicgames.com/modules";
 
 /// Supported target platform identifiers in the EAC module CDN.
-pub const EAC_PLATFORMS: &[&str] = &[
-    "win64",
-    "win64_wow64",
-    "linux64",
-    "linux32",
-    "mac64",
-    "mac_arm64",
-];
+pub const EAC_PLATFORMS: &[&str] =
+    &["win64", "win64_wow64", "linux64", "linux32", "mac64", "mac_arm64"];
 
 /// Parsed token of an EAC check-site signature.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -300,14 +294,13 @@ pub fn inspect_eac_install(game_dir: &Path) -> EacInstallInspection {
         .ok()
         .and_then(|txt| parse_bootstrapper_ini(&txt).remove("ApplicationPath"));
 
-    let settings_json = eac_dir
-        .join("Settings.json")
-        .is_file()
-        .then(|| eac_dir.join("Settings.json"))
-        .or_else(|| {
-            let alt = eac_dir.join("settings.json");
-            alt.is_file().then_some(alt)
-        });
+    let settings_json =
+        eac_dir.join("Settings.json").is_file().then(|| eac_dir.join("Settings.json")).or_else(
+            || {
+                let alt = eac_dir.join("settings.json");
+                alt.is_file().then_some(alt)
+            },
+        );
 
     let mut product_id = None;
     let mut deployment_id = None;
@@ -370,7 +363,8 @@ mod tests {
 
     #[test]
     fn parses_bootstrapper_ini_and_module_urls() {
-        let ini = "# comment\r\nApplicationPath=bin/DBXV2.exe\r\nWorkingDirectory=.\r\nWaitForExit=0\r\n";
+        let ini =
+            "# comment\r\nApplicationPath=bin/DBXV2.exe\r\nWorkingDirectory=.\r\nWaitForExit=0\r\n";
         let parsed = parse_bootstrapper_ini(ini);
         assert_eq!(parsed.get("ApplicationPath").map(String::as_str), Some("bin/DBXV2.exe"));
         assert_eq!(parsed.get("WaitForExit").map(String::as_str), Some("0"));

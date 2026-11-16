@@ -108,9 +108,8 @@ pub fn extract_msg_tree(root: &Path, destination: &Path) -> crate::game::Result<
 
     fs::create_dir(destination)?;
     for input in &inputs {
-        let relative = input.strip_prefix(root).map_err(|error| crate::game::ReError::ParseError {
-            context: "msg_tree",
-            details: error.to_string(),
+        let relative = input.strip_prefix(root).map_err(|error| {
+            crate::game::ReError::ParseError { context: "msg_tree", details: error.to_string() }
         })?;
         let output = destination.join(relative).with_extension("msg.json");
         let parent = output.parent().ok_or_else(|| crate::game::ReError::ParseError {

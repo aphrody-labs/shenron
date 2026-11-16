@@ -53,17 +53,8 @@ pub const CAC_FIELDS: [(&str, usize); 12] = [
     ("bla", 0xC8),
     ("stm", 0xCC),
 ];
-const CAC_STATS: [&str; 9] = [
-    "level",
-    "experience",
-    "attribute_points",
-    "hea",
-    "ki",
-    "atk",
-    "str",
-    "bla",
-    "stm",
-];
+const CAC_STATS: [&str; 9] =
+    ["level", "experience", "attribute_points", "hea", "ki", "atk", "str", "bla", "stm"];
 const CAC_NAME_OFFSET: usize = 0x44;
 
 const ITEM_SIZE: usize = 8;
@@ -124,10 +115,7 @@ pub struct CacReport {
 }
 
 fn corrupt(details: impl Into<String>) -> ReError {
-    ReError::ParseError {
-        context: "dbxv2_sav",
-        details: details.into(),
-    }
+    ReError::ParseError { context: "dbxv2_sav", details: details.into() }
 }
 
 /// AES-256-CTR with a 128-bit big-endian counter (symmetric: encrypts and decrypts).
@@ -153,18 +141,13 @@ fn aes_ctr(data: &mut [u8], key: &[u8], iv: &[u8]) {
 fn u32_at(data: &[u8], offset: usize) -> Result<u32> {
     data.get(offset..offset + 4)
         .map(|bytes| u32::from_le_bytes(bytes.try_into().expect("four bytes")))
-        .ok_or(ReError::BufferTooSmall {
-            required: offset + 4,
-            available: data.len(),
-        })
+        .ok_or(ReError::BufferTooSmall { required: offset + 4, available: data.len() })
 }
 
 /// 128 unpredictable-enough header bytes (the body key/IV live in the header itself, so they
 /// only need to differ between saves, not to stay secret).
 fn header_noise(body: &[u8]) -> [u8; 0x80] {
-    let nanos = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .map_or(0, |time| time.as_nanos());
+    let nanos = SystemTime::now().duration_since(UNIX_EPOCH).map_or(0, |time| time.as_nanos());
     let mut seed = Sha256::new();
     sha2::Digest::update(&mut seed, nanos.to_le_bytes());
     sha2::Digest::update(&mut seed, std::process::id().to_le_bytes());
@@ -186,10 +169,7 @@ impl SaveFile {
                 .iter()
                 .find(|(_, _, decrypted)| *decrypted == raw.len())
                 .map_or(-1, |(version, _, _)| *version);
-            return Ok(Self {
-                body: raw.to_vec(),
-                version,
-            });
+            return Ok(Self { body: raw.to_vec(), version });
         }
         let version = SIZES
             .iter()
@@ -197,9 +177,7 @@ impl SaveFile {
             .map(|(version, _, _)| *version)
             .ok_or_else(|| corrupt(format!("unknown encrypted size 0x{:X}", raw.len())))?;
         let data_size = u32_at(raw, 8)? as usize;
-        let signed = raw
-            .get(0x20..0x20 + data_size)
-            .ok_or_else(|| corrupt("data size"))?;
+        let signed = raw.get(0x20..0x20 + data_size).ok_or_else(|| corrupt("data size"))?;
         if Md5::digest(signed).as_slice() != &raw[0x10..0x20] {
             return Err(corrupt("MD5 mismatch (corrupted file?)"));
         }
@@ -227,11 +205,10 @@ impl SaveFile {
 
     /// Re-encrypt the body into a valid container (fresh key/IV, MD5 and checksums).
     pub fn encrypt(&self) -> Result<Vec<u8>> {
-        let (_, encrypted_size, decrypted_size) = SIZES
-            .iter()
-            .copied()
-            .find(|(version, _, _)| *version == self.version)
-            .ok_or_else(|| corrupt(format!("cannot encrypt unknown version {}", self.version)))?;
+        let (_, encrypted_size, decrypted_size) =
+            SIZES.iter().copied().find(|(version, _, _)| *version == self.version).ok_or_else(
+                || corrupt(format!("cannot encrypt unknown version {}", self.version)),
+            )?;
         if self.body.len() != decrypted_size {
             return Err(corrupt(format!(
                 "body size 0x{:X} != expected 0x{decrypted_size:X} (v{})",
@@ -246,9 +223,7 @@ impl SaveFile {
         buf[0x25] = 0x34; // bit 2: body key at 0x6C, IV at 0x8C
 
         let stride_sum = |buf: &[u8], start: usize, count: usize, step: usize| -> u8 {
-            (0..count).fold(0u8, |acc, index| {
-                acc.wrapping_add(buf[start + index * step])
-            })
+            (0..count).fold(0u8, |acc, index| acc.wrapping_add(buf[start + index * step]))
         };
         let body_sum = |buf: &[u8]| -> u8 {
             (0..decrypted_size)
@@ -290,35 +265,23 @@ impl SaveFile {
         let slot = self
             .body
             .get_mut(offset..offset + 4)
-            .ok_or(ReError::BufferTooSmall {
-                required: offset + 4,
-                available,
-            })?;
+            .ok_or(ReError::BufferTooSmall { required: offset + 4, available })?;
         slot.copy_from_slice(&value.to_le_bytes());
         Ok(())
     }
 
     pub fn steam_id(&self) -> Result<u64> {
-        let bytes = self
-            .body
-            .get(8..16)
-            .ok_or_else(|| corrupt("steam id range"))?;
+        let bytes = self.body.get(8..16).ok_or_else(|| corrupt("steam id range"))?;
         Ok(u64::from_le_bytes(bytes.try_into().expect("eight bytes")) ^ STEAM_ID_KEY)
     }
 
     pub fn global_offset(name: &str) -> Option<usize> {
-        GLOBALS
-            .iter()
-            .find(|(field, _)| *field == name)
-            .map(|(_, offset)| *offset)
+        GLOBALS.iter().find(|(field, _)| *field == name).map(|(_, offset)| *offset)
     }
 
     fn cac_base(slot: usize) -> Result<usize> {
         if slot >= XV2_NUM_CAC {
-            return Err(corrupt(format!(
-                "CaC slot {slot} out of range 0-{}",
-                XV2_NUM_CAC - 1
-            )));
+            return Err(corrupt(format!("CaC slot {slot} out of range 0-{}", XV2_NUM_CAC - 1)));
         }
         Ok(FIRST_CAC_OFFSET + slot * CACS_DISTANCE)
     }
@@ -336,28 +299,19 @@ impl SaveFile {
     }
 
     pub fn cac_set(&mut self, slot: usize, field: &str, value: u32) -> Result<()> {
-        self.set_u32(
-            Self::cac_base(slot)? + Self::cac_field_offset(field)?,
-            value,
-        )
+        self.set_u32(Self::cac_base(slot)? + Self::cac_field_offset(field)?, value)
     }
 
     pub fn cac_name(&self, slot: usize) -> Result<String> {
         let start = Self::cac_base(slot)? + CAC_NAME_OFFSET;
-        let raw = self
-            .body
-            .get(start..start + 64)
-            .ok_or_else(|| corrupt("CaC name range"))?;
+        let raw = self.body.get(start..start + 64).ok_or_else(|| corrupt("CaC name range"))?;
         let end = raw.iter().position(|&byte| byte == 0).unwrap_or(raw.len());
         Ok(String::from_utf8_lossy(&raw[..end]).into_owned())
     }
 
     pub fn cac_valid(&self, slot: usize) -> Result<bool> {
         let base = Self::cac_base(slot)?;
-        Ok(self
-            .body
-            .get(base + CAC_NAME_OFFSET)
-            .is_some_and(|&byte| byte != 0)
+        Ok(self.body.get(base + CAC_NAME_OFFSET).is_some_and(|&byte| byte != 0)
             && (self.cac_get(slot, "race")? as usize) < RACES.len())
     }
 
@@ -367,10 +321,7 @@ impl SaveFile {
         let available = self.body.len();
         self.body
             .get_mut(base..base + CACS_DISTANCE)
-            .ok_or(ReError::BufferTooSmall {
-                required: base + CACS_DISTANCE,
-                available,
-            })?
+            .ok_or(ReError::BufferTooSmall { required: base + CACS_DISTANCE, available })?
             .fill(0);
         Ok(())
     }
@@ -378,20 +329,15 @@ impl SaveFile {
     fn inventory_ids(&self, base: usize) -> impl Iterator<Item = (usize, u32)> + '_ {
         (0..INVENTORY_MAX).filter_map(move |index| {
             let offset = base + index * ITEM_SIZE;
-            u32_at(&self.body, offset)
-                .ok()
-                .filter(|id| *id != 0)
-                .map(|id| (offset, id))
+            u32_at(&self.body, offset).ok().filter(|id| *id != 0).map(|id| (offset, id))
         })
     }
 
     fn skill_slots(&self, base: usize) -> impl Iterator<Item = usize> + '_ {
-        (0..SKILL_COUNT)
-            .map(move |index| base + index * SKILL_SIZE)
-            .filter(|&offset| {
-                let head = u32_at(&self.body, offset).unwrap_or(u32::MAX);
-                head != u32::MAX && self.body.get(offset + 4).is_some_and(|&byte| byte != 255)
-            })
+        (0..SKILL_COUNT).map(move |index| base + index * SKILL_SIZE).filter(|&offset| {
+            let head = u32_at(&self.body, offset).unwrap_or(u32::MAX);
+            head != u32::MAX && self.body.get(offset + 4).is_some_and(|&byte| byte != 255)
+        })
     }
 
     /// Set the quantity of every owned item to `quantity`.
@@ -409,10 +355,8 @@ impl SaveFile {
 
     /// Mark every registered skill as unlocked.
     pub fn unlock_skills(&mut self) {
-        let offsets: Vec<usize> = SKILLS
-            .iter()
-            .flat_map(|(_, base)| self.skill_slots(*base))
-            .collect();
+        let offsets: Vec<usize> =
+            SKILLS.iter().flat_map(|(_, base)| self.skill_slots(*base)).collect();
         for offset in offsets {
             self.body[offset] = 1;
         }
@@ -423,10 +367,8 @@ impl SaveFile {
             .iter()
             .map(|(name, base)| (*name, self.inventory_ids(*base).count()))
             .collect();
-        let skill_counts = SKILLS
-            .iter()
-            .map(|(name, base)| (*name, self.skill_slots(*base).count()))
-            .collect();
+        let skill_counts =
+            SKILLS.iter().map(|(name, base)| (*name, self.skill_slots(*base).count())).collect();
         let mut cacs = Vec::new();
         for slot in 0..XV2_NUM_CAC {
             if !self.cac_valid(slot)? {

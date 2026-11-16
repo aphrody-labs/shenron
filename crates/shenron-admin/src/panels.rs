@@ -52,7 +52,13 @@ pub fn builtin_panels() -> Vec<Panel> {
         builtin("ai", "AI routes", "AI", Site, "/api/admin/ai"),
         builtin("a2a", "A2A", "AI", Site, "/api/admin/a2a"),
         builtin("reports", "Reports", "Community", Site, "/api/admin/reports"),
-        builtin("wiki-contributions", "Wiki contributions", "Community", Site, "/api/admin/wiki-contributions"),
+        builtin(
+            "wiki-contributions",
+            "Wiki contributions",
+            "Community",
+            Site,
+            "/api/admin/wiki-contributions",
+        ),
         builtin("moderation", "Moderation", "Community", Bot, "/api/moderation/stats"),
         builtin("economy", "Economy", "Community", Bot, "/api/economy/stats"),
         builtin("monetization", "Monetization", "Community", Site, "/api/admin/monetization"),
@@ -62,7 +68,11 @@ pub fn builtin_panels() -> Vec<Panel> {
 
 /// Plugin manifests: every `*.json` file of `dir` holds an array of panels. A plugin cannot shadow a
 /// built-in id, cannot reach an origin outside `allowed_origins`, and its path must stay under `/api/`.
-pub fn load_plugin_panels(dir: &Path, taken: &HashSet<String>, allowed_origins: &[String]) -> Vec<Panel> {
+pub fn load_plugin_panels(
+    dir: &Path,
+    taken: &HashSet<String>,
+    allowed_origins: &[String],
+) -> Vec<Panel> {
     let mut out: Vec<Panel> = Vec::new();
     let Ok(entries) = std::fs::read_dir(dir) else {
         return out;
@@ -78,7 +88,9 @@ pub fn load_plugin_panels(dir: &Path, taken: &HashSet<String>, allowed_origins: 
         };
         for mut panel in panels {
             let origin_ok = match &panel.upstream {
-                Upstream::Url(base) => allowed_origins.iter().any(|o| o.trim_end_matches('/') == base.trim_end_matches('/')),
+                Upstream::Url(base) => allowed_origins
+                    .iter()
+                    .any(|o| o.trim_end_matches('/') == base.trim_end_matches('/')),
                 _ => true,
             };
             let path_ok = panel.path.starts_with("/api/") && !panel.path.contains("..");

@@ -12,12 +12,12 @@ use std::{
     },
 };
 
+use axum::{Json, Router, routing::post};
+use serde_json::{Value, json};
 use shenron_jev::{
     Endpoint, JevRouter, RoutingPolicy,
     server::{ServerState, app},
 };
-use axum::{Json, Router, routing::post};
-use serde_json::{Value, json};
 
 async fn upstream(Json(_): Json<Value>) -> Json<Value> {
     Json(json!({
@@ -129,9 +129,7 @@ async fn confidence_policy_preserves_auth_and_rejects_invalid_thresholds_before_
     assert_eq!(denied.status(), 401);
     for (threshold, selected) in [("0.8", Value::Null), ("0.6", json!("read"))] {
         let response = client
-            .post(format!(
-                "{base}/v1/systemone?minimum_confidence={threshold}"
-            ))
+            .post(format!("{base}/v1/systemone?minimum_confidence={threshold}"))
             .bearer_auth("devkey")
             .json(&request)
             .send()

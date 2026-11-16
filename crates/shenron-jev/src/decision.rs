@@ -37,9 +37,7 @@ pub fn validate_confidence_threshold(threshold: f64) -> Result<(), JevError> {
     if threshold.is_finite() && (0.0..=1.0).contains(&threshold) {
         Ok(())
     } else {
-        Err(JevError::InvalidRequest(
-            "confidence threshold must be within [0, 1]".into(),
-        ))
+        Err(JevError::InvalidRequest("confidence threshold must be within [0, 1]".into()))
     }
 }
 
@@ -73,10 +71,9 @@ pub fn confident_choices<'a>(
         .answers
         .iter()
         .filter_map(|(name, answer)| match answer {
-            Answer::Choice { choice, .. } => Some((
-                name.as_str(),
-                (!selected[name].is_null()).then_some(choice.as_str()),
-            )),
+            Answer::Choice { choice, .. } => {
+                Some((name.as_str(), (!selected[name].is_null()).then_some(choice.as_str())))
+            },
             _ => None,
         })
         .collect())
@@ -99,12 +96,8 @@ pub fn confident_choice<'a>(
     let selected = confident_choices(request, response, minimum_confidence)?;
     match response.answers.get(name) {
         Some(Answer::Choice { .. }) => Ok(selected.get(name).copied().flatten()),
-        Some(_) => Err(JevError::InvalidRequest(format!(
-            "`{name}` is not a Choice question"
-        ))),
-        None => Err(JevError::InvalidRequest(format!(
-            "unknown question `{name}`"
-        ))),
+        Some(_) => Err(JevError::InvalidRequest(format!("`{name}` is not a Choice question"))),
+        None => Err(JevError::InvalidRequest(format!("unknown question `{name}`"))),
     }
 }
 
@@ -119,10 +112,7 @@ mod tests {
     fn fixture(confidence: f64) -> (Request, Response) {
         let request = Request::new("synthetic tool-routing fixture").question(
             "tool",
-            Question::choice(
-                "Choose a supplied tool",
-                [("search", "Search"), ("read", "Read")],
-            ),
+            Question::choice("Choose a supplied tool", [("search", "Search"), ("read", "Read")]),
         );
         let response = Response {
             model: "fixture".into(),
@@ -146,23 +136,11 @@ mod tests {
     fn accepts_the_boundary_and_abstains_below_it_without_changing_the_response() {
         let (request, response) = fixture(0.8);
         let original = response.clone();
-        assert_eq!(
-            confident_choice(&request, &response, "tool", 0.8).unwrap(),
-            Some("read")
-        );
-        assert_eq!(
-            confident_choice(&request, &response, "tool", 0.9).unwrap(),
-            None
-        );
+        assert_eq!(confident_choice(&request, &response, "tool", 0.8).unwrap(), Some("read"));
+        assert_eq!(confident_choice(&request, &response, "tool", 0.9).unwrap(), None);
         assert_eq!(response, original);
-        assert_eq!(
-            confident_choices(&request, &response, 0.8).unwrap()["tool"],
-            Some("read")
-        );
-        assert_eq!(
-            confident_choices(&request, &response, 0.9).unwrap()["tool"],
-            None
-        );
+        assert_eq!(confident_choices(&request, &response, 0.8).unwrap()["tool"], Some("read"));
+        assert_eq!(confident_choices(&request, &response, 0.9).unwrap()["tool"], None);
     }
 
     #[test]
@@ -175,9 +153,7 @@ mod tests {
         assert!(confident_choice(&request, &malformed, "tool", 0.0).is_err());
         assert!(confident_choice(&request, &response, "missing", 0.0).is_err());
         let mut foreign = response;
-        let Some(Answer::Choice { choice, .. }) = foreign.answers.get_mut("tool") else {
-            panic!()
-        };
+        let Some(Answer::Choice { choice, .. }) = foreign.answers.get_mut("tool") else { panic!() };
         *choice = "execute-unlisted-action".into();
         assert!(confident_choice(&request, &foreign, "tool", 0.0).is_err());
     }

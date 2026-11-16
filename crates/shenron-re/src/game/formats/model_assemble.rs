@@ -534,9 +534,10 @@ mod tests {
         );
         let emd = EmdFile::parse(&emd_bytes).expect("parse EMD");
 
-        let emb_bytes = crate::game::formats::emb::encode_emb(&[crate::game::formats::emb::encode_dds_rgba(
-            2, 2, &[255; 16],
-        )]);
+        let emb_bytes =
+            crate::game::formats::emb::encode_emb(&[crate::game::formats::emb::encode_dds_rgba(
+                2, 2, &[255; 16],
+            )]);
         let emb = EmbFile::parse(&emb_bytes).expect("parse EMB");
 
         let esk_bytes = crate::game::formats::encode_esk(&[Default::default()]);
@@ -569,12 +570,13 @@ mod tests {
             &[],
         );
         let mut emd = EmdFile::parse(&emd_bytes).expect("parse EMD");
-        emd.parts[0].meshes[0].submeshes[0].samplers = vec![crate::game::formats::emd::EmdSampler {
-            texture_index: 3,
-            addressing: 0,
-            filtering: 0,
-            scale: [2.0, 3.0],
-        }];
+        emd.parts[0].meshes[0].submeshes[0].samplers =
+            vec![crate::game::formats::emd::EmdSampler {
+                texture_index: 3,
+                addressing: 0,
+                filtering: 0,
+                scale: [2.0, 3.0],
+            }];
         emd.parts[0].meshes[0].submeshes[0].vertices[0].uv = [0.25, 0.5];
         let geometry = AssembledCharacterModel::assemble_primitives(&emd, 4);
         assert_eq!(geometry[0].texture_index, Some(3));

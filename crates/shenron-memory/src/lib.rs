@@ -68,7 +68,11 @@ fn empty_object() -> Value {
 impl MemoryRecord {
     /// A record created now.
     #[must_use]
-    pub fn new(id: impl Into<String>, agent_id: impl Into<String>, content: impl Into<String>) -> Self {
+    pub fn new(
+        id: impl Into<String>,
+        agent_id: impl Into<String>,
+        content: impl Into<String>,
+    ) -> Self {
         let now = SystemTime::now().duration_since(UNIX_EPOCH).map_or(0, |d| d.as_millis());
         Self {
             id: id.into(),
@@ -184,7 +188,9 @@ impl SqliteLocalProvider {
         let created = i64::try_from(record.created_at_unix_ms).unwrap_or(i64::MAX);
         let conn = self.conn.lock().await;
         conn.execute(
-            &format!("INSERT OR REPLACE INTO memory_records ({COLUMNS}) VALUES (?1, ?2, ?3, ?4, ?5, ?6)"),
+            &format!(
+                "INSERT OR REPLACE INTO memory_records ({COLUMNS}) VALUES (?1, ?2, ?3, ?4, ?5, ?6)"
+            ),
             params![
                 record.id,
                 record.agent_id,
@@ -203,7 +209,8 @@ impl SqliteLocalProvider {
     /// SQLite failure.
     pub async fn get(&self, id: &str) -> Result<Option<MemoryRecord>, MemoryError> {
         let conn = self.conn.lock().await;
-        let mut stmt = conn.prepare(&format!("SELECT {COLUMNS} FROM memory_records WHERE id = ?1"))?;
+        let mut stmt =
+            conn.prepare(&format!("SELECT {COLUMNS} FROM memory_records WHERE id = ?1"))?;
         let mut rows = stmt.query(params![id])?;
         rows.next()?.map(record_of).transpose()
     }
@@ -214,7 +221,8 @@ impl SqliteLocalProvider {
     /// SQLite failure.
     pub async fn search(&self, query: MemoryQuery) -> Result<Vec<MemoryRecord>, MemoryError> {
         let mut sql = format!("SELECT {COLUMNS} FROM memory_records WHERE agent_id = ?1");
-        let mut binds: Vec<Box<dyn rusqlite::ToSql + Send>> = vec![Box::new(query.agent_id.clone())];
+        let mut binds: Vec<Box<dyn rusqlite::ToSql + Send>> =
+            vec![Box::new(query.agent_id.clone())];
         if let Some(needle) = &query.q {
             binds.push(Box::new(format!("%{needle}%")));
             sql.push_str(&format!(" AND content LIKE ?{}", binds.len()));
@@ -230,7 +238,8 @@ impl SqliteLocalProvider {
         }
         let conn = self.conn.lock().await;
         let mut stmt = conn.prepare(&sql)?;
-        let refs: Vec<&dyn rusqlite::ToSql> = binds.iter().map(|b| b.as_ref() as &dyn rusqlite::ToSql).collect();
+        let refs: Vec<&dyn rusqlite::ToSql> =
+            binds.iter().map(|b| b.as_ref() as &dyn rusqlite::ToSql).collect();
         let mut rows = stmt.query(refs.as_slice())?;
         let mut out = Vec::new();
         while let Some(row) = rows.next()? {

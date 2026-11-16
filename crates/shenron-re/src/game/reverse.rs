@@ -57,36 +57,24 @@ struct Pe<'a> {
 }
 
 fn malformed(details: impl Into<String>) -> ReError {
-    ReError::ParseError {
-        context: "dbxv2_reverse",
-        details: details.into(),
-    }
+    ReError::ParseError { context: "dbxv2_reverse", details: details.into() }
 }
 
 fn u16_at(bytes: &[u8], offset: usize) -> Option<u16> {
-    Some(u16::from_le_bytes(
-        bytes.get(offset..offset + 2)?.try_into().ok()?,
-    ))
+    Some(u16::from_le_bytes(bytes.get(offset..offset + 2)?.try_into().ok()?))
 }
 
 fn u32_at(bytes: &[u8], offset: usize) -> Option<u32> {
-    Some(u32::from_le_bytes(
-        bytes.get(offset..offset + 4)?.try_into().ok()?,
-    ))
+    Some(u32::from_le_bytes(bytes.get(offset..offset + 4)?.try_into().ok()?))
 }
 
 fn u64_at(bytes: &[u8], offset: usize) -> Option<u64> {
-    Some(u64::from_le_bytes(
-        bytes.get(offset..offset + 8)?.try_into().ok()?,
-    ))
+    Some(u64::from_le_bytes(bytes.get(offset..offset + 8)?.try_into().ok()?))
 }
 
 fn c_string(bytes: &[u8], offset: usize) -> Option<String> {
     let tail = bytes.get(offset..)?;
-    let end = tail
-        .iter()
-        .position(|&byte| byte == 0)
-        .unwrap_or(tail.len());
+    let end = tail.iter().position(|&byte| byte == 0).unwrap_or(tail.len());
     Some(String::from_utf8_lossy(&tail[..end]).into_owned())
 }
 
@@ -126,22 +114,14 @@ impl<'a> Pe<'a> {
             }
         }
         // Headers are mapped at RVA 0.
-        let first = self
-            .sections
-            .iter()
-            .map(|section| section.virtual_address)
-            .min()?;
+        let first = self.sections.iter().map(|section| section.virtual_address).min()?;
         (rva < first).then_some(rva as usize)
     }
 
     /// `pefile.adjust_FileAlignment`: raw pointers are rounded down to 0x200 once the file
     /// alignment reaches that value.
     fn adjusted_pointer(&self, pointer: u32) -> u32 {
-        if self.file_alignment < 0x200 {
-            pointer
-        } else {
-            pointer / 0x200 * 0x200
-        }
+        if self.file_alignment < 0x200 { pointer } else { pointer / 0x200 * 0x200 }
     }
 
     fn section_data(&self, section: &Section) -> &'a [u8] {
@@ -172,17 +152,13 @@ fn imports(pe: &Pe<'_>, directory: Option<(u32, u32)>, is64: bool) -> Vec<(Strin
         return result;
     };
     let bytes = pe.bytes;
-    while let (Some(lookup), Some(name_rva), Some(iat)) = (
-        u32_at(bytes, descriptor),
-        u32_at(bytes, descriptor + 12),
-        u32_at(bytes, descriptor + 16),
-    ) {
+    while let (Some(lookup), Some(name_rva), Some(iat)) =
+        (u32_at(bytes, descriptor), u32_at(bytes, descriptor + 12), u32_at(bytes, descriptor + 16))
+    {
         if lookup == 0 && name_rva == 0 && iat == 0 {
             break;
         }
-        let dll = pe
-            .rva_to_offset(name_rva)
-            .and_then(|offset| c_string(bytes, offset));
+        let dll = pe.rva_to_offset(name_rva).and_then(|offset| c_string(bytes, offset));
         let table = if lookup != 0 { lookup } else { iat };
         let mut names = Vec::new();
         if let (Some(dll), Some(mut thunk)) = (dll, pe.rva_to_offset(table)) {
@@ -232,10 +208,7 @@ fn exports(pe: &Pe<'_>, directory: Option<(u32, u32)>) -> Vec<String> {
     };
     (0..count as usize)
         .filter_map(|index| u32_at(bytes, table + index * 4))
-        .filter_map(|rva| {
-            pe.rva_to_offset(rva)
-                .and_then(|offset| c_string(bytes, offset))
-        })
+        .filter_map(|rva| pe.rva_to_offset(rva).and_then(|offset| c_string(bytes, offset)))
         .filter(|name| !name.is_empty())
         .take(EXPORTS_MAX)
         .collect()
@@ -256,9 +229,7 @@ fn version_resource<'a>(pe: &Pe<'a>, directory: Option<(u32, u32)>) -> Option<&'
             })
             .collect()
     };
-    let (_, type_target) = entries(root)
-        .into_iter()
-        .find(|(id, _)| *id == RT_VERSION)?;
+    let (_, type_target) = entries(root).into_iter().find(|(id, _)| *id == RT_VERSION)?;
     let mut target = type_target;
     // Descend name and language levels to the first data entry.
     for _ in 0..2 {
@@ -323,8 +294,8 @@ fn version_strings(resource: &[u8]) -> Map<String, Value> {
                     let limit = (value_start + value_length * 2).min(block_end);
                     let (value, _) = utf16_z(data, value_start, limit);
                     out.insert(key, Value::String(value));
-                }
-                _ => {}
+                },
+                _ => {},
             }
             cursor = align4(block_end);
         }
@@ -395,11 +366,7 @@ pub fn reverse_binary(path: &Path) -> Result<Value> {
             characteristics: u32_at(raw, 36).unwrap_or(0),
         });
     }
-    let pe = Pe {
-        bytes: &bytes,
-        sections,
-        file_alignment,
-    };
+    let pe = Pe { bytes: &bytes, sections, file_alignment };
 
     let section_rows: Vec<ReverseSection> = pe
         .sections
@@ -413,11 +380,7 @@ pub fn reverse_binary(path: &Path) -> Result<Value> {
         })
         .collect();
 
-    let import_list = imports(
-        &pe,
-        data_directory(&bytes, directories, directory_count, 1),
-        is64,
-    );
+    let import_list = imports(&pe, data_directory(&bytes, directories, directory_count, 1), is64);
     let mut import_map = Map::new();
     let mut imported_dlls = Vec::new();
     let mut import_count = 0usize;
@@ -426,12 +389,8 @@ pub fn reverse_binary(path: &Path) -> Result<Value> {
         if !import_map.contains_key(&dll) {
             imported_dlls.push(Value::String(dll.clone()));
         }
-        import_count = import_count.saturating_sub(
-            import_map
-                .get(&dll)
-                .and_then(Value::as_array)
-                .map_or(0, Vec::len),
-        );
+        import_count = import_count
+            .saturating_sub(import_map.get(&dll).and_then(Value::as_array).map_or(0, Vec::len));
         import_count += names.len();
         import_map.insert(dll, Value::from(names));
     }
@@ -446,9 +405,7 @@ pub fn reverse_binary(path: &Path) -> Result<Value> {
         .iter()
         .any(|section| section.name == ".text" && section.entropy >= ENTROPY_PACKED)
     {
-        Some(format!(
-            "packed/encrypted .text (entropy>={ENTROPY_PACKED})"
-        ))
+        Some(format!("packed/encrypted .text (entropy>={ENTROPY_PACKED})"))
     } else {
         None
     };
@@ -487,8 +444,7 @@ pub fn reverse_targets(game: &Path) -> Vec<PathBuf> {
             .flatten()
             .map(|entry| entry.path())
             .filter(|path| {
-                path.extension()
-                    .is_some_and(|value| value.eq_ignore_ascii_case(extension))
+                path.extension().is_some_and(|value| value.eq_ignore_ascii_case(extension))
             })
             .collect();
         // Windows path ordering, as `sorted(Path.glob())` on the reference platform.
@@ -512,11 +468,7 @@ pub fn reverse_install(game: &Path) -> ReverseReport {
             })
         })
         .collect();
-    ReverseReport {
-        target: "DBXV2 binaries",
-        count: binaries.len(),
-        binaries,
-    }
+    ReverseReport { target: "DBXV2 binaries", count: binaries.len(), binaries }
 }
 
 #[cfg(test)]

@@ -36,13 +36,13 @@
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod abi;
-pub mod stdio_capture;
 #[cfg(not(target_arch = "wasm32"))]
 mod jobs;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod llama;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod memory;
+pub mod stdio_capture;
 #[cfg(not(target_arch = "wasm32"))]
 pub mod types;
 

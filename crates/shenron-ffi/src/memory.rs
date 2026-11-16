@@ -12,9 +12,9 @@ use std::{
     sync::{Arc, Mutex, OnceLock, PoisonError, Weak},
 };
 
-use shenron_memory::{MemoryQuery, MemoryRecord, SqliteLocalProvider};
 use serde::Deserialize;
 use serde_json::Value;
+use shenron_memory::{MemoryQuery, MemoryRecord, SqliteLocalProvider};
 
 use crate::types::MemoryEntry;
 

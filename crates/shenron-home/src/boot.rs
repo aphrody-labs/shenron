@@ -23,10 +23,7 @@ impl Boot {
     #[must_use]
     pub fn parse(content: &str) -> Self {
         let (_fm, body) = frontmatter::split(content);
-        Self {
-            steps: extract_bullets(body),
-            body: body.to_string(),
-        }
+        Self { steps: extract_bullets(body), body: body.to_string() }
     }
 
     /// True when there is nothing to do at boot.
@@ -43,10 +40,7 @@ mod tests {
     #[test]
     fn parses_boot_checklist() {
         let b = Boot::parse("- read AGENTS.md\n- check open PRs\n");
-        assert_eq!(
-            b.steps,
-            vec!["read AGENTS.md".to_string(), "check open PRs".to_string()]
-        );
+        assert_eq!(b.steps, vec!["read AGENTS.md".to_string(), "check open PRs".to_string()]);
         assert!(!b.is_empty());
     }
 

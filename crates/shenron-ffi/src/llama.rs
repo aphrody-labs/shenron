@@ -195,7 +195,8 @@ fn resolve_source(
         });
     }
     if let Some(entry) = extra.get(spec) {
-        let text = |key: &str| entry.get(key).and_then(serde_json::Value::as_str).map(str::to_owned);
+        let text =
+            |key: &str| entry.get(key).and_then(serde_json::Value::as_str).map(str::to_owned);
         let url = text("url").ok_or_else(|| format!("catalog entry `{spec}` has no url"))?;
         return Ok(Source {
             file: text("file").unwrap_or_else(|| file_name_of(&url)),
@@ -238,7 +239,8 @@ async fn sha256_file(path: &Path) -> Result<String, String> {
     let path = path.to_owned();
     tokio::task::spawn_blocking(move || {
         use std::io::Read as _;
-        let mut file = std::fs::File::open(&path).map_err(|e| format!("{}: {e}", path.display()))?;
+        let mut file =
+            std::fs::File::open(&path).map_err(|e| format!("{}: {e}", path.display()))?;
         let mut hasher = Sha256::new();
         let mut buffer = vec![0_u8; 1 << 20];
         loop {
@@ -306,7 +308,9 @@ async fn download(
 /// `true` when no digest is expected or the file at `path` has it.
 async fn digest_matches(path: &Path, expected: Option<&str>) -> bool {
     match expected {
-        Some(expected) => sha256_file(path).await.is_ok_and(|actual| actual.eq_ignore_ascii_case(expected)),
+        Some(expected) => {
+            sha256_file(path).await.is_ok_and(|actual| actual.eq_ignore_ascii_case(expected))
+        },
         None => true,
     }
 }
@@ -336,8 +340,12 @@ async fn provision_one(
     std::fs::create_dir_all(&request.models_dir).map_err(|e| format!("models dir: {e}"))?;
     let target = request.models_dir.join(&source.file);
     let mut transferred = false;
-    if request.force || !target.is_file() || !digest_matches(&target, source.sha256.as_deref()).await {
-        let url = source.url.as_deref().ok_or_else(|| format!("`{}` has no source", artifact.spec))?;
+    if request.force
+        || !target.is_file()
+        || !digest_matches(&target, source.sha256.as_deref()).await
+    {
+        let url =
+            source.url.as_deref().ok_or_else(|| format!("`{}` has no source", artifact.spec))?;
         download(job, role, &artifact.spec, url, &target).await?;
         transferred = true;
         if let Some(expected) = &source.sha256 {
@@ -395,14 +403,17 @@ fn locate_llama_server(explicit: Option<&Path>, search_dirs: &[PathBuf]) -> Opti
     let in_dir = |dir: &Path| {
         [dir.join(name), dir.join("llama").join(name)].into_iter().find(|path| path.is_file())
     };
-    let from = |path: &Path| if path.is_dir() { in_dir(path) } else { path.is_file().then(|| path.to_owned()) };
+    let from = |path: &Path| {
+        if path.is_dir() { in_dir(path) } else { path.is_file().then(|| path.to_owned()) }
+    };
     explicit
         .and_then(from)
         .or_else(|| std::env::var_os("SHENRON_LLAMA_BIN").and_then(|v| from(Path::new(&v))))
         .or_else(|| search_dirs.iter().find_map(|dir| in_dir(dir)))
         .or_else(|| {
             std::env::var_os("PATH").and_then(|paths| {
-                std::env::split_paths(&paths).find_map(|dir| Some(dir.join(name)).filter(|p| p.is_file()))
+                std::env::split_paths(&paths)
+                    .find_map(|dir| Some(dir.join(name)).filter(|p| p.is_file()))
             })
         })
 }
@@ -441,12 +452,20 @@ impl Shared {
         if self.path_of(&model.model).is_none() {
             return Some("model file not provisioned".to_owned());
         }
-        model.lora.iter().find(|l| self.path_of(&l.spec).is_none()).map(|_| "adapter not provisioned".to_owned())
+        model
+            .lora
+            .iter()
+            .find(|l| self.path_of(&l.spec).is_none())
+            .map(|_| "adapter not provisioned".to_owned())
     }
 
     /// The loopback port serving `id`, starting its `llama-server` (and stopping another) first.
     async fn ensure(&self, id: &str) -> Result<u16, String> {
-        let model = self.models.iter().find(|m| m.id == id).ok_or_else(|| format!("unknown model `{id}`"))?;
+        let model = self
+            .models
+            .iter()
+            .find(|m| m.id == id)
+            .ok_or_else(|| format!("unknown model `{id}`"))?;
         let mut running = self.running.lock().await;
         if let Some(current) = running.as_mut() {
             if current.id == id && current.child.try_wait().ok().flatten().is_none() {
@@ -466,12 +485,21 @@ impl Shared {
             .port();
         let log_dir = self.state_dir.join(&model.id);
         std::fs::create_dir_all(&log_dir).map_err(|e| e.to_string())?;
-        let log = std::fs::File::create(log_dir.join("llama-server.log")).map_err(|e| e.to_string())?;
+        let log =
+            std::fs::File::create(log_dir.join("llama-server.log")).map_err(|e| e.to_string())?;
         let mut command = tokio::process::Command::new(bin);
         command
             .arg("--model")
             .arg(weights)
-            .args(["--host", "127.0.0.1", "--port", &port.to_string(), "--alias", &model.id, "--jinja"])
+            .args([
+                "--host",
+                "127.0.0.1",
+                "--port",
+                &port.to_string(),
+                "--alias",
+                &model.id,
+                "--jinja",
+            ])
             .args(["--ctx-size", &model.ctx.unwrap_or(8192).to_string()]);
         for adapter in &model.lora {
             if let Some(path) = self.path_of(&adapter.spec) {
@@ -546,22 +574,30 @@ async fn proxy(
         .and_then(|value| value.get("model").and_then(|m| m.as_str().map(str::to_owned)));
     let id = requested.or_else(|| shared.models.first().map(|m| m.id.clone()));
     let Some(id) = id else {
-        return json_response(StatusCode::NOT_FOUND, &serde_json::json!({"error": "no model configured"}));
+        return json_response(
+            StatusCode::NOT_FOUND,
+            &serde_json::json!({"error": "no model configured"}),
+        );
     };
     let port = match shared.ensure(&id).await {
         Ok(port) => port,
         Err(error) => {
-            return json_response(StatusCode::SERVICE_UNAVAILABLE, &serde_json::json!({"error": error}));
+            return json_response(
+                StatusCode::SERVICE_UNAVAILABLE,
+                &serde_json::json!({"error": error}),
+            );
         },
     };
-    let target = format!("http://127.0.0.1:{port}{}", uri.path_and_query().map_or("", |pq| pq.as_str()));
+    let target =
+        format!("http://127.0.0.1:{port}{}", uri.path_and_query().map_or("", |pq| pq.as_str()));
     let mut request = shared.client.request(method, target).body(body);
     if let Some(content_type) = headers.get("content-type") {
         request = request.header("content-type", content_type);
     }
     match request.send().await {
         Ok(upstream) => {
-            let status = StatusCode::from_u16(upstream.status().as_u16()).unwrap_or(StatusCode::BAD_GATEWAY);
+            let status =
+                StatusCode::from_u16(upstream.status().as_u16()).unwrap_or(StatusCode::BAD_GATEWAY);
             let content_type = upstream.headers().get("content-type").cloned();
             let mut response = Response::new(Body::from_stream(upstream.bytes_stream()));
             *response.status_mut() = status;
@@ -570,7 +606,9 @@ async fn proxy(
             }
             response
         },
-        Err(error) => json_response(StatusCode::BAD_GATEWAY, &serde_json::json!({"error": error.to_string()})),
+        Err(error) => {
+            json_response(StatusCode::BAD_GATEWAY, &serde_json::json!({"error": error.to_string()}))
+        },
     }
 }
 
@@ -628,10 +666,11 @@ pub async fn start(request: RouterRequest) -> Result<LlamaRouterInfo, String> {
     let addr = listener.local_addr().map_err(|error| error.to_string())?;
     let (stop_tx, stop_rx) = tokio::sync::oneshot::channel::<()>();
     let server = tokio::spawn(
-        axum::serve(listener, app).with_graceful_shutdown(async move {
-            let _ = stop_rx.await;
-        })
-        .into_future(),
+        axum::serve(listener, app)
+            .with_graceful_shutdown(async move {
+                let _ = stop_rx.await;
+            })
+            .into_future(),
     );
     *serving().lock().await = Some(Serving { shared, stop: stop_tx, server });
     Ok(LlamaRouterInfo {

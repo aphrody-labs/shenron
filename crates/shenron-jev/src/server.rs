@@ -41,11 +41,7 @@ impl ServerState {
     /// `keys` empty means no authentication, as on a loopback-only server.
     #[must_use]
     pub fn new(router: Arc<JevRouter>, keys: HashSet<String>, model: impl Into<Arc<str>>) -> Self {
-        Self {
-            router,
-            keys: Arc::new(keys),
-            model: model.into(),
-        }
+        Self { router, keys: Arc::new(keys), model: model.into() }
     }
 }
 
@@ -54,19 +50,13 @@ pub fn app(state: ServerState) -> Router {
     Router::new()
         .route("/v1/systemone", post(systemone))
         .route("/v1/models", get(models))
-        .route(
-            "/healthz",
-            get(|| async { Json(json!({ "status": "ok" })) }),
-        )
+        .route("/healthz", get(|| async { Json(json!({ "status": "ok" })) }))
         .with_state(state)
 }
 
 /// Preserve the Jev API error envelope for compatible clients.
 fn error(status: StatusCode, error_type: &str, message: impl Into<String>) -> HttpResponse {
-    (
-        status,
-        Json(json!({ "detail": { "error_type": error_type, "message": message.into() } })),
-    )
+    (status, Json(json!({ "detail": { "error_type": error_type, "message": message.into() } })))
         .into_response()
 }
 
@@ -86,11 +76,9 @@ fn denied(state: &ServerState, headers: &HeaderMap) -> Option<HttpResponse> {
             "Must supply an API key! Check your request and try again.",
         )),
         Some(key) if state.keys.contains(key) => None,
-        Some(_) => Some(error(
-            StatusCode::UNAUTHORIZED,
-            "authentication_error",
-            "Invalid API key.",
-        )),
+        Some(_) => {
+            Some(error(StatusCode::UNAUTHORIZED, "authentication_error", "Invalid API key."))
+        },
     }
 }
 
@@ -130,7 +118,7 @@ async fn systemone(
                         "invalid_request_error",
                         error_value.to_string(),
                     );
-                }
+                },
             }
         }
     }
@@ -141,7 +129,7 @@ async fn systemone(
         Ok(request) => request,
         Err(e) => {
             return error(StatusCode::UNPROCESSABLE_ENTITY, "invalid_request_error", e);
-        }
+        },
     };
     match state.router.decide(&request).await {
         Ok(decision) => {
@@ -157,21 +145,19 @@ async fn systemone(
                         "upstream_error",
                         error_value.to_string(),
                     );
-                }
+                },
             };
             let mut output = json!(decision.response);
             output["selections"] = json!(selections);
             Json(output).into_response()
-        }
-        Err(JevError::InvalidRequest(message)) => error(
-            StatusCode::UNPROCESSABLE_ENTITY,
-            "invalid_request_error",
-            message,
-        ),
+        },
+        Err(JevError::InvalidRequest(message)) => {
+            error(StatusCode::UNPROCESSABLE_ENTITY, "invalid_request_error", message)
+        },
         Err(JevError::Rejected { status, body, .. }) => {
             let status = StatusCode::from_u16(status).unwrap_or(StatusCode::BAD_GATEWAY);
             error(status, "upstream_error", body)
-        }
+        },
         Err(JevError::Unavailable(message)) => error(
             StatusCode::from_u16(529).unwrap_or(StatusCode::SERVICE_UNAVAILABLE),
             "overloaded_error",

@@ -41,6 +41,8 @@ pub use formats::{
     pup::{PupEntry, PupFile},
     sav::{Dxbv2Cac, Dxbv2Save},
 };
+#[cfg(not(target_arch = "wasm32"))]
+pub use fs::cpk_stream::{extract_cpk_stream, open_cpk_stream};
 pub use fs::{
     cpk::{CpkArchive, CpkEntry},
     cpk_stream::{
@@ -56,13 +58,11 @@ pub use fs::{
     },
     vfs::{CacheCpkStats, XenoverseVfs, XenoverseVfsEntry},
 };
-#[cfg(not(target_arch = "wasm32"))]
-pub use fs::cpk_stream::{extract_cpk_stream, open_cpk_stream};
 pub use live::aob::AobPattern;
 pub use steam::{
-    Dbxv2Install, STEAM_APP_ID_DB_FIGHTERZ, STEAM_APP_ID_DB_KAKAROT,
-    STEAM_APP_ID_DB_SPARKING_ZERO, STEAM_APP_ID_DBXV1, STEAM_APP_ID_DBXV2, SteamDepotRecord,
-    SteamGameInstall, SteamPlanningLimits, inspect_dbxv2_install, scan_dragon_ball_installs,
+    Dbxv2Install, STEAM_APP_ID_DB_FIGHTERZ, STEAM_APP_ID_DB_KAKAROT, STEAM_APP_ID_DB_SPARKING_ZERO,
+    STEAM_APP_ID_DBXV1, STEAM_APP_ID_DBXV2, SteamDepotRecord, SteamGameInstall,
+    SteamPlanningLimits, inspect_dbxv2_install, scan_dragon_ball_installs,
 };
 pub use unified::{
     BinaryFunctionEntry, BinaryReOverview, Dbxv2UnifiedState, LiveWineOverview, ResolvedSkill,

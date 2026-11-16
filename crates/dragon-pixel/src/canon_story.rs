@@ -74,10 +74,7 @@ impl<'de> Deserialize<'de> for CanonDramaticFinish {
             anim_cutscene: String,
         }
         let h = Helper::deserialize(deserializer)?;
-        Ok(CanonDramaticFinish {
-            move_name: h.move_name,
-            anim_cutscene: h.anim_cutscene,
-        })
+        Ok(CanonDramaticFinish { move_name: h.move_name, anim_cutscene: h.anim_cutscene })
     }
 }
 

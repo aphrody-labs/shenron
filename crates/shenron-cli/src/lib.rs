@@ -15,9 +15,8 @@ use std::ffi::OsString;
 use clap::{Parser, Subcommand};
 
 mod chat;
-mod host;
-mod render;
 pub mod config;
+mod host;
 mod jev;
 mod manga_cmd;
 #[cfg(feature = "koharu")]
@@ -28,6 +27,7 @@ mod ocr_dbfr;
 mod ocr_shenron;
 mod output;
 mod panels_cmd;
+mod render;
 pub mod shenron_cmd;
 
 /// Shenron (dragonballfr.com): Dragon Ball knowledge, databooks and manga tooling.

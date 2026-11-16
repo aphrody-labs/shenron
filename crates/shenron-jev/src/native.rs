@@ -103,11 +103,7 @@ impl NativeEngine {
         if model.trim().is_empty() {
             return Err(JevError::Config("native engine model is empty".into()));
         }
-        let with_slash = if base.ends_with('/') {
-            base.to_owned()
-        } else {
-            format!("{base}/")
-        };
+        let with_slash = if base.ends_with('/') { base.to_owned() } else { format!("{base}/") };
         let base = Url::parse(&with_slash).map_err(|e| JevError::Config(format!("{base}: {e}")))?;
         #[cfg(not(target_arch = "wasm32"))]
         let _ = rustls::crypto::ring::default_provider().install_default();
@@ -115,12 +111,7 @@ impl NativeEngine {
             .user_agent(concat!("shenron_jev/", env!("CARGO_PKG_VERSION")))
             .build()
             .map_err(|e| JevError::Config(e.to_string()))?;
-        Ok(Self {
-            http,
-            base,
-            model,
-            api_key,
-        })
+        Ok(Self { http, base, model, api_key })
     }
 
     /// Model id reported in responses: `shenron_jev/<local model>`.
@@ -155,12 +146,9 @@ impl NativeEngine {
             let (answer, used) = result?;
             usage = match (usage, used) {
                 (Some(usage), Some(used)) => Some(Usage {
-                    input_tokens: usage
-                        .input_tokens
-                        .checked_add(used.prompt_tokens)
-                        .ok_or_else(|| {
-                            JevError::Format("native input token count overflow".into())
-                        })?,
+                    input_tokens: usage.input_tokens.checked_add(used.prompt_tokens).ok_or_else(
+                        || JevError::Format("native input token count overflow".into()),
+                    )?,
                     output_tokens: usage
                         .output_tokens
                         .checked_add(used.completion_tokens)
@@ -172,11 +160,7 @@ impl NativeEngine {
             };
             answers.insert(name, answer);
         }
-        let response = Response {
-            model: self.model_id(),
-            answers,
-            usage,
-        };
+        let response = Response { model: self.model_id(), answers, usage };
         check_response(request, &response)?;
         Ok(response)
     }
@@ -197,11 +181,10 @@ impl NativeEngine {
         let (instructions, criteria_note) = match question {
             Question::Noul { instructions, .. } | Question::Choice { instructions, .. } => {
                 (instructions, "")
-            }
-            Question::Score { instructions, .. } => (
-                instructions,
-                "\nThe options are ordered from lowest to highest.",
-            ),
+            },
+            Question::Score { instructions, .. } => {
+                (instructions, "\nThe options are ordered from lowest to highest.")
+            },
         };
         let mut listing = String::new();
         for (index, (_, text)) in options.iter().enumerate() {
@@ -224,10 +207,8 @@ impl NativeEngine {
                 { "role": "user", "content": prompt },
             ],
         });
-        let url = self
-            .base
-            .join("chat/completions")
-            .map_err(|e| JevError::Config(e.to_string()))?;
+        let url =
+            self.base.join("chat/completions").map_err(|e| JevError::Config(e.to_string()))?;
         let mut call = self.http.post(url).timeout(timeout).json(&body);
         if let Some(key) = &self.api_key {
             call = call.bearer_auth(key);
@@ -242,10 +223,7 @@ impl NativeEngine {
             .await
             .map_err(|_| JevError::Unavailable("native_response_body_error".into()))?;
         if !status.is_success() {
-            return Err(JevError::Unavailable(format!(
-                "native_http_{}",
-                status.as_u16(),
-            )));
+            return Err(JevError::Unavailable(format!("native_http_{}", status.as_u16(),)));
         }
         let completion: Completion = serde_json::from_slice(&bytes)
             .map_err(|e| JevError::Format(format!("native engine: {e}")))?;
@@ -284,16 +262,14 @@ fn options(question: &Question) -> Vec<(String, String)> {
                 ("true".into(), format!("Yes{}", meaning("true"))),
                 ("false".into(), format!("No{}", meaning("false"))),
             ]
-        }
+        },
         Question::Choice { criteria, .. } => criteria
             .iter()
             .map(|(key, text)| (key.clone(), format!("{key}: {}", entry_text(text))))
             .collect(),
-        Question::Score { criteria, .. } => criteria
-            .iter()
-            .enumerate()
-            .map(|(i, text)| (i.to_string(), entry_text(text)))
-            .collect(),
+        Question::Score { criteria, .. } => {
+            criteria.iter().enumerate().map(|(i, text)| (i.to_string(), entry_text(text))).collect()
+        },
     }
 }
 
@@ -328,15 +304,11 @@ fn round2(value: f64) -> f64 {
 }
 
 fn shape(question: &Question, options: &[(String, String)], probabilities: &[f64]) -> Answer {
-    let (best, best_p) =
-        probabilities
-            .iter()
-            .copied()
-            .enumerate()
-            .fold(
-                (0, f64::MIN),
-                |acc, (i, p)| if p > acc.1 { (i, p) } else { acc },
-            );
+    let (best, best_p) = probabilities
+        .iter()
+        .copied()
+        .enumerate()
+        .fold((0, f64::MIN), |acc, (i, p)| if p > acc.1 { (i, p) } else { acc });
     let distribution = || {
         options
             .iter()
@@ -345,9 +317,7 @@ fn shape(question: &Question, options: &[(String, String)], probabilities: &[f64
             .collect::<BTreeMap<_, _>>()
     };
     match question {
-        Question::Noul { .. } => Answer::Noul {
-            noul: round2(probabilities[0]),
-        },
+        Question::Noul { .. } => Answer::Noul { noul: round2(probabilities[0]) },
         Question::Choice { .. } => Answer::Choice {
             choice: options[best].0.clone(),
             confidence: round2(best_p),
@@ -355,11 +325,7 @@ fn shape(question: &Question, options: &[(String, String)], probabilities: &[f64
         },
         Question::Score { criteria, .. } => {
             #[allow(clippy::cast_precision_loss, reason = "level counts are tiny")]
-            let expected: f64 = probabilities
-                .iter()
-                .enumerate()
-                .map(|(i, p)| i as f64 * p)
-                .sum();
+            let expected: f64 = probabilities.iter().enumerate().map(|(i, p)| i as f64 * p).sum();
             Answer::Score {
                 score: round2(expected),
                 confidence: round2(best_p),
@@ -370,7 +336,7 @@ fn shape(question: &Question, options: &[(String, String)], probabilities: &[f64
                     .collect(),
                 probabilities: distribution(),
             }
-        }
+        },
     }
 }
 
@@ -379,22 +345,14 @@ mod tests {
     use super::*;
 
     fn top(pairs: &[(&str, f64)]) -> Vec<TopLogprob> {
-        pairs
-            .iter()
-            .map(|(t, p)| TopLogprob {
-                token: (*t).into(),
-                logprob: p.ln(),
-            })
-            .collect()
+        pairs.iter().map(|(t, p)| TopLogprob { token: (*t).into(), logprob: p.ln() }).collect()
     }
 
     #[test]
     fn distribution_merges_case_and_whitespace_and_ignores_words() {
-        let dist = letter_distribution(
-            &top(&[("A", 0.6), (" a", 0.1), ("B", 0.2), ("Yes", 0.1)]),
-            2,
-        )
-        .unwrap();
+        let dist =
+            letter_distribution(&top(&[("A", 0.6), (" a", 0.1), ("B", 0.2), ("Yes", 0.1)]), 2)
+                .unwrap();
         assert!((dist[0] - 0.7 / 0.9).abs() < 1e-9);
         assert!((dist[1] - 0.2 / 0.9).abs() < 1e-9);
     }
@@ -410,12 +368,8 @@ mod tests {
     fn score_is_the_expected_level_and_lists_every_level() {
         let question = Question::score("How angry?", ["Calm", "Frustrated", "Very angry"]);
         let options = options(&question);
-        let Answer::Score {
-            score,
-            confidence,
-            legend,
-            probabilities,
-        } = shape(&question, &options, &[0.0, 0.96, 0.04])
+        let Answer::Score { score, confidence, legend, probabilities } =
+            shape(&question, &options, &[0.0, 0.96, 0.04])
         else {
             panic!("score expected")
         };
@@ -429,11 +383,8 @@ mod tests {
     fn choice_uses_option_keys() {
         let question = Question::choice("Team?", [("billing", "Payments"), ("technical", "Bugs")]);
         let options = options(&question);
-        let Answer::Choice {
-            choice,
-            probabilities,
-            ..
-        } = shape(&question, &options, &[0.13, 0.87])
+        let Answer::Choice { choice, probabilities, .. } =
+            shape(&question, &options, &[0.13, 0.87])
         else {
             panic!("choice expected")
         };

@@ -47,15 +47,7 @@ impl Chunk {
         text: String,
     ) -> Self {
         let hash = *blake3::hash(text.as_bytes()).as_bytes();
-        Self {
-            ord,
-            kind,
-            symbol,
-            start_line,
-            end_line,
-            text,
-            hash,
-        }
+        Self { ord, kind, symbol, start_line, end_line, text, hash }
     }
 }
 
@@ -232,7 +224,7 @@ pub fn chunker_for_path(path: &str) -> Box<dyn Chunker> {
         Language::Rust => Box::new(crate::rust_chunker::RustChunker),
         lang @ (Language::JavaScript | Language::TypeScript) => {
             Box::new(crate::structural_chunker::StructuralChunker::new(lang))
-        }
+        },
         Language::Markdown => Box::new(crate::markdown_chunker::MarkdownChunker),
         Language::PlainText => Box::new(crate::prose_chunker::ProseChunker),
         lang => Box::new(crate::structural_chunker::StructuralChunker::new(lang)),

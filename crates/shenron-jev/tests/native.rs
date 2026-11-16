@@ -4,26 +4,19 @@
 // Portable HTTP fixtures use std text helpers; they do not link Bun's native string wrappers.
 #![allow(clippy::disallowed_methods)]
 
+use axum::{Json, Router, routing::post};
+use serde_json::{Value, json};
 use shenron_jev::{
     Answer, Backend, Endpoint, JevError, JevMode, JevRouter, NativeEngine, Question, Request,
     RoutingPolicy,
 };
-use axum::{Json, Router, routing::post};
-use serde_json::{Value, json};
 
 /// Picks the letter whose option text appears in the state, else `A`.
 async fn completions(Json(body): Json<Value>) -> Json<Value> {
-    let prompt = body["messages"][1]["content"]
-        .as_str()
-        .unwrap_or_default()
-        .to_owned();
+    let prompt = body["messages"][1]["content"].as_str().unwrap_or_default().to_owned();
     assert_eq!(body["max_tokens"], 1);
     assert_eq!(body["logprobs"], true);
-    let state = prompt
-        .split("\n\nQuestion:")
-        .next()
-        .unwrap_or_default()
-        .to_lowercase();
+    let state = prompt.split("\n\nQuestion:").next().unwrap_or_default().to_lowercase();
     let options: Vec<(char, String)> = prompt
         .lines()
         .filter_map(|l| {
@@ -36,25 +29,15 @@ async fn completions(Json(body): Json<Value>) -> Json<Value> {
         .collect();
     let pick = options
         .iter()
-        .find(|(_, text)| {
-            text.split([':', ' '])
-                .next()
-                .is_some_and(|word| state.contains(word))
-        })
+        .find(|(_, text)| text.split([':', ' ']).next().is_some_and(|word| state.contains(word)))
         .map_or('A', |(letter, _)| *letter);
     let top: Vec<Value> = options
         .iter()
         .map(|(letter, _)| {
-            let p: f64 = if *letter == pick {
-                0.9
-            } else {
-                0.1 / (options.len() - 1) as f64
-            };
+            let p: f64 = if *letter == pick { 0.9 } else { 0.1 / (options.len() - 1) as f64 };
             json!({ "token": letter.to_string(), "logprob": p.ln() })
         })
-        .chain(std::iter::once(
-            json!({ "token": "Yes", "logprob": (0.01_f64).ln() }),
-        ))
+        .chain(std::iter::once(json!({ "token": "Yes", "logprob": (0.01_f64).ln() })))
         .collect();
     Json(json!({
         "choices": [{ "message": { "content": pick.to_string() },
@@ -79,15 +62,9 @@ fn request() -> Request {
         .question("urgent", Question::noul("Is it urgent?"))
         .question(
             "team",
-            Question::choice(
-                "Which team?",
-                [("billing", "Payments"), ("technical", "Bugs")],
-            ),
+            Question::choice("Which team?", [("billing", "Payments"), ("technical", "Bugs")]),
         )
-        .question(
-            "level",
-            Question::score("How bad?", ["Minor", "Major", "Critical"]),
-        )
+        .question("level", Question::score("How bad?", ["Minor", "Major", "Critical"]))
 }
 
 #[tokio::test]
@@ -97,19 +74,10 @@ async fn native_mode_answers_with_jev_primitives() {
     assert_eq!(decision.served_by, Backend::Native);
     assert_eq!(decision.response.model, "shenron_jev/test-model");
     let answers = &decision.response.answers;
-    assert!(
-        matches!(&answers["team"], Answer::Choice { choice, confidence, .. }
-        if choice == "technical" && (*confidence - 0.9).abs() < 1e-9)
-    );
+    assert!(matches!(&answers["team"], Answer::Choice { choice, confidence, .. }
+        if choice == "technical" && (*confidence - 0.9).abs() < 1e-9));
     assert!(matches!(&answers["urgent"], Answer::Noul { noul } if (*noul - 0.9).abs() < 1e-9));
-    let Answer::Score {
-        score,
-        probabilities,
-        ..
-    } = &answers["level"]
-    else {
-        panic!("score")
-    };
+    let Answer::Score { score, probabilities, .. } = &answers["level"] else { panic!("score") };
     assert_eq!(probabilities.len(), 3);
     assert!((0.0..=2.0).contains(score));
     assert_eq!(decision.response.usage.unwrap().input_tokens, 150);
@@ -132,20 +100,14 @@ async fn remote_outage_falls_back_to_the_native_engine() {
     let decision = router.decide(&request()).await.unwrap();
     assert_eq!(decision.served_by, Backend::Native);
     let failover = decision.failover.unwrap();
-    assert_eq!(
-        (failover.from, failover.to),
-        (Backend::Saas, Backend::Native)
-    );
+    assert_eq!((failover.from, failover.to), (Backend::Saas, Backend::Native));
 }
 
 #[tokio::test]
 async fn unreachable_engine_is_unavailable() {
     let engine = NativeEngine::new("http://127.0.0.1:9/v1", "m", None).unwrap();
     let router = JevRouter::native(engine, RoutingPolicy::default()).unwrap();
-    assert!(matches!(
-        router.decide(&request()).await,
-        Err(JevError::Unavailable(_))
-    ));
+    assert!(matches!(router.decide(&request()).await, Err(JevError::Unavailable(_))));
 }
 
 #[test]
@@ -163,9 +125,7 @@ async fn native_entrypoint_rejects_invalid_requests_before_transport() {
     let engine = NativeEngine::new("http://127.0.0.1:9/v1", "m", None).unwrap();
     let invalid = Request::new(Value::Null);
     assert!(matches!(
-        engine
-            .decide(&invalid, std::time::Duration::from_millis(100))
-            .await,
+        engine.decide(&invalid, std::time::Duration::from_millis(100)).await,
         Err(JevError::InvalidRequest(_))
     ));
 }
@@ -182,21 +142,10 @@ async fn native_transport_retains_structured_legends_and_unknown_usage() {
     let criteria = [json!({"level":"low"}), Value::Null];
     let request = Request::new(json!({"ticket":null}))
         .question("accepted", Question::noul(Value::Null))
-        .question(
-            "level",
-            Question::score(json!({"policy":["ordered"]}), criteria.clone()),
-        );
-    let response = engine
-        .decide(&request, std::time::Duration::from_secs(1))
-        .await
-        .unwrap();
+        .question("level", Question::score(json!({"policy":["ordered"]}), criteria.clone()));
+    let response = engine.decide(&request, std::time::Duration::from_secs(1)).await.unwrap();
     assert!(response.usage.is_none());
-    let Answer::Score {
-        legend,
-        probabilities,
-        ..
-    } = &response.answers["level"]
-    else {
+    let Answer::Score { legend, probabilities, .. } = &response.answers["level"] else {
         panic!("score")
     };
     assert_eq!(legend["0"], criteria[0]);
@@ -216,9 +165,7 @@ async fn native_usage_overflow_returns_a_format_error() {
         .question("first", Question::noul(Value::Null))
         .question("second", Question::noul(Value::Null));
     assert!(matches!(
-        engine
-            .decide(&request, std::time::Duration::from_secs(1))
-            .await,
+        engine.decide(&request, std::time::Duration::from_secs(1)).await,
         Err(JevError::Format(_))
     ));
 }

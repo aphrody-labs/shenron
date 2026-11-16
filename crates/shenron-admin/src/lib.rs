@@ -35,7 +35,12 @@ impl Config {
     pub fn from_env() -> Self {
         let var = |k: &str| std::env::var(k).ok().filter(|v| !v.trim().is_empty());
         let list = |k: &str, default: &str| -> Vec<String> {
-            var(k).unwrap_or_else(|| default.to_string()).split(',').map(|s| s.trim().to_string()).filter(|s| !s.is_empty()).collect()
+            var(k)
+                .unwrap_or_else(|| default.to_string())
+                .split(',')
+                .map(|s| s.trim().to_string())
+                .filter(|s| !s.is_empty())
+                .collect()
         };
         Self {
             site_url: var("SHENRON_SITE_URL").unwrap_or_else(|| "http://127.0.0.1:5011".into()),
@@ -80,7 +85,7 @@ pub fn router(state: Shared) -> Router {
         Some(dir) => {
             let index = dir.join("index.html");
             api.fallback_service(ServeDir::new(dir).fallback(ServeFile::new(index)))
-        }
+        },
         None => api,
     }
 }
@@ -96,7 +101,8 @@ async fn authenticate(state: &AppState, headers: &HeaderMap) -> Result<Principal
     let Some(issuer) = state.config.auth_url.as_deref() else {
         return Err(StatusCode::UNAUTHORIZED);
     };
-    let mut request = state.http.get(format!("{}/api/auth/get-session", issuer.trim_end_matches('/')));
+    let mut request =
+        state.http.get(format!("{}/api/auth/get-session", issuer.trim_end_matches('/')));
     for name in [header::AUTHORIZATION, header::COOKIE] {
         if let Some(value) = headers.get(&name) {
             request = request.header(name, value);
@@ -132,7 +138,11 @@ async fn list_panels(State(state): State<Shared>, headers: HeaderMap) -> Respons
     Json(listing).into_response()
 }
 
-async fn read_panel(State(state): State<Shared>, Path(id): Path<String>, headers: HeaderMap) -> Response {
+async fn read_panel(
+    State(state): State<Shared>,
+    Path(id): Path<String>,
+    headers: HeaderMap,
+) -> Response {
     if let Err(status) = authenticate(&state, &headers).await {
         return error(status, "unauthorized");
     }
@@ -153,14 +163,16 @@ async fn read_panel(State(state): State<Shared>, Path(id): Path<String>, headers
     }
     match request.send().await {
         Ok(upstream) => {
-            let status = StatusCode::from_u16(upstream.status().as_u16()).unwrap_or(StatusCode::BAD_GATEWAY);
+            let status =
+                StatusCode::from_u16(upstream.status().as_u16()).unwrap_or(StatusCode::BAD_GATEWAY);
             let data: Value = upstream.json().await.unwrap_or(Value::Null);
-            (status, Json(json!({ "panel": panel.id, "status": status.as_u16(), "data": data }))).into_response()
-        }
+            (status, Json(json!({ "panel": panel.id, "status": status.as_u16(), "data": data })))
+                .into_response()
+        },
         Err(e) => {
             tracing::warn!(panel = %panel.id, error = %e, "upstream unreachable");
             error(StatusCode::BAD_GATEWAY, "upstream unreachable")
-        }
+        },
     }
 }
 
@@ -204,7 +216,10 @@ mod tests {
     async fn health_is_open_and_panels_are_closed() {
         assert_eq!(get_with("/api/health", None).await.0, StatusCode::OK);
         assert_eq!(get_with("/api/panels", None).await.0, StatusCode::UNAUTHORIZED);
-        assert_eq!(get_with("/api/panels", Some("wrong-wrong-wrong-")).await.0, StatusCode::UNAUTHORIZED);
+        assert_eq!(
+            get_with("/api/panels", Some("wrong-wrong-wrong-")).await.0,
+            StatusCode::UNAUTHORIZED
+        );
     }
 
     #[tokio::test]
@@ -214,6 +229,9 @@ mod tests {
         assert!(body.as_array().unwrap().iter().any(|p| p["id"] == "overview"));
         let (status, _) = get_with("/api/panels/overview", Some(&fixture_token())).await;
         assert_eq!(status, StatusCode::BAD_GATEWAY);
-        assert_eq!(get_with("/api/panels/nope", Some(&fixture_token())).await.0, StatusCode::NOT_FOUND);
+        assert_eq!(
+            get_with("/api/panels/nope", Some(&fixture_token())).await.0,
+            StatusCode::NOT_FOUND
+        );
     }
 }

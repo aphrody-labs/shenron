@@ -2,10 +2,10 @@
 
 pub mod arcade;
 pub mod beam_clash;
+pub mod canon_story;
 pub mod combat;
 pub mod frame_data;
 pub mod haptics;
-pub mod canon_story;
 pub mod input;
 pub mod render_packet;
 pub mod roster;
@@ -20,6 +20,7 @@ pub mod wasm;
 mod bevy_view;
 
 pub use beam_clash::{BeamClashResult, BeamClashState};
+pub use canon_story::*;
 pub use combat::{DragonPixelEngineCore, FighterEntity, Particle, Projectile};
 pub use frame_data::{
     MoveFrameData, MoveKind, MovePhase, get_default_move_data, get_fighter_hurtbox,
@@ -31,7 +32,6 @@ pub use render_packet::{
     ProjectileRenderData, UiOverlayData, WebGpuRenderPacket,
 };
 pub use roster::{FighterDefinition, StoryChapter, get_fighter_def, get_story_chapters};
-pub use canon_story::*;
 pub use sprite_manifest::*;
 pub use types::{
     ArenaId, AudioEvent, AuraType, FighterId, FighterStyle, GameMode, HapticEvent, Hitbox, Hurtbox,

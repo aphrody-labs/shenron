@@ -11,11 +11,7 @@
 //! `SHENRON_JEV_SERVER_KEYS` (comma-separated) enables bearer authentication
 //! on the server; it is required when binding to a non-loopback address.
 // This optional product CLI runs before JSC and keeps the standalone crate independent of Bun I/O.
-#![allow(
-    clippy::disallowed_methods,
-    clippy::disallowed_types,
-    clippy::disallowed_macros
-)]
+#![allow(clippy::disallowed_methods, clippy::disallowed_types, clippy::disallowed_macros)]
 
 use std::{collections::HashSet, ffi::OsString, io::Read, net::SocketAddr, sync::Arc};
 
@@ -33,7 +29,7 @@ fn decision_threshold(args: &[String]) -> Result<Option<f64>, String> {
             let threshold =
                 crate::decision::parse_threshold(value).map_err(|error| error.to_string())?;
             Ok(Some(threshold))
-        }
+        },
         _ => Err(USAGE.into()),
     }
 }
@@ -42,27 +38,21 @@ fn decision_threshold(args: &[String]) -> Result<Option<f64>, String> {
 /// name (argv convention). Returns the process exit code.
 #[must_use]
 pub fn cli_main(args: Vec<OsString>) -> i32 {
-    let args: Vec<String> = args
-        .into_iter()
-        .skip(1)
-        .map(|a| a.to_string_lossy().into_owned())
-        .collect();
-    let runtime = match tokio::runtime::Builder::new_multi_thread()
-        .enable_all()
-        .build()
-    {
+    let args: Vec<String> =
+        args.into_iter().skip(1).map(|a| a.to_string_lossy().into_owned()).collect();
+    let runtime = match tokio::runtime::Builder::new_multi_thread().enable_all().build() {
         Ok(runtime) => runtime,
         Err(error) => {
             eprintln!("shenron_jev: runtime: {error}");
             return 1;
-        }
+        },
     };
     match runtime.block_on(run(args)) {
         Ok(()) => 0,
         Err(message) => {
             eprintln!("shenron_jev: {message}");
             1
-        }
+        },
     }
 }
 
@@ -74,11 +64,8 @@ async fn run(args: Vec<String>) -> Result<(), String> {
     if !matches!(args.first().map(String::as_str), Some("serve" | "decide")) {
         return Err(USAGE.into());
     }
-    let minimum_confidence = if args[0] == "decide" {
-        decision_threshold(&args[1..])?
-    } else {
-        None
-    };
+    let minimum_confidence =
+        if args[0] == "decide" { decision_threshold(&args[1..])? } else { None };
     let router = Arc::new(JevRouter::from_env().map_err(|e| e.to_string())?);
     match args.first().map(String::as_str) {
         Some("serve") => {
@@ -106,12 +93,10 @@ async fn run(args: Vec<String>) -> Result<(), String> {
             axum::serve(listener, app(ServerState::new(router, keys, model)))
                 .await
                 .map_err(|e| e.to_string())
-        }
+        },
         Some("decide") => {
             let mut input = String::new();
-            std::io::stdin()
-                .read_to_string(&mut input)
-                .map_err(|e| e.to_string())?;
+            std::io::stdin().read_to_string(&mut input).map_err(|e| e.to_string())?;
             let request: Request = serde_json::from_str(&input).map_err(|e| e.to_string())?;
             let decision = router.decide(&request).await.map_err(|e| e.to_string())?;
             let selections = minimum_confidence
@@ -134,7 +119,7 @@ async fn run(args: Vec<String>) -> Result<(), String> {
             }
             println!("{out}");
             Ok(())
-        }
+        },
         _ => Err(USAGE.into()),
     }
 }
@@ -166,9 +151,6 @@ mod tests {
     #[tokio::test]
     async fn invalid_commands_report_usage_before_backend_discovery() {
         assert_eq!(super::run(Vec::new()).await, Err(super::USAGE.into()));
-        assert_eq!(
-            super::run(vec!["unknown".into()]).await,
-            Err(super::USAGE.into())
-        );
+        assert_eq!(super::run(vec!["unknown".into()]).await, Err(super::USAGE.into()));
     }
 }

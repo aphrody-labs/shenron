@@ -8,9 +8,9 @@ use std::{
     sync::{Arc, PoisonError},
 };
 
-use shenron_rag_core::fusion::top_k_exact;
 use rusqlite::{Connection, OptionalExtension as _, params};
 use serde::{Deserialize, Serialize};
+use shenron_rag_core::fusion::top_k_exact;
 use tokio::sync::Mutex;
 
 use crate::error::{RagError, Result};
@@ -159,22 +159,20 @@ impl RagStore {
             Err(error) => {
                 tracing::debug!(%error, "RAG store has no dedicated reader connection");
                 None
-            }
+            },
         };
-        Ok(Self {
-            conn: Arc::new(Mutex::new(conn)),
-            reader,
-        })
+        Ok(Self { conn: Arc::new(Mutex::new(conn)), reader })
     }
 
     /// Open a transient in-memory database (useful for isolated tests).
     pub fn open_in_memory() -> Result<Self> {
-        let conn = { let conn = Connection::open_in_memory()?; configure(&conn)?; conn };
+        let conn = {
+            let conn = Connection::open_in_memory()?;
+            configure(&conn)?;
+            conn
+        };
         initialize_schema(&conn)?;
-        Ok(Self {
-            conn: Arc::new(Mutex::new(conn)),
-            reader: None,
-        })
+        Ok(Self { conn: Arc::new(Mutex::new(conn)), reader: None })
     }
 
     /// Fold the WAL back into the database file and truncate it (call after bulk indexing).
@@ -215,9 +213,8 @@ impl RagStore {
 
         // On conflict, last_insert_rowid still refers to an unrelated previous
         // insert. Resolve the document by its unique path in both cases.
-        let doc_id = conn.query_row("SELECT id FROM docs WHERE path = ?1", [path], |row| {
-            row.get(0)
-        })?;
+        let doc_id =
+            conn.query_row("SELECT id FROM docs WHERE path = ?1", [path], |row| row.get(0))?;
         Ok(doc_id)
     }
 
@@ -255,14 +252,7 @@ impl RagStore {
         doc: NewDoc<'_>,
         chunks: &[NewChunk],
     ) -> Result<Vec<i64>> {
-        let NewDoc {
-            path,
-            hash,
-            title,
-            language,
-            mtime_ms,
-            size_bytes,
-        } = doc;
+        let NewDoc { path, hash, title, language, mtime_ms, size_bytes } = doc;
         let mut conn = self.conn.lock().await;
         let tx = conn.transaction()?;
         tx.execute(
@@ -279,9 +269,8 @@ impl RagStore {
             "#,
             params![path, hash, title, language, mtime_ms, size_bytes],
         )?;
-        let doc_id: i64 = tx.query_row("SELECT id FROM docs WHERE path = ?1", [path], |row| {
-            row.get(0)
-        })?;
+        let doc_id: i64 =
+            tx.query_row("SELECT id FROM docs WHERE path = ?1", [path], |row| row.get(0))?;
         tx.execute("DELETE FROM chunks WHERE doc_id = ?1", [doc_id])?;
         let mut ids = Vec::with_capacity(chunks.len());
         for chunk in chunks {
@@ -367,17 +356,12 @@ impl RagStore {
     ) -> Result<()> {
         let conn = self.conn.lock().await;
         let existing = conn
-            .query_row("SELECT model_id FROM vectors LIMIT 1", [], |row| {
-                row.get::<_, String>(0)
-            })
+            .query_row("SELECT model_id FROM vectors LIMIT 1", [], |row| row.get::<_, String>(0))
             .optional()?;
         if let Some(expected) = existing
             && expected != model_id
         {
-            return Err(RagError::ModelMismatch {
-                expected,
-                found: model_id.to_owned(),
-            });
+            return Err(RagError::ModelMismatch { expected, found: model_id.to_owned() });
         }
         let mut blob = Vec::with_capacity(embedding.len() * 4);
         for &val in embedding {
@@ -418,17 +402,12 @@ impl RagStore {
         let mut conn = self.conn.lock().await;
         let tx = conn.transaction()?;
         let existing = tx
-            .query_row("SELECT model_id FROM vectors LIMIT 1", [], |row| {
-                row.get::<_, String>(0)
-            })
+            .query_row("SELECT model_id FROM vectors LIMIT 1", [], |row| row.get::<_, String>(0))
             .optional()?;
         if let Some(expected) = existing
             && expected != model_id
         {
-            return Err(RagError::ModelMismatch {
-                expected,
-                found: model_id.to_owned(),
-            });
+            return Err(RagError::ModelMismatch { expected, found: model_id.to_owned() });
         }
         let mut written = 0;
         {
@@ -503,16 +482,8 @@ impl RagStore {
         let conn = self.conn.lock().await;
 
         // Escape query if needed or pass cleaned terms:
-        let clean_query: String = query
-            .chars()
-            .map(|c| {
-                if c.is_alphanumeric() || c == '_' {
-                    c
-                } else {
-                    ' '
-                }
-            })
-            .collect();
+        let clean_query: String =
+            query.chars().map(|c| if c.is_alphanumeric() || c == '_' { c } else { ' ' }).collect();
         let terms: Vec<&str> = clean_query.split_whitespace().collect();
         if terms.is_empty() {
             return Ok(Vec::new());
@@ -549,11 +520,7 @@ impl RagStore {
             let raw_rank: f64 = row.get(10)?;
             let score = (-raw_rank).max(0.0) + 1.0;
 
-            Ok(ScoredChunk {
-                chunk,
-                score,
-                channel: "lexical".to_string(),
-            })
+            Ok(ScoredChunk { chunk, score, channel: "lexical".to_string() })
         })?;
 
         let mut results = Vec::new();
@@ -635,19 +602,10 @@ impl RagStore {
             .map(|n| n as usize)?;
 
         let embedding_model = conn
-            .query_row(
-                "SELECT value FROM meta WHERE key = 'embed_model_id'",
-                [],
-                |r| r.get(0),
-            )
+            .query_row("SELECT value FROM meta WHERE key = 'embed_model_id'", [], |r| r.get(0))
             .optional()?;
 
-        Ok(RagStats {
-            doc_count,
-            chunk_count,
-            vector_count,
-            embedding_model,
-        })
+        Ok(RagStats { doc_count, chunk_count, vector_count, embedding_model })
     }
 }
 
@@ -678,12 +636,7 @@ fn scan_vectors(
                 continue;
             }
             ids.push(row.get(0)?);
-            matrix.extend(
-                blob.as_chunks::<4>()
-                    .0
-                    .iter()
-                    .map(|bytes| f32::from_le_bytes(*bytes)),
-            );
+            matrix.extend(blob.as_chunks::<4>().0.iter().map(|bytes| f32::from_le_bytes(*bytes)));
         }
     }
 
@@ -716,11 +669,7 @@ fn scan_vectors(
             })
             .optional()?;
         if let Some(chunk) = chunk {
-            out.push(ScoredChunk {
-                chunk,
-                score: f64::from(score),
-                channel: "vector".to_string(),
-            });
+            out.push(ScoredChunk { chunk, score: f64::from(score), channel: "vector".to_string() });
         }
     }
     Ok(out)

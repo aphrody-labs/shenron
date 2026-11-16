@@ -34,8 +34,11 @@ pub const ENV_SHENRON_PROFILE: &str = "SHENRON_PROFILE";
 /// [`HomeError::NoHome`] when no home directory can be determined.
 #[cfg(not(target_arch = "wasm32"))]
 pub fn home_dir() -> Result<PathBuf, HomeError> {
-    let non_empty = |key: &str| std::env::var_os(key).filter(|value| !value.is_empty()).map(PathBuf::from);
-    if cfg!(windows) && let Some(profile) = non_empty("USERPROFILE") {
+    let non_empty =
+        |key: &str| std::env::var_os(key).filter(|value| !value.is_empty()).map(PathBuf::from);
+    if cfg!(windows)
+        && let Some(profile) = non_empty("USERPROFILE")
+    {
         return Ok(profile);
     }
     non_empty("HOME").or_else(dirs::home_dir).ok_or(HomeError::NoHome)
@@ -132,11 +135,7 @@ pub fn named_profile_workspace(state: &Path, profile: &str) -> PathBuf {
         return root.home(&name);
     }
     let canonical = root.path.join(&name);
-    if canonical.is_dir() {
-        canonical
-    } else {
-        state.join(format!("workspace-{name}"))
-    }
+    if canonical.is_dir() { canonical } else { state.join(format!("workspace-{name}")) }
 }
 
 #[cfg(test)]
@@ -153,10 +152,7 @@ mod tests {
         std::fs::create_dir_all(&canonical).unwrap();
         assert_eq!(named_profile_workspace(state.path(), "DBFR"), canonical);
         assert_eq!(named_profile_workspace(state.path(), "../dbfr"), canonical);
-        assert_eq!(
-            named_profile_workspace(state.path(), ""),
-            state.path().join("workspace")
-        );
+        assert_eq!(named_profile_workspace(state.path(), ""), state.path().join("workspace"));
     }
 
     #[test]
@@ -175,10 +171,7 @@ mod tests {
         // `workspace-<profile>` always stays under `~/.shenron/`.
         for raw in ["../../etc", "a/../../b", "..\\..\\win", "/abs/path"] {
             let s = sanitize_profile(raw);
-            assert!(
-                !s.contains('/') && !s.contains('\\') && !s.contains(".."),
-                "leaked: {s}"
-            );
+            assert!(!s.contains('/') && !s.contains('\\') && !s.contains(".."), "leaked: {s}");
         }
     }
 

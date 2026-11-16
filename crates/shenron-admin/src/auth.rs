@@ -29,7 +29,9 @@ pub fn bearer(headers: &HeaderMap) -> Option<&str> {
 
 pub fn static_token_ok(configured: Option<&str>, headers: &HeaderMap) -> bool {
     match (configured, bearer(headers)) {
-        (Some(expected), Some(given)) if expected.len() >= 16 => ct_eq(expected.as_bytes(), given.as_bytes()),
+        (Some(expected), Some(given)) if expected.len() >= 16 => {
+            ct_eq(expected.as_bytes(), given.as_bytes())
+        },
         _ => false,
     }
 }

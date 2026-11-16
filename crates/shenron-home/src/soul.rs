@@ -96,10 +96,7 @@ impl Soul {
     /// over-long body, or a high ratio of vague-philosophy sentences).
     pub fn parse(content: &str) -> Result<Self, HomeError> {
         let (fm, body) = frontmatter::split(content);
-        let mut soul = Soul {
-            body: body.to_string(),
-            ..Soul::default()
-        };
+        let mut soul = Soul { body: body.to_string(), ..Soul::default() };
         if let Some(fm) = fm {
             for (key, val) in frontmatter::parse(fm) {
                 soul.apply_field(&key, val);
@@ -114,10 +111,7 @@ impl Soul {
     #[must_use]
     pub fn parse_lenient(content: &str) -> Self {
         let (fm, body) = frontmatter::split(content);
-        let mut soul = Soul {
-            body: body.to_string(),
-            ..Soul::default()
-        };
+        let mut soul = Soul { body: body.to_string(), ..Soul::default() };
         if let Some(fm) = fm {
             for (key, val) in frontmatter::parse(fm) {
                 soul.apply_field(&key, val);
@@ -137,8 +131,8 @@ impl Soul {
             ("humor" | "humour", FmValue::Scalar(s)) => self.humor = parse_humor(&s),
             ("default_bluntness" | "bluntness", FmValue::Scalar(s)) => {
                 self.default_bluntness = parse_bluntness(&s);
-            }
-            _ => {}
+            },
+            _ => {},
         }
     }
 
@@ -325,11 +319,8 @@ fn lint_body(body: &str) -> Result<(), HomeError> {
     }
 
     // Vague-philosophy density: count sentences vs. flagged fragments.
-    let sentence_count = trimmed
-        .split(['.', '!', '?'])
-        .filter(|s| !s.trim().is_empty())
-        .count()
-        .max(1);
+    let sentence_count =
+        trimmed.split(['.', '!', '?']).filter(|s| !s.trim().is_empty()).count().max(1);
     let mut philosophy_hits = 0usize;
     for marker in VAGUE_PHILOSOPHY_MARKERS {
         if lower.contains(marker) {
@@ -398,11 +389,7 @@ mod tests {
         let soul = Soul::parse(src).expect("valid");
         assert_eq!(
             soul.opinions,
-            vec![
-                "first".to_string(),
-                "second item".to_string(),
-                "third".to_string()
-            ]
+            vec!["first".to_string(), "second item".to_string(), "third".to_string()]
         );
     }
 

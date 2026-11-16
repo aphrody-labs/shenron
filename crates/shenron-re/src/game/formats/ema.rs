@@ -130,10 +130,10 @@ fn parse_animation(buffer: &[u8], at: usize, node_count: usize) -> Result<EmaAni
     if value_count > MAX_COUNT || command_count > MAX_COUNT {
         return Err(err(format!("{command_count} commands, {value_count} values")));
     }
-    let length = *buffer.get(name_at + 10).ok_or(ReError::BufferTooSmall {
-        required: name_at + 11,
-        available: buffer.len(),
-    })? as usize;
+    let length = *buffer
+        .get(name_at + 10)
+        .ok_or(ReError::BufferTooSmall { required: name_at + 11, available: buffer.len() })?
+        as usize;
     let name = buffer
         .get(name_at + 11..name_at + 11 + length)
         .map(|b| String::from_utf8_lossy(b).into_owned())
@@ -222,8 +222,11 @@ impl EmaFile {
         let skeleton = u32_at(buffer, 0x0C)? as usize;
         let count = u16_at(buffer, 0x10)? as usize;
         let kind = EmaKind::from(u16_at(buffer, 0x12)?);
-        let nodes =
-            if skeleton == 0 { Vec::new() } else { parse_node_skeleton(buffer, skeleton, usize::MAX)?.0 };
+        let nodes = if skeleton == 0 {
+            Vec::new()
+        } else {
+            parse_node_skeleton(buffer, skeleton, usize::MAX)?.0
+        };
         let mut animations = Vec::with_capacity(count);
         for i in 0..count {
             let at = u32_at(buffer, header_size + i * 4)? as usize;

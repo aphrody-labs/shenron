@@ -3,12 +3,12 @@
 
 use std::collections::BTreeSet;
 
+use serde::{Deserialize, Serialize};
+use serde_json::{Value, json};
 use shenron_jev::{
     Answer, GuardPolicy, PassageVerdict, Question, decision_output, filter_and_rerank,
 };
 pub use shenron_jev::{JevError, JevRouter, Request};
-use serde::{Deserialize, Serialize};
-use serde_json::{Value, json};
 
 const MAX_PUBLIC_STATE_BYTES: usize = 128 * 1024;
 // Three atomic questions per passage fit the owner's 64-question request ceiling.
