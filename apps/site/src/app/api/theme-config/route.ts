@@ -9,7 +9,7 @@ import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
 import { getSiteTheme, saveSiteTheme } from "@/lib/theme-config";
 import { HostThemeError } from "@/lib/host-theme-error";
 import { revalidatePath } from "next/cache";
-import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
+import { ENV_ALIASES, envFirst } from "@shenron/config/env";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

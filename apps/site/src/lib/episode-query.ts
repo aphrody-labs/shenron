@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import { and, eq, ilike, or, sql } from "drizzle-orm";
-import { escapeLike } from "@aphrody/shenron-db/repos/wiki";
+import { escapeLike } from "@shenron/db/repos/wiki";
 import { botEpisodes } from "@/db/bot-schema";
 import {
   normalizeVideoLanguage,
   type VideoLanguage,
-} from "@aphrody/shenron-media/episode-playback";
+} from "@shenron/media/episode-playback";
 
 export class EpisodeLanguageQueryError extends Error {
   constructor() {

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { ExternalLink } from "@aphrody/shenron-ui/external";
-import { JAPANESE_FULL_COLOR_CATALOGUE } from "@aphrody/shenron-config/manga-catalogue";
+import { ExternalLink } from "@shenron/ui/external";
+import { JAPANESE_FULL_COLOR_CATALOGUE } from "@shenron/config/manga-catalogue";
 import { useMangaUIText } from "@/lib/manga-ui-text";
 import { useT } from "@/components/T";
 

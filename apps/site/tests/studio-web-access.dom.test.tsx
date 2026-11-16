@@ -6,10 +6,10 @@ import { NextIntlClientProvider } from "next-intl";
 import messages from "../messages/fr.json";
 
 mock.module("next/dynamic", () => ({ default: () => () => <div data-editor-ready /> }));
-mock.module("@aphrody/shenron-ui/studio/tauri-bridge", () => ({ isTauri: () => false }));
-mock.module("@aphrody/shenron-ui/koharu", () => ({ preloadCanvasModule: async () => true }));
+mock.module("@shenron/ui/studio/tauri-bridge", () => ({ isTauri: () => false }));
+mock.module("@shenron/ui/koharu", () => ({ preloadCanvasModule: async () => true }));
 const { StudioEditor } = await import("../src/app/studio/StudioEditor");
-await import("@aphrody/shenron-koharu/transport");
+await import("@shenron/koharu/transport");
 const originalFetch = globalThis.fetch;
 const environment = globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean };
 const originalAct = environment.IS_REACT_ACT_ENVIRONMENT;

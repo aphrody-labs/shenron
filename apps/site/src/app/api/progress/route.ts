@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Account playback progress ("continue watching"); storage and identity live in the Bun host. */
-import { endpoints } from "@aphrody/shenron-api/contract";
+import { endpoints } from "@shenron/api/contract";
 import { callHost, PRIVATE_JSON_HEADERS } from "@/lib/host-forward";
 
 export const runtime = "nodejs";

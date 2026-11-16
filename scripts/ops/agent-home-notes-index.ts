@@ -4,18 +4,18 @@
 import { Database } from "bun:sqlite";
 import { chmodSync, closeSync, existsSync, mkdirSync, openSync, renameSync, rmSync } from "node:fs";
 import { join } from "node:path";
-import { createRagWriter } from "@aphrody/shenron-db/vfs/build";
-import { openShenronVfs, type OpenedVfs } from "@aphrody/shenron-db/vfs";
+import { createRagWriter } from "@shenron/db/vfs/build";
+import { openShenronVfs, type OpenedVfs } from "@shenron/db/vfs";
 import { ownedDirectory, resolveNotesHome, sha256 } from "./agent-home-notes";
-import { createAphrodyCompute, type AphrodyCompute } from "@aphrody/shenron-pipeline/ai/aphrody";
+import { createAphrodyCompute, type AphrodyCompute } from "@shenron/pipeline/ai/aphrody";
 import {
   assertEmbeddingSpace,
   requireAiHttpToken,
   requireAiHttpUrl,
   SHENRON_E5,
   SHENRON_RAG_INDEX,
-} from "@aphrody/shenron-pipeline/ai/config";
-import { normalizeVector } from "@aphrody/shenron-db/vfs/rag";
+} from "@shenron/pipeline/ai/config";
+import { normalizeVector } from "@shenron/db/vfs/rag";
 import { prepareNativeNoteImport } from "./agent-home-native-note";
 import type { ObservationNote } from "./agent-home-notes";
 

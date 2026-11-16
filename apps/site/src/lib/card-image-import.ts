@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import "server-only";
-import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
 import { and, eq } from "drizzle-orm";
 import { db, schema } from "@/lib/db";
 import { verifyAdminImage } from "@/lib/admin-image-verify";

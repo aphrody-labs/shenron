@@ -8,7 +8,7 @@
 //!   tokens, tolerant restoration, report of invented and dropped tokens.
 //! - [`fold`]: the search key of a form.
 //!
-//! `@aphrody/shenron-lexicon` (TypeScript) implements the same rules; both read the golden fixtures of
+//! `@shenron/lexicon` (TypeScript) implements the same rules; both read the golden fixtures of
 //! `data/lexicon/fixtures/`, so they cannot diverge. Owners: docs/architecture/lexicon.md.
 
 pub mod fold;

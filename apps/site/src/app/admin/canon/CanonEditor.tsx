@@ -27,7 +27,7 @@ import {
   Plus,
   Recherche,
   Reinitialiser,
-} from "@aphrody/shenron-ui/icones";
+} from "@shenron/ui/icones";
 import {
   analyzeCanon,
   CANON_TIERS,

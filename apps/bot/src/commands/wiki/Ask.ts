@@ -30,7 +30,7 @@ import { FeatureEnabled } from "~/guards/FeatureEnabled";
 import { DatabaseService } from "~/db/index";
 import { hybridSearch, hitTruthWeight, type SearchOptions } from "~/lib/rag";
 import { TrainingService } from "~/services/TrainingService";
-import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
+import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
 import { isBotStaff } from "~/api/staff-check";
 import { SingleUseTokens } from "~/services/games/anti-farm";
 import { clip, linkLabel, siteLink, wikiFooter } from "~/lib/wiki-embeds";

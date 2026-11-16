@@ -5,11 +5,11 @@ import {
   checkEmptyEnvImports,
   checkNoEscapingImports,
   checkPackageRuntimes,
-} from "@aphrody/shenron-config/guards";
+} from "@shenron/config/guards";
 
 const PACKAGE_DIR = join(import.meta.dir, "..");
 
-describe("@aphrody/shenron-db portability", () => {
+describe("@shenron/db portability", () => {
   test(
     "runtime classes hold for every exported entry",
     async () => {

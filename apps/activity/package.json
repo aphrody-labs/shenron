@@ -1,5 +1,5 @@
 {
-  "name": "@aphrody/shenron-activity-app",
+  "name": "@shenron/activity-app",
   "version": "1.4.7",
   "private": true,
   "description": "Arène Shenron: the Discord Activity server (Bun.serve, OAuth code exchange, WebSocket rooms, signed settlement) and its React client",
@@ -16,15 +16,15 @@
     "typecheck": "bun check --project tsconfig.json"
   },
   "dependencies": {
-    "@aphrody/shenron-activity": "workspace:*",
-    "@aphrody/shenron-config": "workspace:*",
+    "@shenron/activity": "workspace:*",
+    "@shenron/config": "workspace:*",
     "@discord/embedded-app-sdk": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@aphrody/shenron-ui": "workspace:*",
+    "@shenron/ui": "workspace:*",
     "@types/bun": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:"

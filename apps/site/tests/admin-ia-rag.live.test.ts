@@ -12,7 +12,7 @@ import {
   loadLiveRagEnv,
   requireLiveRag,
   type LiveRag,
-} from "@aphrody/shenron-pipeline/testing/live-rag";
+} from "@shenron/pipeline/testing/live-rag";
 import {
   SourceNotConfiguredError,
   computeRetrievalMetrics,

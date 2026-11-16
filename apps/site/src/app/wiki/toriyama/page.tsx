@@ -32,13 +32,13 @@ import {
 } from "@/lib/toriyama-words";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { GatedLink } from "@/components/GatedLink";
-import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
+import { isPathPublic } from "@shenron/config/wiki-launch";
 import { ogMeta } from "@/lib/og";
 import { T } from "@/components/T";
 import { WikiResearchText } from "@/components/wiki/WikiResearchText";
 import researchStyles from "@/components/wiki/wiki-research.module.css";
 import { assetUrl } from "@/lib/assets";
-import { ToriyamaEmblem, KintoUnCloud, DragonBallSphere } from "@aphrody/shenron-ui/toriyama";
+import { ToriyamaEmblem, KintoUnCloud, DragonBallSphere } from "@shenron/ui/toriyama";
 
 export const revalidate = 3600;
 

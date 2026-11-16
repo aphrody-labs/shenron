@@ -137,13 +137,13 @@ Les chemins de dépôt sont relatifs à `C:\aphrody\apps\shenron`.
 **Commandes.**
 
 - `bun apps/site/scripts/traduction-boucle.ts [--lots N --taille N --databook ID --moteur auto|aphrody|aphrody-translate|agy|google|nllb --modele Xenova/nllb-200-distilled-600M --shards K --shard-index i] [--appliquer]`
-- Ou la même chose via `bun run --filter @aphrody/shenron-pipeline pipeline translation …`
+- Ou la même chose via `bun run --filter @shenron/pipeline pipeline translation …`
 - Statut : `bun scripts/ops/translate-databooks-corpus.ts --statut`
 - Lexique : `bun scripts/data/lexicon.ts coverage --json` (en lecture seule, exécuté pour cet audit), `--check`, `build`
 
 **Dry-run.** La simulation est le défaut de `traduction-boucle.ts`, mais elle appelle les moteurs et se connecte à la base. `translate-databooks-session.ts` **écrit par défaut**.
 
-**Lexique réellement consommé.** Le lexique par lot est lu en direct depuis `bot.db_characters`, `db_planets`, `db_races`, `db_sagas` et `db_techniques` (`name_ja`/`name`, voir `apps/site/scripts/planches-a-traduire.ts:185-191`). Le masquage des termes vient de `@aphrody/shenron-lexicon`. Koharu lit `KOHARU_GLOSSARY` ; son modèle local est `gemma4-12b-it`.
+**Lexique réellement consommé.** Le lexique par lot est lu en direct depuis `bot.db_characters`, `db_planets`, `db_races`, `db_sagas` et `db_techniques` (`name_ja`/`name`, voir `apps/site/scripts/planches-a-traduire.ts:185-191`). Le masquage des termes vient de `@shenron/lexicon`. Koharu lit `KOHARU_GLOSSARY` ; son modèle local est `gemma4-12b-it`.
 
 **Hôte.** NLLB tourne sur CPU : prod en tmux (31 Gio) ou vps. Gemini web et `agy` tournent en local, là où sont les cookies.
 
@@ -221,7 +221,7 @@ Notes sur la couverture :
 
 - Temps réel : `apps/bot/src/events/NewsScan.ts`, qui capture les salons d'annonce Discord (persona `grandPretre`) dans le bot prod.
 - `bun apps/bot/scripts/ingest/bxc-ingest.ts [--dry-run]` : scrape `dragonball.news/fr` et `en.bandainamcoent.eu/news` par Aphrody Web (`APHRODY_BIN`, `APHRODY_WEB_PROFILE`).
-- `bun --filter @aphrody/shenron-bot db:sync-news` → `scripts/sync-news.ts` : prend les 5 dernières URL du sitemap officiel FR. **Pas de dry-run.**
+- `bun --filter @shenron/bot db:sync-news` → `scripts/sync-news.ts` : prend les 5 dernières URL du sitemap officiel FR. **Pas de dry-run.**
 - `NewsService.syncFromSitemap` n'est qu'un stub (`apps/bot/src/services/NewsService.ts:146`).
 
 **Cadence.** Aucune hors des évènements Discord : pas de cron ni de timer.
@@ -254,7 +254,7 @@ Notes sur la couverture :
 
 **Commandes.**
 
-- `bun run --filter @aphrody/shenron-pipeline pipeline crawl <dragonballcn|kanzenshuu|official|databooks|guides|custom|universal> [URL] --dry-run [--max-depth --max-requests --out]`. Cela délègue à `aphrody web dragon-ball crawl --profile shenron --json --index`. La cible `custom` refuse Fandom.
+- `bun run --filter @shenron/pipeline pipeline crawl <dragonballcn|kanzenshuu|official|databooks|guides|custom|universal> [URL] --dry-run [--max-depth --max-requests --out]`. Cela délègue à `aphrody web dragon-ball crawl --profile shenron --json --index`. La cible `custom` refuse Fandom.
 - `pipeline unify --dry-run` : réindexe les exports existants sans recrawler.
 - Skill publish-source : `bun scripts/ops/publish-source.ts --source URL --target https://dragonballfr.com/publications/<slug> --job /abs/private [--apply]`.
   - Sans `--apply`, il ne produit que `plan.json`.

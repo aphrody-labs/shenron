@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@aphrody/shenron-activity` — protocol, rooms and Quiz Budokai rules of the Arène Shenron Discord
+ * `@shenron/activity` — protocol, rooms and Quiz Budokai rules of the Arène Shenron Discord
  * Activity (docs/products/bot-discord-refonte.md §6 G1, §7). Runtime class `pure`: no Discord, no
  * network, no environment; time, randomness and the signing secret are injected.
  *

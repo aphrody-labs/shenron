@@ -1,5 +1,5 @@
 {
-  "name": "@aphrody/shenron-activity",
+  "name": "@shenron/activity",
   "version": "1.4.7",
   "private": true,
   "description": "Rules and protocol of the Arène Shenron Discord Activity: wire protocol, per-instance rooms, Quiz Budokai rules, bounded zeni rewards and signed settlement receipts (no Discord, no network)",
@@ -22,7 +22,7 @@
     "typecheck": "bun check --project tsconfig.json"
   },
   "dependencies": {
-    "@aphrody/shenron-lexicon": "workspace:*",
+    "@shenron/lexicon": "workspace:*",
     "zod": "catalog:"
   },
   "devDependencies": {

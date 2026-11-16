@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * PostgreSQL replica declaration (`@aphrody/shenron-db/bot-schema`) versus the SQLite base.
+ * PostgreSQL replica declaration (`@shenron/db/bot-schema`) versus the SQLite base.
  *
  * The runtime sync copies the bot's state tables into PostgreSQL schema `bot`. This test builds
  * the SQLite base through the bot's migrator and checks, for every replicated table, that the
@@ -11,7 +11,7 @@ import "./setup";
 import { describe, expect, test } from "bun:test";
 import { is } from "drizzle-orm";
 import { getTableConfig, PgTable } from "drizzle-orm/pg-core";
-import * as botSchema from "@aphrody/shenron-db/bot-schema";
+import * as botSchema from "@shenron/db/bot-schema";
 
 import { DatabaseService } from "../src/db/index";
 import { applyBotMigrations } from "../src/db/migrate";

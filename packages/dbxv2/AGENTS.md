@@ -5,9 +5,9 @@ Client typé de la passerelle DBXV2 et imports Bun des ressources publiques immu
 Commands:
 
 ```sh
-bun run --filter @aphrody/shenron-dbxv2 test
-bun run --filter @aphrody/shenron-dbxv2 lint
-bun run --filter @aphrody/shenron-dbxv2 typecheck
+bun run --filter @shenron/dbxv2 test
+bun run --filter @shenron/dbxv2 lint
+bun run --filter @shenron/dbxv2 typecheck
 ```
 
 Rules:

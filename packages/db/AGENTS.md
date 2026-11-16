@@ -5,9 +5,9 @@ PostgreSQL partagé de Shenron: schéma Drizzle, pool postgres-js, driver Bun.SQ
 Commands:
 
 ```sh
-bun run --filter @aphrody/shenron-db test
-bun run --filter @aphrody/shenron-db lint
-bun run --filter @aphrody/shenron-db typecheck
+bun run --filter @shenron/db test
+bun run --filter @shenron/db lint
+bun run --filter @shenron/db typecheck
 ```
 
 Rules:

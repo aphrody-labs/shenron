@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
-import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
-import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
-import { Trophee } from "@aphrody/shenron-ui/icones";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
+import { PageShell } from "@shenron/ui/layout/PageShell";
+import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { Trophee } from "@shenron/ui/icones";
 import { DomainBar } from "@/components/kit";
 import { GatedLink } from "@/components/GatedLink";
 import { Avatar } from "@/components/Avatar";
 import { T } from "@/components/T";
 import { VieEmpty } from "@/components/site/VieEmpty";
-import { SectionDivider } from "@aphrody/shenron-ui/vie/SectionDivider";
+import { SectionDivider } from "@shenron/ui/vie/SectionDivider";
 import { CommunityTopsFull } from "@/components/ratings/CommunityTops";
 import { Podium, PodiumCard, RANK_META, type PodiumRank } from "@/components/ratings/Podium";
 import { TopRatersBoard, TopZeniBoard } from "@/components/contest/ContestBoards";
@@ -18,7 +18,7 @@ import { COMMUNITY_TOP_BOARDS } from "@/lib/community-tops";
 import { getShenronLeaderboard, type LeaderboardEntry } from "@/lib/shenron";
 import { getTopRaters, type ContributorRow } from "@/lib/contributors";
 import { ogMeta } from "@/lib/og";
-import { formatZeni } from "@aphrody/shenron-config/zeni";
+import { formatZeni } from "@shenron/config/zeni";
 
 export const revalidate = 60;
 

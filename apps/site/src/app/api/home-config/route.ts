@@ -12,9 +12,9 @@ import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
 import { HostHomeError } from "@/lib/host-home-error";
-import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
+import { ENV_ALIASES, envFirst } from "@shenron/config/env";
 import { getHomeConfig, saveHomeConfig } from "@/lib/home-config";
-import type { HomeClip } from "@aphrody/shenron-config/home";
+import type { HomeClip } from "@shenron/config/home";
 import { revalidatePath } from "next/cache";
 
 export const runtime = "nodejs";

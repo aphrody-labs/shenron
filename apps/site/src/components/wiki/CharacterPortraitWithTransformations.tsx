@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ViewTransition } from "@aphrody/shenron-ui/layout/ViewTransition";
+import { ViewTransition } from "@shenron/ui/layout/ViewTransition";
 import { WikiImg } from "@/components/wiki/WikiImg";
 
 interface PortraitAppearance {

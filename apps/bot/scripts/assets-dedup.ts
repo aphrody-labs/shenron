@@ -33,7 +33,7 @@ import {
   diskToDbPath,
   hashFile,
   normalizeDbPath,
-} from "@aphrody/shenron-images";
+} from "@shenron/images";
 import { arretSiGel } from "../../site/scripts/_databooks-base";
 import { VARIANT_ASSET_DEDUP_PREDICATE } from "./variant-asset-dedup-policy";
 

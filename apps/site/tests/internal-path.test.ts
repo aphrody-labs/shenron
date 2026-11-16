@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { sanitizeInternalPath } from "@aphrody/shenron-config/favorites";
+import { sanitizeInternalPath } from "@shenron/config/favorites";
 
 describe("sanitizeInternalPath", () => {
   test("conserve et normalise les routes locales", () => {

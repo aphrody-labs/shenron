@@ -9,7 +9,7 @@ import {
   buildCdnAssetUrls,
 } from "../src/index";
 
-describe("@aphrody/hyperframes stream & atom parsing", () => {
+describe("@shenron/hyperframes stream & atom parsing", () => {
   it("parses MP4 binary atom headers correctly", () => {
     // Construct synthetic ftyp + moov buffer
     const buffer = new Uint8Array(32);
@@ -45,7 +45,7 @@ describe("@aphrody/hyperframes stream & atom parsing", () => {
   });
 });
 
-describe("@aphrody/hyperframes decoder & dragon ball streaming", () => {
+describe("@shenron/hyperframes decoder & dragon ball streaming", () => {
   it("computes 41 scene timecodes for Dragon Ball episodes", () => {
     const timecodes = computeSceneTimecodes(1440, 41);
     expect(timecodes.length).toBe(41);

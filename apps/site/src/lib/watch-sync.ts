@@ -11,7 +11,7 @@ import {
   resumable,
   sanitizeWatchEntries,
   type WatchEntry,
-} from "@aphrody/shenron-api/contract";
+} from "@shenron/api/contract";
 import { readHistory, type HistoryEntry } from "./history";
 import {
   importPlaybackProgress,

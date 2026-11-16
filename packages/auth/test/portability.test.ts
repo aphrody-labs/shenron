@@ -8,7 +8,7 @@ import {
   checkNoEscapingImports,
   checkPackageRuntimes,
   listExportEntries,
-} from "@aphrody/shenron-config/guards";
+} from "@shenron/config/guards";
 
 const pkgDir = Bun.fileURLToPath(new URL("..", import.meta.url));
 
@@ -35,7 +35,7 @@ const sources = () =>
     .filter((f) => f.endsWith(".ts") && !f.endsWith(".test.ts"))
     .map((f) => ({ file: f, code: readFileSync(join(pkgDir, "src", f), "utf8") }));
 
-describe("@aphrody/shenron-auth portability", () => {
+describe("@shenron/auth portability", () => {
   test("every subpath is exported with its runtime class", () => {
     const entries: Record<string, string | null> = Object.fromEntries(
       listExportEntries(pkgDir).map((e) => [e.subpath, e.runtime]),
@@ -57,7 +57,7 @@ describe("@aphrody/shenron-auth portability", () => {
     process.platform === "win32" ? 30_000 : 5_000,
   );
 
-  test("never imports @aphrody/shenron-db, server-only or an app env module", () => {
+  test("never imports @shenron/db, server-only or an app env module", () => {
     for (const { file, code } of sources()) {
       expect({ file, db: /["']@aphrody\/shenron-db/.test(code) }).toEqual({ file, db: false });
       expect({ file, so: /["']server-only["']/.test(code) }).toEqual({ file, so: false });

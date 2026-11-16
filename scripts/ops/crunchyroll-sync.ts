@@ -6,7 +6,7 @@
  *   bun scripts/ops/crunchyroll-sync.ts [--series DBS_BEERUS] [--locale fr-FR] [--from-file catalog.json] [--apply]
  *
  * Reads seasons and episodes through the Bun Video Crunchyroll client with the owner's credentials, maps them with
- * @aphrody/shenron-media/crunchyroll-mapping and, with --apply, writes bot.db_episodes.availability (and the
+ * @shenron/media/crunchyroll-mapping and, with --apply, writes bot.db_episodes.availability (and the
  * duration when empty) for the matching episode numbers. Metadata only; nothing is downloaded or decrypted.
  *
  * --from-file ingests a catalogue exported from the owner's own signed-in browser ({ episodes: [...] } with the fields of

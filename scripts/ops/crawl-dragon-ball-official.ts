@@ -3,7 +3,7 @@
 /** Resumable official-site campaign. YOLO WEB owns network capture. */
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { YoloWebBatchCapture } from "@aphrody/shenron-pipeline/yolo-web";
+import { YoloWebBatchCapture } from "@shenron/pipeline/yolo-web";
 import { scrapeWithYoloWeb } from "../../packages/pipeline/scripts/lib/yolo-web-scrape.ts";
 
 const ORIGIN = "https://dragon-ball-official.com";

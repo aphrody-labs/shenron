@@ -3,7 +3,7 @@ import {
   unavailablePlaybackCapabilities,
   type PlaybackCapabilities,
   type PlaybackVariant,
-} from "@aphrody/shenron-api/contract";
+} from "@shenron/api/contract";
 
 /** Declares existing transports without resolving or fetching any media. */
 export function declarePlaybackCapabilities(

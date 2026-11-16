@@ -8,7 +8,7 @@ mock.module("next/navigation", () => ({ useSearchParams: () => new URLSearchPara
 mock.module("@/components/T", () => ({ useT: () => (key: string) => key }));
 mock.module("@/components/manga/MangaReader", () => ({ MangaReader: () => null }));
 let readerProps: Record<string, unknown> = {};
-mock.module("@aphrody/shenron-ui/reader", () => ({
+mock.module("@shenron/ui/reader", () => ({
   CollectionReader: (props: Record<string, unknown>) => {
     readerProps = props;
     return createElement("div", null, String(props.contentsLabel));

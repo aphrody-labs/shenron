@@ -21,7 +21,7 @@ import {
   RACE_ROLE_IDS,
   getRace,
   type RaceId,
-} from "@aphrody/shenron-config/races";
+} from "@shenron/config/races";
 import { logger } from "~/lib/logger";
 import { COLORS } from "~/lib/embeds";
 

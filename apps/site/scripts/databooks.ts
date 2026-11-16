@@ -40,7 +40,7 @@ import {
   classerDefaut,
   defautDePlanche,
   type Defaut,
-} from "@aphrody/shenron-config/databooks-defauts";
+} from "@shenron/config/databooks-defauts";
 
 const args = process.argv.slice(2);
 const commande = args[0] ?? "";

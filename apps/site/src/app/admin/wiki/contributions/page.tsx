@@ -1,7 +1,7 @@
 "use client";
 // SPDX-License-Identifier: Apache-2.0
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Chargement, Coche, Croix, LienExterne } from "@aphrody/shenron-ui/icones";
+import { Chargement, Coche, Croix, LienExterne } from "@shenron/ui/icones";
 import Link from "next/link";
 import { useMemo, useState } from "react";
 import { PlainField } from "@/components/editor/PlainField";

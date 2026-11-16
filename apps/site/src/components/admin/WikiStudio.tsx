@@ -16,7 +16,7 @@ import {
   Historique,
   LienExterne,
   Oeil,
-} from "@aphrody/shenron-ui/icones";
+} from "@shenron/ui/icones";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useWikiAdminText as useT } from "@/lib/wiki-admin-text";

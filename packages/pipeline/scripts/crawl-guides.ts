@@ -10,7 +10,7 @@
 
 import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { yoloWebScrape } from "@aphrody/shenron-pipeline/yolo-web";
+import { yoloWebScrape } from "@shenron/pipeline/yolo-web";
 
 const OUT_DIR = new URL("../data/rag/raw/guides/", import.meta.url).pathname;
 

@@ -15,7 +15,7 @@ Headless integration with Crunchyroll's official anime catalogue for Shenron.
   - `crunchyroll_get_series`: Retrieve series metadata and counts.
   - `crunchyroll_get_episode`: Retrieve episode title, duration, languages, and canonical watch URL.
   - `crunchyroll_resolve_offer`: Validate and format legal watch offers for Shenron's database.
-- **Backend Service:** `@aphrody/shenron-crunchyroll` package in `packages/crunchyroll`.
+- **Backend Service:** `@shenron/crunchyroll` package in `packages/crunchyroll`.
 
 ## Usage Examples
 

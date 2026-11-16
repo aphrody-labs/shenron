@@ -3,8 +3,8 @@
 
 import Link from "next/link";
 import { FormEvent, useEffect, useId, useRef, useState } from "react";
-import { sanitizeInternalPath } from "@aphrody/shenron-config/favorites";
-import { Cadenas, DragonBall, Oeil } from "@aphrody/shenron-ui/icones";
+import { sanitizeInternalPath } from "@shenron/config/favorites";
+import { Cadenas, DragonBall, Oeil } from "@shenron/ui/icones";
 import { useT } from "@/components/T";
 import { authClient } from "@/lib/auth-client";
 import { storePasswordResetEmail } from "@/lib/password-reset-prefill";

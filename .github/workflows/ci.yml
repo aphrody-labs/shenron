@@ -52,7 +52,7 @@ jobs:
 
       - name: Generate entries barrel
         run: |
-          bun --filter @aphrody/shenron-bot gen:entries
+          bun --filter @shenron/bot gen:entries
           git diff --exit-code -- apps/bot/src/_entries.ts
 
       - name: OpenAPI document is up to date
@@ -74,7 +74,7 @@ jobs:
         run: bun scripts/audit/check-workspace-packages.ts --strict
 
       - name: Migrations (offline audit)
-        run: bun run --filter @aphrody/shenron-db audit:migrations
+        run: bun run --filter @shenron/db audit:migrations
 
       - name: Plugin offline snapshots are up to date
         run: bun scripts/plugin/sync.ts --check

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import "server-only";
-import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
 import { catalogPageNumber } from "./catalog-explorer-contract";
 
 export type PublicAsset = { path: string; mime: string; size: number; sha256: string | null };

@@ -1,6 +1,6 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role, react/no-array-index-key -- reviewed: legacy patterns, behavior preserved */
 import type { ReactNode } from "react";
-import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { PageShell } from "@shenron/ui/layout/PageShell";
 
 /**
  * Squelettes des rubriques médias (manga, databooks, épisodes, films, jeux) — dans la même

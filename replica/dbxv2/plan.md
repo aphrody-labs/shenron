@@ -9,7 +9,7 @@ Rédigé d'après `replica/dbxv2/recon.md`, `replica/dbxv2/features.csv`, `repli
 L'exécutable x86-64 `DBXV2.exe` étant protégé au repos par SteamStub DRM, la stratégie souveraine consiste en une **ré-implémentation propre (Clean-Room)** du moteur de combat et d'exploration 3D dans le navigateur, alimenté directement par les archives de données canoniques extraites du store VPS (`data.cpk`, `data2.cpk` - 26 archives, 39.2 Go) :
 
 1. **Zéro contournement de DRM** : Le code natif fermé n'est ni cracké ni décompilé.
-2. **Réutilisation des Formats Dimps Canoniques** : Exploitation des parseurs Rust/WASM existants (`@aphrody/shenron-engine/xv2-character` et `glb-scene`) pour charger directement les maillages `.emd`, textures `.emb`, animations `.ean`, et scripts de combat `.bac`.
+2. **Réutilisation des Formats Dimps Canoniques** : Exploitation des parseurs Rust/WASM existants (`@shenron/engine/xv2-character` et `glb-scene`) pour charger directement les maillages `.emd`, textures `.emb`, animations `.ean`, et scripts de combat `.bac`.
 3. **Moteur 3D Aérien Déterministe** : Exécution WebGPU 60 FPS avec vol libre à 360°, téléportation instantanée (Z-Vanish), super attaques (Kamehameha, Spirit Bomb) et jauges d'Endurance (Stamina Break).
 
 ---
@@ -85,7 +85,7 @@ create table if not exists xv2_quest_progress (
 
 ### Tranche 1 : Visualiseur d'Arène et Vol Libre 3D (`apps/site/src/app/games/xenoverse-2/page.tsx`)
 
-- Chargement d'une arène canonique (Arène du Tournoi ou Wasteland) via `@aphrody/shenron-engine/glb-scene`.
+- Chargement d'une arène canonique (Arène du Tournoi ou Wasteland) via `@shenron/engine/glb-scene`.
 - Caméra orbitale à la troisième personne avec contrôles Z/Q/S/D + Espace (Voler haut) / Shift (Descendre).
 - Télémétrie 60 FPS affichée dans le HUD.
 

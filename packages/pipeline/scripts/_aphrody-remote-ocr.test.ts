@@ -8,7 +8,7 @@ import {
   reviewRemoteImage,
   runRemoteBatch,
   toOcrResultV2,
-} from "@aphrody/shenron-pipeline/aphrody/remote-ocr";
+} from "@shenron/pipeline/aphrody/remote-ocr";
 
 const oldToken = process.env.APHRODY_SHENRON_API_TOKEN;
 const oldUrl = process.env.APHRODY_SHENRON_API_URL;

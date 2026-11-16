@@ -1,6 +1,6 @@
 /** Favorites storage and reader identity belong exclusively to the Bun host. */
-import { resolveHostUrl } from "@aphrody/shenron-config/public-urls";
-import { endpoints } from "@aphrody/shenron-api/contract";
+import { resolveHostUrl } from "@shenron/config/public-urls";
+import { endpoints } from "@shenron/api/contract";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

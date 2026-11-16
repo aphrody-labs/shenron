@@ -2,7 +2,7 @@
 
 import { FormEvent, useEffect, useId, useRef, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Croix } from "@aphrody/shenron-ui/icones";
+import { Croix } from "@shenron/ui/icones";
 import { DONATION_TIERS } from "@/lib/billing-catalog";
 import Link from "next/link";
 import {

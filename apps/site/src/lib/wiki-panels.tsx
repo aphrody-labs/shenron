@@ -28,7 +28,7 @@ import { WikiArticle } from "@/components/wiki/WikiArticle";
 import { WikiSectionLinks } from "@/components/wiki/WikiSectionLinks";
 import { PwsStatSection } from "@/components/wiki/PwsStatSection";
 import Link from "next/link";
-import { Crayon } from "@aphrody/shenron-ui/icones";
+import { Crayon } from "@shenron/ui/icones";
 import { normalizeWikiSectionGroups, PWS_GROUP_NAME } from "@/lib/wiki-section-groups";
 import type { ReaderPanel } from "@/components/wiki/WikiSectionsReader";
 import { tableForSectionEntity } from "@/lib/wiki-entity-model";

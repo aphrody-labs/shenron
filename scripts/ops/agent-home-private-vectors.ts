@@ -3,15 +3,15 @@
 /** Explicit one-note private job. All retrieval and embedding stay with their existing owners. */
 import { chmodSync, closeSync, existsSync, mkdirSync, openSync, renameSync } from "node:fs";
 import { join } from "node:path";
-import { createLocalApi } from "@aphrody/shenron-api/host";
-import { openShenronVfs } from "@aphrody/shenron-db/vfs";
-import type { RagHit } from "@aphrody/shenron-db/vfs/rag";
-import { createAphrodyCompute, type AphrodyCompute } from "@aphrody/shenron-pipeline/ai/aphrody";
+import { createLocalApi } from "@shenron/api/host";
+import { openShenronVfs } from "@shenron/db/vfs";
+import type { RagHit } from "@shenron/db/vfs/rag";
+import { createAphrodyCompute, type AphrodyCompute } from "@shenron/pipeline/ai/aphrody";
 import {
   requireAiHttpToken,
   requireAiHttpUrl,
   SHENRON_E5,
-} from "@aphrody/shenron-pipeline/ai/config";
+} from "@shenron/pipeline/ai/config";
 import { prepareNativeNoteImport } from "./agent-home-native-note";
 import {
   chunkReviewedMarkdown,

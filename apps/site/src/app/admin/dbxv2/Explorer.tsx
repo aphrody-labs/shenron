@@ -4,8 +4,8 @@
 import { useId, useState, useTransition, type FormEvent } from "react";
 import { createTranslator } from "next-intl";
 import { onTablistKeyDown } from "@/lib/tablist-keys";
-import { Dbxv2Audio, Dbxv2Image, Dbxv2UiProvider, Dbxv2Video } from "@aphrody/shenron-ui/dbxv2";
-import "@aphrody/shenron-ui/dbxv2.css";
+import { Dbxv2Audio, Dbxv2Image, Dbxv2UiProvider, Dbxv2Video } from "@shenron/ui/dbxv2";
+import "@shenron/ui/dbxv2.css";
 import { Dbxv2GpuModelViewer } from "@/components/games/Dbxv2GpuModelViewer";
 import type { Dbxv2Locale, Dbxv2Text } from "@/lib/dbxv2-text";
 import {

@@ -7,8 +7,8 @@
  */
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { MangaPage3D } from "@aphrody/shenron-ui/reader";
-import { createMangaSceneRenderer } from "@aphrody/shenron-engine/manga-scene";
+import { MangaPage3D } from "@shenron/ui/reader";
+import { createMangaSceneRenderer } from "@shenron/engine/manga-scene";
 import { sfx } from "@/lib/sfx";
 
 export function MangaChapter3D({ pages }: { pages: readonly string[] }) {

@@ -14,7 +14,7 @@ import {
   PROTOCOL_VERSION,
   type ClientMessage,
   type ServerMessage,
-} from "@aphrody/shenron-activity/protocol";
+} from "@shenron/activity/protocol";
 import type { Failure } from "./state";
 
 /** Close codes of the server transport (apps/activity/src/ws/hello.ts). */

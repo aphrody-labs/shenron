@@ -1,5 +1,5 @@
 {
-  "name": "@aphrody/compression",
+  "name": "@shenron/compression",
   "version": "1.4.7",
   "private": false,
   "description": "Sovereign ultra-fast compression, decompression, and asset conversion suite for Bun v1.4.4+, WebGPU, and R2 CDN.",

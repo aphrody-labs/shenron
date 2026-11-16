@@ -3,15 +3,15 @@
 import "server-only";
 import { cache } from "react";
 import { unstable_cache } from "next/cache";
-import { resolveHostUrl } from "@aphrody/shenron-config/public-urls";
+import { resolveHostUrl } from "@shenron/config/public-urls";
 import {
   DEFAULT_PAGE_BANNERS,
   resolvePageBanners,
   type PageBannersConfig,
   type PageHeroKey,
 } from "@/lib/page-banners";
-import { createShenronApiClient } from "@aphrody/shenron-api/client";
-import { endpoints } from "@aphrody/shenron-api/contract";
+import { createShenronApiClient } from "@shenron/api/client";
+import { endpoints } from "@shenron/api/contract";
 
 import { HostBannerError } from "./host-banner-error";
 import { selectEpisodeFrameBanner, type BannerFrameScope } from "./episode-frame-banner";

@@ -5,8 +5,8 @@ import {
   type ClientMessage,
   type PublicQuestion,
   type ServerMessage,
-} from "@aphrody/shenron-activity/protocol";
-import { createBank, type QuizBank, type QuizQuestion } from "@aphrody/shenron-activity/quiz";
+} from "@shenron/activity/protocol";
+import { createBank, type QuizBank, type QuizQuestion } from "@shenron/activity/quiz";
 import type { DiscordIdentity, DiscordPort } from "../src/auth/discord";
 import { loadConfig, type ActivityConfig } from "../src/config";
 import { silentLogger } from "../src/log";

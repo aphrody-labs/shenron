@@ -3,11 +3,11 @@ import {
   a2aEnforced,
   A2A_TOKEN_ENV,
   decideA2AWrite,
-} from "@aphrody/shenron-auth/a2a";
+} from "@shenron/auth/a2a";
 import {
   clientIpFromHeaders,
   isDirectLoopback as isDirectLoopbackHeaders,
-} from "@aphrody/shenron-config/net";
+} from "@shenron/config/net";
 
 /**
  * Gardes de requête de l'API du bot (S3, S4, S5 — docs/architecture/STACK.md §2.2).
@@ -15,7 +15,7 @@ import {
  */
 
 /**
- * IP du client telle que nginx la voit (S3), doctrine de `@aphrody/shenron-config/net` :
+ * IP du client telle que nginx la voit (S3), doctrine de `@shenron/config/net` :
  * - `x-real-ip` (posé par nginx au `$remote_addr`, non usurpable) ;
  * - sinon le DERNIER saut de `X-Forwarded-For` (ajouté par le proxy de tête) —
  *   jamais le premier, écrit par le client ;

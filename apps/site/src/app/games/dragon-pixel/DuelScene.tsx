@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { createXv2Duel, type Xv2DuelRenderer } from "@aphrody/shenron-engine/xv2-character";
+import { createXv2Duel, type Xv2DuelRenderer } from "@shenron/engine/xv2-character";
 import {
   characterCode,
   fetchCharacter,

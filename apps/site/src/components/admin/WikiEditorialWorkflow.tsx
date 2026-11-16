@@ -1,7 +1,7 @@
 "use client";
 // SPDX-License-Identifier: Apache-2.0
 import Link from "next/link";
-import { Crayon, BouclierCoche, Historique, FlecheDroite } from "@aphrody/shenron-ui/icones";
+import { Crayon, BouclierCoche, Historique, FlecheDroite } from "@shenron/ui/icones";
 import { useWikiEditorialText } from "@/lib/wiki-editorial-text";
 
 const STEPS = [

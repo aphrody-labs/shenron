@@ -1,4 +1,4 @@
-import type { PlaybackCapabilities } from "@aphrody/shenron-api/contract";
+import type { PlaybackCapabilities } from "@shenron/api/contract";
 // SPDX-License-Identifier: Apache-2.0
 import type { Episode } from "./db-universe";
 import { assetUrl } from "./assets";

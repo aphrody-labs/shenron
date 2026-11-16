@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Bibliotheque, Livre } from "@aphrody/shenron-ui/icones";
+import { Bibliotheque, Livre } from "@shenron/ui/icones";
 import type { ReactNode } from "react";
 import { T } from "@/components/T";
 

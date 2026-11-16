@@ -31,13 +31,13 @@ import {
   handleAuthRequest,
   normalizeBaseUrl,
   resolveBetterAuthSecret,
-} from "@aphrody/shenron-auth";
+} from "@shenron/auth";
 import {
   SESSION_COOKIE_CACHE,
   advancedOptions,
   discordProvider,
-} from "@aphrody/shenron-auth/options";
-import { botTrustedOrigins } from "@aphrody/shenron-auth/origins";
+} from "@shenron/auth/options";
+import { botTrustedOrigins } from "@shenron/auth/origins";
 
 export { resolveBetterAuthSecret };
 

@@ -3,7 +3,7 @@
  * The socket layer of the Activity: authenticates sockets, seats them in the room of their Discord
  * `instance_id`, relays the room's addressed messages, and drives the clock of the rooms.
  *
- * The rooms (`@aphrody/shenron-activity/rooms`) own every rule; this class owns the sockets and the
+ * The rooms (`@shenron/activity/rooms`) own every rule; this class owns the sockets and the
  * time. A socket lives through three stages:
  *
  *   hello          waiting for its first frame, `{ type: "hello", token, instanceId }`
@@ -14,20 +14,20 @@
  * when it fires. Rooms also catch up by themselves whenever a message reaches them, so a late timer
  * never changes a result.
  */
-import { systemClock, type Clock } from "@aphrody/shenron-activity";
+import { systemClock, type Clock } from "@shenron/activity";
 import {
   encodeServerMessage,
   parseClientMessage,
   PROTOCOL_VERSION,
   type ServerMessage,
   type Settled,
-} from "@aphrody/shenron-activity/protocol";
+} from "@shenron/activity/protocol";
 import {
   RoomRegistry,
   type Outbound,
   type RegistryOptions,
   type Room,
-} from "@aphrody/shenron-activity/rooms";
+} from "@shenron/activity/rooms";
 import type { DiscordIdentity, DiscordPort } from "../auth/discord";
 import { silentLogger, type Logger } from "../log";
 import { CLOSE, parseHello } from "./hello";

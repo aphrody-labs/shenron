@@ -5,9 +5,9 @@
  * that comes back to the room.
  */
 import { afterEach, describe, expect, test } from "bun:test";
-import { secureRng } from "@aphrody/shenron-activity";
-import { PROTOCOL_VERSION } from "@aphrody/shenron-activity/protocol";
-import { verifyReceipt } from "@aphrody/shenron-activity/quiz";
+import { secureRng } from "@shenron/activity";
+import { PROTOCOL_VERSION } from "@shenron/activity/protocol";
+import { verifyReceipt } from "@shenron/activity/quiz";
 import type { RunningActivityServer } from "../src/server";
 import { ActivityHub, newSocketState } from "../src/ws/hub";
 import {

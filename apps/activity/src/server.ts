@@ -11,10 +11,10 @@
  * Every outgoing dependency (Discord, the bot, the question bank, the clock) is injected, so the
  * integration tests run the real server on an ephemeral port without any network.
  */
-import { systemClock, secureRng, type Clock, type Rng } from "@aphrody/shenron-activity";
-import { type QuizBank, type RewardPolicy } from "@aphrody/shenron-activity/quiz";
-import { lexiconQuizBank } from "@aphrody/shenron-activity/quiz/lexicon";
-import type { RoomLimits } from "@aphrody/shenron-activity/rooms";
+import { systemClock, secureRng, type Clock, type Rng } from "@shenron/activity";
+import { type QuizBank, type RewardPolicy } from "@shenron/activity/quiz";
+import { lexiconQuizBank } from "@shenron/activity/quiz/lexicon";
+import type { RoomLimits } from "@shenron/activity/rooms";
 import type { Server } from "bun";
 import pkg from "../package.json" with { type: "json" };
 import { createDevPort } from "./auth/dev";

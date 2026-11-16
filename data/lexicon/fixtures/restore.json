@@ -1,5 +1,5 @@
 {
-  "description": "restoreTokens(translation, table, options): `table` lists [token, form]; a token is read whatever case, vowel accents and single separator the engine gave it. Shared by shenron_lexicon (Rust) and @aphrody/shenron-lexicon (TypeScript).",
+  "description": "restoreTokens(translation, table, options): `table` lists [token, form]; a token is read whatever case, vowel accents and single separator the engine gave it. Shared by shenron_lexicon (Rust) and @shenron/lexicon (TypeScript).",
   "cases": [
     {
       "name": "an accented token (Zêta010) is restored",

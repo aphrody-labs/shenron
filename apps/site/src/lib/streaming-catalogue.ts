@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { Episode } from "./db-universe";
-import { episodePlaybackMetadata } from "@aphrody/shenron-media/episode-playback";
+import { episodePlaybackMetadata } from "@shenron/media/episode-playback";
 import { stripSourceTags } from "./media";
 import { approvedEpisodeVideoURL } from "./episode-video-source";
 

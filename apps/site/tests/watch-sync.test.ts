@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterAll, expect, test } from "bun:test";
-import type { WatchEntry } from "@aphrody/shenron-api/contract";
+import type { WatchEntry } from "@shenron/api/contract";
 import { entriesToImport, entriesToPush, joinLocalProgress } from "../src/lib/watch-sync";
 import { buildWatchlist } from "../src/lib/watchlist-view";
 

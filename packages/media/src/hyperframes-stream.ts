@@ -7,7 +7,7 @@
  * using HTTP Range requests without ever downloading or uploading full MP4 files.
  */
 
-export * from "@aphrody/hyperframes";
+export * from "@shenron/hyperframes";
 
 export interface VideoSampleInfo {
   index: number;

@@ -1,14 +1,14 @@
 import "server-only";
 import type postgres from "postgres";
-import { createDb, type ShenronDb } from "@aphrody/shenron-db/postgres-js";
-import * as schema from "@aphrody/shenron-db/schema";
+import { createDb, type ShenronDb } from "@shenron/db/postgres-js";
+import * as schema from "@shenron/db/schema";
 
 export {
   DEFAULT_POOL_MAX,
   POOL_MAX_CEILING,
   resolveDatabaseUrl,
   resolvePoolMax,
-} from "@aphrody/shenron-db/config";
+} from "@shenron/db/config";
 
 export const DB_APPLICATION_NAME = "shenron-site";
 

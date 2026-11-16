@@ -1,6 +1,6 @@
 "use client";
 
-import { Metric, MetricGrid, StatusBadge } from "@aphrody/shenron-ui/admin";
+import { Metric, MetricGrid, StatusBadge } from "@shenron/ui/admin";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { RefreshCw, Search, UserX } from "lucide-react";
 import { useTranslations } from "next-intl";

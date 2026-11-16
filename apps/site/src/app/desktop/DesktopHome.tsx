@@ -3,7 +3,7 @@
 "use client";
 /**
  * Start page of the desktop app (Shenron Studio): the chat with the local Dragon Ball model as
- * the main surface (`@aphrody/shenron-ui/chat` on the host API of shenron-server, same origin), then the
+ * the main surface (`@shenron/ui/chat` on the host API of shenron-server, same origin), then the
  * offline corpus search (/api/local/rag/search through the shenron-ffi engine), the manga
  * translation editor, the control panel and the public site (opened in the system browser).
  */
@@ -12,8 +12,8 @@ import { DiscordInviteFAB } from "@/components/DiscordInviteFAB";
 import { ReportButton } from "@/components/ReportButton";
 import { useLocale, useTranslations } from "next-intl";
 import { type FormEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { startHealthPolling } from "@aphrody/shenron-ui/public/health-poll";
-import type { LocalHealthResponse } from "@aphrody/shenron-api/contract";
+import { startHealthPolling } from "@shenron/ui/public/health-poll";
+import type { LocalHealthResponse } from "@shenron/api/contract";
 import {
   ChatPanel,
   type ChatLabels,
@@ -23,8 +23,8 @@ import {
   type ModelsLabels,
   ModelsPanel,
   type PickAdapterPath,
-} from "@aphrody/shenron-ui/chat";
-import { isTauri, nativeOpenDialog } from "@aphrody/shenron-ui/studio/tauri-bridge";
+} from "@shenron/ui/chat";
+import { isTauri, nativeOpenDialog } from "@shenron/ui/studio/tauri-bridge";
 import {
   createDesktopChatTransport,
   createDesktopMemoryTransport,

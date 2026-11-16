@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useSyncExternalStore } from "react";
-import { MaterialSymbol } from "@aphrody/shenron-ui/icones";
+import { MaterialSymbol } from "@shenron/ui/icones";
 import { useVideoUIText } from "@/lib/video-ui-text";
 import {
   EPISODE_THEME_KEY,

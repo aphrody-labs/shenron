@@ -4,7 +4,7 @@ import {
   eraOf,
   type TimelineItem,
   type ChronologyConfig,
-} from "@aphrody/shenron-config/chronology";
+} from "@shenron/config/chronology";
 import { chronologyConfig } from "../schema";
 import type { ShenronPgDatabase } from "../types";
 

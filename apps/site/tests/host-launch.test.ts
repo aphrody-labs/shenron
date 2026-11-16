@@ -3,7 +3,7 @@ import { afterAll, expect, mock, test } from "bun:test";
 import {
   DEFAULT_LAUNCH_CONFIG,
   resolveLaunchConfig,
-} from "@aphrody/shenron-config/wiki-launch-config";
+} from "@shenron/config/wiki-launch-config";
 
 mock.module("server-only", () => ({}));
 mock.module("@/lib/db", () => {

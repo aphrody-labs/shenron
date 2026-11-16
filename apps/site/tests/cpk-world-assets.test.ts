@@ -11,7 +11,7 @@ import {
   resolveStageReference,
   type CpkStage,
 } from "../src/components/dragon-world/cpk-world-assets";
-import type { Xv2StageLayoutInfo } from "@aphrody/shenron-engine/glb-scene";
+import type { Xv2StageLayoutInfo } from "@shenron/engine/glb-scene";
 
 const originalFetch = globalThis.fetch;
 afterEach(() => {

@@ -11,7 +11,7 @@ import { useCallback, useMemo, useState } from "react";
 import { assetUrl } from "@/lib/assets";
 import { EpisodeTimeline } from "@/components/episodes/EpisodeTimeline";
 import { useVideoUIText } from "@/lib/video-ui-text";
-import { Etoile } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
+import { Etoile } from "@shenron/ui/toriyama/MotifsCouverture";
 
 /**
  * Réplique client-safe de `EpisodeFrame` (cf. `@/db/bot-schema`).

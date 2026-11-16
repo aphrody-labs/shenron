@@ -7,7 +7,7 @@ import {
   SelectValue,
   SelectPopup,
   SelectItem,
-} from "@aphrody/shenron-ui/select";
+} from "@shenron/ui/select";
 import styles from "./VideoSelect.module.css";
 
 /** Shared accessible primitives, with the public media surface rather than admin styling. */

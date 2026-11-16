@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 import { z } from "zod";
-import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
 import { wikiUpdateSnapshotHash } from "../src/lib/wiki-update-precondition";
 
 const origin = DEFAULT_PUBLIC_ORIGINS.site;

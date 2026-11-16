@@ -1,5 +1,5 @@
 {
-  "name": "@aphrody/shenron-db",
+  "name": "@shenron/db",
   "version": "1.4.7",
   "private": false,
   "description": "PostgreSQL partagé Shenron : schéma Drizzle, pool postgres-js (Next) et driver Bun.SQL (scripts, API), indépendant du framework",
@@ -70,7 +70,7 @@
     "check:agent-home-template": "bun scripts/agent-home-template.ts --check"
   },
   "dependencies": {
-    "@aphrody/shenron-config": "workspace:*",
+    "@shenron/config": "workspace:*",
     "drizzle-orm": "catalog:",
     "postgres": "catalog:"
   },

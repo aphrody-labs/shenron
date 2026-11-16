@@ -12,7 +12,7 @@ import {
   Cpu,
   CheckCircle,
 } from "lucide-react";
-import { TENKAICHI_TARGETS, type TenkaichiPlatform } from "@aphrody/shenron-engine";
+import { TENKAICHI_TARGETS, type TenkaichiPlatform } from "@shenron/engine";
 
 export interface TenkaichiWasmPlayerProps {
   initialPlatform?: TenkaichiPlatform;

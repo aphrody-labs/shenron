@@ -4,7 +4,7 @@ import {
   DEFAULT_SITE_THEME,
   themeCssVars,
   type SiteTheme,
-} from "@aphrody/shenron-config/site-theme";
+} from "@shenron/config/site-theme";
 import { createShenronApiClient } from "../src/client";
 import { endpoints } from "../src/contract";
 import { createMemoryRateLimiter, createPublicCache, noopInvalidation } from "../src/http";

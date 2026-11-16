@@ -1,13 +1,13 @@
-# @aphrody/shenron-images
+# @shenron/images
 
 Hachage d'images, déduplication, choix de variantes et sélection d'illustrations sourcées (Bun et sharp).
 
 ## Commandes
 
 ```sh
-bun run --filter @aphrody/shenron-images test
-bun run --filter @aphrody/shenron-images lint
-bun run --filter @aphrody/shenron-images typecheck
+bun run --filter @shenron/images test
+bun run --filter @shenron/images lint
+bun run --filter @shenron/images typecheck
 ```
 
 Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce dossier.

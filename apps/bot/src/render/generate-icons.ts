@@ -6,7 +6,7 @@
  *   bun src/render/generate-icons.ts          # rewrite icons.generated.ts
  *   bun src/render/generate-icons.ts --check  # exit 1 when icons.generated.ts is stale
  *
- * The bot does not depend on `@aphrody/shenron-ui`, so the cards read this projection
+ * The bot does not depend on `@shenron/ui`, so the cards read this projection
  * instead of a hand-drawn copy: `tests/render-icons.test.ts` fails as soon as a geometry
  * changes or disappears. No shape is invented here: every name maps to a measured geometry,
  * and a derived part (`sparkle`, `ball`, `ballStar`) is a subset of the paths of one of them.
@@ -18,7 +18,7 @@ import {
   POINTE_ICONE,
   TRAIT_ICONE,
   type GeometrieIcone,
-} from "@aphrody/shenron-ui/icones/geometries";
+} from "@shenron/ui/icones/geometries";
 
 export const GENERATED_PATH = join(import.meta.dir, "icons.generated.ts");
 

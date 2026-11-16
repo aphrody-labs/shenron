@@ -15,7 +15,7 @@ import {
   dbPathToDisk,
   diskToDbPath,
   normalizeDbPath,
-} from "@aphrody/shenron-images";
+} from "@shenron/images";
 
 const RACINE = join(import.meta.dir, "..", "..", "..");
 const ROOTS = { bot: join(RACINE, "apps/bot"), site: join(RACINE, "apps/site") };

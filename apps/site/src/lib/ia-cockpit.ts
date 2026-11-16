@@ -20,7 +20,7 @@ import {
   type GoldCase as SharedGoldCase,
   ndcgAtK,
   RANKS,
-} from "@aphrody/shenron-pipeline/ai/eval";
+} from "@shenron/pipeline/ai/eval";
 
 // ── Source reports ───────────────────────────────────────────────────────────
 
@@ -377,7 +377,7 @@ export function mapDiscordMessage(raw: unknown): LabMessage {
 }
 
 // ── Gold set and retrieval metrics ───────────────────────────────────────────
-// One definition shared with the bot and the pipeline: `@aphrody/shenron-pipeline/ai/eval`
+// One definition shared with the bot and the pipeline: `@shenron/pipeline/ai/eval`
 // (matchers, rank, binary-gain nDCG). A case prefers `expectUrl` (URL prefix
 // with a path boundary), then `expectTitle`, and only falls back to legacy
 // `expect` keywords when neither is present. The cockpit helpers keep their

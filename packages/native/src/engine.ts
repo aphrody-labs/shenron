@@ -2,7 +2,7 @@
 //
 // Bun `bun:ffi` binding for the Shenron native library (crate `shenron-ffi`): the `shenron`
 // command surface, Shenron RAG/persona helpers, in process, on the calling thread. Long calls
-// belong on `@aphrody/shenron-native/worker` (promises, cancellation, off the event loop).
+// belong on `@shenron/native/worker` (promises, cancellation, off the event loop).
 //
 // Set SHENRON_FFI_LIB to the library path; otherwise it is resolved from `native/` beside this
 // package, then (with SHENRON_FFI_DEV=1) from the repository Cargo target directory, the most
@@ -109,7 +109,7 @@ export function checkBunRuntime(version = Bun.version, range = SHENRON_NATIVE_BU
     )
   ) {
     throw new Error(
-      `@aphrody/shenron-native requires Bun ${range}; this process runs Bun ${version}`,
+      `@shenron/native requires Bun ${range}; this process runs Bun ${version}`,
     );
   }
 }
@@ -136,7 +136,7 @@ function lastErrorOf(lib: NativeLibrary): string | null {
 }
 
 /**
- * @internal One lazy handle for every @aphrody/shenron-native subpath. Importing a binding never opens it.
+ * @internal One lazy handle for every @shenron/native subpath. Importing a binding never opens it.
  * `explicitPath` opens that file instead of the default resolution (a host that ships the library
  * beside its executable); once a library is open, every caller shares it whatever the path.
  */
@@ -227,7 +227,7 @@ export function holdLib(): () => void {
  */
 export function close(): void {
   if (holders > 0)
-    throw new Error("close the @aphrody/shenron-native worker pools before the library");
+    throw new Error("close the @shenron/native worker pools before the library");
   library?.close();
   library = undefined;
   libraryPath = undefined;
@@ -264,7 +264,7 @@ function parseCapturedResult(text: string, operation: string): CapturedResult {
 
 /**
  * The last error recorded by the native library on the calling thread (here, the main thread),
- * if any. A worker reads its own: see `@aphrody/shenron-native/worker`.
+ * if any. A worker reads its own: see `@shenron/native/worker`.
  */
 export function lastError(): string | null {
   return lastErrorOf(loadLib());

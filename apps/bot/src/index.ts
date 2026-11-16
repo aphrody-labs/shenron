@@ -256,7 +256,7 @@ registerGracefulShutdown({
     {
       name: "native inference",
       action: async () =>
-        (await import("@aphrody/shenron-pipeline/ai/native")).closeNativeShenronInference(),
+        (await import("@shenron/pipeline/ai/native")).closeNativeShenronInference(),
     },
     {
       name: "Bun vector retrieval",

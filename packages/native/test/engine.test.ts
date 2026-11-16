@@ -106,7 +106,7 @@ describe("argument checks run before the library is opened", () => {
   });
 });
 
-describe("@aphrody/shenron-native/shenron", () => {
+describe("@shenron/native/shenron", () => {
   test("re-exports the loader and the local search", () => {
     expect(shenron.shenronLoad).toBe(shenronLoad);
     expect(shenron.shenronLocalSearch).toBe(shenronLocalSearch);

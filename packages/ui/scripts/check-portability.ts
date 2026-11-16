@@ -1,6 +1,6 @@
 /**
  * Ensure package source can be installed without the host application: no Next.js, no app
- * code (`@/`, `@aphrody/shenron-{site,bot,server}`), no self-import, and every other `@aphrody/shenron-*`
+ * code (`@/`, `@shenron/{site,bot,server}`), no self-import, and every other `@shenron/*`
  * import is a declared dependency (the allowed graph itself is audited by
  * scripts/audit/check-workspace-packages.ts).
  */

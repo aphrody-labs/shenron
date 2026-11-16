@@ -13,16 +13,16 @@ import { createReadStream } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { realpath } from "node:fs/promises";
-import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody/compute";
+import { AphrodyComputeClient } from "@shenron/pipeline/aphrody/compute";
 import {
   aggregate,
   aggregateByTag,
   parseGold,
   runCase,
   type CaseResult,
-} from "@aphrody/shenron-pipeline/ai/eval";
-import { requireAiHttpUrl } from "@aphrody/shenron-pipeline/ai/config";
-import { resolveDataPath } from "@aphrody/shenron-config/paths";
+} from "@shenron/pipeline/ai/eval";
+import { requireAiHttpUrl } from "@shenron/pipeline/ai/config";
+import { resolveDataPath } from "@shenron/config/paths";
 
 const REPO_ROOT = Bun.fileURLToPath(new URL("../../", import.meta.url));
 const COMPUTE_SERVICES = ["aphrody-shenron-embed", "aphrody-ai-http"];
@@ -74,7 +74,7 @@ async function prepareAttestation(releasePath: string) {
   if (process.platform !== "linux")
     throw new Error("Compute attestation requires Linux process provenance");
   const { loadLiveRagEnv, requireLiveRag } =
-    await import("@aphrody/shenron-pipeline/testing/live-rag");
+    await import("@shenron/pipeline/testing/live-rag");
   loadLiveRagEnv();
   const preload = await requireLiveRag();
   const release = await realpath(resolve(releasePath));
@@ -215,7 +215,7 @@ async function attestCompute(
 
 /**
  * B13: the private Aphrody API address has no default here. Returns the origin
- * resolved by `@aphrody/shenron-pipeline/ai/config` (`APHRODY_AI_HTTP_URL`, then the legacy
+ * resolved by `@shenron/pipeline/ai/config` (`APHRODY_AI_HTTP_URL`, then the legacy
  * `APHRODY_SHENRON_API_URL`), or throws an error naming the variables.
  */
 export function aphrodyApiUrlFromEnv(

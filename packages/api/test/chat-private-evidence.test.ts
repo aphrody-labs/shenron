@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Database } from "bun:sqlite";
 import { expect, test } from "bun:test";
-import { openShenronVfs } from "@aphrody/shenron-db/vfs";
-import { createRagWriter } from "@aphrody/shenron-db/vfs/build";
+import { openShenronVfs } from "@shenron/db/vfs";
+import { createRagWriter } from "@shenron/db/vfs/build";
 import { createChatEngine, NO_SOURCE_ANSWER } from "../src/chat/engine";
 import { createExtractiveBackend } from "../src/chat/llm";
 import { ChatRequest, type ChatDone, type ChatEvent } from "../src/contract";

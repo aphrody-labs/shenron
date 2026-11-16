@@ -8,7 +8,7 @@
  * on `/ask` and the forum menus, autocomplete names past Discord's 100-char
  * limit). One implementation, aligned on `lib/embeds.ts`.
  */
-import { resolveApiUrl, resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
+import { resolveApiUrl, resolveSiteUrl } from "@shenron/config/public-urls";
 import { Pagination } from "@discordx/pagination";
 import {
   ActionRowBuilder,

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@aphrody/shenron-pipeline/ai/prompts` — editorial doctrine shared by the bot and the site:
+ * `@shenron/pipeline/ai/prompts` — editorial doctrine shared by the bot and the site:
  * personas, grounding rules, anti-injection guard, sources block.
  *
  * Runtime class: `pure`. Persona texts and fallbacks are copied verbatim from

@@ -55,7 +55,7 @@ import type { Person, WithContext } from "schema-dts";
 import type { SectionAccent } from "@/lib/wiki-section-accents";
 import { capParams } from "@/lib/prerender";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { slugDeRace } from "@aphrody/shenron-config/races-alias";
+import { slugDeRace } from "@shenron/config/races-alias";
 import { pickBestImage } from "@/lib/image-variants";
 import { getLocale } from "next-intl/server";
 import { getWikiCharacterVersionText } from "@/lib/wiki-character-version-messages";

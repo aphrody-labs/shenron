@@ -7,7 +7,7 @@ import {
   DatabookReader as BaseDatabookReader,
   type DatabookReaderPage,
   useKoharuCanvasWarmup,
-} from "@aphrody/shenron-ui/reader";
+} from "@shenron/ui/reader";
 import { TranscriptionTexte } from "./TranscriptionTexte";
 import { readerAssetUrl } from "@/lib/reader-assets";
 import { API_ORIGIN, CDN_ORIGIN, SITE_URL } from "@/lib/config";

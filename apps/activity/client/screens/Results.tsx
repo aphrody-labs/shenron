@@ -4,7 +4,7 @@ import type {
   PlayerPublic,
   RankingEntry,
   Settled,
-} from "@aphrody/shenron-activity/protocol";
+} from "@shenron/activity/protocol";
 import { formatNumber, rewardLabel, translator, type Translate } from "../i18n";
 import { isHost, type GameState } from "../state";
 import { Avatar, DragonBall, Header, ZeniCoin } from "../ui";

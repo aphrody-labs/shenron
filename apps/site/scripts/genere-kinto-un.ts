@@ -19,7 +19,7 @@ import {
   svgIcone,
   svgIllustration,
   svgMonochrome,
-} from "@aphrody/shenron-ui/toriyama-svg/kinto-un";
+} from "@shenron/ui/toriyama-svg/kinto-un";
 
 const racine = new URL("../../../packages/ui/assets/", import.meta.url).pathname;
 const sorties: [string, string][] = [

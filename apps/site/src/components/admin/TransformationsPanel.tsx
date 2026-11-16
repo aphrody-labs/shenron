@@ -12,7 +12,7 @@ import {
   Etincelle,
   LienExterne,
   Plus,
-} from "@aphrody/shenron-ui/icones";
+} from "@shenron/ui/icones";
 import Link from "next/link";
 import { useState } from "react";
 import { ImageField } from "@/components/admin/ImageField";

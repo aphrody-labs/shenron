@@ -8,7 +8,7 @@
  */
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { resolveDiscordAi } from "@aphrody/shenron-config/discord-ai";
+import { resolveDiscordAi } from "@shenron/config/discord-ai";
 
 export interface AdminLabMessageOptions {
   content?: string;

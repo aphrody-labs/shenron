@@ -1,7 +1,7 @@
 import { describe, expect, mock, test } from "bun:test";
 
 mock.module("server-only", () => ({}));
-mock.module("@aphrody/shenron-auth/agent-keys", () => ({
+mock.module("@shenron/auth/agent-keys", () => ({
   decideWriteQuota: () => ({ allowed: true }),
   hasScope: () => true,
   isQuotaExemptMethod: () => true,

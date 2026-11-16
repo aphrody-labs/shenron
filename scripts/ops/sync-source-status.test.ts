@@ -2,7 +2,7 @@
 import { expect, test } from "bun:test";
 import { registryUrl } from "./sync-source-status";
 test("registry identities cannot introduce query strings or alternate hosts", () => {
-  expect(registryUrl("npm", "@aphrody/shenron-api", "1.4.4")).toBe(
+  expect(registryUrl("npm", "@shenron/api", "1.4.4")).toBe(
     "https://registry.npmjs.org/%40aphrody%2Fshenron-api/1.4.4",
   );
   expect(registryUrl("crate", "shenron-re", "1.4.4?token=private")).toBe(

@@ -13,7 +13,7 @@ import {
 
 function library() {
   return {
-    name: "@aphrody/shenron-api",
+    name: "@shenron/api",
     private: false,
     files: ["src", "LICENSE", "openapi"],
     license: "Apache-2.0",
@@ -28,7 +28,7 @@ test("approved public libraries retain exact reviewed allowlists while applicati
     "application or unapproved workspace must remain private",
   );
   expect(
-    publicationViolations({ ...library(), name: "@aphrody/shenron-new" }, "packages/new"),
+    publicationViolations({ ...library(), name: "@shenron/new" }, "packages/new"),
   ).toContain("application or unapproved workspace must remain private");
   expect(
     publicationViolations({ ...library(), files: ["."] }, "packages/api").length,
@@ -61,7 +61,7 @@ test("all thirteen current public manifests and their source payloads match revi
   const root = resolve(import.meta.dir, "../..");
   expect(Object.keys(PUBLIC_LIBRARY_FILES)).toHaveLength(13);
   for (const [name, files] of Object.entries(PUBLIC_LIBRARY_FILES)) {
-    const relative = `packages/${name.slice("@aphrody/shenron-".length)}`;
+    const relative = `packages/${name.slice("@shenron/".length)}`;
     const manifest = await Bun.file(join(root, relative, "package.json")).json();
     expect(manifest.name).toBe(name);
     expect(publicationViolations(manifest, relative), relative).toEqual([]);
@@ -92,9 +92,9 @@ test("source allowlists cannot conceal credentials, databases, provider stores o
 });
 
 test("external capabilities use exact registry pins and local links remain confined to Shenron workspaces", () => {
-  const local = new Set(["@aphrody/shenron-api", "@aphrody/shenron-config"]);
-  expect(pinnedAphrodyDependency("@aphrody/shenron-api", "workspace:*", local)).toBe(true);
-  expect(pinnedAphrodyDependency("@aphrody/shenron-unknown", "workspace:*", local)).toBe(false);
+  const local = new Set(["@shenron/api", "@shenron/config"]);
+  expect(pinnedAphrodyDependency("@shenron/api", "workspace:*", local)).toBe(true);
+  expect(pinnedAphrodyDependency("@shenron/unknown", "workspace:*", local)).toBe(false);
   expect(pinnedAphrodyDependency("@aphrody/http", "workspace:*", new Set(["@aphrody/http"]))).toBe(
     false,
   );

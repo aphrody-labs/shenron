@@ -20,11 +20,11 @@
  * portée, aucun emoji.
  */
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Cadenas, Chargement, Coche, Piece, Sac } from "@aphrody/shenron-ui/icones";
+import { Cadenas, Chargement, Coche, Piece, Sac } from "@shenron/ui/icones";
 import { onTablistKeyDown } from "@/lib/tablist-keys";
 import { VieEmpty } from "@/components/site/VieEmpty";
 import type { CanonPrice, ShopEconomy } from "@/lib/shenron";
-import { formatZeni } from "@aphrody/shenron-config/zeni";
+import { formatZeni } from "@shenron/config/zeni";
 
 interface ShopItem {
   key: string;

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { BOT_JOURNAL_REPLICA_NAMES, BOT_STATE_REPLICA_NAMES } from "@aphrody/shenron-db/bot-schema";
+import { BOT_JOURNAL_REPLICA_NAMES, BOT_STATE_REPLICA_NAMES } from "@shenron/db/bot-schema";
 import {
   KNOWN_TABLES,
   formatStateReport,

@@ -26,7 +26,7 @@ import { canonEvidenceView } from "@/lib/canon-preuves-view";
 import { getCanonConfig, getCanonReferences } from "@/lib/canon-config";
 import { slugCanon } from "@/lib/canon-engine";
 import { canonEvidenceDecision, isCanonEvidenceEnabled } from "@/lib/canon-yolo-server";
-import type { CanonContinuity } from "@aphrody/shenron-pipeline/ai/canon-judgment";
+import type { CanonContinuity } from "@shenron/pipeline/ai/canon-judgment";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

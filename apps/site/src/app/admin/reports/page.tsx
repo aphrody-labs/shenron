@@ -6,9 +6,9 @@
  * progress, resolved, closed), an internal note and deletion. Read/write through
  * /api/admin/reports (site Postgres).
  */
-import { StatusBadge, type StatusTone } from "@aphrody/shenron-ui/admin";
+import { StatusBadge, type StatusTone } from "@shenron/ui/admin";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bulle, Chargement, Corbeille, Drapeau } from "@aphrody/shenron-ui/icones";
+import { Bulle, Chargement, Corbeille, Drapeau } from "@shenron/ui/icones";
 import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { useState } from "react";

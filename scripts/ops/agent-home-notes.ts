@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import { dirname, extname, join, resolve } from "node:path";
 import { mkdirSync, realpathSync } from "node:fs";
-import { writeAtomicSync } from "@aphrody/shenron-db/agent-homes/dir";
-import { containsSensitive } from "@aphrody/shenron-db/conversations/redact";
-import { resolveShenronHome } from "@aphrody/shenron-pipeline/agent-home";
+import { writeAtomicSync } from "@shenron/db/agent-homes/dir";
+import { containsSensitive } from "@shenron/db/conversations/redact";
+import { resolveShenronHome } from "@shenron/pipeline/agent-home";
 
 export interface ObservationNote {
   version: 1;

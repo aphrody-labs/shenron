@@ -21,7 +21,7 @@ import {
   Recherche,
   Telecharger,
   Tv,
-} from "@aphrody/shenron-ui/icones";
+} from "@shenron/ui/icones";
 import { assetUrl } from "@/lib/assets";
 import Image from "next/image";
 import { isEditableAsset } from "@/lib/images";
@@ -38,7 +38,7 @@ import {
   type Era,
   type SortMode,
   type ResolvedTimelineItem,
-} from "@aphrody/shenron-config/chronology";
+} from "@shenron/config/chronology";
 
 const yearOf = (sec: number | null) => (sec ? new Date(sec * 1000).getFullYear() : null);
 

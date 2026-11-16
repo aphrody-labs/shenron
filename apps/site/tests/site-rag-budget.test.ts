@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, mock, test } from "bun:test";
-import { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } from "@aphrody/shenron-config/chat-model";
-import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody/compute";
+import { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } from "@shenron/config/chat-model";
+import { AphrodyComputeClient } from "@shenron/pipeline/aphrody/compute";
 mock.module("server-only", () => ({}));
 const { chatAphrodyRag } = await import("../src/lib/site-rag");
 

@@ -16,5 +16,5 @@ export {
   CANON_INFLATION_FACTOR,
   CANON_PRICES,
   ZENI_YEN_PARITY,
-} from "@aphrody/shenron-config/economy-canon";
-export { DOCUMENTS, REFUSÉ } from "@aphrody/shenron-config/aphrody-corpus";
+} from "@shenron/config/economy-canon";
+export { DOCUMENTS, REFUSÉ } from "@shenron/config/aphrody-corpus";

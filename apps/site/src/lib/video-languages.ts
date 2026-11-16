@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { Availability } from "@/db/bot-schema";
-import { latestOfficialCrunchyrollWatchOffer } from "@aphrody/shenron-api/contract";
-import { officialCrunchyrollWatchURL } from "@aphrody/shenron-config/video-providers";
-import { VIDEO_LANGUAGE_ORDER } from "@aphrody/shenron-media/episode-playback";
+import { latestOfficialCrunchyrollWatchOffer } from "@shenron/api/contract";
+import { officialCrunchyrollWatchURL } from "@shenron/config/video-providers";
+import { VIDEO_LANGUAGE_ORDER } from "@shenron/media/episode-playback";
 export {
   VIDEO_LANGUAGE_ORDER,
   type VideoLanguage,
@@ -10,7 +10,7 @@ export {
   videoLanguages,
   resolveVideoSelection,
   playersForVideoLanguage,
-} from "@aphrody/shenron-media/episode-playback";
+} from "@shenron/media/episode-playback";
 
 const BRANDED_PROVIDER = /crunchyroll/i;
 

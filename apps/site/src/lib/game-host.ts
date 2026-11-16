@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { GAME_WORLD_PATH } from "@aphrody/shenron-config/game";
+import { GAME_WORLD_PATH } from "@shenron/config/game";
 
 export type GameHostRoute = { kind: "rewrite" | "redirect"; url: URL } | { kind: "deny" | "next" };
 

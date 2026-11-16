@@ -5,13 +5,13 @@ import {
   chatTimeoutMs,
   resolveChatModel,
   resolveDirectChat,
-} from "@aphrody/shenron-pipeline/ai/config";
-import { generateGroundedAnswer } from "@aphrody/shenron-pipeline/ai/generate";
-import { createShenronProvider } from "@aphrody/shenron-pipeline/ai/provider";
+} from "@shenron/pipeline/ai/config";
+import { generateGroundedAnswer } from "@shenron/pipeline/ai/generate";
+import { createShenronProvider } from "@shenron/pipeline/ai/provider";
 import {
   AphrodyComputeClient,
   aphrodyComputeFromChat,
-} from "@aphrody/shenron-pipeline/aphrody/compute";
+} from "@shenron/pipeline/aphrody/compute";
 import { wikiDraftSourcesMarkdown, type WikiDraftSource } from "./wiki-ai-draft";
 
 /** Uses the existing inference owner and citation verifier; never writes editorial data. */

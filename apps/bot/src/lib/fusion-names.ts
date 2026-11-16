@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Façade de compatibilité vers @aphrody/shenron-config/fusion-names.
+ * Façade de compatibilité vers @shenron/config/fusion-names.
  */
 export {
   findCanonicalFusion,
   generateFusionName,
   fusionName,
-} from "@aphrody/shenron-config/fusion-names";
+} from "@shenron/config/fusion-names";
 
 /** `0.1` → `+10 %` */
 function percentBonus(ratio: number): string {

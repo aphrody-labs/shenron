@@ -4,7 +4,7 @@ import {
   parsePlaybackCapabilities,
   unavailablePlaybackCapabilities,
   type PlaybackCapabilities,
-} from "@aphrody/shenron-api/contract";
+} from "@shenron/api/contract";
 import { API_URL } from "./config";
 
 /** One shared, short-lived declaration per server process, independent of catalogue caching. */

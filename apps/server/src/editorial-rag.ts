@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody/compute";
-import { requireAiHttpToken, requireAiHttpUrl } from "@aphrody/shenron-pipeline/ai/config";
-import type { EnvSource } from "@aphrody/shenron-config/env";
-import { isPublicRagRow } from "@aphrody/shenron-db/vfs/build";
-import type { RagPort } from "@aphrody/shenron-api/server";
+import { AphrodyComputeClient } from "@shenron/pipeline/aphrody/compute";
+import { requireAiHttpToken, requireAiHttpUrl } from "@shenron/pipeline/ai/config";
+import type { EnvSource } from "@shenron/config/env";
+import { isPublicRagRow } from "@shenron/db/vfs/build";
+import type { RagPort } from "@shenron/api/server";
 
 /** The public site and its chat read the same current editorial index as the bot. */
 export function createAphrodyRagPort(env: EnvSource, fetcher?: typeof fetch): RagPort {

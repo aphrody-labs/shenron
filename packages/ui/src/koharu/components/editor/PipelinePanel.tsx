@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 
 import { call } from "../../lib/backend";
 import { useKoharuStore } from "../../lib/store";
-import { commands } from "@aphrody/shenron-koharu/protocol";
+import { commands } from "@shenron/koharu/protocol";
 import { Button } from "../../../components/button";
 import { ResourceMonitor } from "./ResourceMonitor";
 

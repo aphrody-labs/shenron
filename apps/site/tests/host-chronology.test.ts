@@ -3,7 +3,7 @@ import { afterAll, expect, mock, test } from "bun:test";
 import {
   DEFAULT_CHRONOLOGY_CONFIG,
   resolveChronologyConfig,
-} from "@aphrody/shenron-config/chronology";
+} from "@shenron/config/chronology";
 
 mock.module("server-only", () => ({}));
 mock.module("@/lib/db", () => {

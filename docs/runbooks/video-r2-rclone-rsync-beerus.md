@@ -4,7 +4,7 @@ Ce runbook decrit l'architecture souveraine de telechargement video, d'extractio
 
 ---
 
-## 1. Architecture de Telechargement et Extraction Video (`@aphrody/shenron-media/video-download`)
+## 1. Architecture de Telechargement et Extraction Video (`@shenron/media/video-download`)
 
 Le module [`packages/media/src/video-download.ts`](../../packages/media/src/video-download.ts) fournit les primitives pures et deterministes utilisees par les pipelines serveur et CLI :
 
@@ -22,7 +22,7 @@ Le module [`packages/media/src/video-download.ts`](../../packages/media/src/vide
 
 ---
 
-## 2. Publication R2 Adressable par le Contenu et Sharding de Manifestes (`@aphrody/shenron-media/r2-sync`)
+## 2. Publication R2 Adressable par le Contenu et Sharding de Manifestes (`@shenron/media/r2-sync`)
 
 Le module [`packages/media/src/r2-sync.ts`](../../packages/media/src/r2-sync.ts) orchestre le stockage immuable :
 

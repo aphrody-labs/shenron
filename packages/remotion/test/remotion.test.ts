@@ -10,7 +10,7 @@ import {
   type SubtitleCue,
 } from "../src/index";
 
-describe("@aphrody/remotion timeline & SMPTE", () => {
+describe("@shenron/remotion timeline & SMPTE", () => {
   it("converts seconds to frames and vice versa accurately", () => {
     expect(secondsToFrames(1.5, 24)).toBe(36);
     expect(framesToSeconds(36, 24)).toBe(1.5);
@@ -36,7 +36,7 @@ describe("@aphrody/remotion timeline & SMPTE", () => {
   });
 });
 
-describe("@aphrody/remotion waveform & subtitles", () => {
+describe("@shenron/remotion waveform & subtitles", () => {
   it("generates deterministic audio waveform peaks for dragon ball tracks", () => {
     const peaks = generateWaveformPeaks(120, 60);
     expect(peaks.length).toBe(60);

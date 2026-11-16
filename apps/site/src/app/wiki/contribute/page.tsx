@@ -14,9 +14,9 @@ import { PageShell } from "@/components/kit";
  * cours de remplacement, pas de prolongement. Autant que ce soit dit ici plutôt
  * que découvert au moment d'un refus.
  */
-import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
 import Link from "next/link";
-import { Etincelle } from "@aphrody/shenron-ui/icones";
+import { Etincelle } from "@shenron/ui/icones";
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { MesContributions } from "@/components/wiki/MesContributions";

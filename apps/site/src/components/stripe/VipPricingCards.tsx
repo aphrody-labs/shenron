@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useId, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
-import { Coche } from "@aphrody/shenron-ui/icones";
+import { Coche } from "@shenron/ui/icones";
 import { STRIPE_PLANS } from "@/lib/billing-catalog";
 import {
   PROVIDER_LABEL_KEY,

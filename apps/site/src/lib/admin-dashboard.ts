@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BotAdminStats } from "@aphrody/shenron-api/contract";
+import { BotAdminStats } from "@shenron/api/contract";
 
 const measurement = z.number().finite().nonnegative();
 export const DashboardMonitoring = z.object({

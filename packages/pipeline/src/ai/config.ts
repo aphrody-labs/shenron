@@ -1,7 +1,7 @@
 /* oxlint-disable eslint/no-shadow -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@aphrody/shenron-pipeline/ai/config` — the single resolver of Shenron's AI configuration
+ * `@shenron/pipeline/ai/config` — the single resolver of Shenron's AI configuration
  * (docs/architecture/STACK.md §3.4, docs/operations/ENV.md).
  *
  * Runtime class: `pure`. Environment names follow the aphrody-infra local AI
@@ -22,9 +22,9 @@ import type {
   LanguageModelV4GenerateResult,
   LanguageModelV4StreamResult,
 } from "@ai-sdk/provider";
-import { envString, type EnvIssue, type EnvSource } from "@aphrody/shenron-config/env";
-import { parseLoopbackHttpUrl } from "@aphrody/shenron-config/net";
-import { DIRECT_CHAT_MODEL_ID } from "@aphrody/shenron-config/services";
+import { envString, type EnvIssue, type EnvSource } from "@shenron/config/env";
+import { parseLoopbackHttpUrl } from "@shenron/config/net";
+import { DIRECT_CHAT_MODEL_ID } from "@shenron/config/services";
 import type { generateText } from "ai";
 
 /** The multilingual E5 embedder served by Aphrody (`aphrody-shenron-embed`). */

@@ -1,12 +1,12 @@
 import "server-only";
-import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
-import { configuredCanonJudgment } from "@aphrody/shenron-pipeline/ai/jev-provider";
+import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
+import { configuredCanonJudgment } from "@shenron/pipeline/ai/jev-provider";
 import {
   emptyCanonJudgment,
   type CanonContinuity,
   type CanonJudgment,
   type PublicCanonEvidence,
-} from "@aphrody/shenron-pipeline/ai/canon-judgment";
+} from "@shenron/pipeline/ai/canon-judgment";
 import { env } from "@/lib/env";
 import type { PlanchePreuve } from "./canon-preuves";
 

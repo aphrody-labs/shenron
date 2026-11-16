@@ -5,8 +5,8 @@
  *
  * The rendering lives in Rust (`shenron-engine`, `render::toriyama3d`, compiled to wasm): this
  * component only owns the frame loop, the pointer tilt, visibility and the fallback. The
- * renderer is injected (`renderer`) because `@aphrody/shenron-ui` may not depend on the engine
- * package; the site passes `createToriyamaRenderer` from `@aphrody/shenron-engine/toriyama3d`.
+ * renderer is injected (`renderer`) because `@shenron/ui` may not depend on the engine
+ * package; the site passes `createToriyamaRenderer` from `@shenron/engine/toriyama3d`.
  *
  * There is no WebGL path. Without a renderer, without WebGPU, on a failed device or a lost one,
  * the measured SVG takes over (`DragonBallSphere`, `KintoUn`). `prefers-reduced-motion` → one

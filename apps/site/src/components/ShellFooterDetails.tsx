@@ -1,7 +1,7 @@
 "use client";
 import type { ReactNode } from "react";
 import { useShellUIText } from "@/lib/shell-ui-text";
-import { ChevronBas } from "@aphrody/shenron-ui/icones";
+import { ChevronBas } from "@shenron/ui/icones";
 
 export function ShellFooterDetails({ children }: { children: ReactNode }) {
   const t = useShellUIText();

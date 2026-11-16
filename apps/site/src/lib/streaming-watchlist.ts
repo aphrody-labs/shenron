@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { sanitizeFavorites } from "@aphrody/shenron-config/favorites";
+import { sanitizeFavorites } from "@shenron/config/favorites";
 import { FAVORITES_EVENT, isFavorited, readFavorites, toggleFavorite } from "./favorites";
 import type { StreamingEpisode } from "./streaming-catalogue";
 import { EPISODE_SERIES_LABELS } from "./episode-series-links";

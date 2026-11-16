@@ -25,13 +25,13 @@ import {
   RECEIPT_TTL_MS,
   signReceipt,
   type SettlementReceipt,
-} from "@aphrody/shenron-activity/quiz";
+} from "@shenron/activity/quiz";
 import {
   RewardReasonSchema,
   RoundIdSchema,
   UserIdSchema,
   type Settled,
-} from "@aphrody/shenron-activity/protocol";
+} from "@shenron/activity/protocol";
 import { z } from "zod";
 import { silentLogger, type Logger } from "../log";
 

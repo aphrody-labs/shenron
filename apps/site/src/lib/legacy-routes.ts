@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-import type { RouteRename } from "@aphrody/shenron-config/legacy-routes";
+import type { RouteRename } from "@shenron/config/legacy-routes";
 
-export * from "@aphrody/shenron-config/legacy-routes";
+export * from "@shenron/config/legacy-routes";
 
 /**
  * Conventional account addresses that visitors and other sites guess (`/login`,

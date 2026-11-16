@@ -5,7 +5,7 @@ import {
   RECEIPT_TTL_MS,
   verifyReceipt,
   type SettlementReceipt,
-} from "@aphrody/shenron-activity/quiz";
+} from "@shenron/activity/quiz";
 import { defaultBackoff, Settler, SETTLE_PATH } from "../src/settle/settler";
 import { INSTANCE, SECRET, U1, U2 } from "./support";
 

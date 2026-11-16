@@ -179,7 +179,7 @@ describe("système de design — un seul vocabulaire", () => {
     // Route exclusions and navigation are exercised by wiki-visual-theme.test.tsx.
     // The layout delegates the single shared root to that tested route-aware frame.
     expect(layout).toContain("<WikiVisualFrame>");
-    if (css.includes("@aphrody/shenron-ui/site.css")) {
+    if (css.includes("@shenron/ui/site.css")) {
       const uiCss = readFileSync(join(REPO_ROOT, "packages", "ui", "src", "site.css"), "utf8");
       expect(uiCss).toContain("[data-wiki-surface]");
       expect(uiCss).toContain("--wiki-shell-max");

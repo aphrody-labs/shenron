@@ -13,7 +13,7 @@ import {
   type ClientMessage,
   type Locale,
   type QuizConfigPatch,
-} from "@aphrody/shenron-activity/protocol";
+} from "@shenron/activity/protocol";
 import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { resolveLocale } from "./i18n";
 import {

@@ -28,7 +28,7 @@ test("verified ADN media on the legacy worker retains its content path on the ca
   }
 });
 
-describe("@aphrody/shenron-config/public-urls", () => {
+describe("@shenron/config/public-urls", () => {
   test("routes measured legacy DBZ artwork to its canonical CDN namespace", () => {
     for (const source of [
       "assets/dbz/characters/bulma.webp?v=1#frame",

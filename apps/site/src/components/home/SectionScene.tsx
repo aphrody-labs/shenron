@@ -1,5 +1,5 @@
 import type { CSSProperties, ReactNode } from "react";
-import type { HomeScene } from "@aphrody/shenron-config/home";
+import type { HomeScene } from "@shenron/config/home";
 
 /** Editorial sections use the configured site surface and era atmosphere without background video playback. */
 export function SectionScene({

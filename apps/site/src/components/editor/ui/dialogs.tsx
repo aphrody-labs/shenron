@@ -30,7 +30,7 @@ import {
   panelInputClass,
 } from "./primitives";
 import type { FigurePlacement, FigureSize } from "../nodes/blocks";
-import { cn } from "@aphrody/shenron-ui/lib/utils";
+import { cn } from "@shenron/ui/lib/utils";
 
 /* -------------------------------------------------------------------------- */
 /* Lien                                                                       */

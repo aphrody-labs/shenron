@@ -2,10 +2,10 @@
 "use client";
 
 import Image from "next/image";
-import { SceneBackdrop as SharedSceneBackdrop } from "@aphrody/shenron-ui/public/SceneBackdrop";
-import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
+import { SceneBackdrop as SharedSceneBackdrop } from "@shenron/ui/public/SceneBackdrop";
+import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
 import { assetUrl } from "@/lib/assets";
-import type { HomeScene } from "@aphrody/shenron-config/home";
+import type { HomeScene } from "@shenron/config/home";
 import { isEditableAsset } from "@/lib/images";
 import { useHomeMotion } from "./HomeMotion";
 

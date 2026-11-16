@@ -4,8 +4,8 @@
  * signed in, otherwise from the device (favorites joined with local playback progress).
  * Statuses use the API vocabulary so the `?status=` query and the filter tabs never diverge.
  */
-import type { WatchStatus } from "@aphrody/shenron-api/contract";
-import type { Favorite } from "@aphrody/shenron-config/favorites";
+import type { WatchStatus } from "@shenron/api/contract";
+import type { Favorite } from "@shenron/config/favorites";
 import type { PlaybackProgress } from "./playback-progress";
 import { WATCHLIST_STATUSES, type WatchlistItem } from "./watchlist-view";
 

@@ -12,16 +12,16 @@
  * Bénéfice de côté : l'URL est partageable (« corrige ce paragraphe, tiens »),
  * et la page fonctionne sans avoir à ouvrir une modale par-dessus la lecture.
  */
-import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
 import Link from "next/link";
-import { FlecheGauche } from "@aphrody/shenron-ui/icones";
+import { FlecheGauche } from "@shenron/ui/icones";
 import type { Metadata } from "next";
 import { WikiContribute } from "@/components/wiki/WikiContribute";
 import { CONTRIBUTABLE_COLUMNS } from "@/lib/contributions-shared";
 import { champPlanche, estCiblePlanche, numeroDePlanche } from "@/lib/databook-pages-shared";
 import { estCibleStats } from "@/lib/stats-personnage";
 import { WIKI_TABLE_SPECS } from "@/lib/wiki-tables";
-import { sanitizeInternalPath } from "@aphrody/shenron-config/favorites";
+import { sanitizeInternalPath } from "@shenron/config/favorites";
 import { WikiCorrectionText } from "@/components/wiki/WikiCorrectionText";
 import correctionText from "../../../../messages/wiki-corrections/fr.json";
 import { PageShell } from "@/components/kit";

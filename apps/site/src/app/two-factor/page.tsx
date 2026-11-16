@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import Link from "next/link";
-import { sanitizeInternalPath } from "@aphrody/shenron-config/favorites";
+import { sanitizeInternalPath } from "@shenron/config/favorites";
 import { useT } from "@/components/T";
 import { authClient } from "@/lib/auth-client";
 

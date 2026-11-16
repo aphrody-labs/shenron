@@ -23,8 +23,8 @@ import {
   sanitizeFavorites,
   type Favorite,
   type FavoriteKind,
-} from "@aphrody/shenron-config/favorites";
-export type { Favorite, FavoriteKind } from "@aphrody/shenron-config/favorites";
+} from "@shenron/config/favorites";
+export type { Favorite, FavoriteKind } from "@shenron/config/favorites";
 
 const favKey = (kind: FavoriteKind, id: string) => `${kind}:${id}`;
 

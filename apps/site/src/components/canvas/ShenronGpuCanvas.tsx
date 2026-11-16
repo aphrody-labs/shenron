@@ -17,7 +17,7 @@ import {
   type KiParticleConfig,
   type MangaBoard,
   type Vector2D,
-} from "@aphrody/shenron-engine";
+} from "@shenron/engine";
 
 export interface ShenronGpuCanvasProps {
   mode?: "ki" | "manga" | "custom";

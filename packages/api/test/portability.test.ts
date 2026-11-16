@@ -7,7 +7,7 @@ import {
   checkPackageRuntimes,
   importSpecifiers,
   stripNonCode,
-} from "@aphrody/shenron-config/guards";
+} from "@shenron/config/guards";
 
 const PKG_DIR = join(import.meta.dir, "..");
 const manifest = JSON.parse(readFileSync(join(PKG_DIR, "package.json"), "utf8")) as {
@@ -32,10 +32,10 @@ const RUNTIME: Record<string, string> = {
   "./openapi.json": "json",
 };
 
-/** Doctrine subpaths of `@aphrody/shenron-pipeline` that `./chat` and `./host` may import (§4.1). */
+/** Doctrine subpaths of `@shenron/pipeline` that `./chat` and `./host` may import (§4.1). */
 const PIPELINE_SUBPATHS = new Set([
-  "@aphrody/shenron-pipeline/ai/prompts",
-  "@aphrody/shenron-pipeline/agent-home",
+  "@shenron/pipeline/ai/prompts",
+  "@shenron/pipeline/agent-home",
 ]);
 
 // The source tree is an immutable snapshot for this suite.
@@ -90,7 +90,7 @@ function bareImports(key: string): { file: string; specifier: string; typeOnly: 
   );
 }
 
-describe("@aphrody/shenron-api manifest", () => {
+describe("@shenron/api manifest", () => {
   test("exports and runtime classes of docs/architecture/STACK.md §3.6, no root export", () => {
     expect(manifest.exports).not.toHaveProperty(".");
     expect(Object.keys(manifest.exports).toSorted()).toEqual(Object.keys(RUNTIME).toSorted());
@@ -137,13 +137,13 @@ describe("@aphrody/shenron-api manifest", () => {
       for (const key of ["./contract", "./client", "./http", "./server", "./next"]) {
         expect(
           bareImports(key).filter(({ specifier }) =>
-            specifier.startsWith("@aphrody/shenron-pipeline"),
+            specifier.startsWith("@shenron/pipeline"),
           ),
         ).toEqual([]);
       }
       const reached = ["./chat", "./host"].flatMap((key) =>
         bareImports(key).filter(({ specifier }) =>
-          specifier.startsWith("@aphrody/shenron-pipeline"),
+          specifier.startsWith("@shenron/pipeline"),
         ),
       );
       expect(reached.length).toBeGreaterThan(0);

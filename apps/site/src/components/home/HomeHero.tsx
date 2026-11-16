@@ -1,5 +1,5 @@
 import { T } from "@/components/T";
-import type { HomeConfig } from "@aphrody/shenron-config/home";
+import type { HomeConfig } from "@shenron/config/home";
 import { canonicalFrameUrl } from "@/lib/episode-frame-banner";
 import { KintoUnVolant } from "./KintoUnVolant";
 import type { BeerusFeature } from "./HomeBeerusFeature";

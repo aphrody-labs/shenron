@@ -5,7 +5,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { NextIntlClientProvider } from "next-intl";
 
 mock.module("next/dynamic", () => ({ default: () => () => null }));
-mock.module("@aphrody/shenron-ui/studio/tauri-bridge", () => ({ isTauri: () => true }));
+mock.module("@shenron/ui/studio/tauri-bridge", () => ({ isTauri: () => true }));
 
 const { StudioEditor } = await import("../src/app/studio/StudioEditor");
 const messages = (await import("../messages/fr.json")).default;

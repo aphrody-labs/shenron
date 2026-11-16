@@ -4,7 +4,7 @@
     {
       "name": "site",
       "runtimeExecutable": "bun",
-      "runtimeArgs": ["--filter", "@aphrody/shenron-site", "dev"],
+      "runtimeArgs": ["--filter", "@shenron/site", "dev"],
       "port": 3000
     }
   ]

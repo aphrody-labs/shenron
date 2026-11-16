@@ -1,24 +1,24 @@
 import "server-only";
-import { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } from "@aphrody/shenron-config/chat-model";
+import { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } from "@shenron/config/chat-model";
 import {
   AiConfigError,
   chatTimeoutMs,
   resolveChatModel,
   resolveDirectChat,
-} from "@aphrody/shenron-pipeline/ai/config";
+} from "@shenron/pipeline/ai/config";
 import {
   AphrodyComputeClient,
   aphrodyComputeFromChat,
   type AphrodyRagHit,
   type ChatFn,
-} from "@aphrody/shenron-pipeline/aphrody/compute";
-import { buildGroundingInstructions, resolvePersona } from "@aphrody/shenron-pipeline/ai/prompts";
+} from "@shenron/pipeline/aphrody/compute";
+import { buildGroundingInstructions, resolvePersona } from "@shenron/pipeline/ai/prompts";
 import {
   createOpenAICompatibleChat,
   createShenronProvider,
-} from "@aphrody/shenron-pipeline/ai/provider";
+} from "@shenron/pipeline/ai/provider";
 import { generateText } from "ai";
-import { judgePublicChatHits, jevSourceKind } from "@aphrody/shenron-api/chat";
+import { judgePublicChatHits, jevSourceKind } from "@shenron/api/chat";
 import { siteChatJev } from "./jev";
 
 export function usesAphrodyRag(): boolean {
@@ -101,7 +101,7 @@ export async function chatAphrodyRag(
     ? `[Page consultée] ${options.context.trim().slice(0, 1500)}\n\n${sources}`
     : sources;
   // Serveur direct déclaré (APHRODY_AI_CHAT_BASE_URL), sinon aphrody-ai-http ; modèle :
-  // `APHRODY_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @aphrody/shenron-pipeline/ai/config).
+  // `APHRODY_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @shenron/pipeline/ai/config).
   const direct = resolveDirectChat(process.env);
   if (!direct.ok) throw new AiConfigError("direct chat server", direct.issues);
   const model = direct.value

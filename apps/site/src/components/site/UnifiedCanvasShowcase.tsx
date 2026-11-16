@@ -7,7 +7,7 @@ import type {
   CanvasBackendPreference,
   KiParticleConfig,
   MangaBoard,
-} from "@aphrody/shenron-engine";
+} from "@shenron/engine";
 
 const KI_THEMES = [
   {

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { createBunSql } from "@aphrody/shenron-db/bun-sql";
+import { createBunSql } from "@shenron/db/bun-sql";
 import {
   DEFAULT_SITE_THEME,
   THEME_COLOR_VARS,
   themeCssProperties,
-} from "@aphrody/shenron-config/site-theme";
+} from "@shenron/config/site-theme";
 import { createHostSiteTheme } from "../src/host/site-theme";
 import { createShenronApiClient } from "../src/client";
 import { endpoints } from "../src/contract";

@@ -6,8 +6,8 @@ import {
   type ReplicaMemo,
   type ReplicaPassReport,
   type SqlClient,
-} from "@aphrody/shenron-db/replica";
-import { BOT_STATE_REPLICA_NAMES } from "@aphrody/shenron-db/bot-schema";
+} from "@shenron/db/replica";
+import { BOT_STATE_REPLICA_NAMES } from "@shenron/db/bot-schema";
 import { inject, singleton } from "tsyringe";
 import { DatabaseService } from "~/db/index";
 import { PgService } from "~/db/pg";
@@ -92,7 +92,7 @@ function withTimeout<T>(work: Promise<T>, ms: number, label: string): Promise<T>
 /**
  * Keeps the PostgreSQL replica of the bot's runtime state (`bot.*`) current: every few minutes the
  * rows that changed in SQLite are written to PostgreSQL, and the append-only journals are copied
- * after a persistent cursor. The engine is `@aphrody/shenron-db/replica`, shared with the manual
+ * after a persistent cursor. The engine is `@shenron/db/replica`, shared with the manual
  * script (`scripts/ops/sync-bot-runtime-sqlite-to-postgres.ts`); this service owns the settings,
  * the schedule's guard rails, the logging and the status.
  *

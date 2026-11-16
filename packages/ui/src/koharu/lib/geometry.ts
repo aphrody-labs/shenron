@@ -4,7 +4,7 @@ import type {
   Layer,
   Point,
   TransformFrame,
-} from "@aphrody/shenron-koharu/protocol";
+} from "@shenron/koharu/protocol";
 
 import { effectiveLayerVisibility, isTextLayer } from "./document";
 

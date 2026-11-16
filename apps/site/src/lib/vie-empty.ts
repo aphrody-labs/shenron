@@ -3,7 +3,7 @@
  * décorative et les sorties proposées. Les textes vivent dans `messages/*.json`
  * (`vie.empty.<kind>.{title,description}`, `vie.cta.<key>`), jamais ici.
  */
-import type { VieArtKind } from "@aphrody/shenron-ui/vie/VieArt";
+import type { VieArtKind } from "@shenron/ui/vie/VieArt";
 import { DISCORD_INVITE } from "@/lib/config";
 
 export const VIE_EMPTY_KINDS = ["warriors", "news", "shop"] as const;

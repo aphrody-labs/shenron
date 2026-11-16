@@ -1,10 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { KiAura, KintoUn } from "@aphrody/shenron-ui/toriyama";
+import { KiAura, KintoUn } from "@shenron/ui/toriyama";
 import { useT } from "@/components/T";
 import { useHomeMotion } from "./HomeMotion";
-import { useScenePlaybackPolicy } from "@aphrody/shenron-ui/public/SceneBackdrop";
+import { useScenePlaybackPolicy } from "@shenron/ui/public/SceneBackdrop";
 import styles from "./HomeHero.module.css";
 
 /** Les figures déclenchées au clic, dans l'ordre où elles s'enchaînent. */

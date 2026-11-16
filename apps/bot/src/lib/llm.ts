@@ -4,7 +4,7 @@
  * Le RAG fournit les FAITS ; le modèle
  * RÉFORMULE dans la voix du persona, comme une vraie conversation — il ne recopie jamais les chunks.
  *
- * - Personas, règles, garde anti-injection (B17) et génération : `@aphrody/shenron-pipeline/ai`
+ * - Personas, règles, garde anti-injection (B17) et génération : `@shenron/pipeline/ai`
  *   (`prompts`, `generateGroundedAnswer`) ; ce module ne fournit que les ports.
  * - Mémoire : historique des derniers échanges par session (Redis résilient, B8), injecté dans le prompt.
  * - Chitchat : un simple "bonjour" reçoit une vraie réponse chaleureuse, sans réciter de faits.
@@ -12,48 +12,48 @@
  * - Jamais de dump d'archives. Repli persona si Aphrody est indisponible.
  */
 import type { Database } from "bun:sqlite";
-import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
-import { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } from "@aphrody/shenron-config/chat-model";
-import { createOpenAICompatibleChat } from "@aphrody/shenron-pipeline/ai/provider";
-import { createAphrodyChatModel } from "@aphrody/shenron-pipeline/ai/chat";
+import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
+import { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } from "@shenron/config/chat-model";
+import { createOpenAICompatibleChat } from "@shenron/pipeline/ai/provider";
+import { createAphrodyChatModel } from "@shenron/pipeline/ai/chat";
 import {
   chatTimeoutMs,
   resolveChatModel,
   resolveDirectChat,
-} from "@aphrody/shenron-pipeline/ai/config";
+} from "@shenron/pipeline/ai/config";
 import {
   createNativeShenronChatModel,
   SHENRON_NATIVE_MODEL,
-} from "@aphrody/shenron-pipeline/ai/native";
+} from "@shenron/pipeline/ai/native";
 import {
   generateGroundedAnswer,
   type GroundedAnswer,
   type GroundedHit,
-} from "@aphrody/shenron-pipeline/ai/generate";
+} from "@shenron/pipeline/ai/generate";
 import {
   rankHitsForContext,
   resolveAnswerLang,
   stripCitationMarkers,
-} from "@aphrody/shenron-pipeline/ai/grounding";
+} from "@shenron/pipeline/ai/grounding";
 import type {
   ChunkContentPort,
   ConcurrencyPort,
   HistoryPort,
   HistoryTurn,
   SemanticCachePort as GroundedCachePort,
-} from "@aphrody/shenron-pipeline/ai/ports";
+} from "@shenron/pipeline/ai/ports";
 import {
   isChitchat as sharedIsChitchat,
   PROMPT_VERSION,
   isFallbackAnswer as sharedIsFallbackAnswer,
   PERSONAS,
   resolvePersona,
-} from "@aphrody/shenron-pipeline/ai/prompts";
-import { createResilientRedis, type ResilientRedis } from "@aphrody/shenron-db/redis";
-import type { HomePersona } from "@aphrody/shenron-pipeline/ai/prompts";
+} from "@shenron/pipeline/ai/prompts";
+import { createResilientRedis, type ResilientRedis } from "@shenron/db/redis";
+import type { HomePersona } from "@shenron/pipeline/ai/prompts";
 import type { RagHit } from "./rag";
-import { resolveRedisUrl } from "@aphrody/shenron-config/services";
-import { judgePublicChatHits, jevSourceKind, type ChatJevPort } from "@aphrody/shenron-api/chat";
+import { resolveRedisUrl } from "@shenron/config/services";
+import { judgePublicChatHits, jevSourceKind, type ChatJevPort } from "@shenron/api/chat";
 import { botChatJev } from "./jev";
 
 /** Options of one generation; the DM relay adds the user's agent home and bounds. */
@@ -210,7 +210,7 @@ const lazySemanticCache: SemanticCachePort = {
   setSemanticCache: async (...args) => (await import("./semantic-cache")).setSemanticCache(...args),
 };
 
-/** `APHRODY_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @aphrody/shenron-pipeline/ai/config). */
+/** `APHRODY_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @shenron/pipeline/ai/config). */
 function aphrodyModel(): string {
   return resolveChatModel(process.env);
 }

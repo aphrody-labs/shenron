@@ -9,7 +9,7 @@ import styles from "./wiki-editorial.module.css";
 import { wikiContributionSection } from "@/lib/wiki-visual-theme";
 import type { Crumb } from "@/components/Breadcrumbs";
 import { WikiPageShell } from "@/components/wiki/WikiPageShell";
-import type { ShellWidth } from "@aphrody/shenron-ui/layout/PageShell";
+import type { ShellWidth } from "@shenron/ui/layout/PageShell";
 
 /**
  * Common frame of every wiki catalogue (characters, techniques, items, sagas, movies, music...).

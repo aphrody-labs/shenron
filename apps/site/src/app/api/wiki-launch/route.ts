@@ -12,8 +12,8 @@
 import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
 import { getLaunchConfig, saveLaunchConfig } from "@/lib/wiki-launch-config";
 import { HostLaunchError } from "@/lib/host-launch-error";
-import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
-import type { AccessRule } from "@aphrody/shenron-config/wiki-launch";
+import { ENV_ALIASES, envFirst } from "@shenron/config/env";
+import type { AccessRule } from "@shenron/config/wiki-launch";
 import { revalidatePath } from "next/cache";
 
 export const runtime = "nodejs";

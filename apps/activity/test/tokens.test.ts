@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Design tokens written into the bundle, and the contrast of the colour pairs the stylesheet uses. */
 import { describe, expect, test } from "bun:test";
-import { colorVars, tokens } from "@aphrody/shenron-ui/tokens";
+import { colorVars, tokens } from "@shenron/ui/tokens";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { tokensCss } from "../scripts/tokens";

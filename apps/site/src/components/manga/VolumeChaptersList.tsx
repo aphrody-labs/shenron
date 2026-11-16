@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Coche, Livre, Palette } from "@aphrody/shenron-ui/icones";
+import { Coche, Livre, Palette } from "@shenron/ui/icones";
 import { readerAssetUrl } from "@/lib/reader-assets";
 import { API_ORIGIN, CDN_ORIGIN, SITE_URL } from "@/lib/config";
 import {
@@ -12,7 +12,7 @@ import {
   LIBELLE_EDITION,
   type Edition,
 } from "@/lib/manga-editions";
-import { Etoile } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
+import { Etoile } from "@shenron/ui/toriyama/MotifsCouverture";
 import { MangaPreviewBadge, type MangaReaderExtent } from "./MangaPreviewNotice";
 
 interface Chapter {

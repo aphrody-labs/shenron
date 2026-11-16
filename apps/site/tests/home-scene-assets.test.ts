@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { homeSceneAssetUrl, homeSceneVideoUrl } from "../src/components/home/SceneBackdrop";
-import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
 
 test("owned homepage clips and posters use the asset service instead of the wiki page router", () => {
   expect(homeSceneAssetUrl("/wiki/kidbuu.web.mp4")).toBe(

@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { useId, useState } from "react";
 import Link from "next/link";
-import { Chargement } from "@aphrody/shenron-ui/icones";
+import { Chargement } from "@shenron/ui/icones";
 import { CONTRIBUTABLE_COLUMNS, type ContributionStatusKey } from "@/lib/contributions-shared";
 import { useMe } from "@/lib/use-me";
 import { useWikiEditorialText } from "@/lib/wiki-editorial-text";

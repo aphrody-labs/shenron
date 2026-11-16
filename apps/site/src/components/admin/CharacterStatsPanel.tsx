@@ -15,7 +15,7 @@ import {
   Corbeille,
   Enregistrer,
   Plus,
-} from "@aphrody/shenron-ui/icones";
+} from "@shenron/ui/icones";
 import { useEffect, useState } from "react";
 import { apiAt } from "@/lib/admin-api";
 import { crudBase } from "@/lib/wiki-tables";

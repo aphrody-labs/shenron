@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** `@aphrody/shenron-activity/rooms` — per-instance rooms. Runtime class `pure`. */
+/** `@shenron/activity/rooms` — per-instance rooms. Runtime class `pure`. */
 export {
   DEFAULT_ROOM_LIMITS,
   Room,

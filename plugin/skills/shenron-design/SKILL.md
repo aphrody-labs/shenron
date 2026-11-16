@@ -14,7 +14,7 @@ Appliquer le [contrat partagé](../../references/execution.md). Référence comp
 2. **CSS DBZ** : réutiliser les classes existantes (`toriyama-panel`, `toriyama-speedlines`,
    `scouter-hud`, `ki-aura-*`, `border-ink*`…) et les jetons (`--color-dbz-*`, `--color-encre`,
    `--color-os`, `--color-aura-*`) avant d'en créer.
-3. **Toriyama SVG** : formes dessinées avec `@aphrody/shenron-ui/toriyama-svg` depuis une mesure ; suivre
+3. **Toriyama SVG** : formes dessinées avec `@shenron/ui/toriyama-svg` depuis une mesure ; suivre
    le skill `toriyama-svg` (sources, mesure, rendu 512→16 px). Trait d'encre épais, aplats, ombre
    découpée par la silhouette, ombre portée dure.
 4. **Tailwind + Base UI** : Tailwind v4 CSS-first, primitives `@base-ui/react` + `cva` + `cn`. Les pages

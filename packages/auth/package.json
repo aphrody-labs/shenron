@@ -1,5 +1,5 @@
 {
-  "name": "@aphrody/shenron-auth",
+  "name": "@shenron/auth",
   "version": "1.4.7",
   "private": false,
   "description": "Briques Better Auth partagées (site Next, bot Bun, API) : secret, origines, cookies, fournisseur Discord, handler Request/Response",
@@ -41,12 +41,12 @@
     "typecheck": "bun check"
   },
   "dependencies": {
-    "@aphrody/shenron-config": "workspace:*",
+    "@shenron/config": "workspace:*",
     "@better-auth/oauth-provider": "catalog:",
     "@better-auth/passkey": "catalog:"
   },
   "devDependencies": {
-    "@aphrody/shenron-db": "workspace:*",
+    "@shenron/db": "workspace:*",
     "@types/react": "catalog:",
     "better-auth": "catalog:",
     "drizzle-orm": "catalog:",

@@ -210,7 +210,7 @@ inventaire des corpus. La priorité et les onze lots ouverts sont dans
 - Cinq actualités Super officielles publiées par CMS/PostgreSQL ; épisode bonus et lecture
   effective restent non confirmés. Miroir Redis propriétaire19articles/TTL24h ; writer dans
   release active `bfb1280c`, preuve d'écriture end-to-end distincte du backfill.
-- Scope npm `@aphrody/shenron-*`, apps privées, GitHub `aphrody-labs/shenron` et équipe
+- Scope npm `@shenron/*`, apps privées, GitHub `aphrody-labs/shenron` et équipe
   `aphrody` ; crates.io conserve ses noms globaux et requiert des ownerships prouvés.
 - Sources publiques, notices et allowlists auditées avant publication ; secrets, corpus,
   bases et assets protégés exclus. Migrations historiques immuables.
@@ -269,7 +269,7 @@ La cartographie native `aphrody-graph` unifie les quatre couches de la plateform
 | **SH-P0-003** | Intégrité des databooks sous gel       |    P0    |  [x]   | Garde commune CLI/HTTP, réception atomique, corruption active = 0.                                                                                                                                                                            |
 | **SH-P0-004** | Gouvernance des données                |    P0    |  [x]   | Remplacement des suppressions physiques par masquage logique et révision.                                                                                                                                                                     |
 | **SH-P0-005** | Qualité RAG & Anti-leak                |    P0    |  [x]   | Partitionnement anti-gold-leak vérifié : 1 495 rollouts / 1 091 cibles gold étanches.                                                                                                                                                         |
-| **SH-P0-016** | Unification de la stack modulaire      |    P0    |  [x]   | Découpage propre en paquets `@aphrody/shenron-*` (config, db, auth, api, ui, pipeline, native).                                                                                                                                               |
+| **SH-P0-016** | Unification de la stack modulaire      |    P0    |  [x]   | Découpage propre en paquets `@shenron/*` (config, db, auth, api, ui, pipeline, native).                                                                                                                                               |
 | **SH-P0-017** | Sécurité staff & Bot admin             |    P0    |  [x]   | `checkAdmin` accorde les droits selon la politique staff (403 sinon, tests validés).                                                                                                                                                          |
 | **SH-P1-001** | Production & Sondes live               |    P1    |  [x]   | `dragonballfr.com` HTTP/2 200, `/api/health` ok, agent-card A2A 1.0 en ligne.                                                                                                                                                                 |
 | **SH-P1-002** | Contrats OpenAPI & Tokens M3           |    P1    |  [x]   | `openapi.ts --check` et `generate-tokens.ts --check` validés sans dérive.                                                                                                                                                                     |

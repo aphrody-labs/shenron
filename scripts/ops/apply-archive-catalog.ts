@@ -9,7 +9,7 @@ import {
   ingestNativeCrawl,
   projectNativeCrawl,
   type ExternalCrawlRecord,
-} from "@aphrody/shenron-pipeline/dragon-ball/crawl-ingest";
+} from "@shenron/pipeline/dragon-ball/crawl-ingest";
 
 export const archiveDigest = (value: string | Uint8Array) =>
   new Bun.CryptoHasher("sha256").update(value).digest("hex");

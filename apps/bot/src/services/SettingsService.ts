@@ -15,7 +15,7 @@ import {
   REGEN_XP,
   REGEN_ZENI,
   setRaceTuning,
-} from "@aphrody/shenron-config/races";
+} from "@shenron/config/races";
 import { DEFAULT_XP_BOOST_CONFIG as XP_BOOST } from "~/lib/xp-boosts";
 import { botLang, type BotLang } from "~/lib/i18n";
 

@@ -27,8 +27,8 @@ import {
   pendingChunks,
   type AssetRow,
   type CpkRow,
-} from "@aphrody/shenron-db/dbxv2";
-import { createE5Embedder } from "@aphrody/shenron-db/vfs/rag";
+} from "@shenron/db/dbxv2";
+import { createE5Embedder } from "@shenron/db/vfs/rag";
 
 const REPO = resolve(import.meta.dir, "../..");
 const HOME = process.env.HOME ?? homedir();

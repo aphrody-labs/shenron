@@ -2,8 +2,8 @@
 import "server-only";
 import { cache } from "react";
 import { sql } from "drizzle-orm";
-import { endpoints, VfsInfoResponse } from "@aphrody/shenron-api/contract";
-import { resolveHostUrl } from "@aphrody/shenron-config/public-urls";
+import { endpoints, VfsInfoResponse } from "@shenron/api/contract";
+import { resolveHostUrl } from "@shenron/config/public-urls";
 import { db } from "./db";
 
 export interface PublicCorpusStats {

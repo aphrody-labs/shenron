@@ -14,7 +14,7 @@ La stack repose sur 100% Upstream Bun v1.4.4, Rust 2024 et WebGPU, sans aucune d
 | **Moteur Physique & Combat** | `crates/dragon-pixel` (Rust WASM)        | Déterminisme frame-par-frame strict (60 Hz), zéro allocation dans la boucle de rendu, rollback netcode mathématiquement exact.  |
 | **Serveur & Netcode**        | Axum 0.8 + Tokio (Rust)                  | Gestion de milliers de rooms P2P WebRTC / WebSocket simultanées avec sub-millisecond tick latency (`/api/game/bevy/tick`).      |
 | **Frontend Web**             | Next.js 16.5 + React 19 (Bun standalone) | Rendu hybride SSR pour le SEO des fiches d'arène et CSR haute fréquence pour le canvas de jeu.                                  |
-| **Composants & HUD**         | `@aphrody/shenron-ui` (Tailwind CSS v4)  | Primitives vectorielles SVG haute-résolution (barre 15°, Dragon Radar) garantissant zéro flou sur écrans 4K/Retina.             |
+| **Composants & HUD**         | `@shenron/ui` (Tailwind CSS v4)  | Primitives vectorielles SVG haute-résolution (barre 15°, Dragon Radar) garantissant zéro flou sur écrans 4K/Retina.             |
 | **Base de Données**          | PostgreSQL (`DATABASE_URL`) + RQLite D1  | Unicité des profils, transactions atomiques sur les Zénis et inventaires de Dragon Balls.                                       |
 | **Stockage Fichiers**        | Cloudflare R2 / Garage S3                | Distribution géodistribuée des textures KTX2 et maillages Zstandard sous clé immuable `_objects/<sha256>`.                      |
 | **Audio**                    | Web Audio API natif                      | Synthèse procédurale d'oscillateurs (Ki blasts, bruits d'impact, bourdonnement d'aura) sans charger de fichiers MP3 volumineux. |

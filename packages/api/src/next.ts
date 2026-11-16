@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@aphrody/shenron-api/next` — Next.js App Router adapter. No `next/*` import: the
+ * `@shenron/api/next` — Next.js App Router adapter. No `next/*` import: the
  * cache functions (`revalidatePath`, `revalidateTag`) are injected by the site.
  * Runtime class: `server`.
  */

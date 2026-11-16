@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-import { uiAssetPaths } from "@aphrody/shenron-ui/assets";
-import { NOMS_ICONES } from "@aphrody/shenron-ui/icones/geometries";
+import { uiAssetPaths } from "@shenron/ui/assets";
+import { NOMS_ICONES } from "@shenron/ui/icones/geometries";
 import symbols from "../../packages/ui/src/icones/material-symbol-subset.json";
 
 export async function toriyamaCatalog() {
@@ -11,7 +11,7 @@ export async function toriyamaCatalog() {
     for (const match of source.matchAll(/export function (\w+)\(/g))
       components.push({
         name: match[1]!,
-        module: `@aphrody/shenron-ui/toriyama/${filename.replace(/\.tsx$/, "")}`,
+        module: `@shenron/ui/toriyama/${filename.replace(/\.tsx$/, "")}`,
       });
   }
   for (const path of uiAssetPaths) {

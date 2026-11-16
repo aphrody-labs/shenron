@@ -4,7 +4,7 @@ import {
   getCanonStoryManifest,
   getCanonChapter,
   computeCanonPowerMultiplier,
-} from "@aphrody/shenron-engine";
+} from "@shenron/engine";
 
 describe("Canon Game Monorepo Integration", () => {
   it("verifies all 10 canonical story chapters have valid wiki, manga and anime links", () => {

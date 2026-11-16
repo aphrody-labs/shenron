@@ -6,8 +6,8 @@ import {
   catalogPageNumber,
   catalogPublicUrl,
 } from "../src/lib/catalog-explorer-contract";
-import { wikiQueries, publicColumns } from "@aphrody/shenron-db/repos/wiki";
-import { WIKI_REGISTRY } from "@aphrody/shenron-db/wiki-registry";
+import { wikiQueries, publicColumns } from "@shenron/db/repos/wiki";
+import { WIKI_REGISTRY } from "@shenron/db/wiki-registry";
 import { getTableColumns } from "drizzle-orm";
 
 describe("public catalogue navigation", () => {

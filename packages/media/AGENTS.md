@@ -5,9 +5,9 @@ Logique média partagée: lecture d'épisodes, livraison vidéo, mapping Crunchy
 Commands:
 
 ```sh
-bun run --filter @aphrody/shenron-media test
-bun run --filter @aphrody/shenron-media lint
-bun run --filter @aphrody/shenron-media typecheck
+bun run --filter @shenron/media test
+bun run --filter @shenron/media lint
+bun run --filter @shenron/media typecheck
 ```
 
 Rules:

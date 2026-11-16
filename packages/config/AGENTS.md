@@ -1,6 +1,6 @@
 # Instructions agents
 
-Unité modulaire `@aphrody/shenron-config` du monorepo Shenron.
+Unité modulaire `@shenron/config` du monorepo Shenron.
 
 - Le code et les identifiants restent en anglais ; la documentation reste en français.
 - Utiliser Bun Aphrody pour les scripts, tests et builds.

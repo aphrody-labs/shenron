@@ -110,7 +110,7 @@ db-games *args="help":
 # Next dev server of the site
 [group('bun')]
 dev-site:
-    bun --filter @aphrody/shenron-site dev
+    bun --filter @shenron/site dev
 
 # Remote dev on the build VPS: up | gates [--rust] | dev | stop | sync | doctor | clean-wsl | backup
 [group('bun')]
@@ -124,7 +124,7 @@ env *args="pull":
 # Discord bot in watch mode
 [group('bun')]
 dev-bot:
-    bun --filter @aphrody/shenron-bot dev
+    bun --filter @shenron/bot dev
 
 # shenron-server binary (--target linux-x64|windows-x64, --flavor desktop|production, --skip-site)
 [group('bun')]
@@ -139,12 +139,12 @@ build-bot *args:
 # Regenerate the discordx barrel apps/bot/src/_entries.ts
 [group('bun')]
 entries:
-    bun --filter @aphrody/shenron-bot gen:entries
+    bun --filter @shenron/bot gen:entries
 
 # Regenerate packages/koharu/src/protocol.ts from koharu-app (Specta)
 [group('rust')]
 protocol:
-    bun --filter @aphrody/shenron-koharu protocol
+    bun --filter @shenron/koharu protocol
 
 # cargo check of every crate and target (`cargo ck`)
 [group('rust')]
@@ -190,7 +190,7 @@ wasm:
 # Build the koharu-canvas WASM into packages/koharu/src/wasm
 [group('rust')]
 wasm-build:
-    bun --filter @aphrody/shenron-koharu build:wasm
+    bun --filter @shenron/koharu build:wasm
 
 # Rustdoc of the workspace crates (`cargo docs`)
 [group('rust')]

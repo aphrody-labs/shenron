@@ -5,12 +5,12 @@ Bot Discord de Shenron (discordx sur Bun), API du bot, base `bot.*` (Drizzle), s
 Commands:
 
 ```sh
-bun run --filter @aphrody/shenron-bot dev
-bun run --filter @aphrody/shenron-bot start
-bun run --filter @aphrody/shenron-bot build
-bun run --filter @aphrody/shenron-bot test
-bun run --filter @aphrody/shenron-bot lint
-bun run --filter @aphrody/shenron-bot typecheck
+bun run --filter @shenron/bot dev
+bun run --filter @shenron/bot start
+bun run --filter @shenron/bot build
+bun run --filter @shenron/bot test
+bun run --filter @shenron/bot lint
+bun run --filter @shenron/bot typecheck
 ```
 
 Rules:

@@ -14,7 +14,7 @@ import {
   NOTE_PROVENANCE,
   estTypeDeJeu,
   libelleType,
-} from "@aphrody/shenron-config/techniques-types";
+} from "@shenron/config/techniques-types";
 import type { DefinedTerm, WithContext } from "schema-dts";
 import { SITE_URL } from "@/lib/config";
 import { ogMeta } from "@/lib/og";

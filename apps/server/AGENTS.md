@@ -5,12 +5,12 @@
 Commands:
 
 ```sh
-bun run --filter @aphrody/shenron-server dev
-bun run --filter @aphrody/shenron-server start
-bun run --filter @aphrody/shenron-server build
-bun run --filter @aphrody/shenron-server test
-bun run --filter @aphrody/shenron-server lint
-bun run --filter @aphrody/shenron-server typecheck
+bun run --filter @shenron/server dev
+bun run --filter @shenron/server start
+bun run --filter @shenron/server build
+bun run --filter @shenron/server test
+bun run --filter @shenron/server lint
+bun run --filter @shenron/server typecheck
 ```
 
 Rules:

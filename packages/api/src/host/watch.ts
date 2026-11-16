@@ -1,6 +1,6 @@
-import { envString, type EnvSource } from "@aphrody/shenron-config/env";
-import { createBunDb } from "@aphrody/shenron-db/bun-sql";
-import { createWatchProgressRepository } from "@aphrody/shenron-db/repos/watch-progress";
+import { envString, type EnvSource } from "@shenron/config/env";
+import { createBunDb } from "@shenron/db/bun-sql";
+import { createWatchProgressRepository } from "@shenron/db/repos/watch-progress";
 import type { WatchPort } from "../server";
 
 export function createHostWatch(

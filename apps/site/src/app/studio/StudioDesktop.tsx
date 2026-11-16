@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 "use client";
 import { ThemeProvider } from "next-themes";
-import { Providers, type AtlasPreviewFactory } from "@aphrody/shenron-ui/koharu/providers";
-import { openSpriteAtlas } from "@aphrody/shenron-engine/sprite-atlas";
-import { KoharuApp } from "@aphrody/shenron-ui/koharu/components/app/KoharuApp";
+import { Providers, type AtlasPreviewFactory } from "@shenron/ui/koharu/providers";
+import { openSpriteAtlas } from "@shenron/engine/sprite-atlas";
+import { KoharuApp } from "@shenron/ui/koharu/components/app/KoharuApp";
 import { useLangue } from "@/lib/i18n/client";
 import { DesktopStudioShell } from "./DesktopStudioShell";
 import { StudioCatalogueImport } from "@/components/studio/StudioCatalogueImport";

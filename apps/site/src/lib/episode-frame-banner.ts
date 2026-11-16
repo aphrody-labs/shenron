@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import type { EpisodeFrame } from "@aphrody/shenron-db/bot-schema";
+import type { EpisodeFrame } from "@shenron/db/bot-schema";
 
 export type BannerFrameScope = { series?: string; episodeStart?: number; episodeEnd?: number };
 type BannerEpisode = {

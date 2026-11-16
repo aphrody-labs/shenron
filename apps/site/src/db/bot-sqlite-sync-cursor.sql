@@ -3,7 +3,7 @@
 --
 -- Le bot recopie périodiquement ses journaux en ajout seul (`action_logs`,
 -- `rag_eval_history`) vers le schéma `bot` (`apps/bot/src/services/ReplicaSyncService.ts`,
--- moteur `@aphrody/shenron-db/replica`). Pour chaque (source, table), ce curseur
+-- moteur `@shenron/db/replica`). Pour chaque (source, table), ce curseur
 -- retient le plus grand identifiant SQLite dont la ligne, et toutes les
 -- précédentes, est déjà dans PostgreSQL : une passe ne relit que ce qui suit.
 -- Ce n'est qu'un signet, pas la preuve : chaque ligne est vérifiée contre son

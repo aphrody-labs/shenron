@@ -56,12 +56,12 @@ import {
 } from "./ui/dialogs";
 import { RecoveryBanner, StatusBar } from "./ui/status";
 import { SourceView } from "./ui/source";
-import { cn } from "@aphrody/shenron-ui/lib/utils";
+import { cn } from "@shenron/ui/lib/utils";
 
 // Affordances de saisie (scopées `.sh-editor`) + direction « presse » du journal
 // (scopée `.editorial`) : l'éditeur d'article doit montrer la mise en page finale.
-import "@aphrody/shenron-ui/editor.css";
-import "@aphrody/shenron-ui/editorial.css";
+import "@shenron/ui/editor.css";
+import "@shenron/ui/editorial.css";
 
 type EditorFormat = "doc" | "markdown";
 export type EditorMode = "rich" | "source" | "preview";

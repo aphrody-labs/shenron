@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { test, expect } from "bun:test";
-import { createGame, step } from "@aphrody/shenron-engine/pixel-engine";
+import { createGame, step } from "@shenron/engine/pixel-engine";
 
 test("energy, transformation, cooldown and expiry", () => {
   const g = createGame();

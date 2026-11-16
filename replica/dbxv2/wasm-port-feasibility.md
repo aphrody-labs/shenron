@@ -94,7 +94,7 @@ propriétaire — pas dans `crates/shenron-re/src/formats` de ce dépôt.
 
 - `/games/xenoverse-2` demande à l’utilisateur de sélectionner des fichiers locaux puis analyse
   seulement `BAC`, `BDM`, `CUS`, `MSG` et `PUP` avec le module `shenron_re` compilé en WASM.
-- Le moteur `@aphrody/shenron-engine` possède un build `wasm32-unknown-unknown` et des surfaces
+- Le moteur `@shenron/engine` possède un build `wasm32-unknown-unknown` et des surfaces
   WebGPU/canvas génériques. Aucun raccord source ne montre qu’il exécute le moteur commercial.
 - Le serveur CPK peut servir les données DBXV2. Le propriétaire demande leur publication ; la
   route publique et sa livraison restent à réaliser via Infra.

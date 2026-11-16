@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@aphrody/shenron-activity/quiz` — rules of the Quiz Budokai: question banks, selection, scoring,
+ * `@shenron/activity/quiz` — rules of the Quiz Budokai: question banks, selection, scoring,
  * round state machine, bounded rewards and signed settlement receipts. Runtime class `pure`.
  *
- * The embedded lexicon bank lives in `@aphrody/shenron-activity/quiz/lexicon` so that importing the
+ * The embedded lexicon bank lives in `@shenron/activity/quiz/lexicon` so that importing the
  * rules does not pull the lexicon data.
  */
 export type { PresentedQuestion, QuizBank, QuizChoice, QuizQuestion } from "./types";

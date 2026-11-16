@@ -10,7 +10,7 @@ import {
   DEFAULT_PUBLIC_ORIGINS,
   canonicalDbzAssetUrl,
   canonicalLegacyCdnAssetUrl,
-} from "@aphrody/shenron-config/public-urls";
+} from "@shenron/config/public-urls";
 import { API_URL, ASSET_BASE, SITE_URL } from "@/lib/config";
 
 const CDN_ORIGIN = DEFAULT_PUBLIC_ORIGINS.cdn;

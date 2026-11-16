@@ -1,6 +1,6 @@
 "use client";
 
-import { Metric, MetricGrid, StatusBadge } from "@aphrody/shenron-ui/admin";
+import { Metric, MetricGrid, StatusBadge } from "@shenron/ui/admin";
 import { useQuery } from "@tanstack/react-query";
 import { Globe } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -15,7 +15,7 @@ import {
 } from "@/components/admin/bot/BotUi";
 import { GuildMirrorPanel } from "@/components/admin/bot/GuildMirrorPanel";
 import { useBotFormat } from "@/components/admin/bot/useBotFormat";
-import { Tabs, TabsList, TabsPanel, TabsTab } from "@aphrody/shenron-ui/tabs";
+import { Tabs, TabsList, TabsPanel, TabsTab } from "@shenron/ui/tabs";
 import { api } from "@/lib/admin-api";
 
 interface Guild {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * The contract in `@aphrody/shenron-api/contract` documents the settlement request; the validator
- * of record is `@aphrody/shenron-activity/quiz`. This keeps the two in step (the contract package
+ * The contract in `@shenron/api/contract` documents the settlement request; the validator
+ * of record is `@shenron/activity/quiz`. This keeps the two in step (the contract package
  * cannot depend on the private activity package), and checks the bot's route declarations.
  */
 import "./setup"; // must be first
@@ -11,14 +11,14 @@ import {
   signReceipt,
   SignedReceiptSchema,
   type RewardLine,
-} from "@aphrody/shenron-activity/quiz";
-import { REWARD_REASONS } from "@aphrody/shenron-activity/protocol";
+} from "@shenron/activity/quiz";
+import { REWARD_REASONS } from "@shenron/activity/protocol";
 import {
   ACTIVITY_SETTLE_FAILURES,
   ActivityRewardReason,
   ActivitySettleBody,
   endpoints,
-} from "@aphrody/shenron-api/contract";
+} from "@shenron/api/contract";
 
 const lines: RewardLine[] = [
   {

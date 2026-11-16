@@ -8,7 +8,7 @@ import "server-only";
 import {
   createAccountDataRepository,
   type AccountIdentity,
-} from "@aphrody/shenron-db/repos/accounts";
+} from "@shenron/db/repos/accounts";
 import { and, count, desc, eq, or } from "drizzle-orm";
 import {
   baUser,
@@ -27,7 +27,7 @@ import {
 } from "@/db/schema";
 import { db } from "@/lib/db";
 
-export type { AccountIdentity } from "@aphrody/shenron-db/repos/accounts";
+export type { AccountIdentity } from "@shenron/db/repos/accounts";
 
 export async function readAccountSummary(appUserId: string) {
   const [

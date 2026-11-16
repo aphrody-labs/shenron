@@ -3,7 +3,7 @@ import { expect, test } from "bun:test";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { chromium, type BunBrowser, type BunBrowserPage } from "../../bun-browser";
-import { SectionNavigation } from "@aphrody/shenron-ui/public/SectionNavigation";
+import { SectionNavigation } from "@shenron/ui/public/SectionNavigation";
 
 test.skipIf(process.env.SHENRON_WEB_LIVE !== "1")(
   "shared section navigation scrolls before hydration in native desktop and mobile viewports",

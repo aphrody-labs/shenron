@@ -4,7 +4,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { NextIntlClientProvider } from "next-intl";
 import fr from "../messages/fr.json";
-import { DEFAULT_HOME_CONFIG, SECTION_SCENE } from "@aphrody/shenron-config/home";
+import { DEFAULT_HOME_CONFIG, SECTION_SCENE } from "@shenron/config/home";
 import { HomeHero } from "../src/components/home/HomeHero";
 import { SectionScene } from "../src/components/home/SectionScene";
 import { HomeScreenDeck } from "../src/components/home/HomeScreenDeck";

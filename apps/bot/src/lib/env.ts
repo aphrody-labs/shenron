@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { botApiEnvironment } from "./bot-api-env";
-import { resolveDiscordAi } from "@aphrody/shenron-config/discord-ai";
+import { resolveDiscordAi } from "@shenron/config/discord-ai";
 import {
   staffPolicyFromEnv,
   type StaffEnvSource,
   type StaffPolicy,
-} from "@aphrody/shenron-auth/staff";
+} from "@shenron/auth/staff";
 
 const schema = z.object({
   // ────────────────────────────────────────────────────────

@@ -4,7 +4,7 @@ import {
   loadLiveRagEnv,
   requireLiveRag,
   type LiveRag,
-} from "@aphrody/shenron-pipeline/testing/live-rag";
+} from "@shenron/pipeline/testing/live-rag";
 
 loadLiveRagEnv();
 const { buildRagContext, hitTruthWeight, hybridSearch } = await import("../src/lib/rag");

@@ -4,7 +4,7 @@ import {
   maxBrushDiameter,
   receiveDownload,
   useKoharuStore,
-} from "@aphrody/shenron-ui/koharu/lib/store";
+} from "@shenron/ui/koharu/lib/store";
 
 describe("editor state", () => {
   it("preserves the upstream brush range on large manga and databook pages", () => {

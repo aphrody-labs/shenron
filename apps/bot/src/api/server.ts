@@ -1,4 +1,4 @@
-import { PLAYBACK_CAPABILITIES_PATH } from "@aphrody/shenron-api/contract";
+import { PLAYBACK_CAPABILITIES_PATH } from "@shenron/api/contract";
 import { botOperationalLogs } from "../lib/operational-logs";
 import { botNoiseMeter } from "~/ui/noise-meter";
 import { readHlsSegment, registerHlsSegment } from "./hls-security";
@@ -16,7 +16,7 @@ import {
   discordUserAvatar as userAvatar,
   resolveApiUrl,
   resolveSiteUrl,
-} from "@aphrody/shenron-config/public-urls";
+} from "@shenron/config/public-urls";
 import { adminPipeline } from "./admin-pipeline";
 import { createActivityRoutes } from "./activity";
 import { singleton, inject, container } from "tsyringe";
@@ -146,7 +146,7 @@ import { AdminReportGoalService } from "~/services/AdminReportGoalService";
 import { TrainingService } from "~/services/TrainingService";
 import { buildCommandCatalog, execCommand } from "~/api/command-exec";
 import { DatabaseService } from "~/db/index";
-import { RACE_IDS, isRaceId } from "@aphrody/shenron-config/races";
+import { RACE_IDS, isRaceId } from "@shenron/config/races";
 import { findLadderConflict, reloadRaceLevelRoles } from "~/lib/race-levels";
 import { buildXpBuckets } from "~/lib/xp";
 import { MessageTemplateService } from "~/services/MessageTemplateService";
@@ -157,8 +157,8 @@ import {
   CANON_PRICES,
   CANON_INFLATION_FACTOR,
   ZENI_YEN_PARITY,
-} from "@aphrody/shenron-config/economy-canon";
-import { indexedPrice } from "@aphrody/shenron-config/inflation-rules";
+} from "@shenron/config/economy-canon";
+import { indexedPrice } from "@shenron/config/inflation-rules";
 import { CardService } from "~/services/CardService";
 import { CommandPermissionsService } from "~/services/CommandPermissionsService";
 import { GaugeService } from "~/services/GaugeService";
@@ -171,7 +171,7 @@ import { LevelService, rankOrdering, rankedMembersOnly } from "~/services/LevelS
 import { getLevelThresholds, levelForXP, xpProgress, type LevelThreshold } from "~/lib/xp";
 import { hybridSearch, logRagHealth } from "~/lib/rag";
 import { contextPublicRag, searchPublicRag } from "./public-rag";
-import { AphrodyComputeClient } from "@aphrody/shenron-pipeline/aphrody";
+import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";
 import { generateLlmGrounded, isFallbackAnswer, rankRagHits } from "~/lib/llm";
 import { graphqlHandler } from "~/api/graphql";
 import {
@@ -182,7 +182,7 @@ import {
   searchVisibleWiki,
 } from "~/api/wiki-replica";
 import { openapiSpec, scalarHtml } from "~/api/openapi";
-import { ADMIN_ROUTES, dashboardRedirect } from "@aphrody/shenron-config/admin";
+import { ADMIN_ROUTES, dashboardRedirect } from "@shenron/config/admin";
 import { handleBetterAuthRequest, getBetterAuthSession } from "~/lib/better-auth";
 import { EventBusService } from "~/services/EventBusService";
 import { PgService } from "~/db/pg";
@@ -193,7 +193,7 @@ import {
   crunchyrollSeriesSummary,
   resolveCrunchyroll,
   type ShenronEpisodeRow,
-} from "@aphrody/shenron-media/crunchyroll-mapping";
+} from "@shenron/media/crunchyroll-mapping";
 import {
   botConversationStore,
   createBotShenronApi,
@@ -1018,7 +1018,7 @@ export class ApiServer {
       return;
     }
 
-    // B14 / S9 : @aphrody/shenron-api en repli, même budget public que les routes historiques.
+    // B14 / S9 : @shenron/api en repli, même budget public que les routes historiques.
     const remoteAddresses = createRemoteAddressRegistry();
     const shenronApi = createPublicFallback({
       api: createBotShenronApi({
@@ -6199,7 +6199,7 @@ export class ApiServer {
             },
           });
         }
-        // B14 : routes additives @aphrody/shenron-api (wiki PG, OpenAPI), après tout l'historique.
+        // B14 : routes additives @shenron/api (wiki PG, OpenAPI), après tout l'historique.
         if (shenronApi.handles(url.pathname)) {
           remoteAddresses.remember(req, server);
           return shenronApi.fetch(req);

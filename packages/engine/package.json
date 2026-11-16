@@ -1,5 +1,5 @@
 {
-  "name": "@aphrody/shenron-engine",
+  "name": "@shenron/engine",
   "version": "1.4.7",
   "private": false,
   "description": "Unified full-stack Shenron game engine, GPU backend, WebGPU/WASM pipeline, vector canvas, and deterministic combat core.",
@@ -38,7 +38,7 @@
     "build:wasm": "bun scripts/build-wasm.ts"
   },
   "dependencies": {
-    "@aphrody/compression": "workspace:*"
+    "@shenron/compression": "workspace:*"
   },
   "devDependencies": {
     "@types/bun": "catalog:"

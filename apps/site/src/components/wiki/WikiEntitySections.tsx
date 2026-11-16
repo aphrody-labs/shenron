@@ -16,7 +16,7 @@ import { WikiArticle } from "@/components/wiki/WikiArticle";
 import { WikiSectionLinks } from "@/components/wiki/WikiSectionLinks";
 import { WikiSectionsReader, type ReaderPanel } from "@/components/wiki/WikiSectionsReader";
 import Link from "next/link";
-import { Crayon } from "@aphrody/shenron-ui/icones";
+import { Crayon } from "@shenron/ui/icones";
 
 export async function WikiEntitySections({
   entityType,

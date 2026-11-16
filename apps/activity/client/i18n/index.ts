@@ -2,7 +2,7 @@
 /**
  * Labels of the Activity client. Two dictionaries, both complete in fr, en and ja:
  *  - this folder: the screens of the client (lobby, round, results, boot errors);
- *  - `@aphrody/shenron-activity/i18n`: what the rules speak about (categories, error codes, reward
+ *  - `@shenron/activity/i18n`: what the rules speak about (categories, error codes, reward
  *    reasons, kick and close reasons), shared with the bot so both surfaces say the same thing.
  * No visible string is written in a component.
  */
@@ -11,7 +11,7 @@ import {
   interpolate,
   type DictionaryKey as SharedKey,
   type TemplateParams,
-} from "@aphrody/shenron-activity/i18n";
+} from "@shenron/activity/i18n";
 import type {
   CloseReason,
   ErrorCode,
@@ -19,7 +19,7 @@ import type {
   Locale,
   QuizCategory,
   RewardReason,
-} from "@aphrody/shenron-activity/protocol";
+} from "@shenron/activity/protocol";
 import en from "./en.json";
 import fr from "./fr.json";
 import ja from "./ja.json";

@@ -1,5 +1,5 @@
 import { readPlaybackCapabilities } from "@/lib/playback-capabilities";
-import { supportsPlaybackVariant } from "@aphrody/shenron-api/contract";
+import { supportsPlaybackVariant } from "@shenron/api/contract";
 /* oxlint-disable react/iframe-missing-sandbox -- legacy UI kept as-is (behavior-preserving lint pass) */
 import { WatchLayout, WatchStage, WatchColumns } from "@/components/episodes/WatchLayout";
 import { hasEditorialDatabase } from "@/lib/prerender";

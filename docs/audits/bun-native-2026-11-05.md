@@ -31,7 +31,7 @@ Direct dependency counts (dependencies + devDependencies):
 ## Removed (zero imports in src, scripts, tests, configs)
 
 - site: `@aphrody/http`, `@better-auth/passkey` (still used by packages/auth and packages/api), `pixi.js`, `kysely`.
-- crunchyroll: `@aphrody/shenron-config`.
+- crunchyroll: `@shenron/config`.
 
 ## Replaced
 

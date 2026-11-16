@@ -13,7 +13,7 @@ import { useT } from "@/components/T";
 import { useMangaUIText } from "@/lib/manga-ui-text";
 import { VignetteTome } from "@/components/manga/VignetteTome";
 import { MangaPreviewBadge } from "@/components/manga/MangaPreviewNotice";
-import { Etoile } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
+import { Etoile } from "@shenron/ui/toriyama/MotifsCouverture";
 import {
   canonicalMangaCollection,
   mangaLibraryPage,

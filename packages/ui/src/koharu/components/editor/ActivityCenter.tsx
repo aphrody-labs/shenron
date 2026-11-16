@@ -11,7 +11,7 @@ import {
   commands,
   type Download as DownloadState,
   type Job,
-} from "@aphrody/shenron-koharu/protocol";
+} from "@shenron/koharu/protocol";
 import { Button } from "../../../components/button";
 
 export function ActivityCenter() {

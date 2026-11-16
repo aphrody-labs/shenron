@@ -1,12 +1,12 @@
 "use client";
 
-import { commands } from "@aphrody/shenron-koharu/protocol";
+import { commands } from "@shenron/koharu/protocol";
 import type {
   PipelineConfig,
   Preferences,
   ProviderPreferences,
   TypesettingConfig,
-} from "@aphrody/shenron-koharu/protocol";
+} from "@shenron/koharu/protocol";
 
 import { receiveError, receivePreferences, receiveTranslationModels } from "./store";
 

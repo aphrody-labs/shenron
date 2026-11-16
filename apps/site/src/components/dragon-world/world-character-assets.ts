@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { inspectXv2Animations, type Xv2AnimationInfo } from "@aphrody/shenron-engine/glb-scene";
+import { inspectXv2Animations, type Xv2AnimationInfo } from "@shenron/engine/glb-scene";
 import { characterCode, fetchCharacter } from "../../app/games/dragon-pixel/cpk-scene";
 
 /** Exact names observed in the original GOK.ean on 2026-10-26, not naming heuristics. */

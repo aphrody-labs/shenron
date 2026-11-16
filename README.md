@@ -41,7 +41,7 @@ Shenron is the core platform powering **dragonballfr.com**, integrated into the 
 ```text
 products/shenron/
 ├── apps/         # site (Next.js 16.5), bot (discordx), server (Bun single binary), activity
-├── packages/     # Bun workspace packages (@aphrody/shenron-*, bun-blender, bun-gamestream, bun-video-project)
+├── packages/     # Bun workspace packages (@shenron/*, bun-blender, bun-gamestream, bun-video-project)
 ├── crates/       # Rust crates workspace (shenron-*, koharu-*, dragon-pixel, bun-engine-core)
 ├── deploy/       # Docker BuildKit, compose, Cloudflare Worker CDN, SQL migrations
 ├── scripts/      # Automated build, test, and zero-downtime Zstd deployment lanes

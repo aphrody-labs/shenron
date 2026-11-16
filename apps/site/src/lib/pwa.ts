@@ -1,10 +1,10 @@
 import fr from "../../messages/pwa/fr.json";
 import en from "../../messages/pwa/en.json";
 import ja from "../../messages/pwa/ja.json";
-import episodePalette from "@aphrody/shenron-ui/episode-theme-palette";
+import episodePalette from "@shenron/ui/episode-theme-palette";
 import { resolveEpisodeTheme, type EpisodeTheme } from "./episode-theme";
 
-import { DEFAULT_SITE_THEME } from "@aphrody/shenron-config/site-theme";
+import { DEFAULT_SITE_THEME } from "@shenron/config/site-theme";
 const palette = {
   ...episodePalette,
   neutral: {

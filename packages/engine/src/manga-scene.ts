@@ -7,7 +7,7 @@
  * on its gutters before any scaling (a scaled gutter blurs into the art), then Rust box-filters
  * the texture to `textureSide` pixels (a 2560 px scan sampled by a 600 px canvas only aliases
  * its screentones) and lifts the panels in depth. `createMangaSceneRenderer` matches the
- * `MangaSceneRendererFactory` of `@aphrody/shenron-ui/reader` structurally. It rejects without
+ * `MangaSceneRendererFactory` of `@shenron/ui/reader` structurally. It rejects without
  * WebGPU; the caller keeps the flat page.
  */
 import { assertWebGpu, loadEngine, type MangaSceneHandle } from "./engine-wasm";

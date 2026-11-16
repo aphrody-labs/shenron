@@ -4,7 +4,7 @@ import { NextIntlClientProvider } from "next-intl";
 import fr from "../messages/fr.json";
 import en from "../messages/en.json";
 import ja from "../messages/ja.json";
-import { DEFAULT_HOME_CONFIG } from "@aphrody/shenron-config/home";
+import { DEFAULT_HOME_CONFIG } from "@shenron/config/home";
 import { HomeHero } from "../src/components/home/HomeHero";
 import {
   BEERUS_SLIDE_LIMIT,

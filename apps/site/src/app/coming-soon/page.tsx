@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Cadenas, FlecheDroite } from "@aphrody/shenron-ui/icones";
-import { effectiveOpenKeys, LAUNCH_CATEGORIES } from "@aphrody/shenron-config/wiki-launch";
+import { Cadenas, FlecheDroite } from "@shenron/ui/icones";
+import { effectiveOpenKeys, LAUNCH_CATEGORIES } from "@shenron/config/wiki-launch";
 import { getOpenCategoryKeys } from "@/lib/wiki-launch-config";
 
 /** Kanji décoratif par catégorie (repli vide pour les nouvelles ouvertures). */

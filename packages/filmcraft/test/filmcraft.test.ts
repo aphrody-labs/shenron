@@ -11,7 +11,7 @@ import {
   FilmCraftMcpServer,
 } from "../src/index";
 
-describe("@aphrody/filmcraft timeline", () => {
+describe("@shenron/filmcraft timeline", () => {
   it("creates a standard Dragon Ball FilmCraft project", () => {
     const proj = createFilmProject({ title: "DBZ Episode 5 Remaster", fps: 24 });
     expect(proj.title).toBe("DBZ Episode 5 Remaster");
@@ -109,7 +109,7 @@ describe("@aphrody/filmcraft timeline", () => {
   });
 });
 
-describe("@aphrody/filmcraft engine & MCP tools", () => {
+describe("@shenron/filmcraft engine & MCP tools", () => {
   it("executes timeline commands via FilmCraftEngine", async () => {
     const engine = new FilmCraftEngine();
     const probe = await engine.probeMedia(

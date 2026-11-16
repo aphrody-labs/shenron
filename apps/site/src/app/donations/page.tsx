@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
-import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
+import { PageShell } from "@shenron/ui/layout/PageShell";
 import { T } from "@/components/T";
 import { DonationsClientView } from "@/components/stripe/DonationsClientView";
 import { getReferenceTranslations } from "@/lib/i18n/reference";

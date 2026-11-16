@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { officialCrunchyrollWatchURL } from "@aphrody/shenron-config/video-providers";
+import { officialCrunchyrollWatchURL } from "@shenron/config/video-providers";
 import { z } from "zod";
 
 const CrunchyrollObservation = z.object({

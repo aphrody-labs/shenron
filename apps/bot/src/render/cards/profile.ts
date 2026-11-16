@@ -21,7 +21,7 @@ import {
 } from "../theme";
 import { drawText, fitSize, formatCompact, formatInt, graphemes, num, shout, ui } from "../text";
 import type { RenderOptions, RenderedCard } from "../types";
-import type { RaceId } from "@aphrody/shenron-config/races";
+import type { RaceId } from "@shenron/config/races";
 import {
   drawWordmark,
   finishShell,

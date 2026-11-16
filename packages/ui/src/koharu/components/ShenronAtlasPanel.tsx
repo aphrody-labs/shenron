@@ -4,7 +4,7 @@
 import { ChevronLeft, ChevronRight, Pause, Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { commands, type Page } from "@aphrody/shenron-koharu/protocol";
+import { commands, type Page } from "@shenron/koharu/protocol";
 import { Button } from "../../components/button";
 import { usePage } from "../lib/queries";
 import { useAtlasPreview, type AtlasPreview, type AtlasPreviewFactory } from "../lib/atlas-preview";

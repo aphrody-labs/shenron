@@ -3,7 +3,7 @@
 
 /** One compact preview and mixed thumbnail rail in editorial order. */
 import { Film, ImageIcon, Pause, Play } from "lucide-react";
-import { assetMirrorUrl, DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
+import { assetMirrorUrl, DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useReglages } from "@/lib/use-capacites";
 import { assetUrl } from "@/lib/assets";

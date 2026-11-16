@@ -14,7 +14,7 @@ declare module "*.woff2" {
   export default url;
 }
 
-/** Design tokens of `@aphrody/shenron-ui`, generated at build time as CSS custom properties. */
+/** Design tokens of `@shenron/ui`, generated at build time as CSS custom properties. */
 declare module "virtual:shenron-tokens.css";
 
 declare module "*.css";

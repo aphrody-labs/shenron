@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@aphrody/shenron-lexicon/data` — the canonical lexicon embedded in the bundle
+ * `@shenron/lexicon/data` — the canonical lexicon embedded in the bundle
  * (`terms.generated.ts`, generated from `data/lexicon/terms.json` by
  * `bun scripts/data/lexicon.ts build`). Runtime class `pure`.
  */

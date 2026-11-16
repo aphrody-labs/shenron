@@ -1,8 +1,8 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "bun:test";
 
-import { ShenronExportPanel } from "@aphrody/shenron-ui/koharu/components/ShenronExportPanel";
-import { commands, type PageSummary } from "@aphrody/shenron-koharu/protocol";
+import { ShenronExportPanel } from "@shenron/ui/koharu/components/ShenronExportPanel";
+import { commands, type PageSummary } from "@shenron/koharu/protocol";
 
 const projectPages: PageSummary[] = [
   {

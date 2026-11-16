@@ -1,2 +1,2 @@
-import { stripNonCode } from "@aphrody/shenron-config/guards";
+import { stripNonCode } from "@shenron/config/guards";
 export { stripNonCode };

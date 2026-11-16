@@ -6,7 +6,7 @@ import { dbUniverse } from "@/lib/db-universe";
 import { analyzeCanon, type CanonAnalysisResult } from "@/lib/canon-engine";
 import { getCanonConfig } from "@/lib/canon-config";
 import { judgeCanonPlates } from "./canon-judgment";
-import type { CanonContinuity, CanonJudgment } from "@aphrody/shenron-pipeline/ai/canon-judgment";
+import type { CanonContinuity, CanonJudgment } from "@shenron/pipeline/ai/canon-judgment";
 import {
   getShenronCharacter,
   getShenronPlanet,

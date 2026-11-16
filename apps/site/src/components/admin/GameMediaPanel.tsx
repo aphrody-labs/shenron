@@ -16,7 +16,7 @@ import {
   Film,
   Illustration,
   Plus,
-} from "@aphrody/shenron-ui/icones";
+} from "@shenron/ui/icones";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ImageField } from "@/components/admin/ImageField";
 import { apiAt } from "@/lib/admin-api";

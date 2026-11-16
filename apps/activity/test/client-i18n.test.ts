@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** The client dictionaries: parity fr/en/ja, every key used exists, no visible text in components. */
 import { describe, expect, test } from "bun:test";
-import { placeholders } from "@aphrody/shenron-activity/i18n";
+import { placeholders } from "@shenron/activity/i18n";
 import {
   ERROR_CODES,
   CLOSE_REASONS,
@@ -9,7 +9,7 @@ import {
   QUIZ_CATEGORIES,
   REWARD_REASONS,
   LOCALES,
-} from "@aphrody/shenron-activity/protocol";
+} from "@shenron/activity/protocol";
 import { Glob } from "bun";
 import { join } from "node:path";
 import {

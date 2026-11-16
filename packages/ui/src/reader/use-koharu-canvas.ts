@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { preloadCanvasModule } from "@aphrody/shenron-koharu/canvas";
+import { preloadCanvasModule } from "@shenron/koharu/canvas";
 
 export type KoharuCanvasWarmup = "idle" | "ready" | "unavailable";
 

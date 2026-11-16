@@ -1,11 +1,11 @@
 "use client";
 /* oxlint-disable jsx-a11y/prefer-tag-over-role -- reviewed: legacy patterns, behavior preserved */
 
-import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
+import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
 import Link from "next/link";
 import { useT } from "@/components/T";
-import { DragonBallLoader } from "@aphrody/shenron-ui/toriyama";
-import { DragonRadar } from "@aphrody/shenron-ui/icones";
+import { DragonBallLoader } from "@shenron/ui/toriyama";
+import { DragonRadar } from "@shenron/ui/icones";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
 
 /**

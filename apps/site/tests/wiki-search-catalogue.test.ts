@@ -1,7 +1,7 @@
 import { expect, test } from "bun:test";
 import { buildWikiSearchSections, isPublicWikiSearchHref } from "../src/lib/wiki-search-catalogue";
 import type { SearchResults } from "../src/lib/db-universe";
-import { DEFAULT_LAUNCH_CONFIG } from "@aphrody/shenron-config/wiki-launch-config";
+import { DEFAULT_LAUNCH_CONFIG } from "@shenron/config/wiki-launch-config";
 
 function empty(): SearchResults {
   return {

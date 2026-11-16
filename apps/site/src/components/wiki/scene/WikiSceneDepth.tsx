@@ -1,7 +1,7 @@
 "use client";
 // SPDX-License-Identifier: Apache-2.0
 import { useEffect, useRef } from "react";
-import type { createPortalDiorama } from "@aphrody/shenron-ui/scene3d";
+import type { createPortalDiorama } from "@shenron/ui/scene3d";
 import { SCENE_DEPTH_RECT, scenePoint, type WikiSceneCamera } from "./scene-catalogue";
 import { readScenePalette } from "./scene-palette";
 import styles from "./wiki-scene.module.css";
@@ -56,7 +56,7 @@ export function WikiSceneDepth({
     const cleanupError = (error: unknown) => console.error("Wiki depth cleanup failed", error);
     void (async () => {
       try {
-        const { createPortalDiorama: create } = await import("@aphrody/shenron-ui/scene3d");
+        const { createPortalDiorama: create } = await import("@shenron/ui/scene3d");
         if (abort.signal.aborted) return;
         const palette = readScenePalette(element);
         const current = await create({

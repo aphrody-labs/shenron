@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { useEffect, useRef, useState } from "react";
-import type { Locale } from "@aphrody/shenron-activity/protocol";
+import type { Locale } from "@shenron/activity/protocol";
 import { formatNumber, translator } from "../i18n";
 import {
   MEDIA_CATALOG,

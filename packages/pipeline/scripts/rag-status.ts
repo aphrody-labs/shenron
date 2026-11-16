@@ -20,7 +20,7 @@ import { Database } from "bun:sqlite";
 import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import * as sqliteVec from "sqlite-vec";
-import { AphrodyComputeClient, ShenronEmbeddingsClient } from "@aphrody/shenron-pipeline/aphrody";
+import { AphrodyComputeClient, ShenronEmbeddingsClient } from "@shenron/pipeline/aphrody";
 import { requireAphrodyApiUrl } from "./lib/script-env";
 
 const ROOT = Bun.fileURLToPath(new URL("../../../", import.meta.url));

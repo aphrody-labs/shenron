@@ -18,7 +18,7 @@ import {
   compteRemplacements,
   contientAlphabetEtranger,
   contientBoucle,
-} from "@aphrody/shenron-config/databooks-defauts";
+} from "@shenron/config/databooks-defauts";
 import { proportionJaponais } from "./ja/normalisation";
 
 /**

@@ -11,7 +11,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
-import { MaterialSymbol } from "@aphrody/shenron-ui/icones";
+import { MaterialSymbol } from "@shenron/ui/icones";
 import { useT } from "@/components/T";
 import { HomeMotion } from "./HomeMotion";
 import "./home-screen-deck.css";

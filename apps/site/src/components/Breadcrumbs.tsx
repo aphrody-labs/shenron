@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 import type { BreadcrumbList, WithContext } from "schema-dts";
-import { ShellTrail } from "@aphrody/shenron-ui/navigation/AppShell";
+import { ShellTrail } from "@shenron/ui/navigation/AppShell";
 import { JsonLd } from "@/components/JsonLd";
 import { SITE_URL } from "@/lib/config";
-import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
+import { isPathPublic } from "@shenron/config/wiki-launch";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 
 /**

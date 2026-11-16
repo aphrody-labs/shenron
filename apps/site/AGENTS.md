@@ -5,12 +5,12 @@ Site dragonballfr.com actuel (Next.js 16, pages fr/en/ja, wiki, lecteurs). Le si
 Commands:
 
 ```sh
-bun run --filter @aphrody/shenron-site dev
-bun run --filter @aphrody/shenron-site start
-bun run --filter @aphrody/shenron-site build
-bun run --filter @aphrody/shenron-site test
-bun run --filter @aphrody/shenron-site lint
-bun run --filter @aphrody/shenron-site typecheck
+bun run --filter @shenron/site dev
+bun run --filter @shenron/site start
+bun run --filter @shenron/site build
+bun run --filter @shenron/site test
+bun run --filter @shenron/site lint
+bun run --filter @shenron/site typecheck
 ```
 
 Rules:

@@ -3,7 +3,7 @@ import { getTimelineItems, getTimelineEvents } from "./chronology-config";
 import { normalizeAvailability } from "./video-languages";
 import { mangaReaderExtent, type MangaReaderExtent } from "./manga-reader-extent";
 import { episodeIdentityPredicate, episodeQueryPredicate } from "./episode-query";
-import type { VideoLanguage } from "@aphrody/shenron-media/episode-playback";
+import type { VideoLanguage } from "@shenron/media/episode-playback";
 /**
  * db-universe — accès au **wiki Dragon Ball** (schéma Neon `bot`, miroir du
  * SQLite du bot) via Drizzle, en LECTURE SEULE.
@@ -20,8 +20,8 @@ import "server-only";
 import { cache } from "react";
 import { and, asc, count, desc, eq, gt, ilike, inArray, isNotNull, lt, or, sql } from "drizzle-orm";
 import type { PgColumn, PgTable } from "drizzle-orm/pg-core";
-import { foldText } from "@aphrody/shenron-config/slug";
-import { escapeLike } from "@aphrody/shenron-db/repos/wiki";
+import { foldText } from "@shenron/config/slug";
+import { escapeLike } from "@shenron/db/repos/wiki";
 import { db } from "@/lib/db";
 import { API_URL } from "@/lib/config";
 import { verifyWikimediaImages, withVerifiedImages } from "@/lib/wikimedia-images";
@@ -74,9 +74,9 @@ import type {
   WikiSource,
 } from "@/db/bot-schema";
 import { orderPlayers } from "@/lib/players";
-import { CLE_VERIFIEE } from "@aphrody/shenron-config/databooks-defauts";
+import { CLE_VERIFIEE } from "@shenron/config/databooks-defauts";
 import type { SignauxRichesse } from "@/lib/character-richesse";
-import { formatCharacterSlug } from "@aphrody/shenron-config/wiki-slugs";
+import { formatCharacterSlug } from "@shenron/config/wiki-slugs";
 import { mangaCoverPath, publishedMangaPageCount, publishedMangaPages } from "@/lib/manga-assets";
 import {
   mangaVolumeBibliographicRecord,

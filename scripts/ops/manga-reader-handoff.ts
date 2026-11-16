@@ -5,8 +5,8 @@ import { parseArgs } from "node:util";
 import {
   nativeAssetReport,
   readVerifiedNativeAsset,
-} from "@aphrody/shenron-pipeline/dragon-ball/assets";
-import { validateSoshReaderManifest } from "@aphrody/shenron-pipeline/dragon-ball/sosh-reader-manifest";
+} from "@shenron/pipeline/dragon-ball/assets";
+import { validateSoshReaderManifest } from "@shenron/pipeline/dragon-ball/sosh-reader-manifest";
 import { qualifyBundle } from "./manga-publication-worker";
 
 export const handoffDigest = (bytes: string | Uint8Array) =>

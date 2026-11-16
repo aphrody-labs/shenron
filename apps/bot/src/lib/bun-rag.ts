@@ -5,12 +5,12 @@ import {
   createBunVectorReader,
   directBunQueryEmbedder,
   postgresBunRagSource,
-} from "@aphrody/shenron-pipeline/ai/vector-reader";
+} from "@shenron/pipeline/ai/vector-reader";
 import {
   exportVectorSidecar,
   postgresVectorSource,
   type VectorSource,
-} from "@aphrody/shenron-pipeline/ai/vector-sidecar";
+} from "@shenron/pipeline/ai/vector-sidecar";
 import { createVectorRefresh } from "./vector-refresh";
 import { buildWithVectorWorker } from "./vector-build-worker";
 import type { RagHit, SearchOptions } from "./rag";

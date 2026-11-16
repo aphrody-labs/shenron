@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useId, useRef, useState } from "react";
-import { Baguette, Chargement, Etincelle, LienExterne, Plus } from "@aphrody/shenron-ui/icones";
+import { Baguette, Chargement, Etincelle, LienExterne, Plus } from "@shenron/ui/icones";
 import { apiAt } from "@/lib/admin-api";
 import { sectionKeyFromLabel } from "@/lib/wiki-fields";
 import { crudBase } from "@/lib/wiki-tables";

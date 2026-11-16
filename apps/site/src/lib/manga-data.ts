@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import "server-only";
 import { cache } from "react";
-import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
 import { dbUniverse } from "./db-universe";
 import { createMangaCdnSource, mangaCdnWithFallback } from "./manga-cdn-source";
 import {

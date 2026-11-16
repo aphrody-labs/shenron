@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-import type { MangaReaderExtent } from "@aphrody/shenron-db/bot-schema";
-export type { MangaReaderExtent } from "@aphrody/shenron-db/bot-schema";
+import type { MangaReaderExtent } from "@shenron/db/bot-schema";
+export type { MangaReaderExtent } from "@shenron/db/bot-schema";
 
 export function isMangaReaderExtent(value: unknown): value is MangaReaderExtent {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;

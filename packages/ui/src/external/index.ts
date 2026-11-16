@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// `@aphrody/shenron-ui/external` : l'aide unique d'ouverture externe (fonction pure) et ses composants.
+// `@shenron/ui/external` : l'aide unique d'ouverture externe (fonction pure) et ses composants.
 export {
   EXTERNAL_PROTOCOLS,
   isExternalHref,

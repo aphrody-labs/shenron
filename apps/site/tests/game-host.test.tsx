@@ -2,7 +2,7 @@
 import { expect, mock, test } from "bun:test";
 import { NextRequest } from "next/server";
 import { renderToStaticMarkup } from "react-dom/server";
-import { DEFAULT_GAME_ORIGINS } from "@aphrody/shenron-config/game";
+import { DEFAULT_GAME_ORIGINS } from "@shenron/config/game";
 import { GameSurfaceLayout } from "../src/components/GameSurfaceLayout";
 import { gameHostRoute } from "../src/lib/game-host";
 

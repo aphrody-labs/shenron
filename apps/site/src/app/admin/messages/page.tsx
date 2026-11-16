@@ -3,7 +3,7 @@
 
 import { LoadingText } from "@/components/LoadingText";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Alimentation, Enregistrer, Oeil, Reinitialiser } from "@aphrody/shenron-ui/icones";
+import { Alimentation, Enregistrer, Oeil, Reinitialiser } from "@shenron/ui/icones";
 import { useEffect, useState } from "react";
 import { api } from "@/lib/admin-api";
 import { PlainField } from "@/components/editor/PlainField";

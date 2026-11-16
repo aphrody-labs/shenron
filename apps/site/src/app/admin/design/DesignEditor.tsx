@@ -5,8 +5,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import { DragonBallLoader } from "@aphrody/shenron-ui/toriyama";
-import { Enregistrer, Palette, Reinitialiser } from "@aphrody/shenron-ui/icones";
+import { DragonBallLoader } from "@shenron/ui/toriyama";
+import { Enregistrer, Palette, Reinitialiser } from "@shenron/ui/icones";
 import {
   DEFAULT_SITE_THEME,
   THEME_COLOR_VARS,

@@ -4,13 +4,13 @@
 // engine the editor runs on (Tauri IPC or the local bridge).
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { commands, type PageSummary } from "@aphrody/shenron-koharu/protocol";
+import { commands, type PageSummary } from "@shenron/koharu/protocol";
 import {
   mapNativeKoharuPageResult,
   toMangaReviewCandidateInput,
   type KoharuMangaPageSource,
   type MangaCandidateBinding,
-} from "@aphrody/shenron-pipeline/koharu";
+} from "@shenron/pipeline/koharu";
 import { parseKoharuCandidateReceipt } from "../lib/export-receipt";
 import { ShenronAtlasPanel } from "./ShenronAtlasPanel";
 

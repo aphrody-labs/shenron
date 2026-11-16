@@ -4,14 +4,14 @@ import { chmod, mkdir, lstat } from "node:fs/promises";
 import { join, resolve, isAbsolute } from "node:path";
 import { parseArgs } from "node:util";
 import postgres from "postgres";
-import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
 import {
   ingestNativeCrawl,
   createPostgresCrawlRegistry,
   projectNativeCrawl,
   crawlIngestPolicySchema,
   type CrawlRegistryPort,
-} from "@aphrody/shenron-pipeline/dragon-ball/crawl-ingest";
+} from "@shenron/pipeline/dragon-ball/crawl-ingest";
 
 export const digest = (body: string | Uint8Array) =>
   new Bun.CryptoHasher("sha256").update(body).digest("hex");

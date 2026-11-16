@@ -24,8 +24,8 @@ import {
   type HomeConfig,
   type HomeSectionConfig,
   type HomeSectionId,
-} from "@aphrody/shenron-config/home";
-import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
+} from "@shenron/config/home";
+import type { AccessSnapshot } from "@shenron/config/wiki-launch";
 import { publicShellJourneys } from "@/lib/shell-nav";
 import { HomeCanonArbitre } from "./HomeCanonArbitre";
 import { HOME_GAMES, HomeGames } from "./HomeGames";

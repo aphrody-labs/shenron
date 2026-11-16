@@ -1,7 +1,7 @@
 import { PageShell } from "@/components/kit";
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
-import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
+import { PageHeader } from "@shenron/ui/layout/PageHeader";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { WatchlistClient } from "./WatchlistClient";
 import { UserNav } from "@/components/user/UserNav";

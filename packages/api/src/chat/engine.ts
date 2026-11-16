@@ -2,7 +2,7 @@
 /**
  * The unified chat engine: one turn = OCR of the attachments, hybrid retrieval over the VFS
  * (corpus, agent home, opted-in conversations), the `dragonball.*` MCP tools, a grounded
- * prompt (persona doctrine of `@aphrody/shenron-pipeline/ai/prompts` + agent home tone), generation by
+ * prompt (persona doctrine of `@shenron/pipeline/ai/prompts` + agent home tone), generation by
  * the first available backend (Gemini web, local llama-server, extractive), numbered
  * citations, storage of both turns in the conversation store and the persistent memory of the
  * owner (relevant memories recalled beside the sources, salient facts of the message written
@@ -12,15 +12,15 @@ import type {
   ConversationStore,
   Message,
   StoredCitation,
-} from "@aphrody/shenron-db/conversations/types";
-import type { QueryEmbedder, RagHit as VfsHit, VfsRag } from "@aphrody/shenron-db/vfs";
+} from "@shenron/db/conversations/types";
+import type { QueryEmbedder, RagHit as VfsHit, VfsRag } from "@shenron/db/vfs";
 import {
   buildGroundingInstructions,
   INJECTION_GUARD,
   isChitchat,
   resolvePersona,
   withHomePersona,
-} from "@aphrody/shenron-pipeline/ai/prompts";
+} from "@shenron/pipeline/ai/prompts";
 import type {
   ChatEvent,
   ChatRequestParsed,

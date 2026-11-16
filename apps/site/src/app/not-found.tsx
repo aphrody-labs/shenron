@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { DragonBall } from "@aphrody/shenron-ui/toriyama";
-import { VieArt } from "@aphrody/shenron-ui/vie/VieArt";
+import { DragonBall } from "@shenron/ui/toriyama";
+import { VieArt } from "@shenron/ui/vie/VieArt";
 import { T } from "@/components/T";
 
 export default function NotFound() {

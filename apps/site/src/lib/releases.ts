@@ -6,7 +6,7 @@ import {
   DEFAULT_RELEASES_DIR,
   resolveDataPath,
   type DataPath,
-} from "@aphrody/shenron-config/paths";
+} from "@shenron/config/paths";
 import { serveSumsFile } from "@/lib/private-downloads";
 
 /**

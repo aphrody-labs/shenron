@@ -5,9 +5,9 @@ Hachage d'images, déduplication, choix de variantes et sélection d'illustratio
 Commands:
 
 ```sh
-bun run --filter @aphrody/shenron-images test
-bun run --filter @aphrody/shenron-images lint
-bun run --filter @aphrody/shenron-images typecheck
+bun run --filter @shenron/images test
+bun run --filter @shenron/images lint
+bun run --filter @shenron/images typecheck
 ```
 
 Rules:

@@ -16,7 +16,7 @@ import {
   setRaceTuning,
   voiceXpMultiplier,
   ZENKAI_MULT,
-} from "@aphrody/shenron-config/races";
+} from "@shenron/config/races";
 
 describe("races — surcharges admin", () => {
   test("zénis de race et régén réglables, retour aux défauts sans surcharge", () => {

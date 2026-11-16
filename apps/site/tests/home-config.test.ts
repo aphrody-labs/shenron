@@ -11,7 +11,7 @@
  * porte encore une clé `fx`. Elle doit être ignorée sans rien casser.
  */
 import { describe, expect, test } from "bun:test";
-import { DEFAULT_HOME_CONFIG, resolveHomeConfig } from "@aphrody/shenron-config/home";
+import { DEFAULT_HOME_CONFIG, resolveHomeConfig } from "@shenron/config/home";
 
 describe("resolveHomeConfig", () => {
   test("un document quasi vide retombe sur les défauts complets", () => {

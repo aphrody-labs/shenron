@@ -3,7 +3,7 @@
 import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { SQL } from "bun";
-import { createBunSql } from "@aphrody/shenron-db/bun-sql";
+import { createBunSql } from "@shenron/db/bun-sql";
 import { resolveBotDatabaseUrl } from "./pg-url";
 import {
   createPgReplicaSource,

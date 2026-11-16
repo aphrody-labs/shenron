@@ -17,7 +17,7 @@ import {
   readNativeCrawlDocuments,
   type CrawlRegistryPort,
   type ExternalCrawlRecord,
-} from "@aphrody/shenron-pipeline/dragon-ball/crawl-ingest";
+} from "@shenron/pipeline/dragon-ball/crawl-ingest";
 import { objectStore, type ObjectStore } from "../../deploy/cloudflare/cli/transfer";
 import { validateManifest } from "../../deploy/cloudflare/cli/cloudflare-ops";
 import {

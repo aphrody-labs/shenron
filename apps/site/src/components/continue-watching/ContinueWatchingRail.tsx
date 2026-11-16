@@ -10,8 +10,8 @@
  * docs/products/streaming-replica-etat.md.
  */
 import { useEffect, useState } from "react";
-import { Croix } from "@aphrody/shenron-ui/icones";
-import { resumable, type WatchEntry } from "@aphrody/shenron-api/contract";
+import { Croix } from "@shenron/ui/icones";
+import { resumable, type WatchEntry } from "@shenron/api/contract";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import { useT } from "@/components/T";
 import { playbackTimeLabel, forgetPlaybackProgress } from "@/lib/playback-progress";

@@ -42,7 +42,7 @@ export function renderDeclarations(
 
   const lines = [
     `// ${DBXV2_MARKER}: generated from the private DBXV2 index. Never commit, never ship.`,
-    "// Regenerate with: bun run --filter @aphrody/shenron-dbxv2 types",
+    "// Regenerate with: bun run --filter @shenron/dbxv2 types",
     "",
     "/** Reference to an entry of a CPK: `<cpk>/<path>`. */",
     `type Dbxv2KnownPath =\n  | ${pathType(all)};`,
@@ -73,7 +73,7 @@ export function renderDeclarations(
     ...resourceModule("glb", "Assembled EMD as binary glTF."),
     "/** Assembled EMD metadata (geometry and texture sizes), validated at load. */",
     'declare module "dbxv2:*?model" {',
-    '  import type { Dbxv2ModelJson } from "@aphrody/shenron-dbxv2/schemas";',
+    '  import type { Dbxv2ModelJson } from "@shenron/dbxv2/schemas";',
     "  export const ref: { readonly cpk: string; readonly path: string };",
     "  export const jsonUrl: string;",
     "  export const glbUrl: string;",

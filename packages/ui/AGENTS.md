@@ -5,9 +5,9 @@ Couche UI actuelle: système de design Dragon Ball, composants du site, lecteurs
 Commands:
 
 ```sh
-bun run --filter @aphrody/shenron-ui test
-bun run --filter @aphrody/shenron-ui lint
-bun run --filter @aphrody/shenron-ui typecheck
+bun run --filter @shenron/ui test
+bun run --filter @shenron/ui lint
+bun run --filter @shenron/ui typecheck
 ```
 
 Rules:
@@ -16,5 +16,5 @@ Rules:
 - Code identifiers and comments in English; documentation in French.
 - No secret, private data or generated artifact in a tracked file.
 - No heavy build on the Windows PC: run builds on vps or bunos.
-- `src/tokens.ts` se régénère avec `bun run --filter @aphrody/shenron-ui tokens`; `tokens:check` détecte l'écart.
+- `src/tokens.ts` se régénère avec `bun run --filter @shenron/ui tokens`; `tokens:check` détecte l'écart.
 - Repo-wide rules: `AGENTS.md` at the root.

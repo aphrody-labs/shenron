@@ -3,19 +3,19 @@ import "server-only";
 import { withVerifiedImages } from "@/lib/wikimedia-images";
 import { and, asc, count, eq, getTableColumns, ilike, or, sql, type SQL } from "drizzle-orm";
 import type { PgColumn, PgTable } from "drizzle-orm/pg-core";
-import { WIKI_REGISTRY } from "@aphrody/shenron-db/wiki-registry";
+import { WIKI_REGISTRY } from "@shenron/db/wiki-registry";
 import {
   createWikiReadRepository,
   escapeLike,
   publicColumns,
   wikiQueries,
-} from "@aphrody/shenron-db/repos/wiki";
-import type { WikiCategoryName } from "@aphrody/shenron-db/constants";
-import * as tables from "@aphrody/shenron-db/bot-schema";
+} from "@shenron/db/repos/wiki";
+import type { WikiCategoryName } from "@shenron/db/constants";
+import * as tables from "@shenron/db/bot-schema";
 import { posts } from "@/db/schema";
 import { db } from "@/lib/db";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
+import { isPathPublic } from "@shenron/config/wiki-launch";
 import { publicPostFilter } from "@/lib/posts";
 import {
   externalSourceHref,
