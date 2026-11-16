@@ -2,7 +2,7 @@
   "name": "@shenron/hyperframes",
   "version": "1.4.7",
   "private": false,
-  "description": "Aphrody's vendorized HyperFrames engine: zero-download byte-range streaming, ISOBMFF atom parsing, and on-demand frame decoding.",
+  "description": "Shenron's vendorized HyperFrames engine: zero-download byte-range streaming, ISOBMFF atom parsing, and on-demand frame decoding.",
   "homepage": "https://dragonballfr.com",
   "license": "Apache-2.0",
   "repository": {

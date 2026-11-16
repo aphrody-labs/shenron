@@ -5,7 +5,7 @@
 # once the host units are reinstalled from ops.
 # Backup quotidien du PostgreSQL local du site (base shenron_site : schémas
 # public + bot). pg_dump à chaud (consistent via snapshot MVCC), gzip -9,
-# rétention 14 jours. Timer quotidien 03:00 UTC (piloté par aphrody-infra sur dbfr).
+# rétention 14 jours. Timer quotidien 03:00 UTC (piloté par shenron-infra sur dbfr).
 #
 # Mis en place lors de la migration Neon → PostgreSQL local (2026-06-23).
 # DATABASE_URL est fourni par l'EnvironmentFile ~/.shenron-neon.env (= URL du

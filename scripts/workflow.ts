@@ -556,7 +556,7 @@ async function a2aTick(
   await mkdir(COORD_DIR, { recursive: true });
   const proc = Bun.spawn(
     [
-      "aphrody",
+      "shenron",
       "a2a",
       "tick",
       "--iteration",
@@ -564,7 +564,7 @@ async function a2aTick(
       "--side",
       "shenron",
       "--peer",
-      "aphrody",
+      "shenron",
       "--kind",
       kind,
       "--subject",

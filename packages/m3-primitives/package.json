@@ -1,7 +1,7 @@
 {
   "name": "@shenron/m3-primitives",
   "version": "1.0.0",
-  "description": "Material Design 3 React primitives: the SpaceUI (@spacedrive/primitives) component set rebuilt on the M3 roles, shape, typescale, state layers and motion of the aphrody design system.",
+  "description": "Material Design 3 React primitives: the SpaceUI (@spacedrive/primitives) component set rebuilt on the M3 roles, shape, typescale, state layers and motion of the shenron design system.",
   "keywords": [
     "material-3",
     "md3",
