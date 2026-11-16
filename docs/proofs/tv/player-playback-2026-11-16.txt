@@ -1,0 +1,3 @@
+Player on https://tv.dragonballfr.com/ (Chrome, hls.js), read from the page during playback:
+{"title":"Sintel (trailer, CC-BY Blender Foundation)","meta":"0:52 - 720p / 480p / 360p","currentTime":3.596,"paused":false,"videoWidth":640,"videoHeight":360,"items":1}
+Then seek to 0:20 and pause for the screenshot player-playing-2026-11-16.jpg.
