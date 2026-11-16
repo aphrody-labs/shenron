@@ -14,11 +14,23 @@ fn default_base() -> String {
     // Web build: same origin. Desktop: the service named by SHENRON_ADMIN_URL.
     #[cfg(target_arch = "wasm32")]
     {
-        String::new()
+        web_sys::window().and_then(|w| w.location().origin().ok()).unwrap_or_default()
     }
     #[cfg(not(target_arch = "wasm32"))]
     {
         std::env::var("SHENRON_ADMIN_URL").unwrap_or_else(|_| "https://admin.dragonballfr.com".into())
+    }
+}
+
+/// Desktop operators can preload the token (`SHENRON_ADMIN_TOKEN`); the web build never reads it.
+fn preset_token() -> String {
+    #[cfg(not(target_arch = "wasm32"))]
+    {
+        std::env::var("SHENRON_ADMIN_TOKEN").unwrap_or_default()
+    }
+    #[cfg(target_arch = "wasm32")]
+    {
+        String::new()
     }
 }
 
@@ -46,7 +58,7 @@ fn App() -> Element {
 #[component]
 fn Login(session: Signal<Option<Session>>) -> Element {
     let mut base = use_signal(default_base);
-    let mut token = use_signal(String::new);
+    let mut token = use_signal(preset_token);
     let mut error = use_signal(String::new);
     let mut busy = use_signal(|| false);
     let mut submit = move |_| {
@@ -61,6 +73,11 @@ fn Login(session: Signal<Option<Session>>) -> Element {
             busy.set(false);
         });
     };
+    use_effect(move || {
+        if !token.peek().is_empty() {
+            submit(());
+        }
+    });
     rsx! {
         div { class: "login",
             form { class: "card", aria_label: "Sign in", role: "form", onsubmit: move |e| { e.prevent_default(); submit(()) },
