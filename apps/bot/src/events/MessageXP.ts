@@ -1,5 +1,5 @@
 import { injectable, inject } from "tsyringe";
-import { NotBot } from "@aphrody/discord-kit";
+import { NotBot } from "@shenron/discord-kit";
 import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
 import { and, eq, isNull, lt, or, sql } from "drizzle-orm";
 import { LevelService } from "~/services/LevelService";

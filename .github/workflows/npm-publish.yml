@@ -1,5 +1,4 @@
-# Publication npm sans jeton : appelle le workflow réutilisable du monorepo (aphrody-labs/src, docs/infra/NPM.md).
-# Le trusted publisher npm de chaque paquet de ce dépôt pointe sur ce fichier (npm vérifie le workflow appelant).
+# Publication npm sans jeton (trusted publisher): le trusted publisher npm de chaque paquet pointe sur ce fichier.
 name: npm-publish
 
 on:
@@ -22,9 +21,23 @@ permissions:
 
 jobs:
   publish:
-    uses: aphrody-labs/src/.github/workflows/npm-publish.yml@6eb361e410c06698aed8b7a695849c497dfa3538 # main
-    with:
-      packages: ${{ inputs.packages }}
-      dry_run: ${{ inputs.dry_run }}
-      tag: ${{ inputs.tag }}
-    secrets: inherit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          registry-url: https://registry.npmjs.org
+      - run: bun install --frozen-lockfile
+      - name: Publish
+        env:
+          PACKAGES: ${{ inputs.packages }}
+          DRY_RUN: ${{ inputs.dry_run }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          for dir in $PACKAGES; do
+            (cd "$dir" && npm publish --provenance --access public --tag "$TAG" $([ "$DRY_RUN" = true ] && echo --dry-run))
+          done

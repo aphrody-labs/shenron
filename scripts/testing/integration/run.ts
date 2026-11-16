@@ -29,7 +29,7 @@ stages.push({
   args: [
     "test",
     "--preload",
-    Bun.resolveSync("@aphrody/bun-test-dom", join(root, "packages/ui")),
+    Bun.resolveSync("@shenron/test-dom", join(root, "packages/ui")),
     "--isolate",
     "./tests/command-palette.dom.live.test.tsx",
   ],

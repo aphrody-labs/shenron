@@ -1,5 +1,5 @@
 import { inject, injectable } from "tsyringe";
-import { NotBot } from "@aphrody/discord-kit";
+import { NotBot } from "@shenron/discord-kit";
 import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
 import { DatabaseService } from "~/db/index";
 import { TrainingService } from "~/services/TrainingService";

@@ -6,7 +6,7 @@
  * searchable, each fact deletable, and a two-step "forget everything". Transport, labels and
  * availability are injected (no fetch, no text). Styles: `@shenron/ui/chat.css`.
  */
-import { Banner, Button } from "@aphrody/m3-primitives";
+import { Banner, Button } from "@shenron/m3-primitives";
 import { Brain, CircleAlert, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ChatGroupStatus } from "./model";

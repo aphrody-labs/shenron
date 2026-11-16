@@ -23,7 +23,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-bun
-      # Versions tierces : catalogue du package.json racine ; @aphrody/* épinglés exactement
+      # Versions tierces : catalogue du package.json racine 
       # (inchangés par bun update) ; minimumReleaseAge de bunfig.toml respecté.
       - name: Capture état avant
         run: cp bun.lock "$RUNNER_TEMP/bun.lock.before"

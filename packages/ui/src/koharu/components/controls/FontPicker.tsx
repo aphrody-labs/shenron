@@ -9,7 +9,7 @@ import { useTranslation } from "react-i18next";
 
 import { useFontPreview } from "../../lib/queries";
 import type { FontFamily, FontSource } from "@shenron/koharu/protocol";
-import { Badge } from "@aphrody/m3-primitives";
+import { Badge } from "@shenron/m3-primitives";
 import { Button } from "../../../components/button";
 import {
   DropdownMenu,

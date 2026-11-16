@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 // openExternal et ExternalLink : navigateur (nouvel onglet sûr) et Tauri simulé (mockIPC).
 import { afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
-import { clearMocks, mockIPC } from "@aphrody/api/mocks";
+import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import {
   ExternalLink,

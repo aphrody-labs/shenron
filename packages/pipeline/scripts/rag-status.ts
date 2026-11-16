@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { tempPath } from "@aphrody/paths";
+import { tempPath } from "@shenron/kit/paths";
 /**
  * rag-status.ts — Script de diagnostic et statut du RAG et de la base Dragon Ball.
  *

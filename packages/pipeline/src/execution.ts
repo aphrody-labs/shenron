@@ -1,3 +1,4 @@
+import os from "node:os";
 // SPDX-License-Identifier: Apache-2.0
 
 export interface CommandOutput {
@@ -47,29 +48,41 @@ async function defaultRunner(
     (!Number.isFinite(controls.timeoutMs) || controls.timeoutMs <= 0)
   )
     throw new RangeError("timeoutMs must be a positive finite number");
-  // Only the Bun execution surface loads FFI. Pure/server exports remain portable.
-  const moduleName = "@aphrody/runtime-sdk/modules";
-  const { processes } = (await import(moduleName)) as typeof import("@aphrody/runtime-sdk/modules");
-  controls.signal?.throwIfAborted();
-  using child = processes.spawn({
-    program,
-    args: command.slice(1),
+  const timeoutSignal =
+    controls.timeoutMs === undefined ? undefined : AbortSignal.timeout(controls.timeoutMs);
+  const signal =
+    controls.signal && timeoutSignal
+      ? AbortSignal.any([controls.signal, timeoutSignal])
+      : (controls.signal ?? timeoutSignal);
+  const limit = controls.maxOutputBytes ?? Number.MAX_SAFE_INTEGER;
+  const child = Bun.spawn([program, ...command.slice(1)], {
     cwd,
     env: process.env,
-    stdio: "capture-lossless",
-    maxOutputBytes: controls.maxOutputBytes,
+    stdin: "ignore",
+    stdout: "pipe",
+    stderr: "pipe",
+    ...(signal ? { signal } : {}),
   });
-  const output = await child.collectOutput({
-    // Existing pipelines had no deadline. Explicit caller deadlines remain bounded and cancellable.
-    timeoutMs: controls.timeoutMs ?? Number.MAX_SAFE_INTEGER,
-    signal: controls.signal,
-  });
-  const code = output.status.signal > 0 ? 128 + output.status.signal : output.status.exitCode;
-  return {
-    code,
-    stdout: new TextDecoder().decode(output.stdout),
-    stderr: new TextDecoder().decode(output.stderr),
+  const read = async (stream: ReadableStream<Uint8Array>) => {
+    const chunks: Uint8Array[] = [];
+    let size = 0;
+    for await (const chunk of stream) {
+      size += chunk.byteLength;
+      if (size > limit) {
+        child.kill();
+        throw new RangeError(`Command output exceeds ${limit} bytes`);
+      }
+      chunks.push(chunk);
+    }
+    return new TextDecoder().decode(Buffer.concat(chunks));
   };
+  const [stdout, stderr, exitCode] = await Promise.all([
+    read(child.stdout),
+    read(child.stderr),
+    child.exited,
+  ]);
+  signal?.throwIfAborted();
+  return { code: child.signalCode ? 128 + (os.constants.signals[child.signalCode] ?? 0) : exitCode, stdout, stderr };
 }
 
 export async function executeCommand(

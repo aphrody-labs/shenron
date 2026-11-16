@@ -499,15 +499,8 @@ function globalSpecifierRule(specifier: string): string | null {
       "@discordx/pagination",
     ].some((name) => isPackage(specifier, name))
   )
-    return "aphrody-discord";
+    return "shenron-discord";
   if (specifier === "bun:ffi") return "bun-ffi";
-  if (
-    isPackage(specifier, "@aphrody/bun") ||
-    isPackage(specifier, "@aphrody/zstd") ||
-    isPackage(specifier, "@aphrody/xml2")
-  ) {
-    return "aphrody-native";
-  }
   return null;
 }
 

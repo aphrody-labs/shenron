@@ -16,7 +16,7 @@
  * Registered behaviour change B18: `embed()` collapses whitespace, sends at
  * most 16 texts per request and rejects any vector that is not 384-dimensional.
  */
-import { JsonTransportError, requestJson } from "@aphrody/http";
+import { JsonTransportError, requestJson } from "@shenron/kit/http";
 import {
   type AiFailure,
   type AiResult,

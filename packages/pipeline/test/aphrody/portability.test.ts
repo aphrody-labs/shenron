@@ -43,7 +43,7 @@ describe("portability", () => {
     });
     expect(result.success).toBe(true);
     const code = await result.outputs[0]!.text();
-    expect(code).toContain("aphrody_web_pipeline_submit");
+    expect(code).toContain("SHENRON_BIN");
     expect(code).not.toContain("import(moduleName)");
   });
 });

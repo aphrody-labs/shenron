@@ -2,7 +2,7 @@
 /**
  * Transport of the generated protocol (`./protocol` imports `invoke` and `Channel` from here).
  *
- * - In the Shenron desktop app (Tauri) both are Tauri IPC (`@aphrody/api/core`): the engine
+ * - In the Shenron desktop app (Tauri) both are Tauri IPC (`@tauri-apps/api/core`): the engine
  *   (`koharu-library`) runs in the app process.
  * - Elsewhere, on a site served by `shenron-server`, they speak its local bridge to a
  *   `koharu-sdk` child: each command is `POST /api/local/koharu/invoke`
@@ -18,7 +18,7 @@ import {
   Channel as TauriChannel,
   SERIALIZE_TO_IPC_FN,
   invoke as tauriInvoke,
-} from "@aphrody/api/core";
+} from "@tauri-apps/api/core";
 
 /** Base path of the local bridge of `shenron-server`. */
 export const KOHARU_BRIDGE_PATH = "/api/local/koharu";
@@ -252,7 +252,7 @@ function browserDocument(): Document {
 const handlers = new WeakMap<object, (message: unknown) => void>();
 
 /**
- * A channel streaming values from the engine, as `Channel` of `@aphrody/api/core`: a Tauri
+ * A channel streaming values from the engine, as `Channel` of `@tauri-apps/api/core`: a Tauri
  * channel in the desktop app, a bridge channel elsewhere. It has no private member, so a
  * Tauri `Channel` is also accepted where the protocol expects one (inside Tauri only).
  */

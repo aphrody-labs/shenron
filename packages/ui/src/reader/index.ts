@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Readers: the databook reader is Shenron's (Dragon Ball editorial format); the generic manga
-// and collection readers stay in @aphrody/m3-reader. The manga reader is wrapped only to make
+// and collection readers stay in @shenron/m3-reader. The manga reader is wrapped only to make
 // its fullscreen cover the whole desktop window under Tauri.
 export { DatabookReader } from "./DatabookReader";
 export {
@@ -15,7 +15,7 @@ export type {
   ReaderTranscription,
 } from "./DatabookReader";
 export { CanonicalMangaReader, MangaReader } from "./MangaReader";
-export { CollectionReader } from "@aphrody/m3-reader/source";
+export { CollectionReader } from "@shenron/m3-reader/source";
 export { useKoharuCanvasWarmup } from "./use-koharu-canvas";
 export type { KoharuCanvasWarmup } from "./use-koharu-canvas";
 export type {
@@ -23,7 +23,7 @@ export type {
   MangaReaderProps,
   ReaderCollectionChapter,
   ReaderCollectionEdition,
-} from "@aphrody/m3-reader/source";
+} from "@shenron/m3-reader/source";
 export {
   TauriFullscreenSync,
   isTauriWindowFullscreen,

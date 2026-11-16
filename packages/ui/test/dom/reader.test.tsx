@@ -3,7 +3,7 @@
 // Tauri simulé (mockIPC). Lancé par l'étape DOM de `bun run test` (happy-dom).
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { useRef } from "react";
-import { clearMocks, mockIPC, mockWindows } from "@aphrody/api/mocks";
+import { clearMocks, mockIPC, mockWindows } from "@tauri-apps/api/mocks";
 import { act, cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import {
   DatabookReader,

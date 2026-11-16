@@ -68,7 +68,7 @@
     "typecheck": "bun check --project tsconfig.json"
   },
   "dependencies": {
-    "@aphrody/paths": "catalog:",
+    "@shenron/kit": "workspace:*",
     "zod": "catalog:"
   },
   "engines": {

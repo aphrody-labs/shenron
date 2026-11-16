@@ -1,6 +1,6 @@
 import { injectable, inject } from "tsyringe";
 import { AttachmentBuilder } from "discord.js";
-import { NotBot } from "@aphrody/discord-kit";
+import { NotBot } from "@shenron/discord-kit";
 import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
 import { LogService } from "~/services/LogService";
 import { logger } from "~/lib/logger";

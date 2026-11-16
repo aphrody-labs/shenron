@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { tempPath } from "@aphrody/paths";
+import { tempPath } from "@shenron/kit/paths";
 /**
  * Écrit les motifs de couverture depuis la géométrie de `src/lib/couverture.ts` :
  *   public/dbz/marque/banc-nuage.svg   tuile de volutes, répétable en x

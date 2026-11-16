@@ -2,8 +2,8 @@
 // Studio bridge: typed calls to the Studio commands that shenron-desktop registers
 // (crates/shenron-studio/src/studio.rs, logic owned by shenron-cli::shenron_cmd) and the
 // `studio://train` event. The Koharu editor speaks @shenron/koharu/protocol instead.
-import { invoke } from "@aphrody/api/core";
-import { listen } from "@aphrody/api/event";
+import { invoke } from "@tauri-apps/api/core";
+import { listen } from "@tauri-apps/api/event";
 import { isTauri } from "./tauri-bridge";
 
 const DESKTOP_ONLY = "Cette vue fonctionne dans l’application de bureau Shenron.";

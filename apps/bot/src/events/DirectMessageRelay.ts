@@ -1,6 +1,6 @@
 import { resolveSiteUrl } from "@shenron/config/public-urls";
 import { injectable, inject } from "tsyringe";
-import { NotBot } from "@aphrody/discord-kit";
+import { NotBot } from "@shenron/discord-kit";
 import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { DatabaseService } from "~/db/index";

@@ -7,7 +7,7 @@
  * the browser when the plugin or its permission is missing, so a screen never dead-ends.
  * Module of class `pure`: browser globals are reached through `globalThis` and guarded.
  */
-import { invoke } from "@aphrody/api/core";
+import { invoke } from "@tauri-apps/api/core";
 
 export function isTauri(): boolean {
   return (

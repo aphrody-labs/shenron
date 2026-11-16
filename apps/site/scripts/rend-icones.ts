@@ -16,7 +16,7 @@
  *   bun apps/site/scripts/rend-icones.ts --dry-run     (rend tout en mémoire, n'écrit rien)
  */
 
-import { tempPath } from "@aphrody/paths";
+import { tempPath } from "@shenron/kit/paths";
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import sharp from "sharp";

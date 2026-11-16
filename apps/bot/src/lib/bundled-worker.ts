@@ -1,4 +1,4 @@
-import { isCompiledBinary } from "@aphrody/discord-kit";
+import { isCompiledBinary } from "@shenron/discord-kit";
 import { dirname, win32 } from "node:path";
 
 /**

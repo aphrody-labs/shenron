@@ -2,7 +2,7 @@
 // Pont de fichiers du studio : dialogues natifs dans Tauri simulé (mockIPC), sélecteurs du
 // navigateur ailleurs, et repli navigateur quand un plugin natif manque.
 import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test";
-import { clearMocks, mockIPC } from "@aphrody/api/mocks";
+import { clearMocks, mockIPC } from "@tauri-apps/api/mocks";
 import {
   acceptAttribute,
   browserOpenFiles,

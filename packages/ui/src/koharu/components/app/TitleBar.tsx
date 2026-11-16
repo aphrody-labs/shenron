@@ -1,6 +1,6 @@
 "use client";
 
-import { openUrl } from "@aphrody/plugin-opener";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import {
   DEFAULT_DISCORD_INVITE,
   DEFAULT_PUBLIC_ORIGINS,

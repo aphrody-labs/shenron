@@ -4,7 +4,7 @@ import { Bot, Discord, Once, Client } from "discordx";
 import { CronRegistry } from "~/api/cron-registry";
 import { logger } from "~/lib/logger";
 import { APHRODY_DISCORD } from "@shenron/config/discord-ai";
-import { initApplicationCommandsSafe } from "@aphrody/discord-kit";
+import { initApplicationCommandsSafe } from "@shenron/discord-kit";
 
 /**
  * LabSyncCron — Cron périodique de synchronisation et télémétrie des commandes

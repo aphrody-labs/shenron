@@ -1,74 +1,17 @@
 # SPDX-License-Identifier: Apache-2.0
-name: Setup Bun (aphrody-labs/bun fork)
+name: Setup Bun
 description: >-
-  Installs the Bun fork release pinned by package.json#packageManager
-  (bun@<version> of aphrody-labs/bun), SHA256SUMS-checked.
+  Installs the official upstream Bun release pinned by package.json#packageManager
+  (bun@<version> of oven-sh/bun) with oven-sh/setup-bun, pinned by commit.
 runs:
   using: composite
   steps:
-    - name: Resolve the fork release
-      id: fork
+    - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+      with:
+        bun-version-file: package.json
+    - name: Verify the pinned runtime
       shell: bash
       run: |
-        manager=$(sed -n 's/.*"packageManager": *"bun@\([^"]*\)".*/\1/p' package.json)
-        [ -n "$manager" ] || { echo "package.json#packageManager must be bun@<version>" >&2; exit 1; }
-        echo "tag=${manager}" >> "$GITHUB_OUTPUT"
-    - name: Resolve the qualified factory runtime
-      if: runner.environment == 'self-hosted'
-      shell: bash
-      env:
-        SHENRON_EXPECTED_BUN: ${{ steps.fork.outputs.tag }}
-      run: |
-        set -euo pipefail
-        candidate="${SHENRON_BUN_EXECUTABLE:-${BUN_INSTALL:-$HOME/.bun}/bin/bun-${SHENRON_EXPECTED_BUN}}"
-        [ -x "$candidate" ] || { echo "The pinned factory Bun is unavailable: $SHENRON_EXPECTED_BUN" >&2; exit 1; }
-        native=$(realpath "$candidate")
-        [ -x "$native" ] || { echo "Qualified factory Bun is unavailable" >&2; exit 1; }
-        # Published Linux x64 artifact, revision fd9d7a224 (2026-10-17), also used by production.
-        printf '%s  %s\n' 'cb3332aa3c28f199087fa69bf2d1b1b967b5e12364f1b23d8d1d65ce2feb3a0f' "$native" | sha256sum -c -
-        "$native" -e 'if (Bun.version !== process.env.SHENRON_EXPECTED_BUN || Bun.revision !== "fd9d7a224b83d1763721e409ca98e06a16df1f43") throw new Error("Factory Bun identity differs");'
-        # Expose this verified executable as bun without replacing the shared runtime.
-        stage=$(mktemp -d "$RUNNER_TEMP/shenron-pinned-bun.XXXXXXXX")
-        ln -s "$native" "$stage/bun"
-        echo "$stage" >> "$GITHUB_PATH"
-        echo "SHENRON_BUN_EXECUTABLE=$native" >> "$GITHUB_ENV"
-    - name: Download the exact public owner runtime
-      if: runner.environment != 'self-hosted'
-      shell: bash
-      env:
-        SHENRON_EXPECTED_BUN: ${{ steps.fork.outputs.tag }}
-      run: |
-        set -euo pipefail
-        case "$RUNNER_OS" in
-          Linux) os=linux;; macOS) os=darwin;; Windows) os=windows;;
-          *) echo "Unsupported native runtime platform" >&2; exit 1;;
-        esac
-        case "$RUNNER_ARCH" in
-          X64) arch=x64;; ARM64) arch=aarch64;;
-          *) echo "Unsupported native runtime architecture" >&2; exit 1;;
-        esac
-        [[ "$SHENRON_EXPECTED_BUN" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Invalid pinned runtime version" >&2; exit 1; }
-        asset="bun-$os-$arch"
-        stage="$RUNNER_TEMP/shenron-native-bun-$GITHUB_RUN_ID-$RUNNER_OS-$RUNNER_ARCH"
-        mkdir -p "$stage"
-        base="https://github.com/aphrody-labs/bun/releases/download/bun-v$SHENRON_EXPECTED_BUN"
-        curl -fsSL --retry 3 "$base/$asset.zip" -o "$stage/runtime.zip" || { echo "The exact public Aphrody runtime is unavailable" >&2; exit 1; }
-        curl -fsSL --retry 3 "$base/SHA256SUMS.txt" -o "$stage/SHA256SUMS.txt"
-        expected=$(awk -v name="$asset.zip" '$2 == name || $2 == "*" name { print $1 }' "$stage/SHA256SUMS.txt")
-        if command -v sha256sum >/dev/null; then actual=$(sha256sum "$stage/runtime.zip" | cut -d ' ' -f 1); else actual=$(shasum -a 256 "$stage/runtime.zip" | cut -d ' ' -f 1); fi
-        [[ "$expected" =~ ^[a-f0-9]{64}$ ]] && [ "$expected" = "$actual" ] || { echo "Owner runtime checksum differs" >&2; exit 1; }
-        unzip -q "$stage/runtime.zip" -d "$stage"
-        echo "$stage/$asset" >> "$GITHUB_PATH"
-    - name: Verify the pinned native runtime
-      shell: bash
-      env:
-        SHENRON_EXPECTED_BUN: ${{ steps.fork.outputs.tag }}
-      run: |
-        bun -e '
-          const expected = process.env.SHENRON_EXPECTED_BUN;
-          const source = process.release.sourceUrl ?? "";
-          if (Bun.version !== expected || !source.startsWith("https://github.com/aphrody-labs/bun/releases/download/")) {
-            throw new Error("The pinned Aphrody Bun runtime is unavailable; refusing a bootstrap fallback");
-          }
-          console.log(`Qualified Aphrody Bun ${Bun.version}`);
-        '
+        expected=$(sed -n 's/.*"packageManager": *"bun@\([^"]*\)".*/\1/p' package.json)
+        actual=$(bun --version)
+        [ "$actual" = "$expected" ] || { echo "Bun $actual differs from the pinned $expected" >&2; exit 1; }

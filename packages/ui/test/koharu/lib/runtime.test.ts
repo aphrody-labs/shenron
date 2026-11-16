@@ -14,7 +14,7 @@ import {
   type StartupState,
 } from "@shenron/koharu/protocol";
 
-mock.module("@aphrody/api/core", () => ({
+mock.module("@tauri-apps/api/core", () => ({
   Channel: class<T> {
     onmessage: (payload: T) => void;
 

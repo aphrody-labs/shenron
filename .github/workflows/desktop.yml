@@ -7,7 +7,6 @@
 # repository script replaces tauri-action because it stages the sidecars and the bundle config.
 #
 # Secrets:
-#   APHRODY_GIT_TOKEN              required: read access to aphrody-labs/aphrody (git deps).
 #   TAURI_SIGNING_PRIVATE_KEY      optional: updater artifact signing (with _PASSWORD).
 #   TAURI_SIGNING_PRIVATE_KEY_PASSWORD
 name: Desktop
@@ -51,19 +50,6 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
-
-      - name: Check Aphrody access
-        shell: bash
-        env:
-          APHRODY_GIT_TOKEN: ${{ secrets.APHRODY_GIT_TOKEN }}
-        run: |
-          if [ -z "$APHRODY_GIT_TOKEN" ]; then
-            echo "::error::APHRODY_GIT_TOKEN is required (private Aphrody git dependencies)"
-            exit 1
-          fi
-          git config --global \
-            url."https://x-access-token:${APHRODY_GIT_TOKEN}@github.com/aphrody-labs/".insteadOf \
-            "https://github.com/aphrody-labs/"
 
       - name: Linux system dependencies (WebKitGTK, AppImage)
         if: runner.os == 'Linux'

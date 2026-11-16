@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-// `swiper/react` (used by @aphrody/m3-reader) imports `react` without declaring it as a peer, so
+// `swiper/react` (used by @shenron/m3-reader) imports `react` without declaring it as a peer, so
 // Bun's isolated linker cannot resolve it from inside swiper's store folder. Rewrite that import to
-// this package's React. Same shim as @aphrody/m3-reader's own test setup.
+// this package's React. Same shim as @shenron/m3-reader's own test setup.
 import { plugin } from "bun";
 
 const react = Bun.resolveSync("react", import.meta.dir);

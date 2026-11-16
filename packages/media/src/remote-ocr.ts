@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { JsonTransportError, requestJson } from "@aphrody/http";
+import { JsonTransportError, requestJson } from "@shenron/kit/http";
 import { sha256Hex } from "./sha256";
 export interface RemoteOcrBlock {
   text: string;

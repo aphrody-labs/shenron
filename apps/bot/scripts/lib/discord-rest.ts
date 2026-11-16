@@ -3,13 +3,13 @@
  *
  * Pas de gateway, pas de discord.js : un script d'ops n'a pas à ouvrir une
  * seconde connexion temps réel à côté du bot en production. Le transport est
- * celui d'Aphrody (`discordFetch` de `@aphrody/discord-kit/rest` : jeton,
+ * celui d'Aphrody (`discordFetch` de `@shenron/discord-kit/rest` : jeton,
  * délai, erreurs typées `DiscordRESTError`) ; ce module n'ajoute que ce qu'un
  * script long exige en plus — attendre sur chaque 429 la durée annoncée par
  * Discord (le kit ne rejoue qu'une fois), rejouer les 5xx, et un parallélisme
  * borné qui préserve l'ordre des résultats.
  */
-import { discordFetch, DiscordRESTError } from "@aphrody/discord-kit/rest";
+import { discordFetch, DiscordRESTError } from "@shenron/discord-kit/rest";
 
 export { DiscordRESTError };
 

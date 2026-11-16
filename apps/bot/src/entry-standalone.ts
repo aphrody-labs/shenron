@@ -22,7 +22,7 @@ if (process.argv.includes("--help") || process.argv.includes("-h")) {
 
 if (process.argv.includes("--version") || process.argv.includes("-v")) {
   // Runtime info from the kit: interpreted source or compiled binary, Bun version, platform.
-  const { getBotRuntimeInfo } = await import("@aphrody/discord-kit");
+  const { getBotRuntimeInfo } = await import("@shenron/discord-kit");
   const info = getBotRuntimeInfo();
   console.log(
     `@shenron/bot v1.0.0 (Bun ${info.bunVersion}, ${info.platform}-${info.arch}, ${info.isCompiled ? "compiled" : "source"})`,
@@ -50,7 +50,7 @@ if (process.argv.includes("--smoke")) {
   const canvasPngBytes = await smokeCanvas();
   await import("reflect-metadata");
   const { MetadataStorage } = await import("discordx");
-  const { getBotRuntimeInfo } = await import("@aphrody/discord-kit");
+  const { getBotRuntimeInfo } = await import("@shenron/discord-kit");
   const runtime = getBotRuntimeInfo();
   await import("./_entries");
   const storage = MetadataStorage.instance;

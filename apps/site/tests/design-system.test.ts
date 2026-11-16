@@ -121,7 +121,7 @@ describe("système de design — un seul vocabulaire", () => {
     // Le kit ne définit plus de titre : son baril réexporte celui du paquet.
     const barrel = readFileSync(join(KIT_DIR, "index.ts"), "utf8");
     expect(barrel).toMatch(
-      /export \{ SectionHeading \} from "@aphrody\/shenron-ui\/layout\/SectionHeading";/,
+      /export \{ SectionHeading \} from "@shenron\/ui\/layout\/SectionHeading";/,
     );
     const uiHeading = readFileSync(
       join(REPO_ROOT, "packages", "ui", "src", "layout", "SectionHeading.tsx"),

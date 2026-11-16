@@ -49,9 +49,9 @@ import {
   writeFileSync,
 } from "node:fs";
 import { join, resolve } from "node:path";
-import { nextCommand } from "@aphrody/next-bun/run";
+import { nextCommand } from "@shenron/next-host/run";
 import { flattenStandaloneExternals } from "./standalone-externals";
-import { getHlsPublicAssets } from "@aphrody/bun-video/hls";
+import { getHlsPublicAssets } from "@shenron/video/hls";
 import { stageVideoPublic } from "./video-assets";
 
 import { pack, publicVfsProblems } from "../../apps/server/src/payload";

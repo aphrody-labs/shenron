@@ -1,4 +1,4 @@
-import { withBun } from "@aphrody/next-bun";
+import { withBun } from "@shenron/next-host";
 import type { NextConfig } from "next";
 import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 import {
@@ -40,8 +40,6 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   // Native SDK, image decoders, and SQL/vector drivers are deferred to the Bun host outside Next's server bundle.
   serverExternalPackages: [
-    "@aphrody/bun",
-    "@aphrody/bun-runtime-sdk/yolo",
     "@shenron/native",
     "sharp",
     "postgres",
@@ -588,9 +586,9 @@ const nextConfig: NextConfig = {
 // Next.js 16 Turbopack : analyse de bundle intégrée via `next build --turbopack --experimental-analyze`
 // qui écrit les métriques dans `.next/diagnostics/analyze` sans injecter de wrapper Webpack.
 //
-// `withBun` (@aphrody/next-bun) porte les réglages génériques de Next sur Bun : racine Turbopack et
+// `withBun` (@shenron/next-host) porte les réglages génériques de Next sur Bun : racine Turbopack et
 // file tracing à la racine du workspace (magasin isolé de Bun), `transpilePackages` déduit des paquets
-// qui publient leurs sources TypeScript (@shenron/*, @aphrody/m3-*…), alias communs à Turbopack et
+// qui publient leurs sources TypeScript (@shenron/*, @shenron/m3-*…), alias communs à Turbopack et
 // Webpack, et `next start` qui reprend le préfixe d'assets et l'identifiant de déploiement du build.
 const resolveConfig = withBun(nextConfig, {
   bundler: "turbopack",

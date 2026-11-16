@@ -3,7 +3,7 @@
  * Ouverture externe — la seule porte vers l'extérieur du site et de l'application de bureau.
  *
  * Dans la fenêtre Tauri, `window.open` ou `target="_blank"` ouvriraient une WebView sans barre
- * d'adresse ni retour : l'URL est confiée au navigateur du système par `@aphrody/plugin-opener`.
+ * d'adresse ni retour : l'URL est confiée au navigateur du système par `@tauri-apps/plugin-opener`.
  * Dans un navigateur, elle s'ouvre dans un nouvel onglet sans `opener` ni `referrer`.
  * Seuls `http:`, `https:` et `mailto:` passent : jamais `javascript:`, `data:` ni `file:`.
  *
@@ -63,7 +63,7 @@ export async function openExternal(href: string | URL): Promise<OpenExternalResu
   if (isTauri()) {
     try {
       // Chargé à la demande : la page servie au navigateur n'évalue jamais le pont natif.
-      const { openUrl } = await import("@aphrody/plugin-opener");
+      const { openUrl } = await import("@tauri-apps/plugin-opener");
       await openUrl(url.href);
       return "native";
     } catch {

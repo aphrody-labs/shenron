@@ -34,7 +34,7 @@
     "protocol": "cargo run -p koharu-app --example protocol"
   },
   "dependencies": {
-    "@aphrody/api": "catalog:"
+    "@tauri-apps/api": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:"

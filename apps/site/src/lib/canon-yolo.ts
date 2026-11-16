@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import type * as NativeYolo from "@aphrody/bun-runtime-sdk/yolo";
+import type * as NativeYolo from "@shenron/decision";
 import type { CanonReference } from "./canon-engine";
 
 export type CanonDecisionRuntime = Pick<

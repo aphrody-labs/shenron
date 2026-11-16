@@ -34,7 +34,7 @@
     "typecheck": "bun check --project tsconfig.json"
   },
   "dependencies": {
-    "@aphrody/bun": "catalog:"
+    "@modelcontextprotocol/sdk": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:"

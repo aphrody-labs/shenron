@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 "use client";
 /**
- * Lecteur manga de Shenron : le lecteur canonique de `@aphrody/m3-reader` (Swiper : balayage,
+ * Lecteur manga de Shenron : le lecteur canonique de `@shenron/m3-reader` (Swiper : balayage,
  * pincement, double tap, clavier, double page `lg`), enveloppé pour la fenêtre de bureau.
  *
  * L'enveloppe ne recopie rien du lecteur M3 : elle ne fait que suivre son plein écran DOM avec la
@@ -12,7 +12,7 @@ import { type ReactElement, useRef } from "react";
 import {
   MangaReader as CanonicalMangaReader,
   type MangaReaderProps,
-} from "@aphrody/m3-reader/source";
+} from "@shenron/m3-reader/source";
 import { useTauriFullscreen } from "./use-tauri-fullscreen";
 
 export type { MangaReaderProps };

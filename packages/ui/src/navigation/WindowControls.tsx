@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 "use client";
 /**
- * Contrôles de fenêtre de l'application de bureau (Tauri 3, `@aphrody/api/window`).
+ * Contrôles de fenêtre de l'application de bureau (Tauri 3, `@tauri-apps/api/window`).
  *
  * Rendus seulement quand la fenêtre n'a PAS de décoration native : sinon on doublerait les
  * boutons du système. Le module Tauri est chargé à la demande, jamais dans un navigateur.
@@ -15,7 +15,7 @@ import type { ShellLabels } from "./AppShell";
 type TauriWindow = Awaited<ReturnType<typeof currentWindow>>;
 
 async function currentWindow() {
-  const { getCurrentWindow } = await import("@aphrody/api/window");
+  const { getCurrentWindow } = await import("@tauri-apps/api/window");
   return getCurrentWindow();
 }
 

@@ -8,7 +8,7 @@
  *   dbxv2   production https://dragonballfr.com/games/xenoverse-2: a synthetic #CUS file is handed to the page's
  *           file input; the page must load shenron_re from the CDN, parse 708 records and show them.
  *   koharu  the repository's koharu-canvas module served locally: init, WebGPU adapter, createCanvas, resize, clear.
- *   player  the Shenron player stack (@aphrody/bun-video/playback, as used by VideoPlayer) bundled and run in a
+ *   player  the Shenron player stack (@shenron/video/playback, as used by VideoPlayer) bundled and run in a
  *           <video> against an explicitly supplied real local MP4: native FilmCraft metadata must match
  *           the browser dimensions, and currentTime must advance. No synthetic clip is generated.
  *

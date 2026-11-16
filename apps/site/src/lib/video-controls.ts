@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 export const VIDEO_PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2] as const;
 // One owner for the HLS test: Bun Video decides which sources it attaches hls.js to.
-export { isHlsSource } from "@aphrody/bun-video/playback";
+export { isHlsSource } from "@shenron/video/playback";
 export type VideoKeyAction =
   | "play"
   | "backward"

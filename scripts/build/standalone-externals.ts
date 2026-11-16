@@ -9,7 +9,7 @@ import {
   rmSync,
 } from "node:fs";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
-import { flattenStandalone } from "@aphrody/next-bun/standalone";
+import { flattenStandalone } from "@shenron/next-host/standalone";
 
 interface ExternalAlias {
   path: string;

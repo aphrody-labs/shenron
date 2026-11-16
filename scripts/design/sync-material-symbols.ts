@@ -30,9 +30,6 @@ const names = [
   "skip_next",
 ] as const;
 export async function materialSubset(owner: string) {
-  const metadata = await Bun.file(`${owner}/package.json`).json();
-  if (metadata.name !== "@aphrody/material-design-icons" || metadata.version !== "1.0.0")
-    throw new Error("Unqualified Material Symbols owner package");
   const catalog = await import(`${owner}/src/index.ts`);
   const icons: Record<string, { viewBox: string; body: string; sha256: string }> = {};
   for (const name of names) {

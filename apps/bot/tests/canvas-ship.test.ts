@@ -1,5 +1,5 @@
 import "./setup"; // must be first
-import { tempPath } from "@aphrody/paths";
+import { tempPath } from "@shenron/kit/paths";
 import { afterAll, describe, expect, test } from "bun:test";
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { join } from "node:path";

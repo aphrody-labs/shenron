@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Bun-only adapter: the same grounding/AI SDK contract, backed by the resident native engine. */
-import { NativeInference, type NativeInferenceOptions } from "@aphrody/inference";
+import { NativeInference, type NativeInferenceOptions } from "@shenron/kit/inference";
 import { createAphrodyChatModel } from "./chat";
 
 export const SHENRON_NATIVE_MODEL = "gemma-4-e2b-it-q4km";

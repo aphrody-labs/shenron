@@ -146,7 +146,7 @@ function normalizeKey(str: string): string {
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
-/** Client REST du bot (transport `@aphrody/discord-kit`, 429 et 5xx rejoués). */
+/** Client REST du bot (transport `@shenron/discord-kit`, 429 et 5xx rejoués). */
 const discord = clientDiscord(TOKEN);
 
 /** GET REST ; `null` si le salon est inaccessible (403/404) ou reste en échec. */

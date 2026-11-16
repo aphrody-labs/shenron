@@ -64,27 +64,7 @@ export async function run(): Promise<void> {
           : await lookup(registryUrl("npm", manifest.name, manifest.version)),
     });
   }
-  const rootManifest = (await Bun.file(join(root, "package.json")).json()) as {
-    workspaces?: { catalog?: Record<string, string> };
   };
-  const sdkName = "@aphrody/bun-runtime-sdk";
-  const sdkVersion = rootManifest.workspaces?.catalog?.[sdkName];
-  if (sdkVersion && /^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/.test(sdkVersion))
-    integrations.push({
-      name: sdkName,
-      version: sdkVersion,
-      source: "package.json#workspaces.catalog",
-      registry: await lookup(registryUrl("npm", sdkName, sdkVersion)),
-    });
-  const videoPackage = "@aphrody/bun-video";
-  const videoVersion = rootManifest.workspaces?.catalog?.[videoPackage];
-  if (videoVersion && /^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.-]+)?$/.test(videoVersion))
-    integrations.push({
-      name: videoPackage,
-      version: videoVersion,
-      source: "package.json#workspaces.catalog",
-      registry: await lookup(registryUrl("npm", videoPackage, videoVersion)),
-    });
   for (const folder of (await readdir(join(root, "crates"))).toSorted()) {
     const file = Bun.file(join(root, "crates", folder, "Cargo.toml"));
     if (!(await file.exists())) continue;

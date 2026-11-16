@@ -14,7 +14,7 @@ import type {
   ProviderPreference,
   TranslationConfig as TranslationSettings,
 } from "@shenron/koharu/protocol";
-import { Badge } from "@aphrody/m3-primitives";
+import { Badge } from "@shenron/m3-primitives";
 import { Popover, PopoverPopup, PopoverTrigger } from "../../../components/popover";
 import {
   Select,

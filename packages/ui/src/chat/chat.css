@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: Apache-2.0 */
-/* Material 3 chat surface (`ChatPanel`, assembled on @aphrody/m3-ai and @aphrody/m3-primitives).
+/* Material 3 chat surface (`ChatPanel`, assembled on @shenron/m3-ai and @shenron/m3-primitives).
    Builds only the M3 Tailwind utilities those components use (no preflight: the site keeps its
    base styles) and the Dragon Ball M3 scheme: tonal spot from the gi orange seed #e78220
    (material color utilities 0.4), dark like the site.
@@ -7,13 +7,13 @@
    portal) keeps its colours. */
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities) source(none);
-@import "@aphrody/m3-tokens/m3-tokens.css";
-@import "@aphrody/m3-theme/tailwind.css";
+@import "@shenron/m3-tokens/m3-tokens.css";
+@import "@shenron/m3-theme/tailwind.css";
 
 @source "./";
 /* Only the m3-ai / m3-primitives modules the surface renders (the full sources weigh ~450 KB). */
-@source "../../node_modules/@aphrody/m3-ai/src/{ChatComposer,MessageBubble,Markdown,ModelSelector,internal}.tsx";
-@source "../../node_modules/@aphrody/m3-primitives/src/{Banner,Button,CircleButton,Icon,Popover,SelectPill,base-ui}.tsx";
+@source "../../node_modules/@shenron/m3-ai/src/{ChatComposer,MessageBubble,Markdown,ModelSelector,internal}.tsx";
+@source "../../node_modules/@shenron/m3-primitives/src/{Banner,Button,CircleButton,Icon,Popover,SelectPill,base-ui}.tsx";
 
 :root,
 [data-shenron-chat] {

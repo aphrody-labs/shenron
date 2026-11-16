@@ -14,7 +14,7 @@ test("preserves isolated suites, quoted glob arguments and UI gate stages", () =
   ).toEqual([["bun", "test", "--isolate", "--path-ignore-patterns=**/*.live.test.ts", "tests/"]]);
   expect(
     splitGateScript(
-      "bun test && bun test/koharu/run.ts && bun test --preload @aphrody/bun-test-dom ./test/dom",
+      "bun test && bun test/koharu/run.ts && bun test --preload @shenron/test-dom ./test/dom",
     ),
   ).toHaveLength(3);
 });

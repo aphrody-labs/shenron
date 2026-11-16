@@ -3,13 +3,13 @@
 "use client";
 /**
  * Material 3 chat surface of Shenron Studio (list-detail canonical layout): the Shenron
- * assembly around `@aphrody/m3-ai` (`MessageBubble`, `ChatComposer`) — persisted
+ * assembly around `@shenron/m3-ai` (`MessageBubble`, `ChatComposer`) — persisted
  * conversations in a side pane, the streamed thread with its numbered citations, the
  * availability of the model. Transport, labels and availability are injected: the component
  * never fetches by itself and carries no text. Styles: `@shenron/ui/chat.css`.
  */
-import { ChatComposer, MessageBubble } from "@aphrody/m3-ai";
-import { Banner, Button } from "@aphrody/m3-primitives";
+import { ChatComposer, MessageBubble } from "@shenron/m3-ai";
+import { Banner, Button } from "@shenron/m3-primitives";
 import { Brain, CircleAlert, ExternalLink, MessageSquare, Plus, X } from "lucide-react";
 import { type MouseEvent, useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { safeMarkdownHref } from "../markdown";

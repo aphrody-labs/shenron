@@ -37,7 +37,7 @@ import {
   MAX_EPISODES_PAR_MESSAGE,
   type MenuEpisodes,
 } from "../src/lib/episode-menus";
-import { DiscordChannel } from "@aphrody/messaging";
+import { DiscordChannel } from "@shenron/discord-kit/messaging";
 import { clientDiscord, enParallele, jetonDiscord } from "./lib/discord-rest";
 
 // ── Constantes de publication ───────────────────────────────────────────────

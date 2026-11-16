@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { userHome } from "@aphrody/paths";
+import { userHome } from "@shenron/kit/paths";
 /**
  * orchestre-donnees.ts — la chaîne complète qui mène les données du dépôt
  * jusqu'à ce que l'API sert réellement.

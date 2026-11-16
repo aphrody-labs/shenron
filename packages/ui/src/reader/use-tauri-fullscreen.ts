@@ -20,7 +20,7 @@ import { isTauri } from "../studio/tauri-bridge";
 export async function setTauriWindowFullscreen(fullscreen: boolean): Promise<boolean> {
   if (!isTauri()) return false;
   try {
-    const { getCurrentWindow } = await import("@aphrody/api/window");
+    const { getCurrentWindow } = await import("@tauri-apps/api/window");
     await getCurrentWindow().setFullscreen(fullscreen);
     return true;
   } catch {
@@ -32,7 +32,7 @@ export async function setTauriWindowFullscreen(fullscreen: boolean): Promise<boo
 export async function isTauriWindowFullscreen(): Promise<boolean> {
   if (!isTauri()) return false;
   try {
-    const { getCurrentWindow } = await import("@aphrody/api/window");
+    const { getCurrentWindow } = await import("@tauri-apps/api/window");
     return await getCurrentWindow().isFullscreen();
   } catch {
     return false;

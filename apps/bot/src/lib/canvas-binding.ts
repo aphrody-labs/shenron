@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { dirname, join } from "node:path";
-import { isCompiledBinary } from "@aphrody/discord-kit";
+import { isCompiledBinary } from "@shenron/discord-kit";
 
 /** Compiled Bun modules live in a virtual filesystem; the addon ships beside the executable. */
 export async function configureCanvasBinding(

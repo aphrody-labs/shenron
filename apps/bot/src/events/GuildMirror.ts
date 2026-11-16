@@ -1,4 +1,4 @@
-import { createMonoGuildGuard } from "@aphrody/discord-kit";
+import { createMonoGuildGuard } from "@shenron/discord-kit";
 import type { Client } from "discord.js";
 import { Bot, Discord, Guard, On, Once, type ArgsOf } from "discordx";
 import { inject, injectable } from "tsyringe";

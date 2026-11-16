@@ -38,7 +38,7 @@ const SITE_DIR = join(REPO_ROOT, "apps", "site");
 const GLOBALS_PATH = join(SITE_DIR, "src", "app", "globals.css");
 const GLOBALS_GIT_PATH = "apps/site/src/app/globals.css";
 const PACKAGE_STYLES_GIT_PATH = "packages/ui/src/styles.css";
-const PACKAGE_IMPORT = /@import\s+["']@aphrody\/shenron-ui\/styles\.css["']\s*;/;
+const PACKAGE_IMPORT = /@import\s+["']@shenron\/ui\/styles\.css["']\s*;/;
 
 // ─── Compilation ────────────────────────────────────────────────────────────
 

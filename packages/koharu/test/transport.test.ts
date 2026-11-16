@@ -200,7 +200,7 @@ describe("outside Tauri", () => {
 
 describe("inside Tauri", () => {
   test("commands and channels are Tauri IPC", async () => {
-    // @aphrody/api reaches Tauri through `window`.
+    // @tauri-apps/api reaches Tauri through `window`.
     (globalThis as { window?: unknown }).window = globalThis;
     const invoked: { cmd: string; args: unknown }[] = [];
     const callbacks = new Map<number, (message: unknown) => void>();

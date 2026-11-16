@@ -89,14 +89,13 @@ jobs:
           echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
 
-      - name: Verify factory readiness and dependency access
+      - name: Verify factory readiness
         run: |
           set -euo pipefail
           for tool in cargo rustup cargo-nextest cargo-deny sccache pkg-config clang cmake; do
             command -v "$tool" >/dev/null
           done
           pkg-config --exists gtk4 fontconfig dbus-1 openssl
-          git ls-remote --exit-code https://github.com/aphrody-labs/aphrody.git HEAD >/dev/null
 
       - name: Toolchain
         run: rustup toolchain install

@@ -17,7 +17,7 @@
  * CRUNCHYROLL_PASSWORD + BUN_VIDEO_CRUNCHYROLL_BASIC_AUTHORIZATION. Without them the script reports
  * « not configured » and exits 0, so the timer that runs it is harmless until the credentials exist.
  */
-import { createCrunchyrollClient } from "@aphrody/bun-video/crunchyroll";
+import { createCrunchyrollClient } from "@shenron/video/crunchyroll";
 import {
   CRUNCHYROLL_SERIES_BY_SHENRON,
   mapCrunchyrollEpisodes,

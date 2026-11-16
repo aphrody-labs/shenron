@@ -28,8 +28,8 @@ import {
   type ModelResources,
   type ProjectInfo,
 } from "@shenron/koharu/protocol";
-import { Toaster } from "@aphrody/m3-primitives";
-import { TooltipProvider } from "@aphrody/m3-primitives";
+import { Toaster } from "@shenron/m3-primitives";
+import { TooltipProvider } from "@shenron/m3-primitives";
 import { AtlasPreviewContext, type AtlasPreviewFactory } from "./lib/atlas-preview";
 export type { AtlasPreviewFactory } from "./lib/atlas-preview";
 

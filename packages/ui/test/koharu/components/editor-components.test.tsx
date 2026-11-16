@@ -46,7 +46,7 @@ import {
   type Preferences,
   type ProjectInfo,
 } from "@shenron/koharu/protocol";
-import { TooltipProvider } from "@aphrody/m3-primitives";
+import { TooltipProvider } from "@shenron/m3-primitives";
 
 const nativeWindow = hoisted(() => ({
   close: vi.fn(async () => undefined),
@@ -59,9 +59,9 @@ const nativeWindow = hoisted(() => ({
 const nativeOpenUrl = hoisted(() => vi.fn(async () => undefined));
 const nativeGetVersion = hoisted(() => vi.fn(async () => "0.62.0"));
 
-mock.module("@aphrody/api/window", () => ({ getCurrentWindow: () => nativeWindow }));
-mock.module("@aphrody/api/app", () => ({ getVersion: nativeGetVersion }));
-mock.module("@aphrody/plugin-opener", () => ({ openUrl: nativeOpenUrl }));
+mock.module("@tauri-apps/api/window", () => ({ getCurrentWindow: () => nativeWindow }));
+mock.module("@tauri-apps/api/app", () => ({ getVersion: nativeGetVersion }));
+mock.module("@tauri-apps/plugin-opener", () => ({ openUrl: nativeOpenUrl }));
 
 const emptyCredential = () => ({ configured: false, value: null, clear: false });
 

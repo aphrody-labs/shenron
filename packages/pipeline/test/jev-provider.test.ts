@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
-import { code } from "bun:yolo";
-import { TypeSafeClient } from "@aphrody/typesafe-sdk";
+import { code } from "@shenron/decision";
+import { TypeSafeClient } from "@typesafe-ai/sdk";
 import { createCanonJudgmentPort, createTypesafeProvider } from "../src/ai/jev-provider";
 import type { CanonRelation, PublicCanonEvidence } from "../src/ai/canon-judgment";
 

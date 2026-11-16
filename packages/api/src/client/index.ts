@@ -9,7 +9,7 @@
  * client was created is honoured.
  */
 import type { z } from "zod";
-import { JsonTransportError, requestJson } from "@aphrody/http";
+import { JsonTransportError, requestJson } from "@shenron/kit/http";
 import {
   endpoints,
   fillPath,

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { tempPath } from "@aphrody/paths";
+import { tempPath } from "@shenron/kit/paths";
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "bun:test";
 import { mkdtempSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";

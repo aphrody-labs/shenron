@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { tempPath } from "@aphrody/paths";
+import { tempPath } from "@shenron/kit/paths";
 /**
  * Bridge A2A Unix socket — lanceur du broker Rust `aphrody a2a serve`
  * (crate aphrody-a2a-coord, module legacy_broker). Même contrat que l'ancien

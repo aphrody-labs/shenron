@@ -70,7 +70,7 @@ describe("pages publiques", () => {
     expect(readFileSync(join(SITE, "package.json"), "utf8")).not.toMatch(/shenron-dbxv2/);
     for (const file of walk(SRC)) {
       const text = readFileSync(file, "utf8");
-      expect(text).not.toMatch(/from\s+["']@aphrody\/shenron-dbxv2/);
+      expect(text).not.toMatch(/from\s+["']@shenron\/dbxv2/);
       expect(text).not.toMatch(/from\s+["'](?:\.\.?\/)+packages\/dbxv2/);
     }
   });

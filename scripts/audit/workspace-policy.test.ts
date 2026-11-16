@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import {
   PUBLIC_LIBRARY_FILES,
-  pinnedAphrodyDependency,
+  standaloneDependency,
   protectedPackagePath,
   publicationViolations,
   publicFileViolations,
@@ -91,53 +91,11 @@ test("source allowlists cannot conceal credentials, databases, provider stores o
   }
 });
 
-test("external capabilities use exact registry pins and local links remain confined to Shenron workspaces", () => {
+test("dependencies stay inside the workspace and never name an @aphrody package", () => {
   const local = new Set(["@shenron/api", "@shenron/config"]);
-  expect(pinnedAphrodyDependency("@shenron/api", "workspace:*", local)).toBe(true);
-  expect(pinnedAphrodyDependency("@shenron/unknown", "workspace:*", local)).toBe(false);
-  expect(pinnedAphrodyDependency("@aphrody/http", "workspace:*", new Set(["@aphrody/http"]))).toBe(
-    false,
-  );
-  expect(pinnedAphrodyDependency("@aphrody/http", "^0.1.1", local)).toBe(false);
-  expect(pinnedAphrodyDependency("@aphrody/http", "0.1.1", local)).toBe(true);
-  expect(pinnedAphrodyDependency("@aphrody/http", "file:../aphrody", local)).toBe(false);
-  expect(pinnedAphrodyDependency("@aphrody/bun-video", "1.4.4-video.1", local)).toBe(true);
+  expect(standaloneDependency("@shenron/api", "workspace:*", local)).toBe(true);
+  expect(standaloneDependency("@shenron/unknown", "workspace:*", local)).toBe(false);
+  expect(standaloneDependency("@aphrody/bun-video", "1.4.4", local)).toBe(false);
+  expect(standaloneDependency("hls.js", "1.7.4", local)).toBe(true);
 });
 
-test("the reviewed Bun Video npm archive requires its exact CDN identity, source and integrity", () => {
-  const name = "@aphrody/bun-video";
-  // Keep the qualified historical archive as a fixture when the application moves to npm pins.
-  const pin = {
-    name,
-    version: "1.4.4-video.1",
-    source: "8ae3009ee97d6768d58b0ff09e840ff68fb2e24c",
-    url: "https://dist.aphrody.app/packages/bun-video/1.4.4-video.1/db7590aff424cc85c783a316556b8552f780898f92d9765443092a5c69970056/package.tgz",
-    sha256: "db7590aff424cc85c783a316556b8552f780898f92d9765443092a5c69970056",
-    integrity:
-      "sha512-FMYE7oRCfy31vNA9MVhQYVwdueRdhsmmOr++KPk2J7NlhfKzfIyVxiVnY8Uhg/2ayXbgoVxKBix5COkXBE6QuQ==",
-  };
-  const archives = { [name]: pin };
-  const local = new Set<string>();
-  expect(pinnedAphrodyDependency(name, pin.url, local, archives)).toBe(true);
-  expect(pinnedAphrodyDependency(name, pin.url, local)).toBe(false);
-  expect(pinnedAphrodyDependency("@aphrody/other", pin.url, local, archives)).toBe(false);
-  for (const url of [
-    pin.url.replace("https:", "http:"),
-    pin.url.replace("dist.aphrody.app", "google.com"),
-    pin.url.replace("dist.aphrody.app", "secret@dist.aphrody.app"),
-    `${pin.url}?mutable=latest`,
-    pin.url.replace(pin.sha256, "latest"),
-  ]) {
-    expect(pinnedAphrodyDependency(name, url, local, { [name]: { ...pin, url } })).toBe(false);
-  }
-  for (const invalid of [
-    { source: "main" },
-    { integrity: "" },
-    { sha256: "short" },
-    { version: "latest" },
-  ]) {
-    expect(pinnedAphrodyDependency(name, pin.url, local, { [name]: { ...pin, ...invalid } })).toBe(
-      false,
-    );
-  }
-});

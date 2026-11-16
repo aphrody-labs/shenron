@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { copyFileSync, lstatSync, mkdirSync, readFileSync } from "node:fs";
 import { basename, join } from "node:path";
-import type { getHlsPublicAssets } from "@aphrody/bun-video/hls";
+import type { getHlsPublicAssets } from "@shenron/video/hls";
 
 type VideoAssets = Awaited<ReturnType<typeof getHlsPublicAssets>>;
 

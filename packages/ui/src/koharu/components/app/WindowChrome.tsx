@@ -1,6 +1,6 @@
 "use client";
 
-import { getCurrentWindow } from "@aphrody/api/window";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Copy, Minus, Square, X } from "lucide-react";
 import {
   useEffect,

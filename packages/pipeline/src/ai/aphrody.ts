@@ -15,8 +15,8 @@
  * checks (B18), and `ocr` defaults to the `ppocr` engine.
  */
 import type { z } from "zod";
-import { JsonTransportError, parseRetryAfter, requestJson } from "@aphrody/http";
-export { parseRetryAfter } from "@aphrody/http";
+import { JsonTransportError, parseRetryAfter, requestJson } from "@shenron/kit/http";
+export { parseRetryAfter } from "@shenron/kit/http";
 import { type AiTimeouts, chatTimeoutMs, DEFAULT_AI_TIMEOUTS, SHENRON_E5 } from "./config";
 import {
   APHRODY_LIMITS,

@@ -7,7 +7,7 @@ import { CanvasWorkspace } from "@shenron/ui/koharu/components/editor/CanvasWork
 import { pageKey, pagesKey, projectKey, queryClient } from "@shenron/ui/koharu/lib/queries";
 import { useKoharuStore } from "@shenron/ui/koharu/lib/store";
 import { commands, type Layer } from "@shenron/koharu/protocol";
-import { TooltipProvider } from "@aphrody/m3-primitives";
+import { TooltipProvider } from "@shenron/m3-primitives";
 
 const canvas = hoisted(() => ({
   resize: vi.fn(),

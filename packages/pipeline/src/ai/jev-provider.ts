@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** TypeSafe owns HTTP; Bun's Rust decision core owns validation and confidence abstention. */
-import { TypeSafeClient, type EntryType, type Questions } from "@aphrody/typesafe-sdk";
-import type { Provider } from "bun:yolo";
+import { TypeSafeClient, type EntryType, type Questions } from "@typesafe-ai/sdk";
+import type { Provider } from "@shenron/decision";
 import {
   CANON_JUDGMENT_POLICY,
   CANON_RELATION_CRITERIA,
@@ -37,7 +37,7 @@ export function createCanonJudgmentPort(provider: Provider): CanonJudgmentPort {
         return emptyCanonJudgment("no_public_evidence");
       const started = performance.now();
       try {
-        const { inspect, selections, confidenceThreshold, choice } = await import("bun:yolo");
+        const { inspect, selections, confidenceThreshold, choice } = await import("@shenron/decision");
         const minimum = confidenceThreshold(CANON_JUDGMENT_POLICY.minimumConfidence);
         const state = {
           question: input.question.trim().slice(0, CANON_JUDGMENT_POLICY.maxQuestionCharacters),

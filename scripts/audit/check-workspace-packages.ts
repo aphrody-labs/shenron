@@ -21,10 +21,9 @@ import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import {
   PUBLIC_LIBRARY_FILES,
-  pinnedAphrodyDependency,
+  standaloneDependency,
   publicationViolations,
   publicFileViolations,
-  type AphrodyArchivePin,
 } from "./workspace-policy";
 import {
   ASSET_CLASSES,
@@ -67,7 +66,7 @@ const PACKAGES: Readonly<Record<string, string>> = {
  * `bun:ffi` (CLAUDE.md, STACK §5). Everywhere else `bun:ffi` and `dlopen` stay offences.
  */
 const FFI_OWNER = "@shenron/native";
-const FFI_RULES: ReadonlySet<string> = new Set(["bun-ffi", "dlopen", "aphrody-native"]);
+const FFI_RULES: ReadonlySet<string> = new Set(["bun-ffi", "dlopen"]);
 
 /**
  * Allowed @shenron/* edges (docs/architecture/STACK.md §4.1). `dev` edges are allowed only
@@ -571,33 +570,12 @@ function checkCycles(): void {
   for (const node of [...graph.keys()].toSorted()) visit(node, []);
 }
 
-/**
- * Aphrody capabilities are consumed as registry packages or reviewed immutable npm archives, pinned exactly
- * (bunfig.toml), directly or through the root `workspaces.catalog`; no manifest links an external Aphrody checkout or a path outside the repo.
- */
+/** Shenron is standalone: workspace links stay inside the repository and no manifest depends on an @aphrody/* package. */
 function checkDependencyDirection(): void {
   const root = readJson<{
     workspaces?: { packages?: string[]; catalog?: Record<string, string> };
-    "shenron.packageArchives"?: Record<string, AphrodyArchivePin>;
   }>(join(ROOT, "package.json"));
   const catalog = root?.workspaces?.catalog ?? {};
-  const archives = root?.["shenron.packageArchives"] ?? {};
-  const lock = Bun.JSONC.parse(readFileSync(join(ROOT, "bun.lock"), "utf8")) as {
-    packages?: Record<string, unknown[]>;
-  };
-  for (const [name, pin] of Object.entries(archives)) {
-    const entry = lock.packages?.[name];
-    if (
-      catalog[name] !== pin.url ||
-      entry?.[0] !== `${name}@${pin.url}` ||
-      entry?.at(-1) !== pin.integrity
-    )
-      report(
-        "workspace",
-        "direction",
-        `${name} archive catalog, lock URL or SHA-512 integrity disagrees with the reviewed pin`,
-      );
-  }
   for (const workspace of root?.workspaces?.packages ?? []) {
     if (workspace.startsWith("../"))
       report("workspace", "direction", `workspace glob ${workspace} leaves the repository`);
@@ -644,15 +622,8 @@ function checkDependencyDirection(): void {
             `${where} links ${name} outside the repository (${version})`,
           );
         const pinned = version === "catalog:" ? (catalog[name] ?? version) : version;
-        if (
-          name.startsWith("@aphrody/") &&
-          !pinnedAphrodyDependency(name, pinned, localIdentities, archives)
-        )
-          report(
-            "workspace",
-            "direction",
-            `${where} depends on ${name}@${pinned}, not an exact pin`,
-          );
+        if (!standaloneDependency(name, pinned, localIdentities))
+          report("workspace", "direction", `${where} depends on ${name}@${pinned}`);
       }
     }
   }
@@ -661,15 +632,12 @@ function checkDependencyDirection(): void {
 // ── Application boundaries (§4.2) ────────────────────────────────────────────
 
 function checkApps(): void {
-  // apps/bot: no bun:ffi, @aphrody/bun, drawM3Scene*.
+  // apps/bot: no bun:ffi, drawM3Scene*.
   for (const file of sourceFiles(join(ROOT, "apps", "bot"))) {
     const source = readFileSync(file, "utf8");
     const rel = toPosix(relative(ROOT, file));
     for (const { specifier } of importSpecifiers(source)) {
       if (specifier === "bun:ffi") report("apps/bot", "boundary", `${rel} imports bun:ffi`);
-      if (specifier === "@aphrody/bun" || specifier.startsWith("@aphrody/bun/")) {
-        report("apps/bot", "boundary", `${rel} imports ${specifier}`);
-      }
     }
     if (/\bdrawM3Scene\w*/.test(stripNonCode(source)))
       report("apps/bot", "boundary", `${rel} uses drawM3Scene`);
@@ -708,7 +676,7 @@ function checkApps(): void {
   }
 
   // transpilePackages covers every first-rank @shenron/* dependency of the site.
-  // withBun (@aphrody/next-bun) detects workspace packages publishing TypeScript sources automatically.
+  // withBun (@shenron/next-host) detects workspace packages publishing TypeScript sources automatically.
   const site = readJson<Manifest>(join(ROOT, "apps", "site", "package.json"));
   const nextConfigFile = join(ROOT, "apps", "site", "next.config.ts");
   const nextConfig = existsSync(nextConfigFile) ? readFileSync(nextConfigFile, "utf8") : "";

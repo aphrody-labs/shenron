@@ -5,7 +5,7 @@
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "bun:test";
-import { Toaster, TooltipProvider } from "@aphrody/m3-primitives";
+import { Toaster, TooltipProvider } from "@shenron/m3-primitives";
 import type { ReactNode } from "react";
 
 import {

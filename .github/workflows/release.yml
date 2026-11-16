@@ -92,17 +92,6 @@ jobs:
         with:
           ref: ${{ github.event.inputs.tag || github.ref }}
           persist-credentials: false
-      - name: Check Aphrody access
-        shell: bash
-        env:
-          APHRODY_GIT_TOKEN: ${{ secrets.APHRODY_GIT_TOKEN }}
-        run: |
-          if [ -z "$APHRODY_GIT_TOKEN" ]; then
-            echo "::error::APHRODY_GIT_TOKEN is required (private Aphrody git dependencies)"
-            exit 1
-          fi
-          git config --global url."https://x-access-token:${APHRODY_GIT_TOKEN}@github.com/aphrody-labs/".insteadOf \
-            "https://github.com/aphrody-labs/"
       - name: Linux system dependencies
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev build-essential file

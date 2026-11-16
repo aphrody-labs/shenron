@@ -2,7 +2,7 @@
 
 # Shenron / M3 reader consolidation — 2026-10-05
 
-The three copied readers now delegate to `@aphrody/m3-reader/source`.
+The three copied readers now delegate to `@shenron/m3-reader/source`.
 Both CSS exports import that owner's styles and Dragon Ball skin. The public
 reader names, types and host adapters are retained. Focus handling is shared
 with M3; nested modals and fullscreen lifetime use the qualified common hooks.

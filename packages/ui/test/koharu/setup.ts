@@ -27,7 +27,7 @@ mock.module("react-i18next", () => ({
   I18nextProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
-mock.module("@aphrody/api/window", () => {
+mock.module("@tauri-apps/api/window", () => {
   const window = {
     close: vi.fn(async () => undefined),
     isMaximized: vi.fn(async () => false),

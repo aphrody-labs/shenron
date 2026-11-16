@@ -3,7 +3,7 @@
   "themes": [
     {
       "dark": true,
-      "tokensOwner": "@aphrody/m3-tokens/dynamic-color",
+      "tokensOwner": "@shenron/m3-tokens/dynamic-color",
       "seed": "#74623c",
       "timecodeSeconds": 349.974625,
       "frameSha256": "8a9e141b2de8858a0bbb210df98b44bd70a7f19778ccc80f716c330f06ac4d86",
@@ -72,7 +72,7 @@
     },
     {
       "dark": true,
-      "tokensOwner": "@aphrody/m3-tokens/dynamic-color",
+      "tokensOwner": "@shenron/m3-tokens/dynamic-color",
       "seed": "#fcec6b",
       "timecodeSeconds": 479.9795,
       "frameSha256": "058f4a8bcbdc692481bb88c0aaa46dc9e7b641b1277d836df091a3d570506d71",
@@ -141,7 +141,7 @@
     },
     {
       "dark": true,
-      "tokensOwner": "@aphrody/m3-tokens/dynamic-color",
+      "tokensOwner": "@shenron/m3-tokens/dynamic-color",
       "seed": "#03091c",
       "timecodeSeconds": 779.9875416666666,
       "frameSha256": "d479e62e2c1fb2f9831fc14359dd9f6b246557c987ff73e31bedf8ddd595a48e",
@@ -210,7 +210,7 @@
     },
     {
       "dark": true,
-      "tokensOwner": "@aphrody/m3-tokens/dynamic-color",
+      "tokensOwner": "@shenron/m3-tokens/dynamic-color",
       "seed": "#3c4264",
       "timecodeSeconds": 1024.9822916666667,
       "frameSha256": "5a14deaa7bc757aee5d923e3cae735bec24907745d289edaeaee69989e523bae",
@@ -279,7 +279,7 @@
     },
     {
       "dark": true,
-      "tokensOwner": "@aphrody/m3-tokens/dynamic-color",
+      "tokensOwner": "@shenron/m3-tokens/dynamic-color",
       "seed": "#e2ebfc",
       "timecodeSeconds": 1139.9721666666667,
       "frameSha256": "a6bdbd6d10711f29be04b0eb4f4a5c8d44f212ad98e859a137a5246a4b236685",
@@ -348,7 +348,7 @@
     },
     {
       "dark": true,
-      "tokensOwner": "@aphrody/m3-tokens/dynamic-color",
+      "tokensOwner": "@shenron/m3-tokens/dynamic-color",
       "seed": "#c42b2a",
       "timecodeSeconds": 1209.95875,
       "frameSha256": "94c9365a374b117473bd6e98f8636088e29b2d4acf6f3e6b3975244c8345d50c",

@@ -57,7 +57,7 @@ type Health = Pick<LocalHealthResponse, "ok" | "version" | "profile" | "localRag
 
 async function openExternal(url: string): Promise<void> {
   if (isTauri()) {
-    const { openUrl } = await import("@aphrody/plugin-opener");
+    const { openUrl } = await import("@tauri-apps/plugin-opener");
     await openUrl(url);
   } else {
     window.open(url, "_blank", "noopener,noreferrer");

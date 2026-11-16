@@ -11,7 +11,7 @@ import {
   initApplicationCommandsSafe,
   registerGracefulShutdown,
   resolveGrantedIntents,
-} from "@aphrody/discord-kit";
+} from "@shenron/discord-kit";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
 import { env } from "./lib/env";
 import { admittedGuildIds } from "./lib/guild-admission";

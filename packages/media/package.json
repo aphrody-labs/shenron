@@ -38,8 +38,8 @@
   },
   "dependencies": {
     "@shenron/filmcraft": "workspace:*",
-    "@aphrody/http": "catalog:",
     "@shenron/hyperframes": "workspace:*",
+    "@shenron/kit": "workspace:*",
     "@shenron/remotion": "workspace:*",
     "mediabunny": "catalog:"
   },

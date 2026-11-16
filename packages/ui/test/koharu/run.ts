@@ -16,7 +16,7 @@ for (const file of files) {
       "--timeout",
       timeout,
       "--preload",
-      "@aphrody/bun-test-dom",
+      "@shenron/test-dom",
       "--preload",
       "./test/koharu/setup.ts",
       ...extra,
