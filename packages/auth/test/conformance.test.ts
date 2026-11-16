@@ -44,7 +44,7 @@ describe("ports conformance", () => {
     const dir = join(import.meta.dir, "..", "src");
     for (const file of readdirSync(dir)) {
       if (!file.endsWith(".ts")) continue;
-      expect(readFileSync(join(dir, file), "utf8")).not.toMatch(/from\s+["']@aphrody\/shenron-db/);
+      expect(readFileSync(join(dir, file), "utf8")).not.toMatch(/from\s+["']@shenron\/db/);
     }
   });
 });

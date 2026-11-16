@@ -59,7 +59,7 @@ describe("@shenron/auth portability", () => {
 
   test("never imports @shenron/db, server-only or an app env module", () => {
     for (const { file, code } of sources()) {
-      expect({ file, db: /["']@aphrody\/shenron-db/.test(code) }).toEqual({ file, db: false });
+      expect({ file, db: /["']@shenron\/db/.test(code) }).toEqual({ file, db: false });
       expect({ file, so: /["']server-only["']/.test(code) }).toEqual({ file, so: false });
       expect({ file, env: /["'](?:@|~)\/lib\/env["']/.test(code) }).toEqual({ file, env: false });
     }
