@@ -693,7 +693,7 @@ mod tests {
         let r2 =
             TruncationReport::build(&analysis, WarningMode::Once, &r1.signatures_seen, 3).unwrap();
         assert!(!r2.warning_shown);
-        assert!(r2.lines.is_empty());
+        assert_eq!(r2.lines.len(), 0);
     }
 
     #[test]
@@ -730,6 +730,6 @@ mod tests {
         let (_i, analysis) = apply(&budget, &[input("SOUL.md", "abcdef")]);
         let r = TruncationReport::build(&analysis, WarningMode::Off, &[], 3).unwrap();
         assert!(!r.warning_shown);
-        assert!(r.signatures_seen.is_empty());
+        assert_eq!(r.signatures_seen.len(), 0);
     }
 }

@@ -129,7 +129,7 @@ fn Dashboard(session: Session, on_logout: EventHandler<()>) -> Element {
         .iter()
         .find(|p| p["id"].as_str() == Some(selected().as_str()))
         .and_then(|p| p["title"].as_str().map(str::to_string))
-        .unwrap_or_else(|| selected());
+        .unwrap_or_else(&*selected);
 
     rsx! {
         div { class: "shell",

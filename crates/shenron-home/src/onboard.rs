@@ -491,9 +491,9 @@ mod tests {
 
         // Second run is idempotent: everything kept, no new backups or upgrades
         let second_report = upgrade_workspace(&opts).unwrap();
-        assert!(second_report.upgraded.is_empty());
-        assert!(second_report.created.is_empty());
-        assert!(second_report.backups.is_empty());
+        assert_eq!(second_report.upgraded.len(), 0);
+        assert_eq!(second_report.created.len(), 0);
+        assert_eq!(second_report.backups.len(), 0);
         assert!(second_report.kept.contains(&SOUL_FILENAME.to_string()));
         assert!(second_report.kept.contains(&AGENTS_FILENAME.to_string()));
         assert!(second_report.kept.contains(&USER_FILENAME.to_string()));

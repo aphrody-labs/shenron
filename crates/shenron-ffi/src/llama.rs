@@ -125,8 +125,6 @@ struct ModelConfig {
     id: String,
     model: String,
     #[serde(default)]
-    sha256: Option<String>,
-    #[serde(default)]
     lora: Vec<LoraConfig>,
     #[serde(default)]
     ctx: Option<u32>,
@@ -137,8 +135,6 @@ struct ModelConfig {
 #[derive(Debug, Clone, Deserialize)]
 struct LoraConfig {
     spec: String,
-    #[serde(default)]
-    sha256: Option<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]

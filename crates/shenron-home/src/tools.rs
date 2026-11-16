@@ -89,7 +89,7 @@ mod tests {
     #[test]
     fn body_only_is_retained() {
         let d = ToolsDoc::parse("Use the bash tool for shell access.\n");
-        assert!(d.tools.is_empty());
+        assert_eq!(d.tools.len(), 0);
         assert!(d.body.contains("bash tool"));
     }
 

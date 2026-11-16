@@ -660,8 +660,8 @@ mod tests {
     #[test]
     fn parse_doctags_does_not_fall_back_to_plain_text() {
         // The strict parser is what a DocTags-only caller wants.
-        assert!(Document::parse_doctags("just prose").blocks.is_empty());
-        assert!(!Document::parse("just prose").blocks.is_empty());
+        assert_eq!(Document::parse_doctags("just prose").blocks.len(), 0);
+        assert_ne!(Document::parse("just prose").blocks.len(), 0);
     }
 
     #[test]

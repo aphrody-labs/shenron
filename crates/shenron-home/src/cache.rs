@@ -388,7 +388,7 @@ mod tests {
         let state = WorkspaceState::load(td.path()).unwrap();
         assert_eq!(state.version, WORKSPACE_STATE_VERSION);
         assert!(!state.is_setup_completed());
-        assert!(state.cache.is_empty());
+        assert_eq!(state.cache.len(), 0);
     }
 
     #[test]

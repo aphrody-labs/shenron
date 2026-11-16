@@ -486,7 +486,7 @@ mod tests {
         ]);
         assert!(!report.has_blocking());
         assert_eq!(report.finding_count(), 0);
-        assert!(report.flagged.is_empty());
+        assert_eq!(report.flagged.len(), 0);
     }
 
     #[test]

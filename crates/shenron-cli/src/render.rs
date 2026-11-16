@@ -72,18 +72,6 @@ impl Format {
         }
     }
 
-    /// Conventional file extension, for `--out report.<ext>`.
-    #[must_use]
-    pub const fn extension(self) -> &'static str {
-        match self {
-            Self::Text => "txt",
-            Self::Json => "json",
-            Self::Markdown => "md",
-            Self::Html => "html",
-            Self::Csv => "csv",
-        }
-    }
-
     /// Guess a format from an output path's extension.
     #[must_use]
     pub fn from_extension(path: &str) -> Option<Self> {
@@ -414,8 +402,6 @@ mod tests {
         assert_eq!(Format::from_extension("report.pdf"), None);
         // A bare name is not an extension.
         assert_eq!(Format::from_extension("report"), None);
-        assert_eq!(Format::Markdown.extension(), "md");
-        assert_eq!(Format::Text.extension(), "txt");
     }
 
     #[test]

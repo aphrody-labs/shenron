@@ -25,7 +25,7 @@ pub use native::with_captured_stdio;
 mod native {
     use std::{
         fs::File,
-        io::{Read, Seek, SeekFrom, Write},
+        io::{Seek, SeekFrom, Write},
     };
 
     #[cfg(unix)]
@@ -70,7 +70,7 @@ mod native {
     /// Rewind a temp file and read it as a lossy-UTF-8 string.
     fn read_to_string(mut file: File) -> String {
         let mut bytes = Vec::new();
-        if file.seek(SeekFrom::Start(0)).is_ok() && file.read_to_end(&mut bytes).is_ok() {
+        if file.seek(SeekFrom::Start(0)).is_ok() && std::io::copy(&mut file, &mut bytes).is_ok() {
             String::from_utf8_lossy(&bytes).into_owned()
         } else {
             String::new()

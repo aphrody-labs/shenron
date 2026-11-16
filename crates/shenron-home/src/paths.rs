@@ -138,6 +138,33 @@ pub fn named_profile_workspace(state: &Path, profile: &str) -> PathBuf {
     if canonical.is_dir() { canonical } else { state.join(format!("workspace-{name}")) }
 }
 
+/// A named directory directly under the state directory.
+///
+/// # Errors
+/// Propagates [`state_dir`].
+#[cfg(not(target_arch = "wasm32"))]
+pub fn state_subdir(name: &str) -> Result<PathBuf, HomeError> {
+    Ok(state_dir()?.join(name))
+}
+
+/// OCR results directory (`<state>/ocr`).
+///
+/// # Errors
+/// Propagates [`state_dir`].
+#[cfg(not(target_arch = "wasm32"))]
+pub fn ocr_dir() -> Result<PathBuf, HomeError> {
+    state_subdir("ocr")
+}
+
+/// Vector stores directory (`<state>/vector`).
+///
+/// # Errors
+/// Propagates [`state_dir`].
+#[cfg(not(target_arch = "wasm32"))]
+pub fn vector_dir() -> Result<PathBuf, HomeError> {
+    state_subdir("vector")
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -180,31 +207,4 @@ mod tests {
         assert_eq!(sanitize_profile("...x..."), "x");
         assert_eq!(sanitize_profile("///"), "");
     }
-}
-
-/// A named directory directly under the state directory.
-///
-/// # Errors
-/// Propagates [`state_dir`].
-#[cfg(not(target_arch = "wasm32"))]
-pub fn state_subdir(name: &str) -> Result<PathBuf, HomeError> {
-    Ok(state_dir()?.join(name))
-}
-
-/// OCR results directory (`<state>/ocr`).
-///
-/// # Errors
-/// Propagates [`state_dir`].
-#[cfg(not(target_arch = "wasm32"))]
-pub fn ocr_dir() -> Result<PathBuf, HomeError> {
-    state_subdir("ocr")
-}
-
-/// Vector stores directory (`<state>/vector`).
-///
-/// # Errors
-/// Propagates [`state_dir`].
-#[cfg(not(target_arch = "wasm32"))]
-pub fn vector_dir() -> Result<PathBuf, HomeError> {
-    state_subdir("vector")
 }

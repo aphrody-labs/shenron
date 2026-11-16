@@ -64,26 +64,6 @@ pub struct ChunkRecord {
     pub token_count: usize,
 }
 
-/// Metadata written atomically with a document's replacement chunks.
-pub(crate) struct NewDoc<'a> {
-    pub path: &'a str,
-    pub hash: &'a str,
-    pub title: Option<&'a str>,
-    pub language: Option<&'a str>,
-    pub mtime_ms: i64,
-    pub size_bytes: i64,
-}
-
-/// Chunk fields written together with a document replacement.
-pub(crate) struct NewChunk {
-    pub heading: Option<String>,
-    pub symbol: Option<String>,
-    pub content: String,
-    pub start_line: usize,
-    pub end_line: usize,
-    pub token_count: usize,
-}
-
 /// A retrieved chunk paired with a retrieval score and provenance channel.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ScoredChunk {
@@ -244,56 +224,6 @@ impl RagStore {
             .optional()?;
 
         Ok(record)
-    }
-
-    /// Upsert one document and replace all of its chunks atomically.
-    pub(crate) async fn upsert_doc_chunks(
-        &self,
-        doc: NewDoc<'_>,
-        chunks: &[NewChunk],
-    ) -> Result<Vec<i64>> {
-        let NewDoc { path, hash, title, language, mtime_ms, size_bytes } = doc;
-        let mut conn = self.conn.lock().await;
-        let tx = conn.transaction()?;
-        tx.execute(
-            r#"
-            INSERT INTO docs (path, hash, title, language, mtime_ms, size_bytes)
-            VALUES (?1, ?2, ?3, ?4, ?5, ?6)
-            ON CONFLICT(path) DO UPDATE SET
-                hash = excluded.hash,
-                title = excluded.title,
-                language = excluded.language,
-                mtime_ms = excluded.mtime_ms,
-                size_bytes = excluded.size_bytes,
-                created_at = datetime('now')
-            "#,
-            params![path, hash, title, language, mtime_ms, size_bytes],
-        )?;
-        let doc_id: i64 =
-            tx.query_row("SELECT id FROM docs WHERE path = ?1", [path], |row| row.get(0))?;
-        tx.execute("DELETE FROM chunks WHERE doc_id = ?1", [doc_id])?;
-        let mut ids = Vec::with_capacity(chunks.len());
-        for chunk in chunks {
-            tx.execute(
-                r#"
-                INSERT INTO chunks (doc_id, chunk_index, heading, symbol, content, start_line, end_line, token_count)
-                VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8)
-                "#,
-                params![
-                    doc_id,
-                    ids.len() as i64,
-                    chunk.heading,
-                    chunk.symbol,
-                    chunk.content,
-                    chunk.start_line as i64,
-                    chunk.end_line as i64,
-                    chunk.token_count as i64,
-                ],
-            )?;
-            ids.push(tx.last_insert_rowid());
-        }
-        tx.commit()?;
-        Ok(ids)
     }
 
     /// Delete a document and its associated chunks / vectors (via cascade).

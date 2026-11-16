@@ -395,7 +395,7 @@ mod tests {
         let mut result = with_blocks(&["Dragon Ball", "ブイジャンプ"]);
         result.drop_noise_blocks();
         assert_eq!(result.blocks.len(), 2);
-        assert!(result.quality.reasons.is_empty());
+        assert_eq!(result.quality.reasons.len(), 0);
     }
 
     #[test]
@@ -428,7 +428,7 @@ mod tests {
         assert_eq!(result.page_id, "lot/1.jpg");
         assert_eq!(result.markdown.as_deref(), Some("hi"));
         assert_eq!(result.status, OcrStatus::Text);
-        assert!(result.attempts.is_empty());
+        assert_eq!(result.attempts.len(), 0);
     }
 
     #[test]
