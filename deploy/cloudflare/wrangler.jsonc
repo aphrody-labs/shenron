@@ -1,9 +1,9 @@
 {
   "name": "shenron-cdn",
   "main": "cdn-worker.ts",
-  "account_id": "ca22c1a51a145f919b54afa18d936516",
   "compatibility_date": "2026-10-11",
   "workers_dev": false,
+  "routes": [{ "pattern": "cdn.dragonballfr.com/*", "zone_name": "dragonballfr.com" }],
   "r2_buckets": [{ "binding": "CDN", "bucket_name": "shenron-cdn" }],
   "vars": {
     "IMPORT_ENABLED": "false",
@@ -11,9 +11,6 @@
     "DYNAMIC_ORIGIN": "",
     "GARAGE_ORIGIN": "",
     "MANIFEST_PREFIX": "_migration/manifests/",
-    "MANIFEST_SHARD_HASHES_0": {},
-    "MANIFEST_SHARD_HASHES_1": {},
-    "MANIFEST_SHARD_HASHES_2": {},
-    "MANIFEST_SHARD_HASHES_3": {},
+    // MANIFEST_SHARD_HASHES_0..3 are written by the migration and kept on deploy (wrangler deploy --keep-vars).
   },
 }

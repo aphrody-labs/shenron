@@ -1,0 +1,32 @@
+name: edge
+
+# The shenron Cloudflare edge (deploy/cloudflare): deploys the shenron-cdn Worker on every push touching it. The account,
+# its tunnels, buckets and the other projects are listed in aphrody-labs/ay device/cloudflare/projects.toml.
+# --keep-vars: the MANIFEST_SHARD_HASHES_* bindings are written by the migration, not by this repository.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "deploy/cloudflare/**"
+      - ".github/workflows/edge.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: edge
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: oven-sh/setup-bun@v2
+      - name: Deploy shenron-cdn
+        working-directory: deploy/cloudflare
+        run: bunx wrangler@4.161.0 deploy -c wrangler.jsonc --keep-vars
