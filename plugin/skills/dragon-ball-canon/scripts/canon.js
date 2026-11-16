@@ -1,7 +1,7 @@
 // @bun
 // Généré par scripts/plugin/build-references.ts — ne pas éditer.
 // Sources : apps/site/src/lib/canon-engine.ts, scripts/plugin/src/canon.ts
-// Révision : aa6240b0+modifications (2026-10-15)
+// Révision : 3b23ca81 (2026-11-16)
 // apps/site/src/lib/canon-engine.ts
 var CANON_TIERS = [
   "CANON_ABSOLU",
@@ -2150,7 +2150,7 @@ var CATEGORIES = new Set([
 // scripts/plugin/src/canon.ts
 function instantane() {
   try {
-    return { revision: "aa6240b0+modifications", date: "2026-10-15", source: "apps/site/src/lib/canon-engine.ts" };
+    return { revision: "3b23ca81", date: "2026-11-16", source: "apps/site/src/lib/canon-engine.ts" };
   } catch {
     return { revision: "d\xE9p\xF4t", date: "courante", source: "apps/site/src/lib/canon-engine.ts" };
   }

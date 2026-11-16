@@ -10,8 +10,8 @@
   "packages/config/src/economy-canon.ts",
   "packages/config/src/shenron-corpus.ts"
  ],
- "revision": "6ad93e79+modifications",
- "date": "2026-11-13",
+ "revision": "3b23ca81",
+ "date": "2026-11-16",
  "statut": "Chaque enregistrement est établi par la source qu'il cite (instantané) ; un thème de non_embarque est non établi hors ligne.",
  "donnees": {
   "hierarchie_sources": {

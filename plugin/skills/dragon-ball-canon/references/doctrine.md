@@ -3,7 +3,7 @@
 <!-- Généré par scripts/plugin/build-references.ts — ne pas éditer. Sources : apps/site/src/lib/canon-engine.ts. -->
 
 > **Instantané hors ligne** — sources du dépôt Shenron (`apps/site/src/lib/canon-engine.ts`),
-> révision `aa6240b0+modifications` du 2026-10-15. Citer cette révision et cette date avec toute
+> révision `3b23ca81` du 2026-11-16. Citer cette révision et cette date avec toute
 > réponse tirée d'ici ; une source vivante plus récente peut avoir changé.
 
 Doctrine **livrée avec le dépôt** (défauts de `canon-engine.ts`). La doctrine de

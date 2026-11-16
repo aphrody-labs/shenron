@@ -3,22 +3,22 @@
   "bun": "1.4.5",
   "sorties": {
     "plugin/skills/dragon-ball-canon/references/doctrine.md": {
-      "revision": "aa6240b0+modifications",
-      "date": "2026-10-15",
+      "revision": "3b23ca81",
+      "date": "2026-11-16",
       "sources": {
         "apps/site/src/lib/canon-engine.ts": "d611bfc31d4762d0409c898062b13170b76bbc5eee518ac8fa7a30dfd63647f9",
         "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
       },
-      "sha256": "923214a01d9d091f0a0c31e2c984dace82e15b13c19196490a1866cdd823615f"
+      "sha256": "b157c4110079db7b1bee51c0ea3f31d90147c3628d91c4c92501aa7ff55cb0b9"
     },
     "plugin/skills/dragon-ball-canon/scripts/canon.js": {
-      "revision": "aa6240b0+modifications",
-      "date": "2026-10-15",
+      "revision": "3b23ca81",
+      "date": "2026-11-16",
       "sources": {
         "apps/site/src/lib/canon-engine.ts": "d611bfc31d4762d0409c898062b13170b76bbc5eee518ac8fa7a30dfd63647f9",
         "scripts/plugin/src/canon.ts": "cb45d2b0a2d7710eceb86e5d1ca5cd0adda6a42236734ec20402e045f8012c18"
       },
-      "sha256": "c71115061e1b6832435a7240680ce4a7105776c40473fc0f068345f955dde4fd",
+      "sha256": "42d71f454560680d7791106d35beb93e69fb9436c7ce491573334f480b21da8d",
       "paquet": true
     },
     "plugin/skills/dragon-ball-japonais/references/lexique-canonique.json": {
@@ -55,8 +55,8 @@
       "paquet": true
     },
     "plugin/skills/dragon-ball/references/faits.json": {
-      "revision": "6ad93e79+modifications",
-      "date": "2026-11-13",
+      "revision": "3b23ca81",
+      "date": "2026-11-16",
       "sources": {
         "apps/bot/data/manga-spin-offs-manifest.json": "3f60e80771792afc426dce8a79dc2eb28c322d8b477e8e891446f05332d71b28",
         "apps/site/data/illustrations-lieux-objets.json": "742b9fbf223be6215658acf27d6c3592e6ec5d5fffe434e79cc4e006f75e48f2",
@@ -69,11 +69,11 @@
         "scripts/plugin/faits.ts": "4b43483cf9142968c5b3f671cd72118c9ffbf0b480f46c8639ac915503ffbd74",
         "scripts/plugin/src/faits-sources.ts": "8cb527beb11aff0b6687fea023178fdb06923e816ef158569d3a9ed7d81e5312"
       },
-      "sha256": "41a1fae86ea191f2169818f3332979385322bef8089b7bd6def8d9a860b01d03"
+      "sha256": "7d34fee105f45fd7206c9e8566f56acfe34c3f554fbe6d00e3f969f234ff21b3"
     },
     "plugin/skills/dragon-ball/references/faits.md": {
-      "revision": "6ad93e79+modifications",
-      "date": "2026-11-13",
+      "revision": "3b23ca81",
+      "date": "2026-11-16",
       "sources": {
         "apps/bot/data/manga-spin-offs-manifest.json": "3f60e80771792afc426dce8a79dc2eb28c322d8b477e8e891446f05332d71b28",
         "apps/site/data/illustrations-lieux-objets.json": "742b9fbf223be6215658acf27d6c3592e6ec5d5fffe434e79cc4e006f75e48f2",
@@ -85,7 +85,7 @@
         "packages/config/src/shenron-corpus.ts": "24063bf4cf4d53f8940c6f638ed138c8d963bf3ef84beba339e54de34d55af6f",
         "scripts/plugin/faits.ts": "4b43483cf9142968c5b3f671cd72118c9ffbf0b480f46c8639ac915503ffbd74"
       },
-      "sha256": "c7407fbac5bd7f1048c0112786281115c1c911d45c97fc9f394e1647ef941e9d"
+      "sha256": "55e87e2c346a27269d198c5322fdf74ffd85cd52a688bde6c55dfa847330517a"
     },
     "plugin/skills/toriyama-svg/references/mesures/couverture-analyse-visuelle.md": {
       "revision": "inconnue",
