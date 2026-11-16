@@ -1,6 +1,7 @@
 {
   "name": "@shenron/m3-tokens",
   "version": "1.0.0",
+  "private": true,
   "description": "Material 3 design tokens (--md-sys-*) for Material Web: MUI-theme → M3 token CSS generation and runtime Material You dynamic colour via material-color-utilities.",
   "license": "Apache-2.0",
   "type": "module",
@@ -24,7 +25,6 @@
   "engines": {
     "bun": ">=1.4.3"
   },
-  "private": true,
   "shenron": {
     "runtime": {
       "*": "pure"

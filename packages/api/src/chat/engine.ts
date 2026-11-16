@@ -8,11 +8,7 @@
  * owner (relevant memories recalled beside the sources, salient facts of the message written
  * after the answer). Runtime class: `bun`.
  */
-import type {
-  ConversationStore,
-  Message,
-  StoredCitation,
-} from "@shenron/db/conversations/types";
+import type { ConversationStore, Message, StoredCitation } from "@shenron/db/conversations/types";
 import type { QueryEmbedder, RagHit as VfsHit, VfsRag } from "@shenron/db/vfs";
 import {
   buildGroundingInstructions,

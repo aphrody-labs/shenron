@@ -3,11 +3,7 @@
 
 import { useState, useMemo } from "react";
 import { ShenronGpuCanvas } from "@/components/canvas/ShenronGpuCanvas";
-import type {
-  CanvasBackendPreference,
-  KiParticleConfig,
-  MangaBoard,
-} from "@shenron/engine";
+import type { CanvasBackendPreference, KiParticleConfig, MangaBoard } from "@shenron/engine";
 
 const KI_THEMES = [
   {

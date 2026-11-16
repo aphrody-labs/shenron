@@ -6,7 +6,11 @@ export interface HlsPlaybackInstance<Media> {
   destroy(): void;
 }
 
-export interface HlsPlaybackConstructor<Media, Config, Instance extends HlsPlaybackInstance<Media>> {
+export interface HlsPlaybackConstructor<
+  Media,
+  Config,
+  Instance extends HlsPlaybackInstance<Media>,
+> {
   new (config?: Config): Instance;
   isSupported?(): boolean;
 }
@@ -29,7 +33,9 @@ function httpUrl(value: string, base?: string): URL {
 }
 
 export function attachHlsPlayback<
-  Media extends { ownerDocument?: { URL?: string; baseURI?: string; location?: { href: string } | null } },
+  Media extends {
+    ownerDocument?: { URL?: string; baseURI?: string; location?: { href: string } | null };
+  },
   Config extends object,
   Instance extends HlsPlaybackInstance<Media>,
 >(

@@ -52,7 +52,10 @@ export function isHlsSource(source: string): boolean {
   }
 }
 
-export function createVideoPlayback(video: HTMLVideoElement, options: VideoPlaybackOptions): VideoPlayback {
+export function createVideoPlayback(
+  video: HTMLVideoElement,
+  options: VideoPlaybackOptions,
+): VideoPlayback {
   owners.get(video)?.destroy();
   let disposed = false;
   let failed = false;
@@ -106,9 +109,16 @@ export function createVideoPlayback(video: HTMLVideoElement, options: VideoPlayb
   const syncTracks = () => {
     if (!instance) return;
     publish({
-      levels: instance.levels.map((level, index) => ({ index, height: level.height, bitrate: level.bitrate })),
+      levels: instance.levels.map((level, index) => ({
+        index,
+        height: level.height,
+        bitrate: level.bitrate,
+      })),
       quality: instance.autoLevelEnabled ? -1 : instance.currentLevel,
-      audioTracks: instance.audioTracks.map((track, index) => ({ index, name: track.name || track.lang || "" })),
+      audioTracks: instance.audioTracks.map((track, index) => ({
+        index,
+        name: track.name || track.lang || "",
+      })),
       audioTrack: instance.audioTrack,
     });
   };
@@ -118,7 +128,12 @@ export function createVideoPlayback(video: HTMLVideoElement, options: VideoPlayb
       if (!view || !(video instanceof view.HTMLVideoElement))
         throw new Error("Video playback requires a browser video element");
       const source = new URL(options.src, video.ownerDocument.baseURI);
-      if (!options.src.trim() || !/^https?:$/.test(source.protocol) || source.username || source.password)
+      if (
+        !options.src.trim() ||
+        !/^https?:$/.test(source.protocol) ||
+        source.username ||
+        source.password
+      )
         throw new Error("Video sources must use HTTP(S) without embedded credentials");
       publish({ status: "loading" });
       if (disposed || failed) return false;
@@ -128,7 +143,8 @@ export function createVideoPlayback(video: HTMLVideoElement, options: VideoPlayb
         video.src = source.href;
         return !failed;
       }
-      const Decoder = await (options.loadDecoder?.() ?? import("hls.js").then(module => module.default));
+      const Decoder = await (options.loadDecoder?.() ??
+        import("hls.js").then((module) => module.default));
       if (disposed || failed) return false;
       if (!Decoder.isSupported()) {
         if (!video.canPlayType("application/vnd.apple.mpegurl"))
@@ -143,7 +159,12 @@ export function createVideoPlayback(video: HTMLVideoElement, options: VideoPlayb
       const playback = await attachVideoHlsPlayback(video, {
         src: source.href,
         decoder: Decoder,
-        config: { capLevelToPlayerSize: true, backBufferLength: 30, maxMaxBufferLength: 60, ...options.config },
+        config: {
+          capLevelToPlayerSize: true,
+          backBufferLength: 30,
+          maxMaxBufferLength: 60,
+          ...options.config,
+        },
         beforeStart(active) {
           instance = active;
           for (const event of [
@@ -162,7 +183,8 @@ export function createVideoPlayback(video: HTMLVideoElement, options: VideoPlayb
                 : data.type === Decoder.ErrorTypes.MEDIA_ERROR
                   ? "media"
                   : "other";
-            const action = type === "network" && active.levels.length === 0 ? "fail" : recovery(type);
+            const action =
+              type === "network" && active.levels.length === 0 ? "fail" : recovery(type);
             try {
               if (action === "network") {
                 publish({ status: "recovering" });
@@ -198,7 +220,14 @@ export function createVideoPlayback(video: HTMLVideoElement, options: VideoPlayb
       return attached;
     },
     selectQuality(index) {
-      if (disposed || failed || !instance || !Number.isInteger(index) || index < -1 || index >= instance.levels.length)
+      if (
+        disposed ||
+        failed ||
+        !instance ||
+        !Number.isInteger(index) ||
+        index < -1 ||
+        index >= instance.levels.length
+      )
         return false;
       instance.currentLevel = index;
       syncTracks();

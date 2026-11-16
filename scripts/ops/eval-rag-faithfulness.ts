@@ -20,11 +20,7 @@
  */
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import {
-  COLLECTED_MARKER,
-  fold,
-  isCollectedDocument,
-} from "@shenron/pipeline/ai/grounding";
+import { COLLECTED_MARKER, fold, isCollectedDocument } from "@shenron/pipeline/ai/grounding";
 import { isNotEstablishedAnswer } from "@shenron/pipeline/ai/prompts";
 
 const REPO_ROOT = Bun.fileURLToPath(new URL("../../", import.meta.url));

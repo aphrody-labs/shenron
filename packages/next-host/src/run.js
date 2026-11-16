@@ -85,7 +85,7 @@ function nextBin(cwd = process.cwd()) {
 
 /** The process `next-bun <args>` spawns: Bun running the app's `next`, the Bun `node` first on PATH. */
 function nextCommand(args, cwd = process.cwd(), shim = bunNodeShim()) {
-  const pathKey = Object.keys(process.env).find(key => key.toUpperCase() === "PATH") ?? "PATH";
+  const pathKey = Object.keys(process.env).find((key) => key.toUpperCase() === "PATH") ?? "PATH";
   const env = { ...process.env };
   delete env[pathKey];
   return {

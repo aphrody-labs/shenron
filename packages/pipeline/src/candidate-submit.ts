@@ -31,10 +31,8 @@ export async function submitCandidates(
   candidates: unknown[],
   options: CandidateSubmitOptions = {},
 ): Promise<unknown> {
-  const baseUrl =
-    options.baseUrl ?? process.env.SHENRON_API_URL;
-  const token =
-    options.token ?? process.env.SHENRON_API_TOKEN;
+  const baseUrl = options.baseUrl ?? process.env.SHENRON_API_URL;
+  const token = options.token ?? process.env.SHENRON_API_TOKEN;
   if (!baseUrl) throw new Error("SHENRON_API_URL is not set");
   if (!token) throw new Error("SHENRON_API_TOKEN is not set");
   const url = new URL("/api/manga/candidates", baseUrl);

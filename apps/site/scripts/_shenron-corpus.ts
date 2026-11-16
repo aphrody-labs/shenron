@@ -16,12 +16,7 @@
 // Registre et garde-fou détenus par `@shenron/config` (partagés avec le
 // pipeline RAG) ; réexportés ici pour préserver l'API du module.
 import type { Parseur } from "@shenron/config/shenron-corpus";
-export {
-  DOCUMENTS,
-  REFUSÉ,
-  type Document,
-  type Parseur,
-} from "@shenron/config/shenron-corpus";
+export { DOCUMENTS, REFUSÉ, type Document, type Parseur } from "@shenron/config/shenron-corpus";
 
 // ── Utilitaires de texte ────────────────────────────────────────────────────
 

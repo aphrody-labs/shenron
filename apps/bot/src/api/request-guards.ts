@@ -1,9 +1,4 @@
-import {
-  a2aDeniedBody,
-  a2aEnforced,
-  A2A_TOKEN_ENV,
-  decideA2AWrite,
-} from "@shenron/auth/a2a";
+import { a2aDeniedBody, a2aEnforced, A2A_TOKEN_ENV, decideA2AWrite } from "@shenron/auth/a2a";
 import {
   clientIpFromHeaders,
   isDirectLoopback as isDirectLoopbackHeaders,

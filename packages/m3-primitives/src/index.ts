@@ -326,22 +326,10 @@ export type {
 
 // Avatar (Base UI)
 export { Avatar, AvatarRoot, AvatarImage, AvatarFallback } from "./Avatar";
-export type {
-  AvatarProps,
-  AvatarRootProps,
-  AvatarImageProps,
-  AvatarFallbackProps,
-} from "./Avatar";
+export type { AvatarProps, AvatarRootProps, AvatarImageProps, AvatarFallbackProps } from "./Avatar";
 
 // Meter (Base UI)
-export {
-  Meter,
-  MeterRoot,
-  MeterLabel,
-  MeterTrack,
-  MeterIndicator,
-  MeterValue,
-} from "./Meter";
+export { Meter, MeterRoot, MeterLabel, MeterTrack, MeterIndicator, MeterValue } from "./Meter";
 export type {
   MeterProps,
   MeterRootProps,
@@ -352,7 +340,15 @@ export type {
 } from "./Meter";
 
 // Field (Base UI)
-export { Field, FieldRoot, FieldLabel, FieldControl, FieldDescription, FieldError, FieldValidity } from "./Field";
+export {
+  Field,
+  FieldRoot,
+  FieldLabel,
+  FieldControl,
+  FieldDescription,
+  FieldError,
+  FieldValidity,
+} from "./Field";
 export type {
   FieldRootProps,
   FieldLabelProps,

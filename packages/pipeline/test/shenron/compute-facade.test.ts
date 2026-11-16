@@ -193,9 +193,7 @@ describe("facade defaults and call-time fetch", () => {
   test("no address default: a missing URL is an error naming the variables", () => {
     for (const name of names) delete process.env[name];
     process.env.SHENRON_API_TOKEN = TOKEN;
-    expect(() => new ShenronComputeClient()).toThrow(
-      /SHENRON_AI_HTTP_URL.*SHENRON_API_URL/,
-    );
+    expect(() => new ShenronComputeClient()).toThrow(/SHENRON_AI_HTTP_URL.*SHENRON_API_URL/);
     process.env.SHENRON_AI_HTTP_URL = BASE;
     delete process.env.SHENRON_API_TOKEN;
     expect(() => new ShenronComputeClient()).toThrow(/SHENRON_AI_HTTP_TOKEN/);

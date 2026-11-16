@@ -41,7 +41,10 @@ export const MeterTrack = forwardRef<HTMLDivElement, MeterTrackProps>(
   ({ className, ...props }, ref) => (
     <MeterPrimitive.Track
       ref={ref}
-      className={withClassName("relative h-2 w-full overflow-hidden rounded-full bg-surface-variant", className)}
+      className={withClassName(
+        "relative h-2 w-full overflow-hidden rounded-full bg-surface-variant",
+        className,
+      )}
       {...props}
     />
   ),

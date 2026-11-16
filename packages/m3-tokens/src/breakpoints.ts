@@ -43,7 +43,11 @@ export const HEIGHT_BREAKPOINTS = {
 } as const satisfies Record<WindowHeightClass, number>;
 
 /** Height classes ordered smallest to largest. */
-export const WINDOW_HEIGHT_CLASSES: readonly WindowHeightClass[] = ["compact", "medium", "expanded"];
+export const WINDOW_HEIGHT_CLASSES: readonly WindowHeightClass[] = [
+  "compact",
+  "medium",
+  "expanded",
+];
 
 /** Classify a height (dp/px) into its M3 window height class. */
 export function classifyHeight(height: number): WindowHeightClass {

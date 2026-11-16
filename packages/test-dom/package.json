@@ -1,10 +1,10 @@
 {
   "name": "@shenron/test-dom",
   "version": "1.0.0",
-  "description": "bun:test preload registering happy-dom globals while keeping Bun's native network primitives.",
   "private": true,
-  "type": "module",
+  "description": "bun:test preload registering happy-dom globals while keeping Bun's native network primitives.",
   "license": "Apache-2.0",
+  "type": "module",
   "exports": {
     ".": "./src/index.ts"
   },

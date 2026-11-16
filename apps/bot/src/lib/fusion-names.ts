@@ -2,11 +2,7 @@
 /**
  * Façade de compatibilité vers @shenron/config/fusion-names.
  */
-export {
-  findCanonicalFusion,
-  generateFusionName,
-  fusionName,
-} from "@shenron/config/fusion-names";
+export { findCanonicalFusion, generateFusionName, fusionName } from "@shenron/config/fusion-names";
 
 /** `0.1` → `+10 %` */
 function percentBonus(ratio: number): string {

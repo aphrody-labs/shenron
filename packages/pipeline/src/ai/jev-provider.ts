@@ -37,7 +37,8 @@ export function createCanonJudgmentPort(provider: Provider): CanonJudgmentPort {
         return emptyCanonJudgment("no_public_evidence");
       const started = performance.now();
       try {
-        const { inspect, selections, confidenceThreshold, choice } = await import("@shenron/decision");
+        const { inspect, selections, confidenceThreshold, choice } =
+          await import("@shenron/decision");
         const minimum = confidenceThreshold(CANON_JUDGMENT_POLICY.minimumConfidence);
         const state = {
           question: input.question.trim().slice(0, CANON_JUDGMENT_POLICY.maxQuestionCharacters),

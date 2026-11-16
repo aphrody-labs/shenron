@@ -166,10 +166,13 @@ export class DiscordChannel {
   }
 
   async sendText(room: string, text: string): Promise<MessageRef> {
-    const msg = await this.request<DiscordMessage>(`channels/${encodeURIComponent(room)}/messages`, {
-      method: "POST",
-      body: { content: text },
-    });
+    const msg = await this.request<DiscordMessage>(
+      `channels/${encodeURIComponent(room)}/messages`,
+      {
+        method: "POST",
+        body: { content: text },
+      },
+    );
     return { id: msg.id, room: msg.channel_id, channelId: this.id };
   }
 
@@ -185,17 +188,20 @@ export class DiscordChannel {
       upload = file;
       filename = "name" in file && file.name ? file.name : "file";
     }
-    const msg = await this.request<DiscordMessage>(`channels/${encodeURIComponent(room)}/messages`, {
-      method: "POST",
-      body: {},
-      files: [
-        {
-          data: new Uint8Array(await upload.arrayBuffer()),
-          name: filename,
-          contentType: mime,
-        },
-      ],
-    });
+    const msg = await this.request<DiscordMessage>(
+      `channels/${encodeURIComponent(room)}/messages`,
+      {
+        method: "POST",
+        body: {},
+        files: [
+          {
+            data: new Uint8Array(await upload.arrayBuffer()),
+            name: filename,
+            contentType: mime,
+          },
+        ],
+      },
+    );
     return { id: msg.id, room: msg.channel_id, channelId: this.id };
   }
 
@@ -223,9 +229,12 @@ export class DiscordChannel {
     for (const guild of guilds) {
       if (signal?.aborted) return rooms;
       try {
-        const channels = await this.request<DiscordGuildChannel[]>(`guilds/${encodeURIComponent(guild.id)}/channels`, {
-          signal,
-        });
+        const channels = await this.request<DiscordGuildChannel[]>(
+          `guilds/${encodeURIComponent(guild.id)}/channels`,
+          {
+            signal,
+          },
+        );
         if (signal?.aborted) return rooms;
         for (const channel of channels) {
           rooms.push({
@@ -243,13 +252,17 @@ export class DiscordChannel {
     return rooms;
   }
 
-  async *streamInbox(options: { signal?: AbortSignal } = {}): AsyncGenerator<InboundMessage, void, void> {
+  async *streamInbox(
+    options: { signal?: AbortSignal } = {},
+  ): AsyncGenerator<InboundMessage, void, void> {
     const signal = options.signal;
     if (signal?.aborted) return;
     const rooms = await this.rooms({ signal });
     if (signal?.aborted) return;
-    const roomIds = rooms.filter(room => room.kind === "channel" || room.kind === "thread").map(room => room.id);
-    const cursors = new Map(roomIds.map(id => [id, "0"]));
+    const roomIds = rooms
+      .filter((room) => room.kind === "channel" || room.kind === "thread")
+      .map((room) => room.id);
+    const cursors = new Map(roomIds.map((id) => [id, "0"]));
 
     while (!signal?.aborted) {
       for (const channelId of roomIds) {
@@ -266,14 +279,20 @@ export class DiscordChannel {
           cursors.set(channelId, newest);
         } catch (error) {
           if (signal?.aborted) return;
-          console.warn(`Discord message poll failed for channel ${channelId}: ${errorMessage(error)}`);
+          console.warn(
+            `Discord message poll failed for channel ${channelId}: ${errorMessage(error)}`,
+          );
         }
       }
       await delay(this.pollIntervalMs, signal);
     }
   }
 
-  private async messagesSince(channelId: string, after: string, signal?: AbortSignal): Promise<DiscordMessage[]> {
+  private async messagesSince(
+    channelId: string,
+    after: string,
+    signal?: AbortSignal,
+  ): Promise<DiscordMessage[]> {
     const path = `channels/${encodeURIComponent(channelId)}/messages`;
     let page = await this.request<DiscordMessage[]>(path, {
       query: { after, limit: "100" },
@@ -292,7 +311,7 @@ export class DiscordChannel {
       if (page.length === 0 || compareSnowflakes(page.at(-1)!.id, oldest) >= 0) break;
     }
     return messages
-      .filter(message => compareSnowflakes(message.id, after) > 0)
+      .filter((message) => compareSnowflakes(message.id, after) > 0)
       .toSorted((left, right) => compareSnowflakes(left.id, right.id));
   }
 
@@ -324,9 +343,13 @@ export class DiscordChannel {
         });
       }
       if (error instanceof HTTPError) {
-        throw new ChannelError(`Discord HTTP ${error.status}: ${error.message}`, String(error.status), {
-          cause: error,
-        });
+        throw new ChannelError(
+          `Discord HTTP ${error.status}: ${error.message}`,
+          String(error.status),
+          {
+            cause: error,
+          },
+        );
       }
       throw new ChannelError(`Discord HTTP transport error: ${errorMessage(error)}`, undefined, {
         cause: error,
@@ -338,9 +361,10 @@ export class DiscordChannel {
     return {
       id: message.id,
       room: message.channel_id,
-      sender: message.author?.global_name || message.author?.username || message.author?.id || "unknown",
+      sender:
+        message.author?.global_name || message.author?.username || message.author?.id || "unknown",
       text: message.content,
-      attachments: (message.attachments ?? []).map(attachment => ({
+      attachments: (message.attachments ?? []).map((attachment) => ({
         id: attachment.id,
         filename: attachment.filename,
         mimeType: attachment.content_type ?? "application/octet-stream",
@@ -368,7 +392,7 @@ function errorMessage(error: unknown): string {
 
 function delay(milliseconds: number, signal?: AbortSignal): Promise<void> {
   if (signal?.aborted) return Promise.resolve();
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const timer = setTimeout(done, milliseconds);
     function done(): void {
       clearTimeout(timer);

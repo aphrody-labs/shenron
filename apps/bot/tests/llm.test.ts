@@ -192,8 +192,7 @@ describe("generateLlmAnswer — corps de requête (B17, bavardage sans récupér
 
 describe("public RAG generation budget", () => {
   it("sends the shared budget and an explicit override through the direct SDK transport", async () => {
-    const { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } =
-      await import("@shenron/config/chat-model");
+    const { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } = await import("@shenron/config/chat-model");
     const originalFetch = globalThis.fetch;
     process.env.SHENRON_AI_CHAT_BASE_URL = "http://127.0.0.1:8799/v1";
     process.env.SHENRON_AI_CHAT_MODEL = "fixture";

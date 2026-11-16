@@ -199,9 +199,7 @@ describe("embed base URL forms", () => {
 describe("shenron-ai-http require helpers", () => {
   test("missing URL or token is an error naming canonical and legacy names", () => {
     expect(() => requireAiHttpUrl({})).toThrow(/SHENRON_AI_HTTP_URL.*SHENRON_API_URL/);
-    expect(() => requireAiHttpToken({})).toThrow(
-      /SHENRON_AI_HTTP_TOKEN.*SHENRON_API_TOKEN/,
-    );
+    expect(() => requireAiHttpToken({})).toThrow(/SHENRON_AI_HTTP_TOKEN.*SHENRON_API_TOKEN/);
   });
 
   test("the URL is reduced to its origin; the token never appears in errors", () => {

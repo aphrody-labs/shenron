@@ -67,7 +67,10 @@ function validate(request: Request, result: unknown): Result {
       const labels = Object.keys(question.criteria);
       if (typeof answer.choice !== "string" || !labels.includes(answer.choice))
         throw new TypeError(`Provider answer "${name}" selects an unknown outcome`);
-      if (typeof answer.confidence !== "number" || !(answer.confidence >= 0 && answer.confidence <= 1))
+      if (
+        typeof answer.confidence !== "number" ||
+        !(answer.confidence >= 0 && answer.confidence <= 1)
+      )
         throw new TypeError(`Provider answer "${name}" has an invalid confidence`);
     } else if (question.type === "noul") {
       if (typeof answer.noul !== "number" || !(answer.noul >= 0 && answer.noul <= 1))
@@ -185,7 +188,11 @@ export function code(
     systemOne: async (request, options) =>
       evaluate(
         request,
-        options ?? { signal: new AbortController().signal, timeout: DEFAULT_TIMEOUT, retry: { maxRetries: 0 } },
+        options ?? {
+          signal: new AbortController().signal,
+          timeout: DEFAULT_TIMEOUT,
+          retry: { maxRetries: 0 },
+        },
       ),
   };
 }
@@ -212,7 +219,9 @@ function localAnswer(question: Question, raw: unknown) {
     score: s,
     confidence: 1,
     legend: Object.fromEntries(question.criteria.map((c, i) => [String(i), c])),
-    probabilities: Object.fromEntries(question.criteria.map((_, i) => [String(i), Number(i === Math.round(s))])),
+    probabilities: Object.fromEntries(
+      question.criteria.map((_, i) => [String(i), Number(i === Math.round(s))]),
+    ),
   };
 }
 
@@ -224,7 +233,11 @@ export function local(options: LocalOptions): Provider {
     systemOne(request, provider) {
       const run = async () => {
         const prompt = `Answer as strict JSON mapping each question name to its answer (noul: a probability, choice: an outcome name, score: an integer index).\nState: ${JSON.stringify(request.state)}\nQuestions: ${JSON.stringify(request.questions)}\nJSON:`;
-        const text = await options.context.complete(prompt, { maxTokens, temperature: 0, signal: provider?.signal });
+        const text = await options.context.complete(prompt, {
+          maxTokens,
+          temperature: 0,
+          signal: provider?.signal,
+        });
         const start = text.indexOf("{");
         const end = text.lastIndexOf("}");
         const parsed = JSON.parse(text.slice(start, end + 1)) as Record<string, unknown>;
@@ -232,7 +245,10 @@ export function local(options: LocalOptions): Provider {
           model: options.model,
           usage: null,
           answers: Object.fromEntries(
-            Object.entries(request.questions).map(([name, q]) => [name, localAnswer(q, parsed[name])]),
+            Object.entries(request.questions).map(([name, q]) => [
+              name,
+              localAnswer(q, parsed[name]),
+            ]),
           ),
         };
       };
@@ -244,6 +260,18 @@ export function local(options: LocalOptions): Provider {
 }
 
 export const Yolo = Object.assign(ask, {
-  ask, decide, inspect, systemOne, noul, choice, score, value, remote, code, local, confidenceThreshold, selections,
+  ask,
+  decide,
+  inspect,
+  systemOne,
+  noul,
+  choice,
+  score,
+  value,
+  remote,
+  code,
+  local,
+  confidenceThreshold,
+  selections,
 });
 export default Yolo;

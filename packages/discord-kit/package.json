@@ -1,10 +1,10 @@
 {
   "name": "@shenron/discord-kit",
   "version": "1.0.0",
-  "description": "Discord bot core kit for Shenron: REST transport with retries, messaging channel, guards, command registration, cache and lifecycle helpers.",
   "private": true,
-  "type": "module",
+  "description": "Discord bot core kit for Shenron: REST transport with retries, messaging channel, guards, command registration, cache and lifecycle helpers.",
   "license": "Apache-2.0",
+  "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./rest": "./src/rest.ts",
@@ -17,15 +17,15 @@
   "devDependencies": {
     "@types/bun": "catalog:"
   },
+  "peerDependencies": {
+    "discord.js": "catalog:",
+    "discordx": "catalog:"
+  },
   "shenron": {
     "runtime": {
       ".": "bun",
       "./rest": "server",
       "./messaging": "server"
     }
-  },
-  "peerDependencies": {
-    "discord.js": "catalog:",
-    "discordx": "catalog:"
   }
 }

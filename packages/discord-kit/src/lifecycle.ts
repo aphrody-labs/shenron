@@ -36,7 +36,9 @@ export function registerGracefulShutdown(config: GracefulShutdownConfig): () => 
     if (shuttingDown) return;
     shuttingDown = true;
 
-    logger.info?.(`[discord-kit] Received ${signal} — initiating graceful shutdown (deadline: ${timeoutMs}ms)`);
+    logger.info?.(
+      `[discord-kit] Received ${signal} — initiating graceful shutdown (deadline: ${timeoutMs}ms)`,
+    );
 
     const hardStop = setTimeout(() => {
       logger.error?.("[discord-kit] Graceful shutdown deadline exceeded — forcing exit");

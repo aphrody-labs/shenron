@@ -13,10 +13,7 @@ import { StrictMode, type ReactNode } from "react";
 import { describe, expect, it, vi, mock } from "bun:test";
 import { hoisted } from "../hoisted";
 
-import {
-  DEFAULT_DISCORD_INVITE,
-  DEFAULT_PUBLIC_ORIGINS,
-} from "@shenron/config/public-urls";
+import { DEFAULT_DISCORD_INVITE, DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
 import { TitleBar } from "@shenron/ui/koharu/components/app/TitleBar";
 import { WindowControls } from "@shenron/ui/koharu/components/app/WindowChrome";
 import { ActivityCenter } from "@shenron/ui/koharu/components/editor/ActivityCenter";

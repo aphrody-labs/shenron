@@ -1,10 +1,11 @@
 # @shenron/discord-kit
 
 <!-- catalog:begin unit -->
+
 > Unified Discord bot core kit: pre-flight intent negotiation, memory-bounded caching, resilient interaction dispatching, lifecycle management and guards for Bun.
 
-| Type | Path |
-| :-- | :-- |
+| Type        | Path                   |
+| :---------- | :--------------------- |
 | Bun package | `packages/discord-kit` |
 
 **Commands**

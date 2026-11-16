@@ -18,7 +18,11 @@ const { applyBunConfig, isTauriBuild } = require("./config.js");
 function withBun(nextConfig, options = {}) {
   return async function bunNextConfig(phase, ctx) {
     const resolved = typeof nextConfig === "function" ? await nextConfig(phase, ctx) : nextConfig;
-    return applyBunConfig(resolved, { ...options, phase, projectDir: options.projectDir ?? process.cwd() });
+    return applyBunConfig(resolved, {
+      ...options,
+      phase,
+      projectDir: options.projectDir ?? process.cwd(),
+    });
   };
 }
 

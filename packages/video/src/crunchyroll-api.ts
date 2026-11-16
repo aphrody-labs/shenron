@@ -8,20 +8,26 @@ import {
   type CrunchyrollOptions,
 } from "./crunchyroll";
 
-export type CrunchyrollMetadataClient = Pick<CrunchyrollClient, "getAnime" | "getSeasons" | "getEpisodes" | "search">;
+export type CrunchyrollMetadataClient = Pick<
+  CrunchyrollClient,
+  "getAnime" | "getSeasons" | "getEpisodes" | "search"
+>;
 export interface CrunchyrollApiOptions {
   readonly apiToken?: string;
   readonly timeoutMs?: number;
-  readonly clientFactory?: (signal: AbortSignal) => CrunchyrollMetadataClient | Promise<CrunchyrollMetadataClient>;
+  readonly clientFactory?: (
+    signal: AbortSignal,
+  ) => CrunchyrollMetadataClient | Promise<CrunchyrollMetadataClient>;
 }
 
 export function crunchyrollClientFactory(
   options: CrunchyrollOptions,
 ): NonNullable<CrunchyrollApiOptions["clientFactory"]> {
-  return async signal => {
+  return async (signal) => {
     const client = createCrunchyrollClient({ ...options, signal });
     const login = await client.loginWithAccessToken();
-    if (!login.success) throw new CrunchyrollError("Configured upstream authentication failed", 401);
+    if (!login.success)
+      throw new CrunchyrollError("Configured upstream authentication failed", 401);
     return client;
   };
 }
@@ -45,7 +51,10 @@ function authorized(request: Request, token: string): boolean {
   return timingSafeEqual(digest(bearer), digest(token));
 }
 
-export async function awaitCrunchyrollOperation<T>(operation: Promise<T>, signal: AbortSignal): Promise<T> {
+export async function awaitCrunchyrollOperation<T>(
+  operation: Promise<T>,
+  signal: AbortSignal,
+): Promise<T> {
   if (signal.aborted) {
     void operation.catch(() => {});
     signal.throwIfAborted();
@@ -61,7 +70,9 @@ export async function awaitCrunchyrollOperation<T>(operation: Promise<T>, signal
 }
 
 /** Stateless metadata-only handler. Credentials remain in its explicitly configured factory. */
-export function createCrunchyrollApi(options: CrunchyrollApiOptions = {}): (request: Request) => Promise<Response> {
+export function createCrunchyrollApi(
+  options: CrunchyrollApiOptions = {},
+): (request: Request) => Promise<Response> {
   const timeoutMs = options.timeoutMs ?? 10000;
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 120000)
     throw new RangeError("API timeout must be 1..120000 milliseconds");
@@ -70,7 +81,7 @@ export function createCrunchyrollApi(options: CrunchyrollApiOptions = {}): (requ
     (typeof options.apiToken !== "string" || !options.apiToken || options.apiToken.length > 4096)
   )
     throw new TypeError("API token must be nonempty and at most 4096 characters");
-  return async request => {
+  return async (request) => {
     const url = new URL(request.url);
     if (request.method !== "GET") return json({ error: "method_not_allowed" }, 405);
     if (url.pathname === "/health")
@@ -98,14 +109,17 @@ export function createCrunchyrollApi(options: CrunchyrollApiOptions = {}): (requ
         return json({ error: "invalid_watch_url" }, 400);
       }
     }
-    const resource = /^\/v1\/(anime|seasons)\/([A-Z0-9]{9,32})(?:\/(seasons|episodes))?$/.exec(url.pathname);
+    const resource = /^\/v1\/(anime|seasons)\/([A-Z0-9]{9,32})(?:\/(seasons|episodes))?$/.exec(
+      url.pathname,
+    );
     const search = url.pathname === "/v1/search";
     if (!resource && !search) return json({ error: "not_found" }, 404);
     if (!options.apiToken || !authorized(request, options.apiToken))
       return json({ error: "authentication_required" }, 401);
     if (!options.clientFactory) return json({ error: "metadata_client_unavailable" }, 503);
     const query = search ? url.searchParams.get("q")?.trim() : undefined;
-    if (search && (!query || query.length > 256)) return json({ error: "invalid_search_query" }, 400);
+    if (search && (!query || query.length > 256))
+      return json({ error: "invalid_search_query" }, 400);
     if (
       resource &&
       !(
@@ -118,7 +132,10 @@ export function createCrunchyrollApi(options: CrunchyrollApiOptions = {}): (requ
     const signal = AbortSignal.any([request.signal, deadline]);
     try {
       signal.throwIfAborted();
-      const client = await awaitCrunchyrollOperation(Promise.resolve(options.clientFactory(signal)), signal);
+      const client = await awaitCrunchyrollOperation(
+        Promise.resolve(options.clientFactory(signal)),
+        signal,
+      );
       signal.throwIfAborted();
       const operation = search
         ? client.search(query!)
@@ -134,7 +151,9 @@ export function createCrunchyrollApi(options: CrunchyrollApiOptions = {}): (requ
       return json(
         {
           error: "upstream_failed",
-          ...(error instanceof CrunchyrollError && error.status ? { upstreamStatus: error.status } : {}),
+          ...(error instanceof CrunchyrollError && error.status
+            ? { upstreamStatus: error.status }
+            : {}),
         },
         502,
       );

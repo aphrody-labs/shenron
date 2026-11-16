@@ -57,9 +57,7 @@ describe("script environment contract (B13, rule 9)", () => {
     expect(() => requireEmbedBaseUrl({})).toThrow(
       /SHENRON_AI_EMBED_BASE_URL ou SHENRON_EMBED_BASE_URL ou EMBED_URL ou SHENRON_RAG_EMBED_ENDPOINT/,
     );
-    expect(() => requireShenronApiUrl({})).toThrow(
-      /SHENRON_AI_HTTP_URL ou SHENRON_API_URL/,
-    );
+    expect(() => requireShenronApiUrl({})).toThrow(/SHENRON_AI_HTTP_URL ou SHENRON_API_URL/);
   });
 
   it("reads the canonical SHENRON_AI_* names before the legacy aliases", () => {

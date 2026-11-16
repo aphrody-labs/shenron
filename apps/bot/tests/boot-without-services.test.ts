@@ -56,7 +56,8 @@ process.exit(0);
 describe("boot without services", () => {
   it("imports rag, llm, semantic-cache, TrainingService and pg with no service env", async () => {
     const env = reducedEnv();
-    for (const key of Object.keys(env)) if (key !== "SHENRON_PG_ENV") expect(REMOVED.test(key)).toBe(false);
+    for (const key of Object.keys(env))
+      if (key !== "SHENRON_PG_ENV") expect(REMOVED.test(key)).toBe(false);
     const proc = Bun.spawn([process.execPath, "--no-env-file", "-e", SCRIPT], {
       cwd: BOT_DIR,
       env,

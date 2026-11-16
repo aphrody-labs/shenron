@@ -55,10 +55,7 @@ describe("resolveChatModelConfig", () => {
       DEFAULT_CHAT_CTX,
     );
     expect(
-      resolveChatModelConfig(
-        { SHENRON_LLAMA_BIN: "/a/llama-server" },
-        "desktop",
-      ).llamaBin,
+      resolveChatModelConfig({ SHENRON_LLAMA_BIN: "/a/llama-server" }, "desktop").llamaBin,
     ).toBe("/a/llama-server");
   });
 

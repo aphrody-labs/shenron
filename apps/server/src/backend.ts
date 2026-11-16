@@ -38,17 +38,10 @@
 import { createShenronRagPort } from "./editorial-rag";
 import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
-import {
-  createLocalApi,
-  type LocalApi as HostApi,
-  type MemoryLocation,
-} from "@shenron/api/host";
+import { createLocalApi, type LocalApi as HostApi, type MemoryLocation } from "@shenron/api/host";
 import type { BetterAuthPort } from "@shenron/api/server";
 import type { LocalApiGroups } from "@shenron/api/contract";
-import {
-  DEFAULT_CHAT_MODEL_ID,
-  DEFAULT_LOCAL_CHAT_BACKENDS,
-} from "@shenron/config/chat-model";
+import { DEFAULT_CHAT_MODEL_ID, DEFAULT_LOCAL_CHAT_BACKENDS } from "@shenron/config/chat-model";
 
 import { type AgentHomes, openAgentHomes } from "./agent-home";
 import { type ChatModel, type ChatModelPlan, planChatModel, startChatModel } from "./chat-model";

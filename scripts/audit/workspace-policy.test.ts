@@ -27,9 +27,9 @@ test("approved public libraries retain exact reviewed allowlists while applicati
   expect(publicationViolations(library(), "apps/site")).toContain(
     "application or unapproved workspace must remain private",
   );
-  expect(
-    publicationViolations({ ...library(), name: "@shenron/new" }, "packages/new"),
-  ).toContain("application or unapproved workspace must remain private");
+  expect(publicationViolations({ ...library(), name: "@shenron/new" }, "packages/new")).toContain(
+    "application or unapproved workspace must remain private",
+  );
   expect(
     publicationViolations({ ...library(), files: ["."] }, "packages/api").length,
   ).toBeGreaterThan(0);
@@ -98,4 +98,3 @@ test("dependencies stay inside the workspace and never name an @aphrody package"
   expect(standaloneDependency("@aphrody/bun-video", "1.4.4", local)).toBe(false);
   expect(standaloneDependency("hls.js", "1.7.4", local)).toBe(true);
 });
-

@@ -26,11 +26,7 @@
  */
 import { copyFileSync, existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import type {
-  ChatModelEntry,
-  ChatModelState,
-  LocalApiGroupStatus,
-} from "@shenron/api/contract";
+import type { ChatModelEntry, ChatModelState, LocalApiGroupStatus } from "@shenron/api/contract";
 import {
   CHAT_ADAPTER,
   CHAT_BASE_MODEL,

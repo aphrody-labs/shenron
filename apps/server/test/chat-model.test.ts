@@ -9,10 +9,7 @@ import {
   CHAT_MODEL_IDS,
   GEMMA_MODEL,
 } from "@shenron/config/chat-model";
-import type {
-  ShenronLlamaProvision,
-  ShenronLlamaRouterStart,
-} from "@shenron/native/shenron";
+import type { ShenronLlamaProvision, ShenronLlamaRouterStart } from "@shenron/native/shenron";
 
 import { planBackend } from "../src/backend";
 import {

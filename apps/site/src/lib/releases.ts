@@ -2,11 +2,7 @@
 import "server-only";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import {
-  DEFAULT_RELEASES_DIR,
-  resolveDataPath,
-  type DataPath,
-} from "@shenron/config/paths";
+import { DEFAULT_RELEASES_DIR, resolveDataPath, type DataPath } from "@shenron/config/paths";
 import { serveSumsFile } from "@/lib/private-downloads";
 
 /**

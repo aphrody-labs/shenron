@@ -11,11 +11,7 @@ import { join } from "node:path";
 import { MemoryListResponse } from "@shenron/api/contract";
 import { createLocalApi } from "@shenron/api/host";
 import type { ChatSocketData } from "@shenron/api/server";
-import {
-  SHENRON_FFI_FILE,
-  shenronMemoryAdd,
-  shenronMemorySearch,
-} from "@shenron/native/shenron";
+import { SHENRON_FFI_FILE, shenronMemoryAdd, shenronMemorySearch } from "@shenron/native/shenron";
 
 import { nativeMemory, type NativeMemory } from "../src/memory";
 import { testPaths } from "./support";

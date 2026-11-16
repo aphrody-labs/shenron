@@ -37,9 +37,10 @@ export async function readImmersionMap(
   path = process.env.DBXV2_IMMERSION_MAP?.trim() || DEFAULT_IMMERSION_MAP,
 ): Promise<ImmersionMap | null> {
   try {
-    const text = await readFile(/* turbopackIgnore: true */ resolve(process.cwd(), "../..", path), "utf8").catch(() =>
-      readFile(/* turbopackIgnore: true */ resolve(process.cwd(), path), "utf8"),
-    );
+    const text = await readFile(
+      /* turbopackIgnore: true */ resolve(process.cwd(), "../..", path),
+      "utf8",
+    ).catch(() => readFile(/* turbopackIgnore: true */ resolve(process.cwd(), path), "utf8"));
     const parsed = ImmersionMapSchema.safeParse(JSON.parse(text));
     return parsed.success ? parsed.data : null;
   } catch {

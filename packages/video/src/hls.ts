@@ -16,7 +16,11 @@ export async function getHlsPublicAssets() {
   const owner = await Bun.file(new URL("../package.json", import.meta.url)).json();
   if (metadata.name !== "hls.js" || metadata.version !== owner.dependencies["hls.js"])
     throw new Error("The HLS decoder differs from its pinned dependency");
-  return { version: metadata.version as string, worker: `${directory}/hls.worker.js`, license: `${root}/LICENSE` };
+  return {
+    version: metadata.version as string,
+    worker: `${directory}/hls.worker.js`,
+    license: `${root}/LICENSE`,
+  };
 }
 
 export async function attachVideoHlsPlayback(

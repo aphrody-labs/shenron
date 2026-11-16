@@ -9,12 +9,12 @@ describe("@shenron/pipeline/shenron exports", () => {
   it("root exposes the shared service clients and script adapters", () => {
     expect(Object.keys(root).toSorted()).toEqual(
       [
-      "ShenronComputeClient",
-      "SHENRON_EMBED_DIMENSIONS",
-      "SHENRON_EMBED_MODEL",
-      "ShenronEmbeddingsClient",
-      "shenronInfraCheck",
-      "shenronInfraStatus",
+        "ShenronComputeClient",
+        "SHENRON_EMBED_DIMENSIONS",
+        "SHENRON_EMBED_MODEL",
+        "ShenronEmbeddingsClient",
+        "shenronInfraCheck",
+        "shenronInfraStatus",
       ].toSorted(),
     );
   });
@@ -35,11 +35,11 @@ describe("@shenron/pipeline/shenron exports", () => {
   it("cli subpath exposes the JSON wrappers", () => {
     expect(Object.keys(cli).toSorted()).toEqual(
       [
-      "DEFAULT_SHENRON_CLI_TIMEOUT_MS",
-      "shenronDoctor",
-      "shenronGitInspect",
-      "runShenronCli",
-      "runShenronCommand",
+        "DEFAULT_SHENRON_CLI_TIMEOUT_MS",
+        "shenronDoctor",
+        "shenronGitInspect",
+        "runShenronCli",
+        "runShenronCommand",
       ].toSorted(),
     );
   });

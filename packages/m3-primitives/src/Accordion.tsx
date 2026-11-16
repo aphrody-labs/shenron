@@ -16,8 +16,10 @@ export type AccordionRootProps = AccordionPrimitive.Root.Props & {
 export const AccordionRoot = forwardRef<HTMLDivElement, AccordionRootProps>(
   ({ className, variant = "outlined", ...props }, ref) => {
     const variantStyles = {
-      outlined: "border border-outline-variant divide-y divide-outline-variant rounded-large bg-surface",
-      elevated: "rounded-large bg-surface-container-low shadow-elevation-1 divide-y divide-outline-variant/30",
+      outlined:
+        "border border-outline-variant divide-y divide-outline-variant rounded-large bg-surface",
+      elevated:
+        "rounded-large bg-surface-container-low shadow-elevation-1 divide-y divide-outline-variant/30",
       filled: "rounded-large bg-surface-container divide-y divide-outline-variant/30",
       tonal: "rounded-large bg-secondary-container/40 divide-y divide-outline-variant/30",
     }[variant];
@@ -25,7 +27,10 @@ export const AccordionRoot = forwardRef<HTMLDivElement, AccordionRootProps>(
     return (
       <AccordionPrimitive.Root
         ref={ref}
-        className={withClassName(clsx("w-full overflow-hidden transition-all duration-200", variantStyles), className)}
+        className={withClassName(
+          clsx("w-full overflow-hidden transition-all duration-200", variantStyles),
+          className,
+        )}
         data-m3-component="Accordion"
         {...props}
       />
@@ -54,7 +59,11 @@ export type AccordionHeaderProps = AccordionPrimitive.Header.Props;
 
 export const AccordionHeader = forwardRef<HTMLHeadingElement, AccordionHeaderProps>(
   ({ className, ...props }, ref) => (
-    <AccordionPrimitive.Header ref={ref} className={withClassName("m-0 flex items-center", className)} {...props} />
+    <AccordionPrimitive.Header
+      ref={ref}
+      className={withClassName("m-0 flex items-center", className)}
+      {...props}
+    />
   ),
 );
 AccordionHeader.displayName = "AccordionHeader";

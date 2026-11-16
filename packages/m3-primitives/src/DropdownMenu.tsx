@@ -4,7 +4,14 @@
 
 import { Menu as MenuPrimitive } from "@base-ui/react/menu";
 import { clsx } from "clsx";
-import { createContext, forwardRef, type ForwardRefExoticComponent, type HTMLAttributes, type RefAttributes, useContext } from "react";
+import {
+  createContext,
+  forwardRef,
+  type ForwardRefExoticComponent,
+  type HTMLAttributes,
+  type RefAttributes,
+  useContext,
+} from "react";
 
 import { type AsChildProp, asChildProps, createPortalScope, withClassName } from "./base-ui";
 import { Icon } from "./Icon";
@@ -231,15 +238,15 @@ const Label = forwardRef<
 });
 Label.displayName = "DropdownMenuLabel";
 
-const Separator: ForwardRefExoticComponent<MenuPrimitive.Separator.Props & RefAttributes<HTMLDivElement>> = forwardRef<HTMLDivElement, MenuPrimitive.Separator.Props>(
-  ({ className, ...props }, ref) => (
-    <MenuPrimitive.Separator
-      ref={ref}
-      className={withClassName("my-2 h-px bg-outline-variant", className)}
-      {...props}
-    />
-  ),
-);
+const Separator: ForwardRefExoticComponent<
+  MenuPrimitive.Separator.Props & RefAttributes<HTMLDivElement>
+> = forwardRef<HTMLDivElement, MenuPrimitive.Separator.Props>(({ className, ...props }, ref) => (
+  <MenuPrimitive.Separator
+    ref={ref}
+    className={withClassName("my-2 h-px bg-outline-variant", className)}
+    {...props}
+  />
+));
 Separator.displayName = "DropdownMenuSeparator";
 
 /** Base UI submenu root. */

@@ -10,11 +10,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { GatedWrap } from "@/components/GatedLink";
 import type { Metadata } from "next";
-import {
-  NOTE_PROVENANCE,
-  estTypeDeJeu,
-  libelleType,
-} from "@shenron/config/techniques-types";
+import { NOTE_PROVENANCE, estTypeDeJeu, libelleType } from "@shenron/config/techniques-types";
 import type { DefinedTerm, WithContext } from "schema-dts";
 import { SITE_URL } from "@/lib/config";
 import { ogMeta } from "@/lib/og";

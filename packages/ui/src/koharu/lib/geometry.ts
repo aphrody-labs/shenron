@@ -1,10 +1,4 @@
-import type {
-  EntityId,
-  Frame,
-  Layer,
-  Point,
-  TransformFrame,
-} from "@shenron/koharu/protocol";
+import type { EntityId, Frame, Layer, Point, TransformFrame } from "@shenron/koharu/protocol";
 
 import { effectiveLayerVisibility, isTextLayer } from "./document";
 

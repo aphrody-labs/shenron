@@ -31,7 +31,8 @@ export async function safeExecuteInteraction(
   const logger = options.logger ?? console;
   const failureMessage = options.failureMessage ?? "❌ La commande a rencontré une erreur interne.";
   const unhandledMessage =
-    options.unhandledMessage ?? "Commande inconnue ou expirée. Rechargez Discord (Ctrl+R) pour actualiser la liste.";
+    options.unhandledMessage ??
+    "Commande inconnue ou expirée. Rechargez Discord (Ctrl+R) pour actualiser la liste.";
 
   let executionFailed = false;
   try {

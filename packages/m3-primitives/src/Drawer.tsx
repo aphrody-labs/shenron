@@ -58,9 +58,11 @@ export type DrawerPopupProps = DrawerPrimitive.Popup.Props & {
 export const DrawerPopup = forwardRef<HTMLDivElement, DrawerPopupProps>(
   ({ className, children, side = "bottom", ...props }, ref) => {
     const sideStyles = {
-      bottom: "fixed inset-x-0 bottom-0 max-h-[90vh] rounded-t-extra-large border-t border-outline-variant/30 data-[starting-style]:translate-y-full data-[ending-style]:translate-y-full",
+      bottom:
+        "fixed inset-x-0 bottom-0 max-h-[90vh] rounded-t-extra-large border-t border-outline-variant/30 data-[starting-style]:translate-y-full data-[ending-style]:translate-y-full",
       left: "fixed inset-y-0 left-0 w-80 max-w-[85vw] rounded-r-large border-r border-outline-variant/30 data-[starting-style]:-translate-x-full data-[ending-style]:-translate-x-full",
-      right: "fixed inset-y-0 right-0 w-80 max-w-[85vw] rounded-l-large border-l border-outline-variant/30 data-[starting-style]:translate-x-full data-[ending-style]:translate-x-full",
+      right:
+        "fixed inset-y-0 right-0 w-80 max-w-[85vw] rounded-l-large border-l border-outline-variant/30 data-[starting-style]:translate-x-full data-[ending-style]:translate-x-full",
     }[side];
 
     return (

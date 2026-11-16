@@ -5,7 +5,9 @@ const q = { relation: choice("which?", { a: null, b: null }) };
 const answer = (c: "a" | "b", confidence: number) => ({
   model: "fixture",
   usage: null,
-  answers: { relation: { type: "choice", choice: c, confidence, probabilities: { a: 0.5, b: 0.5 } } },
+  answers: {
+    relation: { type: "choice", choice: c, confidence, probabilities: { a: 0.5, b: 0.5 } },
+  },
 });
 
 test("selections abstain below the confidence floor", async () => {
@@ -17,7 +19,10 @@ test("selections abstain below the confidence floor", async () => {
 });
 
 test("malformed provider answers are rejected", async () => {
-  const bad = code(() => ({ model: "m", answers: { relation: { type: "choice", choice: "zzz", confidence: 1 } } }));
+  const bad = code(() => ({
+    model: "m",
+    answers: { relation: { type: "choice", choice: "zzz", confidence: 1 } },
+  }));
   await expect(decide({ state: "x", questions: q }, { provider: bad })).rejects.toThrow();
 });
 

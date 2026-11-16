@@ -1,11 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { beforeAll, describe, expect, test } from "bun:test";
 import { createSql } from "@shenron/db/sql";
-import {
-  loadLiveRagEnv,
-  requireLiveRag,
-  type LiveRag,
-} from "@shenron/pipeline/testing/live-rag";
+import { loadLiveRagEnv, requireLiveRag, type LiveRag } from "@shenron/pipeline/testing/live-rag";
 import { prepareSource } from "../../../packages/pipeline/scripts/_rag-shenron-sync";
 import { PG_SOURCES } from "../../../packages/pipeline/scripts/_rag-sources-pg";
 

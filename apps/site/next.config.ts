@@ -39,12 +39,7 @@ process.env.NEXT_TELEMETRY_DISABLED = "1";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   // Native SDK, image decoders, and SQL/vector drivers are deferred to the Bun host outside Next's server bundle.
-  serverExternalPackages: [
-    "@shenron/native",
-    "sharp",
-    "postgres",
-    "sqlite-vec",
-  ],
+  serverExternalPackages: ["@shenron/native", "sharp", "postgres", "sqlite-vec"],
   // Type-checking can be skipped during `next build` when already verified by `bun check` (`SHENRON_SKIP_NEXT_TYPECHECK=1`),
   // while keeping `ignoreBuildErrors: false` as the safe default for direct builds.
   typescript: {

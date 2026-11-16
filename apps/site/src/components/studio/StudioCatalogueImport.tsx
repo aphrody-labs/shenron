@@ -1,14 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import {
-  backend,
-  pageKey,
-  pagesKey,
-  projectKey,
-  refresh,
-  useProject,
-} from "@shenron/ui/koharu";
+import { backend, pageKey, pagesKey, projectKey, refresh, useProject } from "@shenron/ui/koharu";
 import { commands } from "@shenron/koharu/protocol";
 import { importStudioFiles, usesHostedStudio } from "@shenron/koharu/transport";
 import {

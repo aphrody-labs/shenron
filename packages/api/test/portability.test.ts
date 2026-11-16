@@ -33,10 +33,7 @@ const RUNTIME: Record<string, string> = {
 };
 
 /** Doctrine subpaths of `@shenron/pipeline` that `./chat` and `./host` may import (§4.1). */
-const PIPELINE_SUBPATHS = new Set([
-  "@shenron/pipeline/ai/prompts",
-  "@shenron/pipeline/agent-home",
-]);
+const PIPELINE_SUBPATHS = new Set(["@shenron/pipeline/ai/prompts", "@shenron/pipeline/agent-home"]);
 
 // The source tree is an immutable snapshot for this suite.
 const sourceCache = new Map<
@@ -136,15 +133,11 @@ describe("@shenron/api manifest", () => {
     () => {
       for (const key of ["./contract", "./client", "./http", "./server", "./next"]) {
         expect(
-          bareImports(key).filter(({ specifier }) =>
-            specifier.startsWith("@shenron/pipeline"),
-          ),
+          bareImports(key).filter(({ specifier }) => specifier.startsWith("@shenron/pipeline")),
         ).toEqual([]);
       }
       const reached = ["./chat", "./host"].flatMap((key) =>
-        bareImports(key).filter(({ specifier }) =>
-          specifier.startsWith("@shenron/pipeline"),
-        ),
+        bareImports(key).filter(({ specifier }) => specifier.startsWith("@shenron/pipeline")),
       );
       expect(reached.length).toBeGreaterThan(0);
       expect(reached.filter(({ specifier }) => !PIPELINE_SUBPATHS.has(specifier))).toEqual([]);

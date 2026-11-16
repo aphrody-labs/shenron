@@ -13,10 +13,7 @@ import {
   type ChatFn,
 } from "@shenron/pipeline/shenron/compute";
 import { buildGroundingInstructions, resolvePersona } from "@shenron/pipeline/ai/prompts";
-import {
-  createOpenAICompatibleChat,
-  createShenronProvider,
-} from "@shenron/pipeline/ai/provider";
+import { createOpenAICompatibleChat, createShenronProvider } from "@shenron/pipeline/ai/provider";
 import { generateText } from "ai";
 import { judgePublicChatHits, jevSourceKind } from "@shenron/api/chat";
 import { siteChatJev } from "./jev";

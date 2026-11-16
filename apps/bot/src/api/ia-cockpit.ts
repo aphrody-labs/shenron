@@ -14,11 +14,7 @@
 import type { AdminReportGoalService } from "~/services/AdminReportGoalService";
 import type { EvalMetrics, TrainingService } from "~/services/TrainingService";
 
-import {
-  FEEDBACK_STATUSES,
-  GOAL_PRIORITIES,
-  type FeedbackStatus,
-} from "@shenron/db/constants";
+import { FEEDBACK_STATUSES, GOAL_PRIORITIES, type FeedbackStatus } from "@shenron/db/constants";
 
 // Source unique des statuts et priorités : `@shenron/db/constants` (mêmes noms qu'avant).
 export { type FeedbackStatus };

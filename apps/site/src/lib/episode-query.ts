@@ -2,10 +2,7 @@
 import { and, eq, ilike, or, sql } from "drizzle-orm";
 import { escapeLike } from "@shenron/db/repos/wiki";
 import { botEpisodes } from "@/db/bot-schema";
-import {
-  normalizeVideoLanguage,
-  type VideoLanguage,
-} from "@shenron/media/episode-playback";
+import { normalizeVideoLanguage, type VideoLanguage } from "@shenron/media/episode-playback";
 
 export class EpisodeLanguageQueryError extends Error {
   constructor() {

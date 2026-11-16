@@ -32,11 +32,7 @@ import {
   normalizeBaseUrl,
   resolveBetterAuthSecret,
 } from "@shenron/auth";
-import {
-  SESSION_COOKIE_CACHE,
-  advancedOptions,
-  discordProvider,
-} from "@shenron/auth/options";
+import { SESSION_COOKIE_CACHE, advancedOptions, discordProvider } from "@shenron/auth/options";
 import { botTrustedOrigins } from "@shenron/auth/origins";
 
 export { resolveBetterAuthSecret };

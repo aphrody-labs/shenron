@@ -2,10 +2,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  createXv2Character,
-  type Xv2CharacterRenderer,
-} from "@shenron/engine/xv2-character";
+import { createXv2Character, type Xv2CharacterRenderer } from "@shenron/engine/xv2-character";
 import { characterCode, fetchCharacter, fetchRoster, type RosterEntry } from "./cpk-scene";
 import type fr from "../../../../messages/dragon-pixel-scene/fr.json";
 

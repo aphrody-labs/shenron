@@ -82,7 +82,13 @@ async function defaultRunner(
     child.exited,
   ]);
   signal?.throwIfAborted();
-  return { code: child.signalCode ? 128 + ((os.constants.signals as Record<string, number>)[child.signalCode] ?? 0) : exitCode, stdout, stderr };
+  return {
+    code: child.signalCode
+      ? 128 + ((os.constants.signals as Record<string, number>)[child.signalCode] ?? 0)
+      : exitCode,
+    stdout,
+    stderr,
+  };
 }
 
 export async function executeCommand(

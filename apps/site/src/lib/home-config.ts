@@ -4,11 +4,7 @@ import "server-only";
 import { cache } from "react";
 import { pickBestImage } from "@/lib/image-variants";
 import { resolveHostUrl } from "@shenron/config/public-urls";
-import {
-  DEFAULT_HOME_CONFIG,
-  resolveHomeConfig,
-  type HomeConfig,
-} from "@shenron/config/home";
+import { DEFAULT_HOME_CONFIG, resolveHomeConfig, type HomeConfig } from "@shenron/config/home";
 import { createShenronApiClient } from "@shenron/api/client";
 import { endpoints } from "@shenron/api/contract";
 import { HostHomeError } from "./host-home-error";

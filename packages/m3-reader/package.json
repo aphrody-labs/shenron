@@ -1,6 +1,7 @@
 {
   "name": "@shenron/m3-reader",
   "version": "1.0.0",
+  "private": true,
   "description": "Material 3 manga and illustrated book readers for React",
   "license": "Apache-2.0",
   "type": "module",
@@ -37,7 +38,6 @@
   "engines": {
     "bun": ">=1.4.4"
   },
-  "private": true,
   "shenron": {
     "runtime": {
       "*": "react"

@@ -11,7 +11,8 @@ function packagesIn(modules) {
   const names = [];
   for (const name of readdirSync(modules)) {
     if (name.startsWith(".")) continue;
-    if (name.startsWith("@")) for (const scoped of readdirSync(join(modules, name))) names.push(`${name}/${scoped}`);
+    if (name.startsWith("@"))
+      for (const scoped of readdirSync(join(modules, name))) names.push(`${name}/${scoped}`);
     else names.push(name);
   }
   return names;
@@ -30,7 +31,8 @@ function materializeSymlinks(dir, root) {
         target = realpathSync(path);
       } catch {}
       rmSync(path, { force: true });
-      if (target && isInside(target, root)) cpSync(target, path, { recursive: true, dereference: true });
+      if (target && isInside(target, root))
+        cpSync(target, path, { recursive: true, dereference: true });
     } else if (entry.isDirectory()) materializeSymlinks(path, root);
   }
 }
@@ -56,7 +58,9 @@ function flattenStandalone(root) {
       if (lstatSync(path).isSymbolicLink()) continue;
       const previous = hoisted.get(name);
       if (previous && previous !== path) {
-        throw new Error(`@shenron/next-host: two versions of ${name} in the standalone trace: ${previous} and ${path}`);
+        throw new Error(
+          `@shenron/next-host: two versions of ${name} in the standalone trace: ${previous} and ${path}`,
+        );
       }
       hoisted.set(name, path);
     }

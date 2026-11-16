@@ -75,9 +75,7 @@ describe("@shenron/pipeline/ai manifest", () => {
         .replace(/^\s*\/\/.*$/gm, "");
       expect(source).not.toMatch(/from\s+["'](?:node:|bun(?::|["']))/);
       expect(source).not.toMatch(/\bprocess\.|\bBun\.|\bimport\.meta\b/);
-      expect(source).not.toMatch(
-        /@shenron\/(?:pipeline\/shenron|db)|sqlite|redis|@huggingface/i,
-      );
+      expect(source).not.toMatch(/@shenron\/(?:pipeline\/shenron|db)|sqlite|redis|@huggingface/i);
       expect(source).not.toMatch(/127\.0\.0\.1|localhost/);
       const mod = (await import(file)) as Record<string, unknown>;
       expect(Object.keys(mod).length).toBeGreaterThan(0);

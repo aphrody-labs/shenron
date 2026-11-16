@@ -69,8 +69,10 @@ function exportTargets(value, out = []) {
 
 /** True when a package manifest points an entry point at TypeScript source (`.ts`/`.tsx`, not `.d.ts`). */
 function shipsTypeScriptSource(manifest) {
-  const targets = [...exportTargets(manifest.exports), manifest.main, manifest.module].filter(Boolean);
-  return targets.some(t => TS_SOURCE.test(t) && !/\.d\.[cm]?tsx?$/.test(t));
+  const targets = [...exportTargets(manifest.exports), manifest.main, manifest.module].filter(
+    Boolean,
+  );
+  return targets.some((t) => TS_SOURCE.test(t) && !/\.d\.[cm]?tsx?$/.test(t));
 }
 
 /**
@@ -120,11 +122,13 @@ function webpackTarget(target, projectDir) {
 function aliasTables(projectDir, alias = {}, dedupe = []) {
   const absolute = {};
   for (const [name, target] of Object.entries(alias)) {
-    absolute[name] = target.startsWith("./") || target.startsWith("../") ? resolve(projectDir, target) : target;
+    absolute[name] =
+      target.startsWith("./") || target.startsWith("../") ? resolve(projectDir, target) : target;
   }
   for (const name of dedupe) {
     const dir = findPackageDir(name, projectDir);
-    if (!dir) throw new Error(`@shenron/next-host: dedupe: ${name} is not installed for ${projectDir}`);
+    if (!dir)
+      throw new Error(`@shenron/next-host: dedupe: ${name} is not installed for ${projectDir}`);
     absolute[name] = dir;
     absolute[`${name}/*`] = `${dir}/*`;
   }
@@ -147,7 +151,10 @@ function readBuiltClientConfig(distDir) {
   if (!config) return null;
   return {
     assetPrefix: typeof config.assetPrefix === "string" ? config.assetPrefix : "",
-    deploymentId: typeof config.deploymentId === "string" && config.deploymentId ? config.deploymentId : undefined,
+    deploymentId:
+      typeof config.deploymentId === "string" && config.deploymentId
+        ? config.deploymentId
+        : undefined,
   };
 }
 
@@ -164,13 +171,18 @@ function isTauriBuild(env = process.env) {
  * dev server as asset prefix outside production when a dev host is known (`devHost`, else `TAURI_DEV_HOST`).
  */
 function applyStaticExport(out, config, tauri, env) {
-  const { devHost = env.TAURI_DEV_HOST, devPort = 3000, env: exportEnv } = tauri === true ? {} : tauri;
+  const {
+    devHost = env.TAURI_DEV_HOST,
+    devPort = 3000,
+    env: exportEnv,
+  } = tauri === true ? {} : tauri;
   out.output ??= "export";
   out.trailingSlash ??= true;
   out.images = { unoptimized: true, ...config.images };
   if (config.cacheComponents === undefined) out.cacheComponents = false;
   if (exportEnv) out.env = { ...exportEnv, ...config.env };
-  if (devHost !== undefined && env.NODE_ENV !== "production") out.assetPrefix ??= `http://${devHost}:${devPort}`;
+  if (devHost !== undefined && env.NODE_ENV !== "production")
+    out.assetPrefix ??= `http://${devHost}:${devPort}`;
 }
 
 /**
@@ -188,19 +200,28 @@ function applyBunConfig(config, options) {
   const out = { ...config };
 
   if (options.root !== false) {
-    const root = options.root ?? out.turbopack?.root ?? out.outputFileTracingRoot ?? findWorkspaceRoot(projectDir);
+    const root =
+      options.root ??
+      out.turbopack?.root ??
+      out.outputFileTracingRoot ??
+      findWorkspaceRoot(projectDir);
     out.turbopack = { ...out.turbopack, root: out.turbopack?.root ?? root };
     out.outputFileTracingRoot ??= root;
   }
 
   const tables = aliasTables(projectDir, options.alias, options.dedupe);
   if (Object.keys(tables.turbopack).length) {
-    out.turbopack = { ...out.turbopack, resolveAlias: { ...tables.turbopack, ...out.turbopack?.resolveAlias } };
+    out.turbopack = {
+      ...out.turbopack,
+      resolveAlias: { ...tables.turbopack, ...out.turbopack?.resolveAlias },
+    };
     const userWebpack = out.webpack;
     out.webpack = (webpackConfig, context) => {
       webpackConfig.resolve ??= {};
       webpackConfig.resolve.alias = { ...tables.webpack, ...webpackConfig.resolve.alias };
-      return typeof userWebpack === "function" ? userWebpack(webpackConfig, context) : webpackConfig;
+      return typeof userWebpack === "function"
+        ? userWebpack(webpackConfig, context)
+        : webpackConfig;
     };
   }
 
@@ -214,7 +235,8 @@ function applyBunConfig(config, options) {
   if (options.transpileSources !== false) {
     const external = new Set(out.serverExternalPackages ?? []);
     const listed = new Set(out.transpilePackages ?? []);
-    for (const name of typeScriptSourcePackages(projectDir)) if (!external.has(name)) listed.add(name);
+    for (const name of typeScriptSourcePackages(projectDir))
+      if (!external.has(name)) listed.add(name);
     if (listed.size) out.transpilePackages = [...listed];
   }
 

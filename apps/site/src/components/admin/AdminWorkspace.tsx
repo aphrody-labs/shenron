@@ -6,13 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { Search, PanelLeft, PanelRight, X, ArrowUpRight, Layers, Command } from "lucide-react";
 import { Dialog, DialogPopup, DialogTitle, DialogDescription } from "@shenron/ui/dialog";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectPopup,
-  SelectItem,
-} from "@shenron/ui/select";
+import { Select, SelectTrigger, SelectValue, SelectPopup, SelectItem } from "@shenron/ui/select";
 import { ADMIN_SECTIONS } from "./AdminSidebar";
 import { ADMIN_FAMILIES, ADMIN_PAGES, adminPageForPath, type AdminFamily } from "./admin-pages";
 import styles from "./AdminWorkspace.module.css";

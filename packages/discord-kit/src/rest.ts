@@ -97,13 +97,14 @@ export async function discordFetch<T = unknown>(
       global?: boolean;
     };
     const delay = limited.retry_after;
-    const wait = typeof delay === "number" && Number.isFinite(delay) && delay >= 0 ? Math.min(5, delay) : 1;
+    const wait =
+      typeof delay === "number" && Number.isFinite(delay) && delay >= 0 ? Math.min(5, delay) : 1;
     opts.onRateLimit?.({
       path,
       retryAfter: limited.retry_after,
       global: limited.global,
     });
-    await new Promise(resolve => setTimeout(resolve, wait * 1000));
+    await new Promise((resolve) => setTimeout(resolve, wait * 1000));
     res = await request();
   }
 

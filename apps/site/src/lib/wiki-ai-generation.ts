@@ -8,10 +8,7 @@ import {
 } from "@shenron/pipeline/ai/config";
 import { generateGroundedAnswer } from "@shenron/pipeline/ai/generate";
 import { createShenronProvider } from "@shenron/pipeline/ai/provider";
-import {
-  ShenronComputeClient,
-  shenronComputeFromChat,
-} from "@shenron/pipeline/shenron/compute";
+import { ShenronComputeClient, shenronComputeFromChat } from "@shenron/pipeline/shenron/compute";
 import { wikiDraftSourcesMarkdown, type WikiDraftSource } from "./wiki-ai-draft";
 
 /** Uses the existing inference owner and citation verifier; never writes editorial data. */

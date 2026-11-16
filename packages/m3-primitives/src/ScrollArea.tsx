@@ -27,7 +27,10 @@ export const ScrollAreaViewport = forwardRef<HTMLDivElement, ScrollAreaViewportP
   ({ className, ...props }, ref) => (
     <ScrollAreaPrimitive.Viewport
       ref={ref}
-      className={withClassName("size-full rounded-[inherit] outline-none focus-visible:outline-2 focus-visible:outline-primary", className)}
+      className={withClassName(
+        "size-full rounded-[inherit] outline-none focus-visible:outline-2 focus-visible:outline-primary",
+        className,
+      )}
       {...props}
     />
   ),
@@ -45,7 +48,8 @@ export const ScrollAreaScrollbar = forwardRef<HTMLDivElement, ScrollAreaScrollba
         clsx(
           "flex select-none touch-none p-0.5 transition-all duration-200 ease-standard",
           orientation === "vertical" && "h-full w-2.5 border-l border-l-transparent hover:w-3.5",
-          orientation === "horizontal" && "h-2.5 flex-col border-t border-t-transparent hover:h-3.5",
+          orientation === "horizontal" &&
+            "h-2.5 flex-col border-t border-t-transparent hover:h-3.5",
           "data-[hovering]:opacity-100 data-[scrolling]:opacity-100 opacity-60 hover:opacity-100",
         ),
         className,

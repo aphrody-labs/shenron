@@ -92,14 +92,24 @@
   --md-sys-motion-spring-expressive-slow-spatial-stiffness: 200;
 
   /* Shape: directional corners (LTR; start/end swap under RTL). */
-  --md-sys-shape-corner-extra-small-top: var(--md-sys-shape-corner-extra-small) var(--md-sys-shape-corner-extra-small) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-none);
-  --md-sys-shape-corner-large-top: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-none);
-  --md-sys-shape-corner-large-start: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-large);
-  --md-sys-shape-corner-large-end: var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-none);
-  --md-sys-shape-corner-extra-large-top: var(--md-sys-shape-corner-extra-large) var(--md-sys-shape-corner-extra-large) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-none);
+  --md-sys-shape-corner-extra-small-top: var(--md-sys-shape-corner-extra-small)
+    var(--md-sys-shape-corner-extra-small) var(--md-sys-shape-corner-none)
+    var(--md-sys-shape-corner-none);
+  --md-sys-shape-corner-large-top: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large)
+    var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-none);
+  --md-sys-shape-corner-large-start: var(--md-sys-shape-corner-large)
+    var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-large);
+  --md-sys-shape-corner-large-end: var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-large)
+    var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-none);
+  --md-sys-shape-corner-extra-large-top: var(--md-sys-shape-corner-extra-large)
+    var(--md-sys-shape-corner-extra-large) var(--md-sys-shape-corner-none)
+    var(--md-sys-shape-corner-none);
 }
 
 :root:dir(rtl) {
-  --md-sys-shape-corner-large-start: var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-none);
-  --md-sys-shape-corner-large-end: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-large);
+  --md-sys-shape-corner-large-start: var(--md-sys-shape-corner-none)
+    var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large)
+    var(--md-sys-shape-corner-none);
+  --md-sys-shape-corner-large-end: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-none)
+    var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-large);
 }

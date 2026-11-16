@@ -104,9 +104,7 @@ describe("Bun runtime", () => {
 
   test("invalid runtime versions cannot satisfy the minimum", () => {
     for (const version of ["", "garbage", "v1.4.4", "1.4", "01.4.4", "1.4.4-debug..", "1.4.4-01"]) {
-      expect(() => checkBunRuntime(version, ">=1.4.3")).toThrow(
-        "@shenron/native requires Bun",
-      );
+      expect(() => checkBunRuntime(version, ">=1.4.3")).toThrow("@shenron/native requires Bun");
     }
     expect(() => checkBunRuntime("1.4.4-debug+shenron", ">=1.4.3")).not.toThrow();
   });

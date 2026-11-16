@@ -18,7 +18,12 @@ export function cachePath(...parts: string[]): string {
   const explicit = process.env.SHENRON_CACHE_DIR?.trim();
   if (explicit) return resolve(explicit, ...parts);
   if (process.platform === "win32")
-    return resolve(process.env.LOCALAPPDATA || homePath("AppData", "Local"), "Shenron", "cache", ...parts);
+    return resolve(
+      process.env.LOCALAPPDATA || homePath("AppData", "Local"),
+      "Shenron",
+      "cache",
+      ...parts,
+    );
   if (process.platform === "darwin") return homePath("Library", "Caches", "Shenron", ...parts);
   return resolve(process.env.XDG_CACHE_HOME || homePath(".cache"), "shenron", ...parts);
 }

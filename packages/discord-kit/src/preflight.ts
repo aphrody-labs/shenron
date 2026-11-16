@@ -22,7 +22,7 @@ export const FULL_INTENTS: readonly GatewayIntentBits[] = [
  * Used when privileged intents have not yet been granted in the Developer Portal.
  */
 export const FALLBACK_INTENTS: readonly GatewayIntentBits[] = FULL_INTENTS.filter(
-  intent =>
+  (intent) =>
     intent !== GatewayIntentBits.GuildMembers &&
     intent !== GatewayIntentBits.GuildPresences &&
     intent !== GatewayIntentBits.MessageContent,
@@ -40,7 +40,7 @@ export const PRIVILEGED_GRANT_BITS = {
 
 function withoutPrivilegedIntents(intents: readonly GatewayIntentBits[]): GatewayIntentBits[] {
   return intents.filter(
-    intent =>
+    (intent) =>
       intent !== GatewayIntentBits.GuildMembers &&
       intent !== GatewayIntentBits.GuildPresences &&
       intent !== GatewayIntentBits.MessageContent,
@@ -100,10 +100,10 @@ export async function resolveGrantedIntents(
     return withoutPrivilegedIntents(desired);
   }
 
-  const isGranted = (bits: readonly number[]) => bits.some(b => (flags & b) !== 0);
+  const isGranted = (bits: readonly number[]) => bits.some((b) => (flags & b) !== 0);
   const refused: string[] = [];
 
-  const grantedIntents = desired.filter(intent => {
+  const grantedIntents = desired.filter((intent) => {
     if (intent === GatewayIntentBits.GuildMembers && !isGranted(PRIVILEGED_GRANT_BITS.members)) {
       refused.push("GuildMembers");
       return false;
@@ -112,7 +112,10 @@ export async function resolveGrantedIntents(
       refused.push("GuildPresences");
       return false;
     }
-    if (intent === GatewayIntentBits.MessageContent && !isGranted(PRIVILEGED_GRANT_BITS.messageContent)) {
+    if (
+      intent === GatewayIntentBits.MessageContent &&
+      !isGranted(PRIVILEGED_GRANT_BITS.messageContent)
+    ) {
       refused.push("MessageContent");
       return false;
     }
@@ -150,7 +153,9 @@ export async function assertDiscordTokenMatchesProfile(
   } = {},
 ): Promise<void> {
   if (!profile.clientId) {
-    throw new Error(`[discord-kit] Discord clientId is missing for profile "${profile.name ?? "unnamed"}"`);
+    throw new Error(
+      `[discord-kit] Discord clientId is missing for profile "${profile.name ?? "unnamed"}"`,
+    );
   }
   const fetchFn = options.fetchImpl ?? globalThis.fetch;
   const apiBase = options.apiBase ?? "https://discord.com/api/v10";
