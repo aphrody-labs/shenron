@@ -114,14 +114,28 @@ describe("index /games", () => {
       /@media \(min-width: 1280px\) \{\s*\.grid \{\s*grid-template-columns: repeat\(4, minmax\(0, 1fr\)\);/,
     );
     // The only <nav> is the in-page section shortcut list, not site chrome.
-    expectNoOwnChrome(html.replace(/<nav aria-label="[^"]*">[\s\S]*?<\/nav>/, ""));
+    expectNoOwnChrome(html.replace(/<nav\b[^>]*aria-label="[^"]*"[^>]*>[\s\S]*?<\/nav>/, ""));
   });
 
   test("liens de jeu en casse normale et cibles de 44 px", () => {
     expect(html).not.toContain("JOUER");
     const liens = html.match(/<a[^>]*href="\/games\/[a-z0-9-]+"[^>]*>/g) ?? [];
-    // Four browser games plus three explorers (Dragon Pixel, Xenoverse 2, Budokai Tenkaichi 3).
-    expect(liens.length).toBe(7);
+    // Four browser games plus four explorers (Canon, Dragon Pixel, Xenoverse 2, Budokai
+    // Tenkaichi 3). The featured banners link again to Canon, Dragon Pixel and Tenkaichi, so
+    // the contract counts distinct destinations, not anchors.
+    const destinations = new Set(liens.map((lien) => lien.match(/href="([^"]+)"/)![1]));
+    expect([...destinations].toSorted()).toEqual(
+      [
+        "/games/2048",
+        "/games/bingo",
+        "/games/budokai-tenkaichi-3",
+        "/games/canon",
+        "/games/dragon-pixel",
+        "/games/rock-paper-scissors",
+        "/games/tic-tac-toe",
+        "/games/xenoverse-2",
+      ].toSorted(),
+    );
     expect(html).toContain('href="/games/dragon-pixel"');
     expect(html).toContain('href="/games/budokai-tenkaichi-3"');
     expect(css).toMatch(/\.cardLink,\s*\.textLink,[^{]*\{[^}]*min-height: 44px;/);

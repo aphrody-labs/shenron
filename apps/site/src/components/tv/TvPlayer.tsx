@@ -389,6 +389,7 @@ export function TvPlayer({
               {/* Semantic Native Range Input for WAI-ARIA and Keyboard Accessibility */}
               <input
                 type="range"
+                aria-label="Position de lecture"
                 min={0}
                 max={duration || 100}
                 step={0.1}
@@ -405,7 +406,6 @@ export function TvPlayer({
                 onTouchStart={() => setIsScrubbing(true)}
                 onTouchEnd={() => setIsScrubbing(false)}
                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 focus-visible:outline-none"
-                aria-label="Position de lecture"
                 aria-valuemin={0}
                 aria-valuemax={duration || 100}
                 aria-valuenow={currentTime}

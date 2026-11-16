@@ -100,7 +100,11 @@ beforeAll(() => {
         case "/huge-chunked":
           return new Response(
             new ReadableStream({
-              pull(c) {
+              // One chunk per millisecond: the producer is paced like a real origin, so the
+              // bytes sent before the client cancels do not depend on how far the kernel socket
+              // buffers (several MiB on Linux loopback) let an unpaced producer run ahead.
+              async pull(c) {
+                await Bun.sleep(1);
                 c.enqueue(new Uint8Array(64 * 1024));
                 hugeSent += 64 * 1024;
                 if (hugeSent >= 8 * 1024 * 1024) c.close();
@@ -201,6 +205,10 @@ describe("fetchCachedImage : taille", () => {
     const r = await fetchCachedImage(`${base}/huge-chunked`, { ...opts, maxBytes: 1000 });
     expect(r.status).toBe(502);
     expect(hugeSent).toBeLessThan(1024 * 1024);
+    // The cancel reached the origin: nothing more is produced afterwards.
+    const settled = hugeSent;
+    await Bun.sleep(100);
+    expect(hugeSent).toBe(settled);
   });
 });
 

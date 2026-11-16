@@ -184,11 +184,11 @@ export function GamesHub({ access = null }: { access?: AccessSnapshot | null } =
       <nav className={styles.sections} aria-label={t.navigation}>
         <a href="#browser-games">
           {t.browserTitle}
-          <span>04</span>
+          <span>{String(games.length).padStart(2, "0")}</span>
         </a>
         <a href="#explorers">
           {t.explorersTitle}
-          <span>03</span>
+          <span>{String(explorers.length).padStart(2, "0")}</span>
         </a>
         <a href="#discord-games">
           {t.discordTitle}

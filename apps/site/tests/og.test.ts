@@ -37,8 +37,10 @@ describe("ogMeta", () => {
     expect(m.openGraph && "url" in m.openGraph ? m.openGraph.url : null).toBe("/wiki/movies");
   });
 
-  test("sans canonique, aucune `alternates` n'est imposée", () => {
-    expect(ogMeta({ title: "x" }).alternates).toBeUndefined();
+  test("sans canonique, aucune canonique n'est imposée mais la découverte oEmbed reste publiée", () => {
+    const alternates = ogMeta({ title: "x" }).alternates;
+    expect(alternates?.canonical).toBeUndefined();
+    expect(alternates?.types?.["application/json+oembed"]).toContain("/api/oembed?url=");
   });
 
   test("les types vidéo sont ramenés à `video.other` (valeur OG valide)", () => {

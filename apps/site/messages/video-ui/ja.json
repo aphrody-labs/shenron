@@ -54,5 +54,9 @@
   "timelineGifCancel": "キャンセル",
   "timelineGifWidth": "幅",
   "timelineClipRange": "{start} → {end} · {duration} 秒",
-  "timelineFrameFailed": "プレビューを読み込めませんでした。別のフレームを選択してください。"
+  "timelineFrameFailed": "プレビューを読み込めませんでした。別のフレームを選択してください。",
+  "playerSeek": "再生位置",
+  "playerVolume": "音量",
+  "playerSpeed": "再生速度",
+  "playerSubtitles": "字幕"
 }

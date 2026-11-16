@@ -4,7 +4,11 @@ import { NextIntlClientProvider } from "next-intl";
 import fr from "../messages/fr.json";
 import { DEFAULT_HOME_CONFIG } from "@shenron/config/home";
 import { HomeHero } from "../src/components/home/HomeHero";
+import { optimizedSrc } from "../src/lib/images";
 import { Billboard } from "../src/components/stream/Billboard";
+
+// The hero logo goes through the image optimizer (671d5583); markup escapes the query ampersands.
+const LOGO_SRC = optimizedSrc("/official/beerus/logo-en.webp", 384).replaceAll("&", "&amp;");
 
 // The DRAGONBALL.FR brand logo (93cdf44f) is the only non-frame image of the hero.
 const BRAND_LOGO = /<img [^>]*src="\/brand\/dragonballfr-logo\.svg"[^>]*>/g;
@@ -71,7 +75,7 @@ test("the homepage keeps one official series logo and both episode destinations"
       />
     </NextIntlClientProvider>,
   );
-  expect(html.match(/src="\/official\/beerus\/logo-en.webp"/g)).toHaveLength(1);
+  expect(html.split(`src="${LOGO_SRC}"`)).toHaveLength(2);
   expect(html).not.toContain("home-wordmark");
   expect(html).toContain("Présentation éditoriale");
   expect(html).toContain('href="/wiki/episodes/875"');

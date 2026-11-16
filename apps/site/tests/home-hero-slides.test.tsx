@@ -6,6 +6,7 @@ import en from "../messages/en.json";
 import ja from "../messages/ja.json";
 import { DEFAULT_HOME_CONFIG } from "@shenron/config/home";
 import { HomeHero } from "../src/components/home/HomeHero";
+import { optimizedSrc } from "../src/lib/images";
 import {
   BEERUS_SLIDE_LIMIT,
   SLIDE_DURATION_MS,
@@ -14,6 +15,9 @@ import {
   formatAirDate,
   wrapIndex,
 } from "../src/components/home/beerus-slides";
+
+// The hero logo goes through the image optimizer (671d5583); markup escapes the query ampersands.
+const LOGO_SRC = optimizedSrc("/official/beerus/logo-en.webp", 384).replaceAll("&", "&amp;");
 
 const episode = (id: number, extra: Record<string, unknown> = {}) => ({
   id,
@@ -92,7 +96,7 @@ describe("Beerus hero slides", () => {
     expect(SLIDE_DURATION_MS).toBe(7000);
     // First image is the LCP candidate; the logo stays single.
     expect(html.match(/fetchPriority="high"/gi)?.length).toBeGreaterThanOrEqual(2);
-    expect(html.match(/src="\/official\/beerus\/logo-en\.webp"/g)).toHaveLength(1);
+    expect(html.split(`src="${LOGO_SRC}"`)).toHaveLength(2);
   });
 
   test("dates are relative when recent and absolute otherwise, in every locale", () => {

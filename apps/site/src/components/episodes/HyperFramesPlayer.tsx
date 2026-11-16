@@ -2,6 +2,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useMemo } from "react";
+import { useVideoUIText } from "@/lib/video-ui-text";
 import { GDS_COLORS, GDS_ELEVATION, GdsChip } from "@shenron/ui/gds";
 import { formatTimecodeSMPTE, generateWaveformPeaks, type WaveformPoint } from "@shenron/remotion";
 import {
@@ -38,6 +39,7 @@ export const HyperFramesPlayer: React.FC<HyperFramesPlayerProps> = ({
   subtitles = EMPTY_SUBTITLES,
   className = "",
 }) => {
+  const t = useVideoUIText();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
@@ -251,6 +253,7 @@ export const HyperFramesPlayer: React.FC<HyperFramesPlayerProps> = ({
         <div className="flex items-center gap-3">
           <input
             type="range"
+            aria-label={t("playerSeek")}
             min={0}
             max={duration || 100}
             step={0.1}
@@ -307,6 +310,7 @@ export const HyperFramesPlayer: React.FC<HyperFramesPlayerProps> = ({
               </button>
               <input
                 type="range"
+                aria-label={t("playerVolume")}
                 min={0}
                 max={1}
                 step={0.05}
@@ -332,6 +336,7 @@ export const HyperFramesPlayer: React.FC<HyperFramesPlayerProps> = ({
           <div className="flex items-center gap-2">
             {/* Speed Selector */}
             <select
+              aria-label={t("playerSpeed")}
               value={playbackRate}
               onChange={(e) => {
                 const r = parseFloat(e.target.value);
@@ -351,6 +356,7 @@ export const HyperFramesPlayer: React.FC<HyperFramesPlayerProps> = ({
             {/* Subtitles Toggle */}
             {subtitles.length > 0 && (
               <select
+                aria-label={t("playerSubtitles")}
                 value={activeSubtitle || ""}
                 onChange={(e) => setActiveSubtitle(e.target.value || null)}
                 className="bg-slate-800 text-xs text-slate-200 rounded px-2 py-1 border border-slate-700 cursor-pointer"

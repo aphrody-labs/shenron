@@ -54,5 +54,9 @@
   "timelineGifCancel": "Cancel",
   "timelineGifWidth": "Width",
   "timelineClipRange": "{start} → {end} · {duration} s",
-  "timelineFrameFailed": "This preview could not be loaded. Select another frame."
+  "timelineFrameFailed": "This preview could not be loaded. Select another frame.",
+  "playerSeek": "Seek",
+  "playerVolume": "Volume",
+  "playerSpeed": "Playback speed",
+  "playerSubtitles": "Subtitles"
 }

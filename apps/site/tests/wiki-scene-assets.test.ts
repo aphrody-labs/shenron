@@ -19,8 +19,12 @@ test("the three faithful mascot files match their source hashes and native PNG d
 });
 
 test("decorative stills reuse homepage sources and exclude the inspected subtitled poster", () => {
-  expect(PORTAL_ANIME_FRAMES).toHaveLength(3);
-  expect(new Set(PORTAL_ANIME_FRAMES.map((frame) => frame.src)).size).toBe(3);
+  // The homepage frame list grows with each published episode; the portal keeps all of them
+  // except the one inspected subtitled still.
+  expect(PORTAL_ANIME_FRAMES).toHaveLength(HOME_HERO_FRAMES.length - 1);
+  expect(new Set(PORTAL_ANIME_FRAMES.map((frame) => frame.src)).size).toBe(
+    PORTAL_ANIME_FRAMES.length,
+  );
   for (const frame of PORTAL_ANIME_FRAMES) {
     expect(HOME_HERO_FRAMES).toContain(frame);
     expect(new URL(frame.src).origin).toBe("https://cdn.dragonballfr.com");

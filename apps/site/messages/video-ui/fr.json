@@ -54,5 +54,9 @@
   "timelineGifCancel": "Annuler",
   "timelineGifWidth": "Largeur",
   "timelineClipRange": "{start} → {end} · {duration} s",
-  "timelineFrameFailed": "Cet aperçu est indisponible. Sélectionnez une autre frame."
+  "timelineFrameFailed": "Cet aperçu est indisponible. Sélectionnez une autre frame.",
+  "playerSeek": "Position de lecture",
+  "playerVolume": "Volume",
+  "playerSpeed": "Vitesse de lecture",
+  "playerSubtitles": "Sous-titres"
 }

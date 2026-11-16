@@ -6,6 +6,7 @@ import { NextIntlClientProvider } from "next-intl";
 import fr from "../messages/fr.json";
 import { DEFAULT_HOME_CONFIG, SECTION_SCENE } from "@shenron/config/home";
 import { HomeHero } from "../src/components/home/HomeHero";
+import { optimizedSrc } from "../src/lib/images";
 import { SectionScene } from "../src/components/home/SectionScene";
 import { HomeScreenDeck } from "../src/components/home/HomeScreenDeck";
 import { HomeSection } from "../src/components/home/HomeSection";
@@ -15,6 +16,9 @@ import {
   surfaceLink,
   tactilePress,
 } from "../src/components/home/ui";
+
+// The hero logo goes through the image optimizer (671d5583); markup escapes the query ampersands.
+const LOGO_SRC = optimizedSrc("/official/beerus/logo-en.webp", 384).replaceAll("&", "&amp;");
 
 let root: Root | undefined;
 let host: HTMLDivElement | undefined;
@@ -51,7 +55,7 @@ describe("home redesign UI/UX — hero, immersive sections & click feedback", ()
 
     expect(html).toContain('src="/brand/dragonballfr-logo.svg"');
     expect(html).toContain("Tout l’univers Dragon Ball en français.");
-    expect(html).toContain('src="/official/beerus/logo-en.webp"');
+    expect(html).toContain(`src="${LOGO_SRC}"`);
     expect(html).toContain('href="/wiki/episodes/877"');
     expect(html).toContain('href="/wiki/episodes/875"');
     expect(html).toContain('href="/wiki/episodes/876"');
