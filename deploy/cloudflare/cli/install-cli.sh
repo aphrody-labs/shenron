@@ -20,13 +20,13 @@ mkdir -p "$HOME/.local/bin"
 printf '%s\n' '#!/bin/sh' 'exec "/usr/local/bin/bun" "$HOME/.local/share/aphrody/cloudflare-cli/orchestration/cloudflare-ops.ts" "$@"' > "$HOME/.local/bin/cloudflare-ops"
 chmod 700 "$HOME/.local/bin/cloudflare-ops"
 install -m 700 "$source_dir/s3-profile.sh" "$HOME/.local/bin/cloudflare-s3"
-printf '%s\n' '#!/bin/sh' 'exec sudo -n /usr/bin/env BUN_DEBUG_QUIET_LOGS=1 /usr/local/bin/bun /etc/aphrody/cloudflare/cli/transfer.ts "$@"' > "$HOME/.local/bin/cloudflare-transfer"
+printf '%s\n' '#!/bin/sh' 'exec sudo -n /usr/bin/env BUN_DEBUG_QUIET_LOGS=1 /usr/local/bin/bun /etc/shenron/cloudflare/cli/transfer.ts "$@"' > "$HOME/.local/bin/cloudflare-transfer"
 chmod 700 "$HOME/.local/bin/cloudflare-transfer"
 if [ "${1:-}" = "--install-owner-s3" ]; then
   # Explicit Infra SSH owner phase; require the existing credential, never create one.
-  sudo -n test -r /etc/aphrody/cloudflare/api-token
-  sudo -n mkdir -p /etc/aphrody/cloudflare/cli
-  sudo -n install -o root -g root -m 600 "$target_dir/s3-profile.ts" "$target_dir/cloudflare-ops.ts" "$target_dir/transfer.ts" "$target_dir/inventory-delta.ts" "$target_dir/publish-catalog.ts" "$target_dir/public-cdn-catalog.ts" /etc/aphrody/cloudflare/cli/
+  sudo -n test -r /etc/shenron/cloudflare/api-token
+  sudo -n mkdir -p /etc/shenron/cloudflare/cli
+  sudo -n install -o root -g root -m 600 "$target_dir/s3-profile.ts" "$target_dir/cloudflare-ops.ts" "$target_dir/transfer.ts" "$target_dir/inventory-delta.ts" "$target_dir/publish-catalog.ts" "$target_dir/public-cdn-catalog.ts" /etc/shenron/cloudflare/cli/
   sudo -n install -o root -g root -m 644 "$target_dir/shenron-cloudflare-s3-renew.service" "$target_dir/shenron-cloudflare-s3-renew.timer" /etc/systemd/system/
   sudo -n systemd-analyze verify /etc/systemd/system/shenron-cloudflare-s3-renew.service /etc/systemd/system/shenron-cloudflare-s3-renew.timer
   sudo -n systemctl daemon-reload

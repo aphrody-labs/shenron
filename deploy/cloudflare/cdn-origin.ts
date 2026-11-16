@@ -217,4 +217,4 @@ export async function originResponse(request: Request, response: Response): Prom
 }
 
 if (import.meta.main)
-  await startCdnOrigin(process.argv[2] ?? "/etc/aphrody/cloudflare/origin-cdn.json");
+  await startCdnOrigin(process.argv[2] ?? "/etc/shenron/cloudflare/origin-cdn.json");

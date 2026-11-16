@@ -223,7 +223,7 @@ export async function run(args: string[]) {
   }
   if (process.platform === "win32" || process.getuid?.() !== 0 || !values.apply)
     throw new Error("DBFR owner root apply required");
-  const config = await Bun.file("/etc/aphrody/cloudflare/source-publication.json").json(),
+  const config = await Bun.file("/etc/shenron/cloudflare/source-publication.json").json(),
     manifest = await Bun.file(config.manifest).json();
   if (manifest.bucket !== "shenron-cdn") throw new Error("Staging bucket differs");
   const p = await Bun.file(config.profile).json();

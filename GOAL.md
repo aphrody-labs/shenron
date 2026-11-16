@@ -95,7 +95,7 @@ architecture distante multi-utilisateur.
    budgets et couverture explicitement qualifiés.
 2. Livrer les lecteurs manga, databooks et vidéo avec tests navigateur réels ; distinguer
    chargement, disponibilité et lecture effective.
-3. Consommer HLS depuis `@aphrody/bun-video`, sans vendoring local ; respecter les licences,
+3. Consommer HLS depuis `@shenron/video`, sans vendoring local ; respecter les licences,
    DRM et droits des fournisseurs.
 4. Maintenir les catalogues par writers transactionnels, snapshots JSON validés, sauvegarde,
    relecture et réplica ; aucune écriture implicite dans RAG, Redis ou PostgreSQL.
