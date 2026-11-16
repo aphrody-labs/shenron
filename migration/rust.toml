@@ -19,8 +19,8 @@ name = "site"
 ts = ["apps/site"]
 rust = "crates/shenron-site"
 state = "ts"
-ts_lines = 276176
-note = "Next.js 16 -> Leptos 0.8 SSR + islands on Axum (ADR 0001)"
+ts_lines = 276220
+note = "Next.js 16 -> Leptos 0.8 SSR + islands on Axum (ADR 0001). Raised from 276176 by the test and accessibility fixes of 3b8b109d"
 
 [[unit]]
 name = "bot"
