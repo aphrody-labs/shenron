@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //! `shenron dbfr …` — the Dragon Ball FR databooks API, natively.
 //!
-//! The corpus that consumes aphrody's OCR is not a folder: it is the databooks
+//! The corpus that consumes shenron's OCR is not a folder: it is the databooks
 //! section of `dragonballfr.com`, whose API stores one text per plate. Until
 //! now the round trip went through `curl` and hand-written JSON, which meant
 //! the safety rules of a deposit — never send a blank text, never send a page
@@ -23,7 +23,7 @@
 
 use std::path::{Path, PathBuf};
 
-use aphrody_ocr::ocr_core::{OcrStatus, store::OcrStore};
+use shenron_ocr_core::{OcrStatus, store::OcrStore};
 
 /// Default site. Overridden by `$DBFR_BASE_URL` for a staging instance.
 const DEFAULT_BASE_URL: &str = "https://dragonballfr.com";
@@ -208,7 +208,7 @@ fn require_token() -> miette::Result<String> {
 
 fn client() -> miette::Result<reqwest::Client> {
     reqwest::Client::builder()
-        .user_agent(concat!("aphrody/", env!("CARGO_PKG_VERSION")))
+        .user_agent(concat!("shenron/", env!("CARGO_PKG_VERSION")))
         .build()
         .map_err(|e| miette::miette!("build HTTP client: {e}"))
 }
@@ -333,7 +333,7 @@ async fn survey(
     let missing = with_image.saturating_sub(transcribed);
 
     rows.sort_by_key(|row| std::cmp::Reverse(row.3.saturating_sub(row.4)));
-    let mut table = aphrody_models::Report::new(
+    let mut table = crate::render::Report::new(
         "Databooks transcription",
         &["ID", "MISSING", "PLATES", "TITLE"],
     )
@@ -401,7 +401,7 @@ async fn list(
     // are reported: a listing that shows 200 of 370 without saying so reads as
     // the whole corpus.
     let total = json.get("total").and_then(serde_json::Value::as_u64).unwrap_or(0);
-    let mut table = aphrody_models::Report::new("Databooks", &["ID", "TITLE", "VISIBLE", "PAGES"])
+    let mut table = crate::render::Report::new("Databooks", &["ID", "TITLE", "VISIBLE", "PAGES"])
         .with_summary(format!(
             "{} record(s) shown, offset {offset}, {total} matching — `survey` counts them all",
             items.len()
@@ -444,7 +444,7 @@ async fn pages(id: u64, missing: bool, output: &crate::output::OutputOpts) -> mi
         }
     }
 
-    let mut table = aphrody_models::Report::new(format!("Databook {id}"), &["FIELD", "VALUE"])
+    let mut table = crate::render::Report::new(format!("Databook {id}"), &["FIELD", "VALUE"])
         .with_summary(format!(
             "{} plate(s), {with_image} with an image, {with_text} transcribed, {} still missing",
             plates.len(),
@@ -490,7 +490,7 @@ async fn texts(id: u64, pages: &str, output: &crate::output::OutputOpts) -> miet
         .unwrap_or_default();
     plates.sort_by_key(|(number, _)| *number);
     let mut table =
-        aphrody_models::Report::new(format!("Databook {id} — plates"), &["PLATE", "TEXT"])
+        crate::render::Report::new(format!("Databook {id} — plates"), &["PLATE", "TEXT"])
             .with_summary(format!("{} plate(s)", plates.len()));
     for (number, text) in plates {
         table.push(vec![number.to_string(), text]);
@@ -607,7 +607,7 @@ async fn fetch(
         fetch_record(&client()?, &record, out, all, limit).await?;
 
     let mut table =
-        aphrody_models::Report::new(format!("Databook {id} images"), &["FIELD", "VALUE"])
+        crate::render::Report::new(format!("Databook {id} images"), &["FIELD", "VALUE"])
             .with_summary(format!(
                 "{downloaded} downloaded, {already} already on disk, {skipped_transcribed} \
                  already transcribed, {skipped_no_image} without an image, {} failed",
@@ -639,7 +639,7 @@ async fn fetch_all(
 ) -> miette::Result<()> {
     let records = all_records(include_hidden).await?;
     let client = client()?;
-    let mut table = aphrody_models::Report::new(
+    let mut table = crate::render::Report::new(
         "Databooks images",
         &["ID", "DOWNLOADED", "ON DISK", "FAILED", "TITLE"],
     );
@@ -739,14 +739,14 @@ async fn push(
 ) -> miette::Result<()> {
     let db_path = match db {
         Some(path) => path.to_path_buf(),
-        None => aphrody_models::paths::ocr_dir()
-            .map_err(|e| miette::miette!("locate the aphrody state directory: {e}"))?
+        None => shenron_home::paths::ocr_dir()
+            .map_err(|e| miette::miette!("locate the shenron state directory: {e}"))?
             .join("results.db"),
     };
     let store =
         OcrStore::open(&db_path).map_err(|e| miette::miette!("open {}: {e}", db_path.display()))?;
     let stored = store
-        .list(&aphrody_ocr::ocr_core::store::ListFilter::default())
+        .list(&shenron_ocr_core::store::ListFilter::default())
         .map_err(|e| miette::miette!("{e}"))?;
 
     let mut payload = Vec::new();
@@ -825,7 +825,7 @@ async fn push(
     }
 
     let mut table =
-        aphrody_models::Report::new(format!("Databook {id} deposit"), &["FIELD", "VALUE"])
+        crate::render::Report::new(format!("Databook {id} deposit"), &["FIELD", "VALUE"])
             .with_summary(format!(
                 "{} plate(s) ready in `{mode}` mode — {} refused (status), {} outside the lot, {} \
                  without a plate number, {} empty",

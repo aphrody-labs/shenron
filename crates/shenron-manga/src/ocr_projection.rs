@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-//! Project Koharu's completed page run into Aphrody's shared OCR result contract.
+//! Project Koharu's completed page run into Shenron's shared OCR result contract.
 
 use std::path::PathBuf;
 
-use aphrody_ocr_core::{
+use shenron_ocr_core::{
     Attempt, AttemptStatus, ImageIdentity, OcrBlock, OcrResult, OcrStatus, Quality,
     RESULT_SCHEMA_V2, RunProvenance,
 };

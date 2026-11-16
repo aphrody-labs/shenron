@@ -2,7 +2,7 @@
 
 //! Binary Triage, PE/ELF Format Detection, Shannon Entropy, and String Extraction.
 //!
-//! Extracted and unified from `aphrody-re`.
+//! Extracted and unified from `shenron-re`.
 //! Inspects arbitrary binary blobs without panicking, extracting headers, section tables,
 //! entropy packed-code indicators, and cryptographic digests.
 

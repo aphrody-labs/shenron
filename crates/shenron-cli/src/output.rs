@@ -8,7 +8,7 @@
 
 use std::path::{Path, PathBuf};
 
-use aphrody_models::{Format, Report};
+use crate::render::{Format, Report};
 
 /// Output options shared by every report-producing subcommand.
 #[derive(clap::Args, Debug, Clone, Default)]

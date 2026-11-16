@@ -65,14 +65,14 @@ est en ligne sans l'avoir sondé.
 ## IA et état courant
 
 `rag_search` et `rag_context` servent à la recherche documentaire. `rag_ask`
-renvoie en plus un texte rédigé par le LLM, en ligne via aphrody-ai-http, à
+renvoie en plus un texte rédigé par le LLM, en ligne via shenron-ai-http, à
 partir des passages retournés. Si le LLM est indisponible, l'outil renvoie une
 erreur (HTTP 503 `llm_unavailable`) au lieu d'un texte de repli. Cette prose
 reformule les passages dans la voix du bot unique : elle ne remplace pas les
 sources, privilégie les passages sourcés et leurs URLs. Traite un résultat vide
 ou une erreur comme une absence de réponse générée.
 
-Les index de recherche et le compute Aphrody sont séparés de la base éditoriale
+Les index de recherche et le compute Shenron sont séparés de la base éditoriale
 Shenron. Un résultat RAG n'est pas une écriture dans le wiki et ne modifie pas
 la source de vérité.
 
@@ -81,9 +81,9 @@ la source de vérité.
 Le système fonctionne désormais avec un seul bot unifié :
 
 - **Mode YOLO** : le bot adopte par défaut le persona canonique **Akira Toriyama** (Tori-bot), bienveillant, modeste, passionné et autorité suprême sur le manga original.
-- **Mode User** : au premier démarrage, l'utilisateur a la liberté de définir son persona personnalisé (enregistré dans `~/.aphrody/persona.json`), avec repli naturel sur Akira Toriyama.
-- **Recherche documentaire locale** : interroge l'index natif Aphrody (`aphrody rag search`) ou le corpus local (`corpus-databooks.json`) avec scoring par pertinence lexicale et boost d'entités.
-- **Modèles locaux** : `rag_ask` utilise le modèle de chat local résolu par le contrat `APHRODY_AI_*` (`APHRODY_AI_CHAT_BASE_URL`, défini dans `config/local-ai.json`) pour rédiger la réponse dans la voix du persona actif. Si les modèles locaux ne sont pas démarrés, une synthèse naïve grounded des passages est produite sans hallucination.
+- **Mode User** : au premier démarrage, l'utilisateur a la liberté de définir son persona personnalisé (enregistré dans `~/.shenron/persona.json`), avec repli naturel sur Akira Toriyama.
+- **Recherche documentaire locale** : interroge l'index natif Shenron (`shenron rag search`) ou le corpus local (`corpus-databooks.json`) avec scoring par pertinence lexicale et boost d'entités.
+- **Modèles locaux** : `rag_ask` utilise le modèle de chat local résolu par le contrat `SHENRON_AI_*` (`SHENRON_AI_CHAT_BASE_URL`, défini dans `config/local-ai.json`) pour rédiger la réponse dans la voix du persona actif. Si les modèles locaux ne sont pas démarrés, une synthèse naïve grounded des passages est produite sans hallucination.
 
 ## Écriture et administration
 

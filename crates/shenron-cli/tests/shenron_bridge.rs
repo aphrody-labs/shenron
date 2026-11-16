@@ -10,15 +10,15 @@ fn shenron() -> Command {
     Command::cargo_bin("shenron").expect("shenron binary must be present in cargo target dir")
 }
 
-/// `shenron` with every Shenron endpoint on a closed loopback port and no Aphrody AI profile,
+/// `shenron` with every Shenron endpoint on a closed loopback port and no Shenron AI profile,
 /// so the bridge probes are hermetic and always report `degraded`.
 fn offline_shenron() -> Command {
     let mut command = shenron();
     command
         .env("SHENRON_SITE_URL", "http://127.0.0.1:9")
         .env("SHENRON_API_URL", "http://127.0.0.1:9")
-        .env("APHRODY_AI_HTTP_URL", "")
-        .env("APHRODY_SHENRON_API_URL", "")
+        .env("SHENRON_AI_HTTP_URL", "")
+        .env("SHENRON_API_URL", "")
         .env("SHENRON_ROOT", "/nonexistent-shenron-root");
     command
 }
@@ -44,7 +44,7 @@ fn shenron_doctor_json_output() {
     )
     .expect("write credential presence fixture");
     let assert = offline_shenron()
-        .env("APHRODY_SHENRON_HOME", home.path())
+        .env("SHENRON_HOME", home.path())
         .args(["doctor", "--json"])
         .assert()
         .success();
@@ -80,17 +80,17 @@ fn copy_tree(from: &std::path::Path, to: &std::path::Path) {
 }
 
 /// Runs on the repository's public agent home (`templates/agent-home/`), copied into a temporary
-/// `APHRODY_HOME`, instead of whatever `~/.aphrody/workspace-dbfr` the host happens to hold.
+/// `SHENRON_HOME`, instead of whatever `~/.shenron/workspace-dbfr` the host happens to hold.
 #[test]
 fn shenron_persona_prompt_output() {
-    let state = tempfile::tempdir().expect("temporary Aphrody home");
+    let state = tempfile::tempdir().expect("temporary Shenron home");
     let workspace = state.path().join("workspace-dbfr");
     std::fs::create_dir_all(&workspace).expect("workspace-dbfr");
     let fixture =
         std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../templates/agent-home");
     copy_tree(&fixture, &workspace);
     shenron()
-        .env("APHRODY_HOME", state.path())
+        .env("SHENRON_HOME", state.path())
         .args(["persona", "prompt"])
         .assert()
         .success()
@@ -128,7 +128,7 @@ fn shenron_auth_status_output() {
     )
     .expect("write credential presence fixture");
     let output = shenron()
-        .env("APHRODY_SHENRON_HOME", home.path())
+        .env("SHENRON_HOME", home.path())
         .args(["auth", "status"])
         .assert()
         .success()
@@ -151,7 +151,7 @@ fn shenron_auth_status_json() {
     std::fs::write(home.path().join("admin_credentials.json"), "{}")
         .expect("write credential presence fixture");
     let assert = shenron()
-        .env("APHRODY_SHENRON_HOME", home.path())
+        .env("SHENRON_HOME", home.path())
         .args(["auth", "status", "--json"])
         .assert()
         .success();
@@ -175,7 +175,7 @@ fn shenron_auth_url_never_includes_the_master_token() {
     .expect("write credential fixture");
 
     let output = shenron()
-        .env("APHRODY_SHENRON_HOME", home.path())
+        .env("SHENRON_HOME", home.path())
         .args(["auth", "url", "--site", "https://example.test", "--raw"])
         .assert()
         .success()

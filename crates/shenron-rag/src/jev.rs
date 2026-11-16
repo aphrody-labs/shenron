@@ -3,10 +3,10 @@
 
 use std::collections::BTreeSet;
 
-use aphrody_jev::{
+use shenron_jev::{
     Answer, GuardPolicy, PassageVerdict, Question, decision_output, filter_and_rerank,
 };
-pub use aphrody_jev::{JevError, JevRouter, Request};
+pub use shenron_jev::{JevError, JevRouter, Request};
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
@@ -111,7 +111,7 @@ pub async fn decide(router: &JevRouter, input: &DecideRequest) -> Result<Value, 
         return Err(JevError::InvalidRequest("private state is not eligible for Jev".into()));
     }
     if let Some(threshold) = input.minimum_confidence {
-        aphrody_jev::validate_confidence_threshold(threshold)?;
+        shenron_jev::validate_confidence_threshold(threshold)?;
     }
     bounded(&input.request)?;
     let decision = router.decide(&input.request).await?;
@@ -281,7 +281,7 @@ mod tests {
         };
         let (_, request) = prepare(&input).unwrap();
         assert_eq!(request.questions.len(), 63);
-        aphrody_jev::check_request(&request).unwrap();
+        shenron_jev::check_request(&request).unwrap();
         input.passages.push(passage("too-many", SourceKind::Manga));
         assert!(prepare(&input).is_err());
     }
@@ -300,7 +300,7 @@ mod tests {
     #[test]
     fn boundary_errors_never_return_provider_response_bodies() {
         let error = JevError::Rejected {
-            backend: aphrody_jev::Backend::Saas,
+            backend: shenron_jev::Backend::Saas,
             status: 401,
             body: "provider-secret-echo".into(),
         };
@@ -324,21 +324,21 @@ mod tests {
                 relevance: 1.0,
                 injection: 0.0,
                 contradiction: 0.0,
-                served_by: aphrody_jev::Backend::Local,
+                served_by: shenron_jev::Backend::Local,
             },
             PassageVerdict {
                 index: 1,
                 relevance: 0.6,
                 injection: 0.0,
                 contradiction: 1.0,
-                served_by: aphrody_jev::Backend::Local,
+                served_by: shenron_jev::Backend::Local,
             },
             PassageVerdict {
                 index: 2,
                 relevance: 1.0,
                 injection: 1.0,
                 contradiction: 0.0,
-                served_by: aphrody_jev::Backend::Local,
+                served_by: shenron_jev::Backend::Local,
             },
         ];
         let ranked = rank(&passages, &verdicts, 8);
@@ -376,8 +376,8 @@ mod tests {
         let router = JevRouter::new(
             None,
             None,
-            Some(aphrody_jev::Endpoint::local(&base, None).unwrap()),
-            aphrody_jev::RoutingPolicy::default(),
+            Some(shenron_jev::Endpoint::local(&base, None).unwrap()),
+            shenron_jev::RoutingPolicy::default(),
         )
         .unwrap();
         let mut private = passage("private", SourceKind::Manga);

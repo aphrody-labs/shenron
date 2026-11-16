@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2026 aphrody contributors
+// SPDX-FileCopyrightText: 2026 shenron contributors
 
 //! Shenron adapter over the Koharu headless library (`koharu-library`).
 //!
@@ -10,7 +10,7 @@
 //!
 //! - [`bubble`]: Speech bubble geometry and Japanese manga reading order (Right-to-Left, Top-to-Bottom).
 //! - [`catalog`]: Dragon Ball FR catalog and CDN plate fetching.
-//! - [`ocr_projection`]: Projection of a page run to an Aphrody OCR v2 review record.
+//! - [`ocr_projection`]: Projection of a page run to an Shenron OCR v2 review record.
 //! - [`pipeline`]: Native Koharu page stages and versioned review candidate results.
 
 #![allow(missing_docs)]

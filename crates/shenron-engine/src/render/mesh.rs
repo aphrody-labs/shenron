@@ -2,8 +2,8 @@
 
 //! Unified 3D Mesh Representation, Procedural Geometry, and Texture Maps.
 //!
-//! Bridges procedural geometry generation from `aphrody-render::mesh3d` and
-//! textured game model representation from `aphrody-nie-render3d::glb`.
+//! Bridges procedural geometry generation from `shenron-render::mesh3d` and
+//! textured game model representation from `shenron-nie-render3d::glb`.
 
 use glam::{Mat4, Vec3};
 use serde::{Deserialize, Serialize};

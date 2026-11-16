@@ -4,7 +4,7 @@
 //!
 //! Provides two-way translation between symbolic assembly text lines
 //! (e.g. `push rbx ; sub rsp, 0x20 ; ret`) and high-level [`Insn`] values.
-//! Adapted from `aphrody-nie-asm::text`.
+//! Adapted from `shenron-nie-asm::text`.
 
 use super::insn::*;
 use thiserror::Error;

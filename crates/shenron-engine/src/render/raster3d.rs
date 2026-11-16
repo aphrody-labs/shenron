@@ -3,7 +3,7 @@
 //! Reference CPU 3D Rasterizer with Z-buffering, Backface Culling, and Textured Shading.
 //!
 //! Provides deterministic software 3D rendering for both procedural geometries and
-//! textured game models (`Model`), matching `aphrody-nie-render3d::render` and `aphrody-render::raster3d`.
+//! textured game models (`Model`), matching `shenron-nie-render3d::render` and `shenron-render::raster3d`.
 //!
 //! Key optical and projection constants:
 //! - [`FOCALE`] = 1.7 (focal length for perspective projection)

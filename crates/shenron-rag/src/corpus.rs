@@ -1,20 +1,20 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2026 aphrody contributors
+// SPDX-FileCopyrightText: 2026 shenron contributors
 
-//! Shenron corpus loader and ingestion into Aphrody RAG storage.
+//! Shenron corpus loader and ingestion into the SQLite RAG storage.
 //!
 //! Parses and loads Dragon Ball encyclopedic corpora (such as `corpus-databooks.json`,
-//! lot JSONL files, or raw Markdown passages) and indexes them into Aphrody's SQLite
+//! lot JSONL files, or raw Markdown passages) and indexes them into the SQLite
 //! [`RagStore`] with FTS5 lexical indexing and optional dense vector embeddings.
 
 use std::{collections::HashSet, path::Path, sync::Arc, time::Instant};
 
-use aphrody_rag_core::{ChunkOptions, chunker_for_path};
+use shenron_rag_core::{ChunkOptions, chunker_for_path};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest as _, Sha256};
 use tracing::info;
 
-use aphrody_rag::{Embedder, RagError, RagStore, Result};
+use crate::{Embedder, RagError, RagStore, Result};
 
 /// A normalized Shenron document before chunking and indexing.
 #[derive(Debug, Clone, Serialize, Deserialize)]

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2026 aphrody contributors
+// SPDX-FileCopyrightText: 2026 shenron contributors
 
 //! Direct integration with the Dragon Ball FR manga & databooks catalog and CDN.
 //!
@@ -96,7 +96,7 @@ impl MangaCdnClient {
 
         #[cfg(not(target_arch = "wasm32"))]
         let client = reqwest::Client::builder()
-            .user_agent("aphrody-manga/1.0.0 (Aphrody Sovereign Scanlation Engine)")
+            .user_agent("shenron-manga/1.0.0 (Shenron Sovereign Scanlation Engine)")
             .timeout(std::time::Duration::from_secs(30))
             .build()
             .unwrap_or_default();

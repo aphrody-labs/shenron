@@ -16,7 +16,7 @@ fn report<E: std::fmt::Debug>(result: Result<Value, E>) -> Result<Value, String>
     result.map_err(|error| format!("{error:?}"))
 }
 
-/// Health of the Shenron site, bot, Aphrody AI, serving RAG and Agent Home dbfr.
+/// Health of the Shenron site, bot, Shenron AI, serving RAG and Agent Home dbfr.
 #[tauri::command]
 pub async fn studio_shenron_health(window: tauri::WebviewWindow) -> Result<Value, String> {
     main_window_only(&window)?;
@@ -52,7 +52,7 @@ pub async fn studio_shenron_training(window: tauri::WebviewWindow) -> Result<Val
 /// Local models served by the managed `llama-server` (chat, embed, rerank) that are ready now.
 #[tauri::command]
 pub fn studio_native_ai_status() -> Value {
-    use aphrody_llama_server::{Role, discover_running};
+    use crate::local_ai::{Role, discover_running};
     let role = |role: Role| {
         discover_running(role).map_or_else(
             || serde_json::json!({"ready": false}),
@@ -67,7 +67,7 @@ pub fn studio_native_ai_status() -> Value {
 }
 
 /// Native pipeline surface advertised to Studio. Execution remains owned by the packaged
-/// Aphrody/Pipeline services; this command exposes the real local routes and capabilities so the
+/// Shenron/Pipeline services; this command exposes the real local routes and capabilities so the
 /// UI never presents a fake local implementation.
 #[tauri::command]
 pub fn studio_pipeline_capabilities() -> Value {
@@ -84,7 +84,7 @@ pub fn studio_pipeline_capabilities() -> Value {
             {"id":"ocr", "label":"OCR manga et databooks", "owner":"shenron-pipeline"},
             {"id":"rag", "label":"RAG hybride et embeddings", "owner":"shenron-pipeline"},
             {"id":"ai", "label":"IA ancrée et évaluation", "owner":"shenron-pipeline"},
-            {"id":"translation", "label":"Traduction Aphrody avec gates", "owner":"shenron-pipeline"},
+            {"id":"translation", "label":"Traduction Shenron avec gates", "owner":"shenron-pipeline"},
             {"id":"crawl", "label":"Crawl borné et ingestion", "owner":"shenron-pipeline"},
             {"id":"unify", "label":"Unification des catalogues", "owner":"shenron-pipeline"},
             {"id":"mcp-admin", "label":"MCP admin local", "owner":"shenron-mcp"},
@@ -100,7 +100,7 @@ pub async fn studio_native_chat(
     temperature: Option<f64>,
     max_tokens: Option<u32>,
 ) -> Result<Value, String> {
-    use aphrody_llama_server::{Role, discover_running};
+    use crate::local_ai::{Role, discover_running};
     let state = discover_running(Role::Chat).filter(|state| state.ready).ok_or_else(|| {
         "aucun modèle de chat local prêt : en charger un depuis Modèles".to_string()
     })?;
@@ -112,7 +112,7 @@ pub async fn studio_native_chat(
         "stream": false,
     });
     let response = reqwest::Client::new()
-        .post(format!("http://127.0.0.1:{}/v1/chat/completions", state.port))
+        .post(format!("{}/chat/completions", state.base_url()))
         .json(&body)
         .send()
         .await
@@ -132,14 +132,14 @@ pub async fn studio_native_chat(
 const NATIVE_AI_BRIDGE: &str = r#"
 (() => {
   const invoke = (cmd, args) => window.__TAURI_INTERNALS__.invoke(cmd, args ?? {});
-  window.aphrodyNative = Object.freeze({
+  window.shenronNative = Object.freeze({
     desktop: true,
     status: () => invoke("studio_native_ai_status"),
     chat: (messages, options = {}) =>
       invoke("studio_native_chat", { messages, temperature: options.temperature ?? null, maxTokens: options.maxTokens ?? null }),
     ragSearch: (query, limit = 10, kind = null) => invoke("studio_shenron_rag_search", { query, limit, kind }),
   });
-  window.dispatchEvent(new Event("aphrody-native-ready"));
+  window.dispatchEvent(new Event("shenron-native-ready"));
 })();
 "#;
 
@@ -254,13 +254,13 @@ pub fn studio_corpus_search(
 /// Grounded answer from the local corpus; uses the desktop's local chat model when one is ready.
 #[tauri::command]
 pub async fn studio_corpus_ask(question: String) -> Value {
-    use aphrody_llama_server::{Role, discover_running};
+    use crate::local_ai::{Role, discover_running};
     let local = discover_running(Role::Chat).filter(|state| state.ready);
     let env = move |name: &str| -> Option<String> {
         if let Some(state) = &local {
             match name {
-                "APHRODY_AI_CHAT_BASE_URL" => return Some(state.base_url()),
-                "APHRODY_AI_CHAT_MODEL" => return Some(state.alias.clone()),
+                "SHENRON_AI_CHAT_BASE_URL" => return Some(state.base_url()),
+                "SHENRON_AI_CHAT_MODEL" => return Some(state.alias.clone()),
                 _ => {},
             }
         }

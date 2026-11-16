@@ -4,7 +4,7 @@
 //!
 //! Extracts geometry (positions, normals, texture coordinates, triangle indices)
 //! and embedded textures (PNG/JPEG via the `image` crate) into a unified `Model`.
-//! Adapted from `aphrody-nie-render3d::glb`.
+//! Adapted from `shenron-nie-render3d::glb`.
 
 use super::mesh::{Model, Primitive, Texture};
 use serde_json::Value;

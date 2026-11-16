@@ -23,16 +23,11 @@ workspace = true
 [features]
 default = ["ocr"]
 # Databooks OCR bridge and the Dragon Ball FR databooks API (local OCR store).
-ocr = ["dep:aphrody-ocr"]
+ocr = ["dep:shenron-ocr-core"]
 # Koharu model choices and persisted preferences (pulls the Koharu engine).
 koharu = ["shenron-manga/koharu"]
 
 [dependencies]
-aphrody-agent-home = { workspace = true }
-aphrody-models = { workspace = true }
-aphrody-rag = { workspace = true }
-aphrody-ocr = { workspace = true, optional = true, features = ["sqlite"] }
-aphrody-toolchains = { workspace = true }
 clap = { workspace = true }
 dirs = { workspace = true }
 miette = { workspace = true }
@@ -40,7 +35,9 @@ reqwest = { workspace = true }
 rustls = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
+shenron-home = { workspace = true }
 shenron-manga = { workspace = true }
+shenron-ocr-core = { workspace = true, optional = true, features = ["sqlite"] }
 shenron-panels = { workspace = true }
 shenron-rag = { workspace = true }
 tokio = { workspace = true }

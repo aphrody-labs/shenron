@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2026 aphrody contributors
+// SPDX-FileCopyrightText: 2026 shenron contributors
 //
 //! `dbfr_*` — the Dragon Ball FR databooks API over MCP.
 //!
-//! The site at `dragonballfr.com` is where aphrody's OCR output actually
+//! The site at `dragonballfr.com` is where shenron's OCR output actually
 //! lands: one text per plate, in a record that a reader renders. These tools
 //! give a model the read side of that API directly, and one write.
 //!

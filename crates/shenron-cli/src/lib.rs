@@ -15,6 +15,8 @@ use std::ffi::OsString;
 use clap::{Parser, Subcommand};
 
 mod chat;
+mod host;
+mod render;
 pub mod config;
 mod jev;
 mod manga_cmd;

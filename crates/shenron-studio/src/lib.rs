@@ -9,5 +9,6 @@
 //!
 //! Every command that reaches local state is restricted to the `main` window.
 
+pub mod local_ai;
 pub mod shenron;
 pub mod studio;

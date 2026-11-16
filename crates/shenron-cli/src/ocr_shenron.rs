@@ -3,15 +3,15 @@
 //!
 //! `shenron` already expects exactly this shape: `depose-transcriptions.ts`
 //! (`apps/site/scripts/depose-transcriptions.ts` of the shenron checkout) opens with "Entrée
-//! : le JSONL qu'écrit `aphrody ocr batch`" and reads `<databookId>-<page>.ext`
+//! : le JSONL qu'écrit `shenron ocr batch`" and reads `<databookId>-<page>.ext`
 //! file names. The two repos were designed to meet here; this module is what
-//! actually walks aphrody across that meeting point instead of leaving it as a
+//! actually walks shenron across that meeting point instead of leaving it as a
 //! shape two humans have to remember to match.
 //!
 //! # Division of authority
 //!
-//! aphrody owns the read: two local OCR engines, a measured contract for what
-//! counts as text (`aphrody-ocr-core::result`), a corpus database. `shenron`
+//! shenron owns the read: two local OCR engines, a measured contract for what
+//! counts as text (`shenron-ocr-core::result`), a corpus database. `shenron`
 //! owns the write: it is `shenron/plugins/dragon-ball/skills/databooks-ocr`
 //! that says it plainly — "Shenron reste l'unique validateur et écrivain du
 //! corpus" — and its own `databooks.ts verifie`/`depose` run `classerDefaut`,
@@ -26,7 +26,7 @@
 
 use std::path::{Path, PathBuf};
 
-use aphrody_ocr::ocr_core::{OcrStatus, store::OcrStore};
+use shenron_ocr_core::{OcrStatus, store::OcrStore};
 
 use crate::ocr_dbfr::plate_number;
 
@@ -58,10 +58,10 @@ pub(crate) enum ShenronAction {
     },
     /// Run `shenron`'s own quality judge over an emitted lot.
     ///
-    /// This is the second gate: aphrody's `content_score`/`is_page_furniture`
+    /// This is the second gate: shenron's `content_score`/`is_page_furniture`
     /// already refused what it could tell was wrong, but `shenron`'s
     /// `classerDefaut` was tuned against the corpus's own history and catches
-    /// what aphrody's rules do not know to look for.
+    /// what shenron's rules do not know to look for.
     ///
     /// Example: shenron ocr verify var/shenron-bridge/312
     Verify {
@@ -72,7 +72,7 @@ pub(crate) enum ShenronAction {
     ///
     /// `shenron depose` refuses a lot carrying a defect unless `--force` is
     /// passed, and resolves its own API token from `apps/site/.env` — no
-    /// secret crosses from aphrody into this command.
+    /// secret crosses from shenron into this command.
     ///
     /// Example: shenron ocr deposit 312 --apply
     Deposit {
@@ -84,13 +84,13 @@ pub(crate) enum ShenronAction {
         #[arg(long)]
         apply: bool,
         /// Deposit despite a quality-judge defect. `shenron`'s own escape
-        /// hatch, forwarded as-is — aphrody adds no separate override.
+        /// hatch, forwarded as-is — shenron adds no separate override.
         #[arg(long)]
         force: bool,
         /// Directory to stage the bridge lot in. Defaults to
-        /// `<root>/apps/site/var/aphrody-bridge/<id>` inside the monorepo
+        /// `<root>/apps/site/var/shenron-bridge/<id>` inside the monorepo
         /// checkout, so `shenron`'s own tooling can find it without a path
-        /// argument crossing back into aphrody's tree.
+        /// argument crossing back into shenron's tree.
         #[arg(long)]
         out: Option<PathBuf>,
         /// Corpus database. Defaults to `<state>/ocr/results.db`.
@@ -148,7 +148,7 @@ pub(crate) fn locate() -> miette::Result<PathBuf> {
         }
     }
     Err(miette::miette!(
-        "no Shenron source found: set $SHENRON_ROOT or run from within the Aphrody monorepo"
+        "no Shenron source found: set $SHENRON_ROOT or run from within the Shenron monorepo"
     ))
 }
 
@@ -165,10 +165,10 @@ fn scripts_dir(shenron_root: &Path) -> PathBuf {
 
 /// Make `path` absolute without requiring it to exist.
 ///
-/// Every path this module hands to `bun` is a bridge artifact aphrody wrote,
+/// Every path this module hands to `bun` is a bridge artifact shenron wrote,
 /// and `run_bun` spawns the child with its own working directory
 /// (`<shenron>/apps/site`, or the legacy `<shenron>/apps/site`) — a
-/// relative path built against Aphrody's cwd would
+/// relative path built against Shenron's cwd would
 /// silently resolve against the wrong tree once it crosses that boundary.
 fn absolute(path: &Path) -> miette::Result<PathBuf> {
     std::path::absolute(path).map_err(|e| miette::miette!("resolve {}: {e}", path.display()))
@@ -182,8 +182,7 @@ fn absolute(path: &Path) -> miette::Result<PathBuf> {
 fn run_bun(shenron_root: &Path, script: &str, args: &[&str]) -> miette::Result<()> {
     let site_dir = site_dir(shenron_root);
     let script_path = scripts_dir(shenron_root).join(script);
-    let status = aphrody_toolchains::Toolchain::Bun
-        .command_in(&site_dir, [script_path.as_os_str()])
+    let status = crate::host::bun_command_in(&site_dir, [script_path.as_os_str()])
         .args(args)
         .status()
         .map_err(|e| miette::miette!("spawn bun {}: {e}", script_path.display()))?;
@@ -224,7 +223,7 @@ pub(crate) fn run(action: ShenronAction) -> miette::Result<()> {
                     .join("apps")
                     .join("site")
                     .join("var")
-                    .join("aphrody-bridge")
+                    .join("shenron-bridge")
                     .join(id.to_string()),
             };
             let report = emit(&store, id, &staging)?;
@@ -255,8 +254,7 @@ fn doctor() -> miette::Result<()> {
     match locate() {
         Ok(root) => {
             println!("shenron checkout: {}", root.display());
-            let has_bun = aphrody_toolchains::Toolchain::Bun
-                .command(["--version"])
+            let has_bun = crate::host::bun_command(["--version"])
                 .output()
                 .is_ok_and(|output| output.status.success());
             println!("bun on PATH: {}", if has_bun { "yes" } else { "no" });
@@ -281,8 +279,8 @@ fn doctor() -> miette::Result<()> {
 fn open_store(db: Option<&Path>) -> miette::Result<OcrStore> {
     let path = match db {
         Some(path) => path.to_path_buf(),
-        None => aphrody_models::paths::ocr_dir()
-            .map_err(|e| miette::miette!("locate the aphrody state directory: {e}"))?
+        None => shenron_home::paths::ocr_dir()
+            .map_err(|e| miette::miette!("locate the shenron state directory: {e}"))?
             .join("results.db"),
     };
     OcrStore::open(&path).map_err(|e| miette::miette!("open {}: {e}", path.display()))
@@ -318,7 +316,7 @@ fn lot_id_matches(path: &Path, id: &str) -> bool {
 /// `shenron dbfr push` applies, restated here because this path never
 /// touches the public API and so never gets that check for free.
 fn emit(store: &OcrStore, id: u64, out: &Path) -> miette::Result<EmitReport> {
-    use aphrody_ocr::ocr_core::store::ListFilter;
+    use shenron_ocr_core::store::ListFilter;
 
     std::fs::create_dir_all(out).map_err(|e| miette::miette!("create {}: {e}", out.display()))?;
     let id_str = id.to_string();
@@ -381,7 +379,7 @@ fn pipeline(apply: bool, db: Option<&Path>) -> miette::Result<()> {
     let shenron_root = locate()?;
     let store = open_store(db)?;
     let pages = store
-        .list(&aphrody_ocr::ocr_core::store::ListFilter::default().status(OcrStatus::Text))
+        .list(&shenron_ocr_core::store::ListFilter::default().status(OcrStatus::Text))
         .map_err(|e| miette::miette!("read corpus: {e}"))?;
 
     // The databook id is the path component right after the lot root, on
@@ -417,7 +415,7 @@ fn pipeline(apply: bool, db: Option<&Path>) -> miette::Result<()> {
             .join("apps")
             .join("site")
             .join("var")
-            .join("aphrody-bridge")
+            .join("shenron-bridge")
             .join(id.to_string());
         let report = emit(&store, id, &staging)?;
         if report.written == 0 {

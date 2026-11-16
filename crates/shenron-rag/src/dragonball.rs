@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2026 aphrody contributors
+// SPDX-FileCopyrightText: 2026 shenron contributors
 
 //! Local Dragon Ball knowledge: corpus paths, a naive in-memory index, the
 //! single-bot persona and the grounded local answer.
@@ -8,17 +8,17 @@
 //! `shenron-mcp`. It replaces the Bun `apps/shenron-mcp` local RAG
 //! (`local-ai.ts`, `local-rag.ts`, `persona.ts`) with the same contracts:
 //!
-//! - Model endpoints follow the `APHRODY_AI_*` contract
-//!   ([`aphrody_config::ai_env`], mirrored by `config/local-ai.json`).
-//!   `APHRODY_LOCAL_AI_CONFIG` names a contract file whose alias forms and
+//! - Model endpoints follow the `SHENRON_AI_*` contract
+//!   ([`crate::ai_env`]).
+//!   `SHENRON_LOCAL_AI_CONFIG` names a contract file whose alias forms and
 //!   default model are honoured. No endpoint literal lives here: without a
 //!   variable, the local chat model is simply unavailable.
-//! - The corpus comes from `APHRODY_DRAGONBALL_CORPUS` (file or directory),
+//! - The corpus comes from `SHENRON_DRAGONBALL_CORPUS` (file or directory),
 //!   else `<dataset dir>/corpus`, where the dataset dir is
-//!   `APHRODY_DRAGONBALL_DATASET_DIR` or `<APHRODY_HOME|~/.aphrody>/workspaces/dbfr/datasets/dragonball`.
-//!   The runtime `aphrody-rag` store is `APHRODY_DRAGONBALL_RAG_DB`, else
-//!   `<crawl dir>/rag.sqlite`, the crawl dir being `APHRODY_CORPUS_CRAWL_DIR`
-//!   or `<APHRODY_HOME|~/.aphrody>/workspaces/dbfr/crawl`.
+//!   `SHENRON_DRAGONBALL_DATASET_DIR` or `<SHENRON_HOME|~/.shenron>/workspaces/dbfr/datasets/dragonball`.
+//!   The runtime `shenron-rag` store is `SHENRON_DRAGONBALL_RAG_DB`, else
+//!   `<crawl dir>/rag.sqlite`, the crawl dir being `SHENRON_CORPUS_CRAWL_DIR`
+//!   or `<SHENRON_HOME|~/.shenron>/workspaces/dbfr/crawl`.
 //!
 //! Every resolver has a `_with` twin taking an environment lookup so it can be
 //! tested without mutating the process environment.
@@ -28,7 +28,7 @@ use std::{
     time::Duration,
 };
 
-use aphrody_config::ai_env;
+use crate::ai_env;
 use serde::{Deserialize, Serialize};
 use serde_json::{Value, json};
 
@@ -59,22 +59,22 @@ fn get(env: EnvLookup<'_>, name: &str) -> Option<String> {
 // Paths
 // ---------------------------------------------------------------------------
 
-/// Aphrody home: `APHRODY_HOME`, else `~/.aphrody`.
+/// Shenron home: `SHENRON_HOME`, else `~/.shenron`.
 #[must_use]
-pub fn aphrody_home_with(env: EnvLookup<'_>) -> PathBuf {
-    get(env, "APHRODY_HOME").map_or_else(
-        || dirs::home_dir().unwrap_or_else(|| PathBuf::from(".")).join(".aphrody"),
+pub fn shenron_home_with(env: EnvLookup<'_>) -> PathBuf {
+    get(env, "SHENRON_HOME").map_or_else(
+        || dirs::home_dir().unwrap_or_else(|| PathBuf::from(".")).join(".shenron"),
         PathBuf::from,
     )
 }
 
-/// Dataset directory: `APHRODY_DRAGONBALL_DATASET_DIR`, else
+/// Dataset directory: `SHENRON_DRAGONBALL_DATASET_DIR`, else
 /// `<home>/workspaces/dbfr/datasets/dragonball`.
 #[must_use]
 pub fn dataset_dir_with(env: EnvLookup<'_>) -> PathBuf {
-    get(env, "APHRODY_DRAGONBALL_DATASET_DIR").map_or_else(
+    get(env, "SHENRON_DRAGONBALL_DATASET_DIR").map_or_else(
         || {
-            aphrody_home_with(env)
+            shenron_home_with(env)
                 .join("workspaces")
                 .join("dbfr")
                 .join("datasets")
@@ -84,31 +84,31 @@ pub fn dataset_dir_with(env: EnvLookup<'_>) -> PathBuf {
     )
 }
 
-/// Crawl directory: `APHRODY_CORPUS_CRAWL_DIR`, else `<home>/workspaces/dbfr/crawl`.
+/// Crawl directory: `SHENRON_CORPUS_CRAWL_DIR`, else `<home>/workspaces/dbfr/crawl`.
 #[must_use]
 pub fn crawl_dir_with(env: EnvLookup<'_>) -> PathBuf {
-    get(env, "APHRODY_CORPUS_CRAWL_DIR").map_or_else(
-        || aphrody_home_with(env).join("workspaces").join("dbfr").join("crawl"),
+    get(env, "SHENRON_CORPUS_CRAWL_DIR").map_or_else(
+        || shenron_home_with(env).join("workspaces").join("dbfr").join("crawl"),
         PathBuf::from,
     )
 }
 
-/// Runtime RAG store: `APHRODY_DRAGONBALL_RAG_DB`, else `<crawl dir>/rag.sqlite`.
+/// Runtime RAG store: `SHENRON_DRAGONBALL_RAG_DB`, else `<crawl dir>/rag.sqlite`.
 #[must_use]
 pub fn rag_store_with(env: EnvLookup<'_>) -> PathBuf {
-    get(env, "APHRODY_DRAGONBALL_RAG_DB")
+    get(env, "SHENRON_DRAGONBALL_RAG_DB")
         .map_or_else(|| crawl_dir_with(env).join("rag.sqlite"), PathBuf::from)
 }
 
-/// Corpus source: `APHRODY_DRAGONBALL_CORPUS`, else `<dataset dir>/corpus`.
+/// Corpus source: `SHENRON_DRAGONBALL_CORPUS`, else `<dataset dir>/corpus`.
 #[must_use]
 pub fn corpus_path_with(env: EnvLookup<'_>) -> PathBuf {
-    get(env, "APHRODY_DRAGONBALL_CORPUS")
+    get(env, "SHENRON_DRAGONBALL_CORPUS")
         .map_or_else(|| dataset_dir_with(env).join("corpus"), PathBuf::from)
 }
 
 // ---------------------------------------------------------------------------
-// Local chat endpoint (APHRODY_AI_* contract)
+// Local chat endpoint (SHENRON_AI_* contract)
 // ---------------------------------------------------------------------------
 
 /// A resolved OpenAI-compatible chat endpoint.
@@ -143,7 +143,7 @@ fn chat_form(contract: Option<&Value>, name: &str) -> &'static str {
         Some("endpoint") => "endpoint",
         Some(_) => "base",
         // Built-in mirror of the contract when no contract file is given.
-        None if name == "APHRODY_LOCAL_MODEL_URL" => "origin",
+        None if name == "SHENRON_LOCAL_MODEL_URL" => "origin",
         None => "base",
     }
 }
@@ -157,13 +157,13 @@ fn normalise_base(value: &str, form: &str) -> String {
     }
 }
 
-/// Resolve the local chat endpoint from the `APHRODY_AI_*` contract.
+/// Resolve the local chat endpoint from the `SHENRON_AI_*` contract.
 ///
-/// `APHRODY_LOCAL_AI_CONFIG` may name the contract JSON; its alias forms and
+/// `SHENRON_LOCAL_AI_CONFIG` may name the contract JSON; its alias forms and
 /// `defaultModel` are then honoured. Returns `None` when no URL variable is set.
 #[must_use]
 pub fn resolve_chat_with(env: EnvLookup<'_>) -> Option<ChatEndpoint> {
-    let contract: Option<Value> = get(env, "APHRODY_LOCAL_AI_CONFIG")
+    let contract: Option<Value> = get(env, "SHENRON_LOCAL_AI_CONFIG")
         .and_then(|path| std::fs::read_to_string(path).ok())
         .and_then(|raw| serde_json::from_str(&raw).ok());
     let source = ai_env::CHAT_BASE_URL.resolve_source_with(env)?;
@@ -242,19 +242,19 @@ fn slug(name: &str) -> String {
 /// Path of the persisted user persona: `<home>/persona.json`.
 #[must_use]
 pub fn persona_path_with(env: EnvLookup<'_>) -> PathBuf {
-    aphrody_home_with(env).join("persona.json")
+    shenron_home_with(env).join("persona.json")
 }
 
 /// Resolve the active persona.
 ///
-/// 1. `APHRODY_YOLO=1` or `APHRODY_NHITL=1`: Akira Toriyama.
+/// 1. `SHENRON_YOLO=1` or `SHENRON_NHITL=1`: Akira Toriyama.
 /// 2. `SHENRON_BOT_PERSONA` / `BOT_PERSONA`.
 /// 3. The user persona saved in `<home>/persona.json`.
 /// 4. Akira Toriyama.
 #[must_use]
 pub fn active_persona_with(env: EnvLookup<'_>) -> Persona {
-    if get(env, "APHRODY_YOLO").as_deref() == Some("1")
-        || get(env, "APHRODY_NHITL").as_deref() == Some("1")
+    if get(env, "SHENRON_YOLO").as_deref() == Some("1")
+        || get(env, "SHENRON_NHITL").as_deref() == Some("1")
     {
         return toriyama_persona();
     }
@@ -410,7 +410,7 @@ impl LocalCorpus {
         docs.extend(
             load_store(&rag_store_with(env))
                 .into_iter()
-                .map(|d| (d, "aphrody-rag-dragonball".to_owned())),
+                .map(|d| (d, "shenron-rag-dragonball".to_owned())),
         );
         Self::from_docs(docs)
     }
@@ -493,7 +493,7 @@ impl LocalCorpus {
     #[must_use]
     pub fn search_json(&self, query: &str, opts: &LocalSearchOptions) -> Value {
         let hits = self.search(query, opts);
-        json!({ "q": query, "mode": "aphrody_local_naive", "total": hits.len(), "results": hits })
+        json!({ "q": query, "mode": "shenron_local_naive", "total": hits.len(), "results": hits })
     }
 
     /// Numbered `[n]` context blocks within a character budget (default 6000).
@@ -529,7 +529,7 @@ impl LocalCorpus {
         if assembled.is_empty() {
             assembled = format!("Aucun passage local trouvé pour la requête : \"{query}\".");
         }
-        json!({ "q": query, "context": assembled.trim(), "totalHits": count, "mode": "aphrody_local_naive" })
+        json!({ "q": query, "context": assembled.trim(), "totalHits": count, "mode": "shenron_local_naive" })
     }
 
     /// Answer a question from the top five passages with the local chat model,
@@ -552,7 +552,7 @@ impl LocalCorpus {
         if let Some(chat) = resolve_chat_with(env)
             && let Some(answer) = chat_completion(&chat, &persona.system_prompt, &prompt).await
         {
-            return json!({ "question": question, "answer": answer, "mode": "aphrody_local_naive_llm", "model": chat.model, "hits": hits });
+            return json!({ "question": question, "answer": answer, "mode": "shenron_local_naive_llm", "model": chat.model, "hits": hits });
         }
         let lines = hits
             .iter()
@@ -564,10 +564,10 @@ impl LocalCorpus {
         let answer = format!(
             "D'après les archives de la base de connaissances Dragon Ball (synthèse directe - \
              persona {}) :\n\n{lines}\n\n(Synthèse directe des passages extraits ; modèle local \
-             APHRODY_AI_CHAT_BASE_URL indisponible).",
+             SHENRON_AI_CHAT_BASE_URL indisponible).",
             persona.name
         );
-        json!({ "question": question, "answer": answer, "mode": "aphrody_local_naive", "hits": hits })
+        json!({ "question": question, "answer": answer, "mode": "shenron_local_naive", "hits": hits })
     }
 }
 
@@ -713,7 +713,7 @@ fn passage(text: &str, terms: &[String]) -> String {
     )
 }
 
-/// Read documents from an `aphrody-rag` SQLite store (docs + chunks), read-only.
+/// Read documents from an `shenron-rag` SQLite store (docs + chunks), read-only.
 fn load_store(path: &Path) -> Vec<ShenronCorpusDoc> {
     if !path.is_file() {
         return Vec::new();
@@ -784,15 +784,15 @@ mod tests {
 
     #[test]
     fn paths_follow_overrides() {
-        let env = env_of(&[("APHRODY_HOME", "/h")]);
+        let env = env_of(&[("SHENRON_HOME", "/h")]);
         assert_eq!(rag_store_with(&env), PathBuf::from("/h/workspaces/dbfr/crawl/rag.sqlite"));
-        let env = env_of(&[("APHRODY_HOME", "/h"), ("APHRODY_CORPUS_CRAWL_DIR", "/c")]);
+        let env = env_of(&[("SHENRON_HOME", "/h"), ("SHENRON_CORPUS_CRAWL_DIR", "/c")]);
         assert_eq!(rag_store_with(&env), PathBuf::from("/c/rag.sqlite"));
-        let env = env_of(&[("APHRODY_DRAGONBALL_RAG_DB", "/db.sqlite")]);
+        let env = env_of(&[("SHENRON_DRAGONBALL_RAG_DB", "/db.sqlite")]);
         assert_eq!(rag_store_with(&env), PathBuf::from("/db.sqlite"));
-        let env = env_of(&[("APHRODY_DRAGONBALL_DATASET_DIR", "/d")]);
+        let env = env_of(&[("SHENRON_DRAGONBALL_DATASET_DIR", "/d")]);
         assert_eq!(corpus_path_with(&env), PathBuf::from("/d/corpus"));
-        let env = env_of(&[("APHRODY_DRAGONBALL_CORPUS", "/x.jsonl")]);
+        let env = env_of(&[("SHENRON_DRAGONBALL_CORPUS", "/x.jsonl")]);
         assert_eq!(corpus_path_with(&env), PathBuf::from("/x.jsonl"));
     }
 
@@ -804,15 +804,15 @@ mod tests {
     #[test]
     fn chat_resolves_canonical_and_origin_alias() {
         let env = env_of(&[
-            ("APHRODY_AI_CHAT_BASE_URL", "http://h:1/v1/"),
-            ("APHRODY_AI_CHAT_MODEL", "m"),
+            ("SHENRON_AI_CHAT_BASE_URL", "http://h:1/v1/"),
+            ("SHENRON_AI_CHAT_MODEL", "m"),
         ]);
         let chat = resolve_chat_with(&env).expect("chat");
         assert_eq!(chat.url, "http://h:1/v1/chat/completions");
         assert_eq!(chat.model.as_deref(), Some("m"));
-        assert_eq!(chat.source, "APHRODY_AI_CHAT_BASE_URL");
+        assert_eq!(chat.source, "SHENRON_AI_CHAT_BASE_URL");
 
-        let env = env_of(&[("APHRODY_LOCAL_MODEL_URL", "http://h:2")]);
+        let env = env_of(&[("SHENRON_LOCAL_MODEL_URL", "http://h:2")]);
         let chat = resolve_chat_with(&env).expect("chat");
         assert_eq!(chat.base_url, "http://h:2/v1");
         assert_eq!(chat.model, None);
@@ -824,13 +824,13 @@ mod tests {
         let contract = dir.path().join("local-ai.json");
         std::fs::write(
             &contract,
-            r#"{"capabilities":{"chat":{"defaultModel":"qwen","env":[{"canonical":"APHRODY_AI_CHAT_BASE_URL","kind":"url","form":"endpoint"}]}}}"#,
+            r#"{"capabilities":{"chat":{"defaultModel":"qwen","env":[{"canonical":"SHENRON_AI_CHAT_BASE_URL","kind":"url","form":"endpoint"}]}}}"#,
         )
         .expect("write");
         let path = contract.to_string_lossy().into_owned();
         let env = env_of(&[
-            ("APHRODY_LOCAL_AI_CONFIG", path.as_str()),
-            ("APHRODY_AI_CHAT_BASE_URL", "http://h:3/v1/chat/completions"),
+            ("SHENRON_LOCAL_AI_CONFIG", path.as_str()),
+            ("SHENRON_AI_CHAT_BASE_URL", "http://h:3/v1/chat/completions"),
         ]);
         let chat = resolve_chat_with(&env).expect("chat");
         assert_eq!(chat.base_url, "http://h:3/v1");
@@ -840,13 +840,13 @@ mod tests {
     #[test]
     fn persona_defaults_to_toriyama_in_yolo_and_env_override_otherwise() {
         let p =
-            active_persona_with(&env_of(&[("APHRODY_YOLO", "1"), ("SHENRON_BOT_PERSONA", "Whis")]));
+            active_persona_with(&env_of(&[("SHENRON_YOLO", "1"), ("SHENRON_BOT_PERSONA", "Whis")]));
         assert_eq!(p.id, "akira-toriyama");
         assert!(p.system_prompt.contains("Tori-bot"));
         let dir = tempfile::tempdir().expect("tempdir");
         let home = dir.path().to_string_lossy().into_owned();
         let p = active_persona_with(&env_of(&[
-            ("APHRODY_HOME", home.as_str()),
+            ("SHENRON_HOME", home.as_str()),
             ("SHENRON_BOT_PERSONA", "Son Gohan"),
         ]));
         assert_eq!(p.name, "Son Gohan");
@@ -857,7 +857,7 @@ mod tests {
     fn user_persona_round_trips() {
         let dir = tempfile::tempdir().expect("tempdir");
         let home = dir.path().to_string_lossy().into_owned();
-        let env = env_of(&[("APHRODY_HOME", home.as_str())]);
+        let env = env_of(&[("SHENRON_HOME", home.as_str())]);
         assert_eq!(active_persona_with(&env).id, "akira-toriyama");
         let saved = set_user_persona_with(&env, " Bulma ").expect("save");
         assert_eq!(saved.name, "Bulma");
@@ -869,8 +869,8 @@ mod tests {
         let dir = tempfile::tempdir().expect("tempdir");
         let empty = dir.path().to_string_lossy().into_owned();
         let env = env_of(&[
-            ("APHRODY_HOME", empty.as_str()),
-            ("APHRODY_DRAGONBALL_DATASET_DIR", empty.as_str()),
+            ("SHENRON_HOME", empty.as_str()),
+            ("SHENRON_DRAGONBALL_DATASET_DIR", empty.as_str()),
         ]);
         let corpus = LocalCorpus::load_with(&env);
         assert_eq!(corpus.len(), 2);
@@ -900,8 +900,8 @@ mod tests {
         let db_path = db.to_string_lossy().into_owned();
         let empty = dir.path().join("none").to_string_lossy().into_owned();
         let env = env_of(&[
-            ("APHRODY_DRAGONBALL_RAG_DB", db_path.as_str()),
-            ("APHRODY_DRAGONBALL_DATASET_DIR", empty.as_str()),
+            ("SHENRON_DRAGONBALL_RAG_DB", db_path.as_str()),
+            ("SHENRON_DRAGONBALL_DATASET_DIR", empty.as_str()),
         ]);
         let corpus = LocalCorpus::load_with(&env);
         let hits = corpus.search(
@@ -909,7 +909,7 @@ mod tests {
             &LocalSearchOptions { lang: Some("en".into()), ..Default::default() },
         );
         assert_eq!(hits.len(), 1);
-        assert_eq!(hits[0].origin_source_id, "aphrody-rag-dragonball");
+        assert_eq!(hits[0].origin_source_id, "shenron-rag-dragonball");
         assert_eq!(hits[0].url, "https://gemini.google.com/vegeta");
     }
 
@@ -1024,12 +1024,12 @@ mod tests {
         let dir = tempfile::tempdir().expect("tempdir");
         let empty = dir.path().to_string_lossy().into_owned();
         let env = env_of(&[
-            ("APHRODY_HOME", empty.as_str()),
-            ("APHRODY_DRAGONBALL_DATASET_DIR", empty.as_str()),
+            ("SHENRON_HOME", empty.as_str()),
+            ("SHENRON_DRAGONBALL_DATASET_DIR", empty.as_str()),
         ]);
         let corpus = LocalCorpus::load_with(&env);
         let out = corpus.ask_json("Qui est Son Goku ?", &env).await;
-        assert_eq!(out["mode"], "aphrody_local_naive");
+        assert_eq!(out["mode"], "shenron_local_naive");
         assert!(out["answer"].as_str().expect("answer").contains("Akira Toriyama"));
     }
 }

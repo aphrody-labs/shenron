@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-//! Persistent chat memory: Aphrody's `aphrody-memory` [`SqliteLocalProvider`], one provider per
+//! Persistent chat memory: the `shenron-memory` [`SqliteLocalProvider`], one provider per
 //! database file while calls own it; idle connections are released.
 //!
 //! Shenron stores nothing of its own here: records, ids, schema and search are the provider's.
@@ -12,10 +12,7 @@ use std::{
     sync::{Arc, Mutex, OnceLock, PoisonError, Weak},
 };
 
-use aphrody_memory::{
-    MemoryProvider, SqliteLocalProvider,
-    types::{MemoryQuery, MemoryRecord},
-};
+use shenron_memory::{MemoryQuery, MemoryRecord, SqliteLocalProvider};
 use serde::Deserialize;
 use serde_json::Value;
 

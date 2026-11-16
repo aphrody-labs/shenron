@@ -14,11 +14,11 @@
 ///   `shenron_job_count`, the `*_job` exports) and `shenron_build_info`. Every revision-1
 ///   symbol keeps its signature, ownership and JSON shape.
 /// - 3: adds the persistent chat memory (`shenron_memory_add`, `shenron_memory_search`,
-///   `shenron_memory_delete`, `shenron_memory_clear`) over Aphrody's `aphrody-memory`. Every
+///   `shenron_memory_delete`, `shenron_memory_clear`) over upstream llama.cpp `llama-server``shenron-memory`. Every
 ///   revision-2 symbol is unchanged.
 /// - 4: adds the local chat models (`shenron_llama_provision_job`, `shenron_llama_progress`,
 ///   `shenron_llama_router_start`, `shenron_llama_router_stop`, `shenron_llama_daemon`) over
-///   Aphrody's `aphrody-llama-server`. Every revision-3 symbol is unchanged.
+///   upstream llama.cpp `llama-server``shenron_llama_server`. Every revision-3 symbol is unchanged.
 /// - 5: adds `shenron_re_xenoverse3_map`, the source-attributed Shenron RE prototype map.
 ///   Every revision-4 symbol is unchanged.
 /// - 6: adds cancellable typed Jev decision and public evidence reranking.

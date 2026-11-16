@@ -2,7 +2,7 @@
 
 //! x86-64 Instruction Definitions, Register Encodings, and Operands.
 //!
-//! Extracted and unified from `aphrody-nie-asm`.
+//! Extracted and unified from `shenron-nie-asm`.
 //! Covers general purpose registers, vector registers, memory addressing modes,
 //! ALU operations, SSE/AVX vector operations, and branch conditions.
 

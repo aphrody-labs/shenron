@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2026 aphrody contributors
+// SPDX-FileCopyrightText: 2026 shenron contributors
 
 //! CLI command `shenron manga`: Koharu page analysis, cleanup, and PSD export.
 
@@ -81,7 +81,7 @@ pub(crate) enum MangaAction {
         /// Emit one versioned candidate JSON record on stdout.
         #[arg(long)]
         json: bool,
-        /// Write the same completed run as an Aphrody OCR v2 review record.
+        /// Write the same completed run as an Shenron OCR v2 review record.
         #[arg(long, value_name = "JSON_PATH")]
         ocr_result: Option<PathBuf>,
         /// Canonical Shenron manga page ID; required for a manga candidate.
@@ -471,7 +471,7 @@ pub(crate) async fn run(action: MangaAction) -> Result<()> {
                     .into_diagnostic()?
                     .write_all(&bytes)
                     .into_diagnostic()?;
-                eprintln!("wrote Aphrody OCR v2 result to {}", path.display());
+                eprintln!("wrote Shenron OCR v2 result to {}", path.display());
             }
             if json {
                 println!("{}", serde_json::to_string(&res).into_diagnostic()?);

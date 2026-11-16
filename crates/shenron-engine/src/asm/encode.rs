@@ -2,7 +2,7 @@
 
 //! x86-64 Canonical Machine Code Binary Encoder.
 //!
-//! Extracted and unified from `aphrody-nie-asm`.
+//! Extracted and unified from `shenron-nie-asm`.
 //! Translates high-level [`Insn`] representations into byte-exact machine code
 //! with full support for address-conscious RIP displacements, SIB byte encoding,
 //! and REX prefix generation.

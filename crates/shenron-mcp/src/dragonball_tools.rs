@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2026 aphrody contributors
+// SPDX-FileCopyrightText: 2026 shenron contributors
 //
 //! `dragonball.*`: the Dragon Ball tools of the Shenron MCP server.
 //!
 //! Ported from the retired Bun server `apps/shenron-mcp` (32 public tools and
 //! the five editorial admin tools). Transport only: the local RAG, persona and
-//! `APHRODY_AI_*` chat resolution live in [`shenron_rag::dragonball`]; wiki,
+//! `SHENRON_AI_*` chat resolution live in [`shenron_rag::dragonball`]; wiki,
 //! bot, databook, manga, canon and A2A data stay behind the Shenron bot and
 //! site APIs.
 //!
@@ -18,7 +18,7 @@
 //! | `SHENRON_SITE_URL` | `https://dragonballfr.com` | absolute links in results |
 //!
 //! `SHENRON_LOCAL_RAG=1` (or `local: true`) serves `rag_*` from the local
-//! corpus; `APHRODY_AUTO_FALLBACK=1` falls back to it when the bot API fails.
+//! corpus; `SHENRON_AUTO_FALLBACK=1` falls back to it when the bot API fails.
 //! Admin tools need `SHENRON_API_ADMIN_TOKEN` (bot) or
 //! `SHENRON_DATABOOKS_API_TOKEN` (site) and fail closed without them.
 
@@ -293,7 +293,7 @@ fn local_forced(local: Option<bool>) -> bool {
 }
 
 fn auto_fallback() -> bool {
-    process_env("APHRODY_AUTO_FALLBACK").as_deref() == Some("1")
+    process_env("SHENRON_AUTO_FALLBACK").as_deref() == Some("1")
 }
 
 fn local_opts(
@@ -328,7 +328,7 @@ pub(crate) struct RagSearchRequest {
                               manga_page, battle, canon, article, databook…")]
     #[serde(default)]
     pub kind: Option<String>,
-    #[schemars(description = "Force the search through the local Aphrody corpus")]
+    #[schemars(description = "Force the search through the local Shenron corpus")]
     #[serde(default)]
     pub local: Option<bool>,
 }
@@ -386,7 +386,7 @@ pub(crate) struct RagContextRequest {
     #[schemars(description = "Passage kind (e.g. 'canon', 'battle')")]
     #[serde(default)]
     pub kind: Option<String>,
-    #[schemars(description = "Force the context through the local Aphrody corpus")]
+    #[schemars(description = "Force the context through the local Shenron corpus")]
     #[serde(default)]
     pub local: Option<bool>,
 }
@@ -428,7 +428,7 @@ pub(crate) async fn rag_context(r: RagContextRequest) -> CallToolResult {
 pub(crate) struct RagAskRequest {
     #[schemars(description = "The question to ask, in natural language")]
     pub question: String,
-    #[schemars(description = "Force local inference (APHRODY_AI_* contract) and the local corpus")]
+    #[schemars(description = "Force local inference (SHENRON_AI_* contract) and the local corpus")]
     #[serde(default)]
     pub local: Option<bool>,
 }
@@ -873,7 +873,7 @@ pub(crate) async fn bot_stats() -> CallToolResult {
 /// Input of `dragonball.bot_personas`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct BotPersonasRequest {
-    #[schemars(description = "Set the single bot's persona (writes <APHRODY_HOME>/persona.json)")]
+    #[schemars(description = "Set the single bot's persona (writes <SHENRON_HOME>/persona.json)")]
     #[serde(default)]
     pub set_persona: Option<String>,
 }
@@ -1169,7 +1169,7 @@ pub(crate) struct CanonReferencesRequest {
     #[schemars(description = "Word or name to look for (e.g. 'Broly', 'Kaiōken')")]
     #[serde(default)]
     pub q: Option<String>,
-    #[schemars(description = "Provenance: aphrody, databooks or manual")]
+    #[schemars(description = "Provenance: shenron, databooks or manual")]
     #[serde(default)]
     pub provenance: Option<String>,
     #[schemars(description = "Number of items (default 20, max 100)")]
@@ -1747,6 +1747,6 @@ mod tests {
         assert_ne!(r.is_error, Some(true));
         let text = r.content[0].as_text().map(|t| t.text.clone()).unwrap_or_default();
         let v: Value = serde_json::from_str(&text).expect("json");
-        assert_eq!(v["mode"], "aphrody_local_naive");
+        assert_eq!(v["mode"], "shenron_local_naive");
     }
 }

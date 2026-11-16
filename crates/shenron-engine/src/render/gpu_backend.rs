@@ -2,7 +2,7 @@
 
 //! Unified GPU Backend Adapters and Hardware Initialization.
 //!
-//! Provides direct API compatibility with `aphrody-gpu-backend`:
+//! Provides direct API compatibility with `shenron-gpu-backend`:
 //! - wgpu instance, device, adapter, queue, and surface configuration boundaries
 //! - Explicit device limits policies (`Adapter`, `DownlevelWithAdapterResolution`)
 //! - Surface format negotiation (preferred, linear, required fallback)

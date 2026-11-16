@@ -3,9 +3,9 @@
 //! Unified Assembly Instruction Encoding, Disassembly, and Binary Triage Engine.
 //!
 //! Unifies:
-//! - Canonical MSVC-dialect x86-64 instruction encoding from `aphrody-nie-asm`
+//! - Canonical MSVC-dialect x86-64 instruction encoding from `shenron-nie-asm`
 //! - Fast instruction disassembly and formatted text output
-//! - Format detection (PE32/PE64/ELF), section entropy analysis, and string triage from `aphrody-re`
+//! - Format detection (PE32/PE64/ELF), section entropy analysis, and string triage from `shenron-re`
 //! - AOB memory pattern searching integrated with `shenron-re`
 
 pub mod disasm;

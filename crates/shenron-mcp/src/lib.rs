@@ -2,7 +2,7 @@
 //! Shenron MCP server: the `dragonball.*` tools (RAG, wiki, manga, databooks,
 //! canon, bot, A2A, site writes and editorial admin) and the `dbfr_*` databooks tools.
 //!
-//! Transport only: the local corpus, persona and `APHRODY_AI_*` chat
+//! Transport only: the local corpus, persona and `SHENRON_AI_*` chat
 //! resolution live in [`shenron_rag::dragonball`]; wiki, bot, databook, manga,
 //! canon and A2A data stay behind the public Shenron bot and site APIs. Admin and
 //! write tools fail closed without their tokens.
@@ -369,7 +369,7 @@ impl ShenronMcp {
 impl ShenronMcp {
     #[tool(
         name = "dragonball.rag_search",
-        description = "Use this for any Dragon Ball question: hybrid search (BM25 + embeddings, RRF fusion, reranking) over the Dragon Ball knowledge base of dragonballfr.com (manga, databooks, Kanzenshuu, wiki). Returns sourced passages (rowid, kind, title, url, snippet, score) and the effective mode; cite the url. Filters: lang, entity, sourceId, kind. local=true (or SHENRON_LOCAL_RAG=1) queries the local Aphrody corpus. API: bot /api/public/rag/search.",
+        description = "Use this for any Dragon Ball question: hybrid search (BM25 + embeddings, RRF fusion, reranking) over the Dragon Ball knowledge base of dragonballfr.com (manga, databooks, Kanzenshuu, wiki). Returns sourced passages (rowid, kind, title, url, snippet, score) and the effective mode; cite the url. Filters: lang, entity, sourceId, kind. local=true (or SHENRON_LOCAL_RAG=1) queries the local Shenron corpus. API: bot /api/public/rag/search.",
         annotations(
             title = "Dragon Ball RAG search",
             read_only_hint = true,
@@ -405,7 +405,7 @@ impl ShenronMcp {
 
     #[tool(
         name = "dragonball.rag_ask",
-        description = "Use this for any Dragon Ball question: a natural-language question; the RAG selects passages (hits, with url) and the LLM writes a grounded answer in the single bot's voice (Akira Toriyama persona by default in YOLO). The API errors if the LLM is unavailable. local=true uses the APHRODY_AI_* model and the local corpus. API: bot /api/public/rag/chat.",
+        description = "Use this for any Dragon Ball question: a natural-language question; the RAG selects passages (hits, with url) and the LLM writes a grounded answer in the single bot's voice (Akira Toriyama persona by default in YOLO). The API errors if the LLM is unavailable. local=true uses the SHENRON_AI_* model and the local corpus. API: bot /api/public/rag/chat.",
         annotations(
             title = "Written answer (generative RAG)",
             read_only_hint = true,
@@ -771,7 +771,7 @@ impl ShenronMcp {
 
     #[tool(
         name = "dragonball.bot_personas",
-        description = "Active persona of the single bot (Akira Toriyama by default in YOLO). set_persona (elevated only) saves a user persona in <APHRODY_HOME>/persona.json. API: bot /api/public/personas, local fallback.",
+        description = "Active persona of the single bot (Akira Toriyama by default in YOLO). set_persona (elevated only) saves a user persona in <SHENRON_HOME>/persona.json. API: bot /api/public/personas, local fallback.",
         annotations(
             title = "Single bot persona",
             read_only_hint = false,

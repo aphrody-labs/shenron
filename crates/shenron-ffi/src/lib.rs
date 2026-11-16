@@ -8,11 +8,11 @@
 //!   `*_job` variants of the long calls, which answer a [`types::JobOutcome`]) and the library
 //!   identity (`shenron_build_info`).
 //! - ABI 3 keeps every ABI 2 symbol unchanged and adds the persistent chat memory
-//!   (`shenron_memory_{add,search,delete,clear}`), Aphrody's `aphrody-memory` SQLite provider
+//!   (`shenron_memory_{add,search,delete,clear}`), Shenron's `shenron-memory` SQLite provider
 //!   ([`memory`]), each answering a [`types::JobOutcome`].
 //! - ABI 4 keeps every ABI 3 symbol unchanged and adds the local chat models
-//!   (`shenron_llama_{provision_job,progress,router_start,router_stop,daemon}`), Aphrody's
-//!   `aphrody-llama-server` local chat in process ([`llama`]).
+//!   (`shenron_llama_{provision_job,progress,router_start,router_stop,daemon}`), Shenron's
+//!   upstream `llama-server` (llama.cpp) in process ([`llama`]).
 //! - ABI 5 keeps every ABI 4 symbol unchanged and adds the source-attributed Xenoverse 3
 //!   prototype map from `shenron-re`.
 //! - ABI 6 adds cancellable public Jev decisions and evidence reranking through Bun.
@@ -36,6 +36,7 @@
 
 #[cfg(not(target_arch = "wasm32"))]
 pub mod abi;
+pub mod stdio_capture;
 #[cfg(not(target_arch = "wasm32"))]
 mod jobs;
 #[cfg(not(target_arch = "wasm32"))]
@@ -59,7 +60,7 @@ mod native {
         time::Duration,
     };
 
-    use aphrody_backend::stdio_capture::with_captured_stdio;
+    use crate::stdio_capture::with_captured_stdio;
     use serde::Serialize;
     use serde_json::Value;
 
@@ -280,7 +281,7 @@ mod native {
     // --- Operations: one implementation each, run blocking (ABI 1) or as a job (ABI 2). ---
 
     /// Mode reported by the local corpus search (`shenron_rag::LocalCorpus::search_json`).
-    const LOCAL_MODE: &str = "aphrody_local_naive";
+    const LOCAL_MODE: &str = "shenron_local_naive";
 
     /// The local corpus, loaded once per process from the environment.
     fn local_corpus() -> &'static shenron_rag::LocalCorpus {
@@ -368,7 +369,7 @@ mod native {
     /// Normalise the statistics of either backend (the bot's carry `backend: "local"`).
     pub(crate) fn rag_stats(value: &Value) -> RagStats {
         RagStats {
-            backend: text(value, "backend").unwrap_or_else(|| "aphrody".to_owned()),
+            backend: text(value, "backend").unwrap_or_else(|| "shenron".to_owned()),
             chunks: count(value, "chunks").unwrap_or(0),
             vectors: count(value, "vectors").unwrap_or(0),
             vectors_stored: count(value, "vectorsStored"),
@@ -507,7 +508,7 @@ mod native {
         })
     }
 
-    /// Search the serving RAG (the bot, or Aphrody with `RAG_BACKEND=aphrody`): `CapturedResult`
+    /// Search the serving RAG (the bot, or Shenron with `RAG_BACKEND=shenron`): `CapturedResult`
     /// JSON whose stdout is the backend answer, as `shenron rag search --json` prints it.
     ///
     /// # Safety
@@ -560,7 +561,7 @@ mod native {
         captured_export("shenron_rag_stats", || command_json(runtime().block_on(rag_stats_value())))
     }
 
-    /// Chunk Shenron Markdown with Aphrody's canonical RAG implementation.
+    /// Chunk Shenron Markdown with Shenron's canonical RAG implementation.
     /// Returns a JSON array of `RagChunk`, or `FfiError`. Free the returned
     /// string with `shenron_string_free`.
     ///
@@ -574,17 +575,17 @@ mod native {
         max_chars: c_int,
         overlap_pct: f32,
     ) -> *mut c_char {
-        use aphrody_rag_core::Chunker;
+        use shenron_rag_core::Chunker;
 
         let outcome = catch_unwind(AssertUnwindSafe(|| {
             let source = match unsafe { required_str(markdown, "markdown") } {
                 Ok(source) => source,
                 Err(error) => return to_json(&FfiError { error }),
             };
-            let mut options = aphrody_rag_core::ChunkOptions::shenron_parity();
+            let mut options = shenron_rag_core::ChunkOptions::shenron_parity();
             options.max_chars = usize::try_from(max_chars.max(1)).unwrap_or(1);
             options.overlap_pct = overlap_pct.clamp(0.0, 1.0);
-            let chunks: Vec<RagChunk> = aphrody_rag_core::MarkdownChunker
+            let chunks: Vec<RagChunk> = shenron_rag_core::MarkdownChunker
                 .chunk(source, source, &options)
                 .into_iter()
                 .map(|chunk| RagChunk {
@@ -622,15 +623,15 @@ mod native {
     pub extern "C" fn shenron_persona_prompt() -> *const c_char {
         static SOUL: OnceLock<CString> = OnceLock::new();
         SOUL.get_or_init(|| {
-            shenron_persona_from_state(aphrody_agent_home::paths::state_dir().ok().as_deref())
+            shenron_persona_from_state(shenron_home::paths::state_dir().ok().as_deref())
         })
         .as_ptr()
     }
 
     pub(crate) fn shenron_persona_from_state(state: Option<&std::path::Path>) -> CString {
         let text = state
-            .map(|state| aphrody_agent_home::paths::named_profile_workspace(state, "dbfr"))
-            .and_then(|root| aphrody_agent_home::SyncSnapshot::capture(root).ok())
+            .map(|state| shenron_home::paths::named_profile_workspace(state, "dbfr"))
+            .and_then(|root| shenron_home::SyncSnapshot::capture(root).ok())
             .and_then(|snapshot| {
                 snapshot.documents.into_iter().find(|document| document.filename == "SOUL.md")
             })
@@ -871,7 +872,7 @@ mod native {
     fn memory_call<T: Serialize, F: std::future::Future<Output = Result<T, String>>>(
         operation: &str,
         db_path: *const c_char,
-        work: impl FnOnce(std::sync::Arc<aphrody_memory::SqliteLocalProvider>) -> Result<F, String>,
+        work: impl FnOnce(std::sync::Arc<shenron_memory::SqliteLocalProvider>) -> Result<F, String>,
     ) -> *mut c_char {
         string_to_c(jobs::run(jobs::create(), operation, |job| {
             let path = unsafe { required_str(db_path, "db_path") }.map_err(JobError::Usage)?;
@@ -984,7 +985,6 @@ mod native {
         string_to_c(jobs::run(job, "shenron_llama_provision_job", |job| {
             let request: crate::llama::ProvisionRequest =
                 unsafe { json_request(request_json, "request_json") }.map_err(JobError::Usage)?;
-            let request = request.to_aphrody().map_err(JobError::Usage)?;
             let id = job.id();
             match job.block_on(|| crate::llama::provision(id, request)) {
                 None => Err(JobError::Cancelled),
@@ -1215,7 +1215,7 @@ mod tests {
     fn persona_fixture(state: &std::path::Path, profile: &str, soul: &str) -> std::path::PathBuf {
         let root = state.join("workspaces").join(profile);
         std::fs::create_dir_all(&root).unwrap();
-        for file in aphrody_agent_home::sync_defaults().unwrap() {
+        for file in shenron_home::sync_defaults().unwrap() {
             let content = if file.filename() == "SOUL.md" { soul } else { "# Synthetic fixture\n" };
             std::fs::write(root.join(file.filename()), content).unwrap();
         }
@@ -1227,11 +1227,11 @@ mod tests {
         let state = tempfile::tempdir().unwrap();
         let soul = "---\ntone: précis\nbrevity: terse\n---\n\nShenron dbfr fixture.\n";
         let root = persona_fixture(state.path(), "dbfr", soul);
-        persona_fixture(state.path(), "aphrody", "Aphrody unrelated persona.\n");
+        persona_fixture(state.path(), "shenron", "Shenron unrelated persona.\n");
         let legacy = state.path().join("home/shenron");
         std::fs::create_dir_all(&legacy).unwrap();
         std::fs::write(legacy.join("SOUL.md"), "Legacy unrelated persona.\n").unwrap();
-        let snapshot = aphrody_agent_home::SyncSnapshot::capture(&root).unwrap();
+        let snapshot = shenron_home::SyncSnapshot::capture(&root).unwrap();
         let selected = snapshot.documents.iter().find(|doc| doc.filename == "SOUL.md").unwrap();
         assert_eq!(selected.content, soul);
         assert_eq!(shenron_persona_from_state(Some(state.path())).to_str().unwrap(), soul);
@@ -1329,10 +1329,10 @@ mod tests {
         let bot = rag_stats(&serde_json::json!({"chunks": 12, "vectors": 10, "mode": "fts",
             "builtAt": "2026-10-01", "ragReady": true, "backend": "local"}));
         assert_eq!((bot.backend.as_str(), bot.chunks, bot.rag_ready), ("local", 12, Some(true)));
-        let aphrody = rag_stats(&serde_json::json!({"chunks": 5, "vectors": 4,
+        let shenron = rag_stats(&serde_json::json!({"chunks": 5, "vectors": 4,
             "vectorsStored": 4, "sources": [{"sourceId": "db", "kind": "databook", "count": 5}]}));
-        assert_eq!(aphrody.backend, "aphrody");
-        assert_eq!(aphrody.sources[0].count, 5);
-        assert_eq!(aphrody.vectors_stored, Some(4));
+        assert_eq!(shenron.backend, "shenron");
+        assert_eq!(shenron.sources[0].count, 5);
+        assert_eq!(shenron.vectors_stored, Some(4));
     }
 }

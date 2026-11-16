@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2026 aphrody contributors
-//! `shenron …`: the bridge between Shenron, Dragon Ball FR and the Aphrody capabilities (AI, Web, Infra).
+// SPDX-FileCopyrightText: 2026 shenron contributors
+//! `shenron …`: the bridge between Shenron, Dragon Ball FR and the Shenron capabilities (AI, Web, Infra).
 //!
 //! Provides a unified, production-grade CLI and programmatic surface that exposes:
 //! - **AI**: Hybrid RAG (FTS5 + Dense E5 + Cross-Encoder Rerank), automated training (triples, embed, rerank, lora),
@@ -107,13 +107,13 @@ pub(crate) enum ShenronRagAction {
         /// Corpus JSON/JSONL inputs or directories containing them
         #[arg(required = true, num_args = 1..)]
         paths: Vec<PathBuf>,
-        /// SQLite store (default: APHRODY_DRAGONBALL_RAG_DB, else <crawl dir>/rag.sqlite)
+        /// SQLite store (default: SHENRON_DRAGONBALL_RAG_DB, else <crawl dir>/rag.sqlite)
         #[arg(long)]
         db: Option<PathBuf>,
         /// Maximum number of documents to ingest
         #[arg(long)]
         max_docs: Option<usize>,
-        /// OpenAI-compatible embeddings base URL (default: APHRODY_AI_EMBED_BASE_URL); without
+        /// OpenAI-compatible embeddings base URL (default: SHENRON_AI_EMBED_BASE_URL); without
         /// one the ingestion is lexical only
         #[arg(long)]
         embed_url: Option<String>,
@@ -289,7 +289,7 @@ pub(crate) fn locate_shenron() -> Option<PathBuf> {
 
 /// Locate the `home/shenron` directory storing models, credentials, and configuration.
 pub fn locate_home_shenron() -> PathBuf {
-    if let Ok(explicit) = std::env::var("APHRODY_SHENRON_HOME") {
+    if let Ok(explicit) = std::env::var("SHENRON_HOME") {
         let p = PathBuf::from(explicit);
         if p.is_dir() {
             return p;
@@ -307,11 +307,11 @@ pub fn locate_home_shenron() -> PathBuf {
         }
     }
     if let Some(user_home) = dirs::home_dir() {
-        let canonical = user_home.join(".aphrody/private/shenron/home");
+        let canonical = user_home.join(".shenron/private/shenron/home");
         if canonical.is_dir() {
             return canonical;
         }
-        let candidate = user_home.join("src").join("aphrody-ai").join("home").join("shenron");
+        let candidate = user_home.join("src").join("shenron-ai").join("home").join("shenron");
         if candidate.is_dir() {
             return candidate;
         }
@@ -380,23 +380,23 @@ fn config_alias(names: &[&str]) -> Option<String> {
 }
 
 fn rag_backend() -> &'static str {
-    if config_alias(&["RAG_BACKEND"]).as_deref() == Some("aphrody") { "aphrody" } else { "local" }
+    if config_alias(&["RAG_BACKEND"]).as_deref() == Some("shenron") { "shenron" } else { "local" }
 }
 
 fn training_root() -> miette::Result<PathBuf> {
-    std::env::var_os("APHRODY_PY_ROOT")
+    std::env::var_os("SHENRON_PY_ROOT")
         .map(PathBuf::from)
         .filter(|root| {
             root.join("uv.lock").is_file()
-                && root.join("packages/ai/py/aphrody-train/pyproject.toml").is_file()
+                && root.join("packages/ai/py/shenron-train/pyproject.toml").is_file()
         })
         .ok_or_else(|| {
-            miette::miette!("Workspace aphrody-py introuvable ; définir APHRODY_PY_ROOT")
+            miette::miette!("Workspace shenron-py introuvable ; définir SHENRON_PY_ROOT")
         })
 }
 
 fn shenron_training_dir() -> miette::Result<PathBuf> {
-    Ok(aphrody_models::paths::state_dir()
+    Ok(shenron_home::paths::state_dir()
         .into_diagnostic()?
         .join("private")
         .join("training")
@@ -430,16 +430,16 @@ fn endpoint(value: String) -> miette::Result<reqwest::Url> {
 }
 
 fn ai_base() -> miette::Result<reqwest::Url> {
-    let value = config_alias(&["APHRODY_AI_HTTP_URL", "APHRODY_SHENRON_API_URL"])
+    let value = config_alias(&["SHENRON_AI_HTTP_URL", "SHENRON_API_URL"])
         .ok_or_else(|| miette::miette!(
-            "APHRODY_AI_HTTP_URL absent ; générer le profil Shenron dev ou exporter cette variable"
+            "SHENRON_AI_HTTP_URL absent ; générer le profil Shenron dev ou exporter cette variable"
         ))?;
     endpoint(value)
 }
 
 fn ai_token() -> miette::Result<String> {
-    config_alias(&["APHRODY_AI_HTTP_TOKEN", "APHRODY_SHENRON_API_TOKEN"])
-        .ok_or_else(|| miette::miette!("APHRODY_AI_HTTP_TOKEN absent"))
+    config_alias(&["SHENRON_AI_HTTP_TOKEN", "SHENRON_API_TOKEN"])
+        .ok_or_else(|| miette::miette!("SHENRON_AI_HTTP_TOKEN absent"))
 }
 
 fn bot_base() -> miette::Result<reqwest::Url> {
@@ -502,7 +502,7 @@ async fn rag_search(
     if let Some(kind) = kind {
         params.push(("kind", kind.to_owned()));
     }
-    let response = if rag_backend() == "aphrody" {
+    let response = if rag_backend() == "shenron" {
         ai_get("/api/v1/shenron/rag/search", &params).await?
     } else {
         bot_get("/api/public/rag/search", &params).await?
@@ -517,10 +517,10 @@ async fn rag_search(
 }
 
 async fn rag_stats() -> miette::Result<serde_json::Value> {
-    if rag_backend() == "aphrody" {
+    if rag_backend() == "shenron" {
         let response = ai_get("/api/v1/shenron/rag/stats", &[]).await?;
         if response["chunks"].as_u64().is_none() || response["vectors"].as_u64().is_none() {
-            return Err(miette::miette!("Statistiques RAG Aphrody invalides"));
+            return Err(miette::miette!("Statistiques RAG Shenron invalides"));
         }
         return Ok(response);
     }
@@ -539,9 +539,9 @@ async fn rag_stats() -> miette::Result<serde_json::Value> {
     if !status.is_success() {
         if response["error"]
             .as_str()
-            .is_some_and(|error| error.starts_with("Aphrody compute unreachable"))
+            .is_some_and(|error| error.starts_with("Shenron compute unreachable"))
         {
-            return Err(miette::miette!("Calcul Aphrody du bot Shenron indisponible"));
+            return Err(miette::miette!("Calcul Shenron du bot Shenron indisponible"));
         }
         return Err(miette::miette!("Erreur HTTP {} : {route}", status.as_u16()));
     }
@@ -582,7 +582,7 @@ async fn probe(url: reqwest::Url, token: Option<String>) -> serde_json::Value {
     }
 }
 
-/// Structured Shenron health report (site, bot, Aphrody AI, serving RAG, Agent Home dbfr).
+/// Structured Shenron health report (site, bot, Shenron AI, serving RAG, Agent Home dbfr).
 /// Shared by `shenron doctor` and the desktop app.
 pub async fn doctor_report() -> miette::Result<serde_json::Value> {
     let site = probe(site_base()?.join("/wiki/personnages").into_diagnostic()?, None).await;
@@ -602,10 +602,10 @@ pub async fn doctor_report() -> miette::Result<serde_json::Value> {
         }),
         Err(error) => json!({"reachable": false, "ready": false, "reason": error.to_string()}),
     };
-    let state = aphrody_agent_home::paths::state_dir()
+    let state = shenron_home::paths::state_dir()
         .map_err(|error| miette::miette!("Agent Home: {error}"))?;
-    let workspace = aphrody_agent_home::paths::named_profile_workspace(&state, "dbfr");
-    let agent_home = match aphrody_agent_home::SyncSnapshot::capture(&workspace) {
+    let workspace = shenron_home::paths::named_profile_workspace(&state, "dbfr");
+    let agent_home = match shenron_home::SyncSnapshot::capture(&workspace) {
         Ok(snapshot) => {
             json!({"valid": true, "files": snapshot.documents.len(), "revision": snapshot.revision})
         },
@@ -624,7 +624,7 @@ pub async fn doctor_report() -> miette::Result<serde_json::Value> {
         "bot": bot,
         "rag_backend": rag_backend(),
         "serving_rag": serving_rag,
-        "aphrody_ai_http": ai,
+        "shenron_ai_http": ai,
         "agent_home": agent_home
     });
     Ok(doc)
@@ -638,7 +638,7 @@ async fn handle_doctor(json_output: bool) -> miette::Result<()> {
         println!("  Site /wiki/personnages: {}", doc["site"]);
         println!("  Bot /api/health/check: {}", doc["bot"]);
         println!("  RAG {}: {}", rag_backend(), doc["serving_rag"]);
-        println!("  Aphrody AI /api/v1/shenron/health: {}", doc["aphrody_ai_http"]);
+        println!("  Shenron AI /api/v1/shenron/health: {}", doc["shenron_ai_http"]);
         println!("  Agent Home dbfr: {}", doc["agent_home"]);
     }
     Ok(())
@@ -654,7 +654,7 @@ pub async fn rag_search_checked(
     limit: usize,
     kind: Option<&str>,
 ) -> miette::Result<serde_json::Value> {
-    let max_limit = if rag_backend() == "aphrody" { 100 } else { 25 };
+    let max_limit = if rag_backend() == "shenron" { 100 } else { 25 };
     if query.trim().len() < 2 || query.len() > 512 || limit == 0 || limit > max_limit {
         return Err(miette::miette!(
             "Requête RAG hors limites (2..=512 caractères, limite 1..={max_limit})"
@@ -729,14 +729,14 @@ async fn handle_rag(action: ShenronRagAction) -> miette::Result<()> {
             if let Some(parent) = db.parent().filter(|parent| !parent.as_os_str().is_empty()) {
                 std::fs::create_dir_all(parent).into_diagnostic()?;
             }
-            let store = aphrody_rag::RagStore::open(&db).into_diagnostic()?;
+            let store = shenron_rag::RagStore::open(&db).into_diagnostic()?;
             let mut docs = Vec::new();
             for path in paths {
                 docs.extend(shenron_rag::load_shenron_corpus(path).into_diagnostic()?);
             }
             let embed_url = embed_url
-                .or_else(|| shenron_rag::dragonball::process_env("APHRODY_AI_EMBED_BASE_URL"));
-            let embedder: Option<std::sync::Arc<dyn aphrody_rag::Embedder>> =
+                .or_else(|| shenron_rag::dragonball::process_env("SHENRON_AI_EMBED_BASE_URL"));
+            let embedder: Option<std::sync::Arc<dyn shenron_rag::Embedder>> =
                 embed_url.map(|base| {
                     let base = base.trim_end_matches('/');
                     let endpoint = if base.ends_with("/embeddings") {
@@ -744,12 +744,12 @@ async fn handle_rag(action: ShenronRagAction) -> miette::Result<()> {
                     } else {
                         format!("{base}/embeddings")
                     };
-                    std::sync::Arc::new(aphrody_rag::OpenAiCompatEmbedder::new(
+                    std::sync::Arc::new(shenron_rag::OpenAiCompatEmbedder::new(
                         endpoint,
                         embed_model,
                         embed_dim,
                         None,
-                    )) as std::sync::Arc<dyn aphrody_rag::Embedder>
+                    )) as std::sync::Arc<dyn shenron_rag::Embedder>
                 });
             let options = shenron_rag::ShenronIngestOptions {
                 max_docs,
@@ -814,10 +814,10 @@ async fn handle_rag(action: ShenronRagAction) -> miette::Result<()> {
 
 /// Shenron training environment (Python project, GPU count, candidate root), as JSON.
 pub fn train_status_report() -> miette::Result<serde_json::Value> {
-    let hw = aphrody_models::accel::probe();
+    let hw = crate::host::gpu_count();
     Ok(json!({
-        "python_project": training_root().ok().map(|root| root.join("packages/ai/py/aphrody-train").display().to_string()),
-        "gpu_count": hw.gpus.len(),
+        "python_project": training_root().ok().map(|root| root.join("packages/ai/py/shenron-train").display().to_string()),
+        "gpu_count": hw,
         "candidate_root": shenron_training_dir()?.display().to_string(),
         "rag_promotion": "requires a measured shadow index; no automatic model replacement"
     }))
@@ -849,8 +849,8 @@ async fn handle_train(action: ShenronTrainAction) -> miette::Result<()> {
                 .current_dir(&root)
                 .args(["run", "--project"])
                 .arg(&root)
-                .args(["--package", "aphrody-train"])
-                .args(["python", "-m", "aphrody_train.triples"])
+                .args(["--package", "shenron-train"])
+                .args(["python", "-m", "shenron_train.triples"])
                 .arg("--input-chunks")
                 .arg(input)
                 .arg("--gold-file")
@@ -882,7 +882,7 @@ async fn handle_train(action: ShenronTrainAction) -> miette::Result<()> {
     Ok(())
 }
 
-/// Train a Shenron `embed` or `rerank` candidate from triples (Python `aphrody-train` via `uv`);
+/// Train a Shenron `embed` or `rerank` candidate from triples (Python `shenron-train` via `uv`);
 /// returns the candidate directory. Promotion stays gated by the shadow-index metrics.
 pub async fn train_candidate(
     kind: &str,
@@ -898,23 +898,23 @@ pub async fn train_candidate(
     if steps == 0 {
         return Err(miette::miette!("--steps doit être supérieur à zéro"));
     }
-    let hw = aphrody_models::accel::probe();
-    if !allow_cpu && hw.gpus.is_empty() {
+    let hw = crate::host::gpu_count();
+    if !allow_cpu && hw == 0 {
         return Err(miette::miette!("GPU absent ; fournir --allow-cpu pour une exécution CPU"));
     }
     let root = training_root()?;
     let output = shenron_training_dir()?.join("candidates").join(kind);
     std::fs::create_dir_all(&output).into_diagnostic()?;
     let module = match kind {
-        "embed" => "aphrody_train.embed",
-        "rerank" => "aphrody_train.rerank",
+        "embed" => "shenron_train.embed",
+        "rerank" => "shenron_train.rerank",
         _ => return Err(miette::miette!("Type d'entraînement inconnu")),
     };
     let status = std::process::Command::new("uv")
         .current_dir(&root)
         .args(["run", "--project"])
         .arg(&root)
-        .args(["--package", "aphrody-train"])
+        .args(["--package", "shenron-train"])
         .args(["--extra", "full", "python", "-m", module])
         .arg("--triples-file")
         .arg(&triples)
@@ -963,19 +963,19 @@ async fn handle_infra(action: ShenronInfraAction) -> miette::Result<()> {
 }
 
 async fn handle_persona(action: ShenronPersonaAction) -> miette::Result<()> {
-    let state = aphrody_agent_home::paths::state_dir()
+    let state = shenron_home::paths::state_dir()
         .map_err(|error| miette::miette!("Agent Home: {error}"))?;
-    let workspace = aphrody_agent_home::paths::named_profile_workspace(&state, "dbfr");
+    let workspace = shenron_home::paths::named_profile_workspace(&state, "dbfr");
     // Read one coherent revision; never generate from a partially edited home.
-    aphrody_agent_home::SyncSnapshot::capture(&workspace)
+    shenron_home::SyncSnapshot::capture(&workspace)
         .map_err(|error| miette::miette!("Agent Home dbfr invalide: {error}"))?;
-    let home = aphrody_agent_home::AgentHome::open(aphrody_agent_home::HomeOptions {
+    let home = shenron_home::AgentHome::open(shenron_home::HomeOptions {
         workspace: Some(workspace),
         strict_soul: true,
         ..Default::default()
     })
     .map_err(|error| miette::miette!("Agent Home dbfr: {error}"))?;
-    let prompt = home.system_prompt(&aphrody_agent_home::BootstrapBudget::default()).render();
+    let prompt = home.system_prompt(&shenron_home::BootstrapBudget::default()).render();
     match action {
         ShenronPersonaAction::Prompt => println!("{prompt}"),
         ShenronPersonaAction::Ask { question } => {

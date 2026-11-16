@@ -80,7 +80,7 @@ impl From<shenron_rag::LocalHit> for LocalHit {
 pub struct LocalSearchResponse {
     /// The query as received.
     pub q: String,
-    /// Search mode (`aphrody_local_naive`).
+    /// Search mode (`shenron_local_naive`).
     pub mode: String,
     /// Number of `results`.
     pub total: u32,
@@ -89,7 +89,7 @@ pub struct LocalSearchResponse {
 }
 
 /// One hit of the serving RAG (`shenron_rag_search_job`): the bot's `/api/public/rag/search`
-/// or Aphrody's `/api/v1/shenron/rag/search`, normalised by the library.
+/// or Shenron's `/api/v1/shenron/rag/search`, normalised by the library.
 #[derive(Debug, Clone, PartialEq, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct RagHit {
@@ -144,7 +144,7 @@ pub struct RagSourceStats {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct RagStats {
-    /// Serving backend: `local` (the bot) or `aphrody`.
+    /// Serving backend: `local` (the bot) or `shenron`.
     pub backend: String,
     /// Indexed passages.
     pub chunks: u32,
@@ -158,7 +158,7 @@ pub struct RagStats {
     pub built_at: Option<String>,
     /// Whether the bot reports its RAG as ready.
     pub rag_ready: Option<bool>,
-    /// Per-source counts (Aphrody backend).
+    /// Per-source counts (Shenron backend).
     pub sources: Vec<RagSourceStats>,
 }
 
@@ -217,8 +217,8 @@ pub struct BuildInfo {
     pub rustc: String,
 }
 
-/// One memory of the persistent chat memory (`shenron_memory_*`, ABI 3): a record of Aphrody's
-/// `aphrody-memory` SQLite provider.
+/// One memory of the persistent chat memory (`shenron_memory_*`, ABI 3): a record of Shenron's
+/// `shenron-memory` SQLite provider.
 #[derive(Debug, Clone, PartialEq, Serialize, Type)]
 #[serde(rename_all = "camelCase")]
 pub struct MemoryEntry {

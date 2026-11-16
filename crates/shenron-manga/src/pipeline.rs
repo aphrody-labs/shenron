@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// SPDX-FileCopyrightText: 2026 aphrody contributors
+// SPDX-FileCopyrightText: 2026 shenron contributors
 
 //! Manga page processing through Koharu's headless library.
 
@@ -12,7 +12,7 @@ use crate::bubble::SpeechBubble;
 #[cfg(feature = "koharu")]
 use crate::bubble::{BoundingBox, BubbleKind, Point, sort_manga_reading_order};
 
-pub const PAGE_RESULT_SCHEMA: &str = "aphrody.manga.page-result/v1";
+pub const PAGE_RESULT_SCHEMA: &str = "shenron.manga.page-result/v1";
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct MangaPipelineOptions {

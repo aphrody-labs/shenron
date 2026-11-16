@@ -2,8 +2,8 @@
 
 //! 3D Model Serving and GPU Mesh Rendering Pipeline.
 //!
-//! Adapts the 3D model serving architecture from `aphrody-nie-model-serve` and
-//! the wgpu viewport renderer from `aphrody-nie-render3d::gpu` for Dragon Ball Xenoverse 2.
+//! Adapts the 3D model serving architecture from `shenron-nie-model-serve` and
+//! the wgpu viewport renderer from `shenron-nie-render3d::gpu` for Dragon Ball Xenoverse 2.
 //!
 //! Provides:
 //! - GPU vertex and index buffer staging (`GpuPrimitive`, `GpuCharacterModel`)

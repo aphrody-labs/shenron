@@ -18,22 +18,27 @@ crate-type = ["cdylib", "rlib"]
 workspace = true
 
 [dependencies]
-aphrody-agent-home = { workspace = true }
-aphrody-llama-server = { workspace = true }
-aphrody-models = { workspace = true }
-aphrody-memory = { workspace = true }
-aphrody-rag-core = { workspace = true }
-aphrody-backend = { workspace = true }
 axum = { workspace = true }
+reqwest = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
+sha2 = { workspace = true }
 shenron-cli = { workspace = true }
+shenron-home = { workspace = true }
+shenron-memory = { workspace = true }
+shenron-rag-core = { workspace = true }
 shenron-re = { workspace = true }
 shenron-rag = { workspace = true }
 specta = { workspace = true }
+tempfile = { workspace = true }
 tokio = { workspace = true }
+
+[target.'cfg(all(not(target_arch = "wasm32"), unix))'.dependencies]
+rustix = { version = "1.1.5", default-features = false, features = ["stdio"] }
+
+[target.'cfg(all(not(target_arch = "wasm32"), windows))'.dependencies]
+windows-sys = { version = "0.61", features = ["Win32_Foundation", "Win32_System_Console"] }
 
 [dev-dependencies]
 specta-serde = { workspace = true }
 specta-typescript = { workspace = true }
-tempfile = { workspace = true }

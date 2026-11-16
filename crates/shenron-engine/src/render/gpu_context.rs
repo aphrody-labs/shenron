@@ -93,7 +93,7 @@ impl GpuContext {
         })
     }
 
-    /// Initializes a GPU context with a custom `DeviceRequest` (compatible with aphrody-gpu-backend).
+    /// Initializes a GPU context with a custom `DeviceRequest` (compatible with shenron-gpu-backend).
     pub async fn new_with_request(
         request: super::gpu_backend::DeviceRequest<'_>,
     ) -> Result<Self, GpuError> {
