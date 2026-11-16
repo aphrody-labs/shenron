@@ -1,69 +1,30 @@
-# Shenron Contributor & Autonomous Agent Rules (`AGENTS.md`)
+# Shenron: agent contract (`AGENTS.md`)
 
-Shenron (`C:\aphrody\apps\shenron`) is the sovereign platform behind **dragonballfr.com**: the web portal, Discord bot, API, editorial pipeline (databook OCR and translation), Shenron Studio (manga translation editor, code name Koharu), 3D/video creative pipelines, RAG, and MCP server. `CLAUDE.md` is a symlink to this file.
+Shenron is the platform behind dragonballfr.com: web portal, Discord bot, API, editorial pipeline (databook OCR and translation), Shenron Studio (manga translation, code name Koharu), media pipelines, RAG and MCP server. It is a standalone product repository (`github.com/aphrody-labs/shenron`, branch `main`) with no dependency on the Aphrody monorepo. `CLAUDE.md` imports this file.
 
-## 1. Mission & Sovereign Architecture
+## Stack
 
-Operate and evolve Shenron on **100% Upstream Bun v1.4.4+ and Rust 2024** with zero external bottlenecks, minimal build steps, and sub-millisecond cold starts.
+- Runtime and tooling: Bun 1.4.5, the official upstream release (no fork). TypeScript only where it is justified; Rust 2024 for the engine, API units and native tools (`migration/rust.toml`, `docs/decisions/0004-migration-typescript-rust.md`).
+- Dependencies come from public npm, crates.io and PyPI at their newest versions, read live. Code that used to come from Aphrody packages lives in this repository.
+- UI: Next.js for the site; Dioxus (DioxusLabs: dioxus, blitz, taffy) where a Rust UI fits (Studio desktop).
+- Data: PostgreSQL and Redis from the official images.
 
-### Stack Architecture (`docs/decisions/0001-pile-du-site.md`)
+## Layout
 
-- **Production Web & Server**: `apps/site` (Next.js 16.5+ standalone optimized for Bun) packaged with `apps/server` into a self-contained Bun runtime binary, migrating progressively to **Leptos 0.8 SSR + Axum** and **Dioxus 0.8 / GPUI**.
-- **Native Studio & Rendering**: GPUI / Dioxus 0.8, WGPU 30, Vello, Parley, Taffy, AccessKit.
-- **Creative & Engine Extensions**: `crates/bun-engine-core`, `packages/bun-blender` (Blender 5.2.3 LTS headless pipeline), `packages/bun-video-project`, `packages/bun-gamestream`.
-- **Tooling, Bot, Scripts & Tests**: Upstream Bun v1.4.4+ only. Zero Node.js, npm, yarn, or pnpm.
-- **TypeScript to Rust migration** (`docs/decisions/0004-migration-typescript-rust.md`): `migration/rust.toml` assigns every TS file to a unit with a target crate, and its `ts_lines` ratchet fails CI when TS grows (`just migrate-check`), so put new logic in the unit's crate. A ported HTTP route goes in `crates/shenron-api` (`OPERATIONS`), and its golden cases in `data/api/fixtures` are recorded by `bun packages/api/scripts/api-fixtures.ts`. `just migrate-ratchet` lowers the ratchet after a deletion.
-- **Release compile Bun**: `scripts/deploy/build-image.sh` requires Bun >= 1.4.5 (fleet `1.4.5-canary.1+6db952080` works: a compiled server re-spawned with `BUN_BE_BUN=1` serves a child like the Next standalone, same as 1.4.6). Legacy `1.4.6-canary.1+fd9d7a224` is preserved as branch `legacy/1.4.6-fd9d7a224` and prerelease `legacy-1.4.6-fd9d7a224` of aphrody-labs/bun (1366 commits off main, not portable); `Bun.Video` is only needed by offline media scripts. Override with `SHENRON_COMPILE_BUN`.
+- `apps/site` (web portal), `apps/bot` (Discord bot), `apps/server` (single Bun server), `apps/activity` (Discord Activity).
+- `packages/*` (`@shenron/*` workspace packages), `crates/*` (`shenron-*`, `koharu-*`, `dragon-pixel`).
+- `deploy/` (compose, nginx, units, SQL migrations), `scripts/`, `docs/` (ADRs and runbooks), `.agents/skills` (skills).
 
-## 2. Sovereign Fleet Triad (`vps` / `cdn` / `prod`)
+## Hosts
 
-All infrastructure is interconnected over the private WireGuard mesh (`10.200.77.0/24`): prefer `ay ssh exec <fr1|fr2|usa> -- cmd` (vps = fr1, cdn = fr2, prod = usa).
+- `prd`: production, shenron and rosegriffon only. `fr1`: builds and CI (self-hosted Vercel). `fr2`: previews, tests, edge (self-hosted Cloudflare). Always `timeout N ssh <host>`.
+- rosegriffon is a separate product repo (`C:\rosegriffon`) and a separate agent: coordinate through files, never touch its services, take `/srv/deploy.lock` before a prd deploy.
 
-- **`ssh vps` (`10.200.77.1` / `51.77.147.152`)**: 12-core Build Hub, Rust/Bun compilation farm, OCR/RAG batch compute, and mesh hub.
-- **`ssh cdn` (`10.200.77.3` / `51.255.162.6`, alias `bunos`)**: Cloudflare Edge Simulator running Pingora Gateway (`yolo-cf-gateway`), Garage S3 R2 (`yolo-cf-garage`), RQLite D1 (`yolo-cf-rqlite`), `workerd` (`yolo-cf-workerd`), Mail, and Auth sync bridges.
-- **`ssh prod` (`10.200.77.5` / `72.60.186.43`)**: Arch Linux (kernel 7.2.14, no /dev/kvm) production host running `shenron-gateway`, `shenron-site`, `shenron-bot`, `shenron-chat`, `shenron-compute`, `shenron-embed`, `shenron-postgres`, `shenron-redis`, and `shenron-cloudflared`.
+## Rules
 
-## 3. Repository Map
-
-- `apps/site`: Web portal. `apps/bot`: Discord bot (`discordx`). `apps/server`: Single Bun binary serving site and APIs. `apps/activity`: Discord Activity server.
-- `packages/*`: Bun workspace packages (`@aphrody/shenron-*`, `bun-blender`, `bun-video-project`, `bun-gamestream`, `bun-engine`).
-- `crates/*`: Rust workspace (`shenron-*`, `koharu-*`, `dragon-pixel`, `bun-engine-core`).
-- `deploy/`: Docker BuildKit (`deploy/docker`), production compose (`deploy/prod`), Cloudflare Edge Worker (`deploy/cloudflare`), SQL migrations (`deploy/sql`).
-- `scripts/`: Automated build (`scripts/build`), zero-downtime deployment lanes (`scripts/deploy`), ops (`scripts/ops`), and testing gates (`scripts/testing`).
-- `docs/`: Architecture, ADRs, operations, and runbooks (`docs/README.md`).
-
-## 4. Canonical Commands (`just`)
-
-All tasks execute through `just` using `bun exec`:
-
-```sh
-just install        # bun install --frozen-lockfile
-just check          # bun check on packages and scripts + cargo check
-just lint           # bun lint + cargo clippy (warnings denied)
-just format-check   # bun fmt --check + cargo fmt --all --check
-just test           # bun tests, script tests, cargo nextest
-just drift          # verify OpenAPI, UI tokens, AI contracts, Cargo workspace deps
-just deploy-check   # verify deployment environment, lanes, and deploy script tests
-just deploy-plan    # preview deployment lane diff against active production release
-bun run ship        # build image on vps and stream via Zstd to prod
-```
-
-## 5. Build, Bottleneck Elimination & Deployment Rules
-
-- **Zero Bottleneck Builds**: Next.js 16.5 standalone and bot builds run in parallel where independent, using cached layers (Docker BuildKit `--mount=type=cache`) and incremental compilation.
-- **Fast Zstd Image Streaming**: `scripts/deploy/release.sh` builds `localhost/shenron:<sha>` on `vps` and streams compressed layers via `zstd -T0` over WireGuard directly to `prod`.
-- **Zero-Downtime Service Activation**: Use `docker compose up -d --no-deps --no-recreate <service>` or lane-specific activation (`scripts/deploy/lanes.ts`) so unaffected containers never restart.
-
-## 6. Safety & Production Integrity
-
-- Never touch production data without a dry-run first, a verified backup (`pg_restore -f /dev/null`), and transactional migration (`deploy/prod/apply-migrations.py`).
-- Never print, log, or commit secrets. Reference environment variable names only.
-- Never run `docker rm`, `rm -rf /srv/shenron/models`, or delete active model weights on `prod`.
-- Code identifiers and comments in English; documentation in French; user-visible strings in `apps/site/messages/{fr,en,ja}.json`.
-- **Strict Zero-Emoji Policy**: Zero emojis in all code, comments, commit messages, PRs, logs, and documentation.
-
-## 7. Autonomous NHITL Agent Directives (24/7 Operations)
-
-- **High-Precision Targeting**: Read specific line ranges or symbols rather than dumping large files into context.
-- **Zero-Polling Reactive Wakeup**: After spawning background tasks or subagents, yield immediately and wait for completion notifications.
-- **Continuous Grind & Auto-Fix**: Autonomously diagnose failures, fix code, run `bun fmt`, `bun lint`, `bun check`, `bun test`, and commit clean slices.
+- Commit directly on `main` in logical commits; run gitleaks before every push. Never `git add -A`, stash or reset on a shared tree.
+- Rust builds on `fr1` or CI, never on the workstation. Never run bare `bun test` at the root: `bun test <package>`.
+- Secrets: never print, log or commit values; only `.env.example` is committed.
+- Proof is a screenshot of the rendered page or a checked API response, never an HTTP status alone.
+- User-facing text goes through the i18n catalogues; no emoji, no AI attribution in code, docs or commits.
+- Commands: `just` (see `justfile`): `just check`, `just test`, `just deploy-check`.

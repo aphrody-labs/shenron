@@ -1,11 +1,3 @@
-[mcp_servers.dbfr-postgres]
-command = "bun"
-args = ["C:/Users/aphro/.aphrody/mcp/dbfr-db.ts", "postgres"]
-
-[mcp_servers.dbfr-redis]
-command = "bun"
-args = ["C:/Users/aphro/.aphrody/mcp/dbfr-db.ts", "redis"]
-
 [mcp_servers.shenron]
 url = "https://dragonballfr.com/mcp"
-http_headers_helper = '"C:\bun\build\release\bun.exe" "C:\Users\aphro\.aphrody\bin\shenron-agent.ts" --headers'
+bearer_token_env_var = "SHENRON_MCP_TOKEN"
