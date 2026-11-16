@@ -9,5 +9,5 @@ Build (fr1 only): `cargo build --release -p koharu-web`, copy to `dist/koharu-we
 `docker save | zstd | ssh prd docker load`. Deploy on prd under `/srv/deploy.lock` (flock), one service.
 
 Settings: `KOHARU_WEB_*` (bind, tokens, translate url and model, target language, cpu).
-Models download on the first page into `/srv/koharu/home` (persistent).
+Models download on the first page into `/srv/koharu/home` (persistent, mode 0700, owner 10002). The translation endpoint takes no key; set `KOHARU_OPENAI_COMPATIBLE_API_KEY` for one that does.
 Proofs: `docs/proofs/koharu-*`.

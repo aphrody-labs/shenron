@@ -30,6 +30,18 @@ impl Default for OpenAiCompatibleConfig {
     }
 }
 
+/// The key of an OpenAI-compatible endpoint is optional (a local llama.cpp or vLLM server takes none):
+/// `KOHARU_OPENAI_COMPATIBLE_API_KEY` first, then the credential store; a host without a credential
+/// store (a container without a kernel keyring) simply sends no key.
+fn api_key() -> Option<koharu_secrets::SecretString> {
+    if let Some(value) =
+        std::env::var("KOHARU_OPENAI_COMPATIBLE_API_KEY").ok().filter(|value| !value.is_empty())
+    {
+        return Some(koharu_secrets::SecretString::from(value));
+    }
+    koharu_secrets::get("openai-compatible").ok().flatten()
+}
+
 pub(super) async fn translate(
     client: &Client,
     config: &OpenAiCompatibleConfig,
@@ -37,7 +49,7 @@ pub(super) async fn translate(
     generation: &GenerationConfig,
     request: &TranslationRequest,
 ) -> Result<Vec<String>> {
-    let api_key = koharu_secrets::get("openai-compatible")?;
+    let api_key = api_key();
     let (system, user) = prompt::prompts(request)?;
     let user_content = match request.image.as_deref() {
         Some(image) => MessageContent::Parts(vec![
@@ -87,7 +99,7 @@ pub(super) async fn translate(
 }
 
 pub(super) async fn models(client: &Client, config: &OpenAiCompatibleConfig) -> Result<Vec<Model>> {
-    let api_key = koharu_secrets::get("openai-compatible")?;
+    let api_key = api_key();
     let request = client.get(endpoint(config.base_url.as_ref(), "models"));
     let request = match api_key {
         Some(api_key) => request.bearer_auth(api_key.expose_secret()),

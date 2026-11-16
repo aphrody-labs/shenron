@@ -17,7 +17,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
  && (id ubuntu >/dev/null 2>&1 && userdel -r ubuntu || true) \
  && groupadd --gid 10002 koharu \
  && useradd --uid 10002 --gid 10002 --home-dir /var/lib/koharu --no-create-home --shell /usr/sbin/nologin koharu \
- && install -d -o 10002 -g 10002 /var/lib/koharu
+ && install -d -m 0700 -o 10002 -g 10002 /var/lib/koharu
 
 ARG SHENRON_REVISION=unknown
 LABEL org.opencontainers.image.title="koharu-web" \
