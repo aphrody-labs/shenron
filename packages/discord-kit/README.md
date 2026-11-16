@@ -30,8 +30,4 @@ Shared Discord bot core kit, published as `@shenron/discord-kit` and used by the
 
 ## Implementation ownership
 
-Discord messaging, REST, bot lifecycle and the private AI laboratory are implemented
-in `packages/discord/kit`. `@aphrody/messaging` is a compatibility export of
-`@shenron/discord-kit/messaging`; it contains no separate transport. Laboratory
-entrypoints are `src/lab/ai-lab.ts` and `src/lab/assistant.ts`. Discord transport
-tests use the package Bun configuration to preserve native multipart primitives.
+Messaging (`./messaging`), REST with retries (`./rest`), guards, command registration, cache and bot lifecycle helpers live in `src/`. Transport tests keep Bun's native multipart primitives.
