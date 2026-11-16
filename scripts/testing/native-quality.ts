@@ -57,7 +57,7 @@ async function run(): Promise<number> {
     for (const command of commands) {
       const child = Bun.spawn([runtime, ...command.args], {
         cwd: command.cwd,
-        env: nativeEnvironment(runtime, mode!),
+        env: nativeEnvironment(runtime, mode!, command.cwd),
         stdin: "inherit",
         stdout: "inherit",
         stderr: "inherit",
@@ -81,7 +81,7 @@ async function run(): Promise<number> {
         const command = commands[index]!;
         const child = Bun.spawn([runtime, ...command.args], {
           cwd: command.cwd,
-          env: nativeEnvironment(runtime, mode!),
+          env: nativeEnvironment(runtime, mode!, command.cwd),
           stdin: "ignore",
           stdout: "pipe",
           stderr: "pipe",

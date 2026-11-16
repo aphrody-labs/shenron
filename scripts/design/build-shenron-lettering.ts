@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { WORDMARK_LETTERS, WORDMARK_FRANCE_GLYPHS } from "@shenron/ui/toriyama-svg/wordmark";
+import { uvCommand } from "./uv";
 
 export const LETTERING_COVERAGE = "DRAGNBLFCE";
 export const LETTERING_GLYPHS = {
@@ -95,7 +96,7 @@ json.dump({'glyphs':details,'unitsPerEm':1000,'capHeight':800,'ascent':850,'desc
 export async function buildLettering(output: string) {
   const child = Bun.spawn(
     [
-      ...(Bun.which("uv") ? [Bun.which("uv")!] : [process.execPath, "uv"]),
+      ...uvCommand(),
       "run",
       "--quiet",
       "--no-project",

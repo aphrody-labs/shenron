@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: OFL-1.1
 // Rebuild Shenron Text from the repository's OFL-licensed static Inter faces.
+import { uvCommand } from "./uv";
 type FontTable = { tag: string; data: Buffer };
 
 export function readTables(font: Buffer): FontTable[] {
@@ -183,7 +184,7 @@ if (import.meta.main) {
         [0xfffd, 0xfffd],
       ],
     }));
-    const child = Bun.spawn([process.execPath, "uv", "run", "--quiet", "--script", recipe, root], {
+    const child = Bun.spawn([...uvCommand(), "run", "--quiet", "--script", recipe, root], {
       stdin: new TextEncoder().encode(JSON.stringify(plan)),
       stdout: "pipe",
       stderr: "pipe",

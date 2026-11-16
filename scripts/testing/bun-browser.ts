@@ -709,7 +709,9 @@ export class BunBrowser {
         } catch {
           // ignore
         }
-        throw new Error(`Browser exited prematurely with code ${proc.exitCode}`);
+        throw new Error(
+          `Browser exited prematurely with code ${proc.exitCode} (${executable}). Browser stderr: ${buffer.slice(-2000) || "(empty)"}`,
+        );
       }
 
       await Bun.sleep(50);
@@ -726,7 +728,9 @@ export class BunBrowser {
       } catch {
         // ignore
       }
-      throw new Error(`Failed to extract DevTools WebSocket URL within ${timeoutMs}ms.`);
+      throw new Error(
+        `Failed to extract DevTools WebSocket URL within ${timeoutMs}ms (${executable}). Browser stderr: ${buffer.slice(-2000) || "(empty)"}`,
+      );
     }
 
     const ws = new WebSocket(wsUrl);

@@ -33,7 +33,7 @@ async function nativeCommand(cwd: string, command: string, args: string[]) {
   const runtime = nativeRuntime(process.env.SHENRON_BUN_EXECUTABLE);
   const child = Bun.spawn([runtime, command, ...args], {
     cwd,
-    env: nativeEnvironment(runtime, command),
+    env: nativeEnvironment(runtime, command, cwd),
     stdout: "pipe",
     stderr: "pipe",
   });

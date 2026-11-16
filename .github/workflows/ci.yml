@@ -92,5 +92,12 @@ jobs:
       - name: Tests
         run: bun run test
 
+      # scripts/design rebuilds the font faces with fontTools through uv (official Bun has no `bun uv`).
+      - name: Setup uv
+        uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
+        with:
+          version: "0.13.8"
+          enable-cache: false
+
       - name: Tests des scripts racine
         run: bun run test:scripts

@@ -72,7 +72,7 @@ export async function runWorkspaceGate(root: string, gate: Gate): Promise<number
       try {
         const child = Bun.spawn(cmd, {
           cwd: command.cwd,
-          env: nativeEnvironment(runtime, args[0]!),
+          env: nativeEnvironment(runtime, args[0]!, command.cwd),
           stdin: "inherit",
           stdout: "inherit",
           stderr: "inherit",
@@ -106,7 +106,7 @@ export async function runWorkspaceGate(root: string, gate: Gate): Promise<number
       try {
         const child = Bun.spawn(cmd, {
           cwd: command.cwd,
-          env: nativeEnvironment(runtime, args[0]!),
+          env: nativeEnvironment(runtime, args[0]!, command.cwd),
           stdin: "ignore",
           stdout: "pipe",
           stderr: "pipe",
