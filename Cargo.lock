@@ -12513,6 +12513,7 @@ dependencies = [
  "reqwest 0.13.5",
  "rustls",
  "serde_json",
+ "web-sys",
 ]
 
 [[package]]
