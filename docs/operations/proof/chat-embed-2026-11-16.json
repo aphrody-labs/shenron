@@ -1,0 +1,10 @@
+{
+  "chat": "Son Goku est un guerrier du village de la Capitale de l'Étoile, fils de Son Gohan et de Bulma. Il possède un esprit fier,",
+  "model": "shenron-chat-v2",
+  "dims": 0
+}
+{
+  "chat": null,
+  "model": "/data/e5",
+  "dims": 384
+}

@@ -15,18 +15,16 @@
 # rust-src), so a site or bot change never recompiles Rust and a source change never reinstalls.
 #
 # Secrets (never baked in a layer):
-#   gitconfig   git config rewriting https://github.com/ with a token (aphrody-labs/aphrody is private)
+#   gitconfig   optional git config rewriting https://github.com/ with a token (private git dependencies)
 #   tauri_key   optional Tauri updater private key (an ephemeral one is generated without it)
 #   sign_pfx    optional Windows code-signing certificate (unused here: see local-windows.ps1)
 
 ARG BASE_IMAGE=ubuntu:26.10
 ARG RUST_VERSION=1.99.1
 ARG BUN_VERSION=1.4.4
-ARG BUN_LINUX_SHA256=247bd13f96cb10404a416291415a35690c4d76e3187f7bb9183c1c8784d314f6
-# Windows base of `bun build --compile --target windows-x64`: the fork publishes no Windows asset
-# for BUN_VERSION yet, so this stays on the newest published runtime.
-ARG BUN_RUNTIME_VERSION=1.4.3-aphrody.2
-ARG BUN_RUNTIME_WINDOWS_INTEGRITY=sha512-VKXaQ+8q63VkGFASjQT+j1yfKKJOL28pvBHtVJeBzsbY2nBF95j/bct405cZGbKhe2FWW9FEAQrdUjQXJ4y4Rg==
+ARG BUN_LINUX_SHA256=bf8ccbfb2b0b80159e0f9a6d15c55317add8077534dbc6130a3edb52fccb395c
+# Windows base of `bun build --compile --target windows-x64`: the upstream Bun release of BUN_VERSION.
+ARG BUN_WINDOWS_SHA256=cd2c0fccc78f3ede1f50ca827a15f063eda13d4d150a3d0674f4f6e323d864a5
 ARG SCCACHE_VERSION=0.18.0
 ARG CARGO_XWIN_VERSION=0.23.1
 ARG TAURI_CLI_VERSION=3.0.0-alpha.4
@@ -56,8 +54,7 @@ FROM base AS toolchain
 ARG RUST_VERSION
 ARG BUN_VERSION
 ARG BUN_LINUX_SHA256
-ARG BUN_RUNTIME_VERSION
-ARG BUN_RUNTIME_WINDOWS_INTEGRITY
+ARG BUN_WINDOWS_SHA256
 ARG SCCACHE_VERSION
 ARG CARGO_XWIN_VERSION
 USER 10001:10001
@@ -73,20 +70,17 @@ RUN set -eux; mkdir -p /opt/tools/bin; cd /tmp \
  && curl -fsSL "https://github.com/rust-cross/cargo-xwin/releases/download/v${CARGO_XWIN_VERSION}/cargo-xwin-v${CARGO_XWIN_VERSION}.x86_64-unknown-linux-musl.tar.gz" | tar xz \
  && install -m0755 cargo-xwin /opt/tools/bin/cargo-xwin \
  && rm -rf /tmp/*
-# Linux build runtime: the exact Bun of package.json#packageManager (the release setup-bun installs),
-# checked against its pinned SHA-256. Windows compile base: public npm registry, pinned SRI digest.
-RUN set -eux; cd /tmp; \
-  curl -fsSL -o bun-linux.tar.gz "https://github.com/aphrody-labs/bun/releases/download/bun-v${BUN_VERSION}/bun-linux-x64.tar.gz"; \
-  echo "${BUN_LINUX_SHA256}  bun-linux.tar.gz" | sha256sum -c -; \
-  mkdir -p /opt/bun/bin /opt/bun/windows bun-linux; \
-  tar xzf bun-linux.tar.gz -C bun-linux; \
-  cp "$(find bun-linux -type f -name bun | head -1)" /opt/bun/bin/bun && chmod +x /opt/bun/bin/bun; \
-  url="https://registry.npmjs.org/@aphrody/bun-runtime-windows-x64/-/bun-runtime-windows-x64-${BUN_RUNTIME_VERSION}.tgz"; \
-  curl -fsSL -o windows-x64.tgz "$url"; \
-  got="sha512-$(openssl dgst -sha512 -binary windows-x64.tgz | base64 -w0)"; \
-  [ "$got" = "${BUN_RUNTIME_WINDOWS_INTEGRITY}" ] || { echo "digest mismatch for windows-x64: $got" >&2; exit 1; }; \
-  tar xzf windows-x64.tgz && cp "$(find package -type f -name 'bun*.exe' | head -1)" /opt/bun/windows/bun.exe; \
-  rm -rf package bun-linux bun-linux.tar.gz windows-x64.tgz; \
+# Build runtime: the official upstream Bun release (oven-sh/bun) of BUN_VERSION, SHA-256 checked, for
+# Linux and for the Windows compile base.
+RUN set -eux; cd /tmp; mkdir -p /opt/bun/bin /opt/bun/windows; \
+  base="https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}"; \
+  curl -fsSL -o bun-linux.zip "$base/bun-linux-x64.zip"; \
+  echo "${BUN_LINUX_SHA256}  bun-linux.zip" | sha256sum -c -; \
+  curl -fsSL -o bun-windows.zip "$base/bun-windows-x64.zip"; \
+  echo "${BUN_WINDOWS_SHA256}  bun-windows.zip" | sha256sum -c -; \
+  unzip -q bun-linux.zip -d bun-linux && install -m0755 bun-linux/*/bun /opt/bun/bin/bun; \
+  unzip -q bun-windows.zip -d bun-windows && cp bun-windows/*/bun.exe /opt/bun/windows/bun.exe; \
+  rm -rf bun-linux bun-windows bun-linux.zip bun-windows.zip; \
   [ "$(bun --version)" = "${BUN_VERSION}" ]
 ENV SHENRON_COMPILE_BUN_WINDOWS=/opt/bun/windows/bun.exe \
     SHENRON_CARGO_REMOTE=off RUSTC_WRAPPER=sccache SCCACHE_DIR=/home/builder/.cache/sccache \

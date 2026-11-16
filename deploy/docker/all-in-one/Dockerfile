@@ -12,8 +12,8 @@
 FROM ubuntu:26.10
 
 ARG SHENRON_REVISION=unknown
-# Bun runtime: release of the aphrody-labs/bun fork (package.json#packageManager).
-ARG BUN_VERSION=1.4.6
+# Bun runtime: official upstream release (oven-sh/bun), same version as package.json#packageManager.
+ARG BUN_VERSION=1.4.4
 
 LABEL org.opencontainers.image.title="Shenron Complete" \
       org.opencontainers.image.description="All-in-one container for Dragon Ball FR (Site, Bot, Studio, DB, Redis, Nginx)" \
@@ -54,9 +54,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     postgresql \
     postgresql-contrib \
  && arch="$(uname -m)"; case "$arch" in x86_64) asset=bun-linux-x64 ;; aarch64) asset=bun-linux-aarch64 ;; *) exit 1 ;; esac \
- && curl -fsSL -o /tmp/bun.tar.gz "https://github.com/aphrody-labs/bun/releases/download/bun-v${BUN_VERSION}/${asset}.tar.gz" \
+ && curl -fsSL -o /tmp/bun.tar.gz "https://github.com/oven-sh/bun/releases/download/bun-v${BUN_VERSION}/${asset}.zip" \
  && mkdir -p /tmp/bun \
- && tar xzf /tmp/bun.tar.gz -C /tmp/bun \
+ && unzip -q /tmp/bun.tar.gz -d /tmp/bun \
  && install -m 0755 "$(find /tmp/bun -type f -name bun | head -1)" /usr/local/bin/bun \
  && rm -rf /tmp/bun /tmp/bun.tar.gz \
  && bun --revision \

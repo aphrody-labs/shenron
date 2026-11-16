@@ -13,7 +13,7 @@ services:
     command: ["serve", "--host", "127.0.0.1", "--port", "5011"]
     env_file:
       - ${SHENRON_SITE_ENV_FILE:-${SHENRON_ENV_DIR:-/etc/rose-griffon}/shenron-site.env}
-      - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-/etc/aphrody/shenron-compute-client.env}
+      - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-/etc/shenron/shenron-compute-client.env}
     environment:
       SHENRON_HOME: /var/lib/shenron
       A2A_COORD_DIR: /var/lib/shenron/data/a2a
@@ -57,8 +57,8 @@ services:
     entrypoint: ["/usr/local/bin/shenron-bot"]
     env_file:
       - ${SHENRON_BOT_ENV_FILE:-${SHENRON_ENV_DIR:-/etc/rose-griffon}/shenron-bot.env}
-      - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-/etc/aphrody/shenron-compute-client.env}
-      - path: ${SHENRON_WEB_CRAWL_ENV_FILE:-/etc/aphrody/shenron-web-crawl.env}
+      - ${SHENRON_COMPUTE_CLIENT_ENV_FILE:-/etc/shenron/shenron-compute-client.env}
+      - path: ${SHENRON_WEB_CRAWL_ENV_FILE:-/etc/shenron/shenron-web-crawl.env}
         required: false
     environment:
       SHENRON_PROFILE: production
@@ -84,8 +84,8 @@ services:
         target: /app/assets
         read_only: true
       - type: bind
-        source: ${SHENRON_WEB_CRAWL_CONFIG_DIR:-/etc/aphrody/shenron-web-crawl}
-        target: /run/aphrody/web-crawl
+        source: ${SHENRON_WEB_CRAWL_CONFIG_DIR:-/etc/shenron/shenron-web-crawl}
+        target: /run/shenron/web-crawl
         read_only: true
         bind:
           create_host_path: true

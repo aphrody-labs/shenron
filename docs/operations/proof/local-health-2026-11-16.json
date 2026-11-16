@@ -1,0 +1,20 @@
+{
+  "ok": true,
+  "service": "shenron-server",
+  "version": "1.4.5",
+  "profile": "production",
+  "groups": {
+    "wiki": false,
+    "rag": true,
+    "chat": true,
+    "conversations": true,
+    "sync": true,
+    "vfs": true,
+    "ocr": false,
+    "mcp": true,
+    "models": true,
+    "memory": true,
+    "auth": true,
+    "koharu": false
+  }
+}

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Production Compose stack of Shenron (/srv/shenron/compose.yaml on prod), as a template without
-# secrets. Owner: this repository; applied by Aphrody Infra only (docs/operations/AUTO-DEPLOY.md).
+# secrets. Owner: this repository; installed on the production host by hand (docs/operations/AUTO-DEPLOY.md).
 #
 # Source: /srv/shenron/compose.yaml read on prod on 2026-11-05 (364 lines). Differences, all
 # deliberate, are marked `CHANGED`:
@@ -18,24 +18,24 @@ name: shenron
 
 services:
   postgres:
-    image: aphrody/shenron-state:1c1d0f30b0df02ff3109e18422976299aeb42d8b
+    image: pgvector/pgvector:pg18
     container_name: shenron-postgres
     restart: unless-stopped
-    user: "105:111"
+    user: "999:999"
     network_mode: host
-    shm_size: 1g
+    shm_size: 8g
     read_only: true
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
     tmpfs:
-      - /run/postgresql:rw,nosuid,uid=105,gid=111,size=16m
+      - /run/postgresql:rw,nosuid,uid=999,gid=999,size=16m
       - /tmp:rw,nosuid,size=16m
     volumes:
       - /srv/shenron/config/postgres:/etc/postgresql:ro
-      - /srv/shenron/config/postgres/tls:/etc/postgresql/tls:ro
-      - /srv/shenron/data/postgres:/var/lib/postgresql/data
+      - /srv/shenron/config/postgres/tls18:/etc/postgresql/tls:ro
+      - /srv/shenron/data/postgres18:/var/lib/postgresql/data
     entrypoint:
-      - /usr/lib/postgresql/18/bin/postgres
+      - postgres
       - -D
       - /var/lib/postgresql/data
       - -c
@@ -57,13 +57,13 @@ services:
       - -c
       - ssl_cert_file=/etc/postgresql/tls/server.crt
       - -c
-      # Redacted while reading: a path, checked against the host by Infra.
+      # a path, checked against the host.
       - ssl_key_file=/etc/postgresql/tls/server.key
     healthcheck:
       test:
         [
           "CMD",
-          "/usr/lib/postgresql/18/bin/pg_isready",
+          "pg_isready",
           "-h",
           "127.0.0.1",
           "-p",
@@ -74,13 +74,12 @@ services:
       interval: 10s
       timeout: 5s
       retries: 6
-    mem_limit: 4g
-    memswap_limit: 4g
+    # shared_buffers is 6GB (config/postgres): no container memory cap below it.
     pids_limit: 512
     stop_grace_period: 30s
 
   redis:
-    image: aphrody/shenron-state:1c1d0f30b0df02ff3109e18422976299aeb42d8b
+    image: redis:8-alpine
     container_name: shenron-redis
     restart: unless-stopped
     user: "104:110"
@@ -94,9 +93,9 @@ services:
     volumes:
       - /srv/shenron/data/redis:/data
       - /srv/shenron/config/redis:/etc/redis:ro
-    entrypoint: [/usr/bin/redis-server, /etc/redis/redis.conf]
+    entrypoint: [redis-server, /etc/redis/redis.conf]
     healthcheck:
-      test: ["CMD", "/usr/bin/redis-cli", "-h", "127.0.0.1", "-p", "6379", "ping"]
+      test: ["CMD", "redis-cli", "-h", "127.0.0.1", "-p", "6379", "ping"]
       interval: 10s
       timeout: 5s
       retries: 6
@@ -106,7 +105,9 @@ services:
     stop_grace_period: 15s
 
   embed:
-    image: aphrody:toolbox-f1346b77156f
+    # Upstream Hugging Face text-embeddings-inference (OpenAI-compatible /v1/embeddings), same
+    # multilingual-e5-small weights as before (384 dimensions, mean pooling).
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.9.4
     container_name: shenron-embed
     restart: unless-stopped
     user: "1000:1000"
@@ -116,31 +117,28 @@ services:
     security_opt: ["no-new-privileges:true"]
     tmpfs:
       - /tmp
-      - /home/ubuntu:uid=1000,gid=1000,mode=0700
     environment:
-      HOME: /home/ubuntu
+      HF_HUB_OFFLINE: "1"
     volumes:
-      - /srv/shenron/models/e5:/models/e5:ro
+      - /srv/shenron/models/e5:/data/e5:ro
     command:
       [
-        aphrody-embed,
-        serve,
-        --host,
+        --model-id,
+        /data/e5,
+        --pooling,
+        mean,
+        --hostname,
         127.0.0.1,
         --port,
         "8085",
-        --threads,
-        "4",
-        --model-dir,
-        /models/e5,
       ]
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8085/health"]
       interval: 15s
       timeout: 5s
       retries: 10
-    mem_limit: 2g
-    memswap_limit: 2g
+    mem_limit: 4g
+    memswap_limit: 4g
     pids_limit: 256
 
   compute:
@@ -179,7 +177,8 @@ services:
     pids_limit: 256
 
   chat:
-    image: aphrody:toolbox-f1346b77156f
+    # Upstream llama.cpp server image; the base model and the LoRA adapter stay on the host.
+    image: ghcr.io/ggml-org/llama.cpp:server
     container_name: shenron-chat
     restart: unless-stopped
     user: "1000:1000"
@@ -191,13 +190,10 @@ services:
       - /tmp:uid=1000,gid=1000,mode=0700
     environment:
       HOME: /tmp
-      LD_LIBRARY_PATH: /llama
     volumes:
-      - /srv/shenron/models/llama:/llama:ro
       - /srv/shenron/models/qwen3/base.gguf:/models/base.gguf:ro
       - /srv/shenron/models/adapter/shenron-chat-v2.gguf:/models/adapter.gguf:ro
     command:
-      - /llama/llama-server
       - --model
       - /models/base.gguf
       - --lora
@@ -218,6 +214,7 @@ services:
       - "5"
       - --n-gpu-layers
       - "0"
+      - --jinja
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:8799/health"]
       interval: 15s

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 # Per-service activation of one Shenron image on the production host. Template owned by this
-# repository, installed and run by Aphrody Infra (it replaces /srv/shenron/bin/deploy-image.sh,
+# repository, installed on the production host by hand (it replaces /srv/shenron/bin/deploy-image.sh,
 # which /root/deploy-shenron-image.sh links to). Runbook: docs/operations/AUTO-DEPLOY.md.
 #
 #   activate.sh <sha> [image-tar]

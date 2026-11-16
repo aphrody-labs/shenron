@@ -86,7 +86,7 @@ if [ "$mode" = auto ] || [ "$mode" = plan ]; then
     exit 0
   fi
   if [ -n "$holds" ] && [ "${SHENRON_ACCEPT_HOLDS:-0}" != 1 ]; then
-    echo "== HOLD ($holds): apply them through the Aphrody Infra runbook, then rerun with SHENRON_ACCEPT_HOLDS=1" >&2
+    echo "== HOLD ($holds): apply them by hand (docs/operations/deploy.md), then rerun with SHENRON_ACCEPT_HOLDS=1" >&2
     exit 78
   fi
   echo "== release $head for: $services"

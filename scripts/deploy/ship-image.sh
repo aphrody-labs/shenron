@@ -27,7 +27,7 @@
 # until 2026-11-03 (audit surface-2026-11-05 E2). Empty disables the guard.
 #
 # Database migrations are never applied here: a release whose diff touches them is held by
-# scripts/deploy/release.sh --auto, and Aphrody Infra applies them by its runbook. The previous
+# scripts/deploy/release.sh --auto, and they are applied by hand (docs/operations/deploy.md). The previous
 # automatic step remains for manual use only, behind SHENRON_REMOTE_MIGRATE=1.
 set -euo pipefail
 HERE=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)

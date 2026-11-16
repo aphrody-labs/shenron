@@ -49,7 +49,7 @@ par Infra avant installation.
 
 ## Mesures
 
-Base, mesurée (journaux GitHub des runs réussis du 2026-11-01/02 sur `aphrody-vps-shenron`,
+Base, mesurée (journaux GitHub des runs réussis du 2026-11-01/02 sur le runner de build,
 journaux de Prod du 2026-11-02/03) :
 
 | Cas                               | Avant                                                                                                                                                                             |
@@ -75,10 +75,10 @@ Cibles :
 ## Ce que le propriétaire approuve pour activer
 
 Secrets : aucun nouveau secret GitHub pour le chemin primaire. Le build reste sur Prod avec
-l'accès git Aphrody déjà configuré sur l'hôte. Le runner ne reçoit aucun secret de production ;
+l'accès git déjà configuré sur l'hôte. Le runner ne reçoit aucun secret de production ;
 les fichiers `.env` restent sur l'hôte.
 
-Changements Infra hors de ce dépôt, dans cet ordre :
+Changements à faire sur l'hôte, dans cet ordre :
 
 1. Installer `deploy/activation/activate.sh` en `/srv/shenron/bin/deploy-image.sh` (le lien
    `/root/deploy-shenron-image.sh` reste valable) et, à côté, `activation.env` produit par
