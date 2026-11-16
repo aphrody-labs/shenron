@@ -1,0 +1,23 @@
+{
+  "name": "@shenron/kit",
+  "version": "1.0.0",
+  "description": "Small shared helpers: JSON HTTP transport, filesystem locations, native inference binding.",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "exports": {
+    "./http": "./src/http.ts",
+    "./paths": "./src/paths.ts",
+    "./inference": "./src/inference.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "shenron": {
+    "runtime": {
+      "./http": "pure",
+      "./paths": "bun",
+      "./inference": "bun"
+    }
+  }
+}

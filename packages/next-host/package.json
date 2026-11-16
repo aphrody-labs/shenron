@@ -1,0 +1,13 @@
+{
+  "name": "@shenron/next-host",
+  "version": "1.0.0",
+  "description": "Next.js configuration and standalone helpers for the Bun host (Turbopack root, transpiled workspace sources, flattened standalone output).",
+  "private": true,
+  "license": "Apache-2.0",
+  "exports": {
+    ".": { "types": "./src/index.d.ts", "default": "./src/index.js" },
+    "./run": { "types": "./src/run.d.ts", "default": "./src/run.js" },
+    "./standalone": { "types": "./src/standalone.d.ts", "default": "./src/standalone.js" }
+  },
+  "peerDependencies": { "next": ">=16.0.0" }
+}

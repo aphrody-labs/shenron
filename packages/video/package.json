@@ -1,0 +1,28 @@
+{
+  "name": "@shenron/video",
+  "version": "1.0.0",
+  "description": "Browser HLS playback, the HLS decoder assets and the Crunchyroll client used by the Shenron site and ops scripts.",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "exports": {
+    "./hls": "./src/hls.ts",
+    "./playback": "./src/playback.ts",
+    "./crunchyroll": "./src/crunchyroll.ts",
+    "./crunchyroll/api": "./src/crunchyroll-api.ts"
+  },
+  "dependencies": {
+    "hls.js": "1.7.4"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "shenron": {
+    "runtime": {
+      "./hls": "react",
+      "./playback": "react",
+      "./crunchyroll": "server",
+      "./crunchyroll/api": "server"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "name": "@shenron/m3-ai",
+  "version": "1.0.0",
+  "description": "Material Design 3 agent-interaction components (tool calls, markdown, chat composer, workers, tasks): the SpaceUI (@spacedrive/ai) set rebuilt on @shenron/m3-primitives.",
+  "keywords": [
+    "material-3",
+    "md3",
+    "react",
+    "spaceui",
+    "tailwind"
+  ],
+  "license": "Apache-2.0 AND MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./src/index.ts",
+  "module": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "bun": "./src/index.ts",
+      "import": "./src/index.ts",
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "motion": "^13.4.4",
+    "react-markdown": "^10.1.0",
+    "rehype-raw": "^7.0.0",
+    "remark-gfm": "^4.0.1",
+    "@shenron/m3-motion": "workspace:*",
+    "@shenron/m3-primitives": "workspace:*"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-dom": ">=18.0.0",
+    "tailwindcss": ">=4.1.0"
+  },
+  "engines": {
+    "bun": ">=1.4.3"
+  },
+  "private": true,
+  "shenron": {
+    "runtime": {
+      "*": "react"
+    }
+  }
+}

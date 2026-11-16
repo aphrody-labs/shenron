@@ -1,0 +1,25 @@
+{
+  "name": "@shenron/decision",
+  "version": "1.0.0",
+  "description": "Typed batched decisions (noul, choice, score) with confidence abstention, over the public TypeSafe AI SDK or a local provider.",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "bun test"
+  },
+  "dependencies": {
+    "@typesafe-ai/sdk": "0.6.0"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "shenron": {
+    "runtime": {
+      ".": "server"
+    }
+  }
+}
