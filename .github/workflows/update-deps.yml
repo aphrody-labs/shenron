@@ -41,7 +41,7 @@ jobs:
           bun scripts/plugin/sync.ts --check
           bun check
           bun run lint
-          bun fmt --check apps packages scripts
+          bun run format:check
           bun run test
           bun run test:scripts
 
