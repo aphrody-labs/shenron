@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Standalone crate (own Cargo.lock, excluded from the workspace): builds in seconds, and the
-# HTTP API (docs/decisions/0005-tv-video-service.md) is reusable by sibling products.
+# HTTP API (docs/decisions/0006-tv-video-service.md) is reusable by sibling products.
 [package]
 name = "shenron-tv"
 description = "tv.: video library, yt-dlp ingest, FFmpeg HLS ladder and web player over a stable HTTP API."
