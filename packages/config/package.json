@@ -68,8 +68,10 @@
     "typecheck": "bun check --project tsconfig.json"
   },
   "dependencies": {
-    "@shenron/kit": "workspace:*",
     "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@shenron/kit": "workspace:*"
   },
   "engines": {
     "bun": ">=1.4.3"

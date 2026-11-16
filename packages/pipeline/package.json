@@ -132,6 +132,7 @@
       "./shenron/native-commands": "bun",
       "./re-wasm-web": "pure",
       "./runtime/python": "bun",
+      "./yolo-web": "bun",
       "./ai/canon-judgment": "pure",
       "./ai/jev-provider": "bun",
       "./ai/vector-reader": "bun",

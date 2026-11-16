@@ -1,7 +1,7 @@
 {
   "name": "@shenron/compression",
   "version": "1.4.7",
-  "private": false,
+  "private": true,
   "description": "Sovereign ultra-fast compression, decompression, and asset conversion suite for Bun v1.4.4+, WebGPU, and R2 CDN.",
   "homepage": "https://dragonballfr.com",
   "license": "Apache-2.0",
@@ -20,10 +20,6 @@
     "./texture": "./src/texture-converter.ts",
     "./mesh": "./src/mesh-optimizer.ts",
     "./pak": "./src/pak-extractor.ts"
-  },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
   },
   "scripts": {
     "typecheck": "bun check --project tsconfig.json",

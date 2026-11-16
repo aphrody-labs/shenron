@@ -275,8 +275,10 @@
       "name": "@shenron/config",
       "version": "1.4.7",
       "dependencies": {
-        "@shenron/kit": "workspace:*",
         "zod": "catalog:",
+      },
+      "devDependencies": {
+        "@shenron/kit": "workspace:*",
       },
     },
     "packages/crunchyroll": {

@@ -1,7 +1,7 @@
 {
   "name": "@shenron/remotion",
   "version": "1.4.7",
-  "private": false,
+  "private": true,
   "description": "Shenron's vendorized, zero-overhead Remotion composition and timeline engine, optimized for Bun and streaming video.",
   "homepage": "https://dragonballfr.com",
   "license": "Apache-2.0",
@@ -17,10 +17,6 @@
     "./waveform": "./src/waveform.ts",
     "./subtitles": "./src/subtitles.ts"
   },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
   "scripts": {
     "typecheck": "bun check --project tsconfig.json",
     "test": "bun test"
@@ -29,5 +25,13 @@
   "devDependencies": {
     "@types/bun": "catalog:",
     "@types/react": "catalog:"
+  },
+  "shenron": {
+    "runtime": {
+      ".": "react",
+      "./timeline": "pure",
+      "./waveform": "pure",
+      "./subtitles": "pure"
+    }
   }
 }

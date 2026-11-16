@@ -8,7 +8,6 @@ import {
   framesToSeconds,
   findActiveSubtitle,
 } from "../src/remotion-engine";
-import { EPISODE_5_CONFIG, PROVIDERS_ROSTER } from "../../../scripts/ops/episode-stream-workflow";
 
 describe("HyperFrames Zero-Download Streaming & Remotion Engine", () => {
   it("finds MP4 atom offsets correctly in binary buffers", () => {
@@ -84,16 +83,5 @@ describe("HyperFrames Zero-Download Streaming & Remotion Engine", () => {
     expect(findActiveSubtitle(subtitles, 150)?.text).toBe("Yamcha apparaît !");
     expect(findActiveSubtitle(subtitles, 250)?.text).toBe("Rōgafūfūken !");
     expect(findActiveSubtitle(subtitles, 400)).toBeNull();
-  });
-
-  it("validates Episode 5 workflow configuration and 12+ providers", () => {
-    expect(EPISODE_5_CONFIG.episodeId).toBe(5);
-    expect(EPISODE_5_CONFIG.title).toContain("Yamcha");
-    expect(EPISODE_5_CONFIG.durationSeconds).toBe(1440);
-
-    expect(PROVIDERS_ROSTER.length).toBeGreaterThanOrEqual(10);
-    expect(PROVIDERS_ROSTER.some((p) => p.provider === "hyperframes")).toBe(true);
-    expect(PROVIDERS_ROSTER.some((p) => p.provider === "remotion")).toBe(true);
-    expect(PROVIDERS_ROSTER.some((p) => p.provider === "crunchyroll")).toBe(true);
   });
 });

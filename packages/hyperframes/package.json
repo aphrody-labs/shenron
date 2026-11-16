@@ -1,7 +1,7 @@
 {
   "name": "@shenron/hyperframes",
   "version": "1.4.7",
-  "private": false,
+  "private": true,
   "description": "Shenron's vendorized HyperFrames engine: zero-download byte-range streaming, ISOBMFF atom parsing, and on-demand frame decoding.",
   "homepage": "https://dragonballfr.com",
   "license": "Apache-2.0",
@@ -17,10 +17,6 @@
     "./decoder": "./src/decoder.ts",
     "./dragonball": "./src/dragonball.ts"
   },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
   "scripts": {
     "typecheck": "bun check --project tsconfig.json",
     "test": "bun test"
@@ -28,5 +24,13 @@
   "dependencies": {},
   "devDependencies": {
     "@types/bun": "catalog:"
+  },
+  "shenron": {
+    "runtime": {
+      ".": "pure",
+      "./stream": "pure",
+      "./decoder": "pure",
+      "./dragonball": "pure"
+    }
   }
 }

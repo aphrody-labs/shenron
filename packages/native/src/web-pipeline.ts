@@ -90,13 +90,20 @@ interface McpServerConfig {
   headers?: Record<string, string>;
 }
 
-const resolveEnv = (value: string) =>
-  value.startsWith("$") ? (process.env[value.slice(1)] ?? "") : value;
+interface McpResult<T> {
+  server: string;
+  tool: string;
+  result: T;
+}
+
+function resolveEnv(value: string): string {
+  return value.startsWith("$") ? (process.env[value.slice(1)] ?? "") : value;
+}
 
 export async function mcpTool<T = unknown>(
   request: McpInvocation,
   options: WebPipelineOptions = {},
-): Promise<{ server: string; tool: string; result: T }> {
+): Promise<McpResult<T>> {
   if (
     !request.server ||
     !request.tool ||
@@ -112,14 +119,18 @@ export async function mcpTool<T = unknown>(
     mcpServers?: Record<string, McpServerConfig>;
   };
   const server = config.mcpServers?.[request.server];
-  if (!server?.url) throw new Error(`MCP server ${request.server} has no HTTP url (stdio is refused)`);
+  if (!server?.url)
+    throw new Error(`MCP server ${request.server} has no HTTP url (stdio is refused)`);
   const headers = Object.fromEntries(
     Object.entries(server.headers ?? {}).map(([k, v]) => [k, resolveEnv(v)]),
   );
   const client = new Client({ name: "shenron", version: "1.0.0" });
-  await client.connect(new StreamableHTTPClientTransport(new URL(server.url), { requestInit: { headers } }), {
-    signal,
-  });
+  await client.connect(
+    new StreamableHTTPClientTransport(new URL(server.url), { requestInit: { headers } }),
+    {
+      signal,
+    },
+  );
   try {
     const result = await client.callTool(
       { name: request.tool, arguments: request.arguments },

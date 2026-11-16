@@ -59,7 +59,9 @@
       "./crunchyroll-mapping": "pure",
       "./episode-playback": "pure",
       "./video-download": "pure",
-      "./r2-sync": "pure"
+      "./r2-sync": "pure",
+      "./hyperframes-stream": "pure",
+      "./remotion-engine": "pure"
     }
   }
 }

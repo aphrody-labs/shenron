@@ -75,7 +75,8 @@ const FFI_RULES: ReadonlySet<string> = new Set(["bun-ffi", "dlopen"]);
 const ALLOWED_EDGES: Readonly<
   Record<string, { runtime: readonly string[]; dev: readonly string[] }>
 > = {
-  "@shenron/config": { runtime: [], dev: [] },
+  // Leaf; its path tests exercise the kit locations.
+  "@shenron/config": { runtime: [], dev: ["@shenron/kit"] },
   "@shenron/db": { runtime: ["@shenron/config"], dev: [] },
   "@shenron/auth": { runtime: ["@shenron/config"], dev: ["@shenron/db"] },
   // Private DBXV2 access: reads the private database through the db subpath only (never public).
@@ -86,6 +87,7 @@ const ALLOWED_EDGES: Readonly<
       "@shenron/config",
       "@shenron/db",
       "@shenron/auth",
+      "@shenron/kit",
       "@shenron/lexicon",
       "@shenron/pipeline",
     ],
@@ -94,8 +96,17 @@ const ALLOWED_EDGES: Readonly<
   // The UI layer hosts the Koharu editor (protocol, canvas), the studio (config/admin) and the
   // Koharu export of the pipeline; none of them depends back on @shenron/ui.
   "@shenron/ui": {
-    runtime: ["@shenron/config", "@shenron/koharu", "@shenron/pipeline"],
-    dev: ["@shenron/config"],
+    runtime: [
+      "@shenron/config",
+      "@shenron/koharu",
+      "@shenron/m3-ai",
+      "@shenron/m3-primitives",
+      "@shenron/m3-reader",
+      "@shenron/m3-theme",
+      "@shenron/m3-tokens",
+      "@shenron/pipeline",
+    ],
+    dev: ["@shenron/config", "@shenron/kit", "@shenron/test-dom"],
   },
 
   // Discord activity rules and protocol: pure, reads only the lexicon.
@@ -105,13 +116,19 @@ const ALLOWED_EDGES: Readonly<
   "@shenron/koharu": { runtime: [], dev: [] },
   // The one ja/fr/en lexicon (data embedded, no I/O): a leaf every layer may read.
   "@shenron/lexicon": { runtime: [], dev: [] },
-  "@shenron/media": { runtime: [], dev: [] },
+  // Video engines (filmcraft, hyperframes, remotion) and the kit HTTP transport.
+  "@shenron/media": {
+    runtime: ["@shenron/filmcraft", "@shenron/hyperframes", "@shenron/kit", "@shenron/remotion"],
+    dev: [],
+  },
   "@shenron/native": { runtime: [], dev: [] },
   // Compute clients and the editorial pipeline; never @shenron/api, @shenron/auth or @shenron/ui.
   "@shenron/pipeline": {
     runtime: [
       "@shenron/config",
       "@shenron/db",
+      "@shenron/decision",
+      "@shenron/kit",
       "@shenron/koharu",
       "@shenron/lexicon",
       "@shenron/media",
@@ -126,18 +143,12 @@ const EDGE_SUBPATHS: Readonly<Record<string, Readonly<Record<string, readonly st
   "@shenron/dbxv2": { "@shenron/db": ["@shenron/db/dbxv2"] },
   // Chat engine doctrine only (§4.1): personas and the agent home, never the pipeline runtime.
   "@shenron/api": {
-    "@shenron/pipeline": [
-      "@shenron/pipeline/ai/prompts",
-      "@shenron/pipeline/agent-home",
-    ],
+    "@shenron/pipeline": ["@shenron/pipeline/ai/prompts", "@shenron/pipeline/agent-home"],
   },
   "@shenron/ui": {
     // The editor speaks the generated protocol and draws on the wasm canvas; the koharu-sdk
     // transport (`./native`, class bun) stays with the pipeline.
-    "@shenron/koharu": [
-      "@shenron/koharu/protocol",
-      "@shenron/koharu/canvas",
-    ],
+    "@shenron/koharu": ["@shenron/koharu/protocol", "@shenron/koharu/canvas"],
     // Koharu export panel only.
     "@shenron/pipeline": ["@shenron/pipeline/koharu"],
   },
