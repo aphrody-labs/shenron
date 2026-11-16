@@ -135,14 +135,14 @@ reqwest = { version = "0.13.5", features = [
   "socks",
   "multipart",
 ], default-features = false }
-rmcp = { version = "=3.5.0", features = [
+rmcp = { version = "3.10.0", features = [
   "server",
   "transport-io",
   "transport-streamable-http-server",
   "macros",
   "schemars",
 ] }
-rusqlite = { version = "0.40", features = ["bundled"] }
+rusqlite = { version = "0.43", features = ["bundled"] }
 rustls = { version = "0.23", default-features = false, features = ["ring", "std", "tls12"] }
 schemars = { version = "1.2.2", features = ["derive", "chrono04", "indexmap2", "uuid1"] }
 serde = { version = "1.0.229", features = ["derive", "std"], default-features = false }

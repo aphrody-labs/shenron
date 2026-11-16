@@ -12,7 +12,15 @@ targets = ["x86_64-unknown-linux-gnu", "x86_64-pc-windows-msvc", "wasm32-unknown
 # RustSec database. An accepted advisory goes in `ignore` with its id and the reason.
 yanked = "deny"
 unmaintained = "workspace"
-ignore = []
+ignore = [
+  # zip 4.6 reaches the desktop only through tauri-plugin-updater (tauri-apps/plugins-workspace,
+  # Tauri 3 pin), which extracts the app's own update archive after its minisign signature is
+  # verified: no attacker-controlled archive is extracted. Dropped when the v3 updater moves to zip 9.
+  { id = "RUSTSEC-2026-0367", reason = "signed updater archive only (tauri-plugin-updater)" },
+  { id = "RUSTSEC-2026-0368", reason = "signed updater archive only (tauri-plugin-updater)" },
+  { id = "RUSTSEC-2026-0369", reason = "signed updater archive only (tauri-plugin-updater)" },
+  { id = "RUSTSEC-2026-0429", reason = "signed updater archive only (tauri-plugin-updater)" },
+]
 
 [licenses]
 # Shenron is Apache-2.0, the upstream Koharu crates are MIT OR Apache-2.0: only permissive

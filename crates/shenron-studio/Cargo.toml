@@ -3,6 +3,7 @@
 name = "shenron-studio"
 description = "Tauri commands of the Shenron studio: health, RAG, training, local corpus, local models and the public Shenron chat."
 version.workspace = true
+publish = false
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true

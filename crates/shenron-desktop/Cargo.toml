@@ -3,6 +3,7 @@
 name = "shenron-desktop"
 description = "Shenron Studio (Tauri 3), the only Shenron desktop app: the site, the manga translation editor (koharu-library engine in process), the studio and administration in one native window, served locally by the shenron-server sidecar."
 version.workspace = true
+publish = false
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
