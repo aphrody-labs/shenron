@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 //! # `shenron-re`
 //!
-//! Thin façade over [`aphrody_re::game`] keeping Shenron's C ABI (`ffi`),
-//! WebAssembly entrypoints (`wasm`), and CLI (`bin/shenron-re`) backed by the
-//! deduplicated `aphrody-re` core (`C:\aphrody\crates\re`).
+//! Dragon Ball Xenoverse 2 reverse engineering: binary formats, CRIWARE CPK archives, live memory
+//! inspection and game catalogue (`game`), with Shenron's C ABI (`ffi`), WebAssembly entrypoints
+//! (`wasm`) and CLI (`bin/shenron-re`).
 
-pub use aphrody_re::game::{
-    catalog, error, formats, fs, inventory, live, steam, text, unified, world,
-};
+pub mod game;
+pub use game::{catalog, error, formats, fs, inventory, live, steam, text, unified, world};
 
 pub mod ffi;
 #[cfg(any(feature = "wasm", target_arch = "wasm32", test))]
