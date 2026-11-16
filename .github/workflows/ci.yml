@@ -83,7 +83,7 @@ jobs:
         run: bun check
 
       - name: Native lint
-        run: bun lint -c .oxlintrc.json apps packages scripts
+        run: bun run lint
 
       - name: Native format check
         run: bun run format:check
