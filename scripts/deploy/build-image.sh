@@ -14,7 +14,7 @@
 #                         (default: dist/vfs/shenron-vfs.public.sqlite already in the worktree)
 #   SHENRON_CONTAINER     docker | podman (default: whichever is installed, docker first)
 #   SHENRON_IMAGE         image name (default: localhost/shenron)
-#   SHENRON_COMPILE_BUN   Bun used to compile the release binaries, must be >= 1.4.5 (default: bun-1.4.6 if present, else bun on PATH)
+#   SHENRON_COMPILE_BUN   Bun used to compile the release binaries, must be >= 1.4.4 (default: bun on PATH)
 #   SHENRON_WBG_DIR       directory of the wasm-bindgen CLI pinned by Cargo.lock (default: $HOME/build/tools/wbg-<version>/bin)
 #   SHENRON_CARGO_JOBS    Cargo jobs (default: all CPUs)
 #   SHENRON_SITE_BUILD_CPUS, SHENRON_SITE_BUILD_MIN_GIB, SHENRON_PAYLOAD_ZSTD_LEVEL,
@@ -31,21 +31,15 @@ IMAGE=${SHENRON_IMAGE:-localhost/shenron}
 ENGINE=${SHENRON_CONTAINER:-$(command -v docker >/dev/null 2>&1 && echo docker || echo podman)}
 command -v "$ENGINE" >/dev/null 2>&1 || { echo "No container engine: install docker or podman" >&2; exit 1; }
 if [ -z "${SHENRON_COMPILE_BUN:-}" ]; then
-  if [ -x "$HOME/build/tools/bun-1.4.6/bin/bun" ]; then
-    SHENRON_COMPILE_BUN="$HOME/build/tools/bun-1.4.6/bin/bun"
-  elif command -v bun-1.4.6 >/dev/null 2>&1; then
-    SHENRON_COMPILE_BUN="$(command -v bun-1.4.6)"
-  else
-    SHENRON_COMPILE_BUN="$(command -v bun)"
-  fi
+  SHENRON_COMPILE_BUN="$(command -v bun)"
 fi
 export SHENRON_COMPILE_BUN
 case "$("$SHENRON_COMPILE_BUN" --version)" in
   *debug*) echo "Refusing a debug runtime for production compilation" >&2; exit 1 ;;
 esac
-# Fleet Bun 1.4.5-canary (6db952080) compiles a server that re-spawns itself with BUN_BE_BUN=1 and serves
-# the child, like 1.4.6-canary fd9d7a224 (checked on fr1, plain and bytecode); older Bun is refused.
-MIN_COMPILE_BUN=1.4.5
+# Official Bun >= 1.4.4 compiles a server that re-spawns itself with BUN_BE_BUN=1 and serves
+# the child; older Bun is refused.
+MIN_COMPILE_BUN=1.4.4
 COMPILE_BUN_VERSION=$("$SHENRON_COMPILE_BUN" --version)
 if [ "$(printf '%s
 %s
