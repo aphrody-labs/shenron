@@ -1,6 +1,7 @@
 import "./setup"; // must be first
 import { createCanvas } from "@napi-rs/canvas";
 import { describe, expect, test } from "bun:test";
+import "~/lib/canvas-kit"; // registers the card fonts: widths depend on them, not on a sibling test having loaded them
 import { encodePngRgba } from "~/render/png";
 import {
   ellipsize,
