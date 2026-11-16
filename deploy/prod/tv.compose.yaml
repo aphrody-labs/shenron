@@ -24,7 +24,7 @@ services:
       SHENRON_TV_THREADS: "2"
       SHENRON_TV_JOBS: "1"
     tmpfs:
-      - /tmp:rw,nosuid,size=2g
+      - /tmp:rw,nosuid,exec,size=2g
       - /home/tv:rw,nosuid,size=64m,uid=10001,gid=10001
     volumes:
       - /srv/shenron/data/tv:/var/lib/shenron-tv

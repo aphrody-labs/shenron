@@ -1,0 +1,33 @@
+GET /api/v1/videos -> first ready id 01a1e319-80e4-70a5-ba43-10109b61bb0e
+{"videos":[{"created_at":1794811461,"duration_secs":52.209,"error":null,"id":"01a1e319-80e4-70a5-ba43-10109b61bb0e","playlist":"/hls/01a1e319-80e4-70a5-ba43-10109b61bb0e/master.m3u8","poster":"/hls/01a1e319-80e4-70a5-ba43-10109b61bb0e/poster.jpg","renditions":[720,480,360],"source_url":"https://download.blender.org/durian/trailer/sintel_trailer-720p.mp4","status":"ready","title":"Sintel (trailer, CC-BY Blender Founda
+
+GET /hls/01a1e319-80e4-70a5-ba43-10109b61bb0e/master.m3u8
+#EXTM3U
+#EXT-X-VERSION:6
+#EXT-X-STREAM-INF:BANDWIDTH=3220800,RESOLUTION=1280x720,CODECS="avc1.64001f,mp4a.40.2"
+v0.m3u8
+
+#EXT-X-STREAM-INF:BANDWIDTH=1680800,RESOLUTION=854x480,CODECS="avc1.64001e,mp4a.40.2"
+v1.m3u8
+
+#EXT-X-STREAM-INF:BANDWIDTH=1020800,RESOLUTION=640x360,CODECS="avc1.64001e,mp4a.40.2"
+v2.m3u8
+
+GET /hls/01a1e319-80e4-70a5-ba43-10109b61bb0e/v0.m3u8 (head)
+#EXTM3U
+#EXT-X-VERSION:6
+#EXT-X-TARGETDURATION:6
+#EXT-X-MEDIA-SEQUENCE:0
+#EXT-X-PLAYLIST-TYPE:VOD
+#EXT-X-INDEPENDENT-SEGMENTS
+#EXTINF:6.000000,
+v0_00000.ts
+#EXTINF:6.000000,
+segment v0_00000.ts: HTTP 200 video/mp2t 696728 bytes
+h264,1280,720
+aac
+
+h264,1280,720
+aac
+player page /: HTTP 200 text/html; charset=utf-8
+ingest without token: HTTP 401
