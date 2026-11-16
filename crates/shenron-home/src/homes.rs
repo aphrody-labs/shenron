@@ -306,7 +306,7 @@ mod tests {
         }
         let root = HomesRoot::resolve_with(state.path(), None, None);
         let names: Vec<_> = root.list().unwrap().into_iter().map(|h| (h.name, h.legacy)).collect();
-        assert_eq!(names, [("shenron".to_string(), false), ("dbfr".to_string(), true)]);
+        assert_eq!(names, [("dbfr".to_string(), true), ("shenron".to_string(), false)]);
         assert!(root.new_home_path("..").is_err());
     }
 }

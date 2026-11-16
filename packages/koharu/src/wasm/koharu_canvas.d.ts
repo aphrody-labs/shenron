@@ -70,21 +70,21 @@ export interface InitOutput {
     readonly webcanvas_setView: (a: number, b: number, c: number, d: number) => [number, number];
     readonly webcanvas_stageManifest: (a: number, b: any) => [number, number, number];
     readonly webcanvas_updateTransform: (a: number, b: number, c: any) => [number, number];
-    readonly wasm_bindgen_ea7cac6b7005a86f___convert__closures_____invoke___f64______true_: (a: number, b: number, c: number) => void;
-    readonly wasm_bindgen_ea7cac6b7005a86f___convert__closures_____invoke___js_sys_69739cf680d85524___Function_fn_wasm_bindgen_ea7cac6b7005a86f___JsValue_____wasm_bindgen_ea7cac6b7005a86f___sys__Undefined___js_sys_69739cf680d85524___Function_fn_wasm_bindgen_ea7cac6b7005a86f___JsValue_____wasm_bindgen_ea7cac6b7005a86f___sys__Undefined_______true_: (a: number, b: number, c: any, d: any) => void;
-    readonly wasm_bindgen_ea7cac6b7005a86f___convert__closures_____invoke___wasm_bindgen_ea7cac6b7005a86f___JsValue__core_37ee0ce0c4cd57d5___result__Result_____wasm_bindgen_ea7cac6b7005a86f___JsError___true_: (a: number, b: number, c: any) => [number, number];
-    readonly wasm_bindgen_ea7cac6b7005a86f___convert__closures_____invoke___wasm_bindgen_ea7cac6b7005a86f___sys__JsNullable_wgpu_cc8089cb1ec2d457___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_37ee0ce0c4cd57d5___result__Result_____wasm_bindgen_ea7cac6b7005a86f___JsError___true_: (a: number, b: number, c: any) => [number, number];
-    readonly wasm_bindgen_ea7cac6b7005a86f___convert__closures_____invoke___wasm_bindgen_ea7cac6b7005a86f___sys__JsNullable_wgpu_cc8089cb1ec2d457___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_37ee0ce0c4cd57d5___result__Result_____wasm_bindgen_ea7cac6b7005a86f___JsError___true__29: (a: number, b: number, c: any) => [number, number];
-    readonly wasm_bindgen_ea7cac6b7005a86f___convert__closures_____invoke___wasm_bindgen_ea7cac6b7005a86f___sys__JsNullable_wgpu_cc8089cb1ec2d457___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_37ee0ce0c4cd57d5___result__Result_____wasm_bindgen_ea7cac6b7005a86f___JsError___true__30: (a: number, b: number, c: any) => [number, number];
-    readonly wasm_bindgen_ea7cac6b7005a86f___convert__closures_____invoke___wgpu_cc8089cb1ec2d457___backend__webgpu__webgpu_sys__gen_GpuDeviceLostInfo__GpuDeviceLostInfo______true_: (a: number, b: number, c: any) => void;
+    readonly wasm_bindgen_645fb917136effa5___convert__closures_____invoke___f64______true_: (a: number, b: number, c: number) => void;
+    readonly wasm_bindgen_645fb917136effa5___convert__closures_____invoke___js_sys_f7d79e4a795fd87c___Function_fn_wasm_bindgen_645fb917136effa5___JsValue_____wasm_bindgen_645fb917136effa5___sys__Undefined___js_sys_f7d79e4a795fd87c___Function_fn_wasm_bindgen_645fb917136effa5___JsValue_____wasm_bindgen_645fb917136effa5___sys__Undefined_______true_: (a: number, b: number, c: any, d: any) => void;
+    readonly wasm_bindgen_645fb917136effa5___convert__closures_____invoke___wasm_bindgen_645fb917136effa5___JsValue__core_37ee0ce0c4cd57d5___result__Result_____wasm_bindgen_645fb917136effa5___JsError___true_: (a: number, b: number, c: any) => [number, number];
+    readonly wasm_bindgen_645fb917136effa5___convert__closures_____invoke___wasm_bindgen_645fb917136effa5___sys__JsNullable_wgpu_ab4bf242736e821d___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_37ee0ce0c4cd57d5___result__Result_____wasm_bindgen_645fb917136effa5___JsError___true_: (a: number, b: number, c: any) => [number, number];
+    readonly wasm_bindgen_645fb917136effa5___convert__closures_____invoke___wasm_bindgen_645fb917136effa5___sys__JsNullable_wgpu_ab4bf242736e821d___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_37ee0ce0c4cd57d5___result__Result_____wasm_bindgen_645fb917136effa5___JsError___true__29: (a: number, b: number, c: any) => [number, number];
+    readonly wasm_bindgen_645fb917136effa5___convert__closures_____invoke___wasm_bindgen_645fb917136effa5___sys__JsNullable_wgpu_ab4bf242736e821d___backend__webgpu__webgpu_sys__gen_GpuError__GpuError___core_37ee0ce0c4cd57d5___result__Result_____wasm_bindgen_645fb917136effa5___JsError___true__30: (a: number, b: number, c: any) => [number, number];
+    readonly wasm_bindgen_645fb917136effa5___convert__closures_____invoke___wgpu_ab4bf242736e821d___backend__webgpu__webgpu_sys__gen_GpuDeviceLostInfo__GpuDeviceLostInfo______true_: (a: number, b: number, c: any) => void;
     readonly __wbindgen_malloc: (a: number, b: number) => number;
     readonly __wbindgen_realloc: (a: number, b: number, c: number, d: number) => number;
+    readonly __wbindgen_free: (a: number, b: number, c: number) => void;
     readonly __wbindgen_exn_store: (a: number) => void;
     readonly __externref_table_alloc: () => number;
     readonly __wbindgen_externrefs: WebAssembly.Table;
     readonly __wbindgen_destroy_closure: (a: number, b: number) => void;
     readonly __externref_table_dealloc: (a: number) => void;
-    readonly __wbindgen_free: (a: number, b: number, c: number) => void;
     readonly __wbindgen_start: () => void;
 }
 
