@@ -6,7 +6,7 @@
 use std::path::Path;
 
 use anyhow::{Context, Result, bail};
-use aphrody_torch::{Device, Kind, Tensor};
+use koharu_torch::{Device, Kind, Tensor};
 use image::{DynamicImage, GenericImageView, GrayImage, Luma};
 use imageproc::contours::find_contours_with_threshold;
 use serde::{Deserialize, Serialize};

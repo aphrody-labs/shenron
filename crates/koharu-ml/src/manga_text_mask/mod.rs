@@ -2,7 +2,7 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result};
-use aphrody_torch::Device;
+use koharu_torch::Device;
 use image::DynamicImage;
 
 use crate::backend::TryIntoDevice;
@@ -67,7 +67,7 @@ impl MangaTextMaskGenerator {
         vertical_flip: bool,
         max_side: Option<u32>,
     ) -> Result<MangaTextMask> {
-        aphrody_torch::no_grad(|| {
+        koharu_torch::no_grad(|| {
             self.processor.call(&self.model, image, horizontal_flip, vertical_flip, max_side)
         })
     }

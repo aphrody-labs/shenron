@@ -42,8 +42,8 @@ confidence-threshold = 0.9
 ignore = true
 
 [bans]
-# Versions come from Aphrody's workspace (scripts/build/rust/workspace-deps.ts): duplicates in the
-# Tauri, wgpu and ML trees are deduplicated there, not here.
+# Duplicates in the Tauri, wgpu and ML trees come from upstream pins; they are tracked with
+# `cargo tree -d`, not denied here.
 multiple-versions = "allow"
 wildcards = "deny"
 allow-wildcard-paths = true
@@ -52,9 +52,13 @@ allow-wildcard-paths = true
 unknown-registry = "deny"
 unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
-# Aphrody (pinned by `rev` in [workspace.dependencies]) and the upstream hf-hub revision of
-# [patch.crates-io] in Cargo.toml.
-allow-git = ["https://github.com/huggingface/hf-hub"]
-
-[sources.allow-org]
-github = ["aphrody-labs"]
+# Git sources, each pinned by `rev` in [workspace.dependencies]: the Tauri tree, tauri-specta, the
+# Koharu engine crates, and the hf-hub revision those crates depend on.
+allow-git = [
+  "https://github.com/tauri-apps/tauri",
+  "https://github.com/tauri-apps/plugins-workspace",
+  "https://github.com/tauri-apps/tauri-specta",
+  "https://github.com/koharu-rs/koharu",
+  "https://github.com/huggingface/hf-hub",
+  "https://github.com/storytold/photocraft",
+]

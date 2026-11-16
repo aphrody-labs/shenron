@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use aphrody_ml_runtime::HuggingFaceFile;
+use koharu_runtime::HuggingFaceFile;
 
 use crate::{ModelGeneration, ModelSelection, QuantizationDefinition};
 

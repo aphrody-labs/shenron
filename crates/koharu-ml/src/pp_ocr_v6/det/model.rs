@@ -6,7 +6,7 @@
 use std::path::Path;
 
 use anyhow::Result;
-use aphrody_torch::{
+use koharu_torch::{
     Device, Tensor,
     nn::{self, Module, ModuleT},
 };
@@ -404,7 +404,7 @@ impl Head {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use aphrody_ml_runtime::{Feature, Runtime};
+    use koharu_runtime::{Feature, Runtime};
 
     #[tokio::test]
     #[ignore = "downloads and loads the LibTorch runtime"]

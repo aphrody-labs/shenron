@@ -14,7 +14,7 @@ use std::{
 };
 
 use anyhow::{Context, Result, bail, ensure};
-use aphrody_llama::{
+use koharu_llama::{
     context::{
         LlamaContext,
         params::{LlamaAttentionType, LlamaContextParams},

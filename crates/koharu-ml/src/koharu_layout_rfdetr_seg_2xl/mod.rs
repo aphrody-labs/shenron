@@ -10,7 +10,7 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result};
-use aphrody_torch::Device;
+use koharu_torch::Device;
 use image::DynamicImage;
 
 use crate::backend::TryIntoDevice;
@@ -64,7 +64,7 @@ impl KoharuLayoutRFDetrSeg2XL {
         image: &DynamicImage,
         thresholds: KoharuLayoutThresholds,
     ) -> Result<KoharuLayoutDetections> {
-        aphrody_torch::no_grad(|| {
+        koharu_torch::no_grad(|| {
             let pixel_values = self.processor.preprocess(image, self.device)?;
             let output = self.model.forward(&pixel_values);
             self.processor.postprocess(&output, image.width(), image.height(), thresholds)

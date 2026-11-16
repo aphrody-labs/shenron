@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Rust gates of the Cargo workspace (crates/*): rustfmt, clippy with warnings denied, nextest,
-# koharu-canvas on wasm32, the generated [workspace.dependencies] block and cargo-deny.
+# koharu-canvas on wasm32 and cargo-deny.
 #
 # Infra provisions the trusted factory's toolchain and read-only dependency access.
 # Only this repository's branches may execute on that host. Cargo compilation uses
@@ -105,10 +105,6 @@ jobs:
 
       - name: Fetch (Cargo.lock)
         run: cargo fetch --locked
-
-      # Reads Aphrody's workspace manifest from the git database Cargo just filled.
-      - name: Generated [workspace.dependencies] is up to date
-        run: bun scripts/build/rust/workspace-deps.ts --check
 
       - name: Clippy (cargo lint)
         run: bun scripts/build/rust/cargo.ts clippy --workspace --all-targets --locked -- -D warnings

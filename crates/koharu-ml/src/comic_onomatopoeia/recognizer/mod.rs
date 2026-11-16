@@ -5,7 +5,7 @@ mod processor;
 use std::path::Path;
 
 use anyhow::{Context, Result};
-use aphrody_torch::Device;
+use koharu_torch::Device;
 use image::DynamicImage;
 
 use crate::backend::TryIntoDevice;
@@ -45,7 +45,7 @@ impl ComicOnomatopoeiaRecognizer {
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<Recognition> {
-        aphrody_torch::no_grad(|| {
+        koharu_torch::no_grad(|| {
             let pixel_values = self.processor.preprocess(image, self.device)?;
             let logits = self.model.forward(&pixel_values);
             self.processor.postprocess(&logits)

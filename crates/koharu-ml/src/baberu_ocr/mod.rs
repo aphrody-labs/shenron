@@ -3,7 +3,7 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result, ensure};
-use aphrody_torch::Device;
+use koharu_torch::Device;
 use image::DynamicImage;
 
 use crate::backend::TryIntoDevice;
@@ -96,7 +96,7 @@ impl BaberuOcr {
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<String> {
-        aphrody_torch::no_grad(|| {
+        koharu_torch::no_grad(|| {
             let pixel_values = self.processor.preprocess(image)?;
             let token_ids = self.model.forward(
                 &pixel_values,

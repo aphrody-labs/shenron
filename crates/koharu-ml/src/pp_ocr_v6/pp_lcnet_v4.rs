@@ -3,7 +3,7 @@
 //! Original implementation:
 //! https://github.com/huggingface/transformers/blob/63f32a8782cb70da3365acab16f2b67947737985/src/transformers/models/pp_lcnet_v4/modeling_pp_lcnet_v4.py
 
-use aphrody_torch::{
+use koharu_torch::{
     Tensor,
     nn::{self, Module, ModuleT},
 };

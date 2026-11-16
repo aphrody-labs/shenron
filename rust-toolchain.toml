@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Stable toolchain shared with the maintained Aphrody workspaces.
+# Stable toolchain of the workspace.
 [toolchain]
 channel = "1.99.1"
 components = ["rustfmt", "clippy"]

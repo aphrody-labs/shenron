@@ -3,7 +3,7 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result};
-use aphrody_torch::Device;
+use koharu_torch::Device;
 use image::DynamicImage;
 
 use crate::backend::TryIntoDevice;
@@ -64,7 +64,7 @@ impl PPOCRV6MediumRec {
     }
 
     pub fn inference(&self, image: &DynamicImage) -> Result<TextRecognition> {
-        aphrody_torch::no_grad(|| {
+        koharu_torch::no_grad(|| {
             let pixel_values = self.processor.preprocess(image, self.device)?;
             let probabilities = self.model.forward(&pixel_values);
             self.processor.postprocess(&probabilities)
@@ -74,7 +74,7 @@ impl PPOCRV6MediumRec {
 
 #[cfg(test)]
 mod tests {
-    use aphrody_ml_runtime::{Feature, Runtime};
+    use koharu_runtime::{Feature, Runtime};
 
     use super::*;
 

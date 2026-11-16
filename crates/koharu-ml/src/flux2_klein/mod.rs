@@ -7,7 +7,7 @@ mod model;
 mod processor;
 
 use anyhow::{Context, Result, ensure};
-use aphrody_diffusion::{
+use koharu_diffusion::{
     GuidanceParams, ImageGenerationParams, SampleMethod, SampleParams, Scheduler,
 };
 use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};

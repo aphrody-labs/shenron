@@ -8,7 +8,7 @@
 use std::{collections::HashSet, fs, path::Path};
 
 use anyhow::{Result, bail};
-use aphrody_torch::{Device, Kind, Tensor};
+use koharu_torch::{Device, Kind, Tensor};
 use fast_image_resize::{FilterType, ResizeAlg, ResizeOptions, Resizer};
 use image::{DynamicImage, RgbImage};
 use serde::Deserialize;

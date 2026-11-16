@@ -7,7 +7,7 @@
 use std::path::Path;
 
 use anyhow::{Context, Result, bail, ensure};
-use aphrody_torch::{Device, Kind, Tensor};
+use koharu_torch::{Device, Kind, Tensor};
 use image::DynamicImage;
 use serde::{Deserialize, Serialize};
 use tokenizers::Tokenizer;

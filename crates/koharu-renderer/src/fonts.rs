@@ -7,7 +7,7 @@ use std::{
 };
 
 use anyhow::{Context, Result, bail};
-use aphrody_ml_runtime::HuggingFaceFile;
+use koharu_runtime::HuggingFaceFile;
 use fontique::{
     Attributes, Blob, Collection, CollectionOptions, FallbackKey, FontInfoOverride, FontStyle,
     GenericFamily, Language, QueryFamily, QueryFont, QueryStatus, Script, SourceCache,

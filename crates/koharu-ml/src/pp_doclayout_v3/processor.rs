@@ -6,7 +6,7 @@
 use std::cmp::Ordering;
 
 use anyhow::{Context, Result, bail};
-use aphrody_torch::{Device, IndexOp, Kind, Tensor};
+use koharu_torch::{Device, IndexOp, Kind, Tensor};
 use fast_image_resize::{ResizeAlg, ResizeOptions, Resizer};
 use image::{DynamicImage, GenericImageView, GrayImage, Luma};
 use imageproc::{

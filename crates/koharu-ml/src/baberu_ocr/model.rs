@@ -8,7 +8,7 @@
 use std::{collections::HashSet, path::Path};
 
 use anyhow::{Result, ensure};
-use aphrody_torch::{
+use koharu_torch::{
     Device, Kind, Tensor,
     nn::{self, Module},
 };

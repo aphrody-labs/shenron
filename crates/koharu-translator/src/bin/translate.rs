@@ -1,7 +1,7 @@
 use std::env;
 
 use anyhow::{Context, Result};
-use aphrody_ml_config::Config;
+use koharu_config::Config;
 use clap::Parser;
 use koharu_secrets::{ExposeSecret, SecretString};
 use koharu_translator::{

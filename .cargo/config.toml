@@ -32,7 +32,3 @@ CARGO_WORKSPACE_DIR = { value = "", relative = true }
 # target. An exported CFLAGS_x86_64_pc_windows_msvc wins.
 CFLAGS_x86_64_pc_windows_msvc = "-msse4.1"
 
-[net]
-# aphrody-labs/aphrody is private: fetch it with the git CLI so its credential helpers and
-# `url.<base>.insteadOf` rewrites (SSH locally, a token in CI) apply.
-git-fetch-with-cli = true

@@ -14,7 +14,7 @@ use std::{
 };
 
 use anyhow::{Context as _, Result, bail};
-use aphrody_ml_config::Config;
+use koharu_config::Config;
 use async_trait::async_trait;
 use image::{ExtendedColorType, ImageEncoder as _, codecs::png::PngEncoder};
 use koharu_ml::Device;
@@ -38,11 +38,11 @@ pub mod service;
 pub use editor::Editor;
 pub use service::Service;
 
-pub use aphrody_diffusion as diffusion;
-pub use aphrody_llama as llama;
-pub use aphrody_ml_config as config;
-pub use aphrody_ml_runtime as runtime;
-pub use aphrody_torch as torch;
+pub use koharu_diffusion as diffusion;
+pub use koharu_llama as llama;
+pub use koharu_config as config;
+pub use koharu_runtime as runtime;
+pub use koharu_torch as torch;
 pub use koharu_agent as agent;
 pub use koharu_desktop as desktop;
 pub use koharu_ml as ml;
