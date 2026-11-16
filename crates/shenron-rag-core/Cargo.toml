@@ -1,0 +1,22 @@
+[package]
+name = "shenron-rag-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Pure, wasm32-safe RAG core: source-aware chunkers (Rust, Markdown, structural, prose), rank fusion, MMR, vector helpers and the retrieval eval harness"
+license = "Apache-2.0"
+repository.workspace = true
+publish = false
+
+[dependencies]
+blake3 = { workspace = true }
+ndarray = "0.17.2"
+proc-macro2 = { version = "1.0.107", features = ["span-locations"] }
+regex = "1.11"
+serde = { workspace = true }
+serde_json = { workspace = true }
+syn = { version = "3.0.5", features = ["full", "extra-traits"] }
+thiserror = { workspace = true }
+
+[dev-dependencies]
+pretty_assertions = "1"
