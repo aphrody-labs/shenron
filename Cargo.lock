@@ -6995,6 +6995,24 @@ dependencies = [
 ]
 
 [[package]]
+name = "koharu-web"
+version = "1.4.5"
+dependencies = [
+ "anyhow",
+ "axum",
+ "bytes",
+ "clap",
+ "futures-util",
+ "koharu-library",
+ "koharu-pipeline",
+ "koharu-translator",
+ "serde",
+ "serde_json",
+ "tokio",
+ "uuid",
+]
+
+[[package]]
 name = "konst"
 version = "0.4.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"

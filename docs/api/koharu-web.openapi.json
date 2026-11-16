@@ -1,0 +1,25 @@
+{
+  "openapi": "3.1.0",
+  "info": { "title": "Koharu web", "version": "1.0.0", "description": "Manga page pipeline: detection, OCR, translation, inpainting, typesetting." },
+  "components": { "securitySchemes": { "bearer": { "type": "http", "scheme": "bearer" } } },
+  "security": [{ "bearer": [] }, {}],
+  "paths": {
+    "/healthz": { "get": { "responses": { "200": { "description": "ok" } } } },
+    "/api/v1/pages": { "post": {
+      "summary": "Submit one page (raw PNG, JPEG or WebP body)",
+      "requestBody": { "required": true, "content": { "image/png": {}, "image/jpeg": {}, "image/webp": {} } },
+      "responses": { "202": { "description": "accepted", "content": { "application/json": { "schema": { "type": "object", "required": ["id"], "properties": { "id": { "type": "string", "format": "uuid" } } } } } }, "400": { "description": "empty body" }, "401": { "description": "bad token" }, "413": { "description": "page too large" } } } },
+    "/api/v1/jobs/{id}": { "get": {
+      "summary": "Job status, stage timings and the typed page result",
+      "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string", "format": "uuid" } }],
+      "responses": { "200": { "description": "job", "content": { "application/json": { "schema": { "type": "object", "properties": {
+        "id": { "type": "string" }, "status": { "enum": ["queued", "running", "done", "failed"] }, "message": { "type": "string" },
+        "stages": { "type": "array", "items": { "type": "object", "properties": { "stage": { "type": "string" }, "model": { "type": "string" }, "state": { "type": "string" }, "seconds": { "type": ["number", "null"] } } } },
+        "seconds": { "type": ["number", "null"] },
+        "result": { "type": ["object", "null"], "properties": { "width": { "type": "number" }, "height": { "type": "number" }, "regions": { "type": "integer" },
+          "texts": { "type": "array", "items": { "type": "object", "properties": { "reading_order": { "type": ["integer", "null"] }, "source": { "type": ["string", "null"] }, "source_language": { "type": ["string", "null"] }, "translation": { "type": ["string", "null"] }, "target_language": { "type": ["string", "null"] }, "bounds": { "type": "array", "items": { "type": "number" }, "minItems": 4, "maxItems": 4 } } } } } },
+        "error": { "type": ["string", "null"] } } } } } }, "404": { "description": "unknown job" } } } },
+    "/api/v1/jobs/{id}/events": { "get": { "summary": "Server-sent events {status,message} until done or failed", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "text/event-stream" } } } },
+    "/api/v1/jobs/{id}/result.png": { "get": { "summary": "Typeset page", "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }], "responses": { "200": { "description": "image/png" }, "409": { "description": "not finished" } } } }
+  }
+}

@@ -1,0 +1,18 @@
+# Starts the Koharu service at boot (own project; the container also carries restart: unless-stopped).
+# Installed as /etc/systemd/system/koharu-stack.service on the production host.
+[Unit]
+Description=Koharu manga page service (docker compose)
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+WorkingDirectory=/srv/koharu
+ExecStart=/usr/bin/docker compose -f /srv/koharu/compose.yaml up -d --no-recreate
+ExecStop=/bin/true
+TimeoutStartSec=300
+
+[Install]
+WantedBy=multi-user.target

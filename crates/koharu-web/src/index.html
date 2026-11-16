@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Koharu translates a manga page: text detection, OCR, translation and typesetting.">
+<meta name="color-scheme" content="dark light">
+<title>Koharu: manga page translation</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23ff8a00'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#101114;--fg:#eceef2;--muted:#b4bac6;--line:#3a3f4b;--card:#1b1d23;--accent:#ffa733;font-family:system-ui,sans-serif;line-height:1.5}
+@media(prefers-color-scheme:light){:root{--bg:#fff;--fg:#14161a;--muted:#4a505c;--line:#b9bdc6;--card:#f1f2f5;--accent:#a35200}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg)}
+main{max-width:68rem;margin:0 auto;padding:1.5rem}
+h1{font-size:1.5rem;margin:0}
+.sub{margin:.25rem 0 1.5rem;color:var(--muted)}
+.drop{display:block;border:2px dashed var(--line);border-radius:.75rem;padding:2rem;text-align:center;cursor:pointer}
+.drop.over,.drop:focus-within,.drop:hover{border-color:var(--accent)}
+.drop input{position:absolute;inline-size:1px;block-size:1px;opacity:0}
+.drop:focus-within{outline:3px solid var(--accent);outline-offset:2px}
+#status{margin:1rem 0;color:var(--muted);min-block-size:1.5rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(18rem,1fr));gap:1rem}
+figure{margin:0}
+figcaption{color:var(--muted);font-size:.875rem;margin-block-end:.375rem}
+img{display:block;max-inline-size:100%;block-size:auto;border-radius:.5rem;background:var(--card)}
+table{border-collapse:collapse;inline-size:100%;margin-block-start:1.5rem;font-size:.9375rem}
+caption{text-align:start;font-weight:600;padding-block-end:.5rem}
+th,td{border-block-end:1px solid var(--line);padding:.375rem .5rem;text-align:start;vertical-align:top}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<header>
+<h1>Koharu</h1>
+<p class="sub">Translate a manga page: detection, OCR, translation and typesetting.</p>
+</header>
+<section aria-labelledby="up">
+<h2 id="up" class="sub" style="margin:0 0 .5rem;font-size:1rem">Page</h2>
+<label class="drop" id="drop"><input id="file" type="file" accept="image/png,image/jpeg,image/webp">Drop a PNG, JPEG or WebP page here, or choose a file</label>
+<p id="status" role="status" aria-live="polite"></p>
+</section>
+<section id="out" class="grid" aria-label="Result" hidden>
+<figure><figcaption>Original</figcaption><img id="src" alt="Original manga page" width="600" height="900"></figure>
+<figure><figcaption>Translated</figcaption><img id="res" alt="Translated manga page" width="600" height="900"></figure>
+</section>
+<table id="rows" hidden><caption>Recognized and translated text</caption><thead><tr><th scope="col">#</th><th scope="col">Source</th><th scope="col">Translation</th></tr></thead><tbody></tbody></table>
+</main>
+<script>
+const $=id=>document.getElementById(id),drop=$("drop"),file=$("file");
+const say=m=>{$("status").textContent=m};
+drop.addEventListener("dragover",e=>{e.preventDefault();drop.classList.add("over")});
+drop.addEventListener("dragleave",()=>drop.classList.remove("over"));
+drop.addEventListener("drop",e=>{e.preventDefault();drop.classList.remove("over");run(e.dataTransfer.files[0])});
+file.addEventListener("change",()=>run(file.files[0]));
+async function run(f){
+  if(!f)return;
+  $("out").hidden=true;$("rows").hidden=true;say("Uploading");
+  $("src").src=URL.createObjectURL(f);
+  const tk=localStorage.getItem("koharuToken"),h=tk?{authorization:"Bearer "+tk}:{};
+  const r=await fetch("api/v1/pages",{method:"POST",headers:{...h,"content-type":f.type},body:f});
+  if(!r.ok){say("Error: "+await r.text());return}
+  const {id}=await r.json();
+  let last="";
+  for(;;){
+    const j=await (await fetch("api/v1/jobs/"+id,{headers:h})).json();
+    if(j.message!==last){last=j.message;say(j.message)}
+    if(j.status==="failed")return;
+    if(j.status==="done"){
+      const img=await fetch("api/v1/jobs/"+id+"/result.png",{headers:h});
+      $("res").src=URL.createObjectURL(await img.blob());$("out").hidden=false;
+      const tb=$("rows").querySelector("tbody");tb.textContent="";
+      (j.result?.texts||[]).forEach((g,i)=>{
+        const tr=document.createElement("tr");
+        for(const x of [String(i+1),g.source??"",g.translation??""]){const td=document.createElement("td");td.textContent=x;tr.append(td)}
+        tb.append(tr)});
+      $("rows").hidden=false;return;
+    }
+    await new Promise(r=>setTimeout(r,1000));
+  }
+}
+</script>
+</body>
+</html>
