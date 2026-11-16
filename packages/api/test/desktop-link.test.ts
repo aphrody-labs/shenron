@@ -81,7 +81,7 @@ test("the actual Bun host issues state-bound localized codes through both mounti
     {
       HOME: dir,
       SHENRON_DATA_DIR: dir,
-      APHRODY_BIN: join(dir, "absent"),
+      SHENRON_BIN: join(dir, "absent"),
       SHENRON_CHAT_TOOLS: "0",
       BETTER_AUTH_SECRET: secret,
       SHENRON_CHAT_STORE: "off",

@@ -7,7 +7,7 @@
  * (`baseUrl`, `token`, `fetcher`), method signatures, thrown errors and
  * their messages, and `ocr` still asking for the `gemini-web` engine. Without
  * options, the address and token come from the single resolver
- * `@shenron/pipeline/ai/config` (`APHRODY_AI_HTTP_URL` / `APHRODY_AI_HTTP_TOKEN`, then
+ * `@shenron/pipeline/ai/config` (`SHENRON_AI_HTTP_URL` / `SHENRON_AI_HTTP_TOKEN`, then
  * their legacy aliases); there is no address default, a missing one throws an
  * error naming the variables. Every request is delegated to
  * {@link createAphrodyCompute}; `fetch` is resolved at call time unless a
@@ -299,7 +299,7 @@ export function createOpenAiChat(
 }
 
 /**
- * Direct chat function from the environment (`APHRODY_AI_CHAT_BASE_URL` or an alias),
+ * Direct chat function from the environment (`SHENRON_AI_CHAT_BASE_URL` or an alias),
  * or `null` when none is set. A malformed value throws an {@link AiConfigError}.
  */
 export function directChatFromEnv(

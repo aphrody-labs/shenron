@@ -65,7 +65,7 @@ export function planSourceSearch(config: SourceSearchConfig) {
 export const nativeSearch: SearchRunner = async (args, jar, signal, maxBytes) => {
   signal.throwIfAborted();
   const child = Bun.spawn([process.execPath, "search", ...args], {
-    env: { ...process.env, BUN_BE_BUN: "1", APHRODY_GOOGLE_COOKIES_JSON: jar },
+    env: { ...process.env, BUN_BE_BUN: "1", SHENRON_GOOGLE_COOKIES_JSON: jar },
     stdin: "ignore",
     stdout: "pipe",
     stderr: "ignore",

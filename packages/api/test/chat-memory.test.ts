@@ -388,7 +388,7 @@ describe("host memory group", () => {
     return {
       HOME: dir,
       SHENRON_DATA_DIR: dir,
-      APHRODY_BIN: join(dir, "absent"),
+      SHENRON_BIN: join(dir, "absent"),
       SHENRON_CHAT_TOOLS: "0",
       SHENRON_CHAT_STORE: "off",
       ...over,

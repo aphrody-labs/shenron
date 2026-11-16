@@ -10,12 +10,12 @@ const [action, directory, pin] = Bun.argv.slice(2);
 if (
   !directory ||
   !["export", "build-verify"].includes(action ?? "") ||
-  !process.env.APHRODY_MCP_DATABASE_URL
+  !process.env.SHENRON_MCP_DATABASE_URL
 )
   throw Error(
     "export|build-verify ABSOLUTE_PRIVATE_DIRECTORY [MANIFEST_SHA256] requires existing owner database configuration",
   );
-const sql = new SQL(process.env.APHRODY_MCP_DATABASE_URL, { max: 1, connectionTimeout: 10 });
+const sql = new SQL(process.env.SHENRON_MCP_DATABASE_URL, { max: 1, connectionTimeout: 10 });
 try {
   const source = postgresVectorSource(sql);
   const receipt =

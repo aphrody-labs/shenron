@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { startNativeClient, type NativeClient } from "../src/native.ts";
 
-const binary = process.env.APHRODY_KOHARU_SDK_BIN ?? Bun.which("koharu-sdk");
+const binary = process.env.SHENRON_KOHARU_SDK_BIN ?? Bun.which("koharu-sdk");
 const native = test.skipIf(binary == null);
 const roots: string[] = [];
 const clients: NativeClient[] = [];

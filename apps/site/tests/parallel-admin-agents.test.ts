@@ -115,12 +115,12 @@ const upstream = Bun.serve({
     });
   },
 });
-const savedUrl = process.env.APHRODY_A2A_URL;
-process.env.APHRODY_A2A_URL = `http://127.0.0.1:${upstream.port}/`;
+const savedUrl = process.env.SHENRON_A2A_URL;
+process.env.SHENRON_A2A_URL = `http://127.0.0.1:${upstream.port}/`;
 afterAll(() => {
   upstream.stop(true);
-  if (savedUrl === undefined) delete process.env.APHRODY_A2A_URL;
-  else process.env.APHRODY_A2A_URL = savedUrl;
+  if (savedUrl === undefined) delete process.env.SHENRON_A2A_URL;
+  else process.env.SHENRON_A2A_URL = savedUrl;
 });
 
 const A2A_TOKEN = "site-a2a-token-0123456789abcdef";
@@ -662,8 +662,8 @@ describe("/api/admin/a2a : sous SHENRON_A2A_ENFORCE, sans jeton côté navigateu
 
 describe("/api/admin/a2a : pannes amont", () => {
   test("hub injoignable : 502 a2a_upstream_unreachable sans adresse ni message interne", async () => {
-    const saved = process.env.APHRODY_A2A_URL;
-    process.env.APHRODY_A2A_URL = "http://127.0.0.1:1";
+    const saved = process.env.SHENRON_A2A_URL;
+    process.env.SHENRON_A2A_URL = "http://127.0.0.1:1";
     try {
       for (const res of [
         await GET(new Request(BASE)),
@@ -680,7 +680,7 @@ describe("/api/admin/a2a : pannes amont", () => {
       }
       expect(errorLogs.length).toBe(2);
     } finally {
-      process.env.APHRODY_A2A_URL = saved;
+      process.env.SHENRON_A2A_URL = saved;
     }
   });
 

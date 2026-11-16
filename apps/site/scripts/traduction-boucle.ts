@@ -81,9 +81,9 @@ const MOTEUR_DEMANDE = (opt("moteur", "auto") ?? "auto") as
   | "nllb";
 const MODELE = opt("modele") ?? "Xenova/nllb-200-distilled-600M";
 /** Rust translator: Aphrody Web Google, then its configured native fallbacks. */
-const APHRODY_TRANSLATE_BACKEND = process.env.APHRODY_TRANSLATE_BACKEND ?? "auto";
-const APHRODY_TRANSLATE_CANDIDATES = [
-  process.env.APHRODY_TRANSLATE_BIN,
+const SHENRON_TRANSLATE_BACKEND = process.env.SHENRON_TRANSLATE_BACKEND ?? "auto";
+const SHENRON_TRANSLATE_CANDIDATES = [
+  process.env.SHENRON_TRANSLATE_BIN,
   Bun.which("aphrody") ?? (process.platform === "win32" ? "aphrody.exe" : "aphrody"),
   join(
     DEPOT,
@@ -94,9 +94,9 @@ const APHRODY_TRANSLATE_CANDIDATES = [
   process.platform === "win32" ? "aphrody-translate.exe" : "aphrody-translate",
   "/srv/aphrody/current/bin/aphrody-translate",
 ].filter((value): value is string => Boolean(value));
-const APHRODY_TOKEN_PREFIX = "QXZ";
+const SHENRON_TOKEN_PREFIX = "QXZ";
 /** Four digits make `QXZ0001` unambiguous when a source digit follows it. */
-const APHRODY_TOKEN_WIDTH = 4;
+const SHENRON_TOKEN_WIDTH = 4;
 const SHARDS = Math.max(1, Number(opt("shards", "1")) || 1);
 const SHARD_INDEX = Math.max(0, Math.min(SHARDS - 1, Number(opt("shard-index", "0")) || 0));
 const WORKER_ID = (opt("worker-id", `worker-${SHARD_INDEX}`) ?? `worker-${SHARD_INDEX}`).replace(
@@ -241,7 +241,7 @@ function isAphrodyCli(bin: string): boolean {
 function commandeAphrodyTranslate(
   bin: string,
   text: string,
-  backend = APHRODY_TRANSLATE_BACKEND,
+  backend = SHENRON_TRANSLATE_BACKEND,
 ): string[] {
   if (isAphrodyCli(bin)) {
     return [bin, "translate", "-s", "ja", "-t", "fr", "-b", backend, "--", text];
@@ -256,7 +256,7 @@ function extraireTraductionAphrody(raw: string): string {
 
 /** Locate Aphrody's dedicated one-shot translator without requiring Node or a global install. */
 async function cheminAphrodyTranslate(): Promise<string | undefined> {
-  for (const candidate of APHRODY_TRANSLATE_CANDIDATES) {
+  for (const candidate of SHENRON_TRANSLATE_CANDIDATES) {
     if (candidate.includes("\\") || candidate.includes("/")) {
       if (!(await Bun.file(candidate).exists())) continue;
     } else {
@@ -268,7 +268,7 @@ async function cheminAphrodyTranslate(): Promise<string | undefined> {
 }
 
 /** Probe the actual JA→FR contract, not the unrelated Aphrody chat command. */
-async function aphrodyTranslateDisponible(backend = APHRODY_TRANSLATE_BACKEND): Promise<boolean> {
+async function aphrodyTranslateDisponible(backend = SHENRON_TRANSLATE_BACKEND): Promise<boolean> {
   const bin = await cheminAphrodyTranslate();
   if (!bin) return false;
   const r = await execute(
@@ -280,7 +280,7 @@ async function aphrodyTranslateDisponible(backend = APHRODY_TRANSLATE_BACKEND): 
 }
 
 /** Aphrody's dedicated translator with Dragon Ball lexicon protection. */
-async function moteurAphrodyTranslate(backend = APHRODY_TRANSLATE_BACKEND): Promise<Traducteur> {
+async function moteurAphrodyTranslate(backend = SHENRON_TRANSLATE_BACKEND): Promise<Traducteur> {
   const bin = await cheminAphrodyTranslate();
   if (!bin) throw new Error("binaire aphrody-translate introuvable");
   return async (p, lexique) => {
@@ -294,8 +294,8 @@ async function moteurAphrodyTranslate(backend = APHRODY_TRANSLATE_BACKEND): Prom
         continue;
       }
       const { masque, table } = protegerTermes(segment, lex, {
-        prefixe: APHRODY_TOKEN_PREFIX,
-        largeur: APHRODY_TOKEN_WIDTH,
+        prefixe: SHENRON_TOKEN_PREFIX,
+        largeur: SHENRON_TOKEN_WIDTH,
       });
       const r = await execute(commandeAphrodyTranslate(bin, masque, backend), 120_000);
       if (!r.ok) throw new Error(`aphrody-translate : ${r.sortie.trim().slice(0, 200)}`);
@@ -303,8 +303,8 @@ async function moteurAphrodyTranslate(backend = APHRODY_TRANSLATE_BACKEND): Prom
       const { texte: restauree, residuels } = restaurerJetons(
         texteTraduit,
         table,
-        APHRODY_TOKEN_PREFIX,
-        APHRODY_TOKEN_WIDTH,
+        SHENRON_TOKEN_PREFIX,
+        SHENRON_TOKEN_WIDTH,
       );
       if (residuels.length)
         throw new Error(`jeton non restauré (${residuels.slice(0, 3).join(", ")})`);

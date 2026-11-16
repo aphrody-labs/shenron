@@ -15,7 +15,7 @@
  * Métriques : Recall@{1,3,5,10}, MRR, nDCG@10, latence p50/p95, ventilation par tag.
  *
  * Lecture seule sur apps/bot/data/bot.db (ou RAG_DB). Embeddings via Aphrody
- * `POST /api/v1/shenron/embed` : APHRODY_AI_HTTP_URL et APHRODY_AI_HTTP_TOKEN
+ * `POST /api/v1/shenron/embed` : SHENRON_AI_HTTP_URL et SHENRON_AI_HTTP_TOKEN
  * obligatoires hors --lexical-only (B13).
  *
  * Usage : bun scripts/rag-eval.ts [--ci] [--details] [--tag=<tag>] [--lexical-only] [--json=<fichier>]
@@ -165,7 +165,7 @@ async function main(): Promise<void> {
     );
   }
 
-  // B13 : hors --lexical-only, APHRODY_AI_HTTP_URL / _TOKEN sont obligatoires (aucun défaut).
+  // B13 : hors --lexical-only, SHENRON_AI_HTTP_URL / _TOKEN sont obligatoires (aucun défaut).
   const embeddings = flag("lexical-only") ? null : new ShenronEmbeddingsClient();
   const sidecar = embeddings !== null && (await embeddingsUp(embeddings));
   console.log(

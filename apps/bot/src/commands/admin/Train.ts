@@ -46,9 +46,9 @@ export interface TrainJob {
   tail: string;
 }
 
-/** `$APHRODY_HOME`, else `~/.aphrody` (same root as the Rust `state_dir`). */
+/** `$SHENRON_HOME`, else `~/.aphrody` (same root as the Rust `state_dir`). */
 export function aphrodyStateDir(env: NodeJS.ProcessEnv = process.env): string {
-  return env.APHRODY_HOME?.trim() || path.join(os.homedir(), ".aphrody");
+  return env.SHENRON_HOME?.trim() || path.join(os.homedir(), ".aphrody");
 }
 
 /** Default dbfr triples: `<state>/workspaces/dbfr/training/triples.jsonl`. */
@@ -56,13 +56,13 @@ export function defaultDbfrTriples(env: NodeJS.ProcessEnv = process.env): string
   return path.join(aphrodyStateDir(env), "workspaces", "dbfr", "training", "triples.jsonl");
 }
 
-/** argv for `aphrody train run`; the binary comes from `APHRODY_BIN` (default `aphrody`). */
+/** argv for `aphrody train run`; the binary comes from `SHENRON_BIN` (default `aphrody`). */
 export function buildTrainRunArgv(
   job: Pick<TrainJob, "id" | "kind" | "input" | "outDir">,
   env: NodeJS.ProcessEnv = process.env,
 ): string[] {
   return [
-    env.APHRODY_BIN?.trim() || "aphrody",
+    env.SHENRON_BIN?.trim() || "aphrody",
     "train",
     "run",
     "--kind",
@@ -136,7 +136,7 @@ export class TrainJobRunner {
     try {
       proc = this.spawner(buildTrainRunArgv(job, this.env), {
         ...this.env,
-        APHRODY_AGENT_DOMAIN: "dbfr",
+        SHENRON_AGENT_DOMAIN: "dbfr",
       });
     } catch (error) {
       // A missing binary must not leave a job "running" forever (it would block every later start).

@@ -93,10 +93,10 @@ if [[ -f "$root/bun.lock" ]] && (have bun || (( dry == 1 ))); then
 fi
 
 step "Aphrody and Yolo binaries (download server, when announced)"
-if [[ -n "${APHRODY_DOWNLOAD_BASE:-}" ]]; then
-  run bash -c "curl -fsSL '$APHRODY_DOWNLOAD_BASE/install.sh' | sh"
+if [[ -n "${SHENRON_DOWNLOAD_BASE:-}" ]]; then
+  run bash -c "curl -fsSL '$SHENRON_DOWNLOAD_BASE/install.sh' | sh"
 else
-  echo "  APHRODY_DOWNLOAD_BASE is not set: skipped"
+  echo "  SHENRON_DOWNLOAD_BASE is not set: skipped"
 fi
 
 step "code graph (local, offline)"

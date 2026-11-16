@@ -9,7 +9,7 @@ import {
 } from "../../src/aphrody/native";
 
 const nativeAvailable = isNativeAvailable();
-const requireNative = process.env.APHRODY_FFI_REQUIRE_NATIVE === "1";
+const requireNative = process.env.SHENRON_FFI_REQUIRE_NATIVE === "1";
 
 describe("@shenron/pipeline/aphrody/native FFI bridge", () => {
   it("detects whether native library is available on host", () => {
@@ -42,7 +42,7 @@ describe("@shenron/pipeline/aphrody/native FFI bridge", () => {
   it.skipIf(!nativeAvailable)("loads sovereign persona prompt in-process", async () => {
     const prompt = await aphrodyNative.personaPrompt();
     expect(prompt).not.toBeNull();
-    const expectedPersonaPath = process.env.APHRODY_FFI_TEST_PERSONA_PATH;
+    const expectedPersonaPath = process.env.SHENRON_FFI_TEST_PERSONA_PATH;
     if (requireNative) expect(expectedPersonaPath).toBeDefined();
     if (expectedPersonaPath) {
       expect(prompt).toBe(await Bun.file(expectedPersonaPath).text());

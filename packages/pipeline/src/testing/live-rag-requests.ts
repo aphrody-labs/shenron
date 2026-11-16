@@ -20,7 +20,7 @@ export function recordLiveRagRequests() {
         path: url.pathname,
         query: Object.fromEntries(url.searchParams),
         authenticated:
-          request.headers.get("authorization") === `Bearer ${process.env.APHRODY_AI_HTTP_TOKEN}`,
+          request.headers.get("authorization") === `Bearer ${process.env.SHENRON_AI_HTTP_TOKEN}`,
         body: request.body === null ? null : await request.clone().json(),
       });
       return transport(request);

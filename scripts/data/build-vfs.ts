@@ -16,9 +16,9 @@
  *            and opted-in conversations; f32 vectors (aphrody-rag readable). Delivered directly,
  *            NEVER attached to a public release nor committed (default out: ~/.aphrody/private).
  *
- * Sources (read only): the Aphrody RAG store (`SHENRON_RAG_PG_URL`, else `APHRODY_MCP_DATABASE_URL`),
+ * Sources (read only): the Aphrody RAG store (`SHENRON_RAG_PG_URL`, else `SHENRON_MCP_DATABASE_URL`),
  * the site database (`SHENRON_WIKI_PG_URL`, else `DATABASE_URL`, `default_transaction_read_only`),
- * the corpus embedder (`APHRODY_AI_EMBED_BASE_URL`) for agent-home chunks, the conversation store
+ * the corpus embedder (`SHENRON_AI_EMBED_BASE_URL`) for agent-home chunks, the conversation store
  * (`SHENRON_CHAT_STORE`). Outputs: `shenron-vfs.<profile>.sqlite`, `vfs-entry.<profile>.ts`,
  * `vfs-manifest.<profile>.json`.
  */
@@ -107,10 +107,10 @@ vfs.setMeta("profile", profile);
 for (const dir of ["/home", "/data", "/assets", "/public", "/db"]) vfs.mkdirAll(dir);
 
 // ── RAG corpus ──────────────────────────────────────────────────────────────
-const ragUrl = process.env.SHENRON_RAG_PG_URL ?? process.env.APHRODY_MCP_DATABASE_URL;
+const ragUrl = process.env.SHENRON_RAG_PG_URL ?? process.env.SHENRON_MCP_DATABASE_URL;
 if (!skip.has("rag") && values["rag-source"] === "postgres") {
   if (!ragUrl)
-    throw new Error("SHENRON_RAG_PG_URL or APHRODY_MCP_DATABASE_URL is required (or --skip rag)");
+    throw new Error("SHENRON_RAG_PG_URL or SHENRON_MCP_DATABASE_URL is required (or --skip rag)");
   const sql = readOnlySql(ragUrl);
   const rag = await exportRag(sql, db, {
     profile,
@@ -151,10 +151,10 @@ const HOME_FILES = [
 ];
 const homeDir =
   profile === "complet"
-    ? (process.env.APHRODY_WORKSPACE ??
-      join(process.env.APHRODY_HOME ?? join(homedir(), ".aphrody"), "workspaces", "dbfr"))
+    ? (process.env.SHENRON_WORKSPACE ??
+      join(process.env.SHENRON_HOME ?? join(homedir(), ".aphrody"), "workspaces", "dbfr"))
     : join(ROOT, "templates/agent-home");
-const embedBase = process.env.APHRODY_AI_EMBED_BASE_URL;
+const embedBase = process.env.SHENRON_AI_EMBED_BASE_URL;
 const embedder = embedBase ? createE5Embedder({ baseUrl: embedBase }) : null;
 if (!skip.has("home")) {
   const visibility = profile === "complet" ? "private" : "public";

@@ -31,6 +31,6 @@ Vérifier le catalogue connecté avant appel. Le serveur public filtre les outil
 privés ; sa connexion ne donne aucun droit d'écriture.
 
 A2A reste distinct : le client Shenron de coordination durable utilise le service
-Aphrody configuré par `APHRODY_A2A_COORD_API`. L'absence de cette configuration
+Aphrody configuré par `SHENRON_A2A_COORD_API`. L'absence de cette configuration
 est une erreur en production, sans substitution silencieuse d'une boîte locale.
 Une synchronisation du plugin ne prouve pas l'exécution d'une tâche distante.

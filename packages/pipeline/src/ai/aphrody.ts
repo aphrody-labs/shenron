@@ -11,7 +11,7 @@
  *
  * Documented differences with the historical `AphrodyComputeClient`
  * (`packages/pipeline/src/aphrody/compute.ts`): `embed` collapses whitespace and splits
- * requests in batches of {@link APHRODY_LIMITS}.embedTexts with 384-dimension
+ * requests in batches of {@link SHENRON_LIMITS}.embedTexts with 384-dimension
  * checks (B18), and `ocr` defaults to the `ppocr` engine.
  */
 import type { z } from "zod";
@@ -19,7 +19,7 @@ import { JsonTransportError, parseRetryAfter, requestJson } from "@shenron/kit/h
 export { parseRetryAfter } from "@shenron/kit/http";
 import { type AiTimeouts, chatTimeoutMs, DEFAULT_AI_TIMEOUTS, SHENRON_E5 } from "./config";
 import {
-  APHRODY_LIMITS,
+  SHENRON_LIMITS,
   type AphrodyIngestDoc,
   type AphrodyOcrResult,
   type AphrodyRagDocument,
@@ -260,17 +260,17 @@ export function createAphrodyCompute(
 
     async chat(i) {
       const route = SHENRON_ROUTES.chat;
-      if (i.messages.length === 0 || i.messages.length > APHRODY_LIMITS.chatMessages) {
-        return invalidRequest(route.path, `messages must hold 1..=${APHRODY_LIMITS.chatMessages}`);
+      if (i.messages.length === 0 || i.messages.length > SHENRON_LIMITS.chatMessages) {
+        return invalidRequest(route.path, `messages must hold 1..=${SHENRON_LIMITS.chatMessages}`);
       }
       for (const message of i.messages) {
-        if (!message.content || byteLength(message.content) > APHRODY_LIMITS.chatMessageBytes) {
+        if (!message.content || byteLength(message.content) > SHENRON_LIMITS.chatMessageBytes) {
           return invalidRequest(route.path, "message content must hold 1..=32768 bytes");
         }
       }
       if (
         i.model !== undefined &&
-        (!i.model.trim() || i.model.length > APHRODY_LIMITS.modelIdBytes)
+        (!i.model.trim() || i.model.length > SHENRON_LIMITS.modelIdBytes)
       ) {
         return invalidRequest(route.path, "invalid model id");
       }
@@ -278,7 +278,7 @@ export function createAphrodyCompute(
         i.maxOutputTokens !== undefined &&
         (!Number.isInteger(i.maxOutputTokens) ||
           i.maxOutputTokens < 1 ||
-          i.maxOutputTokens > APHRODY_LIMITS.chatOutputTokens)
+          i.maxOutputTokens > SHENRON_LIMITS.chatOutputTokens)
       ) {
         return invalidRequest(route.path, "maxOutputTokens must be an integer in 1..=8192");
       }
@@ -306,17 +306,17 @@ export function createAphrodyCompute(
       if (texts.length === 0 || texts.some((text) => !text)) {
         return invalidRequest(route.path, "embedding input is empty");
       }
-      if (texts.some((text) => byteLength(text) > APHRODY_LIMITS.embedTextBytes)) {
+      if (texts.some((text) => byteLength(text) > SHENRON_LIMITS.embedTextBytes)) {
         return invalidRequest(
           route.path,
-          `embedding input exceeds ${APHRODY_LIMITS.embedTextBytes} bytes`,
+          `embedding input exceeds ${SHENRON_LIMITS.embedTextBytes} bytes`,
         );
       }
       const vectors: number[][] = [];
       let model: string | undefined;
       let consistentModel = true;
-      for (let start = 0; start < texts.length; start += APHRODY_LIMITS.embedTexts) {
-        const batch = texts.slice(start, start + APHRODY_LIMITS.embedTexts);
+      for (let start = 0; start < texts.length; start += SHENRON_LIMITS.embedTexts) {
+        const batch = texts.slice(start, start + SHENRON_LIMITS.embedTexts);
         // No client prefix: the server adds `query: ` / `passage: ` (http_rest.rs, D10).
         // eslint-disable-next-line no-await-in-loop -- The embedding endpoint requires sequential batches of at most 16.
         const r = await call(route, EmbedResponse, {
@@ -375,7 +375,7 @@ export function createAphrodyCompute(
 
     async ragDocument(sourceId) {
       const route = SHENRON_ROUTES.ragDocument;
-      if (sourceId.length > APHRODY_LIMITS.sourceIdBytes || !SOURCE_ID_RE.test(sourceId)) {
+      if (sourceId.length > SHENRON_LIMITS.sourceIdBytes || !SOURCE_ID_RE.test(sourceId)) {
         return invalidRequest(route.path, "invalid Shenron RAG source ID");
       }
       const r = await call(route, RagDocumentResponse, {
@@ -460,7 +460,7 @@ export function createAphrodyCompute(
       // Never gated on health().ocr: the capability flag reflects the build
       // feature, not the gemini-web engine, so the call itself is the probe.
       const route = SHENRON_ROUTES.ocr;
-      if (!i.imageBase64 || i.imageBase64.length > APHRODY_LIMITS.imageBase64Bytes) {
+      if (!i.imageBase64 || i.imageBase64.length > SHENRON_LIMITS.imageBase64Bytes) {
         return invalidRequest(route.path, "invalid image_base64");
       }
       const engine = i.engine ?? "ppocr";
@@ -497,10 +497,10 @@ export function createAphrodyCompute(
       const route = SHENRON_ROUTES.visionStructured;
       if (
         !i.imageBase64 ||
-        i.imageBase64.length > APHRODY_LIMITS.imageBase64Bytes ||
+        i.imageBase64.length > SHENRON_LIMITS.imageBase64Bytes ||
         !["image/jpeg", "image/png", "image/webp"].includes(i.mime) ||
         !i.prompt ||
-        byteLength(i.prompt) > APHRODY_LIMITS.visionPromptBytes
+        byteLength(i.prompt) > SHENRON_LIMITS.visionPromptBytes
       ) {
         return invalidRequest(route.path, "invalid vision request");
       }

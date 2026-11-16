@@ -207,8 +207,8 @@ test.skipIf(process.platform === "win32")(
 test("query embedding uses only existing model HTTP route and rejects a different vector space", async () => {
   const calls: URL[] = [];
   const env = {
-    APHRODY_AI_HTTP_URL: "http://127.0.0.1:8789",
-    APHRODY_AI_HTTP_TOKEN: "private-fixture",
+    SHENRON_AI_HTTP_URL: "http://127.0.0.1:8789",
+    SHENRON_AI_HTTP_TOKEN: "private-fixture",
   };
   const embed = directBunQueryEmbedder(env, async (input, init) => {
     calls.push(new URL(String(input)));

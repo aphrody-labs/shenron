@@ -10,8 +10,8 @@ mock.module("@/lib/session", () => ({
 
 const saved = { ...process.env };
 const dir = mkdtempSync(join(tmpdir(), "admin-a2a-mailbox-"));
-delete process.env.APHRODY_A2A_URL;
-delete process.env.APHRODY_A2A_COORD_API;
+delete process.env.SHENRON_A2A_URL;
+delete process.env.SHENRON_A2A_COORD_API;
 delete process.env.A2A_COORD_DIR;
 process.env = { ...process.env, NODE_ENV: "production" };
 process.env.SHENRON_A2A_STORE_DIR = dir;

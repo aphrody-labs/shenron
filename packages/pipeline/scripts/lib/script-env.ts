@@ -65,9 +65,9 @@ function requireAiSetting(env: EnvSource, setting: AiEnvSetting, purpose: string
 
 /**
  * E5 embedder base URL (ending in `/v1`), resolved by `@shenron/pipeline/ai/config`:
- * `APHRODY_AI_EMBED_BASE_URL`, then the contract aliases
- * (`APHRODY_SHENRON_EMBED_BASE_URL`, `EMBED_URL` as an origin,
- * `APHRODY_RAG_EMBED_ENDPOINT` as an endpoint). No default (B13).
+ * `SHENRON_AI_EMBED_BASE_URL`, then the contract aliases
+ * (`SHENRON_EMBED_BASE_URL`, `EMBED_URL` as an origin,
+ * `SHENRON_RAG_EMBED_ENDPOINT` as an endpoint). No default (B13).
  */
 export function requireEmbedBaseUrl(env: EnvSource): {
   name: string;
@@ -80,7 +80,7 @@ export function requireEmbedBaseUrl(env: EnvSource): {
   return { name, baseUrl: url.toString(), origin: url.origin };
 }
 
-/** Origin of `aphrody-ai-http` (`APHRODY_AI_HTTP_URL`, alias `APHRODY_SHENRON_API_URL`). No default (B13). */
+/** Origin of `aphrody-ai-http` (`SHENRON_AI_HTTP_URL`, alias `SHENRON_API_URL`). No default (B13). */
 export function requireAphrodyApiUrl(env: EnvSource): string {
   requireAiSetting(env, AI_ENV.httpUrl, "API de calcul Aphrody");
   return requireAiHttpUrl(env).href;

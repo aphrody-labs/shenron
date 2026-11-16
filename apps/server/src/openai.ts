@@ -79,9 +79,9 @@ export function openAiApi(
 
     const configured =
       env.SHENRON_OPENAI_BASE_URL?.trim() ||
-      env.APHRODY_AI_CHAT_BASE_URL?.trim() ||
-      env.APHRODY_SHENRON_LLM_BASE_URL?.trim() ||
-      env.APHRODY_LOCAL_MODEL_URL?.trim() ||
+      env.SHENRON_AI_CHAT_BASE_URL?.trim() ||
+      env.SHENRON_LLM_BASE_URL?.trim() ||
+      env.SHENRON_LOCAL_MODEL_URL?.trim() ||
       managedUrl();
     if (!configured) return error("OpenAI provider is not configured", 503, "server_error");
     let target: URL;

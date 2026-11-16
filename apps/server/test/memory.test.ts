@@ -182,7 +182,7 @@ describe.if(library !== undefined)("with the built shenron-ffi library", () => {
       SHENRON_FFI_LIB: library!,
       SHENRON_CHAT_STORE: "off",
       SHENRON_CHAT_TOOLS: "0",
-      APHRODY_BIN: join(root, "absent"),
+      SHENRON_BIN: join(root, "absent"),
     };
     /** One served host on the memory file; the direct loopback owner is `local`. */
     const serve = async <T>(run: (base: string) => Promise<T>) => {

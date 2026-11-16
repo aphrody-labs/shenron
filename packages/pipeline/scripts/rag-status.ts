@@ -9,7 +9,7 @@ import { tempPath } from "@shenron/kit/paths";
  * 3. Affiche les métadonnées de la table rag_meta (modèle, dim, date de compilation).
  * 4. Calcule la taille moyenne des chunks.
  * 5. Teste les embeddings via Aphrody `POST /api/v1/shenron/embed`
- *    (APHRODY_AI_HTTP_URL / APHRODY_AI_HTTP_TOKEN obligatoires).
+ *    (SHENRON_AI_HTTP_URL / SHENRON_AI_HTTP_TOKEN obligatoires).
  * 6. Compte les lignes des tables structurées principales (personnages, techniques, planètes).
 
  *
@@ -177,7 +177,7 @@ async function main() {
     console.log(JSON.stringify({ backend: "aphrody", ...stats }, null, 2));
     return;
   }
-  // B13 : aucune adresse par défaut ; jette si APHRODY_AI_HTTP_URL / _TOKEN manquent.
+  // B13 : aucune adresse par défaut ; jette si SHENRON_AI_HTTP_URL / _TOKEN manquent.
   const embeddings = new ShenronEmbeddingsClient();
   printHeader("Embeddings Aphrody");
   const sidecar = await checkEmbeddings(embeddings);

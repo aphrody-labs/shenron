@@ -73,7 +73,7 @@ async function urlBase(): Promise<string> {
 
 async function corpusDir(): Promise<string | null> {
   const candidats = [
-    process.env.APHRODY_HOME,
+    process.env.SHENRON_HOME,
     join(homedir(), ".aphrody", "workspace"),
     join(homedir(), ".aphrody", "workspaces", "dbfr"),
   ].filter((c): c is string => Boolean(c));

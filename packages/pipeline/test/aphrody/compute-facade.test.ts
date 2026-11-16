@@ -170,14 +170,14 @@ describe("AphrodyComputeClient facade: request bodies identical to the legacy cl
 describe("facade defaults and call-time fetch", () => {
   // Every AI name the facades read (canonical and legacy), restored after each test.
   const names = [
-    "APHRODY_AI_HTTP_URL",
-    "APHRODY_AI_HTTP_TOKEN",
-    "APHRODY_SHENRON_API_URL",
-    "APHRODY_SHENRON_API_TOKEN",
-    "APHRODY_AI_EMBED_BASE_URL",
-    "APHRODY_SHENRON_EMBED_BASE_URL",
+    "SHENRON_AI_HTTP_URL",
+    "SHENRON_AI_HTTP_TOKEN",
+    "SHENRON_API_URL",
+    "SHENRON_API_TOKEN",
+    "SHENRON_AI_EMBED_BASE_URL",
+    "SHENRON_EMBED_BASE_URL",
     "EMBED_URL",
-    "APHRODY_RAG_EMBED_ENDPOINT",
+    "SHENRON_RAG_EMBED_ENDPOINT",
   ];
   const saved = Object.fromEntries(names.map((name) => [name, process.env[name]]));
   const savedFetch = globalThis.fetch;
@@ -192,20 +192,20 @@ describe("facade defaults and call-time fetch", () => {
 
   test("no address default: a missing URL is an error naming the variables", () => {
     for (const name of names) delete process.env[name];
-    process.env.APHRODY_SHENRON_API_TOKEN = TOKEN;
+    process.env.SHENRON_API_TOKEN = TOKEN;
     expect(() => new AphrodyComputeClient()).toThrow(
-      /APHRODY_AI_HTTP_URL.*APHRODY_SHENRON_API_URL/,
+      /SHENRON_AI_HTTP_URL.*SHENRON_API_URL/,
     );
-    process.env.APHRODY_AI_HTTP_URL = BASE;
-    delete process.env.APHRODY_SHENRON_API_TOKEN;
-    expect(() => new AphrodyComputeClient()).toThrow(/APHRODY_AI_HTTP_TOKEN/);
+    process.env.SHENRON_AI_HTTP_URL = BASE;
+    delete process.env.SHENRON_API_TOKEN;
+    expect(() => new AphrodyComputeClient()).toThrow(/SHENRON_AI_HTTP_TOKEN/);
   });
 
   test("canonical names first, legacy aliases next; global fetch read at call time", async () => {
     for (const name of names) delete process.env[name];
-    process.env.APHRODY_SHENRON_API_URL = "http://127.0.0.1:1";
-    process.env.APHRODY_AI_HTTP_URL = BASE;
-    process.env.APHRODY_SHENRON_API_TOKEN = TOKEN;
+    process.env.SHENRON_API_URL = "http://127.0.0.1:1";
+    process.env.SHENRON_AI_HTTP_URL = BASE;
+    process.env.SHENRON_API_TOKEN = TOKEN;
     const client = new AphrodyComputeClient();
     const { calls, fetcher } = computeServer();
     globalThis.fetch = fetcher; // replaced after construction
@@ -214,13 +214,13 @@ describe("facade defaults and call-time fetch", () => {
     expect(calls[0]?.path).toBe("/api/v1/shenron/health");
   });
 
-  test("EMBED_URL is an origin, APHRODY_SHENRON_EMBED_BASE_URL a base, no default", () => {
-    expect(() => resolveShenronEmbeddingsBaseUrl({}, {})).toThrow(/APHRODY_AI_EMBED_BASE_URL/);
+  test("EMBED_URL is an origin, SHENRON_EMBED_BASE_URL a base, no default", () => {
+    expect(() => resolveShenronEmbeddingsBaseUrl({}, {})).toThrow(/SHENRON_AI_EMBED_BASE_URL/);
     expect(
       resolveShenronEmbeddingsBaseUrl(
         {},
         {
-          APHRODY_AI_EMBED_BASE_URL: "http://127.0.0.1:5018/v1",
+          SHENRON_AI_EMBED_BASE_URL: "http://127.0.0.1:5018/v1",
           EMBED_URL: "http://127.0.0.1:5017",
         },
       ).href,
@@ -233,7 +233,7 @@ describe("facade defaults and call-time fetch", () => {
         {},
         {
           EMBED_URL: "http://127.0.0.1:5017",
-          APHRODY_SHENRON_EMBED_BASE_URL: "http://localhost:9/v1/",
+          SHENRON_EMBED_BASE_URL: "http://localhost:9/v1/",
         },
       ).href,
     ).toBe("http://localhost:9/v1");
@@ -276,16 +276,16 @@ describe("ShenronEmbeddingsClient facade", () => {
     expect(Object.keys(bodies[0] ?? {}).toSorted()).toEqual(["kind", "texts"]);
   });
 
-  test("defaults to APHRODY_AI_HTTP_URL / APHRODY_AI_HTTP_TOKEN, no direct embedder needed", async () => {
+  test("defaults to SHENRON_AI_HTTP_URL / SHENRON_AI_HTTP_TOKEN, no direct embedder needed", async () => {
     const { calls, fetcher } = embedServer();
     const client = new ShenronEmbeddingsClient({
-      env: { APHRODY_AI_HTTP_URL: BASE, APHRODY_AI_HTTP_TOKEN: TOKEN },
+      env: { SHENRON_AI_HTTP_URL: BASE, SHENRON_AI_HTTP_TOKEN: TOKEN },
       fetcher,
     });
     await client.embed(["Goku"], "query");
     expect(calls[0]?.path).toBe("/api/v1/shenron/embed");
     expect((calls[0]!.body as { kind: string }).kind).toBe("query");
-    expect(() => new ShenronEmbeddingsClient({ env: {} })).toThrow(/APHRODY_AI_HTTP_URL/);
+    expect(() => new ShenronEmbeddingsClient({ env: {} })).toThrow(/SHENRON_AI_HTTP_URL/);
   });
 
   test("legacy error messages", async () => {

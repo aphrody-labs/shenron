@@ -162,7 +162,7 @@ export function loadEnvironment(
   env.SHENRON_PROFILE = profile;
   env.SHENRON_HOME = paths.home;
   env.DATABASE_PATH ??= join(paths.data, "bot.db");
-  env.APHRODY_DRAGONBALL_RAG_DB ??= join(paths.data, "rag.sqlite");
+  env.SHENRON_DRAGONBALL_RAG_DB ??= join(paths.data, "rag.sqlite");
   return { profile, fromFile };
 }
 

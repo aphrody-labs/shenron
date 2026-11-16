@@ -13,11 +13,11 @@ const okRunner: CommandRunner = async (command) => ({
   stdout: JSON.stringify({ command }),
   stderr: "",
 });
-const originalProfileHome = process.env.APHRODY_PROFILE_HOME;
+const originalProfileHome = process.env.SHENRON_PROFILE_HOME;
 
 afterEach(() => {
-  if (originalProfileHome === undefined) delete process.env.APHRODY_PROFILE_HOME;
-  else process.env.APHRODY_PROFILE_HOME = originalProfileHome;
+  if (originalProfileHome === undefined) delete process.env.SHENRON_PROFILE_HOME;
+  else process.env.SHENRON_PROFILE_HOME = originalProfileHome;
 });
 
 describe("@shenron/pipeline — exécution vérifiable", () => {
@@ -131,8 +131,8 @@ describe("@shenron/pipeline — exécution vérifiable", () => {
   it("exige les fichiers réels du profil éditorial", () => {
     const root = join(tmpdir(), `shenron-profile-${process.pid}-${Date.now()}`);
     mkdirSync(root, { recursive: true });
-    // Explicit environment: the ambient agent session (APHRODY_AGENT_DOMAIN…) must not leak in.
-    const env = { APHRODY_PROFILE_HOME: root };
+    // Explicit environment: the ambient agent session (SHENRON_AGENT_DOMAIN…) must not leak in.
+    const env = { SHENRON_PROFILE_HOME: root };
     expect(() => getToriyamaPersona(env)).toThrow("Profil Shenron incomplet");
     writeFileSync(join(root, "SOUL.md"), "soul fixture");
     writeFileSync(join(root, "IDENTITY.md"), "identity fixture");

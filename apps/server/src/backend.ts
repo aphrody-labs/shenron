@@ -10,9 +10,9 @@
  *                  (SHENRON_CHAT_STORE overrides the file, `off` disables it)
  *   agent home     per user, outside production: `<home>/agents/<id>/` (./agent-home.ts: `local`
  *                  until Discord sign-in, then `discord:<user_id>`; SHENRON_LOCAL_OWNER follows);
- *                  shared persona: the VFS `/home`, else APHRODY_WORKSPACE, else (outside
+ *                  shared persona: the VFS `/home`, else SHENRON_WORKSPACE, else (outside
  *                  production) the public template of the payload (`home/`)
- *   OCR            APHRODY_BIN, else `aphrody` beside the executable, else on PATH
+ *   OCR            SHENRON_BIN, else `aphrody` beside the executable, else on PATH
  *   MCP            SHENRON_MCP_URL, else the `shenron-mcp` sidecar shipped beside the
  *                  executable (SHENRON_MCP_BIN, `./`, `./binaries/`, as `shenron-desktop`
  *                  finds `shenron-server`), started on `--http 127.0.0.1:<free port> --public`
@@ -24,8 +24,8 @@
  *                  `<home>/data/memory.sqlite` (SHENRON_MEMORY_DB, SHENRON_MEMORY=off); Aphrody's
  *                  aphrody-memory through the native library (./memory.ts); none → group disabled
  *   chat           SHENRON_CHAT_BACKENDS (default `local,gemini-web` outside production): the
- *                  OpenAI-compatible server declared by APHRODY_AI_CHAT_BASE_URL,
- *                  APHRODY_SHENRON_LLM_BASE_URL or APHRODY_LOCAL_MODEL_URL (llama-server,
+ *                  OpenAI-compatible server declared by SHENRON_AI_CHAT_BASE_URL,
+ *                  SHENRON_LLM_BASE_URL or SHENRON_LOCAL_MODEL_URL (llama-server,
  *                  aphrody-llama-daemon); none → the chat and models groups stay disabled.
  *                  Desktop profile without such a URL: the managed models of ./chat-model.ts
  *                  (Qwen3-4B + LoRA shenron-chat-v2, Gemma 4 E2B; Aphrody's local chat router in
@@ -112,17 +112,17 @@ export function planBackend(
   ].find((candidate) => isFile(candidate));
   if (vfs) out.SHENRON_VFS_DB = vfs;
   else delete out.SHENRON_VFS_DB;
-  if (profile !== "production" && !env.APHRODY_WORKSPACE?.trim()) {
+  if (profile !== "production" && !env.SHENRON_WORKSPACE?.trim()) {
     const template = [
       o.payloadDir ? join(o.payloadDir, "home") : undefined,
       join(paths.exeDir, "home"),
     ]
       .filter((dir): dir is string => Boolean(dir))
       .find((dir) => isFile(join(dir, "SOUL.md")));
-    if (template) out.APHRODY_WORKSPACE = template;
+    if (template) out.SHENRON_WORKSPACE = template;
   }
   const aphrody = siblingBinary(paths, "aphrody");
-  if (!env.APHRODY_BIN?.trim() && aphrody) out.APHRODY_BIN = aphrody;
+  if (!env.SHENRON_BIN?.trim() && aphrody) out.SHENRON_BIN = aphrody;
   const mcp = siblingBinary(paths, "shenron-mcp", env.SHENRON_MCP_BIN);
   // The chat's own MCP tools (stdio) use the same shipped binary.
   if (mcp) out.SHENRON_MCP_BIN = mcp;
@@ -131,8 +131,8 @@ export function planBackend(
   const chatModel = planChatModel(paths, env);
   if (chatModel) {
     // Declared now (the groups are fixed at host creation); the model answers once loaded.
-    out.APHRODY_LOCAL_MODEL_URL = chatModel.url;
-    out.APHRODY_AI_CHAT_MODEL ??= DEFAULT_CHAT_MODEL_ID;
+    out.SHENRON_LOCAL_MODEL_URL = chatModel.url;
+    out.SHENRON_AI_CHAT_MODEL ??= DEFAULT_CHAT_MODEL_ID;
   }
   // The `shenron` plugin (index in every chat prompt, `/api/public/plugin*`): the payload
   // copy, beside the executable, else the checkout this source runs from.

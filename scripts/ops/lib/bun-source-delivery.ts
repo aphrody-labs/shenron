@@ -108,7 +108,7 @@ export async function runDeliveryOwner(
     stderr: "pipe",
     env: {
       ...Bun.env,
-      APHRODY_SSH_COMMAND_TIMEOUT_SECS: String(
+      SHENRON_SSH_COMMAND_TIMEOUT_SECS: String(
         Math.min(86400, Math.max(1, Math.ceil(controls.timeoutMs / 1000))),
       ),
     },

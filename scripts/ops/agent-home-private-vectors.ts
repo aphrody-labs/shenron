@@ -240,7 +240,7 @@ export async function runPrivateVectorJob(job: PrivateVectorJob) {
             SHENRON_MEMORY: "off",
             SHENRON_MEMORY_REMOTE: "off",
             SHENRON_VFS_OFFLINE: "1",
-            APHRODY_WORKSPACE: home,
+            SHENRON_WORKSPACE: home,
           },
           {
             conversations: null,

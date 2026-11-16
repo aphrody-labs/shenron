@@ -152,7 +152,7 @@ test("native search dispatch enables runtime mode for a compiled product executa
       expect.objectContaining({
         env: expect.objectContaining({
           BUN_BE_BUN: "1",
-          APHRODY_GOOGLE_COOKIES_JSON: "/private/jar.json",
+          SHENRON_GOOGLE_COOKIES_JSON: "/private/jar.json",
         }),
       }),
     );

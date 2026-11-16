@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Durable A2A store of the Shenron hub on the local file system, used when Aphrody's coord API
- * (`APHRODY_A2A_COORD_API`, see `a2a-remote.ts`) is not configured.
+ * (`SHENRON_A2A_COORD_API`, see `a2a-remote.ts`) is not configured.
  *
  * Directory: `SHENRON_A2A_STORE_DIR`, else, in production, `<A2A_COORD_DIR>/shenron-dragonball`
  * (the site and the bot share `A2A_COORD_DIR`), else `<SHENRON_HOME>/data/a2a/shenron-dragonball`.

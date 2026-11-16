@@ -67,7 +67,7 @@ describe("native OpenAI provider transport", () => {
       return Response.json({ object: "list", data: [{ id: "shenron-chat-v2" }] });
     });
     const api = localApi({} as ServerPaths, () => ({ groups: {} as never }), {
-      APHRODY_AI_CHAT_BASE_URL: `${base}/v1/`,
+      SHENRON_AI_CHAT_BASE_URL: `${base}/v1/`,
     });
     const response = await call(api, "/v1/models");
     expect(response.status).toBe(200);
@@ -184,7 +184,7 @@ describe("native OpenAI provider transport", () => {
     const response = await call(
       openAiApi({
         SHENRON_OPENAI_BASE_URL: base,
-        APHRODY_AI_CHAT_API_KEY: "canonical-upstream",
+        SHENRON_AI_CHAT_API_KEY: "canonical-upstream",
         SHENRON_OPENAI_API_KEY: "legacy-upstream",
       }),
       "/v1/models",

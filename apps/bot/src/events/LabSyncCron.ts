@@ -3,7 +3,7 @@ import { injectable, inject } from "tsyringe";
 import { Bot, Discord, Once, Client } from "discordx";
 import { CronRegistry } from "~/api/cron-registry";
 import { logger } from "~/lib/logger";
-import { APHRODY_DISCORD } from "@shenron/config/discord-ai";
+import { SHENRON_DISCORD } from "@shenron/config/discord-ai";
 import { initApplicationCommandsSafe } from "@shenron/discord-kit";
 
 /**
@@ -29,10 +29,10 @@ export class LabSyncCronEvent {
       description: "Synchronisation périodique des commandes et état du laboratoire IA Aphrody",
       intervalMs: THIRTY_MINUTES_MS,
       fn: async () => {
-        const labGuild = this.client.guilds.cache.get(APHRODY_DISCORD.guildId);
+        const labGuild = this.client.guilds.cache.get(SHENRON_DISCORD.guildId);
         if (!labGuild) {
           logger.debug(
-            { guildId: APHRODY_DISCORD.guildId },
+            { guildId: SHENRON_DISCORD.guildId },
             "[LabSyncCron] Guilde Aphrody non présente dans le cache — attente d'invitation",
           );
           return;

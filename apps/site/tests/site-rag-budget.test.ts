@@ -6,8 +6,8 @@ mock.module("server-only", () => ({}));
 const { chatAphrodyRag } = await import("../src/lib/site-rag");
 
 test("the site sends the same bounded generation request after real HTTP retrieval", async () => {
-  const savedUrl = process.env.APHRODY_AI_CHAT_BASE_URL;
-  const savedModel = process.env.APHRODY_AI_CHAT_MODEL;
+  const savedUrl = process.env.SHENRON_AI_CHAT_BASE_URL;
+  const savedModel = process.env.SHENRON_AI_CHAT_MODEL;
   let budget: unknown;
   const server = Bun.serve({
     hostname: "127.0.0.1",
@@ -45,18 +45,18 @@ test("the site sends the same bounded generation request after real HTTP retriev
     },
   });
   try {
-    process.env.APHRODY_AI_CHAT_BASE_URL = new URL("/v1", server.url).href;
-    process.env.APHRODY_AI_CHAT_MODEL = "fixture";
+    process.env.SHENRON_AI_CHAT_BASE_URL = new URL("/v1", server.url).href;
+    process.env.SHENRON_AI_CHAT_MODEL = "fixture";
     const client = new AphrodyComputeClient({ baseUrl: server.url.origin, token: "fixture" });
     const result = await chatAphrodyRag("Qui est Goku ?", "whis", {}, client);
     expect(budget).toBe(PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS);
     expect(result.answer).toContain("Goku");
     expect(result.hits).toHaveLength(1);
   } finally {
-    if (savedUrl === undefined) delete process.env.APHRODY_AI_CHAT_BASE_URL;
-    else process.env.APHRODY_AI_CHAT_BASE_URL = savedUrl;
-    if (savedModel === undefined) delete process.env.APHRODY_AI_CHAT_MODEL;
-    else process.env.APHRODY_AI_CHAT_MODEL = savedModel;
+    if (savedUrl === undefined) delete process.env.SHENRON_AI_CHAT_BASE_URL;
+    else process.env.SHENRON_AI_CHAT_BASE_URL = savedUrl;
+    if (savedModel === undefined) delete process.env.SHENRON_AI_CHAT_MODEL;
+    else process.env.SHENRON_AI_CHAT_MODEL = savedModel;
     await server.stop(true);
   }
 });

@@ -79,19 +79,19 @@ describe("planBackend", () => {
     expect(env).toEqual({ SHENRON_PROFILE: "desktop" });
   });
 
-  test("agent home template of the payload, outside production and without APHRODY_WORKSPACE", () => {
+  test("agent home template of the payload, outside production and without SHENRON_WORKSPACE", () => {
     const { paths, payloadDir } = setup();
     touch(join(payloadDir, "home", "SOUL.md"));
     const desktop = planBackend(paths, { SHENRON_PROFILE: "desktop" }, { payloadDir });
-    expect(desktop.env.APHRODY_WORKSPACE).toBe(join(payloadDir, "home"));
+    expect(desktop.env.SHENRON_WORKSPACE).toBe(join(payloadDir, "home"));
     const explicit = planBackend(
       paths,
-      { SHENRON_PROFILE: "desktop", APHRODY_WORKSPACE: "/srv/dbfr" },
+      { SHENRON_PROFILE: "desktop", SHENRON_WORKSPACE: "/srv/dbfr" },
       { payloadDir },
     );
-    expect(explicit.env.APHRODY_WORKSPACE).toBe("/srv/dbfr");
+    expect(explicit.env.SHENRON_WORKSPACE).toBe("/srv/dbfr");
     const production = planBackend(paths, { SHENRON_PROFILE: "production" }, { payloadDir });
-    expect(production.env.APHRODY_WORKSPACE).toBeUndefined();
+    expect(production.env.SHENRON_WORKSPACE).toBeUndefined();
   });
 
   test("production: public VFS nodes only, no loopback owner, wiki on the site, chat order kept", () => {
@@ -105,14 +105,14 @@ describe("planBackend", () => {
 
   test("aphrody and shenron-mcp shipped beside the executable", () => {
     const { paths } = setup();
-    expect(planBackend(paths, {}).env.APHRODY_BIN).toBeUndefined();
+    expect(planBackend(paths, {}).env.SHENRON_BIN).toBeUndefined();
     const aphrody = touch(join(paths.exeDir, exe("aphrody")));
     const mcp = touch(join(paths.exeDir, "binaries", exe("shenron-mcp")));
     const plan = planBackend(paths, {});
-    expect(plan.env.APHRODY_BIN).toBe(aphrody);
+    expect(plan.env.SHENRON_BIN).toBe(aphrody);
     expect(plan.env.SHENRON_MCP_BIN).toBe(mcp);
     expect(plan.mcpSidecar).toBe(mcp);
-    expect(planBackend(paths, { APHRODY_BIN: "/opt/aphrody" }).env.APHRODY_BIN).toBe(
+    expect(planBackend(paths, { SHENRON_BIN: "/opt/aphrody" }).env.SHENRON_BIN).toBe(
       "/opt/aphrody",
     );
   });

@@ -65,7 +65,7 @@ const BOT_ROOT = join(import.meta.dir, "..");
 const ROOT = resolve(option("root") ?? join(BOT_ROOT, "..", "..", "data", "manga-ocr"));
 const APHRODY = option("aphrody") ?? "aphrody";
 const PP_MODEL = option("pp-model") ?? "ppocr-v5-mobile";
-// APHRODY_AI_VISION_MODEL, puis l'alias hérité ; défaut gemini-web/flash (résolveur unique).
+// SHENRON_AI_VISION_MODEL, puis l'alias hérité ; défaut gemini-web/flash (résolveur unique).
 const REVIEW_MODEL = resolveVisionModel(process.env);
 const REVIEW_REASONING = "low";
 const REVIEW_SCHEMA = join(import.meta.dir, "manga-ocr-review.schema.json");

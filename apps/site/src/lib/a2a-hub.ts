@@ -10,9 +10,9 @@
  * - POST /a2a                          legacy JSON-RPC `message/send` bridge
  * - POST /                             A2A 1.0 JSON-RPC (SendMessage, GetTask, ListTasks, ...)
  *
- * Base URL: `APHRODY_A2A_URL`. Read per call, never at module load.
+ * Base URL: `SHENRON_A2A_URL`. Read per call, never at module load.
  *
- * Without `APHRODY_A2A_URL` (production since the Aphrody A2A service was retired on 2026-09-25),
+ * Without `SHENRON_A2A_URL` (production since the Aphrody A2A service was retired on 2026-09-25),
  * the site answers itself with the in-process Shenron hub (`@shenron/pipeline/aphrody/a2a`):
  * legacy `message/send`, `tasks/*` and the A2A 1.0 `SendMessage`, `GetTask`, `ListTasks`, with
  * tasks and envelopes kept in the durable store of `A2A_COORD_DIR`.

@@ -128,10 +128,10 @@ describe("createOpenAiChat", () => {
   it("is built from the environment only when a base URL is declared", () => {
     expect(directChatFromEnv({})).toBeNull();
     expect(
-      directChatFromEnv({ APHRODY_AI_CHAT_BASE_URL: "http://127.0.0.1:8798/v1" }),
+      directChatFromEnv({ SHENRON_AI_CHAT_BASE_URL: "http://127.0.0.1:8798/v1" }),
     ).toBeFunction();
     expect(() =>
-      directChatFromEnv({ APHRODY_AI_CHAT_BASE_URL: "https://google.com/v1" }),
+      directChatFromEnv({ SHENRON_AI_CHAT_BASE_URL: "https://google.com/v1" }),
     ).toThrow();
   });
 });

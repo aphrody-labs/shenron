@@ -31,7 +31,7 @@ test("production tasks survive a fresh process using only the application home",
   const env: NodeJS.ProcessEnv = { ...process.env, NODE_ENV: "production", SHENRON_HOME: home };
   delete env.A2A_COORD_DIR;
   delete env.SHENRON_A2A_STORE_DIR;
-  delete env.APHRODY_A2A_COORD_API;
+  delete env.SHENRON_A2A_COORD_API;
   const modulePath = new URL("../../src/aphrody/a2a-file-store.ts", import.meta.url).href;
   const run = async (code: string) => {
     const process = Bun.spawn([Bun.which("bun")!, "-e", code], {

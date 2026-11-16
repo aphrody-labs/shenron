@@ -55,28 +55,28 @@ describe("script environment contract (B13, rule 9)", () => {
   it("has no embedder default and names the variables", () => {
     expect(() => requireEmbedBaseUrl({})).toThrow(MissingEnvError);
     expect(() => requireEmbedBaseUrl({})).toThrow(
-      /APHRODY_AI_EMBED_BASE_URL ou APHRODY_SHENRON_EMBED_BASE_URL ou EMBED_URL ou APHRODY_RAG_EMBED_ENDPOINT/,
+      /SHENRON_AI_EMBED_BASE_URL ou SHENRON_EMBED_BASE_URL ou EMBED_URL ou SHENRON_RAG_EMBED_ENDPOINT/,
     );
     expect(() => requireAphrodyApiUrl({})).toThrow(
-      /APHRODY_AI_HTTP_URL ou APHRODY_SHENRON_API_URL/,
+      /SHENRON_AI_HTTP_URL ou SHENRON_API_URL/,
     );
   });
 
-  it("reads the canonical APHRODY_AI_* names before the legacy aliases", () => {
+  it("reads the canonical SHENRON_AI_* names before the legacy aliases", () => {
     expect(
       requireEmbedBaseUrl({
-        APHRODY_AI_EMBED_BASE_URL: "http://127.0.0.1:9002/v1",
+        SHENRON_AI_EMBED_BASE_URL: "http://127.0.0.1:9002/v1",
         EMBED_URL: "http://127.0.0.1:9000",
       }),
     ).toEqual({
-      name: "APHRODY_AI_EMBED_BASE_URL",
+      name: "SHENRON_AI_EMBED_BASE_URL",
       baseUrl: "http://127.0.0.1:9002/v1",
       origin: "http://127.0.0.1:9002",
     });
     expect(
       requireAphrodyApiUrl({
-        APHRODY_AI_HTTP_URL: "http://127.0.0.1:9003",
-        APHRODY_SHENRON_API_URL: "http://127.0.0.1:1",
+        SHENRON_AI_HTTP_URL: "http://127.0.0.1:9003",
+        SHENRON_API_URL: "http://127.0.0.1:1",
       }),
     ).toBe("http://127.0.0.1:9003/");
   });
@@ -88,7 +88,7 @@ describe("script environment contract (B13, rule 9)", () => {
       model: "Xenova/multilingual-e5-small",
       dimensions: 384,
     });
-    expect(() => requireScriptEmbeddingSpace({ APHRODY_AI_EMBED_DIMENSIONS: "1024" })).toThrow(
+    expect(() => requireScriptEmbeddingSpace({ SHENRON_AI_EMBED_DIMENSIONS: "1024" })).toThrow(
       /never mixed/,
     );
     expect(() =>
@@ -104,10 +104,10 @@ describe("script environment contract (B13, rule 9)", () => {
     });
     expect(
       requireEmbedBaseUrl({
-        APHRODY_SHENRON_EMBED_BASE_URL: "http://localhost:9001/v1",
+        SHENRON_EMBED_BASE_URL: "http://localhost:9001/v1",
         EMBED_URL: "http://x:1",
       }).name,
-    ).toBe("APHRODY_SHENRON_EMBED_BASE_URL");
+    ).toBe("SHENRON_EMBED_BASE_URL");
   });
 
   it("refuses a destructive rebuild without RAG_DB or against the served database", () => {

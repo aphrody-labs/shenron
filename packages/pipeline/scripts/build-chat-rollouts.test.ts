@@ -161,9 +161,9 @@ describe("options", () => {
   });
   test("antigravityTimeoutMs reads a positive override only", () => {
     expect(antigravityTimeoutMs({})).toBe(ANTIGRAVITY_TIMEOUT_MS);
-    expect(antigravityTimeoutMs({ APHRODY_ANTIGRAVITY_TIMEOUT_MS: "2500" })).toBe(2500);
+    expect(antigravityTimeoutMs({ SHENRON_ANTIGRAVITY_TIMEOUT_MS: "2500" })).toBe(2500);
     for (const bad of ["0", "-5", "abc", ""])
-      expect(antigravityTimeoutMs({ APHRODY_ANTIGRAVITY_TIMEOUT_MS: bad })).toBe(
+      expect(antigravityTimeoutMs({ SHENRON_ANTIGRAVITY_TIMEOUT_MS: bad })).toBe(
         ANTIGRAVITY_TIMEOUT_MS,
       );
   });
@@ -185,13 +185,13 @@ function fakeAphrody(body: string): string {
 }
 
 async function withBin<T>(bin: string, run: () => Promise<T>): Promise<T> {
-  const previous = Bun.env.APHRODY_BIN;
-  Bun.env.APHRODY_BIN = bin;
+  const previous = Bun.env.SHENRON_BIN;
+  Bun.env.SHENRON_BIN = bin;
   try {
     return await run();
   } finally {
-    if (previous === undefined) delete Bun.env.APHRODY_BIN;
-    else Bun.env.APHRODY_BIN = previous;
+    if (previous === undefined) delete Bun.env.SHENRON_BIN;
+    else Bun.env.SHENRON_BIN = previous;
   }
 }
 
@@ -402,7 +402,7 @@ describe("build-chat-rollouts CLI", () => {
           ...(stop === "stdin" ? ["--control-stdin"] : []),
         ],
         {
-          env: { ...process.env, APHRODY_BIN: bin },
+          env: { ...process.env, SHENRON_BIN: bin },
           stdout: "pipe",
           stderr: "pipe",
           stdin: "pipe",

@@ -54,7 +54,7 @@ const URL_CANON = "https://dragonballfr.com/wiki/canon";
 
 async function corpusDir(): Promise<string> {
   const candidats = [
-    process.env.APHRODY_HOME,
+    process.env.SHENRON_HOME,
     join(homedir(), ".aphrody", "workspace"),
     join(homedir(), ".aphrody", "workspaces", "dbfr"),
   ].filter((c): c is string => Boolean(c));
@@ -176,7 +176,7 @@ if (process.env.RAG_BACKEND === "aphrody") {
 // ── Écriture à chaud ────────────────────────────────────────────────────────
 
 // B13 : aucune adresse par défaut ; embeddings via Aphrody `POST /api/v1/shenron/embed`
-// (APHRODY_AI_HTTP_URL / APHRODY_AI_HTTP_TOKEN), vérifiés avant toute écriture.
+// (SHENRON_AI_HTTP_URL / SHENRON_AI_HTTP_TOKEN), vérifiés avant toute écriture.
 let embeddingsClient: ShenronEmbeddingsClient;
 try {
   embeddingsClient = new ShenronEmbeddingsClient();

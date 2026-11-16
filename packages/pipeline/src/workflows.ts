@@ -328,8 +328,8 @@ export function createCrawlJobIntent(key: string, target: CrawlTarget): WebJobIn
 export function corpusLocations(_root: string, env?: Record<string, string | undefined>) {
   env ??= process.env;
   const crawlDir =
-    env.APHRODY_CORPUS_CRAWL_DIR?.trim() ||
-    join(env.APHRODY_HOME?.trim() || join(homedir(), ".aphrody"), "workspaces", "dbfr", "crawl");
+    env.SHENRON_CORPUS_CRAWL_DIR?.trim() ||
+    join(env.SHENRON_HOME?.trim() || join(homedir(), ".aphrody"), "workspaces", "dbfr", "crawl");
   return {
     crawlDir,
     corpusDir: join(crawlDir, "corpus"),
@@ -344,7 +344,7 @@ export async function runCorpusIngest(
   const root = join(import.meta.dir, "../../..");
   const loc = corpusLocations(root);
   const command = [
-    process.env.APHRODY_BIN?.trim() || "aphrody",
+    process.env.SHENRON_BIN?.trim() || "aphrody",
     "web",
     "dragon-ball",
     "index",
@@ -360,7 +360,7 @@ export async function runCorpusIngest(
 export async function runCrawl(target: CrawlTarget): Promise<PipelineExecution> {
   const root = join(import.meta.dir, "../../..");
   const loc = corpusLocations(root);
-  const bin = process.env.APHRODY_BIN?.trim() || "aphrody";
+  const bin = process.env.SHENRON_BIN?.trim() || "aphrody";
   if (target.url && target.source !== "custom")
     throw new Error("A seed URL requires the custom crawl source");
   if (target.outDir !== undefined && !target.outDir.trim())
@@ -402,8 +402,8 @@ export async function runCrawl(target: CrawlTarget): Promise<PipelineExecution> 
     ];
     if (target.source !== "universal")
       command.push("--source", sources[target.source as keyof typeof sources]!);
-    if (process.env.APHRODY_CORPUS_CRAWL_CONFIG?.trim())
-      command.push("--config", process.env.APHRODY_CORPUS_CRAWL_CONFIG.trim());
+    if (process.env.SHENRON_CORPUS_CRAWL_CONFIG?.trim())
+      command.push("--config", process.env.SHENRON_CORPUS_CRAWL_CONFIG.trim());
   }
   for (const value of [target.depth, target.maxRequests])
     if (value !== undefined && (!Number.isSafeInteger(value) || value < 0))

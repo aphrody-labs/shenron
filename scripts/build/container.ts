@@ -9,13 +9,13 @@
  *
  * Same contract as Aphrody's `aphrody-build.ts run`: the checkout is mounted at its own absolute path,
  * the caller's uid plus the shared build group (1500), named cache volumes
- * aphrody-build-{cargo,sccache,bun,xwin,xdg}, bounded CPU/memory (APHRODY_BUILD_CPUS ≤ 6, default 6;
- * APHRODY_BUILD_MEMORY, default 16g, no swap) so the llama-server services keep their memory, and the
+ * aphrody-build-{cargo,sccache,bun,xwin,xdg}, bounded CPU/memory (SHENRON_BUILD_CPUS ≤ 6, default 6;
+ * SHENRON_BUILD_MEMORY, default 16g, no swap) so the llama-server services keep their memory, and the
  * optional build lock named by SHENRON_BUILD_LOCK. Secrets pass by environment NAME only, never as values.
  *
  * Dépendances Git privées (aphrody-labs/aphrody épinglé par révision) : l'aide d'identification Git
- * de l'image répond pour github.com avec `APHRODY_GIT_TOKEN`, résolu ici depuis l'appelant
- * (APHRODY_GIT_TOKEN, GH_TOKEN, GITHUB_TOKEN, sinon `gh auth token`) et passé par son nom seulement.
+ * de l'image répond pour github.com avec `SHENRON_GIT_TOKEN`, résolu ici depuis l'appelant
+ * (SHENRON_GIT_TOKEN, GH_TOKEN, GITHUB_TOKEN, sinon `gh auth token`) et passé par son nom seulement.
  */
 import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
@@ -53,8 +53,8 @@ export function containerArgs(o: ContainerOptions): string[] {
     throw new Error("--target-volume : nom de volume invalide");
   const cpus = o.cpus || "6";
   const memory = o.memory || "16g";
-  if (!/^\d+(\.\d+)?$/.test(cpus) || Number(cpus) > 6) throw new Error("APHRODY_BUILD_CPUS ≤ 6");
-  if (!/^\d+[mg]$/.test(memory)) throw new Error("APHRODY_BUILD_MEMORY : <n>m ou <n>g");
+  if (!/^\d+(\.\d+)?$/.test(cpus) || Number(cpus) > 6) throw new Error("SHENRON_BUILD_CPUS ≤ 6");
+  if (!/^\d+[mg]$/.test(memory)) throw new Error("SHENRON_BUILD_MEMORY : <n>m ou <n>g");
   for (const name of o.env ?? [])
     if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) throw new Error(`--env ${name} invalide`);
   const docker = [
@@ -116,7 +116,7 @@ export function gitToken(
   env: Record<string, string | undefined>,
   gh: () => string | undefined,
 ): string | undefined {
-  return env.APHRODY_GIT_TOKEN || env.GH_TOKEN || env.GITHUB_TOKEN || gh() || undefined;
+  return env.SHENRON_GIT_TOKEN || env.GH_TOKEN || env.GITHUB_TOKEN || gh() || undefined;
 }
 
 function ghToken(): string | undefined {
@@ -186,7 +186,7 @@ if (import.meta.main) {
   };
   const env = flags.flatMap((flag, index) => (flag === "--env" ? [flags[index + 1] ?? ""] : []));
   const token = gitToken(process.env, ghToken);
-  if (token && !env.includes("APHRODY_GIT_TOKEN")) env.push("APHRODY_GIT_TOKEN");
+  if (token && !env.includes("SHENRON_GIT_TOKEN")) env.push("SHENRON_GIT_TOKEN");
   const args = containerArgs({
     repo: ROOT,
     command: argv.slice(split + 1),
@@ -196,11 +196,11 @@ if (import.meta.main) {
     env,
     hostNetwork: flags.includes("--host-network"),
     lock: !flags.includes("--no-lock"),
-    cpus: process.env.APHRODY_BUILD_CPUS,
-    memory: process.env.APHRODY_BUILD_MEMORY,
+    cpus: process.env.SHENRON_BUILD_CPUS,
+    memory: process.env.SHENRON_BUILD_MEMORY,
   });
   const child = Bun.spawnSync(args, {
-    env: token ? { ...process.env, APHRODY_GIT_TOKEN: token } : process.env,
+    env: token ? { ...process.env, SHENRON_GIT_TOKEN: token } : process.env,
     stdio: ["inherit", "inherit", "inherit"],
   });
   process.exit(child.exitCode ?? 1);

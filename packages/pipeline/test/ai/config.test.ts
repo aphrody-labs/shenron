@@ -50,13 +50,13 @@ describe("resolveAiConfig", () => {
     expect(cfg.timeouts).toEqual({ ...DEFAULT_AI_TIMEOUTS });
     const caps = cfg.disabled.map((d) => d.capability).toSorted();
     expect(caps).toEqual(["chat", "compute", "embed", "ocr", "rag"]);
-    for (const d of cfg.disabled) expect(d.reason).toContain("APHRODY_AI_HTTP_URL");
+    for (const d of cfg.disabled) expect(d.reason).toContain("SHENRON_AI_HTTP_URL");
   });
 
   test("canonical compute names: origin form, aphrody embed transport", () => {
     const cfg = ok({
-      APHRODY_AI_HTTP_URL: `${LOOP}/`,
-      APHRODY_AI_HTTP_TOKEN: TOKEN,
+      SHENRON_AI_HTTP_URL: `${LOOP}/`,
+      SHENRON_AI_HTTP_TOKEN: TOKEN,
       RAG_BACKEND: "aphrody",
     });
     expect(cfg.compute?.baseUrl.href).toBe(`${LOOP}/`);
@@ -67,14 +67,14 @@ describe("resolveAiConfig", () => {
   });
 
   test("legacy compute aliases still work; canonical wins when both are set", () => {
-    const legacy = ok({ APHRODY_SHENRON_API_URL: LOOP, APHRODY_SHENRON_API_TOKEN: TOKEN });
+    const legacy = ok({ SHENRON_API_URL: LOOP, SHENRON_API_TOKEN: TOKEN });
     expect(legacy.compute?.baseUrl.origin).toBe(LOOP);
     const other = loopbackBase(18800).origin;
     const both = ok({
-      APHRODY_AI_HTTP_URL: other,
-      APHRODY_SHENRON_API_URL: LOOP,
-      APHRODY_AI_HTTP_TOKEN: TOKEN,
-      APHRODY_SHENRON_API_TOKEN: "x".repeat(40),
+      SHENRON_AI_HTTP_URL: other,
+      SHENRON_API_URL: LOOP,
+      SHENRON_AI_HTTP_TOKEN: TOKEN,
+      SHENRON_API_TOKEN: "x".repeat(40),
     });
     expect(both.compute?.baseUrl.origin).toBe(other);
     expect(both.compute?.token).toBe(TOKEN);
@@ -84,14 +84,14 @@ describe("resolveAiConfig", () => {
     const secret = "short-secret-value";
     const remote = ["http://", "gemini.google.com", ":8789"].join("");
     const r = resolveAiConfig({
-      APHRODY_AI_HTTP_URL: remote,
-      APHRODY_AI_HTTP_TOKEN: secret,
+      SHENRON_AI_HTTP_URL: remote,
+      SHENRON_AI_HTTP_TOKEN: secret,
     });
     expect(r.ok).toBe(false);
     if (r.ok) return;
     expect(r.issues.map((i) => i.name).toSorted()).toEqual([
-      "APHRODY_AI_HTTP_TOKEN",
-      "APHRODY_AI_HTTP_URL",
+      "SHENRON_AI_HTTP_TOKEN",
+      "SHENRON_AI_HTTP_URL",
     ]);
     const serialised = JSON.stringify(r.issues);
     expect(serialised).not.toContain(secret);
@@ -99,43 +99,43 @@ describe("resolveAiConfig", () => {
   });
 
   test("URL without token is an issue naming the canonical token variable", () => {
-    const r = resolveAiConfig({ APHRODY_SHENRON_API_URL: LOOP });
+    const r = resolveAiConfig({ SHENRON_API_URL: LOOP });
     expect(r.ok).toBe(false);
     if (!r.ok) {
       expect(r.issues).toHaveLength(1);
-      expect(r.issues[0]).toMatchObject({ name: "APHRODY_AI_HTTP_TOKEN", problem: "missing" });
-      expect(r.issues[0]?.hint).toContain("APHRODY_SHENRON_API_TOKEN");
+      expect(r.issues[0]).toMatchObject({ name: "SHENRON_AI_HTTP_TOKEN", problem: "missing" });
+      expect(r.issues[0]?.hint).toContain("SHENRON_API_TOKEN");
     }
   });
 
   test("a direct embed URL never selects a transport: Aphrody only", () => {
-    const cfg = ok({ APHRODY_AI_EMBED_BASE_URL: `${E5}/` });
+    const cfg = ok({ SHENRON_AI_EMBED_BASE_URL: `${E5}/` });
     expect(cfg.embed).toBeNull();
     expect(cfg.disabled.find((d) => d.capability === "embed")?.reason).toContain(
-      "APHRODY_AI_HTTP_URL",
+      "SHENRON_AI_HTTP_URL",
     );
     // An invalid direct URL is ignored, not an issue.
-    expect(resolveAiConfig({ APHRODY_AI_EMBED_BASE_URL: E5_ORIGIN }).ok).toBe(true);
+    expect(resolveAiConfig({ SHENRON_AI_EMBED_BASE_URL: E5_ORIGIN }).ok).toBe(true);
     const both = ok({
-      APHRODY_AI_HTTP_URL: LOOP,
-      APHRODY_AI_HTTP_TOKEN: TOKEN,
-      APHRODY_AI_EMBED_BASE_URL: E5,
+      SHENRON_AI_HTTP_URL: LOOP,
+      SHENRON_AI_HTTP_TOKEN: TOKEN,
+      SHENRON_AI_EMBED_BASE_URL: E5,
     });
     expect(both.embed).toEqual({ transport: "aphrody" });
     expect(both.e5BaseUrl?.href).toBe(E5);
   });
 
   test("chat and vision model ids: canonical, aliases in contract order, <= 128 chars", () => {
-    expect(ok({ APHRODY_LLM_MODEL: "gemini-web/pro" }).chatModel).toBe("gemini-web/pro");
-    expect(ok({ APHRODY_SHENRON_LLM_MODEL: "qwen3" }).chatModel).toBe("qwen3");
+    expect(ok({ SHENRON_LLM_MODEL: "gemini-web/pro" }).chatModel).toBe("gemini-web/pro");
+    expect(ok({ SHENRON_LLM_MODEL: "qwen3" }).chatModel).toBe("qwen3");
     expect(
-      ok({ APHRODY_AI_CHAT_MODEL: "gemini-web/flash-lite", APHRODY_LLM_MODEL: "gemini-web/pro" })
+      ok({ SHENRON_AI_CHAT_MODEL: "gemini-web/flash-lite", SHENRON_LLM_MODEL: "gemini-web/pro" })
         .chatModel,
     ).toBe("gemini-web/flash-lite");
-    expect(ok({ APHRODY_LLM_MODEL: "  " }).chatModel).toBe("gemini-web/flash");
-    expect(resolveAiConfig({ APHRODY_AI_CHAT_MODEL: "m".repeat(129) }).ok).toBe(false);
-    expect(ok({ APHRODY_SHENRON_VISION_MODEL: "qwen3-vl" }).visionModel).toBe("qwen3-vl");
-    expect(resolveChatModel({ APHRODY_AI_CHAT_MODEL: "gemini-web/pro" })).toBe("gemini-web/pro");
+    expect(ok({ SHENRON_LLM_MODEL: "  " }).chatModel).toBe("gemini-web/flash");
+    expect(resolveAiConfig({ SHENRON_AI_CHAT_MODEL: "m".repeat(129) }).ok).toBe(false);
+    expect(ok({ SHENRON_VISION_MODEL: "qwen3-vl" }).visionModel).toBe("qwen3-vl");
+    expect(resolveChatModel({ SHENRON_AI_CHAT_MODEL: "gemini-web/pro" })).toBe("gemini-web/pro");
     expect(resolveVisionModel({})).toBe("gemini-web/flash");
   });
 
@@ -161,13 +161,13 @@ describe("embed base URL forms", () => {
   };
 
   test("base form must end with /v1", () => {
-    expect(base({ APHRODY_AI_EMBED_BASE_URL: E5 })).toBe(E5);
-    expect(base({ APHRODY_SHENRON_EMBED_BASE_URL: `${E5}/` })).toBe(E5);
-    const bad = resolveEmbedBaseUrl({ APHRODY_AI_EMBED_BASE_URL: E5_ORIGIN });
+    expect(base({ SHENRON_AI_EMBED_BASE_URL: E5 })).toBe(E5);
+    expect(base({ SHENRON_EMBED_BASE_URL: `${E5}/` })).toBe(E5);
+    const bad = resolveEmbedBaseUrl({ SHENRON_AI_EMBED_BASE_URL: E5_ORIGIN });
     expect(bad.ok).toBe(false);
     if (!bad.ok)
       expect(bad.issues[0]).toMatchObject({
-        name: "APHRODY_AI_EMBED_BASE_URL",
+        name: "SHENRON_AI_EMBED_BASE_URL",
         problem: "invalid",
       });
   });
@@ -177,41 +177,41 @@ describe("embed base URL forms", () => {
     expect(base({ EMBED_URL: `${E5_ORIGIN}/` })).toBe(E5);
   });
 
-  test("APHRODY_RAG_EMBED_ENDPOINT is an endpoint: the operation path is removed", () => {
-    expect(base({ APHRODY_RAG_EMBED_ENDPOINT: `${E5}/embeddings` })).toBe(E5);
-    expect(resolveEmbedBaseUrl({ APHRODY_RAG_EMBED_ENDPOINT: E5 }).ok).toBe(false);
+  test("SHENRON_RAG_EMBED_ENDPOINT is an endpoint: the operation path is removed", () => {
+    expect(base({ SHENRON_RAG_EMBED_ENDPOINT: `${E5}/embeddings` })).toBe(E5);
+    expect(resolveEmbedBaseUrl({ SHENRON_RAG_EMBED_ENDPOINT: E5 }).ok).toBe(false);
   });
 
-  test("contract order: canonical, then APHRODY_SHENRON_EMBED_BASE_URL, EMBED_URL, APHRODY_RAG_EMBED_ENDPOINT", () => {
+  test("contract order: canonical, then SHENRON_EMBED_BASE_URL, EMBED_URL, SHENRON_RAG_EMBED_ENDPOINT", () => {
     const other = `${loopbackBase(18900).origin}/v1`;
-    expect(base({ EMBED_URL: E5_ORIGIN, APHRODY_SHENRON_EMBED_BASE_URL: other })).toBe(other);
-    expect(base({ APHRODY_AI_EMBED_BASE_URL: other, EMBED_URL: E5_ORIGIN })).toBe(other);
+    expect(base({ EMBED_URL: E5_ORIGIN, SHENRON_EMBED_BASE_URL: other })).toBe(other);
+    expect(base({ SHENRON_AI_EMBED_BASE_URL: other, EMBED_URL: E5_ORIGIN })).toBe(other);
   });
 
   test("no default: missing is an error naming the variables", () => {
     expect(base({})).toBeNull();
     expect(() => requireEmbedBaseUrl({})).toThrow(AiConfigError);
-    expect(() => requireEmbedBaseUrl({})).toThrow(/APHRODY_AI_EMBED_BASE_URL.*EMBED_URL/);
+    expect(() => requireEmbedBaseUrl({})).toThrow(/SHENRON_AI_EMBED_BASE_URL.*EMBED_URL/);
     expect(aiServiceHealthUrl(new URL(E5)).href).toBe(`${E5_ORIGIN}/health`);
   });
 });
 
 describe("aphrody-ai-http require helpers", () => {
   test("missing URL or token is an error naming canonical and legacy names", () => {
-    expect(() => requireAiHttpUrl({})).toThrow(/APHRODY_AI_HTTP_URL.*APHRODY_SHENRON_API_URL/);
+    expect(() => requireAiHttpUrl({})).toThrow(/SHENRON_AI_HTTP_URL.*SHENRON_API_URL/);
     expect(() => requireAiHttpToken({})).toThrow(
-      /APHRODY_AI_HTTP_TOKEN.*APHRODY_SHENRON_API_TOKEN/,
+      /SHENRON_AI_HTTP_TOKEN.*SHENRON_API_TOKEN/,
     );
   });
 
   test("the URL is reduced to its origin; the token never appears in errors", () => {
-    expect(requireAiHttpUrl({ APHRODY_AI_HTTP_URL: `${LOOP}/api/v1/shenron` }).href).toBe(
+    expect(requireAiHttpUrl({ SHENRON_AI_HTTP_URL: `${LOOP}/api/v1/shenron` }).href).toBe(
       `${LOOP}/`,
     );
-    expect(requireAiHttpToken({ APHRODY_SHENRON_API_TOKEN: TOKEN })).toBe(TOKEN);
+    expect(requireAiHttpToken({ SHENRON_API_TOKEN: TOKEN })).toBe(TOKEN);
     const remote = ["http://", "gemini.google.com", ":1"].join("");
     try {
-      requireAiHttpUrl({ APHRODY_AI_HTTP_URL: remote });
+      requireAiHttpUrl({ SHENRON_AI_HTTP_URL: remote });
       throw new Error("expected a throw");
     } catch (error) {
       expect(error).toBeInstanceOf(AiConfigError);
@@ -231,18 +231,18 @@ describe("embedding space (never mix spaces)", () => {
   test("the same model, with or without its hub namespace, is accepted", () => {
     expect(
       requireEmbeddingSpace({
-        APHRODY_AI_EMBED_MODEL: "multilingual-e5-small",
-        APHRODY_AI_EMBED_DIMENSIONS: "384",
+        SHENRON_AI_EMBED_MODEL: "multilingual-e5-small",
+        SHENRON_AI_EMBED_DIMENSIONS: "384",
       }).dimensions,
     ).toBe(384);
-    expect(requireEmbeddingSpace({ APHRODY_RAG_EMBED_DIM: "384" }).dimensions).toBe(384);
+    expect(requireEmbeddingSpace({ SHENRON_RAG_EMBED_DIM: "384" }).dimensions).toBe(384);
   });
 
   test("another dimension or another model is a hard error", () => {
-    expect(() => requireEmbeddingSpace({ APHRODY_AI_EMBED_DIMENSIONS: "1024" })).toThrow(
+    expect(() => requireEmbeddingSpace({ SHENRON_AI_EMBED_DIMENSIONS: "1024" })).toThrow(
       EmbeddingSpaceMismatchError,
     );
-    expect(() => requireEmbeddingSpace({ APHRODY_AI_EMBED_MODEL: "qwen3-embedding-0.6b" })).toThrow(
+    expect(() => requireEmbeddingSpace({ SHENRON_AI_EMBED_MODEL: "qwen3-embedding-0.6b" })).toThrow(
       EmbeddingSpaceMismatchError,
     );
     expect(() =>
@@ -255,10 +255,10 @@ describe("embedding space (never mix spaces)", () => {
   });
 
   test("a malformed dimension is a configuration error", () => {
-    expect(() => requireEmbeddingSpace({ APHRODY_AI_EMBED_DIMENSIONS: "384.5" })).toThrow(
+    expect(() => requireEmbeddingSpace({ SHENRON_AI_EMBED_DIMENSIONS: "384.5" })).toThrow(
       AiConfigError,
     );
-    expect(resolveAiConfig({ APHRODY_AI_EMBED_DIMENSIONS: "-1" }).ok).toBe(false);
+    expect(resolveAiConfig({ SHENRON_AI_EMBED_DIMENSIONS: "-1" }).ok).toBe(false);
   });
 });
 
@@ -274,7 +274,7 @@ describe("rerank dialects", () => {
   });
 
   test("canonical base form posts to /v1/rerank in the llama-server dialect", () => {
-    const r = rerank({ APHRODY_AI_RERANK_BASE_URL: E5, APHRODY_AI_RERANK_MODEL: "qwen3-reranker" });
+    const r = rerank({ SHENRON_AI_RERANK_BASE_URL: E5, SHENRON_AI_RERANK_MODEL: "qwen3-reranker" });
     expect(r?.endpoint.href).toBe(`${E5}/rerank`);
     expect(r?.dialect).toBe("llama-server");
     expect(r?.model).toBe("qwen3-reranker");
@@ -286,10 +286,10 @@ describe("rerank dialects", () => {
     expect(r?.dialect).toBe("shenron-sidecar");
   });
 
-  test("APHRODY_RAG_RERANK_ENDPOINT is a llama-server endpoint", () => {
+  test("SHENRON_RAG_RERANK_ENDPOINT is a llama-server endpoint", () => {
     const r = rerank({
-      APHRODY_RAG_RERANK_ENDPOINT: `${E5}/rerank`,
-      APHRODY_RAG_RERANK_MODEL: "m",
+      SHENRON_RAG_RERANK_ENDPOINT: `${E5}/rerank`,
+      SHENRON_RAG_RERANK_MODEL: "m",
     });
     expect(r?.dialect).toBe("llama-server");
     expect(r?.model).toBe("m");
@@ -299,9 +299,9 @@ describe("rerank dialects", () => {
 describe("aphrody-infra contract parity", () => {
   // Infra configuration belongs to the selected Aphrody workspace, not a fixed host checkout.
   const contractPath =
-    process.env.APHRODY_AI_CONTRACT ||
-    (process.env.APHRODY_INFRA_ROOT
-      ? join(process.env.APHRODY_INFRA_ROOT, "config", "local-ai.json")
+    process.env.SHENRON_AI_CONTRACT ||
+    (process.env.SHENRON_INFRA_ROOT
+      ? join(process.env.SHENRON_INFRA_ROOT, "config", "local-ai.json")
       : join(import.meta.dir, "..", "..", "..", "..", "aphrody-infra", "config", "local-ai.json"));
   const present = existsSync(contractPath);
 
@@ -348,27 +348,27 @@ describe("resolveDirectChat", () => {
   });
 
   test("reads the canonical base and defaults the model to gemma4-e2b", () => {
-    const r = resolveDirectChat({ APHRODY_AI_CHAT_BASE_URL: `${LOOP}/v1` });
+    const r = resolveDirectChat({ SHENRON_AI_CHAT_BASE_URL: `${LOOP}/v1` });
     expect(r.ok && r.value?.baseUrl.href).toBe(`${LOOP}/v1`);
     expect(r.ok && r.value?.model).toBe("gemma4-e2b");
-    expect(r.ok && r.value?.source).toBe("APHRODY_AI_CHAT_BASE_URL");
+    expect(r.ok && r.value?.source).toBe("SHENRON_AI_CHAT_BASE_URL");
   });
 
   test("an origin alias gets /v1 and the configured model wins", () => {
-    const r = resolveDirectChat({ APHRODY_LOCAL_MODEL_URL: LOOP, APHRODY_AI_CHAT_MODEL: "m1" });
+    const r = resolveDirectChat({ SHENRON_LOCAL_MODEL_URL: LOOP, SHENRON_AI_CHAT_MODEL: "m1" });
     expect(r.ok && r.value?.baseUrl.href).toBe(`${LOOP}/v1`);
     expect(r.ok && r.value?.model).toBe("m1");
   });
 
   test("refuses a public address", () => {
-    expect(resolveDirectChat({ APHRODY_AI_CHAT_BASE_URL: "https://google.com/v1" }).ok).toBe(false);
+    expect(resolveDirectChat({ SHENRON_AI_CHAT_BASE_URL: "https://google.com/v1" }).ok).toBe(false);
   });
 
   test("a direct vLLM provider enables chat independently of the compute gateway", () => {
     const cfg = ok({
-      APHRODY_AI_CHAT_BASE_URL: `${LOOP}/v1`,
-      APHRODY_AI_CHAT_MODEL: "gemma4-e2b-bnb-4bit",
-      APHRODY_AI_CHAT_API_KEY: TOKEN,
+      SHENRON_AI_CHAT_BASE_URL: `${LOOP}/v1`,
+      SHENRON_AI_CHAT_MODEL: "gemma4-e2b-bnb-4bit",
+      SHENRON_AI_CHAT_API_KEY: TOKEN,
     });
     expect(cfg.compute).toBeNull();
     expect(cfg.chatModel).toBe("gemma4-e2b-bnb-4bit");
@@ -379,18 +379,18 @@ describe("resolveDirectChat", () => {
 
   test("canonical upstream credential wins; malformed credentials expose only variable names", () => {
     const resolved = resolveDirectChat({
-      APHRODY_AI_CHAT_BASE_URL: `${LOOP}/v1`,
-      APHRODY_AI_CHAT_API_KEY: TOKEN,
+      SHENRON_AI_CHAT_BASE_URL: `${LOOP}/v1`,
+      SHENRON_AI_CHAT_API_KEY: TOKEN,
       SHENRON_OPENAI_API_KEY: "legacy",
     });
     expect(resolved.ok && resolved.value?.apiKey).toBe(TOKEN);
     const bad = resolveDirectChat({
-      APHRODY_AI_CHAT_BASE_URL: `${LOOP}/v1`,
-      APHRODY_AI_CHAT_API_KEY: "private\nvalue",
+      SHENRON_AI_CHAT_BASE_URL: `${LOOP}/v1`,
+      SHENRON_AI_CHAT_API_KEY: "private\nvalue",
     });
     expect(bad.ok).toBe(false);
     if (!bad.ok) {
-      expect(bad.issues[0]?.name).toBe("APHRODY_AI_CHAT_API_KEY");
+      expect(bad.issues[0]?.name).toBe("SHENRON_AI_CHAT_API_KEY");
       expect(JSON.stringify(bad.issues)).not.toContain("private");
     }
   });

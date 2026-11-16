@@ -1,6 +1,6 @@
 import "./setup-discord-ai";
 import { afterAll, expect, mock, test } from "bun:test";
-import { APHRODY_DISCORD } from "@shenron/config/discord-ai";
+import { SHENRON_DISCORD } from "@shenron/config/discord-ai";
 import { DmChatGate } from "../src/lib/dm-chat";
 import { resolveDmChat } from "@shenron/config/dm-chat";
 
@@ -17,7 +17,7 @@ afterAll(() => mock.restore());
 
 test("general uses bounded chat with its own history and never reads private home or memory", async () => {
   const previous = Bun.env.GUILD_ID;
-  Bun.env.GUILD_ID = APHRODY_DISCORD.guildId;
+  Bun.env.GUILD_ID = SHENRON_DISCORD.guildId;
   const settings = resolveDmChat({});
   let answer = "";
   const relay = Object.assign(Object.create(DirectMessageRelay.prototype), {
@@ -37,8 +37,8 @@ test("general uses bounded chat with its own history and never reads private hom
     },
   });
   const message = {
-    guildId: APHRODY_DISCORD.guildId,
-    channelId: APHRODY_DISCORD.generalChannelId,
+    guildId: SHENRON_DISCORD.guildId,
+    channelId: SHENRON_DISCORD.generalChannelId,
     content: "Shenron, bonjour",
     inGuild: () => true,
     author: { id: "987654321012345678" },

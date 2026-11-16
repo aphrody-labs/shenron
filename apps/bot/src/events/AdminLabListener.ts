@@ -8,7 +8,7 @@ import { ADMIN_LAB_CHANNEL_ID } from "~/lib/admin-lab";
 import { logger } from "~/lib/logger";
 import { env, isBotOwner } from "~/lib/env";
 import { PermissionFlagsBits, type APIEmbed, type Message } from "discord.js";
-import { resolveDiscordAi, APHRODY_DISCORD } from "@shenron/config/discord-ai";
+import { resolveDiscordAi, SHENRON_DISCORD } from "@shenron/config/discord-ai";
 import { COLORS, SHENRON_THEME, errorText, shenronEmbed, truncate } from "~/lib/embeds";
 import { canonTierColor, embeddingsLabel } from "~/commands/admin/Train";
 
@@ -70,13 +70,13 @@ export class AdminLabListener {
   async onMessage([message]: ArgsOf<"messageCreate">) {
     const isLabGuild =
       message.guildId === env.GUILD_ID ||
-      message.guildId === APHRODY_DISCORD.guildId ||
+      message.guildId === SHENRON_DISCORD.guildId ||
       env.ADDITIONAL_GUILD_IDS.includes(message.guildId ?? "");
     const isLabChannel =
       Boolean(ADMIN_LAB_CHANNEL_ID) &&
       (message.channelId === ADMIN_LAB_CHANNEL_ID ||
-        message.channelId === APHRODY_DISCORD.adminConsoleChannelId ||
-        message.channelId === APHRODY_DISCORD.startHereChannelId);
+        message.channelId === SHENRON_DISCORD.adminConsoleChannelId ||
+        message.channelId === SHENRON_DISCORD.startHereChannelId);
 
     if (!isLabGuild || !isLabChannel || message.author.bot || message.webhookId) return;
     const authorized =

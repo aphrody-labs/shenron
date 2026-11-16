@@ -24,7 +24,7 @@ import {
   chatTimeoutMs,
   DEFAULT_AI_TIMEOUTS,
 } from "./config";
-import { APHRODY_LIMITS } from "./wire";
+import { SHENRON_LIMITS } from "./wire";
 
 export interface AphrodyChatWireMessage {
   role: AphrodyChatRole;
@@ -82,18 +82,18 @@ export function toAphrodyMessages(prompt: LanguageModelV4Prompt): AphrodyChatWir
   }
   const messages: AphrodyChatWireMessage[] =
     system.length > 0 ? [{ role: "system", content: system.join("\n\n") }, ...turns] : turns;
-  if (messages.length === 0 || messages.length > APHRODY_LIMITS.chatMessages) {
+  if (messages.length === 0 || messages.length > SHENRON_LIMITS.chatMessages) {
     throw new InvalidPromptError({
       prompt,
-      message: `Aphrody chat accepts 1 to ${APHRODY_LIMITS.chatMessages} messages, received ${messages.length}`,
+      message: `Aphrody chat accepts 1 to ${SHENRON_LIMITS.chatMessages} messages, received ${messages.length}`,
     });
   }
   for (const message of messages) {
     const bytes = encoder.encode(message.content).length;
-    if (bytes === 0 || bytes > APHRODY_LIMITS.chatMessageBytes) {
+    if (bytes === 0 || bytes > SHENRON_LIMITS.chatMessageBytes) {
       throw new InvalidPromptError({
         prompt,
-        message: `Aphrody chat messages must hold 1 to ${APHRODY_LIMITS.chatMessageBytes} bytes`,
+        message: `Aphrody chat messages must hold 1 to ${SHENRON_LIMITS.chatMessageBytes} bytes`,
       });
     }
   }

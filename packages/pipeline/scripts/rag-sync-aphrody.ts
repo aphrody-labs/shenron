@@ -30,12 +30,12 @@ const option = (name: string) =>
 const expectedSourceDigest = option("--expected-source-digest");
 const crawlDir = resolve(
   option("--crawl-dir") ??
-    join(process.env.APHRODY_HOME?.trim() || join(homedir(), ".aphrody"), "workspaces/dbfr/crawl"),
+    join(process.env.SHENRON_HOME?.trim() || join(homedir(), ".aphrody"), "workspaces/dbfr/crawl"),
 );
 const manifestPath = resolve(
   option("--manifest") ??
     join(
-      process.env.APHRODY_HOME?.trim() || join(homedir(), ".aphrody"),
+      process.env.SHENRON_HOME?.trim() || join(homedir(), ".aphrody"),
       "workspaces/dbfr/indexes/shenron-aphrody-sync-manifest.json",
     ),
 );

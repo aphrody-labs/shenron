@@ -210,7 +210,7 @@ const lazySemanticCache: SemanticCachePort = {
   setSemanticCache: async (...args) => (await import("./semantic-cache")).setSemanticCache(...args),
 };
 
-/** `APHRODY_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @shenron/pipeline/ai/config). */
+/** `SHENRON_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @shenron/pipeline/ai/config). */
 function aphrodyModel(): string {
   return resolveChatModel(process.env);
 }
@@ -281,14 +281,14 @@ export async function generateLlmGrounded(
   // reste sélectionnable explicitement pour les installations distantes.
   let model: Parameters<typeof generateGroundedAnswer>[0]["model"] | null = null;
   try {
-    const backend = process.env.APHRODY_SHENRON_INFERENCE ?? "native";
+    const backend = process.env.SHENRON_INFERENCE ?? "native";
     if (backend === "native") {
       model = createNativeShenronChatModel({
-        model: process.env.APHRODY_NATIVE_CHAT_MODEL || SHENRON_NATIVE_MODEL,
-        ...(process.env.APHRODY_NATIVE_LORA ? { lora: process.env.APHRODY_NATIVE_LORA } : {}),
+        model: process.env.SHENRON_NATIVE_CHAT_MODEL || SHENRON_NATIVE_MODEL,
+        ...(process.env.SHENRON_NATIVE_LORA ? { lora: process.env.SHENRON_NATIVE_LORA } : {}),
       });
     } else if (backend === "http") {
-      // Serveur de chat direct (Gemma 4 E2B préchargé du vps) quand APHRODY_AI_CHAT_BASE_URL
+      // Serveur de chat direct (Gemma 4 E2B préchargé du vps) quand SHENRON_AI_CHAT_BASE_URL
       // est déclaré, sinon aphrody-ai-http.
       const direct = resolveDirectChat(process.env);
       if (!direct.ok)
@@ -303,7 +303,7 @@ export async function generateLlmGrounded(
             modelId: aphrodyModel(),
           });
     } else {
-      throw new Error("APHRODY_SHENRON_INFERENCE must be native or http");
+      throw new Error("SHENRON_INFERENCE must be native or http");
     }
   } catch (err) {
     console.error(
@@ -350,7 +350,7 @@ export async function generateLlmGrounded(
     history: createRedisHistoryPort(),
     // Native Agent Home is reloaded on every turn. Do not serve a cached answer
     // from an earlier SOUL or adapter; the HTTP owner's existing cache is unchanged.
-    ...(process.env.APHRODY_SHENRON_INFERENCE === "http"
+    ...(process.env.SHENRON_INFERENCE === "http"
       ? { cache: semanticCachePort(opts.cache ?? lazySemanticCache, pid) }
       : {}),
     concurrency: concurrencyPort,

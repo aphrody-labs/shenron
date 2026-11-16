@@ -6,7 +6,7 @@ import { AI_ENV } from "@shenron/pipeline/ai/config";
 // No address default since the AI env contract (aphrody-infra local-ai.json): the
 // tests pin the aphrody-ai-http origin through its canonical name.
 const environmentNames = [
-  "APHRODY_SHENRON_INFERENCE",
+  "SHENRON_INFERENCE",
   "RAG_BACKEND",
   ...[AI_ENV.httpUrl, AI_ENV.httpToken, AI_ENV.chatBaseUrl, AI_ENV.chatModel].flatMap((setting) =>
     Array.of<string>(setting.canonical).concat(setting.aliases.map((alias) => alias.name)),
@@ -16,10 +16,10 @@ const savedEnvironment = Object.fromEntries(environmentNames.map((key) => [key, 
 beforeEach(() => {
   // These fixtures exercise the compute facade, never the workstation's direct chat server.
   for (const key of environmentNames) delete process.env[key];
-  process.env.APHRODY_SHENRON_INFERENCE = "http";
-  process.env.APHRODY_AI_HTTP_URL = "http://127.0.0.1:8789";
-  process.env.APHRODY_AI_HTTP_TOKEN = "fixture-token-".padEnd(32, "x");
-  process.env.APHRODY_AI_CHAT_MODEL = "gemini-web/flash";
+  process.env.SHENRON_INFERENCE = "http";
+  process.env.SHENRON_AI_HTTP_URL = "http://127.0.0.1:8789";
+  process.env.SHENRON_AI_HTTP_TOKEN = "fixture-token-".padEnd(32, "x");
+  process.env.SHENRON_AI_CHAT_MODEL = "gemini-web/flash";
 });
 afterEach(() => {
   for (const [key, value] of Object.entries(savedEnvironment)) {
@@ -85,7 +85,7 @@ test("the same question only reuses a cached answer with the same evidence and m
       "whis",
       { cache },
     );
-    process.env.APHRODY_AI_CHAT_MODEL = "gemini-web/pro";
+    process.env.SHENRON_AI_CHAT_MODEL = "gemini-web/pro";
     const changedModel = await generateLlmAnswer(
       db,
       "Où vivent les Nameks ?",

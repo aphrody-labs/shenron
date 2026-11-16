@@ -5,7 +5,7 @@
  * manifests of `crates/*` and the pinned Aphrody revision.
  *
  * - Shenron crates (`crates/<name>`) become `path` dependencies.
- * - Aphrody crates (path dependencies in Aphrody's workspace at `APHRODY_REV`)
+ * - Aphrody crates (path dependencies in Aphrody's workspace at `SHENRON_REV`)
  *   become `git` dependencies on aphrody-labs/aphrody pinned by `rev`.
  * - Everything else (crates.io, other git sources) is copied verbatim from
  *   Aphrody's workspace so versions and features stay in step.

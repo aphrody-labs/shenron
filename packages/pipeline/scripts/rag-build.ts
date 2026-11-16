@@ -12,7 +12,7 @@
  *
  * Récupération HYBRIDE : BM25 lexical (`rag_chunks`) + embeddings denses
  * multilingues (`vec_chunks`, multilingual-e5-small via Aphrody
- * `POST /api/v1/shenron/embed`, APHRODY_AI_HTTP_URL / APHRODY_AI_HTTP_TOKEN). DROP +
+ * `POST /api/v1/shenron/embed`, SHENRON_AI_HTTP_URL / SHENRON_AI_HTTP_TOKEN). DROP +
  * recreate : ne JAMAIS lancer sur la base servie (cf. docs/architecture/rag-enrichment.md,
  * procédure copy-swap) — pour une mise à jour à chaud, `rag-resync-entites.ts`.
  *
@@ -42,7 +42,7 @@ if (process.env.RAG_BACKEND === "aphrody") {
 
 // Règle 9 (CLAUDE.md) : DROP + recreate — RAG_DB explicite, jamais la base servie.
 // B13 : pas d'adresse par défaut ; hors --no-vectors, les embeddings passent par
-// Aphrody (APHRODY_AI_HTTP_URL / APHRODY_AI_HTTP_TOKEN obligatoires).
+// Aphrody (SHENRON_AI_HTTP_URL / SHENRON_AI_HTTP_TOKEN obligatoires).
 // Espace d'embedding : celui du contrat (index shenron-rag), jamais un autre.
 let DBP: string;
 let embeddingsConfigured: ShenronEmbeddingsClient | null = null;

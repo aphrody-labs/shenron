@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { envString, type EnvSource } from "./env";
 
-export const APHRODY_DISCORD = {
+export const SHENRON_DISCORD = {
   guildId: "1554189180030947338",
   startHereChannelId: "1557354118710829117",
   labStatusChannelId: "1557354121869131846",
@@ -22,10 +22,10 @@ export const APHRODY_DISCORD = {
 
 /** Explicit deployment overrides keep other guilds isolated. */
 export function resolveDiscordAi(env: EnvSource) {
-  const guildId = envString(env, "GUILD_ID") ?? APHRODY_DISCORD.guildId;
+  const guildId = envString(env, "GUILD_ID") ?? SHENRON_DISCORD.guildId;
   const generalChannelId =
     envString(env, "SHENRON_AI_CHANNEL_ID") ??
-    (guildId === APHRODY_DISCORD.guildId ? APHRODY_DISCORD.generalChannelId : undefined);
+    (guildId === SHENRON_DISCORD.guildId ? SHENRON_DISCORD.generalChannelId : undefined);
   return {
     guildId,
     generalChannelId,
@@ -46,11 +46,11 @@ export function isAllowedAiChannel(
   message: GuildAiMessage,
   settings: ReturnType<typeof resolveDiscordAi>,
 ): boolean {
-  if (message.guildId === APHRODY_DISCORD.guildId) {
+  if (message.guildId === SHENRON_DISCORD.guildId) {
     return (
-      message.channelId === APHRODY_DISCORD.startHereChannelId ||
-      message.channelId === APHRODY_DISCORD.assistantChannelId ||
-      message.channelId === APHRODY_DISCORD.chatChannelId ||
+      message.channelId === SHENRON_DISCORD.startHereChannelId ||
+      message.channelId === SHENRON_DISCORD.assistantChannelId ||
+      message.channelId === SHENRON_DISCORD.chatChannelId ||
       message.channelId === settings.generalChannelId
     );
   }
@@ -60,8 +60,8 @@ export function isAllowedAiChannel(
 /** Returns true if the guild is either primary or explicitly admitted. */
 export function isAdmittedGuild(guildId: string | null | undefined, env: EnvSource): boolean {
   if (!guildId) return false;
-  const primary = envString(env, "GUILD_ID") ?? APHRODY_DISCORD.guildId;
-  if (guildId === primary || guildId === APHRODY_DISCORD.guildId) return true;
+  const primary = envString(env, "GUILD_ID") ?? SHENRON_DISCORD.guildId;
+  if (guildId === primary || guildId === SHENRON_DISCORD.guildId) return true;
   const additional = (envString(env, "ADDITIONAL_GUILD_IDS") ?? "")
     .split(",")
     .map((s) => s.trim())

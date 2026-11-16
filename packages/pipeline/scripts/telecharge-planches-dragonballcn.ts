@@ -201,9 +201,9 @@ async function verifiePrealables(sonde: boolean) {
   if (!Bun.which("curl"))
     manques.push("`curl` absent du PATH — c'est le client HTTP du script (apt install curl).");
 
-  if (!process.env.APHRODY_BIN?.trim() && !Bun.which("aphrody"))
+  if (!process.env.SHENRON_BIN?.trim() && !Bun.which("aphrody"))
     manques.push(
-      "Aphrody CLI absent du PATH — définir APHRODY_BIN ou installer le binaire aphrody.",
+      "Aphrody CLI absent du PATH — définir SHENRON_BIN ou installer le binaire aphrody.",
     );
 
   try {

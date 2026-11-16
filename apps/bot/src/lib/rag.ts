@@ -15,7 +15,7 @@
  * fonctionnel).
  *
  * Ce module n'importe PAS transformers.js — il ne fait qu'un fetch HTTP local
- * vers Aphrody (`APHRODY_AI_HTTP_URL`, jeton `APHRODY_AI_HTTP_TOKEN`).
+ * vers Aphrody (`SHENRON_AI_HTTP_URL`, jeton `SHENRON_AI_HTTP_TOKEN`).
  */
 import type { Database } from "bun:sqlite";
 import { readFileSync } from "node:fs";
@@ -50,7 +50,7 @@ let queryEmbeddingState: QueryEmbedding | undefined;
  * (B3) : une mauvaise URL ne fait plus planter l'import du module, la recherche
  * retombe simplement en lexical. Transport unique (D10) : Aphrody
  * `POST /api/v1/shenron/embed`, adresse et jeton lus par le résolveur unique
- * `@shenron/pipeline/ai/config` (`APHRODY_AI_HTTP_URL` / `APHRODY_AI_HTTP_TOKEN`
+ * `@shenron/pipeline/ai/config` (`SHENRON_AI_HTTP_URL` / `SHENRON_AI_HTTP_TOKEN`
  * ou leurs alias ; aucune adresse par défaut : sans configuration, la recherche
  * reste lexicale). `maxRetries: 0`, délai `EMBED_TIMEOUT_MS`. Ne jette jamais.
  */
@@ -85,9 +85,9 @@ export async function embedQueryVector(text: string, timeoutMs?: number): Promis
 const RERANK_TIMEOUT_MS = Number(process.env.RERANK_TIMEOUT_MS ?? 6000);
 
 /**
- * Reranker optionnel, résolu par `@shenron/pipeline/ai/config` : `APHRODY_AI_RERANK_BASE_URL`
+ * Reranker optionnel, résolu par `@shenron/pipeline/ai/config` : `SHENRON_AI_RERANK_BASE_URL`
  * (dialecte llama-server), puis `RERANK_URL` (sidecar Shenron) et
- * `APHRODY_RAG_RERANK_ENDPOINT`. Une valeur invalide désactive le rerank avec
+ * `SHENRON_RAG_RERANK_ENDPOINT`. Une valeur invalide désactive le rerank avec
  * un avertissement nommant la variable, jamais sa valeur.
  */
 function configuredReranker(): RerankEndpoint | null {
@@ -1330,7 +1330,7 @@ export function ragIndexSpace(db: Database | null): { space: EmbeddingSpace; lab
 
 /**
  * Contrôle de démarrage : l'espace d'embedding configuré
- * (`APHRODY_AI_EMBED_MODEL` / `APHRODY_AI_EMBED_DIMENSIONS`, défaut : contrat)
+ * (`SHENRON_AI_EMBED_MODEL` / `SHENRON_AI_EMBED_DIMENSIONS`, défaut : contrat)
  * doit être celui de l'index. Jette `EmbeddingSpaceMismatchError` sinon :
  * deux espaces vectoriels ne sont jamais mélangés.
  */

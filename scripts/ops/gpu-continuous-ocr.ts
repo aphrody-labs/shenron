@@ -15,7 +15,7 @@ import {
   runRemoteBatch,
 } from "@shenron/pipeline/aphrody/remote-ocr";
 
-const APHRODY_BIN = process.env.APHRODY_BIN?.trim() || "aphrody";
+const SHENRON_BIN = process.env.SHENRON_BIN?.trim() || "aphrody";
 const WORK_DIR = join(process.cwd(), "data", "ocr-gpu");
 const limitIndex = Bun.argv.indexOf("--limite-lots");
 const limitLots = limitIndex < 0 ? null : Number(Bun.argv[limitIndex + 1]);
@@ -24,7 +24,7 @@ if (limitLots !== null && (!Number.isInteger(limitLots) || limitLots < 1)) {
 }
 const SHENRON_ADMIN_TOKEN = process.env.SHENRON_ADMIN_TOKEN?.trim();
 if (!SHENRON_ADMIN_TOKEN) throw new Error("SHENRON_ADMIN_TOKEN is required.");
-// aphrody-ai-http : adresse et jeton obligatoires (APHRODY_AI_HTTP_URL / _TOKEN ou alias), sans défaut.
+// aphrody-ai-http : adresse et jeton obligatoires (SHENRON_AI_HTTP_URL / _TOKEN ou alias), sans défaut.
 requireAiHttpUrl(process.env);
 requireAiHttpToken(process.env);
 
@@ -52,7 +52,7 @@ interface SurveyResult {
 
 async function obtenirStatutCorpus(): Promise<SurveyResult | null> {
   try {
-    const proc = Bun.spawnSync([APHRODY_BIN, "ocr", "dbfr", "survey", "--json", "--top", "50"], {
+    const proc = Bun.spawnSync([SHENRON_BIN, "ocr", "dbfr", "survey", "--json", "--top", "50"], {
       env: { ...process.env, SHENRON_ADMIN_TOKEN, DBFR_TOKEN: SHENRON_ADMIN_TOKEN },
     });
     if (proc.exitCode !== 0) return null;
@@ -75,7 +75,7 @@ async function traiterOuvrage(record: WorstRecord): Promise<boolean> {
   // 1. Téléchargement des planches manquantes
   console.log(`1. Téléchargement des planches manquantes vers ${lotDir}...`);
   const fetchProc = Bun.spawnSync(
-    [APHRODY_BIN, "ocr", "dbfr", "fetch", String(record.id), "--dir", lotDir],
+    [SHENRON_BIN, "ocr", "dbfr", "fetch", String(record.id), "--dir", lotDir],
     {
       env: { ...process.env, SHENRON_ADMIN_TOKEN, DBFR_TOKEN: SHENRON_ADMIN_TOKEN },
       stdio: ["inherit", "inherit", "inherit"],
@@ -114,7 +114,7 @@ async function traiterOuvrage(record: WorstRecord): Promise<boolean> {
   // conserve les mêmes textes, tandis que le JSONL v2 garde la provenance.
   const auditPath = `${outJsonl}.audit.jsonl`;
   await Bun.write(auditPath, projection.jsonl);
-  const auditProc = Bun.spawnSync([APHRODY_BIN, "ocr", "audit", auditPath, "--json"], {
+  const auditProc = Bun.spawnSync([SHENRON_BIN, "ocr", "audit", auditPath, "--json"], {
     stdout: "pipe",
     stderr: "pipe",
   });
@@ -139,7 +139,7 @@ async function traiterOuvrage(record: WorstRecord): Promise<boolean> {
     );
     return false;
   }
-  const ingestProc = Bun.spawnSync([APHRODY_BIN, "ocr", "db", "ingest", outJsonl, "--json"], {
+  const ingestProc = Bun.spawnSync([SHENRON_BIN, "ocr", "db", "ingest", outJsonl, "--json"], {
     stdout: "pipe",
     stderr: "pipe",
   });
@@ -163,7 +163,7 @@ async function traiterOuvrage(record: WorstRecord): Promise<boolean> {
   // 3. Dépôt sécurisé des transcriptions dans PostgreSQL via l'API dbfr
   console.log(`3. Dépôt des transcriptions vers dragonballfr.com...`);
   const pushProc = Bun.spawnSync(
-    [APHRODY_BIN, "ocr", "dbfr", "push", String(record.id), "--lot", lotDir, "--apply"],
+    [SHENRON_BIN, "ocr", "dbfr", "push", String(record.id), "--lot", lotDir, "--apply"],
     {
       env: { ...process.env, SHENRON_ADMIN_TOKEN, DBFR_TOKEN: SHENRON_ADMIN_TOKEN },
       stdio: ["inherit", "inherit", "inherit"],

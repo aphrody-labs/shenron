@@ -16,9 +16,9 @@ function upstream(handler: (request: Request) => Promise<Response>) {
   const server = Bun.serve({ hostname: "127.0.0.1", port: 0, fetch: handler });
   servers.push(server);
   return {
-    APHRODY_AI_CHAT_BASE_URL: `http://127.0.0.1:${server.port}/v1`,
-    APHRODY_AI_CHAT_MODEL: model,
-    APHRODY_AI_CHAT_API_KEY: key,
+    SHENRON_AI_CHAT_BASE_URL: `http://127.0.0.1:${server.port}/v1`,
+    SHENRON_AI_CHAT_MODEL: model,
+    SHENRON_AI_CHAT_API_KEY: key,
   };
 }
 

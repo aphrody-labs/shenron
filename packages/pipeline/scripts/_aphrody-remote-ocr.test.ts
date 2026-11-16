@@ -10,25 +10,25 @@ import {
   toOcrResultV2,
 } from "@shenron/pipeline/aphrody/remote-ocr";
 
-const oldToken = process.env.APHRODY_SHENRON_API_TOKEN;
-const oldUrl = process.env.APHRODY_SHENRON_API_URL;
-const oldAiUrl = process.env.APHRODY_AI_HTTP_URL;
-const oldAiToken = process.env.APHRODY_AI_HTTP_TOKEN;
+const oldToken = process.env.SHENRON_API_TOKEN;
+const oldUrl = process.env.SHENRON_API_URL;
+const oldAiUrl = process.env.SHENRON_AI_HTTP_URL;
+const oldAiToken = process.env.SHENRON_AI_HTTP_TOKEN;
 beforeEach(() => {
-  process.env.APHRODY_AI_HTTP_URL = "http://127.0.0.1:8789";
+  process.env.SHENRON_AI_HTTP_URL = "http://127.0.0.1:8789";
   // The canonical token wins over its alias: a real one in the environment must not leak in.
-  delete process.env.APHRODY_AI_HTTP_TOKEN;
-  process.env.APHRODY_SHENRON_API_TOKEN = "test-token";
+  delete process.env.SHENRON_AI_HTTP_TOKEN;
+  process.env.SHENRON_API_TOKEN = "test-token";
 });
 afterEach(() => {
-  if (oldToken === undefined) delete process.env.APHRODY_SHENRON_API_TOKEN;
-  else process.env.APHRODY_SHENRON_API_TOKEN = oldToken;
-  if (oldUrl === undefined) delete process.env.APHRODY_SHENRON_API_URL;
-  else process.env.APHRODY_SHENRON_API_URL = oldUrl;
-  if (oldAiUrl === undefined) delete process.env.APHRODY_AI_HTTP_URL;
-  else process.env.APHRODY_AI_HTTP_URL = oldAiUrl;
-  if (oldAiToken === undefined) delete process.env.APHRODY_AI_HTTP_TOKEN;
-  else process.env.APHRODY_AI_HTTP_TOKEN = oldAiToken;
+  if (oldToken === undefined) delete process.env.SHENRON_API_TOKEN;
+  else process.env.SHENRON_API_TOKEN = oldToken;
+  if (oldUrl === undefined) delete process.env.SHENRON_API_URL;
+  else process.env.SHENRON_API_URL = oldUrl;
+  if (oldAiUrl === undefined) delete process.env.SHENRON_AI_HTTP_URL;
+  else process.env.SHENRON_AI_HTTP_URL = oldAiUrl;
+  if (oldAiToken === undefined) delete process.env.SHENRON_AI_HTTP_TOKEN;
+  else process.env.SHENRON_AI_HTTP_TOKEN = oldAiToken;
 });
 
 const valid = {
@@ -54,7 +54,7 @@ const valid = {
 };
 
 test("remote PP-OCR sends image bytes and preserves geometric evidence", async () => {
-  process.env.APHRODY_SHENRON_API_TOKEN = "test-token";
+  process.env.SHENRON_API_TOKEN = "test-token";
   const fetcher = (async (input: RequestInfo | URL, init?: RequestInit) => {
     expect(String(input)).toBe("http://127.0.0.1:8789/api/v1/shenron/ocr");
     expect(init?.headers).toMatchObject({ authorization: "Bearer test-token" });
@@ -81,7 +81,7 @@ test("remote PP-OCR sends image bytes and preserves geometric evidence", async (
 });
 
 test("remote PP-OCR rejects missing geometry and does not write an invalid page", async () => {
-  process.env.APHRODY_SHENRON_API_TOKEN = "test-token";
+  process.env.SHENRON_API_TOKEN = "test-token";
   const dir = await mkdtemp(join(tmpdir(), "shenron-ocr-"));
   try {
     await Bun.write(join(dir, "0001.jpg"), new Uint8Array([1, 2, 3]));
@@ -98,7 +98,7 @@ test("remote PP-OCR rejects missing geometry and does not write an invalid page"
 });
 
 test("remote batch resumes without retranscribing completed images", async () => {
-  process.env.APHRODY_SHENRON_API_TOKEN = "test-token";
+  process.env.SHENRON_API_TOKEN = "test-token";
   const dir = await mkdtemp(join(tmpdir(), "shenron-ocr-"));
   try {
     await Bun.write(join(dir, "0001.jpg"), new Uint8Array([1, 2, 3]));
@@ -119,7 +119,7 @@ test("remote batch resumes without retranscribing completed images", async () =>
 });
 
 test("visual review sends the actual image and rejects model substitution", async () => {
-  process.env.APHRODY_SHENRON_API_TOKEN = "test-token";
+  process.env.SHENRON_API_TOKEN = "test-token";
   const fetcher = (async (input: RequestInfo | URL, init?: RequestInit) => {
     expect(String(input)).toBe("http://127.0.0.1:8789/api/v1/shenron/vision/structured");
     expect(JSON.parse(String(init?.body))).toMatchObject({

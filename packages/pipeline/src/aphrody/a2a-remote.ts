@@ -41,22 +41,22 @@ class CoordApiHttpError extends Error {
 }
 
 function configuredBase(): string | undefined {
-  const value = process.env.APHRODY_A2A_COORD_API?.trim();
+  const value = process.env.SHENRON_A2A_COORD_API?.trim();
   if (!value) return undefined;
   let url: URL;
   try {
     url = new URL(value);
   } catch {
-    throw new Error("APHRODY_A2A_COORD_API must be a valid credential-free HTTP(S) URL");
+    throw new Error("SHENRON_A2A_COORD_API must be a valid credential-free HTTP(S) URL");
   }
   if (!(url.protocol === "http:" || url.protocol === "https:") || url.username || url.password) {
-    throw new Error("APHRODY_A2A_COORD_API must be a valid credential-free HTTP(S) URL");
+    throw new Error("SHENRON_A2A_COORD_API must be a valid credential-free HTTP(S) URL");
   }
   return value.replace(/\/+$/, "");
 }
 
 function missingApiError(): Error {
-  return new Error("APHRODY_A2A_COORD_API is required for durable A2A storage in production");
+  return new Error("SHENRON_A2A_COORD_API is required for durable A2A storage in production");
 }
 
 export function aphrodyA2aStoreEnabled(): boolean {
@@ -66,11 +66,11 @@ export function aphrodyA2aStoreEnabled(): boolean {
 }
 
 function timeoutMs(): number {
-  const configured = process.env.APHRODY_A2A_COORD_TIMEOUT_MS?.trim();
+  const configured = process.env.SHENRON_A2A_COORD_TIMEOUT_MS?.trim();
   if (!configured) return DEFAULT_TIMEOUT_MS;
   const parsed = Number(configured);
   if (!Number.isSafeInteger(parsed) || parsed < 1) {
-    throw new Error("APHRODY_A2A_COORD_TIMEOUT_MS must be a positive integer");
+    throw new Error("SHENRON_A2A_COORD_TIMEOUT_MS must be a positive integer");
   }
   return Math.min(parsed, MAX_TIMEOUT_MS);
 }
@@ -150,12 +150,12 @@ async function request(path: string, init?: RequestInit): Promise<unknown> {
   const base = configuredBase();
   if (!base) {
     if (process.env.NODE_ENV === "production") throw missingApiError();
-    throw new Error("APHRODY_A2A_COORD_API is not configured");
+    throw new Error("SHENRON_A2A_COORD_API is not configured");
   }
   const headers = new Headers(init?.headers);
   headers.set("Accept", "application/json");
   if (init?.body !== undefined) headers.set("Content-Type", "application/json");
-  const token = process.env.APHRODY_A2A_COORD_TOKEN?.trim();
+  const token = process.env.SHENRON_A2A_COORD_TOKEN?.trim();
   if (token) headers.set("Authorization", `Bearer ${token}`);
   const timeout = timeoutMs();
   const signal = AbortSignal.timeout(timeout);

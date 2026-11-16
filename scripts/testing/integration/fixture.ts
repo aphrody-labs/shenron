@@ -35,8 +35,8 @@ export function createFixture(nextPort = 0) {
     {
       SHENRON_DATA_DIR: root,
       SHENRON_CHAT_STORE: join(root, "conversations.sqlite"),
-      APHRODY_WORKSPACE: join(root, "agent"),
-      APHRODY_BIN: join(root, "absent"),
+      SHENRON_WORKSPACE: join(root, "agent"),
+      SHENRON_BIN: join(root, "absent"),
       SHENRON_CHAT_TOOLS: "0",
       SHENRON_CHAT_BACKENDS: "local",
     },

@@ -3,11 +3,11 @@
 import { expect, test } from "bun:test";
 import { openAphrodyPython } from "../../src/runtime/python";
 
-test.if(Boolean(process.env.SHENRON_APHRODY_PYTHON_SOURCE))(
+test.if(Boolean(process.env.SHENRON_SHENRON_PYTHON_SOURCE))(
   "real fork aliases and the complete lazy Aphrody SDK share the Shenron Bun PID",
   async () => {
-    const source = process.env.SHENRON_APHRODY_PYTHON_SOURCE;
-    if (!source) throw new Error("Set the selected qualified SHENRON_APHRODY_PYTHON_SOURCE");
+    const source = process.env.SHENRON_SHENRON_PYTHON_SOURCE;
+    if (!source) throw new Error("Set the selected qualified SHENRON_SHENRON_PYTHON_SOURCE");
     const builtin = "bun:python";
     const buv = "buv:python";
     const pyjs = "pyjs:python";

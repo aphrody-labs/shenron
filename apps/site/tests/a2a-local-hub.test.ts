@@ -1,5 +1,5 @@
 /**
- * `/api/a2a` without `APHRODY_A2A_URL`: the in-process Shenron hub answers (A2A 1.0 and the
+ * `/api/a2a` without `SHENRON_A2A_URL`: the in-process Shenron hub answers (A2A 1.0 and the
  * legacy dialect), reads are public, writes need a token or an admin IP.
  */
 import { afterAll, beforeAll, describe, expect, mock, test } from "bun:test";
@@ -14,8 +14,8 @@ const saved = { ...process.env };
 const ADMIN = "site-a2a-local-admin-token-0123";
 
 beforeAll(() => {
-  delete process.env.APHRODY_A2A_URL;
-  delete process.env.APHRODY_A2A_COORD_API;
+  delete process.env.SHENRON_A2A_URL;
+  delete process.env.SHENRON_A2A_COORD_API;
   delete process.env.SHENRON_A2A_ENFORCE;
   delete process.env.DATABOOKS_API_TOKEN;
   process.env.SHENRON_A2A_STORE_DIR = dir;

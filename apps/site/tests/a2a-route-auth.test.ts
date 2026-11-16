@@ -1,6 +1,6 @@
 /**
  * S5 (docs/architecture/STACK.md D14) : garde d'écriture de `/api/a2a`, proxy vers `aphrody a2a serve`.
- * L'amont Rust est simulé par un serveur Bun local (APHRODY_A2A_URL).
+ * L'amont Rust est simulé par un serveur Bun local (SHENRON_A2A_URL).
  */
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from "bun:test";
 import {
@@ -36,12 +36,12 @@ const upstream = Bun.serve({
     });
   },
 });
-const savedUrl = process.env.APHRODY_A2A_URL;
-process.env.APHRODY_A2A_URL = `http://127.0.0.1:${upstream.port}/`;
+const savedUrl = process.env.SHENRON_A2A_URL;
+process.env.SHENRON_A2A_URL = `http://127.0.0.1:${upstream.port}/`;
 afterAll(() => {
   upstream.stop(true);
-  if (savedUrl === undefined) delete process.env.APHRODY_A2A_URL;
-  else process.env.APHRODY_A2A_URL = savedUrl;
+  if (savedUrl === undefined) delete process.env.SHENRON_A2A_URL;
+  else process.env.SHENRON_A2A_URL = savedUrl;
 });
 
 const { GET, POST, OPTIONS } = await import("../src/app/api/a2a/route");
@@ -166,14 +166,14 @@ describe("proxy amont", () => {
     expect(bad.status).toBe(400);
     expect((await bad.json()).error.code).toBe(-32700);
     // oxlint-disable-next-line eslint/no-shadow -- intentional local name reuse
-    const saved = process.env.APHRODY_A2A_URL;
-    process.env.APHRODY_A2A_URL = "http://127.0.0.1:1";
+    const saved = process.env.SHENRON_A2A_URL;
+    process.env.SHENRON_A2A_URL = "http://127.0.0.1:1";
     try {
       const res = await POST(post());
       expect(res.status).toBe(502);
       expect((await res.json()).error).toBe("a2a_upstream_unreachable");
     } finally {
-      process.env.APHRODY_A2A_URL = saved;
+      process.env.SHENRON_A2A_URL = saved;
     }
   });
 });

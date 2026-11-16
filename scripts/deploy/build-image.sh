@@ -165,7 +165,7 @@ build_wasm() {
   if bun wasm --help >/dev/null 2>&1; then
     bun packages/engine/scripts/build-wasm.ts
   else
-    # Only the Aphrody Bun fork has `bun wasm`: otherwise the module tracked in Git is used.
+    # Upstream Bun has no `bun wasm`: the the module tracked in Git is used.
     test -s packages/engine/src/wasm/shenron_engine_bg.wasm || { echo "engine wasm missing" >&2; exit 1; }
   fi
   wait "$canvas"

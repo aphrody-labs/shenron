@@ -13,7 +13,7 @@
  *   Bearer token), une image par requête ; aucun appel direct à un serveur de modèle.
  *
  * Usage : bun apps/bot/scripts/test-gemma-multimodal.ts [--manga N] [--video chemin]
- * Env   : APHRODY_AI_HTTP_URL, APHRODY_AI_HTTP_TOKEN, MM_MODEL (défaut : modèle vision résolu)
+ * Env   : SHENRON_AI_HTTP_URL, SHENRON_AI_HTTP_TOKEN, MM_MODEL (défaut : modèle vision résolu)
  */
 import {
   requireAiHttpToken,

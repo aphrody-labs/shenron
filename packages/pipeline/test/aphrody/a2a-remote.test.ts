@@ -12,9 +12,9 @@ import {
 import type { A2AEnvelope, A2ATask } from "../../src/aphrody/a2a";
 
 const ENV_KEYS = [
-  "APHRODY_A2A_COORD_API",
-  "APHRODY_A2A_COORD_TOKEN",
-  "APHRODY_A2A_COORD_TIMEOUT_MS",
+  "SHENRON_A2A_COORD_API",
+  "SHENRON_A2A_COORD_TOKEN",
+  "SHENRON_A2A_COORD_TIMEOUT_MS",
   "NODE_ENV",
 ] as const;
 const originalEnv = new Map(ENV_KEYS.map((key) => [key, process.env[key]]));
@@ -60,17 +60,17 @@ async function withApi(
   run: (root: string) => Promise<void>,
 ): Promise<void> {
   const server = Bun.serve({ port: 0, fetch: fetcher });
-  const previousApi = process.env.APHRODY_A2A_COORD_API;
-  const previousToken = process.env.APHRODY_A2A_COORD_TOKEN;
-  process.env.APHRODY_A2A_COORD_API = `${server.url.origin}/v1/`;
-  process.env.APHRODY_A2A_COORD_TOKEN = "test-token";
+  const previousApi = process.env.SHENRON_A2A_COORD_API;
+  const previousToken = process.env.SHENRON_A2A_COORD_TOKEN;
+  process.env.SHENRON_A2A_COORD_API = `${server.url.origin}/v1/`;
+  process.env.SHENRON_A2A_COORD_TOKEN = "test-token";
   try {
     await run("/v1/coord/shenron-dragonball");
   } finally {
-    if (previousApi === undefined) delete process.env.APHRODY_A2A_COORD_API;
-    else process.env.APHRODY_A2A_COORD_API = previousApi;
-    if (previousToken === undefined) delete process.env.APHRODY_A2A_COORD_TOKEN;
-    else process.env.APHRODY_A2A_COORD_TOKEN = previousToken;
+    if (previousApi === undefined) delete process.env.SHENRON_A2A_COORD_API;
+    else process.env.SHENRON_A2A_COORD_API = previousApi;
+    if (previousToken === undefined) delete process.env.SHENRON_A2A_COORD_TOKEN;
+    else process.env.SHENRON_A2A_COORD_TOKEN = previousToken;
     server.stop(true);
   }
 }
@@ -82,14 +82,14 @@ function json(value: unknown, status = 200): Response {
 describe("Aphrody A2A remote store configuration", () => {
   it("requires the namespaced API in production and accepts HTTP or HTTPS VPN endpoints", () => {
     process.env.NODE_ENV = "production";
-    delete process.env.APHRODY_A2A_COORD_API;
-    expect(() => aphrodyA2aStoreEnabled()).toThrow("APHRODY_A2A_COORD_API is required");
+    delete process.env.SHENRON_A2A_COORD_API;
+    expect(() => aphrodyA2aStoreEnabled()).toThrow("SHENRON_A2A_COORD_API is required");
 
     process.env.NODE_ENV = "test";
     expect(aphrodyA2aStoreEnabled()).toBe(false);
-    process.env.APHRODY_A2A_COORD_API = "http://a2a.internal:8788/v1";
+    process.env.SHENRON_A2A_COORD_API = "http://a2a.internal:8788/v1";
     expect(aphrodyA2aStoreEnabled()).toBe(true);
-    process.env.APHRODY_A2A_COORD_API = "https://a2a.example/v1";
+    process.env.SHENRON_A2A_COORD_API = "https://a2a.example/v1";
     expect(aphrodyA2aStoreEnabled()).toBe(true);
   });
 
@@ -99,7 +99,7 @@ describe("Aphrody A2A remote store configuration", () => {
       "ftp://a2a.example",
       "https://user:secret@a2a.example",
     ]) {
-      process.env.APHRODY_A2A_COORD_API = value;
+      process.env.SHENRON_A2A_COORD_API = value;
       expect(() => aphrodyA2aStoreEnabled()).toThrow("credential-free HTTP(S) URL");
     }
   });
@@ -222,7 +222,7 @@ describe("Aphrody A2A HTTP client", () => {
   });
 
   it("bounds HTTP requests with an abort timeout", async () => {
-    process.env.APHRODY_A2A_COORD_TIMEOUT_MS = "20";
+    process.env.SHENRON_A2A_COORD_TIMEOUT_MS = "20";
     await withApi(
       () => new Promise<Response>(() => {}),
       async () => {

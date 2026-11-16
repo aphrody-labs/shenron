@@ -28,9 +28,9 @@ describe("createShenronProvider", () => {
       },
     });
     const cfg = config({
-      APHRODY_SHENRON_API_URL: BASE.href,
-      APHRODY_SHENRON_API_TOKEN: TOKEN,
-      APHRODY_LLM_MODEL: "gemini-web/flash",
+      SHENRON_API_URL: BASE.href,
+      SHENRON_API_TOKEN: TOKEN,
+      SHENRON_LLM_MODEL: "gemini-web/flash",
     });
     const compute = createAphrodyCompute(cfg.compute ?? { baseUrl: BASE, token: TOKEN }, {
       fetch: rec.fetch,
@@ -58,7 +58,7 @@ describe("createShenronProvider", () => {
   });
 
   test("a direct embedder URL alone enables no embedding model", () => {
-    const cfg = config({ APHRODY_SHENRON_EMBED_BASE_URL: loopbackBase(18794, "/v1").href });
+    const cfg = config({ SHENRON_EMBED_BASE_URL: loopbackBase(18794, "/v1").href });
     const provider = createShenronProvider(cfg, { compute: null });
     expect(() => provider.embeddingModel("e5-passage")).toThrow();
     expect(() => provider.languageModel("chat")).toThrow();
@@ -76,11 +76,11 @@ describe("createShenronProvider", () => {
 
   test("direct configured chat replaces only chat and keeps the compute embedding space", () => {
     const cfg = config({
-      APHRODY_AI_CHAT_BASE_URL: loopbackBase(18800, "/v1").href,
-      APHRODY_AI_CHAT_MODEL: "gemma4-e2b-bnb-4bit",
-      APHRODY_AI_CHAT_API_KEY: TOKEN,
-      APHRODY_AI_HTTP_URL: BASE.origin,
-      APHRODY_AI_HTTP_TOKEN: TOKEN,
+      SHENRON_AI_CHAT_BASE_URL: loopbackBase(18800, "/v1").href,
+      SHENRON_AI_CHAT_MODEL: "gemma4-e2b-bnb-4bit",
+      SHENRON_AI_CHAT_API_KEY: TOKEN,
+      SHENRON_AI_HTTP_URL: BASE.origin,
+      SHENRON_AI_HTTP_TOKEN: TOKEN,
     });
     const compute = createAphrodyCompute(cfg.compute ?? { baseUrl: BASE, token: TOKEN });
     const provider = createShenronProvider(cfg, { compute });

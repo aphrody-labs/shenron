@@ -30,11 +30,11 @@ export function loadAphrodyTokens(): ConnectorTokens {
   const tokens: ConnectorTokens = {};
 
   // 1. Env vars
-  if (process.env.APHRODY_MCP_HTTP_TOKEN) {
-    tokens.mcpToken = process.env.APHRODY_MCP_HTTP_TOKEN;
+  if (process.env.SHENRON_MCP_HTTP_TOKEN) {
+    tokens.mcpToken = process.env.SHENRON_MCP_HTTP_TOKEN;
   }
-  if (process.env.APHRODY_A2A_COORD_TOKEN) {
-    tokens.a2aToken = process.env.APHRODY_A2A_COORD_TOKEN;
+  if (process.env.SHENRON_A2A_COORD_TOKEN) {
+    tokens.a2aToken = process.env.SHENRON_A2A_COORD_TOKEN;
   }
 
   // 2. Private host files in ~/.aphrody
@@ -51,7 +51,7 @@ export function loadAphrodyTokens(): ConnectorTokens {
   );
   if (!tokens.mcpToken && existsSync(mcpEnvPath)) {
     try {
-      const m = /APHRODY_MCP_HTTP_TOKEN=["']?([a-f0-9]+)["']?/i.exec(
+      const m = /SHENRON_MCP_HTTP_TOKEN=["']?([a-f0-9]+)["']?/i.exec(
         readFileSync(mcpEnvPath, "utf8"),
       );
       if (m?.[1]) tokens.mcpToken = m[1];
@@ -71,7 +71,7 @@ export function loadAphrodyTokens(): ConnectorTokens {
   );
   if (!tokens.a2aToken && existsSync(a2aEnvPath)) {
     try {
-      const m = /APHRODY_A2A_COORD_TOKEN=["']?([a-f0-9]+)["']?/i.exec(
+      const m = /SHENRON_A2A_COORD_TOKEN=["']?([a-f0-9]+)["']?/i.exec(
         readFileSync(a2aEnvPath, "utf8"),
       );
       if (m?.[1]) tokens.a2aToken = m[1];
@@ -99,7 +99,7 @@ export function buildClaudeMcpConfig(tokens: ConnectorTokens) {
     mcpServers["aphrody-tunnel"] = {
       url: "http://127.0.0.1:8793/mcp",
       headers: {
-        Authorization: "Bearer <VOTRE_JETON_APHRODY_MCP_HTTP>",
+        Authorization: "Bearer <VOTRE_JETON_SHENRON_MCP_HTTP>",
       },
     };
   }
@@ -125,7 +125,7 @@ export function buildAgyMcpConfig(tokens: ConnectorTokens) {
     mcpServers["aphrody-tunnel"] = {
       serverUrl: "http://127.0.0.1:8793/mcp",
       headers: {
-        Authorization: "Bearer <VOTRE_JETON_APHRODY_MCP_HTTP>",
+        Authorization: "Bearer <VOTRE_JETON_SHENRON_MCP_HTTP>",
       },
     };
   }
@@ -134,7 +134,7 @@ export function buildAgyMcpConfig(tokens: ConnectorTokens) {
 }
 
 export function buildCodexTomlConfig(tokens: ConnectorTokens): string {
-  const token = tokens.mcpToken ?? "<VOTRE_JETON_APHRODY_MCP_HTTP>";
+  const token = tokens.mcpToken ?? "<VOTRE_JETON_SHENRON_MCP_HTTP>";
   return `# Codex MCP Configuration — Shenron & Aphrody
 [mcp_servers.shenron_public]
 url = "https://dragonballfr.com/mcp"

@@ -10,8 +10,8 @@
  * retirer l'ancienne génération). La base SQLite n'est ouverte qu'en lecture.
  *
  * Usage : bun packages/pipeline/scripts/rag-embed-vectors.ts
- *   RAG_DB (copie hors service, obligatoire), APHRODY_AI_HTTP_URL et
- *   APHRODY_AI_HTTP_TOKEN (ou leurs alias ; obligatoires, aucun défaut).
+ *   RAG_DB (copie hors service, obligatoire), SHENRON_AI_HTTP_URL et
+ *   SHENRON_AI_HTTP_TOKEN (ou leurs alias ; obligatoires, aucun défaut).
  */
 import { Database } from "bun:sqlite";
 import { AphrodyComputeClient } from "@shenron/pipeline/aphrody";

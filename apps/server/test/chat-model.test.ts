@@ -148,7 +148,7 @@ describe("planChatModel", () => {
     expect(
       planChatModel(paths, {
         SHENRON_PROFILE: "desktop",
-        APHRODY_AI_CHAT_BASE_URL: "http://127.0.0.1:9/v1",
+        SHENRON_AI_CHAT_BASE_URL: "http://127.0.0.1:9/v1",
       }),
     ).toBe(null);
     const desktop = planChatModel(paths, { SHENRON_PROFILE: "desktop" });
@@ -163,12 +163,12 @@ describe("planChatModel", () => {
     const { paths } = setup();
     const env = { SHENRON_PROFILE: "desktop" };
     const plan = planBackend(paths, env);
-    expect(plan.env.APHRODY_LOCAL_MODEL_URL).toBe(plan.chatModel!.url);
-    expect(plan.env.APHRODY_AI_CHAT_MODEL).toBe(CHAT_MODEL_IDS.shenron);
+    expect(plan.env.SHENRON_LOCAL_MODEL_URL).toBe(plan.chatModel!.url);
+    expect(plan.env.SHENRON_AI_CHAT_MODEL).toBe(CHAT_MODEL_IDS.shenron);
     expect(
-      planBackend(paths, { ...env, APHRODY_AI_CHAT_MODEL: "own" }).env.APHRODY_AI_CHAT_MODEL,
+      planBackend(paths, { ...env, SHENRON_AI_CHAT_MODEL: "own" }).env.SHENRON_AI_CHAT_MODEL,
     ).toBe("own");
-    expect(planBackend(paths, {}).env.APHRODY_LOCAL_MODEL_URL).toBeUndefined();
+    expect(planBackend(paths, {}).env.SHENRON_LOCAL_MODEL_URL).toBeUndefined();
   });
 
   test("the supervisor re-executes this server as its daemon", () => {

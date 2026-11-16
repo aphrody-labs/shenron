@@ -37,7 +37,7 @@ test("the live adapter uses the declared private transport and preserves editori
     { preconnect: fetch.preconnect },
   ) as typeof fetch;
   const port = createAphrodyRagPort(
-    { APHRODY_AI_HTTP_URL: "http://127.0.0.1:8789", APHRODY_AI_HTTP_TOKEN: "fixture-private" },
+    { SHENRON_AI_HTTP_URL: "http://127.0.0.1:8789", SHENRON_AI_HTTP_TOKEN: "fixture-private" },
     fetcher,
   );
   const result = await port.search({ q: "Goku", sourceId: "manga", lang: "fr" });

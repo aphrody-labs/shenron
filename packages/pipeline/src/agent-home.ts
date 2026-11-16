@@ -4,11 +4,11 @@
  * consignes de persona (clés de frontmatter de SOUL.md et IDENTITY.md).
  *
  * Résolution, alignée sur `crates/os/a2a-coord` (domaine) et `crates/ai/agent-home` (chemins) :
- * `APHRODY_AGENT_DOMAIN`, sinon le domaine de `APHRODY_WORKSPACE` (qui doit être
- * `<APHRODY_HOME>/workspaces/<domaine>`, liens symboliques résolus), sinon `APHRODY_PROFILE`
+ * `SHENRON_AGENT_DOMAIN`, sinon le domaine de `SHENRON_WORKSPACE` (qui doit être
+ * `<SHENRON_HOME>/workspaces/<domaine>`, liens symboliques résolus), sinon `SHENRON_PROFILE`
  * (`shenron` est l'ancien nom de `dbfr`), sinon `dbfr`, le domaine du produit. Un autre domaine
  * n'a pas de profil Shenron : aucun repli implicite sur dbfr, aucune lecture du profil étranger.
- * `APHRODY_PROFILE_HOME` reste l'alias historique d'un dossier explicite.
+ * `SHENRON_PROFILE_HOME` reste l'alias historique d'un dossier explicite.
  *
  * Ni mémoire, ni corpus, ni secret n'est lu : seuls SOUL.md et IDENTITY.md sont ouverts, et seules
  * trois clés (`tone`, `brevity`, `vibe`) en sortent.
@@ -66,37 +66,37 @@ function workspaceDomain(workspace: string, state: string): string | undefined {
 
 /**
  * Profil Agent Home de Shenron pour cet environnement. Lève quand la configuration est
- * explicitement invalide : domaine mal formé, `APHRODY_WORKSPACE` hors `workspaces/<domaine>` ou
- * en désaccord avec `APHRODY_AGENT_DOMAIN`.
+ * explicitement invalide : domaine mal formé, `SHENRON_WORKSPACE` hors `workspaces/<domaine>` ou
+ * en désaccord avec `SHENRON_AGENT_DOMAIN`.
  */
 export function resolveShenronHome(env?: AgentEnv, home: string = homedir()): AgentHomeResolution {
   env ??= process.env;
-  const state = setting(env, "APHRODY_HOME") ?? join(home, ".aphrody");
-  const declared = setting(env, "APHRODY_AGENT_DOMAIN");
+  const state = setting(env, "SHENRON_HOME") ?? join(home, ".aphrody");
+  const declared = setting(env, "SHENRON_AGENT_DOMAIN");
   if (declared !== undefined && !DOMAIN_NAME.test(declared))
-    throw invalid(`APHRODY_AGENT_DOMAIN=${declared}`);
+    throw invalid(`SHENRON_AGENT_DOMAIN=${declared}`);
 
-  const workspace = setting(env, "APHRODY_WORKSPACE");
+  const workspace = setting(env, "SHENRON_WORKSPACE");
   const owner = workspace === undefined ? undefined : workspaceDomain(workspace, state);
   if (workspace !== undefined && owner === undefined)
-    throw invalid(`APHRODY_WORKSPACE doit être ${join(state, "workspaces", "<domaine>")}`);
+    throw invalid(`SHENRON_WORKSPACE doit être ${join(state, "workspaces", "<domaine>")}`);
   if (declared !== undefined && owner !== undefined && declared !== owner)
     throw invalid(
-      `APHRODY_AGENT_DOMAIN=${declared} ne correspond pas à APHRODY_WORKSPACE (${owner})`,
+      `SHENRON_AGENT_DOMAIN=${declared} ne correspond pas à SHENRON_WORKSPACE (${owner})`,
     );
 
-  const profile = setting(env, "APHRODY_PROFILE")?.toLowerCase();
+  const profile = setting(env, "SHENRON_PROFILE")?.toLowerCase();
   const fromProfile = profile === "shenron" ? SHENRON_DOMAIN : profile;
   const domain = declared ?? owner ?? fromProfile ?? SHENRON_DOMAIN;
   if (domain !== SHENRON_DOMAIN) return { status: "foreign-domain", domain };
 
   if (workspace !== undefined)
     return { status: "home", domain, dir: resolve(workspace), source: "workspace" };
-  const profileHome = setting(env, "APHRODY_PROFILE_HOME");
+  const profileHome = setting(env, "SHENRON_PROFILE_HOME");
   if (profileHome !== undefined) {
     const profileDomain = workspaceDomain(profileHome, state);
     if (profileDomain !== undefined && profileDomain !== domain)
-      throw invalid(`APHRODY_PROFILE_HOME désigne le domaine ${profileDomain}, attendu ${domain}`);
+      throw invalid(`SHENRON_PROFILE_HOME désigne le domaine ${profileDomain}, attendu ${domain}`);
     return { status: "home", domain, dir: resolve(profileHome), source: "profile-home" };
   }
 

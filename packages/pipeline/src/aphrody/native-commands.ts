@@ -2,7 +2,7 @@
 /** Product commands execute inside the canonical Aphrody FFI library. */
 import { resolve } from "node:path";
 
-export const DEFAULT_APHRODY_CLI_TIMEOUT_MS = 30_000;
+export const DEFAULT_SHENRON_CLI_TIMEOUT_MS = 30_000;
 
 export interface NativeCommandOutput {
   code: number;
@@ -15,7 +15,7 @@ export type NativeCommandExecutor = (
 ) => Promise<NativeCommandOutput>;
 
 export interface AphrodyCommandOptions {
-  /** Former binary override. Select the verified library with APHRODY_FFI_LIB. */
+  /** Former binary override. Select the verified library with SHENRON_FFI_LIB. */
   bin?: string;
   timeoutMs?: number;
   signal?: AbortSignal;
@@ -63,7 +63,7 @@ export async function runAphrodyCommand<T = unknown>(
   options: AphrodyCommandOptions = {},
 ): Promise<CliResult<T>> {
   options.signal?.throwIfAborted();
-  const timeoutMs = options.timeoutMs ?? DEFAULT_APHRODY_CLI_TIMEOUT_MS;
+  const timeoutMs = options.timeoutMs ?? DEFAULT_SHENRON_CLI_TIMEOUT_MS;
   if (!Number.isSafeInteger(timeoutMs) || timeoutMs < 1 || timeoutMs > 0xffff_ffff)
     throw new RangeError("timeoutMs must be a positive uint32 millisecond value");
   if (!args.length || args.some((arg) => typeof arg !== "string" || arg.includes("\0")))
@@ -72,7 +72,7 @@ export async function runAphrodyCommand<T = unknown>(
     return {
       kind: "not_found",
       bin: options.bin,
-      message: "Binary overrides are retired; select a verified APHRODY_FFI_LIB artifact",
+      message: "Binary overrides are retired; select a verified SHENRON_FFI_LIB artifact",
     };
   if (options.cwd && resolve(options.cwd) !== process.cwd())
     throw new Error(

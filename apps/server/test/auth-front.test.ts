@@ -19,7 +19,7 @@ mkdirSync(join(dir, "public"), { recursive: true });
 
 const seen: { realIp: string | null; forwardedFor: string | null; path: string }[] = [];
 const withAuth = createLocalApi(
-  { HOME: dir, SHENRON_DATA_DIR: dir, SHENRON_CHAT_TOOLS: "0", APHRODY_BIN: join(dir, "none") },
+  { HOME: dir, SHENRON_DATA_DIR: dir, SHENRON_CHAT_TOOLS: "0", SHENRON_BIN: join(dir, "none") },
   {
     betterAuth: {
       handler: async (request) => {
@@ -37,7 +37,7 @@ const without = createLocalApi({
   HOME: dir,
   SHENRON_DATA_DIR: dir,
   SHENRON_CHAT_TOOLS: "0",
-  APHRODY_BIN: join(dir, "none"),
+  SHENRON_BIN: join(dir, "none"),
 });
 
 const front = (host: FrontHost) =>

@@ -165,7 +165,7 @@ export function resolveChatModelConfig(env: EnvSource, profile: string): ChatMod
     loraPath: lora && lora !== "off" && lora !== "auto" ? lora : null,
     loraUrl: loraUrl ?? CHAT_ADAPTER.url,
     loraSha256: loraUrl ? null : CHAT_ADAPTER.sha256,
-    llamaBin: envString(env, "SHENRON_LLAMA_BIN") ?? envString(env, "APHRODY_LLAMA_BIN") ?? null,
+    llamaBin: envString(env, "SHENRON_LLAMA_BIN") ?? envString(env, "SHENRON_LLAMA_BIN") ?? null,
     ctx: Number.isInteger(ctx) && ctx >= 512 ? ctx : DEFAULT_CHAT_CTX,
   };
 }

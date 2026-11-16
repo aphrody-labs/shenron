@@ -6,7 +6,7 @@
  *
  * Runtime class: `pure`. Environment names follow the aphrody-infra local AI
  * contract v1 (`config/local-ai.json`): the canonical
- * `APHRODY_AI_*` name is read first, then each legacy alias in the contract
+ * `SHENRON_AI_*` name is read first, then each legacy alias in the contract
  * order; an alias written in another URL form (origin, endpoint) is converted
  * to the base form. No URL, host or port default lives here (D16): every
  * endpoint comes from the environment passed by the caller, and a missing one
@@ -111,75 +111,75 @@ export interface AiEnvSetting {
 
 /**
  * Every AI variable Shenron reads: canonical name, then the legacy aliases in
- * the contract order. `APHRODY_AI_CHAT_BASE_URL` (and aliases) selects a direct
+ * the contract order. `SHENRON_AI_CHAT_BASE_URL` (and aliases) selects a direct
  * OpenAI-compatible chat server (the preloaded Gemma 4 E2B of the vps,
  * {@link resolveDirectChat}); without it, generation goes through `aphrody-ai-http`.
- * `APHRODY_AI_VISION_BASE_URL` is deliberately absent: vision always goes through
+ * `SHENRON_AI_VISION_BASE_URL` is deliberately absent: vision always goes through
  * `aphrody-ai-http`.
  */
 export const AI_ENV = Object.freeze({
   httpUrl: {
-    canonical: "APHRODY_AI_HTTP_URL",
+    canonical: "SHENRON_AI_HTTP_URL",
     form: "origin",
-    aliases: [{ name: "APHRODY_SHENRON_API_URL", form: "origin" }],
+    aliases: [{ name: "SHENRON_API_URL", form: "origin" }],
   },
   httpToken: {
-    canonical: "APHRODY_AI_HTTP_TOKEN",
-    aliases: [{ name: "APHRODY_SHENRON_API_TOKEN" }],
+    canonical: "SHENRON_AI_HTTP_TOKEN",
+    aliases: [{ name: "SHENRON_API_TOKEN" }],
   },
   chatModel: {
-    canonical: "APHRODY_AI_CHAT_MODEL",
-    aliases: [{ name: "APHRODY_LLM_MODEL" }, { name: "APHRODY_SHENRON_LLM_MODEL" }],
+    canonical: "SHENRON_AI_CHAT_MODEL",
+    aliases: [{ name: "SHENRON_LLM_MODEL" }, { name: "SHENRON_LLM_MODEL" }],
   },
   chatBaseUrl: {
-    canonical: "APHRODY_AI_CHAT_BASE_URL",
+    canonical: "SHENRON_AI_CHAT_BASE_URL",
     form: "base",
     aliases: [
-      { name: "APHRODY_SHENRON_LLM_BASE_URL", form: "base" },
-      { name: "APHRODY_OSS_BASE_URL", form: "base" },
-      { name: "APHRODY_LOCAL_MODEL_URL", form: "origin" },
+      { name: "SHENRON_LLM_BASE_URL", form: "base" },
+      { name: "SHENRON_OSS_BASE_URL", form: "base" },
+      { name: "SHENRON_LOCAL_MODEL_URL", form: "origin" },
     ],
   },
   chatApiKey: {
-    canonical: "APHRODY_AI_CHAT_API_KEY",
+    canonical: "SHENRON_AI_CHAT_API_KEY",
     aliases: [
-      { name: "APHRODY_AI_CHAT_TOKEN" },
+      { name: "SHENRON_AI_CHAT_TOKEN" },
       { name: "VLLM_API_KEY" },
       { name: "SHENRON_OPENAI_API_KEY" },
     ],
   },
   visionModel: {
-    canonical: "APHRODY_AI_VISION_MODEL",
-    aliases: [{ name: "APHRODY_SHENRON_VISION_MODEL" }],
+    canonical: "SHENRON_AI_VISION_MODEL",
+    aliases: [{ name: "SHENRON_VISION_MODEL" }],
   },
   embedBaseUrl: {
-    canonical: "APHRODY_AI_EMBED_BASE_URL",
+    canonical: "SHENRON_AI_EMBED_BASE_URL",
     form: "base",
     aliases: [
-      { name: "APHRODY_SHENRON_EMBED_BASE_URL", form: "base" },
+      { name: "SHENRON_EMBED_BASE_URL", form: "base" },
       { name: "EMBED_URL", form: "origin" },
-      { name: "APHRODY_RAG_EMBED_ENDPOINT", form: "endpoint" },
+      { name: "SHENRON_RAG_EMBED_ENDPOINT", form: "endpoint" },
     ],
   },
   embedModel: {
-    canonical: "APHRODY_AI_EMBED_MODEL",
-    aliases: [{ name: "APHRODY_SHENRON_EMBED_MODEL" }, { name: "APHRODY_RAG_EMBED_MODEL" }],
+    canonical: "SHENRON_AI_EMBED_MODEL",
+    aliases: [{ name: "SHENRON_EMBED_MODEL" }, { name: "SHENRON_RAG_EMBED_MODEL" }],
   },
   embedDimensions: {
-    canonical: "APHRODY_AI_EMBED_DIMENSIONS",
-    aliases: [{ name: "APHRODY_RAG_EMBED_DIM" }],
+    canonical: "SHENRON_AI_EMBED_DIMENSIONS",
+    aliases: [{ name: "SHENRON_RAG_EMBED_DIM" }],
   },
   rerankBaseUrl: {
-    canonical: "APHRODY_AI_RERANK_BASE_URL",
+    canonical: "SHENRON_AI_RERANK_BASE_URL",
     form: "base",
     aliases: [
       { name: "RERANK_URL", form: "endpoint" },
-      { name: "APHRODY_RAG_RERANK_ENDPOINT", form: "endpoint" },
+      { name: "SHENRON_RAG_RERANK_ENDPOINT", form: "endpoint" },
     ],
   },
   rerankModel: {
-    canonical: "APHRODY_AI_RERANK_MODEL",
-    aliases: [{ name: "APHRODY_RAG_RERANK_MODEL" }],
+    canonical: "SHENRON_AI_RERANK_MODEL",
+    aliases: [{ name: "SHENRON_RAG_RERANK_MODEL" }],
   },
 } as const satisfies Record<string, AiEnvSetting>);
 
@@ -366,8 +366,8 @@ export interface EmbeddingSpace {
 }
 
 /**
- * Embedding space the configuration asks for: `APHRODY_AI_EMBED_MODEL` and
- * `APHRODY_AI_EMBED_DIMENSIONS` (or their aliases), each defaulting to the
+ * Embedding space the configuration asks for: `SHENRON_AI_EMBED_MODEL` and
+ * `SHENRON_AI_EMBED_DIMENSIONS` (or their aliases), each defaulting to the
  * contract index {@link SHENRON_RAG_INDEX}.
  */
 export function resolveEmbeddingSpace(env: EnvSource): Resolved<EmbeddingSpace> {
@@ -498,7 +498,7 @@ function modelId(
   return hit.value;
 }
 
-/** Chat model id sent to `aphrody-ai-http` (`APHRODY_AI_CHAT_MODEL` or aliases, else the default). */
+/** Chat model id sent to `aphrody-ai-http` (`SHENRON_AI_CHAT_MODEL` or aliases, else the default). */
 export function resolveChatModel(env: EnvSource): AphrodyChatModelId {
   return modelId(env, AI_ENV.chatModel, DEFAULT_CHAT_MODEL, []);
 }
@@ -508,7 +508,7 @@ export function resolveChatModel(env: EnvSource): AphrodyChatModelId {
 export interface DirectChatEndpoint {
   /** Base URL (`…/v1`); requests go to `<base>/chat/completions`. */
   baseUrl: URL;
-  /** Model id sent to the server (`APHRODY_AI_CHAT_MODEL` or aliases, else `gemma4-e2b`). */
+  /** Model id sent to the server (`SHENRON_AI_CHAT_MODEL` or aliases, else `gemma4-e2b`). */
   model: string;
   /** Variable the base URL was read from. */
   source: string;
@@ -517,7 +517,7 @@ export interface DirectChatEndpoint {
 }
 
 /**
- * Direct chat server (llama-server, OpenAI-compatible) when `APHRODY_AI_CHAT_BASE_URL`
+ * Direct chat server (llama-server, OpenAI-compatible) when `SHENRON_AI_CHAT_BASE_URL`
  * or an alias is set, else `null` (generation then goes through `aphrody-ai-http`).
  * The URL must be loopback HTTP, like every other AI address.
  */
@@ -539,7 +539,7 @@ export function resolveDirectChat(env: EnvSource): Resolved<DirectChatEndpoint |
   };
 }
 
-/** Vision model id sent to `aphrody-ai-http` (`APHRODY_AI_VISION_MODEL` or alias, else the default). */
+/** Vision model id sent to `aphrody-ai-http` (`SHENRON_AI_VISION_MODEL` or alias, else the default). */
 export function resolveVisionModel(env: EnvSource): string {
   return modelId(env, AI_ENV.visionModel, DEFAULT_VISION_MODEL, []);
 }

@@ -32,7 +32,7 @@ describe("@shenron/pipeline/aphrody exports", () => {
 
   it("cli subpath exposes the JSON wrappers", () => {
     expect(Object.keys(cli).toSorted()).toEqual([
-      "DEFAULT_APHRODY_CLI_TIMEOUT_MS",
+      "DEFAULT_SHENRON_CLI_TIMEOUT_MS",
       "aphrodyDoctor",
       "aphrodyGitInspect",
       "runAphrodyCli",

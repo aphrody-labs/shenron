@@ -29,7 +29,7 @@ describe("isLoopbackHost", () => {
 
 describe("parseLoopbackHttpUrl", () => {
   test("accepts http loopback URLs and strips search and hash", () => {
-    const ipv4 = parseLoopbackHttpUrl("http://127.0.0.1:8789/api?token=x#frag", "APHRODY_URL");
+    const ipv4 = parseLoopbackHttpUrl("http://127.0.0.1:8789/api?token=x#frag", "SHENRON_URL");
     expect(ipv4.ok && ipv4.url.href).toBe("http://127.0.0.1:8789/api");
     const ipv6 = parseLoopbackHttpUrl("http://[::1]:8794/v1", "EMBED_URL");
     expect(ipv6.ok && ipv6.url.hostname).toBe("[::1]");
@@ -47,10 +47,10 @@ describe("parseLoopbackHttpUrl", () => {
       ["  ", "missing"],
     ];
     for (const [raw, problem] of cases) {
-      const result = parseLoopbackHttpUrl(raw, "APHRODY_URL");
+      const result = parseLoopbackHttpUrl(raw, "SHENRON_URL");
       expect(result.ok).toBe(false);
       if (!result.ok) {
-        expect(result.issue).toMatchObject({ name: "APHRODY_URL", problem });
+        expect(result.issue).toMatchObject({ name: "SHENRON_URL", problem });
         expect(JSON.stringify(result.issue)).not.toContain("pass@");
       }
     }

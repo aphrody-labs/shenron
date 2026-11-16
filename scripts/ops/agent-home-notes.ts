@@ -34,10 +34,10 @@ export function resolveNotesHome(explicitHome?: string): string {
   const resolution = explicitHome
     ? resolveShenronHome({
         ...process.env,
-        APHRODY_AGENT_DOMAIN: "dbfr",
-        APHRODY_WORKSPACE: undefined,
-        APHRODY_PROFILE_HOME: undefined,
-        APHRODY_PROFILE: undefined,
+        SHENRON_AGENT_DOMAIN: "dbfr",
+        SHENRON_WORKSPACE: undefined,
+        SHENRON_PROFILE_HOME: undefined,
+        SHENRON_PROFILE: undefined,
       })
     : resolveShenronHome();
   if (resolution.status !== "home")

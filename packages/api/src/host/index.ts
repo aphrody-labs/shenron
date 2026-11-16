@@ -184,8 +184,8 @@ export function hostPaths(env: EnvSource) {
     vfs: envString(env, "SHENRON_VFS_DB") ?? join(data, "shenron-vfs.sqlite"),
     conversations: envString(env, "SHENRON_CHAT_STORE") ?? join(data, "conversations.sqlite"),
     agentHome:
-      envString(env, "APHRODY_WORKSPACE") ??
-      join(envString(env, "APHRODY_HOME") ?? join(home, ".aphrody"), "workspaces", "dbfr"),
+      envString(env, "SHENRON_WORKSPACE") ??
+      join(envString(env, "SHENRON_HOME") ?? join(home, ".aphrody"), "workspaces", "dbfr"),
   };
 }
 
@@ -372,7 +372,7 @@ export interface LocalApiOptions {
   /**
    * Agent home resolver: the directory of an owner's own agent home (`discord:<user_id>`,
    * `local`; native `aphrody-agent-home` layout), or `null` for the shared persona (the VFS
-   * `/home`, else APHRODY_WORKSPACE).
+   * `/home`, else SHENRON_WORKSPACE).
    */
   agentHome?: ((ownerId: string) => string | null) | null;
   /**
@@ -439,7 +439,7 @@ export function usableChatBackends(
 ): LlmBackend[] {
   return backendsFromEnv(env).filter((backend) => {
     if (backend.id !== "gemini-web") return true;
-    const binary = envString(env, "APHRODY_GEMINI_WEB_BIN") ?? "aphrody-gemini-web";
+    const binary = envString(env, "SHENRON_GEMINI_WEB_BIN") ?? "aphrody-gemini-web";
     const installed = /[\\/]/.test(binary) ? existsSync(binary) : Bun.which(binary) !== null;
     return installed && geminiCookieCandidates(env, home).some((path) => existsSync(path));
   });
@@ -486,8 +486,8 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     if (!options.vfsDatabase) opened?.vfs.db.close();
     throw new Error("Private query embedding space differs from the VFS model metadata");
   }
-  const embedModel = envString(env, "APHRODY_AI_EMBED_MODEL") ?? RAG_EMBED_MODEL;
-  const embedBase = envString(env, "APHRODY_AI_EMBED_BASE_URL");
+  const embedModel = envString(env, "SHENRON_AI_EMBED_MODEL") ?? RAG_EMBED_MODEL;
+  const embedBase = envString(env, "SHENRON_AI_EMBED_BASE_URL");
   const embedder = embedBase
     ? createE5Embedder({
         baseUrl: embedBase,
@@ -537,7 +537,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
           env: existsSync(paths.vfs) ? { SHENRON_VFS_DB: paths.vfs } : {},
         })
       : null;
-  const ocr = createCliOcr({ binary: envString(env, "APHRODY_BIN") ?? "aphrody" });
+  const ocr = createCliOcr({ binary: envString(env, "SHENRON_BIN") ?? "aphrody" });
   const ocrPort = ocr.available() ? ocr : null;
 
   // Persistent chat memory: off by SHENRON_MEMORY=off, else opened by the host process.

@@ -53,7 +53,7 @@ const states = new Set(["queued", "running", "succeeded", "failed", "cancelled"]
 const terminal = (state: string) => ["succeeded", "failed", "cancelled"].includes(state);
 const crawlOutputRoot = "/home/ubuntu/.aphrody/workspaces/dbfr/crawl/campaigns";
 
-/** The VPS and DBFR Aphrody worker units share this Infra-owned APHRODY_HOME. */
+/** The VPS and DBFR Aphrody worker units share this Infra-owned SHENRON_HOME. */
 export function crawlJobOutputDirectory(key: string): string {
   if (!key.trim() || key.length > 256)
     throw new Error("Crawl job key must contain 1..256 characters");

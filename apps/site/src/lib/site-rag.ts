@@ -41,7 +41,7 @@ export async function searchAphrodyRag(
 
 /**
  * Fournisseur Shenron dont le modèle `chat` passe par la fonction injectée : le serveur
- * de chat direct (Gemma 4 E2B préchargé du vps, `APHRODY_AI_CHAT_BASE_URL`) s'il est
+ * de chat direct (Gemma 4 E2B préchargé du vps, `SHENRON_AI_CHAT_BASE_URL`) s'il est
  * déclaré, sinon la façade `aphrody-ai-http` (ou un double de test).
  */
 function chatProvider(chat: ChatFn, chatModel: string) {
@@ -100,8 +100,8 @@ export async function chatAphrodyRag(
   const context = options.context?.trim()
     ? `[Page consultée] ${options.context.trim().slice(0, 1500)}\n\n${sources}`
     : sources;
-  // Serveur direct déclaré (APHRODY_AI_CHAT_BASE_URL), sinon aphrody-ai-http ; modèle :
-  // `APHRODY_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @shenron/pipeline/ai/config).
+  // Serveur direct déclaré (SHENRON_AI_CHAT_BASE_URL), sinon aphrody-ai-http ; modèle :
+  // `SHENRON_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @shenron/pipeline/ai/config).
   const direct = resolveDirectChat(process.env);
   if (!direct.ok) throw new AiConfigError("direct chat server", direct.issues);
   const model = direct.value

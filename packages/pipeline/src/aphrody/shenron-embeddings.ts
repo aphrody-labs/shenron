@@ -7,7 +7,7 @@
  * optional `token` and `env`), the `embed(texts, kind, { timeoutMs })`
  * signature and error messages. The former E5-direct sidecar transport is
  * gone: `baseUrl` now means the Aphrody `aphrody-ai-http` URL and defaults to
- * `APHRODY_AI_HTTP_URL`; the token defaults to `APHRODY_AI_HTTP_TOKEN`. The
+ * `SHENRON_AI_HTTP_URL`; the token defaults to `SHENRON_AI_HTTP_TOKEN`. The
  * server adds the E5 prefix; the client collapses whitespace, sends 16 inputs
  * per request and checks 384 dimensions. `fetch` is resolved at call time
  * unless a `fetcher` is given.
@@ -30,9 +30,9 @@ const LOOPBACK_HOSTS = new Set(["127.0.0.1", "[::1]", "localhost"]);
 export type ShenronEmbedKind = EmbedKind;
 
 export interface ShenronEmbeddingsOptions {
-  /** Aphrody `aphrody-ai-http` URL; defaults to `APHRODY_AI_HTTP_URL` (or its aliases). */
+  /** Aphrody `aphrody-ai-http` URL; defaults to `SHENRON_AI_HTTP_URL` (or its aliases). */
   baseUrl?: string;
-  /** Bearer token; defaults to `APHRODY_AI_HTTP_TOKEN` (or its aliases). */
+  /** Bearer token; defaults to `SHENRON_AI_HTTP_TOKEN` (or its aliases). */
   token?: string;
   fetcher?: typeof fetch;
   /** Environment read for the defaults (`process.env` when omitted). */
@@ -72,8 +72,8 @@ export function resolveShenronEmbeddingsBaseUrl(
  * collapses whitespace and splits requests to 16 inputs.
  *
  * Options: `baseUrl` is the Aphrody `aphrody-ai-http` URL (loopback HTTP, only
- * its origin is used) and overrides `APHRODY_AI_HTTP_URL`; `token` overrides
- * `APHRODY_AI_HTTP_TOKEN`. Both fall back to `@shenron/pipeline/ai/config`
+ * its origin is used) and overrides `SHENRON_AI_HTTP_URL`; `token` overrides
+ * `SHENRON_AI_HTTP_TOKEN`. Both fall back to `@shenron/pipeline/ai/config`
  * and the constructor throws an `AiConfigError` naming the variables when
  * neither is available. A direct embedder URL (`/v1` path) passed as
  * `baseUrl` keeps working only in the sense that its origin is used as the
@@ -90,7 +90,7 @@ export class ShenronEmbeddingsClient {
     this.baseUrl =
       options.baseUrl === undefined
         ? requireAiHttpUrl(env)
-        : requireAiHttpUrl({ APHRODY_AI_HTTP_URL: options.baseUrl });
+        : requireAiHttpUrl({ SHENRON_AI_HTTP_URL: options.baseUrl });
     this.token = options.token ?? requireAiHttpToken(env);
     this.fetcher = options.fetcher;
   }

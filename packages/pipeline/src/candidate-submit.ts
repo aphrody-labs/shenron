@@ -32,11 +32,11 @@ export async function submitCandidates(
   options: CandidateSubmitOptions = {},
 ): Promise<unknown> {
   const baseUrl =
-    options.baseUrl ?? process.env.APHRODY_SHENRON_API_URL ?? process.env.SHENRON_API_URL;
+    options.baseUrl ?? process.env.SHENRON_API_URL;
   const token =
-    options.token ?? process.env.APHRODY_SHENRON_API_TOKEN ?? process.env.SHENRON_API_TOKEN;
-  if (!baseUrl) throw new Error("APHRODY_SHENRON_API_URL is not set");
-  if (!token) throw new Error("APHRODY_SHENRON_API_TOKEN is not set");
+    options.token ?? process.env.SHENRON_API_TOKEN;
+  if (!baseUrl) throw new Error("SHENRON_API_URL is not set");
+  if (!token) throw new Error("SHENRON_API_TOKEN is not set");
   const url = new URL("/api/manga/candidates", baseUrl);
   const response = await (options.fetch ?? fetch)(url, {
     method: "POST",

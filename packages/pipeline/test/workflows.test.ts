@@ -39,7 +39,7 @@ function profile(domain: string, tone: string): string {
 }
 
 function env(extra: AgentEnv = {}): AgentEnv {
-  return { APHRODY_HOME: state, ...extra };
+  return { SHENRON_HOME: state, ...extra };
 }
 
 beforeAll(() => {
@@ -66,14 +66,14 @@ describe("resolveShenronHome", () => {
     });
   });
 
-  test("l'état vient d'APHRODY_HOME, sinon du dossier personnel", () => {
+  test("l'état vient d'SHENRON_HOME, sinon du dossier personnel", () => {
     expect(resolveShenronHome({}, home)).toMatchObject({ dir: join(state, "workspaces", "dbfr") });
   });
 
-  test("APHRODY_WORKSPACE=dbfr et APHRODY_AGENT_DOMAIN=dbfr désignent le même profil", () => {
+  test("SHENRON_WORKSPACE=dbfr et SHENRON_AGENT_DOMAIN=dbfr désignent le même profil", () => {
     const dir = join(state, "workspaces", "dbfr");
     const resolved = resolveShenronHome(
-      env({ APHRODY_WORKSPACE: dir, APHRODY_AGENT_DOMAIN: "dbfr", APHRODY_PROFILE: "dbfr" }),
+      env({ SHENRON_WORKSPACE: dir, SHENRON_AGENT_DOMAIN: "dbfr", SHENRON_PROFILE: "dbfr" }),
       home,
     );
     expect(resolved).toEqual({ status: "home", domain: "dbfr", dir, source: "workspace" });
@@ -83,12 +83,12 @@ describe("resolveShenronHome", () => {
     const legacy = join(state, "workspace-shenron");
     symlinkSync(join(state, "workspaces", "dbfr"), legacy);
     try {
-      expect(resolveShenronHome(env({ APHRODY_WORKSPACE: legacy }), home)).toMatchObject({
+      expect(resolveShenronHome(env({ SHENRON_WORKSPACE: legacy }), home)).toMatchObject({
         status: "home",
         dir: legacy,
         source: "workspace",
       });
-      expect(loadShenronHomePersona(env({ APHRODY_WORKSPACE: legacy }), home)).toMatchObject({
+      expect(loadShenronHomePersona(env({ SHENRON_WORKSPACE: legacy }), home)).toMatchObject({
         tone: "ton dbfr fixture",
       });
     } finally {
@@ -96,8 +96,8 @@ describe("resolveShenronHome", () => {
     }
   });
 
-  test("APHRODY_PROFILE=shenron est l'ancien nom de dbfr", () => {
-    expect(resolveShenronHome(env({ APHRODY_PROFILE: "shenron" }), home)).toMatchObject({
+  test("SHENRON_PROFILE=shenron est l'ancien nom de dbfr", () => {
+    expect(resolveShenronHome(env({ SHENRON_PROFILE: "shenron" }), home)).toMatchObject({
       status: "home",
       dir: join(state, "workspaces", "dbfr"),
       source: "domain",
@@ -108,19 +108,19 @@ describe("resolveShenronHome", () => {
     const bare = join(root, "bare-state");
     const legacy = join(bare, "workspace-shenron");
     mkdirSync(legacy, { recursive: true });
-    expect(resolveShenronHome({ APHRODY_HOME: bare }, home)).toMatchObject({
+    expect(resolveShenronHome({ SHENRON_HOME: bare }, home)).toMatchObject({
       dir: legacy,
       source: "default",
     });
     mkdirSync(join(bare, "workspaces", "dbfr"), { recursive: true });
-    expect(resolveShenronHome({ APHRODY_HOME: bare }, home)).toMatchObject({
+    expect(resolveShenronHome({ SHENRON_HOME: bare }, home)).toMatchObject({
       dir: join(bare, "workspaces", "dbfr"),
     });
   });
 
-  test("APHRODY_PROFILE_HOME reste l'alias historique d'un dossier explicite", () => {
+  test("SHENRON_PROFILE_HOME reste l'alias historique d'un dossier explicite", () => {
     const dir = join(root, "explicit");
-    expect(resolveShenronHome(env({ APHRODY_PROFILE_HOME: dir }), home)).toEqual({
+    expect(resolveShenronHome(env({ SHENRON_PROFILE_HOME: dir }), home)).toEqual({
       status: "home",
       domain: "dbfr",
       dir,
@@ -132,20 +132,20 @@ describe("resolveShenronHome", () => {
     expect(() =>
       loadShenronHomePersona(
         env({
-          APHRODY_AGENT_DOMAIN: "dbfr",
-          APHRODY_PROFILE_HOME: join(state, "workspaces", "ie"),
+          SHENRON_AGENT_DOMAIN: "dbfr",
+          SHENRON_PROFILE_HOME: join(state, "workspaces", "ie"),
         }),
         home,
       ),
-    ).toThrow("APHRODY_PROFILE_HOME");
+    ).toThrow("SHENRON_PROFILE_HOME");
   });
 
-  test("APHRODY_WORKSPACE prime sur l'alias historique, sans lire un autre domaine", () => {
+  test("SHENRON_WORKSPACE prime sur l'alias historique, sans lire un autre domaine", () => {
     const dir = join(state, "workspaces", "dbfr");
     const selected = env({
-      APHRODY_WORKSPACE: dir,
-      APHRODY_AGENT_DOMAIN: "dbfr",
-      APHRODY_PROFILE_HOME: join(state, "workspaces", "ie"),
+      SHENRON_WORKSPACE: dir,
+      SHENRON_AGENT_DOMAIN: "dbfr",
+      SHENRON_PROFILE_HOME: join(state, "workspaces", "ie"),
     });
     expect(resolveShenronHome(selected, home)).toEqual({
       status: "home",
@@ -158,15 +158,15 @@ describe("resolveShenronHome", () => {
 
   test("un autre domaine n'a pas de profil Shenron, jamais de repli sur dbfr", () => {
     const ie = join(state, "workspaces", "ie");
-    expect(resolveShenronHome(env({ APHRODY_WORKSPACE: ie }), home)).toEqual({
+    expect(resolveShenronHome(env({ SHENRON_WORKSPACE: ie }), home)).toEqual({
       status: "foreign-domain",
       domain: "ie",
     });
-    expect(resolveShenronHome(env({ APHRODY_AGENT_DOMAIN: "aphrody" }), home)).toEqual({
+    expect(resolveShenronHome(env({ SHENRON_AGENT_DOMAIN: "aphrody" }), home)).toEqual({
       status: "foreign-domain",
       domain: "aphrody",
     });
-    expect(resolveShenronHome(env({ APHRODY_PROFILE: "ie" }), home)).toEqual({
+    expect(resolveShenronHome(env({ SHENRON_PROFILE: "ie" }), home)).toEqual({
       status: "foreign-domain",
       domain: "ie",
     });
@@ -174,8 +174,8 @@ describe("resolveShenronHome", () => {
     expect(
       resolveShenronHome(
         env({
-          APHRODY_AGENT_DOMAIN: "ie",
-          APHRODY_PROFILE_HOME: join(state, "workspaces", "dbfr"),
+          SHENRON_AGENT_DOMAIN: "ie",
+          SHENRON_PROFILE_HOME: join(state, "workspaces", "dbfr"),
         }),
         home,
       ),
@@ -185,12 +185,12 @@ describe("resolveShenronHome", () => {
   test("configuration explicitement invalide : lève", () => {
     const ie = join(state, "workspaces", "ie");
     expect(() =>
-      resolveShenronHome(env({ APHRODY_AGENT_DOMAIN: "dbfr", APHRODY_WORKSPACE: ie }), home),
-    ).toThrow("ne correspond pas à APHRODY_WORKSPACE");
+      resolveShenronHome(env({ SHENRON_AGENT_DOMAIN: "dbfr", SHENRON_WORKSPACE: ie }), home),
+    ).toThrow("ne correspond pas à SHENRON_WORKSPACE");
     expect(() =>
-      resolveShenronHome(env({ APHRODY_WORKSPACE: join(root, "ailleurs") }), home),
-    ).toThrow("APHRODY_WORKSPACE doit être");
-    expect(() => resolveShenronHome(env({ APHRODY_AGENT_DOMAIN: "../ie" }), home)).toThrow(
+      resolveShenronHome(env({ SHENRON_WORKSPACE: join(root, "ailleurs") }), home),
+    ).toThrow("SHENRON_WORKSPACE doit être");
+    expect(() => resolveShenronHome(env({ SHENRON_AGENT_DOMAIN: "../ie" }), home)).toThrow(
       "Agent Home invalide",
     );
   });
@@ -211,21 +211,21 @@ describe("loadShenronHomePersona", () => {
     mkdirSync(join(trap, "workspaces", "ie", "SOUL.md"), { recursive: true });
     mkdirSync(join(trap, "workspaces", "aphrody", "SOUL.md"), { recursive: true });
     const ie = join(trap, "workspaces", "ie");
-    expect(loadShenronHomePersona({ APHRODY_HOME: trap, APHRODY_WORKSPACE: ie }, home)).toBeNull();
+    expect(loadShenronHomePersona({ SHENRON_HOME: trap, SHENRON_WORKSPACE: ie }, home)).toBeNull();
     expect(
-      loadShenronHomePersona({ APHRODY_HOME: trap, APHRODY_AGENT_DOMAIN: "aphrody" }, home),
+      loadShenronHomePersona({ SHENRON_HOME: trap, SHENRON_AGENT_DOMAIN: "aphrody" }, home),
     ).toBeNull();
-    expect(() => getToriyamaPersona({ APHRODY_HOME: trap, APHRODY_WORKSPACE: ie }, home)).toThrow(
+    expect(() => getToriyamaPersona({ SHENRON_HOME: trap, SHENRON_WORKSPACE: ie }, home)).toThrow(
       "indisponible pour le domaine ie",
     );
   });
 
   test("profil par défaut absent ou sans consigne : null, persona canonique", () => {
-    expect(loadShenronHomePersona({ APHRODY_HOME: join(root, "vide") }, home)).toBeNull();
+    expect(loadShenronHomePersona({ SHENRON_HOME: join(root, "vide") }, home)).toBeNull();
     const bare = join(root, "sans-cle");
     mkdirSync(join(bare, "workspaces", "dbfr"), { recursive: true });
     writeFileSync(join(bare, "workspaces", "dbfr", "SOUL.md"), "# Sans frontmatter\n");
-    expect(loadShenronHomePersona({ APHRODY_HOME: bare }, home)).toBeNull();
+    expect(loadShenronHomePersona({ SHENRON_HOME: bare }, home)).toBeNull();
   });
 
   test("un fichier suffit : SOUL seul, ou IDENTITY seul", () => {
@@ -233,31 +233,31 @@ describe("loadShenronHomePersona", () => {
     const dir = join(only, "workspaces", "dbfr");
     mkdirSync(dir, { recursive: true });
     writeFileSync(join(dir, "SOUL.md"), SOUL("ton seul"));
-    expect(loadShenronHomePersona({ APHRODY_HOME: only }, home)).toEqual({
+    expect(loadShenronHomePersona({ SHENRON_HOME: only }, home)).toEqual({
       tone: "ton seul",
       brevity: "terse",
     });
     rmSync(join(dir, "SOUL.md"));
     writeFileSync(join(dir, "IDENTITY.md"), IDENTITY);
-    expect(loadShenronHomePersona({ APHRODY_HOME: only }, home)).toEqual({ vibe: "Vibe fixture" });
+    expect(loadShenronHomePersona({ SHENRON_HOME: only }, home)).toEqual({ vibe: "Vibe fixture" });
   });
 
   test("dossier désigné explicitement mais absent : lève", () => {
     const missing = join(state, "custom-profile-absent");
-    expect(() => loadShenronHomePersona(env({ APHRODY_PROFILE_HOME: missing }), home)).toThrow(
+    expect(() => loadShenronHomePersona(env({ SHENRON_PROFILE_HOME: missing }), home)).toThrow(
       "profil introuvable",
     );
     const emptyState = join(root, "etat-vide");
     mkdirSync(emptyState, { recursive: true });
     expect(() =>
       loadShenronHomePersona(
-        { APHRODY_HOME: emptyState, APHRODY_WORKSPACE: join(emptyState, "workspaces", "dbfr") },
+        { SHENRON_HOME: emptyState, SHENRON_WORKSPACE: join(emptyState, "workspaces", "dbfr") },
         home,
       ),
     ).toThrow("profil introuvable");
     // Un domaine déclaré sans profil installé garde la persona canonique.
     expect(
-      loadShenronHomePersona({ APHRODY_HOME: emptyState, APHRODY_AGENT_DOMAIN: "dbfr" }, home),
+      loadShenronHomePersona({ SHENRON_HOME: emptyState, SHENRON_AGENT_DOMAIN: "dbfr" }, home),
     ).toBeNull();
   });
 });
@@ -269,22 +269,22 @@ describe("getToriyamaPersona (contrat historique)", () => {
     expect(persona.identity).toBe(IDENTITY);
   });
 
-  test("APHRODY_PROFILE_HOME prime et exige les deux fichiers", () => {
+  test("SHENRON_PROFILE_HOME prime et exige les deux fichiers", () => {
     const dir = join(root, "incomplet");
     mkdirSync(dir, { recursive: true });
-    expect(() => getToriyamaPersona(env({ APHRODY_PROFILE_HOME: dir }), home)).toThrow(
+    expect(() => getToriyamaPersona(env({ SHENRON_PROFILE_HOME: dir }), home)).toThrow(
       `Profil Shenron incomplet: ${dir}`,
     );
     writeFileSync(join(dir, "SOUL.md"), "soul fixture");
     writeFileSync(join(dir, "IDENTITY.md"), "identity fixture");
-    expect(getToriyamaPersona(env({ APHRODY_PROFILE_HOME: dir }), home)).toEqual({
+    expect(getToriyamaPersona(env({ SHENRON_PROFILE_HOME: dir }), home)).toEqual({
       soul: "soul fixture",
       identity: "identity fixture",
     });
   });
 
   test("sous un autre domaine : lève au lieu de lire dbfr", () => {
-    expect(() => getToriyamaPersona(env({ APHRODY_AGENT_DOMAIN: "ie" }), home)).toThrow(
+    expect(() => getToriyamaPersona(env({ SHENRON_AGENT_DOMAIN: "ie" }), home)).toThrow(
       "Profil Shenron indisponible pour le domaine ie",
     );
   });

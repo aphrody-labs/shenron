@@ -27,7 +27,7 @@ beforeAll(async () => {
   reportSources = JSON.parse(readFileSync(reportPath, "utf8")).sources;
   index = createSql({
     applicationName: "shenron-storage-live-index",
-    url: process.env.APHRODY_MCP_DATABASE_URL,
+    url: process.env.SHENRON_MCP_DATABASE_URL,
     max: 1,
   });
   editorial = createSql({ applicationName: "shenron-storage-live-editorial", max: 1 });

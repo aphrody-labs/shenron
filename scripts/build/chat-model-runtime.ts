@@ -10,7 +10,7 @@
  *                                           [--chat-lora <adapter.gguf>]
  *
  * Writes `<out>/llama/` and `<out>/models/shenron-chat-v2.gguf`. The adapter comes from
- * --chat-lora, SHENRON_CHAT_LORA or APHRODY_SHENRON_CHAT_LORA (Aphrody training output); the
+ * --chat-lora, SHENRON_CHAT_LORA or SHENRON_CHAT_LORA (Aphrody training output); the
  * weights never enter Git. Downloads are cached under `target/llama-runtime/`.
  */
 import {
@@ -105,7 +105,7 @@ export async function stageAdapter(source: string | undefined, dest: string): Pr
   if (!source || !existsSync(source) || !statSync(source).isFile())
     throw new Error(
       `${CHAT_ADAPTER.id}: adapter not found; pass --chat-lora <adapter.gguf> or set ` +
-        "APHRODY_SHENRON_CHAT_LORA (or build with --skip-chat-model)",
+        "SHENRON_CHAT_LORA (or build with --skip-chat-model)",
     );
   const digest = await sha256File(source);
   if (digest !== CHAT_ADAPTER.sha256)
@@ -116,13 +116,13 @@ export async function stageAdapter(source: string | undefined, dest: string): Pr
   return out;
 }
 
-/** The adapter source of a build: --chat-lora, SHENRON_CHAT_LORA, APHRODY_SHENRON_CHAT_LORA. */
+/** The adapter source of a build: --chat-lora, SHENRON_CHAT_LORA, SHENRON_CHAT_LORA. */
 export function adapterSource(args: readonly string[]): string | undefined {
   const index = args.indexOf("--chat-lora");
   return (
     (index >= 0 ? args[index + 1] : undefined) ??
     process.env.SHENRON_CHAT_LORA?.trim() ??
-    process.env.APHRODY_SHENRON_CHAT_LORA?.trim()
+    process.env.SHENRON_CHAT_LORA?.trim()
   );
 }
 

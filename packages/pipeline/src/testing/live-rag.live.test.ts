@@ -10,13 +10,13 @@ beforeAll(async () => {
 }, 120_000);
 
 async function search(source = "db_characters") {
-  const url = new URL("/api/v1/shenron/rag/search", process.env.APHRODY_AI_HTTP_URL);
+  const url = new URL("/api/v1/shenron/rag/search", process.env.SHENRON_AI_HTTP_URL);
   url.searchParams.set("q", "Son Goku");
   url.searchParams.set("sourceId", source);
   url.searchParams.set("lang", "fr");
   url.searchParams.set("limit", "5");
   const response = await fetch(url, {
-    headers: { authorization: `Bearer ${process.env.APHRODY_AI_HTTP_TOKEN}` },
+    headers: { authorization: `Bearer ${process.env.SHENRON_AI_HTTP_TOKEN}` },
   });
   expect(response.status).toBe(200);
   return { cache: response.headers.get("x-shenron-rag-cache"), body: await response.json() };

@@ -239,9 +239,9 @@ export function antigravityAnswer(raw: unknown): string {
 export const ANTIGRAVITY_TIMEOUT_MS = 180_000;
 const ERROR_TAIL_CHARS = 300;
 
-/** `APHRODY_ANTIGRAVITY_TIMEOUT_MS` when a positive number, else the default. */
+/** `SHENRON_ANTIGRAVITY_TIMEOUT_MS` when a positive number, else the default. */
 export function antigravityTimeoutMs(env: Record<string, string | undefined> = Bun.env): number {
-  const value = Number(env.APHRODY_ANTIGRAVITY_TIMEOUT_MS);
+  const value = Number(env.SHENRON_ANTIGRAVITY_TIMEOUT_MS);
   return Number.isFinite(value) && value > 0 ? value : ANTIGRAVITY_TIMEOUT_MS;
 }
 
@@ -260,7 +260,7 @@ export async function antigravityChat(
 ): Promise<{ answer: string; model: string }> {
   const prompt = messages.map((message) => `[${message.role}]\n${message.content}`).join("\n\n");
   const args = ["antigravity", "chat", "--prompt", prompt, ...(model ? ["--model", model] : [])];
-  const proc = Bun.spawn([Bun.env.APHRODY_BIN ?? "aphrody", ...args], {
+  const proc = Bun.spawn([Bun.env.SHENRON_BIN ?? "aphrody", ...args], {
     stdout: "pipe",
     stderr: "pipe",
     stdin: "ignore",

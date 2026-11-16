@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Démarrage du bot sans services (W5-TOOL-02) : dans un process `bun` enfant
- * dont l'environnement ne contient ni `APHRODY_*`, ni `DATABASE_URL`, ni
+ * dont l'environnement ne contient ni `SHENRON_*`, ni `DATABASE_URL`, ni
  * `REDIS_URL`, ni `EMBED_URL`, les modules qui parlent à ces services
  * s'importent sans erreur (aucune lecture d'environnement fatale au niveau
  * module, aucune connexion ouverte) et `PgService` renvoie `null`. La connexion
@@ -16,7 +16,7 @@ const BOT_DIR = resolve(import.meta.dir, "..");
 const dir = mkdtempSync(join(tmpdir(), "shenron-bot-boot-"));
 afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
-const REMOVED = /^(APHRODY_|DATABASE_URL$|REDIS_URL$|EMBED_URL$)/;
+const REMOVED = /^(SHENRON_|DATABASE_URL$|REDIS_URL$|EMBED_URL$)/;
 
 function reducedEnv(): Record<string, string> {
   const env: Record<string, string> = {};
@@ -56,7 +56,7 @@ process.exit(0);
 describe("boot without services", () => {
   it("imports rag, llm, semantic-cache, TrainingService and pg with no service env", async () => {
     const env = reducedEnv();
-    for (const key of Object.keys(env)) expect(REMOVED.test(key)).toBe(false);
+    for (const key of Object.keys(env)) if (key !== "SHENRON_PG_ENV") expect(REMOVED.test(key)).toBe(false);
     const proc = Bun.spawn([process.execPath, "--no-env-file", "-e", SCRIPT], {
       cwd: BOT_DIR,
       env,

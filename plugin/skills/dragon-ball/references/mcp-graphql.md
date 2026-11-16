@@ -87,7 +87,7 @@ passent par les flux d'administration Shenron autorisés et versionnés.
 ## Modes de recherche
 
 `local: true` ou `SHENRON_LOCAL_RAG=1` force le corpus local Aphrody ;
-`APHRODY_AUTO_FALLBACK=1` y replie la recherche lorsque l'API bot échoue.
+`SHENRON_AUTO_FALLBACK=1` y replie la recherche lorsque l'API bot échoue.
 Ces modes sont vérifiés dans `crates/shenron-mcp/src/dragonball_tools.rs` le
 2026-10-04. Lire le mode retourné et ouvrir sa source : un index local peut
 ne pas contenir les pages du manga. RAG, compute et base éditoriale restent

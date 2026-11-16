@@ -574,7 +574,7 @@ async function a2aTick(
     ],
     {
       cwd: ROOT,
-      env: { ...Bun.env, APHRODY_COORD_DIR: COORD_DIR },
+      env: { ...Bun.env, SHENRON_COORD_DIR: COORD_DIR },
       stdout: "pipe",
       stderr: "pipe",
     },

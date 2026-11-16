@@ -127,7 +127,7 @@ export function e5Middleware(kind: EmbedKind): EmbeddingModelV4Middleware {
 
 /**
  * Embedding model on Aphrody `/api/v1/shenron/embed`, resolved from `env`
- * (`APHRODY_AI_HTTP_URL` / `APHRODY_AI_HTTP_TOKEN` or their aliases). The name
+ * (`SHENRON_AI_HTTP_URL` / `SHENRON_AI_HTTP_TOKEN` or their aliases). The name
  * is kept for existing callers; the former direct sidecar transport is gone,
  * so `e5.baseUrl` and any direct embedder variable are ignored (one warning).
  * Throws an `AiConfigError` naming the variables when Aphrody is not configured.
@@ -140,7 +140,7 @@ export function e5DirectEmbeddingModel(
   // Portable lookup: hosts without a process object fall back to an empty env.
   const env = o.env ?? (globalThis as { process?: { env?: EnvSource } }).process?.env ?? {};
   warnIgnoredEmbedBaseUrl(
-    e5?.baseUrl !== undefined ? { ...env, APHRODY_AI_EMBED_BASE_URL: String(e5.baseUrl) } : env,
+    e5?.baseUrl !== undefined ? { ...env, SHENRON_AI_EMBED_BASE_URL: String(e5.baseUrl) } : env,
   );
   const compute = createAphrodyCompute(
     { baseUrl: requireAiHttpUrl(env), token: requireAiHttpToken(env) },

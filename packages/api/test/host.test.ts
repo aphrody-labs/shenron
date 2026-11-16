@@ -29,7 +29,7 @@ function baseEnv(over: Record<string, string | undefined> = {}) {
   return {
     HOME: dir,
     SHENRON_DATA_DIR: dir,
-    APHRODY_BIN: join(dir, "absent", "aphrody"),
+    SHENRON_BIN: join(dir, "absent", "aphrody"),
     SHENRON_CHAT_BACKENDS: "local",
     SHENRON_CHAT_TOOLS: "0",
     ...over,
@@ -77,7 +77,7 @@ describe("groups", () => {
   });
 
   test("a declared local model enables chat and models", () => {
-    const api = host(baseEnv({ APHRODY_LOCAL_MODEL_URL: "http://127.0.0.1:9" }));
+    const api = host(baseEnv({ SHENRON_LOCAL_MODEL_URL: "http://127.0.0.1:9" }));
     expect(api.groups.chat).toEqual({ available: true });
     expect(api.groups.models).toEqual({ available: true });
     expect(api.handles("/api/v1/chat/ws")).toBe(true);
@@ -136,7 +136,7 @@ describe("usableChatBackends", () => {
     expect(
       usableChatBackends({
         SHENRON_CHAT_BACKENDS: "local,extractive",
-        APHRODY_AI_CHAT_BASE_URL: "http://127.0.0.1:9/v1",
+        SHENRON_AI_CHAT_BASE_URL: "http://127.0.0.1:9/v1",
       }).map((b) => b.id),
     ).toEqual(["local", "extractive"]);
   });
@@ -147,8 +147,8 @@ describe("usableChatBackends", () => {
     const binary = join(dir, "aphrody-gemini-web");
     const env = {
       SHENRON_CHAT_BACKENDS: "gemini-web",
-      APHRODY_HOME: dir,
-      APHRODY_GEMINI_WEB_BIN: binary,
+      SHENRON_HOME: dir,
+      SHENRON_GEMINI_WEB_BIN: binary,
     };
     expect(usableChatBackends(env, dir)).toEqual([]);
     writeFileSync(binary, "");

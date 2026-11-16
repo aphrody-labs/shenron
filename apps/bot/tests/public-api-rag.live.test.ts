@@ -93,9 +93,9 @@ describe("public API client and schemas against the preloaded Shenron RAG", () =
   });
 
   test("projects an actual backend authentication failure as index_unavailable", async () => {
-    const token = process.env.APHRODY_AI_HTTP_TOKEN;
+    const token = process.env.SHENRON_AI_HTTP_TOKEN;
     try {
-      process.env.APHRODY_AI_HTTP_TOKEN = "invalid-qualification-credential";
+      process.env.SHENRON_AI_HTTP_TOKEN = "invalid-qualification-credential";
       const client = createShenronApiClient({ baseUrl: server!.url.href });
       const search = await client.rag.search({ q: "Son Goku" });
       const context = await client.rag.context({ q: "Son Goku" });
@@ -103,7 +103,7 @@ describe("public API client and schemas against the preloaded Shenron RAG", () =
       expect(context.ok && context.value.error).toBe("index_unavailable");
       expect(JSON.stringify([search, context]).includes(token!)).toBe(false);
     } finally {
-      process.env.APHRODY_AI_HTTP_TOKEN = token;
+      process.env.SHENRON_AI_HTTP_TOKEN = token;
     }
   });
 });

@@ -14,7 +14,7 @@ import { tempPath } from "@shenron/kit/paths";
  *   curl --unix-socket /tmp/dbfr-a2a.sock -X POST http://localhost/jsonrpc \
  *     -H 'Content-Type: application/json' -d '{"jsonrpc":"2.0","id":1,"method":"ping"}'
  *
- * Variables : A2A_SOCKET, COORD_DIR, APHRODY_BIN (binaire aphrody, défaut PATH).
+ * Variables : A2A_SOCKET, COORD_DIR, SHENRON_BIN (binaire aphrody, défaut PATH).
  */
 
 export const SOCKET = Bun.env.A2A_SOCKET ?? tempPath("dbfr-a2a.sock");
@@ -26,7 +26,7 @@ export function brokerArgs(socket: string = SOCKET, coordDir: string = COORD_DIR
 }
 
 if (import.meta.main) {
-  const bin = Bun.env.APHRODY_BIN ?? "aphrody";
+  const bin = Bun.env.SHENRON_BIN ?? "aphrody";
   const child = Bun.spawn([bin, ...brokerArgs()], { stdio: ["inherit", "inherit", "inherit"] });
   for (const signal of ["SIGINT", "SIGTERM"] as const) {
     process.on(signal, () => child.kill(signal));

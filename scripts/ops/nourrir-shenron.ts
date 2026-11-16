@@ -213,7 +213,7 @@ async function main() {
 
     // 4. Ingestion de Knowledge.db ou memory/ vers le Wiki / RAG de Shenron
     const aphrodyWorkspace =
-      process.env.APHRODY_WORKSPACE?.trim() || join(homedir(), ".aphrody", "workspace");
+      process.env.SHENRON_WORKSPACE?.trim() || join(homedir(), ".aphrody", "workspace");
     const knowledgeDbPaths = [join(aphrodyWorkspace, "knowledge.db")];
     const memoryDirs = [join(aphrodyWorkspace, "memory")];
 

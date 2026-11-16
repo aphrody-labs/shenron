@@ -184,12 +184,12 @@ async function ensureDocker(): Promise<void> {
 /** Git token for the private aphrody-labs repositories, written to a 0600 file mounted as a BuildKit secret. */
 function writeGitSecret(): string {
   const token =
-    process.env.APHRODY_GIT_TOKEN ||
+    process.env.SHENRON_GIT_TOKEN ||
     process.env.GH_TOKEN ||
     process.env.GITHUB_TOKEN ||
     text(run(["gh", "auth", "token"]));
   if (!token || /\s/.test(token))
-    throw new Error("no GitHub token (APHRODY_GIT_TOKEN, GH_TOKEN, or `gh auth login`)");
+    throw new Error("no GitHub token (SHENRON_GIT_TOKEN, GH_TOKEN, or `gh auth login`)");
   const dir = join(DIST, ".secrets");
   mkdirSync(dir, { recursive: true });
   const file = join(dir, "gitconfig");

@@ -54,7 +54,7 @@ describe.if(isLive())("RAG wire contracts measured against preloaded Shenron ser
   test("ingests an unchanged actual editorial passage and confirms its current complete generation", async () => {
     const editorial = createSql({ applicationName: "shenron-wire-live-editorial", max: 1 });
     const index = createSql({
-      url: process.env.APHRODY_MCP_DATABASE_URL,
+      url: process.env.SHENRON_MCP_DATABASE_URL,
       applicationName: "shenron-wire-live-index",
       max: 1,
     });

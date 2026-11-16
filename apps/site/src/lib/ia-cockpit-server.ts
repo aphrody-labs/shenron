@@ -2,8 +2,8 @@
  * IA & Canon Cockpit (/admin/ai) — concrete data sources.
  *
  * Owners, never local files of another process:
- *   - Aphrody AI private HTTP (`APHRODY_AI_HTTP_URL`, loopback, bearer
- *     `APHRODY_AI_HTTP_TOKEN`, legacy aliases accepted): health, RAG statistics, search mode;
+ *   - Aphrody AI private HTTP (`SHENRON_AI_HTTP_URL`, loopback, bearer
+ *     `SHENRON_AI_HTTP_TOKEN`, legacy aliases accepted): health, RAG statistics, search mode;
  *   - YOLO WEB (`YOLO_WEB_CLI` spawned as `web-cli mcp` over stdio, then the CDP endpoint of
  *     `YOLO_CDP_ENDPOINT`/`YOLO_CDP_PORT`): MCP handshake, tool list and CDP version;
  *   - the bot process over HTTP (`BOT_INTERNAL_URL`, else the configured bot
@@ -57,8 +57,8 @@ import {
   type RetrievalMetrics,
 } from "@/lib/ia-cockpit";
 
-const APHRODY_TIMEOUT_MS = 5_000;
-const APHRODY_SEARCH_TIMEOUT_MS = 10_000;
+const SHENRON_TIMEOUT_MS = 5_000;
+const SHENRON_SEARCH_TIMEOUT_MS = 10_000;
 const BOT_TIMEOUT_MS = 5_000;
 /** Fixed probe query: the answered `mode` says which retrieval really serves. */
 const RAG_PROBE_QUERY = "Son Goku";
@@ -96,10 +96,10 @@ function fetchWithTimeout(timeoutMs: number): typeof fetch {
 }
 
 /** Aphrody AI client; a missing or invalid configuration is reported as such. */
-function aphrodyCompute(timeoutMs = APHRODY_TIMEOUT_MS): AphrodyComputeClient {
+function aphrodyCompute(timeoutMs = SHENRON_TIMEOUT_MS): AphrodyComputeClient {
   if (!hasAiHttpToken(process.env)) {
     throw new SourceNotConfiguredError(
-      "APHRODY_AI_HTTP_TOKEN (ou APHRODY_SHENRON_API_TOKEN) absent de l'environnement du site",
+      "SHENRON_AI_HTTP_TOKEN (ou SHENRON_API_TOKEN) absent de l'environnement du site",
     );
   }
   try {
@@ -203,7 +203,7 @@ export function createIaCockpitFetchers(): IaCockpitFetchers {
       target: "web-cli mcp (stdio) + CDP /json/version",
       run: async () => {
         try {
-          return summarizeYoloWebProbe(await probeYoloWeb({ timeoutMs: APHRODY_TIMEOUT_MS }));
+          return summarizeYoloWebProbe(await probeYoloWeb({ timeoutMs: SHENRON_TIMEOUT_MS }));
         } catch (error) {
           if (error instanceof YoloWebNotConfiguredError)
             throw new SourceNotConfiguredError("YOLO_WEB_CLI absent de l'environnement du site");
@@ -326,13 +326,13 @@ export async function searchConfiguredRag(
       query,
       limit,
       {},
-      aphrodyCompute(APHRODY_SEARCH_TIMEOUT_MS),
+      aphrodyCompute(SHENRON_SEARCH_TIMEOUT_MS),
     );
     return { mode, results };
   }
   const params = new URLSearchParams({ q: query, limit: String(limit) });
   return parseBotSearch(
-    await fetchBotJson(`/api/public/rag/search?${params}`, APHRODY_SEARCH_TIMEOUT_MS),
+    await fetchBotJson(`/api/public/rag/search?${params}`, SHENRON_SEARCH_TIMEOUT_MS),
   );
 }
 

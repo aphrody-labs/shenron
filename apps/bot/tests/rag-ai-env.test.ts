@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * rag.ts on the aphrody-infra AI env contract: reranker dialects (llama-server
- * for the canonical APHRODY_AI_RERANK_BASE_URL, the Shenron sidecar for the
+ * for the canonical SHENRON_AI_RERANK_BASE_URL, the Shenron sidecar for the
  * legacy RERANK_URL) and the startup check that refuses to mix embedding spaces.
  */
 import { afterEach, beforeAll, describe, expect, it } from "bun:test";
@@ -17,9 +17,9 @@ import {
 
 const NAMES = [
   "RAG_BACKEND",
-  "APHRODY_AI_EMBED_MODEL",
-  "APHRODY_AI_EMBED_DIMENSIONS",
-  "APHRODY_RAG_EMBED_DIM",
+  "SHENRON_AI_EMBED_MODEL",
+  "SHENRON_AI_EMBED_DIMENSIONS",
+  "SHENRON_RAG_EMBED_DIM",
 ];
 const saved = Object.fromEntries(NAMES.map((name) => [name, process.env[name]]));
 afterEach(() => {
@@ -103,7 +103,7 @@ describe.if(isLive())("embedding space against the real Shenron PostgreSQL index
       dimensions: 384,
     });
     const sql = createSql({
-      url: process.env.APHRODY_MCP_DATABASE_URL,
+      url: process.env.SHENRON_MCP_DATABASE_URL,
       applicationName: "shenron-live-embedding-space",
       max: 1,
     });
@@ -121,13 +121,13 @@ describe.if(isLive())("embedding space against the real Shenron PostgreSQL index
   });
 
   it("rejects a configured dimension mismatch without rebuilding the served index", () => {
-    process.env.APHRODY_AI_EMBED_DIMENSIONS = "1024";
+    process.env.SHENRON_AI_EMBED_DIMENSIONS = "1024";
     expect(() => assertRagEmbeddingSpace(null)).toThrow(EmbeddingSpaceMismatchError);
   });
 
   it("also refuses an incompatible legacy embedding dimension", () => {
-    delete process.env.APHRODY_AI_EMBED_DIMENSIONS;
-    process.env.APHRODY_RAG_EMBED_DIM = "768";
+    delete process.env.SHENRON_AI_EMBED_DIMENSIONS;
+    process.env.SHENRON_RAG_EMBED_DIM = "768";
     expect(() => assertRagEmbeddingSpace(null)).toThrow(/shenron-rag/);
   });
 });

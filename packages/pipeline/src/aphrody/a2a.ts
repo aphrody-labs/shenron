@@ -389,16 +389,16 @@ export const coordMailboxStore = new CoordMailboxStore();
 type DurableStore = "remote" | "file" | "memory";
 
 /**
- * Where tasks and envelopes are kept: Aphrody's coord API when `APHRODY_A2A_COORD_API` is set,
+ * Where tasks and envelopes are kept: Aphrody's coord API when `SHENRON_A2A_COORD_API` is set,
  * else the local file store (`a2a-file-store.ts`, `A2A_COORD_DIR` in production), else memory,
  * which production refuses.
  */
 function durableStore(): DurableStore {
-  if (process.env.APHRODY_A2A_COORD_API?.trim() && aphrodyA2aStoreEnabled()) return "remote";
+  if (process.env.SHENRON_A2A_COORD_API?.trim() && aphrodyA2aStoreEnabled()) return "remote";
   if (fileStoreEnabled()) return "file";
   if (process.env.NODE_ENV === "production") {
     throw new Error(
-      "A durable A2A store is required in production: set A2A_COORD_DIR, SHENRON_A2A_STORE_DIR or APHRODY_A2A_COORD_API",
+      "A durable A2A store is required in production: set A2A_COORD_DIR, SHENRON_A2A_STORE_DIR or SHENRON_A2A_COORD_API",
     );
   }
   return "memory";

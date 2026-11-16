@@ -1,10 +1,10 @@
 import { describe, expect, test } from "bun:test";
-import { APHRODY_DISCORD, guildAiPrompt, resolveDiscordAi } from "../src/discord-ai";
+import { SHENRON_DISCORD, guildAiPrompt, resolveDiscordAi } from "../src/discord-ai";
 
 describe("Aphrody Discord migration", () => {
   const message = {
-    guildId: APHRODY_DISCORD.guildId,
-    channelId: APHRODY_DISCORD.generalChannelId,
+    guildId: SHENRON_DISCORD.guildId,
+    channelId: SHENRON_DISCORD.generalChannelId,
     author: { bot: false },
     content: "<@123456789012345678> Bonjour",
   };
@@ -12,9 +12,9 @@ describe("Aphrody Discord migration", () => {
 
   test("defaults point to the verified general channel", () => {
     expect(resolveDiscordAi({})).toEqual({
-      guildId: APHRODY_DISCORD.guildId,
-      generalChannelId: APHRODY_DISCORD.generalChannelId,
-      adminChannelId: APHRODY_DISCORD.generalChannelId,
+      guildId: SHENRON_DISCORD.guildId,
+      generalChannelId: SHENRON_DISCORD.generalChannelId,
+      adminChannelId: SHENRON_DISCORD.generalChannelId,
     });
     expect(resolveDiscordAi({ GUILD_ID: "other" }).generalChannelId).toBeUndefined();
     expect(resolveDiscordAi({ GUILD_ID: "other" }).adminChannelId).toBeUndefined();
@@ -41,7 +41,7 @@ describe("Aphrody Discord migration", () => {
   test("accepts messages across admitted multi-guild setup in Aphrody lab channels", () => {
     const multiGuildEnv = {
       GUILD_ID: "934894610545770506",
-      ADDITIONAL_GUILD_IDS: APHRODY_DISCORD.guildId,
+      ADDITIONAL_GUILD_IDS: SHENRON_DISCORD.guildId,
     };
     // Message in start-here
     expect(guildAiPrompt(message, botId, multiGuildEnv)).toBe("Bonjour");
@@ -49,7 +49,7 @@ describe("Aphrody Discord migration", () => {
     // Message in assistant channel
     expect(
       guildAiPrompt(
-        { ...message, channelId: APHRODY_DISCORD.assistantChannelId },
+        { ...message, channelId: SHENRON_DISCORD.assistantChannelId },
         botId,
         multiGuildEnv,
       ),
@@ -57,7 +57,7 @@ describe("Aphrody Discord migration", () => {
 
     // Message in chat channel
     expect(
-      guildAiPrompt({ ...message, channelId: APHRODY_DISCORD.chatChannelId }, botId, multiGuildEnv),
+      guildAiPrompt({ ...message, channelId: SHENRON_DISCORD.chatChannelId }, botId, multiGuildEnv),
     ).toBe("Bonjour");
   });
 });

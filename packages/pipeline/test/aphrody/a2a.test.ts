@@ -16,23 +16,23 @@ import {
 
 // Boîte .coord isolée : les tests n'écrivent JAMAIS dans la vraie boîte partagée.
 const previousCoordDir = process.env.A2A_COORD_DIR;
-const previousCoordApi = process.env.APHRODY_A2A_COORD_API;
-const previousCoordToken = process.env.APHRODY_A2A_COORD_TOKEN;
+const previousCoordApi = process.env.SHENRON_A2A_COORD_API;
+const previousCoordToken = process.env.SHENRON_A2A_COORD_TOKEN;
 const coordDir = mkdtempSync(join(tmpdir(), "a2a-test-coord-"));
 
 beforeAll(() => {
   process.env.A2A_COORD_DIR = coordDir;
-  delete process.env.APHRODY_A2A_COORD_API;
-  delete process.env.APHRODY_A2A_COORD_TOKEN;
+  delete process.env.SHENRON_A2A_COORD_API;
+  delete process.env.SHENRON_A2A_COORD_TOKEN;
 });
 
 afterAll(() => {
   if (previousCoordDir === undefined) delete process.env.A2A_COORD_DIR;
   else process.env.A2A_COORD_DIR = previousCoordDir;
-  if (previousCoordApi === undefined) delete process.env.APHRODY_A2A_COORD_API;
-  else process.env.APHRODY_A2A_COORD_API = previousCoordApi;
-  if (previousCoordToken === undefined) delete process.env.APHRODY_A2A_COORD_TOKEN;
-  else process.env.APHRODY_A2A_COORD_TOKEN = previousCoordToken;
+  if (previousCoordApi === undefined) delete process.env.SHENRON_A2A_COORD_API;
+  else process.env.SHENRON_A2A_COORD_API = previousCoordApi;
+  if (previousCoordToken === undefined) delete process.env.SHENRON_A2A_COORD_TOKEN;
+  else process.env.SHENRON_A2A_COORD_TOKEN = previousCoordToken;
   rmSync(coordDir, { recursive: true, force: true });
 });
 
@@ -435,8 +435,8 @@ describe("Ordres de travail et clôture par un pair", () => {
         return Response.json({ error: "not found" }, { status: 404 });
       },
     });
-    process.env.APHRODY_A2A_COORD_API = server.url.origin;
-    process.env.APHRODY_A2A_COORD_TOKEN = "test-coord-token";
+    process.env.SHENRON_A2A_COORD_API = server.url.origin;
+    process.env.SHENRON_A2A_COORD_TOKEN = "test-coord-token";
     try {
       const { task, responseData } = await ShenronA2AHub.sendMessage({
         target: "subagents",
@@ -475,8 +475,8 @@ describe("Ordres de travail et clôture par un pair", () => {
       expect(requests.every((r) => r.authorization === "Bearer test-coord-token")).toBe(true);
       expect(tasks.get(task.id)?.metadata.appliedEnvelopes).toContain("env-http-reply-1");
     } finally {
-      delete process.env.APHRODY_A2A_COORD_API;
-      delete process.env.APHRODY_A2A_COORD_TOKEN;
+      delete process.env.SHENRON_A2A_COORD_API;
+      delete process.env.SHENRON_A2A_COORD_TOKEN;
       server.stop(true);
     }
   });
@@ -486,7 +486,7 @@ describe("Ordres de travail et clôture par un pair", () => {
       port: 0,
       fetch: () => Response.json({ error: "store unavailable" }, { status: 503 }),
     });
-    process.env.APHRODY_A2A_COORD_API = server.url.origin;
+    process.env.SHENRON_A2A_COORD_API = server.url.origin;
     try {
       await expect(
         ShenronA2AHub.sendMessage({
@@ -496,7 +496,7 @@ describe("Ordres de travail et clôture par un pair", () => {
         }),
       ).rejects.toThrow("Aphrody A2A store 503: store unavailable");
     } finally {
-      delete process.env.APHRODY_A2A_COORD_API;
+      delete process.env.SHENRON_A2A_COORD_API;
       server.stop(true);
     }
   });

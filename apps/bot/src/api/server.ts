@@ -6542,7 +6542,7 @@ async function mapLimitDeadline<T, R>(
 }
 
 // ── A2A bridge ────────────────────────────────────────────────────────────
-// Le bot n'implémente pas A2A. Avec APHRODY_A2A_URL, tout est relayé vers le
+// Le bot n'implémente pas A2A. Avec SHENRON_A2A_URL, tout est relayé vers le
 // serveur Rust `aphrody a2a serve` (./a2a-proxy.ts). Sans lui (production depuis
 // le retrait du service Aphrody), la carte et le JSON-RPC sont relayés au hub du
 // site (`/api/a2a`, seul propriétaire des tâches) et `/api/a2a/events` diffuse

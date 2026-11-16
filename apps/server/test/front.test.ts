@@ -91,7 +91,7 @@ async function start(
     writeFileSync(binary, `#!${process.execPath}\n${o.mcpScript}`);
     chmodSync(binary, 0o755);
   }
-  const fullEnv = { HOME: dir, APHRODY_BIN: ABSENT_APHRODY, SHENRON_CHAT_TOOLS: "0", ...env };
+  const fullEnv = { HOME: dir, SHENRON_BIN: ABSENT_APHRODY, SHENRON_CHAT_TOOLS: "0", ...env };
   const backend = await startBackend(paths, fullEnv, { payloadDir });
   const front = serveFront({
     hostname: "127.0.0.1",

@@ -15,7 +15,7 @@ mock.module("server-only", () => ({}));
 
 const LIVE = process.env.SHENRON_LIVE === "1";
 const gemini = createGeminiWebBackend({
-  binary: process.env.APHRODY_GEMINI_WEB_BIN ?? "aphrody-gemini-web",
+  binary: process.env.SHENRON_GEMINI_WEB_BIN ?? "aphrody-gemini-web",
   cookiePaths: geminiCookieCandidates(process.env),
   coolDownMs: 0,
 });

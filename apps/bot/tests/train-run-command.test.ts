@@ -12,7 +12,7 @@ import {
   type TrainRunKind,
 } from "../src/commands/admin/Train";
 
-const env = { APHRODY_HOME: "/state", APHRODY_BIN: "/bin/aphrody" } as NodeJS.ProcessEnv;
+const env = { SHENRON_HOME: "/state", SHENRON_BIN: "/bin/aphrody" } as NodeJS.ProcessEnv;
 
 function stream(text: string): ReadableStream<Uint8Array> {
   return new Response(text).body as ReadableStream<Uint8Array>;
@@ -64,7 +64,7 @@ describe("train run", () => {
     const exited = new Promise<number>((r) => (release = r));
     const calls: { argv: string[]; domain?: string }[] = [];
     const runner = new TrainJobRunner((argv, spawnEnv) => {
-      calls.push({ argv, domain: spawnEnv.APHRODY_AGENT_DOMAIN });
+      calls.push({ argv, domain: spawnEnv.SHENRON_AGENT_DOMAIN });
       return { exited, stdout: stream("Job done\n"), stderr: null };
     }, env);
     const job = runner.start("embed", undefined, "42");

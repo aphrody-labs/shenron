@@ -92,7 +92,7 @@ async function prepareAttestation(releasePath: string) {
   );
   await requireListenerBinary(new URL(aphrodyApiUrlFromEnv()), release, "aphrody-mcp");
   const embedUrl =
-    process.env.APHRODY_AI_EMBED_BASE_URL ?? process.env.APHRODY_SHENRON_EMBED_BASE_URL;
+    process.env.SHENRON_AI_EMBED_BASE_URL ?? process.env.SHENRON_EMBED_BASE_URL;
   if (!embedUrl) throw new Error("Real E5 endpoint is not configured");
   await requireListenerBinary(new URL(embedUrl), release, "aphrody-embed");
   const reportPath =
@@ -149,7 +149,7 @@ async function attestCompute(
     throw new Error(
       "Managed model did not provide a timely answer citing a retrieved Dragon Ball source",
     );
-  const stateRoot = process.env.APHRODY_HOME ?? join(homedir(), ".aphrody");
+  const stateRoot = process.env.SHENRON_HOME ?? join(homedir(), ".aphrody");
   const state = (await Bun.file(join(stateRoot, "run/llama-server-chat.json")).json()) as {
     ready?: boolean;
     daemon_pid: number;
@@ -160,7 +160,7 @@ async function attestCompute(
   if (!state.ready || state.alias !== answer.model)
     throw new Error("Managed model state disagrees with the answer");
   await requireProcessBinary(state.daemon_pid, attestation.release, "aphrody-llama-daemon");
-  const lora = process.env.APHRODY_SHENRON_CHAT_LORA;
+  const lora = process.env.SHENRON_CHAT_LORA;
   if (!lora) throw new Error("Shenron LoRA is not configured");
   const argv = (await Bun.file(`/proc/${state.server_pid}/cmdline`).text()).split("\0");
   if (!argv.some((arg, index) => arg === "--lora" && argv[index + 1] === lora))
@@ -215,8 +215,8 @@ async function attestCompute(
 
 /**
  * B13: the private Aphrody API address has no default here. Returns the origin
- * resolved by `@shenron/pipeline/ai/config` (`APHRODY_AI_HTTP_URL`, then the legacy
- * `APHRODY_SHENRON_API_URL`), or throws an error naming the variables.
+ * resolved by `@shenron/pipeline/ai/config` (`SHENRON_AI_HTTP_URL`, then the legacy
+ * `SHENRON_API_URL`), or throws an error naming the variables.
  */
 export function aphrodyApiUrlFromEnv(
   env: Record<string, string | undefined> = process.env,

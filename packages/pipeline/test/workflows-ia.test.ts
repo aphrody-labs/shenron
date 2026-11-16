@@ -57,7 +57,7 @@ function promptText(options: CallOptions): { system: string; user: string } {
 
 // Environnement hermétique : un état Agent Home vide, jamais le profil réel de la machine.
 const sandbox = mkdtempSync(join(tmpdir(), "shenron-ia-home-"));
-const noHome = { APHRODY_HOME: join(sandbox, "vide") };
+const noHome = { SHENRON_HOME: join(sandbox, "vide") };
 const runIaTask = (options: IaTaskOptions) => run({ env: noHome, ...options });
 
 afterAll(() => {
@@ -65,8 +65,8 @@ afterAll(() => {
 });
 
 const savedFetch = globalThis.fetch;
-const savedToken = process.env.APHRODY_SHENRON_API_TOKEN;
-const savedUrl = process.env.APHRODY_SHENRON_API_URL;
+const savedToken = process.env.SHENRON_API_TOKEN;
+const savedUrl = process.env.SHENRON_API_URL;
 
 let fetchCalls = 0;
 beforeEach(() => {
@@ -80,10 +80,10 @@ beforeEach(() => {
 afterEach(() => {
   expect(fetchCalls).toBe(0);
   globalThis.fetch = savedFetch;
-  if (savedToken === undefined) delete process.env.APHRODY_SHENRON_API_TOKEN;
-  else process.env.APHRODY_SHENRON_API_TOKEN = savedToken;
-  if (savedUrl === undefined) delete process.env.APHRODY_SHENRON_API_URL;
-  else process.env.APHRODY_SHENRON_API_URL = savedUrl;
+  if (savedToken === undefined) delete process.env.SHENRON_API_TOKEN;
+  else process.env.SHENRON_API_TOKEN = savedToken;
+  if (savedUrl === undefined) delete process.env.SHENRON_API_URL;
+  else process.env.SHENRON_API_URL = savedUrl;
 });
 
 describe("runIaTask (B5)", () => {
@@ -132,7 +132,7 @@ function fixtureState(name: string, domain: string, tone: string): Record<string
   );
   writeFileSync(join(dir, "IDENTITY.md"), '---\nvibe: "Vibe fixture"\n---\n');
   writeFileSync(join(dir, "MEMORY.md"), "MEMORY-SENTINEL");
-  return { APHRODY_HOME: state, APHRODY_AGENT_DOMAIN: domain, APHRODY_WORKSPACE: dir };
+  return { SHENRON_HOME: state, SHENRON_AGENT_DOMAIN: domain, SHENRON_WORKSPACE: dir };
 }
 
 describe("runIaTask : Agent Home du domaine", () => {
@@ -185,7 +185,7 @@ describe("runIaTask : Agent Home du domaine", () => {
   test("domaine ie : persona canonique, le profil ie n'est pas appliqué et dbfr n'est pas lu", async () => {
     const ieEnv = fixtureState("home-ie", "ie", "ton ie fixture");
     // Un profil dbfr piégé dans le même état : s'il était lu, SOUL.md (un dossier) lèverait EISDIR.
-    mkdirSync(join(ieEnv.APHRODY_HOME!, "workspaces", "dbfr", "SOUL.md"), { recursive: true });
+    mkdirSync(join(ieEnv.SHENRON_HOME!, "workspaces", "dbfr", "SOUL.md"), { recursive: true });
     const { model, calls } = mockModel("Réponse.");
     await runIaTask({ task: "Qui est Kami ?", withRag: false, languageModel: model, env: ieEnv });
     const { system } = promptText(calls[0]!);
@@ -195,7 +195,7 @@ describe("runIaTask : Agent Home du domaine", () => {
 
   test("configuration invalide : rejet avant toute récupération ou génération", async () => {
     const { model, calls } = mockModel("Réponse.");
-    const env = { ...fixtureState("home-conflit", "dbfr", "x"), APHRODY_AGENT_DOMAIN: "ie" };
+    const env = { ...fixtureState("home-conflit", "dbfr", "x"), SHENRON_AGENT_DOMAIN: "ie" };
     await expect(runIaTask({ task: "Qui est Kami ?", languageModel: model, env })).rejects.toThrow(
       "Agent Home invalide",
     );

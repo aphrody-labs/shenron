@@ -19,7 +19,7 @@
  * --skip-koharu-sdk ships no engine sidecar: the local server then reports its koharu group
  * unavailable (the editor still runs in the app window).
  * --skip-chat-model ships neither llama-server nor the adapter: the chat then needs a server
- * declared by APHRODY_LOCAL_MODEL_URL. The base model (2.5 GB, too large for the installer) is
+ * declared by SHENRON_LOCAL_MODEL_URL. The base model (2.5 GB, too large for the installer) is
  * downloaded by shenron-server into SHENRON_HOME on first launch, digest-checked.
  * windows-x64 from Linux/WSL: the app is cross-compiled with cargo-xwin. Linux uses
  * its native NSIS toolset; WSL drives Windows NSIS through scripts/build/makensis-wsl.ts.

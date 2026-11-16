@@ -170,8 +170,8 @@ export function geminiCookieCandidates(
   env: Record<string, string | undefined>,
   home = homedir(),
 ): string[] {
-  const explicit = env.APHRODY_GOOGLE_COOKIES_JSON?.trim();
-  const dir = env.APHRODY_HOME?.trim() || join(home, ".aphrody");
+  const explicit = env.SHENRON_GOOGLE_COOKIES_JSON?.trim();
+  const dir = env.SHENRON_HOME?.trim() || join(home, ".aphrody");
   return [
     ...(explicit ? [explicit] : []),
     join(dir, "cookies", "gemini-web.json"),
@@ -308,25 +308,25 @@ export function backendsFromEnv(env: Record<string, string | undefined>): LlmBac
     if (id === "gemini-web") {
       out.push(
         createGeminiWebBackend({
-          binary: env.APHRODY_GEMINI_WEB_BIN?.trim() || "aphrody-gemini-web",
+          binary: env.SHENRON_GEMINI_WEB_BIN?.trim() || "aphrody-gemini-web",
           cookiePaths: geminiCookieCandidates(env),
           ...(env.SHENRON_GEMINI_MODEL ? { model: env.SHENRON_GEMINI_MODEL } : {}),
         }),
       );
     } else if (id === "local") {
       const base =
-        env.APHRODY_AI_CHAT_BASE_URL?.trim() ||
-        env.APHRODY_SHENRON_LLM_BASE_URL?.trim() ||
-        (env.APHRODY_LOCAL_MODEL_URL?.trim()
-          ? `${env.APHRODY_LOCAL_MODEL_URL.trim().replace(/\/+$/, "")}/v1`
+        env.SHENRON_AI_CHAT_BASE_URL?.trim() ||
+        env.SHENRON_LLM_BASE_URL?.trim() ||
+        (env.SHENRON_LOCAL_MODEL_URL?.trim()
+          ? `${env.SHENRON_LOCAL_MODEL_URL.trim().replace(/\/+$/, "")}/v1`
           : "");
       if (base) {
         out.push(
           createOpenAiBackend({
             id: "local",
             baseUrl: base,
-            model: env.APHRODY_AI_CHAT_MODEL?.trim() || null,
-            apiKey: env.APHRODY_AI_CHAT_API_KEY?.trim() || null,
+            model: env.SHENRON_AI_CHAT_MODEL?.trim() || null,
+            apiKey: env.SHENRON_AI_CHAT_API_KEY?.trim() || null,
           }),
         );
       }

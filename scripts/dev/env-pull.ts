@@ -158,7 +158,7 @@ async function writePrivate(path: string, text: string): Promise<void> {
 async function contractCheck(service: Service, path: string): Promise<string> {
   const proc = Bun.spawn(
     ["aphrody-infra", "secrets", "check", "--service", SERVICES[service].unit, "--env-file", path],
-    // aphrody-infra resolves its own checkout; APHRODY_INFRA_ROOT, when set, passes through.
+    // aphrody-infra resolves its own checkout; SHENRON_INFRA_ROOT, when set, passes through.
     { stdout: "pipe", stderr: "pipe" },
   );
   const [out, err, code] = await Promise.all([

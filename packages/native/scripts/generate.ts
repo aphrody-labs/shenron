@@ -17,7 +17,7 @@ const check = Bun.argv.includes("--check");
 
 const cargo = Bun.spawn(
   [
-    process.env.APHRODY_CARGO_SERIAL || "cargo",
+    process.env.SHENRON_CARGO_SERIAL || "cargo",
     "test",
     "--quiet",
     "-p",

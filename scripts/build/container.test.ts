@@ -41,7 +41,7 @@ test("the image must match the checkout's Rust and wasm-bindgen pins", () => {
 });
 
 test("jeton Git : environnement de l'appelant d'abord, gh en dernier, jamais requis", () => {
-  expect(gitToken({ APHRODY_GIT_TOKEN: "a", GH_TOKEN: "b" }, () => "c")).toBe("a");
+  expect(gitToken({ SHENRON_GIT_TOKEN: "a", GH_TOKEN: "b" }, () => "c")).toBe("a");
   expect(gitToken({ GITHUB_TOKEN: "d" }, () => "c")).toBe("d");
   expect(gitToken({}, () => "c")).toBe("c");
   expect(gitToken({}, () => undefined)).toBeUndefined();

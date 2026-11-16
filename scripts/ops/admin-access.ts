@@ -51,7 +51,7 @@ function onHost(host: string, script: string, arg: string): string {
   const quoted = `'${arg.replace(/'/g, `'\\''`)}'`;
   const cmd = `f=$(mktemp --suffix=.ts) && echo ${b64} | base64 -d > "$f" && ${REMOTE_BUN} "$f" ${quoted}; c=$?; rm -f "$f"; exit $c`;
   const p = Bun.spawnSync(infraCommand(["ssh", "exec", "--host", host, "-c", cmd]), {
-    env: { ...process.env, APHRODY_SSH_COMMAND_TIMEOUT_SECS: "300" },
+    env: { ...process.env, SHENRON_SSH_COMMAND_TIMEOUT_SECS: "300" },
     stdout: "pipe",
     stderr: "pipe",
   });

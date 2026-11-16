@@ -40,13 +40,13 @@ describe("wire fixtures", () => {
   });
 });
 
-describe("APHRODY_LIMITS", () => {
+describe("SHENRON_LIMITS", () => {
   test("match http_rest.rs", () => {
-    expect(wire.APHRODY_LIMITS.chatMessages).toBe(32);
-    expect(wire.APHRODY_LIMITS.chatMessageBytes).toBe(32 * 1024);
-    expect(wire.APHRODY_LIMITS.embedTexts).toBe(16);
-    expect(wire.APHRODY_LIMITS.embedTextBytes).toBe(8192);
-    expect(wire.APHRODY_LIMITS.imageBase64Bytes).toBe(24 * 1024 * 1024);
-    expect(Object.isFrozen(wire.APHRODY_LIMITS)).toBe(true);
+    expect(wire.SHENRON_LIMITS.chatMessages).toBe(32);
+    expect(wire.SHENRON_LIMITS.chatMessageBytes).toBe(32 * 1024);
+    expect(wire.SHENRON_LIMITS.embedTexts).toBe(16);
+    expect(wire.SHENRON_LIMITS.embedTextBytes).toBe(8192);
+    expect(wire.SHENRON_LIMITS.imageBase64Bytes).toBe(24 * 1024 * 1024);
+    expect(Object.isFrozen(wire.SHENRON_LIMITS)).toBe(true);
   });
 });

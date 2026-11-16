@@ -104,13 +104,13 @@ function post(body: unknown) {
 
 /** Real transport towards a loopback port nobody listens on: a genuine connection failure. */
 async function withUnreachableAphrody<T>(run: () => Promise<T>): Promise<T> {
-  const previous = process.env.APHRODY_AI_HTTP_URL;
-  process.env.APHRODY_AI_HTTP_URL = "http://127.0.0.1:1";
+  const previous = process.env.SHENRON_AI_HTTP_URL;
+  process.env.SHENRON_AI_HTTP_URL = "http://127.0.0.1:1";
   try {
     return await run();
   } finally {
-    if (previous === undefined) delete process.env.APHRODY_AI_HTTP_URL;
-    else process.env.APHRODY_AI_HTTP_URL = previous;
+    if (previous === undefined) delete process.env.SHENRON_AI_HTTP_URL;
+    else process.env.SHENRON_AI_HTTP_URL = previous;
   }
 }
 

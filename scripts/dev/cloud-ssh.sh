@@ -2,11 +2,11 @@
 # SPDX-License-Identifier: Apache-2.0
 # SSH from a Claude Code cloud session to the owner hosts: writes ~/.ssh/config aliases `vps`, `dbfr` and `wsl`
 # from the cloud environment, never from the repository. Idempotent, tolerant (exit code 0).
-#   APHRODY_SSH_KEY_B64   base64 of the private key (cloud secret; SHENRON_SSH_KEY_B64 accepted)
-#   APHRODY_VPS_HOST      first VPS address     APHRODY_DBFR_HOST  second VPS address
-#   APHRODY_WSL_HOST      optional WSL address reachable from the cloud (reverse tunnel or private network)
-#   APHRODY_WSL_PORT      optional WSL port (default 22)   APHRODY_WSL_USER  optional WSL login (default aphro)
-#   APHRODY_SSH_USER      VPS login (default ubuntu)
+#   SHENRON_SSH_KEY_B64   base64 of the private key (cloud secret; SHENRON_SSH_KEY_B64 accepted)
+#   SHENRON_VPS_HOST      first VPS address     SHENRON_DBFR_HOST  second VPS address
+#   SHENRON_WSL_HOST      optional WSL address reachable from the cloud (reverse tunnel or private network)
+#   SHENRON_WSL_PORT      optional WSL port (default 22)   SHENRON_WSL_USER  optional WSL login (default aphro)
+#   SHENRON_SSH_USER      VPS login (default ubuntu)
 #   --force               run outside a cloud session
 set -u
 [[ "${CLAUDE_CODE_REMOTE:-}" == "true" || "${1:-}" == "--force" ]] || exit 0
@@ -18,21 +18,21 @@ if [[ -n "${GH_TOKEN:-}" ]] && command -v gh >/dev/null 2>&1; then
   git config --global credential.https://github.com.helper '!gh auth git-credential'
   gh auth status >/dev/null 2>&1 && echo "cloud-ssh: gh authenticated" || echo "cloud-ssh: gh token rejected"
 fi
-key_b64="${APHRODY_SSH_KEY_B64:-${SHENRON_SSH_KEY_B64:-}}"
-vps="${APHRODY_VPS_HOST:-${SHENRON_VPS_HOST:-}}"
-dbfr="${APHRODY_DBFR_HOST:-${SHENRON_DBFR_HOST:-}}"
+key_b64="${SHENRON_SSH_KEY_B64:-${SHENRON_SSH_KEY_B64:-}}"
+vps="${SHENRON_VPS_HOST:-${SHENRON_VPS_HOST:-}}"
+dbfr="${SHENRON_DBFR_HOST:-${SHENRON_DBFR_HOST:-}}"
 if [[ -z "$key_b64" || ( -z "$vps" && -z "$dbfr" ) ]]; then
-  echo "cloud-ssh: APHRODY_SSH_KEY_B64 and APHRODY_VPS_HOST/APHRODY_DBFR_HOST absent, SSH aliases not written"
+  echo "cloud-ssh: SHENRON_SSH_KEY_B64 and SHENRON_VPS_HOST/SHENRON_DBFR_HOST absent, SSH aliases not written"
   exit 0
 fi
 umask 077
 mkdir -p "$HOME/.ssh"
 key="$HOME/.ssh/aphrody_hosts"
 printf '%s' "$key_b64" | base64 -d >"$key" 2>/dev/null && chmod 600 "$key" || {
-  echo "cloud-ssh: APHRODY_SSH_KEY_B64 is not valid base64"
+  echo "cloud-ssh: SHENRON_SSH_KEY_B64 is not valid base64"
   exit 0
 }
-user="${APHRODY_SSH_USER:-${SHENRON_SSH_USER:-ubuntu}}"
+user="${SHENRON_SSH_USER:-${SHENRON_SSH_USER:-ubuntu}}"
 config="$HOME/.ssh/config"
 touch "$config"
 host_block() { # alias address user port
@@ -46,7 +46,7 @@ if ! grep -q '# aphrody-hosts' "$config" 2>/dev/null; then
     echo "# aphrody-hosts"
     [[ -z "$vps" ]] || host_block vps "$vps" "$user" 22
     [[ -z "$dbfr" ]] || host_block dbfr "$dbfr" "$user" 22
-    [[ -z "${APHRODY_WSL_HOST:-}" ]] || host_block wsl "$APHRODY_WSL_HOST" "${APHRODY_WSL_USER:-aphro}" "${APHRODY_WSL_PORT:-22}"
+    [[ -z "${SHENRON_WSL_HOST:-}" ]] || host_block wsl "$SHENRON_WSL_HOST" "${SHENRON_WSL_USER:-aphro}" "${SHENRON_WSL_PORT:-22}"
   } >>"$config"
 fi
 chmod 600 "$config"

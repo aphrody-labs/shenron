@@ -17,9 +17,9 @@ const { generateLlmAnswer } = await import("../src/lib/llm");
 const { hybridSearch } = await import("../src/lib/rag");
 
 const realFetch = globalThis.fetch;
-const savedInference = process.env.APHRODY_SHENRON_INFERENCE;
+const savedInference = process.env.SHENRON_INFERENCE;
 beforeEach(() => {
-  process.env.APHRODY_SHENRON_INFERENCE = "http";
+  process.env.SHENRON_INFERENCE = "http";
 });
 const CHAT_PATH = "/api/v1/shenron/llm/chat";
 
@@ -48,8 +48,8 @@ beforeAll(async () => {
 }, 120_000);
 
 afterEach(() => {
-  if (savedInference === undefined) delete process.env.APHRODY_SHENRON_INFERENCE;
-  else process.env.APHRODY_SHENRON_INFERENCE = savedInference;
+  if (savedInference === undefined) delete process.env.SHENRON_INFERENCE;
+  else process.env.SHENRON_INFERENCE = savedInference;
   globalThis.fetch = realFetch;
 });
 

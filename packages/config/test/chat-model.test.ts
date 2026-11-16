@@ -40,7 +40,7 @@ describe("resolveChatModelConfig", () => {
         SHENRON_CHAT_MODEL: "/m/base.gguf",
         SHENRON_CHAT_MODEL_URL: "https://example.test/base.gguf",
         SHENRON_CHAT_LORA_URL: "https://example.test/lora.gguf",
-        APHRODY_LLAMA_BIN: "/opt/llama-server",
+        SHENRON_LLAMA_BIN: "/opt/llama-server",
         SHENRON_CHAT_CTX: "16384",
       },
       "desktop",
@@ -56,7 +56,7 @@ describe("resolveChatModelConfig", () => {
     );
     expect(
       resolveChatModelConfig(
-        { SHENRON_LLAMA_BIN: "/a/llama-server", APHRODY_LLAMA_BIN: "/b" },
+        { SHENRON_LLAMA_BIN: "/a/llama-server" },
         "desktop",
       ).llamaBin,
     ).toBe("/a/llama-server");

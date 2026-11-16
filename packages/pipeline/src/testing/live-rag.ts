@@ -71,7 +71,7 @@ export function loadLiveRagEnv(): void {
   }
   if (process.env.RAG_BACKEND !== "aphrody")
     throw new Error("Live Shenron tests require RAG_BACKEND=aphrody");
-  for (const name of ["DATABASE_URL", "APHRODY_MCP_DATABASE_URL", "REDIS_URL"]) {
+  for (const name of ["DATABASE_URL", "SHENRON_MCP_DATABASE_URL", "REDIS_URL"]) {
     if (!process.env[name]?.trim()) throw new Error(`Live Shenron tests require ${name}`);
   }
 }
@@ -172,7 +172,7 @@ export async function requireLiveRag(): Promise<LiveRag> {
   const editorial = createSql({ applicationName: "shenron-rag-live-editorial", max: 1 });
   const index = createSql({
     applicationName: "shenron-rag-live-index",
-    url: process.env.APHRODY_MCP_DATABASE_URL,
+    url: process.env.SHENRON_MCP_DATABASE_URL,
     max: 1,
   });
   const redis = createResilientRedis({ name: "shenron-rag-live", url: process.env.REDIS_URL! });

@@ -56,15 +56,15 @@ describe.if(isLive())("A2A with the real preloaded Shenron RAG", () => {
   });
 
   test("a genuine unauthorized request cannot produce a successful RAG task", async () => {
-    const token = process.env.APHRODY_AI_HTTP_TOKEN;
+    const token = process.env.SHENRON_AI_HTTP_TOKEN;
     try {
-      process.env.APHRODY_AI_HTTP_TOKEN = "invalid-qualification-credential";
+      process.env.SHENRON_AI_HTTP_TOKEN = "invalid-qualification-credential";
       const result = await ShenronA2AHub.sendMessage({ target: "rag", instruction: "Son Goku" });
       expect(result.verdict).toBe("NON_FAIT");
       expect(result.task.status).toBe("failed");
       expect(JSON.stringify(result.responseData).includes(token!)).toBe(false);
     } finally {
-      process.env.APHRODY_AI_HTTP_TOKEN = token;
+      process.env.SHENRON_AI_HTTP_TOKEN = token;
     }
   });
 });

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Shared HTTP transport primitives for the Shenron site and bot A2A adapters. */
 
-export const A2A_URL_ENV = "APHRODY_A2A_URL";
+export const A2A_URL_ENV = "SHENRON_A2A_URL";
 export const A2A_DEFAULT_URL = "http://127.0.0.1:8788";
 export const LEGACY_SEND_METHOD = "message/send";
 

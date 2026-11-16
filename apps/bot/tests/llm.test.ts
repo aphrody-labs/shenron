@@ -5,29 +5,29 @@ import { Database } from "bun:sqlite";
 
 // No address default since the AI env contract (aphrody-infra local-ai.json): the
 // tests pin the aphrody-ai-http origin through its canonical name.
-const savedAiHttpUrl = process.env.APHRODY_AI_HTTP_URL;
-const savedInference = process.env.APHRODY_SHENRON_INFERENCE;
-const savedChatBaseUrl = process.env.APHRODY_AI_CHAT_BASE_URL;
-const savedShenronLlmBaseUrl = process.env.APHRODY_SHENRON_LLM_BASE_URL;
-const savedChatModel = process.env.APHRODY_AI_CHAT_MODEL;
+const savedAiHttpUrl = process.env.SHENRON_AI_HTTP_URL;
+const savedInference = process.env.SHENRON_INFERENCE;
+const savedChatBaseUrl = process.env.SHENRON_AI_CHAT_BASE_URL;
+const savedShenronLlmBaseUrl = process.env.SHENRON_LLM_BASE_URL;
+const savedChatModel = process.env.SHENRON_AI_CHAT_MODEL;
 beforeEach(() => {
-  process.env.APHRODY_SHENRON_INFERENCE = "http";
-  process.env.APHRODY_AI_HTTP_URL = "http://127.0.0.1:8789";
-  delete process.env.APHRODY_AI_CHAT_BASE_URL;
-  delete process.env.APHRODY_SHENRON_LLM_BASE_URL;
-  delete process.env.APHRODY_AI_CHAT_MODEL;
+  process.env.SHENRON_INFERENCE = "http";
+  process.env.SHENRON_AI_HTTP_URL = "http://127.0.0.1:8789";
+  delete process.env.SHENRON_AI_CHAT_BASE_URL;
+  delete process.env.SHENRON_LLM_BASE_URL;
+  delete process.env.SHENRON_AI_CHAT_MODEL;
 });
 afterEach(() => {
-  if (savedInference === undefined) delete process.env.APHRODY_SHENRON_INFERENCE;
-  else process.env.APHRODY_SHENRON_INFERENCE = savedInference;
-  if (savedAiHttpUrl === undefined) delete process.env.APHRODY_AI_HTTP_URL;
-  else process.env.APHRODY_AI_HTTP_URL = savedAiHttpUrl;
-  if (savedChatBaseUrl === undefined) delete process.env.APHRODY_AI_CHAT_BASE_URL;
-  else process.env.APHRODY_AI_CHAT_BASE_URL = savedChatBaseUrl;
-  if (savedShenronLlmBaseUrl === undefined) delete process.env.APHRODY_SHENRON_LLM_BASE_URL;
-  else process.env.APHRODY_SHENRON_LLM_BASE_URL = savedShenronLlmBaseUrl;
-  if (savedChatModel === undefined) delete process.env.APHRODY_AI_CHAT_MODEL;
-  else process.env.APHRODY_AI_CHAT_MODEL = savedChatModel;
+  if (savedInference === undefined) delete process.env.SHENRON_INFERENCE;
+  else process.env.SHENRON_INFERENCE = savedInference;
+  if (savedAiHttpUrl === undefined) delete process.env.SHENRON_AI_HTTP_URL;
+  else process.env.SHENRON_AI_HTTP_URL = savedAiHttpUrl;
+  if (savedChatBaseUrl === undefined) delete process.env.SHENRON_AI_CHAT_BASE_URL;
+  else process.env.SHENRON_AI_CHAT_BASE_URL = savedChatBaseUrl;
+  if (savedShenronLlmBaseUrl === undefined) delete process.env.SHENRON_LLM_BASE_URL;
+  else process.env.SHENRON_LLM_BASE_URL = savedShenronLlmBaseUrl;
+  if (savedChatModel === undefined) delete process.env.SHENRON_AI_CHAT_MODEL;
+  else process.env.SHENRON_AI_CHAT_MODEL = savedChatModel;
 });
 
 /** Pure conversational paths may only reach `llm/chat`: any retrieval request fails the test. */
@@ -81,8 +81,8 @@ describe("persona (normalisation + défaut)", () => {
 describe("generateLlmAnswer (chemin conversationnel & repli)", () => {
   it("envoie le contexte à l'API privée Aphrody", async () => {
     const originalFetch = globalThis.fetch;
-    const originalToken = process.env.APHRODY_SHENRON_API_TOKEN;
-    process.env.APHRODY_SHENRON_API_TOKEN = "test-token";
+    const originalToken = process.env.SHENRON_API_TOKEN;
+    process.env.SHENRON_API_TOKEN = "test-token";
     let calledBody: unknown;
     globalThis.fetch = chatOnly((init) => {
       calledBody = JSON.parse(String(init?.body));
@@ -100,16 +100,16 @@ describe("generateLlmAnswer (chemin conversationnel & repli)", () => {
       expect((calledBody as { model?: string }).model).toBe("gemini-web/flash");
     } finally {
       globalThis.fetch = originalFetch;
-      if (originalToken === undefined) delete process.env.APHRODY_SHENRON_API_TOKEN;
-      else process.env.APHRODY_SHENRON_API_TOKEN = originalToken;
+      if (originalToken === undefined) delete process.env.SHENRON_API_TOKEN;
+      else process.env.SHENRON_API_TOKEN = originalToken;
       db.close();
     }
   });
 
   it("génère une réponse de repli appropriée si Aphrody est injoignable", async () => {
     const originalFetch = globalThis.fetch;
-    const originalToken = process.env.APHRODY_SHENRON_API_TOKEN;
-    process.env.APHRODY_SHENRON_API_TOKEN = "test-token";
+    const originalToken = process.env.SHENRON_API_TOKEN;
+    process.env.SHENRON_API_TOKEN = "test-token";
     globalThis.fetch = chatOnly(() => new Response("", { status: 500 }));
     const db = new Database(":memory:");
     try {
@@ -117,16 +117,16 @@ describe("generateLlmAnswer (chemin conversationnel & repli)", () => {
       expect(ans).toContain("Oh oh, pardonnez-moi");
     } finally {
       globalThis.fetch = originalFetch;
-      if (originalToken === undefined) delete process.env.APHRODY_SHENRON_API_TOKEN;
-      else process.env.APHRODY_SHENRON_API_TOKEN = originalToken;
+      if (originalToken === undefined) delete process.env.SHENRON_API_TOKEN;
+      else process.env.SHENRON_API_TOKEN = originalToken;
       db.close();
     }
   });
 
   it("renvoie la réponse du repli Beerus en cas d'erreur Aphrody", async () => {
     const originalFetch = globalThis.fetch;
-    const originalToken = process.env.APHRODY_SHENRON_API_TOKEN;
-    process.env.APHRODY_SHENRON_API_TOKEN = "test-token";
+    const originalToken = process.env.SHENRON_API_TOKEN;
+    process.env.SHENRON_API_TOKEN = "test-token";
     globalThis.fetch = chatOnly(() => new Response("", { status: 500 }));
     const db = new Database(":memory:");
     try {
@@ -134,8 +134,8 @@ describe("generateLlmAnswer (chemin conversationnel & repli)", () => {
       expect(ans).toContain("Hmpf");
     } finally {
       globalThis.fetch = originalFetch;
-      if (originalToken === undefined) delete process.env.APHRODY_SHENRON_API_TOKEN;
-      else process.env.APHRODY_SHENRON_API_TOKEN = originalToken;
+      if (originalToken === undefined) delete process.env.SHENRON_API_TOKEN;
+      else process.env.SHENRON_API_TOKEN = originalToken;
       db.close();
     }
   });
@@ -147,13 +147,13 @@ describe("generateLlmAnswer — corps de requête (B17, bavardage sans récupér
       await import("@shenron/pipeline/ai/prompts");
     const originalFetch = globalThis.fetch;
     const saved = {
-      token: process.env.APHRODY_SHENRON_API_TOKEN,
+      token: process.env.SHENRON_API_TOKEN,
       backend: process.env.RAG_BACKEND,
-      model: process.env.APHRODY_LLM_MODEL,
+      model: process.env.SHENRON_LLM_MODEL,
     };
-    process.env.APHRODY_SHENRON_API_TOKEN = "test-token";
+    process.env.SHENRON_API_TOKEN = "test-token";
     delete process.env.RAG_BACKEND;
-    delete process.env.APHRODY_LLM_MODEL;
+    delete process.env.SHENRON_LLM_MODEL;
     let body: { messages: Array<{ role: string; content: string }>; model?: string } | undefined;
     globalThis.fetch = chatOnly((init) => {
       body = JSON.parse(String(init?.body));
@@ -178,9 +178,9 @@ describe("generateLlmAnswer — corps de requête (B17, bavardage sans récupér
     } finally {
       globalThis.fetch = originalFetch;
       for (const [name, value] of [
-        ["APHRODY_SHENRON_API_TOKEN", saved.token],
+        ["SHENRON_API_TOKEN", saved.token],
         ["RAG_BACKEND", saved.backend],
-        ["APHRODY_LLM_MODEL", saved.model],
+        ["SHENRON_LLM_MODEL", saved.model],
       ] as const) {
         if (value === undefined) delete process.env[name];
         else process.env[name] = value;
@@ -195,8 +195,8 @@ describe("public RAG generation budget", () => {
     const { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } =
       await import("@shenron/config/chat-model");
     const originalFetch = globalThis.fetch;
-    process.env.APHRODY_AI_CHAT_BASE_URL = "http://127.0.0.1:8799/v1";
-    process.env.APHRODY_AI_CHAT_MODEL = "fixture";
+    process.env.SHENRON_AI_CHAT_BASE_URL = "http://127.0.0.1:8799/v1";
+    process.env.SHENRON_AI_CHAT_MODEL = "fixture";
     const budgets: number[] = [];
     globalThis.fetch = Object.assign(
       async (input: Parameters<typeof fetch>[0], init?: RequestInit) => {

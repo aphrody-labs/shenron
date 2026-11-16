@@ -69,7 +69,7 @@ describe.if(isLive())("runIaTask with the real preloaded Shenron RAG (B5)", () =
     const response = await runIaTask({
       task: question,
       languageModel: model,
-      env: { APHRODY_HOME: "/nonexistent-aphrody-home" },
+      env: { SHENRON_HOME: "/nonexistent-aphrody-home" },
     });
     if (!response.citations) throw new Error("The grounded workflow returned no citations");
 

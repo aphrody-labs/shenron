@@ -5,7 +5,7 @@ import { A2A_URL_ENV } from "../src/api/a2a-proxy";
 import { a2aAgentCard, a2aEventsStream, a2aJsonRpc, publicBotEvent } from "../src/api/server";
 import { EventBusService } from "../src/services/EventBusService";
 
-// Without APHRODY_A2A_URL the bot relays the card and JSON-RPC to the site hub and streams its
+// Without SHENRON_A2A_URL the bot relays the card and JSON-RPC to the site hub and streams its
 // own public events.
 const hits: Array<{ method: string; path: string; auth: string | null }> = [];
 let site: ReturnType<typeof Bun.serve>;

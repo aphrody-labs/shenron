@@ -15,7 +15,7 @@ import { json, loopbackBase, TOKEN, vector } from "./helpers";
 
 const BASE = loopbackBase();
 const E5_BASE = loopbackBase(18794, "/v1");
-const ENV = { APHRODY_AI_HTTP_URL: BASE.href, APHRODY_AI_HTTP_TOKEN: TOKEN };
+const ENV = { SHENRON_AI_HTTP_URL: BASE.href, SHENRON_AI_HTTP_TOKEN: TOKEN };
 
 function aphrodyServer() {
   return createRecordingFetch({
@@ -86,9 +86,9 @@ describe("e5DirectEmbeddingModel (now routed to Aphrody)", () => {
   test("direct embedder URL is ignored; missing Aphrody config throws naming the variables", () => {
     expect(() =>
       e5DirectEmbeddingModel({ baseUrl: E5_BASE }, "passage", {
-        env: { APHRODY_AI_EMBED_BASE_URL: E5_BASE.href },
+        env: { SHENRON_AI_EMBED_BASE_URL: E5_BASE.href },
       }),
-    ).toThrow(/APHRODY_AI_HTTP_URL/);
+    ).toThrow(/SHENRON_AI_HTTP_URL/);
   });
 
   test("40 inputs -> 3 sequential calls 16/16/8", async () => {

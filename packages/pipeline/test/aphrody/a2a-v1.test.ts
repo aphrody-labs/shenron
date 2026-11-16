@@ -11,17 +11,17 @@ import { fileStoreDir } from "../../src/aphrody/a2a-file-store";
 const storeDir = mkdtempSync(join(tmpdir(), "a2a-v1-store-"));
 const saved = {
   store: process.env.SHENRON_A2A_STORE_DIR,
-  api: process.env.APHRODY_A2A_COORD_API,
+  api: process.env.SHENRON_A2A_COORD_API,
 };
 
 beforeAll(() => {
   process.env.SHENRON_A2A_STORE_DIR = storeDir;
-  delete process.env.APHRODY_A2A_COORD_API;
+  delete process.env.SHENRON_A2A_COORD_API;
 });
 afterAll(() => {
   if (saved.store === undefined) delete process.env.SHENRON_A2A_STORE_DIR;
   else process.env.SHENRON_A2A_STORE_DIR = saved.store;
-  if (saved.api !== undefined) process.env.APHRODY_A2A_COORD_API = saved.api;
+  if (saved.api !== undefined) process.env.SHENRON_A2A_COORD_API = saved.api;
   rmSync(storeDir, { recursive: true, force: true });
 });
 

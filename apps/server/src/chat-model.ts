@@ -8,7 +8,7 @@
  *                 aphrody-models (pinned revision and digest), resumed and digest-checked
  *                 downloads into the store `<SHENRON_HOME>/models` (`registry.json`)
  *   router        `shenron_llama_router_start`: one OpenAI-compatible endpoint on the loopback
- *                 port of `APHRODY_LOCAL_MODEL_URL`, over `shenron-chat-v2` (Qwen3-4B + the
+ *                 port of `SHENRON_LOCAL_MODEL_URL`, over `shenron-chat-v2` (Qwen3-4B + the
  *                 Shenron LoRA) and `gemma4-e2b`; one `llama-server` at a time, started on first
  *                 use, `/health` per model
  *   daemon        the supervisor re-executes this server as `llama-daemon` (`main.ts`), so no
@@ -17,8 +17,8 @@
  * Shenron decides only which files: the base GGUF (SHENRON_CHAT_MODEL path, a file left in
  * `<home>/models/` by an earlier release, SHENRON_CHAT_MODEL_URL, else the catalog id), the
  * adapter (SHENRON_CHAT_LORA, `<home>/models/`, `models/` shipped beside the app,
- * APHRODY_SHENRON_CHAT_LORA, SHENRON_CHAT_LORA_URL), Gemma 4 E2B alike. `llama-server` is
- * SHENRON_LLAMA_BIN, else Aphrody's lookup (APHRODY_LLAMA_BIN, `llama/` in SHENRON_RESOURCE_DIR
+ * SHENRON_CHAT_LORA, SHENRON_CHAT_LORA_URL), Gemma 4 E2B alike. `llama-server` is
+ * SHENRON_LLAMA_BIN, else Aphrody's lookup (SHENRON_LLAMA_BIN, `llama/` in SHENRON_RESOURCE_DIR
  * or beside the executable, Aphrody runtimes, PATH).
  *
  * Nothing blocks the server: provisioning and loading run in the background and the chat
@@ -59,9 +59,9 @@ const isFile = (path: string | undefined | null): path is string =>
 
 /** Variables that already point the chat at a server: no managed model then. */
 const EXTERNAL_CHAT_URLS = [
-  "APHRODY_AI_CHAT_BASE_URL",
-  "APHRODY_SHENRON_LLM_BASE_URL",
-  "APHRODY_LOCAL_MODEL_URL",
+  "SHENRON_AI_CHAT_BASE_URL",
+  "SHENRON_LLM_BASE_URL",
+  "SHENRON_LOCAL_MODEL_URL",
 ] as const;
 
 /** Verb of `main.ts` under which the model supervisor re-executes this server as its daemon. */
@@ -69,7 +69,7 @@ export const LLAMA_DAEMON_VERB = "llama-daemon";
 
 export interface ChatModelPlan {
   config: ChatModelConfig;
-  /** Loopback origin the router listens on (`APHRODY_LOCAL_MODEL_URL`). */
+  /** Loopback origin the router listens on (`SHENRON_LOCAL_MODEL_URL`). */
   url: string;
   port: number;
   /** Aphrody model store (`registry.json` and the files). */
@@ -241,7 +241,7 @@ export function adapterSpec(
   const found = [
     join(plan.modelsDir, CHAT_ADAPTER.file),
     ...plan.shippedDirs.map((dir) => join(dir, "models", CHAT_ADAPTER.file)),
-    env.APHRODY_SHENRON_CHAT_LORA?.trim(),
+    env.SHENRON_CHAT_LORA?.trim(),
   ].find(isFile);
   if (found) return fileSpec(found, config.loraSha256);
   return config.loraUrl

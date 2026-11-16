@@ -11,7 +11,7 @@
 import { z } from "zod";
 
 /** Server-side limits enforced by `http_rest.rs`. */
-export const APHRODY_LIMITS = Object.freeze({
+export const SHENRON_LIMITS = Object.freeze({
   /** `shenron_llm_chat_core`: `messages.len() > 32` is rejected. */
   chatMessages: 32,
   /** `shenron_llm_chat_core`: `content.len() > 32 * 1024` bytes is rejected. */
@@ -97,7 +97,7 @@ export const ChatMessage = z.object({ role: ChatRole, content: z.string() });
 export const ChatRequest = z.object({
   messages: z.array(ChatMessage),
   model: z.string().optional(),
-  maxOutputTokens: z.number().int().min(1).max(APHRODY_LIMITS.chatOutputTokens).optional(),
+  maxOutputTokens: z.number().int().min(1).max(SHENRON_LIMITS.chatOutputTokens).optional(),
 });
 export const ChatResponse = z.object({ answer: z.string(), model: z.string().optional() });
 
