@@ -16,7 +16,7 @@
 
 ## 1. Vision & Sovereign Architecture
 
-Shenron is the core platform powering **dragonballfr.com**, integrated into the YOLO Sovereign Fleet (`C:\src\products\shenron`):
+Shenron is the core platform powering **dragonballfr.com**, integrated into the YOLO Sovereign Fleet (`C:\aphrody\products\shenron`):
 
 - **Web Platform & API (`apps/site`, `apps/server`)**: High-throughput SSR web portal (Next.js 16.5+ standalone under Bun v1.4.4+ transitioning to Leptos 0.8 + Axum), PostgreSQL (`pgvector`), and Redis cache.
 - **Shenron Studio (`crates/koharu-*`, `crates/shenron-desktop`)**: Native visual manga translation workbench, typesetting engine, and GPUI / Dioxus 0.8 desktop UI.
@@ -64,4 +64,4 @@ bun run ship        # Zero-downtime build on vps and Zstd stream deployment to p
 
 ## 5. Autonomous Directives (NHITL)
 
-This repository operates under the **No Human In The Loop (NHITL)** doctrine. Refer to [`AGENTS.md`](file:///C:/src/products/shenron/AGENTS.md) and [`GEMINI.md`](file:///C:/src/products/shenron/GEMINI.md) for full operational guidelines.
+This repository operates under the **No Human In The Loop (NHITL)** doctrine. Refer to [`AGENTS.md`](file:///C:/aphrody/products/shenron/AGENTS.md) and [`GEMINI.md`](file:///C:/aphrody/products/shenron/GEMINI.md) for full operational guidelines.

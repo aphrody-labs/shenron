@@ -11,7 +11,7 @@ const tools = [
   {
     name: "shenron_ops",
     description:
-      "Execute sovereign Shenron platform verification, zero-downtime lane deployment checks, and Bun v1.4.4 gate commands across C:\\src\\apps\\shenron.",
+      "Execute sovereign Shenron platform verification, zero-downtime lane deployment checks, and Bun v1.4.4 gate commands across C:\\aphrody\\apps\\shenron.",
     inputSchema: {
       type: "object",
       properties: {

@@ -11,7 +11,7 @@
       "paths": {
         "vps": "~/src/shenron",
         "cdn": "~/src/shenron",
-        "windows": "C:/src/apps/shenron",
+        "windows": "C:/aphrody/apps/shenron",
         "prod": "/srv/shenron/build/source"
       }
     },
@@ -22,7 +22,7 @@
       "submodules": "initialized",
       "mode": "ff-only",
       "enabled": true,
-      "paths": { "vps": "~/build/yolo-ui", "windows": "C:/src/yolo-ui" }
+      "paths": { "vps": "~/build/yolo-ui", "windows": "C:/aphrody/yolo-ui" }
     },
     {
       "name": "yolo-stack",
@@ -31,7 +31,7 @@
       "submodules": false,
       "mode": "ff-only",
       "enabled": true,
-      "paths": { "windows": "C:/src/yolo-stack" }
+      "paths": { "windows": "C:/aphrody/yolo-stack" }
     },
     {
       "name": "bun-os",
@@ -64,17 +64,17 @@
   "excluded": [
     {
       "host": "windows",
-      "path": "C:/src/apps/shenron",
+      "path": "C:/aphrody/apps/shenron",
       "reason": "main checkout holds other sessions' uncommitted work"
     },
     {
       "host": "windows",
-      "path": "C:/src/yolo-stack",
+      "path": "C:/aphrody/yolo-stack",
       "reason": "main checkout holds other sessions' uncommitted work"
     },
     {
       "host": "windows",
-      "path": "C:/src/yolo-ui",
+      "path": "C:/aphrody/yolo-ui",
       "reason": "main checkout holds other sessions' uncommitted work"
     },
     {

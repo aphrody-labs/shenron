@@ -1,6 +1,6 @@
 # Shenron : runbook d'exécution des chaînes de contenu
 
-Audit en lecture seule réalisé le 2026-11-05 (environ 06:00–07:30 UTC). Dépôt `C:\src\apps\shenron` à HEAD `2e465772`. La production sert l'image `f04de517` (`/srv/shenron/current` → `releases/docker-f04de517…`).
+Audit en lecture seule réalisé le 2026-11-05 (environ 06:00–07:30 UTC). Dépôt `C:\aphrody\apps\shenron` à HEAD `2e465772`. La production sert l'image `f04de517` (`/srv/shenron/current` → `releases/docker-f04de517…`).
 
 Aucune écriture n'a eu lieu :
 
@@ -15,7 +15,7 @@ Les mesures viennent de quatre sources :
 - **Requêtes HEAD publiques** sur `cdn.dragonballfr.com`.
 - **L'inventaire CDN de prod** `/srv/shenron/data/cdn/inventory-9a8ecae6371f.json` (246 420 chemins), lu sans écriture et comparé aux références en base.
 
-Les chemins de dépôt sont relatifs à `C:\src\apps\shenron`.
+Les chemins de dépôt sont relatifs à `C:\aphrody\apps\shenron`.
 
 ## 0. Constats transverses (à lire avant tout lot massif)
 
@@ -64,7 +64,7 @@ Les chemins de dépôt sont relatifs à `C:\src\apps\shenron`.
 | 12  | Frames                        | 830 / 878 épisodes avec frames (6 736 frames ; moyenne 8, entre 7 et 41). 41 PNG de l'épisode 876 absents de R2. 0 frame pour les 48 SDBH                                                                                                                      | `bun apps/bot/scripts/build-frame-catalog.ts [--check]` ; `scripts/ops/index-frames.ts --dry-run`                                                      | Oui (`--check`, `--dry-run`)                                                                            | vps (téléchargement + ffmpeg)                       | Recaler le catalogue (826 épisodes contre 830 en base) avec `--check`                                                 |
 | 13  | CDN R2                        | Inventaire de 246 420 chemins. Références en base : databooks 17 084/17 084, manga 53 304/53 304, sous-titres 2 738/2 738, personnages 683/683. **Manquants** : 51 SVG de techniques, 41 frames de l'ép. 876, couverture 486 (introuvable partout)             | `deploy/cloudflare/cli/transfer.ts status` ; `publish-catalog.ts --options F` ; `scripts/ops/audit-cdn-gaps.ts`                                        | Oui (sans `--apply`)                                                                                    | Prod (origine 9077, `shenron-cdn-origin` actif)     | Plan `publish-catalog.ts` pour les 92 objets manquants                                                                |
 | 14  | Outils média                  | Bun Video épinglé `1.4.4-video.1`. FilmCraft **toujours en sous-module** (`crates/filmcraft`, exclu du workspace). Remotion : libellés seulement. PhotoCraft : absent. **Hermes : inexistant**. Pas de service d'images autonome (`/_next/image`)              | `scripts/video/render.ts` ; `packages/images` (bibliothèque)                                                                                           | —                                                                                                       | Local ou vps                                        | Retirer le sous-module FilmCraft ou acter sa conservation                                                             |
-| 15  | Fournisseurs IA               | Prod : `shenron-chat-v2` local, puis gemma4-e2b, puis gemini-web (repli désactivé en prod), e5 local. Pas de clé Gemini API (mode web par cookies). Anthropic par HTTP direct (`ANTHROPIC_API_KEY`), pas de SDK Agent. `locally-uncensored` absent de `C:\src` | `packages/config/src/chat-model.ts` ; `packages/pipeline/src/ai/config.ts`                                                                             | —                                                                                                       | —                                                   | Décider quels fournisseurs payants utiliser pour 1, 2 et 3                                                            |
+| 15  | Fournisseurs IA               | Prod : `shenron-chat-v2` local, puis gemma4-e2b, puis gemini-web (repli désactivé en prod), e5 local. Pas de clé Gemini API (mode web par cookies). Anthropic par HTTP direct (`ANTHROPIC_API_KEY`), pas de SDK Agent. `locally-uncensored` absent de `C:\aphrody` | `packages/config/src/chat-model.ts` ; `packages/pipeline/src/ai/config.ts`                                                                             | —                                                                                                       | —                                                   | Décider quels fournisseurs payants utiliser pour 1, 2 et 3                                                            |
 
 ## 2. Détail par chaîne
 
@@ -570,7 +570,7 @@ Notes sur la couverture :
 - **Bun Video.** `@aphrody/bun-video` est épinglé en `1.4.4-video.1` (`package.json:223-231`), avec les exports `/hls`, `/playback` et `/crunchyroll`. Il dispose d'une exception `minimumReleaseAge` accordée par le propriétaire. La version `.6` n'était pas publiée au 25/10, faute de 32 Gio de disque.
 - **FilmCraft.** Contrairement à l'énoncé, le crate est **toujours présent** : sous-module `crates/filmcraft` → `github.com/aphrody-labs/filmcraft` (v0.7.2-187-g87b84513), exclu du workspace Cargo (`Cargo.toml:10`). Il pèse 400 700 lignes de Rust.
 - **Remotion.** Seulement des libellés dans `apps/site/src/app/studio/video/*`. Le vrai rendu est `scripts/video/render.ts` (Bun.WebView vers l'encodeur, `SHENRON_VIDEO_*`).
-- **PhotoCraft.** Absent de `C:\src`. Il n'est cité que dans le README FilmCraft (`github.com/storytold/photocraft`).
+- **PhotoCraft.** Absent de `C:\aphrody`. Il n'est cité que dans le README FilmCraft (`github.com/storytold/photocraft`).
 - **Hermes.** **N'existe pas** : aucun dépôt, paquet ou service ; les seules occurrences de grep sont des faux positifs.
 - **Archives.** Scripts `scripts/ops/apply-archive-catalog.ts`, `enrich-internet-archive.ts`, `archive-bot-sqlite-variants.ts [--apply]` et `shenron-offsite-backup.ts`. En base, `bot.archive_catalog_files` compte 62 lignes.
 - **Images.** `packages/images` est une bibliothèque sharp (hash, variantes, WebP), pas un service. Le redimensionnement passe par `/_next/image` derrière `origin-cdn.dragonballfr.com`. **Il n'existe pas de service d'images Bun auto-hébergé.**
@@ -585,8 +585,8 @@ Notes sur la couverture :
 - **Gemini.** Aucune `GEMINI_API_KEY` dans le dépôt. Le mode est web (`aphrody-gemini-web`, cookies `APHRODY_GOOGLE_COOKIES_JSON` ou `~/.aphrody/cookies/gemini-web.json`). Il sert à la relecture OCR (`APHRODY_AI_VISION_MODEL`) et au repli du chat hors prod. Le pair A2A `agycli` (Gemini 3.8 Flash) est décrit dans `config/ai.json`.
 - **Anthropic.** Pas de Claude Agent SDK ni de `@anthropic-ai`. Le runner HTTP direct est dans `packages/pipeline/src/auto/workers.ts:104` (`ANTHROPIC_API_KEY`, `claude-haiku-5-5`). Les traductions `machine:sonnet` (1 110 pages) prouvent un usage passé.
 - **OpenAI/codex.** `gpt-5.6-luna` via `codex exec` (wiki-fill, arbitre OCR). `SHENRON_OPENAI_API_KEY` en option.
-- **locally-uncensored.** Absent de `C:\src`. Le dépôt GitHub `aphrody-dev/locally-uncensored` n'a pas été consulté (pas d'appel réseau authentifié). Mémoire projet : ne pas utiliser le GGUF Qwen3 « Uncensored » HauhauCS comme base du chat.
-- **yolo-ai** (`C:\src\yolo-ai`). Crates Rust neutres vis-à-vis des fournisseurs (`yolo-model-client` : Anthropic, Ollama, OpenAI-compatible, vLLM ; `yolo-rag-core`, `yolo-agent-engine`). Aucun pipeline Shenron ne les consomme encore, et ce n'est pas un checkout Git.
+- **locally-uncensored.** Absent de `C:\aphrody`. Le dépôt GitHub `aphrody-dev/locally-uncensored` n'a pas été consulté (pas d'appel réseau authentifié). Mémoire projet : ne pas utiliser le GGUF Qwen3 « Uncensored » HauhauCS comme base du chat.
+- **yolo-ai** (`C:\aphrody\yolo-ai`). Crates Rust neutres vis-à-vis des fournisseurs (`yolo-model-client` : Anthropic, Ollama, OpenAI-compatible, vLLM ; `yolo-rag-core`, `yolo-agent-engine`). Aucun pipeline Shenron ne les consomme encore, et ce n'est pas un checkout Git.
 - **A2A.** `apps/site/src/app/api/a2a/route.ts`. Carte publique v1.4.5 (`dragonballfr.com/api/a2a`), skills `rag_query`, `ocr_dispatch`, `subagent_task`, `model_infer` et `task_update`. Écriture avec `SHENRON_A2A_TOKEN`. Une tâche reste `submitted` tant qu'un pair ne rend pas de résultat.
 - **Agent wiki.** Les outils `dragonball.agent_*` demandent `SHENRON_AGENT_API_KEY` ; les contributions passent en modération.
 - **Commandes admin du bot.** `dragonball.admin_bot_commands` et `…_execute` (`/api/bot/commands/catalog|exec`) demandent `SHENRON_API_ADMIN_TOKEN`. Non appelés, car l'accès élevé est indisponible.

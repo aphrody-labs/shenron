@@ -7,7 +7,7 @@
 
 ## Contexte
 
-`apps/site` est un serveur Next.js 16 et `packages/ui` une couche React avec Tailwind et Base UI. Le propriétaire impose une refonte complète en Rust et Bun, sans Next.js, Tailwind, Base UI ni shadcn, avec WebGPU réel et Taffy. L'ADR 0003 de yolo-stack (`C:\src\yolo-stack\docs\decisions\0003-verdict-leptos-dioxus-tanstack.md`) a départagé trois arbitrages contradictoires sur la base des mesures krausest publiées le 2026-10-25.
+`apps/site` est un serveur Next.js 16 et `packages/ui` une couche React avec Tailwind et Base UI. Le propriétaire impose une refonte complète en Rust et Bun, sans Next.js, Tailwind, Base UI ni shadcn, avec WebGPU réel et Taffy. L'ADR 0003 de yolo-stack (`C:\aphrody\yolo-stack\docs\decisions\0003-verdict-leptos-dioxus-tanstack.md`) a départagé trois arbitrages contradictoires sur la base des mesures krausest publiées le 2026-10-25.
 
 ## Décision
 
@@ -34,4 +34,4 @@ Nous retenons Leptos 0.8 (SSR et îlots) sur Axum pour le site public, Dioxus po
 ## Références
 
 - `docs/plans/refonte-rust-bun-yolo-stack.md`
-- `C:\src\yolo-stack\docs\decisions\0003-verdict-leptos-dioxus-tanstack.md`
+- `C:\aphrody\yolo-stack\docs\decisions\0003-verdict-leptos-dioxus-tanstack.md`

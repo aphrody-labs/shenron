@@ -1,21 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
 //! # `shenron-re`
 //!
-//! Pure Rust reverse engineering engine and binary parsers for Dragon Ball Xenoverse 2 (DBXV2),
-//! CRIWARE CPK archives, live memory inspection, and game data ingestion for the Shenron ecosystem.
+//! Thin façade over [`aphrody_re::game`] keeping Shenron's C ABI (`ffi`),
+//! WebAssembly entrypoints (`wasm`), and CLI (`bin/shenron-re`) backed by the
+//! deduplicated `aphrody-re` core (`C:\aphrody\crates\re`).
 
-pub mod catalog;
-pub mod error;
+pub use aphrody_re::game::{
+    catalog, error, formats, fs, inventory, live, steam, text, unified, world,
+};
+
 pub mod ffi;
-pub mod formats;
-pub mod fs;
-pub mod inventory;
-pub mod live;
-pub mod steam;
-pub mod text;
-pub mod unified;
-pub mod world;
-
 #[cfg(any(feature = "wasm", target_arch = "wasm32", test))]
 pub mod wasm;
 

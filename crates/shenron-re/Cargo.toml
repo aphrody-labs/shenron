@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 [package]
 name = "shenron-re"
-description = "Pure Rust reverse engineering engine and binary parsers for Dragon Ball Xenoverse 2 (DBXV2) formats, CRIWARE CPK archives, live memory inspection, and game data ingestion for Shenron."
+description = "Pure Rust reverse engineering engine and binary parsers for Dragon Ball Xenoverse 2 (DBXV2) formats, CRIWARE CPK archives, live memory inspection, and game data ingestion for Shenron (backed by aphrody-re)."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -9,6 +9,8 @@ license.workspace = true
 authors.workspace = true
 homepage.workspace = true
 repository.workspace = true
+keywords = ["reverse-engineering", "dbxv2", "cpk", "crilayla", "shenron"]
+categories = ["development-tools::debugging", "parser-implementations"]
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -18,9 +20,12 @@ workspace = true
 
 [features]
 default = []
-wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen", "dep:js-sys"]
+wasm = ["aphrody-re/wasm", "dep:wasm-bindgen", "dep:serde-wasm-bindgen", "dep:js-sys"]
 
 [dependencies]
+aphrody-re = { version = "0.4.0", path = "../../../../crates/re", default-features = false, features = [
+  "game",
+] }
 serde = { workspace = true }
 serde_json = { workspace = true }
 thiserror = { workspace = true }
@@ -34,9 +39,6 @@ tempfile = { workspace = true }
 wasm-bindgen = { workspace = true }
 serde-wasm-bindgen = { workspace = true }
 js-sys = { workspace = true }
-
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-memmap2 = { workspace = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = { workspace = true }

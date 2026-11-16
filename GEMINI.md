@@ -6,7 +6,7 @@
 
 - **High-Precision Targeting**: Never dump large raw files into context. Use exact line range reads or symbol searches.
 - **Zero-Polling Reactive Wakeup**: When launching background tasks or subagents, do not poll. End the turn and wait for reactive notifications.
-- **Concise Fact-Based Output**: Report only verified facts, executed commands, test results, and clickable file links (`[file.ext](file:///C:/src/products/shenron/...)`).
+- **Concise Fact-Based Output**: Report only verified facts, executed commands, test results, and clickable file links (`[file.ext](file:///C:/aphrody/products/shenron/...)`).
 - **Strict Zero-Emoji Policy**: Zero emojis in all responses, code, UI, commits, and logs.
 
 ## 2. Sovereign Infrastructure Triad

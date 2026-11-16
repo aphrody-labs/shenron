@@ -1,6 +1,6 @@
 # Shenron Contributor & Autonomous Agent Rules (`AGENTS.md`)
 
-Shenron (`C:\src\apps\shenron`) is the sovereign platform behind **dragonballfr.com**: the web portal, Discord bot, API, editorial pipeline (databook OCR and translation), Shenron Studio (manga translation editor, code name Koharu), 3D/video creative pipelines, RAG, and MCP server. `CLAUDE.md` is a symlink to this file.
+Shenron (`C:\aphrody\apps\shenron`) is the sovereign platform behind **dragonballfr.com**: the web portal, Discord bot, API, editorial pipeline (databook OCR and translation), Shenron Studio (manga translation editor, code name Koharu), 3D/video creative pipelines, RAG, and MCP server. `CLAUDE.md` is a symlink to this file.
 
 ## 1. Mission & Sovereign Architecture
 

@@ -2,7 +2,7 @@
 
 ## 1. Vue d'ensemble et Triade Souveraine
 
-Shenron propulse **dragonballfr.com** au sein du monorepo YOLO (`C:\src\products\shenron`) et s'appuie sur la triade d'infrastructure souveraine interconnectee via WireGuard (`10.200.77.0/24`) :
+Shenron propulse **dragonballfr.com** au sein du monorepo YOLO (`C:\aphrody\products\shenron`) et s'appuie sur la triade d'infrastructure souveraine interconnectee via WireGuard (`10.200.77.0/24`) :
 
 - **`ssh vps` (`10.200.77.1` / `51.77.147.152`)** : Hub de maillage WireGuard et usine de compilation (12 coeurs, sccache, builds Rust/Bun, pipelines OCR et indexation RAG).
 - **`ssh cdn` (`10.200.77.3` / `51.255.162.6`, alias `bunos`)** : Simulateur Cloudflare Edge de bout en bout executant :
