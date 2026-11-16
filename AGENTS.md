@@ -28,3 +28,20 @@ Shenron is the platform behind dragonballfr.com: web portal, Discord bot, API, e
 - Proof is a screenshot of the rendered page or a checked API response, never an HTTP status alone.
 - User-facing text goes through the i18n catalogues; no emoji, no AI attribution in code, docs or commits.
 - Commands: `just` (see `justfile`): `just check`, `just test`, `just deploy-check`.
+
+## Shared with the sibling product
+
+Shenron (`C:\shenron`, dragonballfr.com) and Rose Griffon (`C:\rosegriffon`, rosegriffon.fr) share prd and part of their needs. Shared code exists once: a published crate or package, or a git dependency on the product that owns it; never a copy. The owner column is proposed; either agent may change it by editing this table in both files in the same step, and the other agent's work is never overwritten.
+
+| Need | Owner | Consumer |
+| --- | --- | --- |
+| Koharu: OCR, translation, typesetting (service `koharu.`) | shenron | rosegriffon (wiki, zukan, databooks) calls the service or depends on the `koharu-*` crates |
+| Video, anime, film (`tv.`): FFmpeg, libvlc, yt-dlp, HLS | shenron | rosegriffon |
+| `filmcraft` (video engine): one source `github.com/aphrody-labs/filmcraft`, the vendored copies in both repos are removed | filmcraft repo | both |
+| Admin dashboard (Rust, desktop first, web second) | shenron | rosegriffon plugs its own panels in |
+| Auth and SSO (Better Auth: oauth-provider, passkey, api-key, agent-auth) | rosegriffon (`@rosegriffon/auth`, superset) | shenron-auth shrinks to Shenron configuration over it |
+| Wiki and databook formats, CPK and game archive readers (`shenron-re` game module, `yolo-re-core`) | rosegriffon for Inazuma Eleven formats, shenron for Dragon Ball formats; one shared crate for the generic archive code | both |
+| CDN (R2 origin, cdn-sync) | rosegriffon (`infra/docker/cdn-sync`) | shenron |
+| Deploy on prd: compose per product, `/srv/deploy.lock` (flock) before any prd change, nginx and tunnel routes in each product's own files | each product for its own units | never touch the other product's units |
+
+Coordination goes through files (this table, `docs/` notes, commits on `main`), not through live edits of the other repository.
