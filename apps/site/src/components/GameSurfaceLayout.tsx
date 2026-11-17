@@ -8,7 +8,7 @@ import { STATIC_PREFIX } from "@/lib/config";
 /** Dedicated process shell: no site navigation, consent, analytics or promotional overlays. */
 export function GameSurfaceLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="fr" className="dark" suppressHydrationWarning>
+    <html lang="fr" className="dark" suppressHydrationWarning dir="ltr">
       <head>
         {FONT_PRELOADS.map((href) => (
           <link

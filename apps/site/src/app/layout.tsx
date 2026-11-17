@@ -148,7 +148,7 @@ export default async function RootLayout({
 
   return (
     // The bootstrap restores local theme attributes before hydration; children still hydrate normally.
-    <html lang="fr" className="dark" suppressHydrationWarning>
+    <html lang="fr" className="dark" suppressHydrationWarning dir="ltr">
       <head>
         {/* Polices critiques depuis le CDN : même URL que celle que résout `fonts.css`. */}
         {FONT_PRELOADS.map((href) => (

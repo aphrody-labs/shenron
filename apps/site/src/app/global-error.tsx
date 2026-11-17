@@ -14,7 +14,7 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <html lang="fr">
+    <html lang="fr" dir="ltr">
       <body className="min-h-screen bg-zinc-950 text-zinc-100 antialiased flex flex-col items-center justify-center p-4">
         <div className="max-w-md w-full text-center p-8 bg-zinc-900 border border-zinc-800 rounded-lg">
           <h2 className="text-2xl font-bold text-red-500 mb-4">Une erreur critique est survenue</h2>

@@ -1,0 +1,3 @@
+[config]
+# Scraped catalogue captures and OCR data are evidence, kept byte-for-byte except line endings.
+exclude_content_extra = ["data/**"]
