@@ -53,7 +53,8 @@ interface IntentRow {
 const states = new Set(["queued", "running", "succeeded", "failed", "cancelled"]);
 const terminal = (state: string) => ["succeeded", "failed", "cancelled"].includes(state);
 /** Worker-side crawl root: `SHENRON_CRAWL_OUTPUT_ROOT`, else `<SHENRON_HOME or ~/.shenron>/workspaces/dbfr/crawl/campaigns` (POSIX, the workers are Linux). */
-function crawlOutputRoot(env: NodeJS.ProcessEnv = process.env): string {
+function crawlOutputRoot(): string {
+  const env = process.env;
   return (
     env.SHENRON_CRAWL_OUTPUT_ROOT?.trim() ||
     posix.join(
