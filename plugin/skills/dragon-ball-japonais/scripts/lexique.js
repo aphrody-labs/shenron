@@ -3,7 +3,7 @@
 // Sources : packages/lexicon/src/fold.ts, packages/lexicon/src/index.ts, packages/lexicon/src/lexicon.ts, packages/lexicon/src/mask.ts, packages/lexicon/src/types.ts, scripts/plugin/src/lexique.ts
 // Révision : 6ad93e79 (2026-11-13)
 // scripts/plugin/src/lexique.ts
-import { join } from "path";
+import { join } from "node:path";
 
 // packages/lexicon/src/types.ts
 var LANGS = ["ja", "fr", "en"];

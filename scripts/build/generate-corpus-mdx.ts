@@ -1,5 +1,5 @@
-import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "fs";
-import { join } from "path";
+import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { join } from "node:path";
 
 /**
  * Script de generation automatique des documents MDX du corpus Shenron
