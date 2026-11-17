@@ -15,13 +15,28 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  DISCORD_TOKEN: test-token
-  GUILD_ID: "1497167233280118896"
-  OWNER_ID: "11111111111111111"
-  DATABASE_PATH: "./data/test-ci.db"
-
 jobs:
+  paths:
+    name: No hardcoded absolute paths
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      # The scanner is pinned to a commit of aphrody-dev/ay; never fetched from a branch.
+      - uses: actions/checkout@v7
+        with:
+          repository: aphrody-dev/ay
+          ref: 02e2737216665ff8ee1a8f470df8f16c604d2de0
+          path: .ay
+          sparse-checkout: tools
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bun
+      - run: PATHS_SCANNER=.ay/tools/paths.ts bun scripts/audit/check-paths.ts
+
   check:
     name: Check (Bun)
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
@@ -29,6 +44,11 @@ jobs:
     # Rust's private-dependency build remains in rust.yml until its GitHub secret setup is migrated.
     runs-on: ubuntu-24.04
     timeout-minutes: 45
+    env:
+      DISCORD_TOKEN: test-token
+      GUILD_ID: "1497167233280118896"
+      OWNER_ID: "11111111111111111"
+      DATABASE_PATH: "./data/test-ci.db"
     steps:
       - uses: actions/checkout@v7
         with:
@@ -46,11 +66,6 @@ jobs:
         run: |
           bun scripts/deploy/environment.ts --check
           bun scripts/deploy/lanes.ts --check
-
-      - name: No hardcoded absolute paths
-        run: |
-          curl -fsSL https://raw.githubusercontent.com/aphrody-dev/ay/main/tools/paths.ts -o "$RUNNER_TEMP/paths.ts"
-          PATHS_SCANNER="$RUNNER_TEMP/paths.ts" bun scripts/audit/check-paths.ts
 
       - name: Install
         run: bun ci
