@@ -9,7 +9,7 @@
 import { Database } from "bun:sqlite";
 import { mkdirSync, writeFileSync, existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
-import { yoloWebScrape } from "@shenron/pipeline/yolo-web";
+import { yoloWebScrape } from "@aphrody/shenron-pipeline/yolo-web";
 
 // Paths
 const DB_PATH = Bun.fileURLToPath(new URL("../data/bot.db", import.meta.url));

@@ -1,5 +1,5 @@
 {
-  "name": "@shenron/m3-primitives",
+  "name": "@aphrody/shenron-m3-primitives",
   "version": "1.0.0",
   "private": true,
   "description": "Material Design 3 React primitives: the SpaceUI (@spacedrive/primitives) component set rebuilt on the M3 roles, shape, typescale, state layers and motion of the shenron design system.",
@@ -26,7 +26,7 @@
   },
   "dependencies": {
     "@base-ui/react": "catalog:",
-    "@shenron/m3-motion": "workspace:*",
+    "@aphrody/shenron-m3-motion": "workspace:*",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "motion": "^13.4.4",

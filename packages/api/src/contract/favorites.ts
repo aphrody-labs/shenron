@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { FAVORITE_KINDS, FAVORITES_MAX } from "@shenron/config/favorites";
+import { FAVORITE_KINDS, FAVORITES_MAX } from "@aphrody/shenron-config/favorites";
 
 export const FavoriteSchema = z.object({
   kind: z.enum(FAVORITE_KINDS),

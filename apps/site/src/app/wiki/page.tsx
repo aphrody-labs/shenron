@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Suspense } from "react";
 import type { Metadata } from "next";
-import { isPathPublic } from "@shenron/config/wiki-launch";
+import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 import { DomainBar } from "@/components/kit/DomainBar";
 import {
   WikiEditorialPortal,

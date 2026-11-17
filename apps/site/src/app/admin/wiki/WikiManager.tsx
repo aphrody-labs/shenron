@@ -23,7 +23,7 @@ import {
   Oeil,
   Plus,
   Presse,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { isStudioTable } from "@/lib/wiki-fields";
 import { WikiEditorialWorkflow } from "@/components/admin/WikiEditorialWorkflow";
 

@@ -26,7 +26,7 @@ Les paramètres, les empreintes des références et leurs limites sont livrés d
 [`measurements.json`](measurements.json).
 
 Le composant importe les deux SVG par l’export déjà autorisé
-`@shenron/ui/assets/*`. Next émet leurs fichiers dans
+`@aphrody/shenron-ui/assets/*`. Next émet leurs fichiers dans
 `/_next/static/media/` ; la vérification du build réellement livré et des fichiers
 servis reste requise après publication. Aucun nouveau registre, export de paquet
 ou ajout à `uiAssetPaths` n’est nécessaire. Générateur, mesures et documentation

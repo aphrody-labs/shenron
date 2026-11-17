@@ -2,7 +2,7 @@
 /**
  * Moteur de masquage canonique et protection du vocabulaire Dragon Ball.
  *
- * Adaptateur historique de `@shenron/lexicon` (règles partagées avec le crate Rust
+ * Adaptateur historique de `@aphrody/shenron-lexicon` (règles partagées avec le crate Rust
  * `shenron-lexicon`). Implémente la doctrine de `dragon-ball-japonais/SKILL.md` :
  * 1. Détection des termes canoniques triés du plus long au plus court.
  * 2. Substitution par des marqueurs neutres latins (`Zeta001`, `Yuni002`...).
@@ -11,8 +11,8 @@
  * 5. Contrôle qualité de conformité (anti-régression, seuil de japonais, absence de glose).
  */
 
-import { LEGACY_KIND, type LegacyEntry, type Term } from "@shenron/lexicon";
-import { lexicon } from "@shenron/lexicon/data";
+import { LEGACY_KIND, type LegacyEntry, type Term } from "@aphrody/shenron-lexicon";
+import { lexicon } from "@aphrody/shenron-lexicon/data";
 import { intraduisible, refus } from "../databooks-traduction";
 import { masquerTermes, PREFIXE_JETON, restaurerJetons } from "./traduction";
 
@@ -31,7 +31,7 @@ export interface MasquageResult {
 }
 
 /**
- * Le lexique canonique (`@shenron/lexicon/data`) sous sa forme historique : une ligne par
+ * Le lexique canonique (`@aphrody/shenron-lexicon/data`) sous sa forme historique : une ligne par
  * graphie japonaise, du plus long au plus court.
  */
 export function chargerLexiqueCanonique(): LexiqueEntry[] {

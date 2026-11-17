@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** The SDK seam (real/mock selection, handshake of the stand-in) and the client socket. */
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import { PROTOCOL_VERSION, type ServerMessage } from "@shenron/activity/protocol";
+import { PROTOCOL_VERSION, type ServerMessage } from "@aphrody/shenron-activity/protocol";
 import { createFakeSdk } from "../client/fake-sdk";
 import {
   apiBaseFor,

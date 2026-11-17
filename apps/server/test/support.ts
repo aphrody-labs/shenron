@@ -3,8 +3,8 @@
 import { Database } from "bun:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { ShenronVfs, writeWikiRows } from "@shenron/db/vfs";
-import { createRagWriter } from "@shenron/db/vfs/build";
+import { ShenronVfs, writeWikiRows } from "@aphrody/shenron-db/vfs";
+import { createRagWriter } from "@aphrody/shenron-db/vfs/build";
 
 import type { ServerPaths } from "../src/config";
 

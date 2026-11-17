@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Couches, Lien, Livre, Plus, ZSword } from "@shenron/ui/icones";
+import { Couches, Lien, Livre, Plus, ZSword } from "@aphrody/shenron-ui/icones";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useMemo } from "react";
 import { useAdminCatalogText } from "@/lib/admin-catalog-text";

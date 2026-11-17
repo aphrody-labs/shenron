@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/pipeline/ai/ports` — storage ports of the grounded generation (D9: no
+ * `@aphrody/shenron-pipeline/ai/ports` — storage ports of the grounded generation (D9: no
  * Redis, SQLite, `bun:*` or `node:*` in this package; storage enters here).
  *
  * Runtime class: `pure` (WebCrypto only).

@@ -40,7 +40,7 @@ export const canonEvidenceDecision = createCanonEvidenceGate(
     minimumSpacingMs: env.SHENRON_CANON_YOLO_MIN_SPACING_MS,
   },
   {
-    runtime: () => import("@shenron/decision"),
+    runtime: () => import("@aphrody/shenron-decision"),
     async admit() {
       for (const limiter of [spacing, hourly, daily]) {
         if ((await limiter.consume("global")).limited) return false;

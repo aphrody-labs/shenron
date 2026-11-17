@@ -20,8 +20,8 @@
 import { existsSync } from "node:fs";
 import { appendFile, mkdir, readdir, rmdir, unlink } from "node:fs/promises";
 import { basename, dirname, extname, join, resolve } from "node:path";
-import { resolveVisionModel } from "@shenron/pipeline/ai/config";
-import { recogniseRemotePage, reviewRemoteImage } from "@shenron/pipeline/shenron/remote-ocr";
+import { resolveVisionModel } from "@aphrody/shenron-pipeline/ai/config";
+import { recogniseRemotePage, reviewRemoteImage } from "@aphrody/shenron-pipeline/shenron/remote-ocr";
 import {
   atomicWriteJson,
   atomicWriteText,

@@ -50,7 +50,7 @@ avec preuves primaires et relecture indépendante ; installer le plugin Aphrody
 et son MCP dans Codex. La demande explicite de synchronisation Git, merge, déploiement complet et
 mise à jour des paquets autorise la livraison site/bot via Infra et la publication
 des bibliothèques publiques auditées. Le propriétaire a ensuite explicitement autorisé
-DBXV2 public en production ; `@shenron/dbxv2@1.4.7` est publié et vérifié.
+DBXV2 public en production ; `@aphrody/shenron-dbxv2@1.4.7` est publié et vérifié.
 Les secrets, bases privées et sessions Steam restent hors paquet ; la version publiée
 n'est pas la preuve d'un jeu WASM ou d'un streaming qualifié.
 Demandes ajoutées ensuite : trier `/catalog/archive_movies` et `/catalog/archive_images`
@@ -95,11 +95,11 @@ architecture distante multi-utilisateur.
    budgets et couverture explicitement qualifiés.
 2. Livrer les lecteurs manga, databooks et vidéo avec tests navigateur réels ; distinguer
    chargement, disponibilité et lecture effective.
-3. Consommer HLS depuis `@shenron/video`, sans vendoring local ; respecter les licences,
+3. Consommer HLS depuis `@aphrody/shenron-video`, sans vendoring local ; respecter les licences,
    DRM et droits des fournisseurs.
 4. Maintenir les catalogues par writers transactionnels, snapshots JSON validés, sauvegarde,
    relecture et réplica ; aucune écriture implicite dans RAG, Redis ou PostgreSQL.
-5. Garder le monorepo modulaire : paquets `@shenron/*`, apps privées, crates Rust
+5. Garder le monorepo modulaire : paquets `@aphrody/shenron-*`, apps privées, crates Rust
    avec leurs noms publics et notices.
 6. Construire sur VPS, sceller l’artefact, activer via Aphrody Infra sur DBFR, puis vérifier
    les sondes publiques, CDN, MCP et lecteurs réellement servis.

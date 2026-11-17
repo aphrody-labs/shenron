@@ -1,6 +1,6 @@
 import { dbUniverse } from "@/lib/db-universe";
 import { assetUrl } from "@/lib/assets";
-import { normalizeVideoSubtitles } from "@shenron/media/episode-playback";
+import { normalizeVideoSubtitles } from "@aphrody/shenron-media/episode-playback";
 import { summarizeVideoSources } from "@/lib/video-source-coverage";
 
 export const runtime = "nodejs";

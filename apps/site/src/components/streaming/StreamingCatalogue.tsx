@@ -19,7 +19,7 @@ import {
 import { streamingEpisode, streamingFeature, type StreamingGroup } from "@/lib/streaming-catalogue";
 import { StreamingHero, StreamingNotice, StreamingNavigation } from "./StreamingHero";
 import { StreamingBrowser } from "./StreamingBrowser";
-import { SectionDivider } from "@shenron/ui/vie/SectionDivider";
+import { SectionDivider } from "@aphrody/shenron-ui/vie/SectionDivider";
 import { StreamingSavedRail } from "./StreamingSavedRail";
 
 export default async function StreamingCatalogue() {

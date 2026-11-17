@@ -52,7 +52,7 @@ Not proven: signed-in /admin/ai, data-backed wiki pages, Windows gates (shenron-
 - install --frozen-lockfile 0; lint 0 (warnings only); typecheck 0 on every workspace.
 - format:check: 3 files failed (csp-report route, ConsentGate.tsx, avatar-discord-variant test). Fixed;
   ConsentGate had meanwhile been formatted by another session (theirs kept). Now: all files formatted.
-- tests: the one real failure was `@shenron/ui portability` (packages/ui/assets/wiki-objects/generate.ts
+- tests: the one real failure was `@aphrody/shenron-ui portability` (packages/ui/assets/wiki-objects/generate.ts
   imported scripts/plugin). Moved to scripts/build/wiki-objects.ts (`--check` passes, portability 3/3).
 - Other failures on Bun 1.4.4 are the runtime, not main: `Bun.Image.rgba` is missing in 1.4.4 (frame analysis x6,
   build-frame-catalog, technique-artwork). With pinned Bun 1.4.6: frame-catalog 28/28, technique-artwork 5/5.

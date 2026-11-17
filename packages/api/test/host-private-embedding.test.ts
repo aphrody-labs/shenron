@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 import { Database } from "bun:sqlite";
 import { expect, test } from "bun:test";
-import { ShenronVfs } from "@shenron/db/vfs";
-import { createRagWriter } from "@shenron/db/vfs/build";
+import { ShenronVfs } from "@aphrody/shenron-db/vfs";
+import { createRagWriter } from "@aphrody/shenron-db/vfs/build";
 import { createLocalApi } from "../src/host";
 const env = {
   SHENRON_CHAT_BACKENDS: "extractive",

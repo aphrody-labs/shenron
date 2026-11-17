@@ -29,8 +29,8 @@ import {
   formatMangaDialogues,
   type CanonChapter,
   type CanonSaga,
-} from "@shenron/engine";
-import { FighterzHpBar, DragonRadarHud } from "@shenron/ui/games";
+} from "@aphrody/shenron-engine";
+import { FighterzHpBar, DragonRadarHud } from "@aphrody/shenron-ui/games";
 
 export function CanonGameView({ initialChapterId = 6 }: { initialChapterId?: number }) {
   const [currentChapterId, setCurrentChapterId] = useState(initialChapterId);

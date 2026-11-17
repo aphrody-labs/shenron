@@ -144,7 +144,7 @@ describe("generateLlmAnswer (chemin conversationnel & repli)", () => {
 describe("generateLlmAnswer — corps de requête (B17, bavardage sans récupération)", () => {
   it("envoie système persona, règles d’autonomie et phrase anti-injection partagées", async () => {
     const { AUTONOMY_RULE, INJECTION_GUARD, PERSONAS, personaRules } =
-      await import("@shenron/pipeline/ai/prompts");
+      await import("@aphrody/shenron-pipeline/ai/prompts");
     const originalFetch = globalThis.fetch;
     const saved = {
       token: process.env.SHENRON_API_TOKEN,
@@ -192,7 +192,7 @@ describe("generateLlmAnswer — corps de requête (B17, bavardage sans récupér
 
 describe("public RAG generation budget", () => {
   it("sends the shared budget and an explicit override through the direct SDK transport", async () => {
-    const { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } = await import("@shenron/config/chat-model");
+    const { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } = await import("@aphrody/shenron-config/chat-model");
     const originalFetch = globalThis.fetch;
     process.env.SHENRON_AI_CHAT_BASE_URL = "http://127.0.0.1:8799/v1";
     process.env.SHENRON_AI_CHAT_MODEL = "fixture";

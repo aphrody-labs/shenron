@@ -7,10 +7,10 @@
  *  - journals (`action_logs`, `rag_eval_history`): append-only, copied under stable negative
  *    identifiers derived from the source, never deleted, guarded by a checkpoint;
  *  - state tables (users, inventory, economy_flags, ...: `BOT_STATE_REPLICA_TABLES` of
- *    `@shenron/db/bot-schema`): mirrored by primary key, so PostgreSQL ends up equal to
+ *    `@aphrody/shenron-db/bot-schema`): mirrored by primary key, so PostgreSQL ends up equal to
  *    SQLite (insert, update, delete), one transaction per table, bounded batches, read back.
  *
- * The copy itself is `@shenron/db/replica`, the engine the bot runs every few minutes
+ * The copy itself is `@aphrody/shenron-db/replica`, the engine the bot runs every few minutes
  * (`apps/bot/src/services/ReplicaSyncService.ts`); this script is the manual, whole-table,
  * checkpointed entry point to it.
  *
@@ -30,7 +30,7 @@ import {
 import { dirname, resolve } from "node:path";
 import { Database } from "bun:sqlite";
 import postgres from "postgres";
-import { BOT_STATE_REPLICA_NAMES } from "@shenron/db/bot-schema";
+import { BOT_STATE_REPLICA_NAMES } from "@aphrody/shenron-db/bot-schema";
 import {
   DEFAULT_BATCH_SIZE,
   JOURNAL_TABLES,
@@ -44,9 +44,9 @@ import {
   type JournalTable,
   type SqlClient,
   type TableReport,
-} from "@shenron/db/replica";
+} from "@aphrody/shenron-db/replica";
 
-export { formatStateReport, sameRecord, stablePostgresId } from "@shenron/db/replica";
+export { formatStateReport, sameRecord, stablePostgresId } from "@aphrody/shenron-db/replica";
 
 const TABLES = JOURNAL_TABLES;
 type Table = JournalTable;

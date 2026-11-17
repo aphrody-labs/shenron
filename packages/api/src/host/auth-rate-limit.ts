@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { BetterAuthOptions } from "better-auth";
-import type { RedisLike } from "@shenron/db/redis";
+import type { RedisLike } from "@aphrody/shenron-db/redis";
 
 export type AuthRateLimitStorage = NonNullable<
   NonNullable<BetterAuthOptions["rateLimit"]>["customStorage"]

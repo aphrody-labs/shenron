@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 //! The lexicon: validation, lookup by id or by any form, localisation, search and masking per
-//! target language. Same rules as `@shenron/lexicon`'s `lexicon.ts` (fixtures
+//! target language. Same rules as `@aphrody/shenron-lexicon`'s `lexicon.ts` (fixtures
 //! `data/lexicon/fixtures/lexicon.json`).
 
 use std::{

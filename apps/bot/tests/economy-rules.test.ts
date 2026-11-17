@@ -3,8 +3,8 @@ import {
   CANON_INFLATION_FACTOR,
   CANON_PRICES,
   canonEquivalent,
-} from "@shenron/config/economy-canon";
-import { changePercent, computeIndex, indexedPrice } from "@shenron/config/inflation-rules";
+} from "@aphrody/shenron-config/economy-canon";
+import { changePercent, computeIndex, indexedPrice } from "@aphrody/shenron-config/inflation-rules";
 import {
   assess,
   flagExcess,

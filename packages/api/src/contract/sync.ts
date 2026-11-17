@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Conversation sync and VFS contracts (zod mirrors of `@shenron/db/conversations/types`).
+ * Conversation sync and VFS contracts (zod mirrors of `@aphrody/shenron-db/conversations/types`).
  * Runtime class: `pure`.
  */
 import { z } from "zod";

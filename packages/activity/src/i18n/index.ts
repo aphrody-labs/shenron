@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/activity/i18n` — the Activity's dictionaries (fr is the reference, en and ja are
+ * `@aphrody/shenron-activity/i18n` — the Activity's dictionaries (fr is the reference, en and ja are
  * complete; parity is enforced by the type of `DICTIONARIES` and by tests). Runtime class `pure`.
  *
  * No visible string is hard-coded in the rules: question prompts are rendered from these templates

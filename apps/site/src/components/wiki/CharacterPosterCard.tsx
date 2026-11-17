@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { ReactNode } from "react";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
-import { ViewTransition } from "@shenron/ui/layout/ViewTransition";
+import { ViewTransition } from "@aphrody/shenron-ui/layout/ViewTransition";
 import { WikiImg } from "@/components/wiki/WikiImg";
-import type { AccessSnapshot } from "@shenron/config/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 
 /**
  * Carte portrait d'un personnage — LA carte de personnage du wiki.

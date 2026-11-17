@@ -3,91 +3,91 @@
   "components": [
     {
       "name": "BancNuages",
-      "module": "@shenron/ui/toriyama/MotifsCouverture"
+      "module": "@aphrody/shenron-ui/toriyama/MotifsCouverture"
     },
     {
       "name": "CadreCase",
-      "module": "@shenron/ui/toriyama/MotifsCouverture"
+      "module": "@aphrody/shenron-ui/toriyama/MotifsCouverture"
     },
     {
       "name": "DragonBall",
-      "module": "@shenron/ui/toriyama/DragonBall"
+      "module": "@aphrody/shenron-ui/toriyama/DragonBall"
     },
     {
       "name": "DragonBall3D",
-      "module": "@shenron/ui/toriyama/Toriyama3D"
+      "module": "@aphrody/shenron-ui/toriyama/Toriyama3D"
     },
     {
       "name": "DragonBallLoader",
-      "module": "@shenron/ui/toriyama/DragonBall"
+      "module": "@aphrody/shenron-ui/toriyama/DragonBall"
     },
     {
       "name": "DragonBallSphere",
-      "module": "@shenron/ui/toriyama/DragonBallSphere"
+      "module": "@aphrody/shenron-ui/toriyama/DragonBallSphere"
     },
     {
       "name": "DragonBallWordmark",
-      "module": "@shenron/ui/toriyama/DragonBallWordmark"
+      "module": "@aphrody/shenron-ui/toriyama/DragonBallWordmark"
     },
     {
       "name": "DragonRadarDisplay",
-      "module": "@shenron/ui/toriyama/DragonRadarDisplay"
+      "module": "@aphrody/shenron-ui/toriyama/DragonRadarDisplay"
     },
     {
       "name": "Etoile",
-      "module": "@shenron/ui/toriyama/MotifsCouverture"
+      "module": "@aphrody/shenron-ui/toriyama/MotifsCouverture"
     },
     {
       "name": "KiAura",
-      "module": "@shenron/ui/toriyama/KiAura"
+      "module": "@aphrody/shenron-ui/toriyama/KiAura"
     },
     {
       "name": "KintoUn",
-      "module": "@shenron/ui/toriyama/KintoUn"
+      "module": "@aphrody/shenron-ui/toriyama/KintoUn"
     },
     {
       "name": "KintoUn3D",
-      "module": "@shenron/ui/toriyama/Toriyama3D"
+      "module": "@aphrody/shenron-ui/toriyama/Toriyama3D"
     },
     {
       "name": "KintoUnCloud",
-      "module": "@shenron/ui/toriyama/KintoUnCloud"
+      "module": "@aphrody/shenron-ui/toriyama/KintoUnCloud"
     },
     {
       "name": "KintoUnLoader",
-      "module": "@shenron/ui/toriyama/KintoUn"
+      "module": "@aphrody/shenron-ui/toriyama/KintoUn"
     },
     {
       "name": "MotManga",
-      "module": "@shenron/ui/toriyama/MotManga"
+      "module": "@aphrody/shenron-ui/toriyama/MotManga"
     },
     {
       "name": "PastilleTome",
-      "module": "@shenron/ui/toriyama/MotifsCouverture"
+      "module": "@aphrody/shenron-ui/toriyama/MotifsCouverture"
     },
     {
       "name": "PotaraEarrings",
-      "module": "@shenron/ui/toriyama/PotaraEarrings"
+      "module": "@aphrody/shenron-ui/toriyama/PotaraEarrings"
     },
     {
       "name": "ScouterHudOverlay",
-      "module": "@shenron/ui/toriyama/ScouterHudOverlay"
+      "module": "@aphrody/shenron-ui/toriyama/ScouterHudOverlay"
     },
     {
       "name": "SenzuBean",
-      "module": "@shenron/ui/toriyama/SenzuBean"
+      "module": "@aphrody/shenron-ui/toriyama/SenzuBean"
     },
     {
       "name": "ShenronSilhouette",
-      "module": "@shenron/ui/toriyama/ShenronSilhouette"
+      "module": "@aphrody/shenron-ui/toriyama/ShenronSilhouette"
     },
     {
       "name": "Toriyama3D",
-      "module": "@shenron/ui/toriyama/Toriyama3D"
+      "module": "@aphrody/shenron-ui/toriyama/Toriyama3D"
     },
     {
       "name": "ToriyamaEmblem",
-      "module": "@shenron/ui/toriyama/ToriyamaEmblem"
+      "module": "@aphrody/shenron-ui/toriyama/ToriyamaEmblem"
     }
   ],
   "artwork": [

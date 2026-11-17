@@ -1,4 +1,4 @@
-import { withBun } from "@shenron/next-host";
+import { withBun } from "@aphrody/shenron-next-host";
 import type { NextConfig } from "next";
 import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
 import {
@@ -6,8 +6,8 @@ import {
   ownImageRemotePatterns,
   resolveApiUrl,
   resolveSiteUrl,
-} from "@shenron/config/public-urls";
-import { sitePublicRedirects } from "@shenron/images/resolve";
+} from "@aphrody/shenron-config/public-urls";
+import { sitePublicRedirects } from "@aphrody/shenron-images/resolve";
 import {
   AUTH_ROUTE_ALIASES,
   PUBLIC_ROUTE_RENAMES,
@@ -39,7 +39,7 @@ process.env.NEXT_TELEMETRY_DISABLED = "1";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   // Native SDK, image decoders, and SQL/vector drivers are deferred to the Bun host outside Next's server bundle.
-  serverExternalPackages: ["@shenron/native", "sharp", "postgres", "sqlite-vec"],
+  serverExternalPackages: ["@aphrody/shenron-native", "sharp", "postgres", "sqlite-vec"],
   // Type-checking can be skipped during `next build` when already verified by `bun check` (`SHENRON_SKIP_NEXT_TYPECHECK=1`),
   // while keeping `ignoreBuildErrors: false` as the safe default for direct builds.
   typescript: {
@@ -174,7 +174,7 @@ const nextConfig: NextConfig = {
       "@tiptap/starter-kit",
       "@tiptap/extensions",
       "@base-ui/react",
-      "@shenron/ui",
+      "@aphrody/shenron-ui",
     ],
   },
 
@@ -214,7 +214,7 @@ const nextConfig: NextConfig = {
     // Bot expose les assets DB via /db/* (Cache-Control immutable + Vary:Accept côté bot).
     remotePatterns: [
       // Origines propres (CDN, API/assets du bot, site, Discord) : dérivées des
-      // mêmes variables que `@/lib/config` via `@shenron/config/public-urls`.
+      // mêmes variables que `@/lib/config` via `@aphrody/shenron-config/public-urls`.
       ...ownImageRemotePatterns(process.env),
       // Catalogue mirrors have a stable image owner, independent of the JS chunk CDN.
       {
@@ -286,7 +286,7 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       // Copies binaires dédoublonnées de `public/` (manifeste
-      // `@shenron/images/asset-aliases.json`) : l'ancienne URL garde sa réponse.
+      // `@aphrody/shenron-images/asset-aliases.json`) : l'ancienne URL garde sa réponse.
       ...sitePublicRedirects().map(([source, destination]) => ({
         source: source.replace(/[():*+?{}]/g, "\\$&"),
         destination,
@@ -581,9 +581,9 @@ const nextConfig: NextConfig = {
 // Next.js 16 Turbopack : analyse de bundle intégrée via `next build --turbopack --experimental-analyze`
 // qui écrit les métriques dans `.next/diagnostics/analyze` sans injecter de wrapper Webpack.
 //
-// `withBun` (@shenron/next-host) porte les réglages génériques de Next sur Bun : racine Turbopack et
+// `withBun` (@aphrody/shenron-next-host) porte les réglages génériques de Next sur Bun : racine Turbopack et
 // file tracing à la racine du workspace (magasin isolé de Bun), `transpilePackages` déduit des paquets
-// qui publient leurs sources TypeScript (@shenron/*, @shenron/m3-*…), alias communs à Turbopack et
+// qui publient leurs sources TypeScript (@aphrody/shenron-*, @aphrody/shenron-m3-*…), alias communs à Turbopack et
 // Webpack, et `next start` qui reprend le préfixe d'assets et l'identifiant de déploiement du build.
 const resolveConfig = withBun(nextConfig, {
   bundler: "turbopack",

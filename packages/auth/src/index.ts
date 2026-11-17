@@ -17,7 +17,7 @@ export {
 /**
  * Public origins allowed to call `/api/auth/*` (production values, S2).
  * @deprecated Use `botTrustedOrigins({ production })` or
- * `siteTrustedOrigins({ production })` from `@shenron/auth/origins`.
+ * `siteTrustedOrigins({ production })` from `@aphrody/shenron-auth/origins`.
  */
 export const SHENRON_TRUSTED_ORIGINS: readonly string[] = Object.freeze(
   botTrustedOrigins({ production: true }),
@@ -26,7 +26,7 @@ export const SHENRON_TRUSTED_ORIGINS: readonly string[] = Object.freeze(
 /**
  * Hosts accepted by the dynamic `baseURL` of the site (production values, S2:
  * no generic `*.vercel.app`, no `localhost`).
- * @deprecated Use `siteAllowedHosts({ production })` from `@shenron/auth/origins`.
+ * @deprecated Use `siteAllowedHosts({ production })` from `@aphrody/shenron-auth/origins`.
  */
 export const SHENRON_ALLOWED_HOSTS: readonly string[] = Object.freeze(
   siteAllowedHosts({ production: true }),

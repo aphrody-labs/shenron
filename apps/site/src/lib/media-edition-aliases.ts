@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { eq } from "drizzle-orm";
-import { botMediaEditionAliases } from "@shenron/db/bot-schema";
+import { botMediaEditionAliases } from "@aphrody/shenron-db/bot-schema";
 import { db } from "@/lib/db";
 
 type CatalogTransaction = Parameters<Parameters<typeof db.transaction>[0]>[0];

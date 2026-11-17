@@ -3,7 +3,7 @@
 
 "use client";
 
-import { Popover, usePopover, SelectPill, type SelectPillProps } from "@shenron/m3-primitives";
+import { Popover, usePopover, SelectPill, type SelectPillProps } from "@aphrody/shenron-m3-primitives";
 import { clsx } from "clsx";
 import { forwardRef, useEffect, useMemo, useRef, useState } from "react";
 

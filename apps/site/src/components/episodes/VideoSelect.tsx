@@ -1,7 +1,7 @@
 "use client";
 
 import { Children, isValidElement, useEffect, useState, type ReactNode } from "react";
-import { Select, SelectTrigger, SelectValue, SelectPopup, SelectItem } from "@shenron/ui/select";
+import { Select, SelectTrigger, SelectValue, SelectPopup, SelectItem } from "@aphrody/shenron-ui/select";
 import styles from "./VideoSelect.module.css";
 
 /** Shared accessible primitives, with the public media surface rather than admin styling. */

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Network guards shared by every `@shenron/*` package: the single loopback /
+ * Network guards shared by every `@aphrody/shenron-*` package: the single loopback /
  * HTTPS URL doctrine (formerly copied in `compute.ts`, `shenron-embeddings.ts`,
  * `web.ts` and `ia-cockpit.ts`) and the client IP doctrine of
  * `apps/site/src/app/api/_client-ip.ts`.

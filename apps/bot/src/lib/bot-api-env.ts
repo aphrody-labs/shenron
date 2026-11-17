@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { checkAlias, ENV_ALIASES, envFirst, type EnvSource } from "@shenron/config/env";
+import { checkAlias, ENV_ALIASES, envFirst, type EnvSource } from "@aphrody/shenron-config/env";
 
 /** Resolve the canonical shared credentials before the bot validates its historical fields. */
 export function botApiEnvironment(source: EnvSource): Record<string, string | undefined> {

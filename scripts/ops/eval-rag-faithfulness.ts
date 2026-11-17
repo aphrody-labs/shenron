@@ -20,8 +20,8 @@
  */
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { COLLECTED_MARKER, fold, isCollectedDocument } from "@shenron/pipeline/ai/grounding";
-import { isNotEstablishedAnswer } from "@shenron/pipeline/ai/prompts";
+import { COLLECTED_MARKER, fold, isCollectedDocument } from "@aphrody/shenron-pipeline/ai/grounding";
+import { isNotEstablishedAnswer } from "@aphrody/shenron-pipeline/ai/prompts";
 
 const REPO_ROOT = Bun.fileURLToPath(new URL("../../", import.meta.url));
 const DATASET = join(REPO_ROOT, "packages/pipeline/test/ai/fixtures/eval/rag-faithfulness.json");

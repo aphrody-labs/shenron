@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import type { AccessSnapshot } from "@shenron/config/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import { useLangue } from "@/lib/i18n/client";
 import { wikiNarrativeMessages } from "@/lib/wiki-narrative-messages";
 import { WikiCatalogueToolbar } from "./WikiCatalogueToolbar";

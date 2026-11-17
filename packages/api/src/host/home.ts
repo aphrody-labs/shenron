@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Bun-native PostgreSQL lifecycle for the home configuration. */
-import { envString, type EnvSource } from "@shenron/config/env";
-import { createBunDb } from "@shenron/db/bun-sql";
-import { createHomeConfigRepository } from "@shenron/db/repos/home";
+import { envString, type EnvSource } from "@aphrody/shenron-config/env";
+import { createBunDb } from "@aphrody/shenron-db/bun-sql";
+import { createHomeConfigRepository } from "@aphrody/shenron-db/repos/home";
 import type { HomeConfigPort } from "../server";
 
 export function createHostHome(

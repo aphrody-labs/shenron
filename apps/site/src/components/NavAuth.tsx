@@ -4,10 +4,10 @@ import Link from "next/link";
 import { Avatar } from "@/components/Avatar";
 import { SignInDiscord } from "@/components/SignInDiscord";
 import { SignOut } from "@/components/SignOut";
-import { Bouclier, Curseurs, DragonBall, Piece } from "@shenron/ui/icones";
+import { Bouclier, Curseurs, DragonBall, Piece } from "@aphrody/shenron-ui/icones";
 import { useMe } from "@/lib/use-me";
 import { useLangue } from "@/lib/i18n/client";
-import { Popover, PopoverPopup, PopoverTitle, PopoverTrigger } from "@shenron/ui/popover";
+import { Popover, PopoverPopup, PopoverTitle, PopoverTrigger } from "@aphrody/shenron-ui/popover";
 
 /**
  * Le compte dans le shell (îlot client). L'état d'auth vient de `/api/me` côté client : le

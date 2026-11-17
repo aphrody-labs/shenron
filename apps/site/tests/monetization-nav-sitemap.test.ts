@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { SITE_SECTIONS, isPathPublic } from "@shenron/config/wiki-launch";
+import { SITE_SECTIONS, isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 import { buildSiteMap, sitemapDestinations } from "@/lib/site-map";
 import { publicShellJourneys } from "@/lib/shell-nav";
 import { MOBILE_MORE_DESTINATIONS } from "@/lib/site-menu";

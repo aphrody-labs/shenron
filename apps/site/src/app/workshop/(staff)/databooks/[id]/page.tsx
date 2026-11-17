@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PageShell } from "@shenron/ui/layout/PageShell";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
-import { Crayon, LienExterne } from "@shenron/ui/icones";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
+import { Crayon, LienExterne } from "@aphrody/shenron-ui/icones";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { GatedLink } from "@/components/GatedLink";
 import { LibraryNav, WorkshopNav } from "@/components/library/LibraryNav";

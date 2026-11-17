@@ -19,7 +19,7 @@ import {
   type Xv2WorldRenderer,
   type Xv2WorldTextureProfile,
   type Xv2WorldFrameStats,
-} from "@shenron/engine/glb-scene";
+} from "@aphrody/shenron-engine/glb-scene";
 import { useLangue } from "@/lib/i18n/client";
 import {
   discoverStages,

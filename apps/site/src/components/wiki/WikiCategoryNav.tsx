@@ -4,7 +4,7 @@ import "server-only";
 import { TabNav } from "@/components/kit/TabNav";
 import { dbUniverse } from "@/lib/db-universe";
 import { ENCYCLOPEDIA_CATEGORIES } from "@/lib/wiki-categories";
-import { isPathPublic } from "@shenron/config/wiki-launch";
+import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { getPublishedCardCount } from "@/lib/card-catalog";
 import { getTranslations } from "next-intl/server";
@@ -13,7 +13,7 @@ import { getTranslations } from "next-intl/server";
  * Onglets de l'encyclopédie (Personnages, Races, Transformations, Techniques,
  * Sagas, Puissances, Objets, Lieux) — le passage latéral d'un index à l'autre.
  *
- * Rendu par la barre d'onglets en liens du kit (`TabNav`, `@shenron/ui`) : une
+ * Rendu par la barre d'onglets en liens du kit (`TabNav`, `@aphrody/shenron-ui`) : une
  * URL par onglet, défilement horizontal au téléphone, cibles de 44 px. Deux
  * barres maison faisaient la même chose (puces ici, onglets soulignés dans
  * `UniverseTabs`) ; il n'en reste qu'une.

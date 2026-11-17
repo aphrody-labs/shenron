@@ -2,8 +2,8 @@
 import postgres from "postgres";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import { createDatabooksFreezeGate } from "@shenron/db/guards";
-import { ShenronComputeClient } from "@shenron/pipeline/shenron";
+import { createDatabooksFreezeGate } from "@aphrody/shenron-db/guards";
+import { ShenronComputeClient } from "@aphrody/shenron-pipeline/shenron";
 import { prepareSource, syncSource } from "./_rag-shenron-sync";
 import type { SourceChunk } from "./_rag-sources-pg";
 import { digest, sourceManifestSchema, verifySource, type SourceManifest } from "./source-coverage";

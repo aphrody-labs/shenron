@@ -16,7 +16,7 @@ const fakeAuth: AuthLike = {
   },
 };
 
-describe("@shenron/auth", () => {
+describe("@aphrody/shenron-auth", () => {
   test("normalizeBaseUrl strips whitespace and slashes", () => {
     expect(normalizeBaseUrl(" https://x.fr//\n")).toBe("https://x.fr");
     expect(normalizeBaseUrl(undefined)).toBe("https://dragonballfr.com");

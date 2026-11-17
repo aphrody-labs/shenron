@@ -5,7 +5,7 @@ import {
   crunchyrollSeriesSummary,
   resolveCrunchyroll,
   type ShenronEpisodeRow,
-} from "@shenron/media/crunchyroll-mapping";
+} from "@aphrody/shenron-media/crunchyroll-mapping";
 
 /**
  * Public, read-only Crunchyroll layer of Shenron. It serves the offers stored on the episodes (watch links and

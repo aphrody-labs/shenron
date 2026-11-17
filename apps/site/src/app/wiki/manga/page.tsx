@@ -1,11 +1,11 @@
 import { mangaData } from "@/lib/manga-data";
-import { JAPANESE_FULL_COLOR_CATALOGUE } from "@shenron/config/manga-catalogue";
+import { JAPANESE_FULL_COLOR_CATALOGUE } from "@aphrody/shenron-config/manga-catalogue";
 import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
 import { WikiMediaMetrics } from "@/components/wiki/WikiMediaCatalogue";
 import { WikiMediaText } from "@/components/wiki/WikiMediaText";
 import { getLocale } from "next-intl/server";
 import { MangaUIText } from "@/lib/manga-ui-text";
-import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 import { T } from "@/components/T";
 import { ContinueRail } from "@/components/history/ContinueRail";
 import { dbUniverse } from "@/lib/db-universe";

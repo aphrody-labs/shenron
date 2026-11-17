@@ -1,5 +1,5 @@
 import { inject, injectable } from "tsyringe";
-import { NotBot } from "@shenron/discord-kit";
+import { NotBot } from "@aphrody/shenron-discord-kit";
 import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
 import { DatabaseService } from "~/db/index";
 import { TrainingService } from "~/services/TrainingService";
@@ -8,7 +8,7 @@ import { ADMIN_LAB_CHANNEL_ID } from "~/lib/admin-lab";
 import { logger } from "~/lib/logger";
 import { env, isBotOwner } from "~/lib/env";
 import { PermissionFlagsBits, type APIEmbed, type Message } from "discord.js";
-import { resolveDiscordAi, SHENRON_DISCORD } from "@shenron/config/discord-ai";
+import { resolveDiscordAi, SHENRON_DISCORD } from "@aphrody/shenron-config/discord-ai";
 import { COLORS, SHENRON_THEME, errorText, shenronEmbed, truncate } from "~/lib/embeds";
 import { canonTierColor, embeddingsLabel } from "~/commands/admin/Train";
 

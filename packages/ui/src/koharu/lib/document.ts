@@ -1,4 +1,4 @@
-import type { Layer } from "@shenron/koharu/protocol";
+import type { Layer } from "@aphrody/shenron-koharu/protocol";
 
 export function isTextLayer(layer: Layer): layer is Extract<Layer, { type: "text" }> {
   return layer.type === "text";

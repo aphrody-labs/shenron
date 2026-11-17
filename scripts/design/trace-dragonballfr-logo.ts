@@ -10,7 +10,7 @@
  * Writes packages/ui/assets/brand/dragonballfr-logo.svg, its PNG renders and the site module
  * apps/site/src/lib/dragonballfr-logo.generated.ts (OpenGraph image) with --write.
  */
-import { decodeRgba } from "@shenron/kit/image";
+import { decodeRgba } from "@aphrody/shenron-kit/image";
 import { resolve } from "node:path";
 
 type Point = readonly [number, number];

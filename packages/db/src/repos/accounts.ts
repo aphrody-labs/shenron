@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Discord account lookup over Better Auth's `ba_account` (provider `discord`).
- * Structurally satisfies `DiscordAccountLookup` of `@shenron/auth`.
+ * Structurally satisfies `DiscordAccountLookup` of `@aphrody/shenron-auth`.
  * Runtime class: `pure`.
  */
 import { and, eq } from "drizzle-orm";

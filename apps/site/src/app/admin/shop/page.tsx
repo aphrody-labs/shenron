@@ -14,14 +14,14 @@ import {
   Plus,
   Recherche,
   Sac,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { type FormEvent, useMemo, useState } from "react";
 import { api } from "@/lib/admin-api";
 import { RoleBadge } from "@/components/admin/RoleSelect";
 import { RolePicker } from "@/components/admin/RolePicker";
-import { cn } from "@shenron/ui/lib/utils";
+import { cn } from "@aphrody/shenron-ui/lib/utils";
 import { PlainField } from "@/components/editor/PlainField";
-import { formatZeni } from "@shenron/config/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 
 export interface ShopItem {
   key: string;

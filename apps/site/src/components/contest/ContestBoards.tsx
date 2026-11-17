@@ -11,7 +11,7 @@
 import type { ReactNode } from "react";
 import type { ContributorRow } from "@/lib/contributors";
 import type { LeaderboardEntry } from "@/lib/shenron";
-import { formatZeni } from "@shenron/config/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 import { T } from "@/components/T";
 import { RankTable } from "./RankTable";
 

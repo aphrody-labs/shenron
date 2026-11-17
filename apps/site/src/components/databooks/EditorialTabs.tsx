@@ -1,5 +1,5 @@
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import { isPathPublic } from "@shenron/config/wiki-launch";
+import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 import { EditorialTabsView, type EditorialTab } from "./EditorialTabsView";
 
 /**

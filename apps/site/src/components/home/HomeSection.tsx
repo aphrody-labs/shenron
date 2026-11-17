@@ -5,7 +5,7 @@
  */
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { FlecheDroite } from "@shenron/ui/icones";
+import { FlecheDroite } from "@aphrody/shenron-ui/icones";
 import { blockTitle, focusRing, tactilePress } from "./ui";
 
 export function HomeSection({

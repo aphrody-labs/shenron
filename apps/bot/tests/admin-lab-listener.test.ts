@@ -1,6 +1,6 @@
 import "./setup-discord-ai";
 import { afterAll, describe, expect, test } from "bun:test";
-import { NotBot } from "@shenron/discord-kit";
+import { NotBot } from "@aphrody/shenron-discord-kit";
 import { MetadataStorage } from "discordx";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";

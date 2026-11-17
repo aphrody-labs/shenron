@@ -40,7 +40,7 @@ beforeAll(() => {
 
 afterAll(() => server.stop(true));
 
-describe("@shenron/pipeline — bridge HTTP", () => {
+describe("@aphrody/shenron-pipeline — bridge HTTP", () => {
   it("retourne les réponses du serveur local", async () => {
     const bridge = new DbuiBridge({ forcedTransport: "http", fallbackApiUrl: baseUrl });
     expect((await bridge.getModels())[0]?.id).toBe("fixture");

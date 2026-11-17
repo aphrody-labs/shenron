@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /** In-process stage probes run directly by the orchestrator through Bun APIs (no subprocess). */
-import { code } from "@shenron/decision";
+import { code } from "@aphrody/shenron-decision";
 import type { PublicCanonEvidence } from "./ai/canon-judgment";
 import { createCanonJudgmentPort } from "./ai/jev-provider";
 

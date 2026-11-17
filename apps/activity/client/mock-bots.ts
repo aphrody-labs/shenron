@@ -8,7 +8,7 @@ import {
   PROTOCOL_VERSION,
   type PublicQuestion,
   type ServerMessage,
-} from "@shenron/activity/protocol";
+} from "@aphrody/shenron-activity/protocol";
 import { GameConnection } from "./socket";
 
 export interface MockBotsOptions {

@@ -31,9 +31,9 @@ export function capParams<T>(list: readonly T[], cap: number = PRERENDER_CAP): T
 
 /**
  * Whether the editorial PostgreSQL database is configured for this build or process
- * (`isDatabaseConfigured` of `@shenron/db/config`: a usable postgres:// URL, never an
+ * (`isDatabaseConfigured` of `@aphrody/shenron-db/config`: a usable postgres:// URL, never an
  * empty, `"undefined"` or undecrypted value). The public and desktop binaries are built
  * without it: their dynamic segments prerender nothing and render on demand
  * (dynamicParams stays true), against the database the running server is given, if any.
  */
-export { isDatabaseConfigured as hasEditorialDatabase } from "@shenron/db/config";
+export { isDatabaseConfigured as hasEditorialDatabase } from "@aphrody/shenron-db/config";

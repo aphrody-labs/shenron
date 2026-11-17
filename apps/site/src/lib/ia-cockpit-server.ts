@@ -4,7 +4,7 @@
  * Owners, never local files of another process:
  *   - Shenron AI private HTTP (`SHENRON_AI_HTTP_URL`, loopback, bearer
  *     `SHENRON_AI_HTTP_TOKEN`, legacy aliases accepted): health, RAG statistics, search mode;
- *   - YOLO WEB (`YOLO_WEB_CLI` spawned as `web-cli mcp` over stdio, then the CDP endpoint of
+ *   - YOLO WEB (`SHENRON_YOLO_WEB_CLI` spawned as `web-cli mcp` over stdio, then the CDP endpoint of
  *     `YOLO_CDP_ENDPOINT`/`YOLO_CDP_PORT`): MCP handshake, tool list and CDP version;
  *   - the bot process over HTTP (`BOT_INTERNAL_URL`, else the configured bot
  *     API URL): its local index while `RAG_BACKEND` is not `shenron`, and
@@ -18,17 +18,17 @@ import { readFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import { sql } from "drizzle-orm";
-import { ShenronComputeClient } from "@shenron/pipeline/shenron/compute";
-import { hasAiHttpToken } from "@shenron/pipeline/ai/config";
-import { probeYoloWeb, YoloWebNotConfiguredError } from "@shenron/pipeline/yolo-web";
-import { createShenronApiClient, type ApiResult } from "@shenron/api/client";
+import { ShenronComputeClient } from "@aphrody/shenron-pipeline/shenron/compute";
+import { hasAiHttpToken } from "@aphrody/shenron-pipeline/ai/config";
+import { probeYoloWeb, YoloWebNotConfiguredError } from "@aphrody/shenron-pipeline/yolo-web";
+import { createShenronApiClient, type ApiResult } from "@aphrody/shenron-api/client";
 import type {
   CompleteGoalBody,
   CreateGoalBody,
   FeedbackStatusBody,
   GoldCaseBody,
-} from "@shenron/api/contract";
-import { resolveDataPath } from "@shenron/config/paths";
+} from "@aphrody/shenron-api/contract";
+import { resolveDataPath } from "@aphrody/shenron-config/paths";
 import { db } from "@/lib/db";
 import { botApiBaseUrl } from "@/lib/config";
 import { listAgentKeys } from "@/lib/agent-keys";
@@ -206,7 +206,7 @@ export function createIaCockpitFetchers(): IaCockpitFetchers {
           return summarizeYoloWebProbe(await probeYoloWeb({ timeoutMs: SHENRON_TIMEOUT_MS }));
         } catch (error) {
           if (error instanceof YoloWebNotConfiguredError)
-            throw new SourceNotConfiguredError("YOLO_WEB_CLI absent de l'environnement du site");
+            throw new SourceNotConfiguredError("SHENRON_YOLO_WEB_CLI absent de l'environnement du site");
           throw error;
         }
       },
@@ -341,7 +341,7 @@ export async function searchConfiguredRag(
 const BOT_WRITE_TIMEOUT_MS = 15_000;
 const BOT_EVAL_TIMEOUT_MS = 180_000;
 
-/** Typed client of the bot cockpit routes (`@shenron/api/client`, admin bearer). */
+/** Typed client of the bot cockpit routes (`@aphrody/shenron-api/client`, admin bearer). */
 function botCockpitClient(timeoutMs: number) {
   const token = process.env.SHENRON_ADMIN_TOKEN?.trim();
   if (!token) {

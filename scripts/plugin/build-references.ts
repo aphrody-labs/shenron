@@ -7,7 +7,7 @@
  * dans `plugin/` ce que le code du dépôt sait déjà, sous une forme autonome :
  *
  *   - canon : `canon-engine.ts` empaqueté en `canon.js` + doctrine lisible ;
- *   - lexique : `data/lexicon/terms.json` + moteur `@shenron/lexicon` (`lexique.js`) ;
+ *   - lexique : `data/lexicon/terms.json` + moteur `@aphrody/shenron-lexicon` (`lexique.js`) ;
  *   - Toriyama : géométrie de `packages/ui/src/toriyama-svg/` (`toriyama.js`)
  *     et analyses visuelles de `docs/reference/*-analyse-visuelle.md` ;
  *   - faits : référence publique sourcée tirée des données embarquées du dépôt.

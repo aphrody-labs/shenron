@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLink } from "@shenron/ui/external";
+import { ExternalLink } from "@aphrody/shenron-ui/external";
 import type { MangaChapter } from "@/lib/db-universe";
 import { useMangaUIText } from "@/lib/manga-ui-text";
 

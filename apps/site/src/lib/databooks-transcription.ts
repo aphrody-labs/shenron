@@ -22,7 +22,7 @@ import { dirname, join } from "node:path";
  * à chaque mesure live.
  */
 import { sql } from "drizzle-orm";
-import { escapeLike } from "@shenron/db/repos/wiki";
+import { escapeLike } from "@aphrody/shenron-db/repos/wiki";
 import { db } from "@/lib/db";
 
 /** Progression d'un ouvrage. */

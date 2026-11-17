@@ -6,7 +6,7 @@ import { T } from "@/components/T";
 import { CatalogControls } from "@/components/catalog/CatalogControls";
 import { CatalogAssetsNavigation } from "@/components/catalog/CatalogAssetsNavigation";
 import { readCdnPage } from "@/lib/cdn-catalog";
-import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 export const dynamic = "force-dynamic";
 export default async function AssetsCatalog({
   searchParams,

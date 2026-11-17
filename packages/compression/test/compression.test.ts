@@ -11,7 +11,7 @@ import {
   UE4_PAK_MAGIC,
 } from "../src/index";
 
-describe("@shenron/compression engine", () => {
+describe("@aphrody/shenron-compression engine", () => {
   it("compresses and decompresses with GZIP round-trip", () => {
     const raw = new TextEncoder().encode(
       "Son Goku Kamehameha Dragon Ball FighterZ ArcSys".repeat(50),
@@ -56,7 +56,7 @@ describe("@shenron/compression engine", () => {
   });
 });
 
-describe("@shenron/compression texture & mesh converters", () => {
+describe("@aphrody/shenron-compression texture & mesh converters", () => {
   it("wraps RGBA texture into compliant KTX2 container", () => {
     const rgba = new Uint8Array(256 * 256 * 4).fill(255);
     const ktx2 = TextureConverter.createKtx2Container(rgba, 256, 256);

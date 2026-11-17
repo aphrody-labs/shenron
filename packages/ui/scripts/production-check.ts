@@ -44,14 +44,14 @@ async function bundle(entry: (typeof entries)[number]) {
 async function compileCss() {
   const source = [
     '@import "tailwindcss";',
-    '@import "@shenron/ui/styles.css";',
-    '@import "@shenron/ui/site.css";',
-    '@import "@shenron/ui/toriyama.css";',
-    '@import "@shenron/ui/barre-nav.css";',
-    '@import "@shenron/ui/editor.css";',
-    '@import "@shenron/ui/editorial.css";',
-    '@import "@shenron/ui/reader-styles.css";',
-    '@import "@shenron/ui/reader-dragon-ball.css";',
+    '@import "@aphrody/shenron-ui/styles.css";',
+    '@import "@aphrody/shenron-ui/site.css";',
+    '@import "@aphrody/shenron-ui/toriyama.css";',
+    '@import "@aphrody/shenron-ui/barre-nav.css";',
+    '@import "@aphrody/shenron-ui/editor.css";',
+    '@import "@aphrody/shenron-ui/editorial.css";',
+    '@import "@aphrody/shenron-ui/reader-styles.css";',
+    '@import "@aphrody/shenron-ui/reader-dragon-ball.css";',
   ].join("\n");
   const result = await postcss([tailwindcss({ base: root, optimize: { minify: true } })]).process(
     source,

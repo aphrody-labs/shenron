@@ -8,7 +8,7 @@ import { env } from "./env";
 import { and, eq } from "drizzle-orm";
 import { purgeAccountData } from "./account-data";
 import { invalidateCurrentUser } from "./current-user-cache";
-import { AUTH_BASE_PATH, normalizeBaseUrl, resolveBetterAuthSecret } from "@shenron/auth";
+import { AUTH_BASE_PATH, normalizeBaseUrl, resolveBetterAuthSecret } from "@aphrody/shenron-auth";
 import {
   createMemoryRateLimitStorage,
   siteRateLimitStorage,
@@ -20,8 +20,8 @@ import {
   discordProvider,
   drizzleDebugLogs,
   loggingOptions,
-} from "@shenron/auth/options";
-import { siteAllowedHosts, siteTrustedOrigins } from "@shenron/auth/origins";
+} from "@aphrody/shenron-auth/options";
+import { siteAllowedHosts, siteTrustedOrigins } from "@aphrody/shenron-auth/origins";
 
 /** Variables d'env lues par la configuration Better Auth du site. */
 export interface SiteAuthEnv {

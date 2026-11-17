@@ -15,8 +15,8 @@ import { WikiCatalogueToolbar } from "@/components/wiki/WikiCatalogueToolbar";
 import { wikiMediaCatalogueMessages } from "@/lib/wiki-media-catalogue-messages";
 import mediaStyles from "@/components/wiki/wiki-media-catalogue.module.css";
 import { Pagination } from "@/components/kit/Pagination";
-import { Bibliotheque, Livre, Micro, Palette, Tendance } from "@shenron/ui/icones";
-import { ViewTransition } from "@shenron/ui/layout/ViewTransition";
+import { Bibliotheque, Livre, Micro, Palette, Tendance } from "@aphrody/shenron-ui/icones";
+import { ViewTransition } from "@aphrody/shenron-ui/layout/ViewTransition";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import {
   DATABOOK_CATEGORIES,
@@ -24,7 +24,7 @@ import {
   type DatabookCategory,
 } from "@/lib/databook-categories";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
-import type { AccessSnapshot } from "@shenron/config/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import { toMillis } from "@/lib/epoch";
 import {
   readAvailability,

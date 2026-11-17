@@ -3,7 +3,7 @@
  * A2A 1.0 face of the Shenron hub (`a2a.ts`, legacy dialect inside): the JSON-RPC methods
  * `SendMessage`, `GetTask` and `ListTasks` with the 1.0 payloads (ProtoJSON `Task`, `Message`,
  * `Part`, `TASK_STATE_*`), and the 1.0 fields of the Agent Card (`supportedInterfaces`). A 1.0
- * client such as `@shenron/a2a` discovers `/.well-known/agent-card.json` and talks to `/api/a2a`;
+ * client such as `@aphrody/shenron-a2a` discovers `/.well-known/agent-card.json` and talks to `/api/a2a`;
  * older peers keep `message/send`, `tasks/get`, `tasks/update`.
  *
  * Routing of `SendMessage`: `message.metadata.target` (or `targetAgent`, `shenron_peer`), then

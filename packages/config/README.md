@@ -1,4 +1,4 @@
-# @shenron/config
+# @aphrody/shenron-config
 
 Configuration partagée de Shenron.
 

@@ -13,11 +13,11 @@
   "iconLibrary": "lucide",
   "rtl": false,
   "aliases": {
-    "components": "@shenron/ui/components",
-    "utils": "@shenron/ui/lib/utils",
-    "ui": "@shenron/ui/components",
-    "lib": "@shenron/ui/lib",
-    "hooks": "@shenron/ui/hooks"
+    "components": "@aphrody/shenron-ui/components",
+    "utils": "@aphrody/shenron-ui/lib/utils",
+    "ui": "@aphrody/shenron-ui/components",
+    "lib": "@aphrody/shenron-ui/lib",
+    "hooks": "@aphrody/shenron-ui/hooks"
   },
   "menuColor": "default",
   "menuAccent": "subtle",

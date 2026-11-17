@@ -3,19 +3,19 @@ import { lstatSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 
 export const PUBLIC_LIBRARY_FILES: Readonly<Record<string, readonly string[]>> = {
-  "@shenron/api": ["src", "LICENSE", "openapi"],
-  "@shenron/auth": ["src", "LICENSE"],
-  "@shenron/config": ["src", "LICENSE", "tsconfig"],
-  "@shenron/db": ["src", "LICENSE"],
-  "@shenron/dbxv2": ["src", "LICENSE"],
-  "@shenron/engine": ["src", "LICENSE"],
-  "@shenron/images": ["src", "LICENSE"],
-  "@shenron/koharu": ["src", "LICENSE"],
-  "@shenron/lexicon": ["src", "LICENSE"],
-  "@shenron/media": ["src", "LICENSE"],
-  "@shenron/native": ["src", "LICENSE"],
-  "@shenron/pipeline": ["src", "LICENSE"],
-  "@shenron/ui": ["src", "LICENSE", "assets"],
+  "@aphrody/shenron-api": ["src", "LICENSE", "openapi"],
+  "@aphrody/shenron-auth": ["src", "LICENSE"],
+  "@aphrody/shenron-config": ["src", "LICENSE", "tsconfig"],
+  "@aphrody/shenron-db": ["src", "LICENSE"],
+  "@aphrody/shenron-dbxv2": ["src", "LICENSE"],
+  "@aphrody/shenron-engine": ["src", "LICENSE"],
+  "@aphrody/shenron-images": ["src", "LICENSE"],
+  "@aphrody/shenron-koharu": ["src", "LICENSE"],
+  "@aphrody/shenron-lexicon": ["src", "LICENSE"],
+  "@aphrody/shenron-media": ["src", "LICENSE"],
+  "@aphrody/shenron-native": ["src", "LICENSE"],
+  "@aphrody/shenron-pipeline": ["src", "LICENSE"],
+  "@aphrody/shenron-ui": ["src", "LICENSE", "assets"],
 };
 
 export interface PublicationManifest {
@@ -74,7 +74,7 @@ export function publicationViolations(manifest: PublicationManifest, location: s
       issues.push("private workspace cannot declare a public files allowlist");
     return issues;
   }
-  const expectedLocation = `packages/${manifest.name!.slice("@shenron/".length)}`;
+  const expectedLocation = `packages/${manifest.name!.slice("@aphrody/shenron-".length)}`;
   if (location !== expectedLocation)
     issues.push("public package identity differs from its approved workspace");
   if (manifest.private !== false)
@@ -145,6 +145,6 @@ export function standaloneDependency(
   localIdentities: ReadonlySet<string>,
 ): boolean {
   if (name.startsWith("@aphrody/")) return false;
-  if (version === "workspace:*") return name.startsWith("@shenron/") && localIdentities.has(name);
+  if (version === "workspace:*") return name.startsWith("@aphrody/shenron-") && localIdentities.has(name);
   return true;
 }

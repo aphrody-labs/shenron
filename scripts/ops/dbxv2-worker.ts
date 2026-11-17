@@ -25,7 +25,7 @@ export interface Dbxv2Backend {
 export interface BackendSpec {
   /** Module exportant `createBackend(): Dbxv2Backend | Promise<Dbxv2Backend>` (tests, simulations). */
   module?: string;
-  /** Sinon : paquet @shenron/dbxv2 charge par chemin. */
+  /** Sinon : paquet @aphrody/shenron-dbxv2 charge par chemin. */
   pkgDir?: string;
   lib?: string;
 }

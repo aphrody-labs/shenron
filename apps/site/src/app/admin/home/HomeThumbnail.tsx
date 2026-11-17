@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Film } from "@shenron/ui/icones";
+import { Film } from "@aphrody/shenron-ui/icones";
 
 /** Failed previews remain placeholders; the configured asset is never rewritten. */
 export function HomeThumbnail({ src, className = "" }: { src?: string; className?: string }) {

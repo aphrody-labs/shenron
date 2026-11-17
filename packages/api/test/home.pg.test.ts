@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { createBunSql } from "@shenron/db/bun-sql";
-import { DEFAULT_HOME_CONFIG } from "@shenron/config/home";
+import { createBunSql } from "@aphrody/shenron-db/bun-sql";
+import { DEFAULT_HOME_CONFIG } from "@aphrody/shenron-config/home";
 import { createHostHome } from "../src/host/home";
 import { createShenronApiClient } from "../src/client";
 import { endpoints } from "../src/contract";

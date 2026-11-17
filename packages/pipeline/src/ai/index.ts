@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** `@shenron/pipeline/ai` — constants and types shared by every AI consumer (runtime class `pure`). */
+/** `@aphrody/shenron-pipeline/ai` — constants and types shared by every AI consumer (runtime class `pure`). */
 export {
   type AiCapability,
   type AiConfig,

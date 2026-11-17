@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 
-import { resizeFrame, rotateFrame } from "@shenron/ui/koharu/lib/geometry";
-import type { Frame } from "@shenron/koharu/protocol";
+import { resizeFrame, rotateFrame } from "@aphrody/shenron-ui/koharu/lib/geometry";
+import type { Frame } from "@aphrody/shenron-koharu/protocol";
 
 const frame: Frame = { x: 10, y: 20, width: 100, height: 50, angle_degrees: 0 };
 

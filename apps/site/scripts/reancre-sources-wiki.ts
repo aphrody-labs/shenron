@@ -39,7 +39,7 @@
 import { randomBytes } from "node:crypto";
 import { join } from "node:path";
 import postgres from "postgres";
-import { defautDePlanche } from "@shenron/config/databooks-defauts";
+import { defautDePlanche } from "@aphrody/shenron-config/databooks-defauts";
 import { SITE_URL } from "../src/lib/config";
 import { containsExactCjkTerm } from "../src/lib/wiki-source-reanchor";
 

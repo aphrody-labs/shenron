@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0 AND MIT
 // Derived from SpaceUI (SpaceUI), MIT, rebuilt on Material Design 3.
 
-import { m3Durations, m3Easings, useM3ReducedMotion } from "@shenron/m3-motion";
+import { m3Durations, m3Easings, useM3ReducedMotion } from "@aphrody/shenron-m3-motion";
 import { clsx } from "clsx";
 import { LayoutGroup, motion } from "motion/react";
 import { type ReactNode, useId } from "react";

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { ServerWebSocket, WebSocketHandler } from "bun";
-import type { ChatSocketData } from "@shenron/api/server";
+import type { ChatSocketData } from "@aphrody/shenron-api/server";
 
 const CONNECT_TIMEOUT_MS = 5000;
 const BUFFER_LIMIT = 16 * 1024 * 1024;

@@ -19,7 +19,7 @@ import { T } from "@/components/T";
 import { ContinueRail } from "@/components/history/ContinueRail";
 import type { Metadata } from "next";
 import { pageHero } from "@/lib/banner-config";
-import { eraOf, ERA_ACCENT } from "@shenron/config/chronology";
+import { eraOf, ERA_ACCENT } from "@aphrody/shenron-config/chronology";
 import { StreamRow } from "@/components/stream/StreamRow";
 import { PosterCard } from "@/components/stream/PosterCard";
 import { stripSourceTags, langBadges } from "@/lib/media";

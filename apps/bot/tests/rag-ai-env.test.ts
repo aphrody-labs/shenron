@@ -5,9 +5,9 @@
  * legacy RERANK_URL) and the startup check that refuses to mix embedding spaces.
  */
 import { afterEach, beforeAll, describe, expect, it } from "bun:test";
-import { createSql } from "@shenron/db/sql";
-import { isLive, loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
-import { EmbeddingSpaceMismatchError } from "@shenron/pipeline/ai/config";
+import { createSql } from "@aphrody/shenron-db/sql";
+import { isLive, loadLiveRagEnv, requireLiveRag } from "@aphrody/shenron-pipeline/testing/live-rag";
+import { EmbeddingSpaceMismatchError } from "@aphrody/shenron-pipeline/ai/config";
 import {
   assertRagEmbeddingSpace,
   ragIndexSpace,

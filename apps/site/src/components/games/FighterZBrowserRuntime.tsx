@@ -2,8 +2,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { GDS_COLORS, GDS_ELEVATION, GdsCard, GdsButton, GdsChip } from "@shenron/ui/gds";
-import { FighterZEngineRuntime, type BevyCombatSnapshot } from "@shenron/engine/games";
+import { GDS_COLORS, GDS_ELEVATION, GdsCard, GdsButton, GdsChip } from "@aphrody/shenron-ui/gds";
+import { FighterZEngineRuntime, type BevyCombatSnapshot } from "@aphrody/shenron-engine/games";
 import { Shield, Sparkles, Gamepad, Eye, Cpu, Database } from "lucide-react";
 
 export interface FighterZBrowserRuntimeProps {

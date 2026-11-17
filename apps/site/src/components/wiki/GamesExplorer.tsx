@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { assetMirrorUrl, DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
+import { assetMirrorUrl, DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 import { ArrowRight, Check, Gamepad2, ImageOff, Search, Star, X } from "lucide-react";
 import { useLangue } from "@/lib/i18n/client";
 import { assetUrl } from "@/lib/assets";

@@ -12,7 +12,7 @@
 import { Database } from "bun:sqlite";
 import { mkdirSync, writeFileSync } from "node:fs";
 
-import { yoloWebScrape } from "@shenron/pipeline/yolo-web";
+import { yoloWebScrape } from "@aphrody/shenron-pipeline/yolo-web";
 
 const DB = new URL("../data/bot.db", import.meta.url).pathname;
 const OUT = new URL("../data/rag/", import.meta.url).pathname;

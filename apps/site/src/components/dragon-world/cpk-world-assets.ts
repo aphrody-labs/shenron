@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { inspectXv2StageLayout, type Xv2StageLayoutInfo } from "@shenron/engine/glb-scene";
+import { inspectXv2StageLayout, type Xv2StageLayoutInfo } from "@aphrody/shenron-engine/glb-scene";
 import {
   fetchBytes,
   sceneUrl,

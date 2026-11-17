@@ -9,7 +9,7 @@
  */
 import "./setup";
 import { afterEach, beforeEach, describe, expect, it } from "bun:test";
-import { ACTING_USER_TEST_VECTOR as V, signActingUser } from "@shenron/auth/acting-user";
+import { ACTING_USER_TEST_VECTOR as V, signActingUser } from "@aphrody/shenron-auth/acting-user";
 import {
   ACTING_USER_UPLOAD_SUBDIRS,
   assetUploadScopeDenied,

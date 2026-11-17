@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
-/** Exact public surface of `@shenron/pipeline/shenron` and its subpaths (B16). */
+/** Exact public surface of `@aphrody/shenron-pipeline/shenron` and its subpaths (B16). */
 import { describe, expect, it } from "bun:test";
 import * as root from "../../src/shenron/index";
 import * as cli from "../../src/shenron/cli";
 import pkg from "../../package.json";
 
-describe("@shenron/pipeline/shenron exports", () => {
+describe("@aphrody/shenron-pipeline/shenron exports", () => {
   it("root exposes the shared service clients and script adapters", () => {
     expect(Object.keys(root).toSorted()).toEqual(
       [

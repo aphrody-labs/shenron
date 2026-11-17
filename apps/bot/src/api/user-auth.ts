@@ -17,8 +17,8 @@
  * gated par `checkAdmin()`. Les routes user-only doivent appeler
  * `verifyActingUser(req)`.
  */
-import { verifyActingUser as verifyActingUserHeaders } from "@shenron/auth/acting-user";
-import { ENV_ALIASES, envFirst } from "@shenron/config/env";
+import { verifyActingUser as verifyActingUserHeaders } from "@aphrody/shenron-auth/acting-user";
+import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
 import { env } from "~/lib/env";
 import { logger } from "~/lib/logger";
 

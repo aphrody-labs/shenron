@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Pagination — façade du site sur `@shenron/ui/pagination`.
+ * Pagination — façade du site sur `@aphrody/shenron-ui/pagination`.
  *
  * Le composant (fenêtre de numéros, URL `?p=`, garde `prefers-reduced-motion`,
  * cibles de 44 px, reprise du focus) vit dans le paquet, libellés en props. Ce
@@ -16,10 +16,10 @@ import {
   DEFAULT_PAGINATION_LABELS,
   Pagination as PaginationBase,
   type PaginationLabels,
-} from "@shenron/ui/pagination";
-import { pagesVisibles } from "@shenron/ui/lib/page-window";
+} from "@aphrody/shenron-ui/pagination";
+import { pagesVisibles } from "@aphrody/shenron-ui/lib/page-window";
 
-/** Numéros à afficher, `null` = ellipse (`pageWindow` de `@shenron/ui`). */
+/** Numéros à afficher, `null` = ellipse (`pageWindow` de `@aphrody/shenron-ui`). */
 export { pagesVisibles };
 
 const CLES = ["previous", "next", "range"] as const satisfies ReadonlyArray<keyof PaginationLabels>;

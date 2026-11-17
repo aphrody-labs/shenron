@@ -1,13 +1,13 @@
-# @shenron/engine
+# @aphrody/shenron-engine
 
 Moteur de jeu: backend GPU, pipeline WebGPU/WASM, canvas vectoriel, noyau de combat déterministe.
 
 ## Commandes
 
 ```sh
-bun run --filter @shenron/engine test
-bun run --filter @shenron/engine lint
-bun run --filter @shenron/engine typecheck
+bun run --filter @aphrody/shenron-engine test
+bun run --filter @aphrody/shenron-engine lint
+bun run --filter @aphrody/shenron-engine typecheck
 ```
 
 Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce dossier.

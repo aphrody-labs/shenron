@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { cropToWebp } from "@shenron/kit/image";
+import { cropToWebp } from "@aphrody/shenron-kit/image";
 import { radialSpeedlines } from "../../src/toriyama-svg/geometry";
 import references from "./references.json";
 

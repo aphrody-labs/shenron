@@ -23,8 +23,8 @@
  * Entries are settled one after the other under a process-wide lock, so two receipts for the same
  * member cannot both read the same budget. Dependencies are injected: tests run without Discord.
  */
-import { timingSafeEqualString } from "@shenron/auth/crypto";
-import { ACTIVITY_ENV, envString } from "@shenron/config/env";
+import { timingSafeEqualString } from "@aphrody/shenron-auth/crypto";
+import { ACTIVITY_ENV, envString } from "@aphrody/shenron-config/env";
 import {
   ACTIVITY_SETTLE_FAILURES,
   ACTIVITY_SETTLE_MAX_BODY_BYTES,
@@ -34,7 +34,7 @@ import {
   type ActivitySettleEntry,
   type ActivitySettleResponse,
   type ErrorEnvelope,
-} from "@shenron/api/contract";
+} from "@aphrody/shenron-api/contract";
 import {
   DEFAULT_REWARD_POLICY,
   HARD_LIMITS,
@@ -42,7 +42,7 @@ import {
   verifyReceipt,
   type ReceiptEntry,
   type SettlementReceipt,
-} from "@shenron/activity/quiz";
+} from "@aphrody/shenron-activity/quiz";
 import { and, eq, gte, like } from "drizzle-orm";
 import type { GuildMember } from "discord.js";
 import { container } from "tsyringe";

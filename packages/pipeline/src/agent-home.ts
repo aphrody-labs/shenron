@@ -16,7 +16,7 @@
 import { existsSync, readFileSync, realpathSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
-import type { HomePersona } from "@shenron/pipeline/ai/prompts";
+import type { HomePersona } from "@aphrody/shenron-pipeline/ai/prompts";
 
 export type AgentEnv = Record<string, string | undefined>;
 

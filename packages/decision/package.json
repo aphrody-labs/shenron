@@ -1,5 +1,5 @@
 {
-  "name": "@shenron/decision",
+  "name": "@aphrody/shenron-decision",
   "version": "1.0.0",
   "private": true,
   "description": "Typed batched decisions (noul, choice, score) with confidence abstention, over the public TypeSafe AI SDK or a local provider.",

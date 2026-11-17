@@ -15,7 +15,7 @@ describe("moisson d'assets YOLO WEB", () => {
   test("script harvest existe et passe par YOLO WEB (rag-harvest pattern)", () => {
     expect(existsSync(SCRIPT)).toBe(true);
     const src = readFileSync(SCRIPT, "utf8");
-    expect(src.includes("@shenron/pipeline/yolo-web")).toBe(true);
+    expect(src.includes("@aphrody/shenron-pipeline/yolo-web")).toBe(true);
     expect(src.includes("rag-harvest")).toBe(true);
     expect(src.includes('"scrape"') || src.includes("scrape")).toBe(true);
     // Ne doit PAS se contenter d'un fetch raw comme moteur principal

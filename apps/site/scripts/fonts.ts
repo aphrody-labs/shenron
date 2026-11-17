@@ -80,7 +80,7 @@ const FAMILIES: readonly Family[] = [
   },
 ];
 
-/** Variables lues par `@shenron/ui/styles.css` (`--font-sans`, `--font-serif`…). */
+/** Variables lues par `@aphrody/shenron-ui/styles.css` (`--font-sans`, `--font-serif`…). */
 const VARIABLES = `:root {
   --font-sans: "Google Sans Flex", "Google Sans Flex Fallback", system-ui, arial, sans-serif;
   --font-serif-src: "Newsreader", "Newsreader Fallback";

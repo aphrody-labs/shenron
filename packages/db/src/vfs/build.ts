@@ -7,7 +7,7 @@
  * binary. Runtime class: `bun`.
  */
 import type { Database } from "bun:sqlite";
-import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 import { drizzle } from "drizzle-orm/bun-sql";
 import { fullSchema } from "../full-schema";
 import { createWikiReadRepository } from "../repos/wiki";

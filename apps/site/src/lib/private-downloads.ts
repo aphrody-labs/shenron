@@ -3,7 +3,7 @@ import { open, readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { Readable } from "node:stream";
 import { hasValidApiToken } from "@/lib/api-token";
-import { defaultPrivateDownloadsDir, resolveDataPath, type DataPath } from "@shenron/config/paths";
+import { defaultPrivateDownloadsDir, resolveDataPath, type DataPath } from "@aphrody/shenron-config/paths";
 
 /**
  * Admin-only downloads (`/api/private-downloads`): files handed to administrators, such as the

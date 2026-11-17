@@ -4,14 +4,14 @@
  * socket), routed to what the second player would receive, then folded into the client state.
  */
 import { describe, expect, test } from "bun:test";
-import { seededRng } from "@shenron/activity";
+import { seededRng } from "@aphrody/shenron-activity";
 import {
   PROTOCOL_VERSION,
   type ClientMessage,
   type ServerMessage,
-} from "@shenron/activity/protocol";
-import { Room, type Outbound } from "@shenron/activity/rooms";
-import { ManualClock } from "@shenron/activity/testing";
+} from "@aphrody/shenron-activity/protocol";
+import { Room, type Outbound } from "@aphrody/shenron-activity/rooms";
+import { ManualClock } from "@aphrody/shenron-activity/testing";
 import {
   answerOf,
   initialState,

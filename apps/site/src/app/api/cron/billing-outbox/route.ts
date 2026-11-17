@@ -1,10 +1,10 @@
 import { and, asc, eq, inArray, lte, lt, or, sql } from "drizzle-orm";
 import "server-only";
-import { sendSmtpEmail } from "@shenron/api/host";
+import { sendSmtpEmail } from "@aphrody/shenron-api/host";
 import { siteEmailOutbox } from "@/db/schema";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
-import { verifyStaticBearer } from "@shenron/auth/tokens";
+import { verifyStaticBearer } from "@aphrody/shenron-auth/tokens";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

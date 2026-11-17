@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/lexicon` — the one Dragon Ball translation lexicon (ja/fr/en) of Shenron: format,
+ * `@aphrody/shenron-lexicon` — the one Dragon Ball translation lexicon (ja/fr/en) of Shenron: format,
  * search, localisation and term protection around a translation engine. Runtime class `pure`.
  *
- * The data ships separately (`@shenron/lexicon/data`) so the engine can run on another copy
+ * The data ships separately (`@aphrody/shenron-lexicon/data`) so the engine can run on another copy
  * of `data/lexicon/terms.json` (the plugin's offline snapshot, a test lexicon).
  */
 export * from "./types";

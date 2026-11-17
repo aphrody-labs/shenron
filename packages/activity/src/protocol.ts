@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/activity/protocol` — wire protocol between the Arène Shenron client (Discord
+ * `@aphrody/shenron-activity/protocol` — wire protocol between the Arène Shenron client (Discord
  * Activity iframe) and the Activity server. Runtime class `pure`: zod schemas only, no Discord, no
  * network, safe for the browser bundle.
  *
@@ -56,7 +56,7 @@ export const PROTOCOL_LIMITS = {
 
 export const CHOICE_COUNT = PROTOCOL_LIMITS.choiceCount;
 
-/** Machine-readable error codes; the labels live in `@shenron/activity/i18n`. */
+/** Machine-readable error codes; the labels live in `@aphrody/shenron-activity/i18n`. */
 export const ERROR_CODES = [
   "invalid_message",
   "unsupported_protocol",

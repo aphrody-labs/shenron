@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { parseSpriteAtlas } from "@shenron/engine/sprite-atlas";
+import { parseSpriteAtlas } from "@aphrody/shenron-engine/sprite-atlas";
 import { uiAssetPaths } from "../../../packages/ui/src/assets";
 
 test("combat atlas publishes the reviewed chapter 516 derivative and its exact PNG digest", async () => {

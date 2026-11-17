@@ -4,7 +4,7 @@ import { Database } from "bun:sqlite";
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { createHash } from "node:crypto";
-import { ShenronComputeClient } from "@shenron/pipeline/shenron";
+import { ShenronComputeClient } from "@aphrody/shenron-pipeline/shenron";
 
 interface Chunk {
   rowid: number;

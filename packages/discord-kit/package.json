@@ -1,5 +1,5 @@
 {
-  "name": "@shenron/discord-kit",
+  "name": "@aphrody/shenron-discord-kit",
   "version": "1.0.0",
   "private": true,
   "description": "Discord bot core kit for Shenron: REST transport with retries, messaging channel, guards, command registration, cache and lifecycle helpers.",

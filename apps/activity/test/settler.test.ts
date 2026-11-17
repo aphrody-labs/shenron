@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Settlement queue: signing, retries, bounds, and what is given up. */
 import { describe, expect, test } from "bun:test";
-import { RECEIPT_TTL_MS, verifyReceipt, type SettlementReceipt } from "@shenron/activity/quiz";
+import { RECEIPT_TTL_MS, verifyReceipt, type SettlementReceipt } from "@aphrody/shenron-activity/quiz";
 import { defaultBackoff, Settler, SETTLE_PATH } from "../src/settle/settler";
 import { INSTANCE, SECRET, U1, U2 } from "./support";
 

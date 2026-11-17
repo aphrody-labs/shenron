@@ -3,7 +3,7 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, expect, test, vi } from "bun:test";
-import { commands, type Page } from "@shenron/koharu/protocol";
+import { commands, type Page } from "@aphrody/shenron-koharu/protocol";
 import { ShenronAtlasPanel } from "../../../src/koharu/components/ShenronAtlasPanel";
 import { AtlasPreviewContext, type AtlasPreview } from "../../../src/koharu/lib/atlas-preview";
 import { pageKey, queryClient } from "../../../src/koharu/lib/queries";

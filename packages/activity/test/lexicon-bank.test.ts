@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import { LEXICON_DATA } from "@shenron/lexicon/data";
+import { LEXICON_DATA } from "@aphrody/shenron-lexicon/data";
 import {
   buildLexiconBank,
   DEFAULT_EXCLUDED_TERM_IDS,

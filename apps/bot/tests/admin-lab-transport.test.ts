@@ -19,7 +19,7 @@ function fauxDiscord() {
 }
 
 describe("admin-lab — transports Shenron", () => {
-  test("un texte seul part par DiscordChannel (@shenron/discord-kit/messaging)", async () => {
+  test("un texte seul part par DiscordChannel (@aphrody/shenron-discord-kit/messaging)", async () => {
     const { transport, requetes } = fauxDiscord();
     const sent = await postAdminLabMessage("jeton", "123", { content: "Rapport prêt" }, transport);
     expect(sent.id).toBe("m1");
@@ -30,7 +30,7 @@ describe("admin-lab — transports Shenron", () => {
     expect(requetes[0]!.corps).toEqual({ content: "Rapport prêt" });
   });
 
-  test("des embeds partent par le REST de @shenron/discord-kit, contenu compris", async () => {
+  test("des embeds partent par le REST de @aphrody/shenron-discord-kit, contenu compris", async () => {
     const { transport, requetes } = fauxDiscord();
     const embeds = [{ title: "🎯 Objectif", description: "fait" }];
     const sent = await postAdminLabMessage(

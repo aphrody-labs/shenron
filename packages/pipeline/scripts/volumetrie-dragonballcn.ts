@@ -26,7 +26,7 @@
  *   bun apps/bot/scripts/volumetrie-dragonballcn.ts --recommencer      # ignore les mesures acquises
  */
 import { join } from "node:path";
-import { yoloWebScrape } from "@shenron/pipeline/yolo-web";
+import { yoloWebScrape } from "@aphrody/shenron-pipeline/yolo-web";
 
 const args = process.argv.slice(2);
 const opt = (nom: string, defaut?: string) => {

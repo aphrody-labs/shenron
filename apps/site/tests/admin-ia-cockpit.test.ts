@@ -122,7 +122,7 @@ function fakeFetchers(): IaCockpitFetchers {
     shenronHealth: notExercised("Shenron AI — santé"),
     shenronRagStats: notExercised("Shenron RAG — statistiques"),
     shenronRagProbe: notExercised("Shenron RAG — sonde"),
-    yoloWeb: unconfigured("YOLO WEB — crawl", "YOLO_WEB_CLI absent de l'environnement du site"),
+    yoloWeb: unconfigured("YOLO WEB — crawl", "SHENRON_YOLO_WEB_CLI absent de l'environnement du site"),
     botRag: notExercised("Bot Shenron — index local"),
     evalHistory: ok("Historique", []),
     goldSet: ok("Jeu doré", { cases: 3, sample: [] }),
@@ -336,7 +336,7 @@ describe("Cockpit Admin IA — route /api/admin/ai", () => {
     expect((await res.json()).error).toContain("Objectif #99 introuvable");
   });
 
-  test("les corps sont validés par le contrat @shenron/api (limites du bot) avant tout appel", async () => {
+  test("les corps sont validés par le contrat @aphrody/shenron-api (limites du bot) avant tout appel", async () => {
     expect((await post({ action: "create_goal", title: "x".repeat(201) })).status).toBe(400);
     expect(
       (await post({ action: "add_gold_case", q: "Q", expect: ["x".repeat(301)] })).status,
@@ -349,7 +349,7 @@ describe("Cockpit Admin IA — route /api/admin/ai", () => {
       path.resolve(import.meta.dir, "../src/app/api/admin/ai/route.ts"),
       "utf8",
     );
-    expect(source).toContain("@shenron/api/contract");
+    expect(source).toContain("@aphrody/shenron-api/contract");
     expect(source).not.toContain("FEEDBACK_STATUSES");
     expect(source.split("revalidatePath(").length - 1).toBe(2);
   });

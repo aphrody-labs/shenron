@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import { WIKI_CATEGORIES } from "@shenron/db/constants";
+import { WIKI_CATEGORIES } from "@aphrody/shenron-db/constants";
 import { ErrorEnvelope, WikiCategoriesResponse, WikiListResponse } from "../src/contract";
 import {
   createMemoryRateLimiter,

@@ -22,7 +22,7 @@ import { listComments, reactionState } from "@/lib/social";
 import { CommentThread } from "@/components/social/CommentThread";
 import { LikeButton } from "@/components/social/LikeButton";
 import { DomainBar } from "@/components/kit";
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { ArticleTocDisclosure, ArticleTocRail } from "./ArticleToc";
 import { ReadingProgress } from "./ReadingProgress";
 

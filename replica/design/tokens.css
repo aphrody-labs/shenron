@@ -2,7 +2,7 @@
  * Roles of the "work page" template (replica/design/tokens.json).
  * Each role reads the existing DBFR token (runtime-overridable by /admin/design)
  * and falls back to the measured value. Prefixed `--work-*` so it never shadows
- * the shared `--color-primary|accent|success|warning` of @shenron/ui.
+ * the shared `--color-primary|accent|success|warning` of @aphrody/shenron-ui.
  */
 :root {
   --work-bg: var(--color-dbz-bg, #0a0a0a);

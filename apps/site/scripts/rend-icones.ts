@@ -1,7 +1,7 @@
 /**
  * rend-icones — contrôle visuel du jeu de glyphes maison.
  *
- * Rastérise chaque géométrie de `@shenron/ui/icones`
+ * Rastérise chaque géométrie de `@aphrody/shenron-ui/icones`
  * (`packages/ui/src/icones/geometries.ts`) en PNG à 16, 24 et 32 px
  * (les trois tailles réellement utilisées par l'interface) et compose une
  * planche de contact par taille, pour qu'un défaut se voie à l'œil plutôt que
@@ -16,7 +16,7 @@
  *   bun apps/site/scripts/rend-icones.ts --dry-run     (rend tout en mémoire, n'écrit rien)
  */
 
-import { tempPath } from "@shenron/kit/paths";
+import { tempPath } from "@aphrody/shenron-kit/paths";
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
 import sharp from "sharp";
@@ -26,7 +26,7 @@ import {
   svgIcone,
   type GeometrieIcone,
   type NomIcone,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 
 /** Tailles de rendu réellement employées par l'interface. */
 const TAILLES = [16, 24, 32] as const;

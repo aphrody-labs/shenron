@@ -3,7 +3,7 @@
 
 "use client";
 
-import { m3Durations, m3Easings, useM3ReducedMotion } from "@shenron/m3-motion";
+import { m3Durations, m3Easings, useM3ReducedMotion } from "@aphrody/shenron-m3-motion";
 import { clsx } from "clsx";
 import { forwardRef } from "react";
 import { LayoutGroup, motion } from "motion/react";

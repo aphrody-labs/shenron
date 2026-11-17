@@ -121,7 +121,7 @@ describe("système de design — un seul vocabulaire", () => {
     // Le kit ne définit plus de titre : son baril réexporte celui du paquet.
     const barrel = readFileSync(join(KIT_DIR, "index.ts"), "utf8");
     expect(barrel).toMatch(
-      /export \{ SectionHeading \} from "@shenron\/ui\/layout\/SectionHeading";/,
+      /export \{ SectionHeading \} from "@aphrody\/shenron-ui\/layout\/SectionHeading";/,
     );
     const uiHeading = readFileSync(
       join(REPO_ROOT, "packages", "ui", "src", "layout", "SectionHeading.tsx"),
@@ -179,7 +179,7 @@ describe("système de design — un seul vocabulaire", () => {
     // Route exclusions and navigation are exercised by wiki-visual-theme.test.tsx.
     // The layout delegates the single shared root to that tested route-aware frame.
     expect(layout).toContain("<WikiVisualFrame>");
-    if (css.includes("@shenron/ui/site.css")) {
+    if (css.includes("@aphrody/shenron-ui/site.css")) {
       const uiCss = readFileSync(join(REPO_ROOT, "packages", "ui", "src", "site.css"), "utf8");
       expect(uiCss).toContain("[data-wiki-surface]");
       expect(uiCss).toContain("--wiki-shell-max");

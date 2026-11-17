@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { getShenronRaces, getShenronCharacterCards } from "@/lib/shenron";
-import { slugDeRace } from "@shenron/config/races-alias";
+import { slugDeRace } from "@aphrody/shenron-config/races-alias";
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";

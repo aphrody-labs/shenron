@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /** B5: `runIaTask` injects citations from the real preloaded RAG into the model prompt. */
 import { beforeAll, describe, expect, test } from "bun:test";
-import type { GroundedAnswerInput } from "@shenron/pipeline/ai/generate";
-import { INJECTION_GUARD } from "@shenron/pipeline/ai/prompts";
+import type { GroundedAnswerInput } from "@aphrody/shenron-pipeline/ai/generate";
+import { INJECTION_GUARD } from "@aphrody/shenron-pipeline/ai/prompts";
 import { isLive, loadLiveRagEnv, requireLiveRag } from "../src/testing/live-rag";
 import { runIaTask } from "../src/workflows";
 

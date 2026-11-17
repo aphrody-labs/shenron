@@ -18,7 +18,7 @@ import {
   r2ObjectKey,
   r2ShardId,
 } from "../../packages/media/src/r2-sync";
-import { shenronRoot } from "@shenron/config/paths";
+import { shenronRoot } from "@aphrody/shenron-config/paths";
 import { crunchyrollWatchUrl } from "../../packages/media/src/crunchyroll-mapping";
 
 export interface BeerusEpisodeSpec {

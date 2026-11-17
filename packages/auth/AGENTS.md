@@ -5,9 +5,9 @@ Briques Better Auth partagées entre le site, le bot et l'API: secret, origines,
 Commands:
 
 ```sh
-bun run --filter @shenron/auth test
-bun run --filter @shenron/auth lint
-bun run --filter @shenron/auth typecheck
+bun run --filter @aphrody/shenron-auth test
+bun run --filter @aphrody/shenron-auth lint
+bun run --filter @aphrody/shenron-auth typecheck
 ```
 
 Rules:

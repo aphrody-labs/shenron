@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * @shenron/pipeline/shenron — clients for the Shenron Rust services.
+ * @aphrody/shenron-pipeline/shenron — clients for the Shenron Rust services.
  *
  * Network clients use compute, Shenron E5 embeddings and the web crawler.
  * Product command adapters load the verified Shenron FFI library when executed.
  * Importing this entry point does not load `bun:ffi`, `bun:sqlite` or `sharp`.
- * The A2A hub lives at `@shenron/pipeline/shenron/a2a`.
+ * The A2A hub lives at `@aphrody/shenron-pipeline/shenron/a2a`.
  */
 
 export {

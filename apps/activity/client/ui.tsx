@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Small building blocks shared by the screens. No visible string lives here. */
-import type { Locale } from "@shenron/activity/protocol";
+import type { Locale } from "@aphrody/shenron-activity/protocol";
 import { useEffect, useState, type ReactNode } from "react";
-import zeniBadge from "@shenron/ui/assets/badges/badge-zeni.svg";
-import kintoUn from "@shenron/ui/assets/dbz/kinto-un.svg";
+import zeniBadge from "@aphrody/shenron-ui/assets/badges/badge-zeni.svg";
+import kintoUn from "@aphrody/shenron-ui/assets/dbz/kinto-un.svg";
 import { translator } from "./i18n";
 
 // ── Dragon Ball sphere ───────────────────────────────────────────────────────

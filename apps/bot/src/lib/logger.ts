@@ -1,4 +1,4 @@
-import { isCompiledBinary } from "@shenron/discord-kit";
+import { isCompiledBinary } from "@aphrody/shenron-discord-kit";
 import pino from "pino";
 import { env } from "./env";
 import { botOperationalLogs } from "./operational-logs";

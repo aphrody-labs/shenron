@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { startSearchSession } from "@shenron/ui/public/search-session";
+import { startSearchSession } from "@aphrody/shenron-ui/public/search-session";
 
 const pause = () => Bun.sleep(15);
 test("replacement and disposal suppress responses even when fetch ignores abort", async () => {

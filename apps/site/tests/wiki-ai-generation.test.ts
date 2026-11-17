@@ -9,7 +9,7 @@ let result = {
   citations: [{ n: 1, title: "Manga", url: "/wiki/manga" }],
 };
 mock.module("server-only", () => ({}));
-mock.module("@shenron/pipeline/ai/config", () => ({
+mock.module("@aphrody/shenron-pipeline/ai/config", () => ({
   AiConfigError: class extends Error {},
   resolveDirectChat: () => ({
     ok: true,
@@ -18,16 +18,16 @@ mock.module("@shenron/pipeline/ai/config", () => ({
   resolveChatModel: () => "fallback-model",
   chatTimeoutMs: () => 5000,
 }));
-mock.module("@shenron/pipeline/ai/provider", () => ({
+mock.module("@aphrody/shenron-pipeline/ai/provider", () => ({
   createShenronProvider: () => ({ languageModel: () => ({ modelId: "local-model" }) }),
 }));
-mock.module("@shenron/pipeline/shenron/compute", () => ({
+mock.module("@aphrody/shenron-pipeline/shenron/compute", () => ({
   ShenronComputeClient: class {
     chat = async () => "";
   },
   shenronComputeFromChat: () => null,
 }));
-mock.module("@shenron/pipeline/ai/generate", () => ({
+mock.module("@aphrody/shenron-pipeline/ai/generate", () => ({
   generateGroundedAnswer: async (input: Record<string, unknown>) => {
     calls++;
     received = input;

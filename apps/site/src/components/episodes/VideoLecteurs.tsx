@@ -15,8 +15,8 @@ import {
   readVideoLanguagePreference,
   writeVideoLanguagePreference,
 } from "@/lib/video-language-preference";
-import { officialCrunchyrollWatchURL } from "@shenron/config/video-providers";
-import { normalizeVideoPlayers } from "@shenron/media/episode-playback";
+import { officialCrunchyrollWatchURL } from "@aphrody/shenron-config/video-providers";
+import { normalizeVideoPlayers } from "@aphrody/shenron-media/episode-playback";
 import {
   normalizeVideoLanguage,
   officialProviderName,

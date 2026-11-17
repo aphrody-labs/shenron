@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { z } from "zod";
-import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 
 type CardImageEvidence = {
   frontImageUrl?: string;

@@ -19,7 +19,7 @@ import {
   directionFromSwipe,
 } from "../src/app/games/2048/controls";
 import { nextGridIndex } from "../src/components/games/grid-nav";
-import { DEFAULT_LAUNCH_CONFIG } from "@shenron/config/wiki-launch-config";
+import { DEFAULT_LAUNCH_CONFIG } from "@aphrody/shenron-config/wiki-launch-config";
 
 const SRC = join(import.meta.dir, "..", "src");
 
@@ -179,7 +179,7 @@ describe("contrat du shell — jeux", () => {
     .filter((f) => /\.tsx?$/.test(f))
     .map((f) => [f, readFileSync(f, "utf8")] as const);
 
-  test("PageShell et PageHeader viennent de @shenron/ui", () => {
+  test("PageShell et PageHeader viennent de @aphrody/shenron-ui", () => {
     for (const [f, code] of sources) {
       expect(`${f}: ${code.includes("@/components/PageHeader")}`).toBe(`${f}: false`);
       expect(`${f}: ${code.includes("GamePageLayout")}`).toBe(`${f}: false`);

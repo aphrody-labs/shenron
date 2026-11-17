@@ -1,4 +1,4 @@
-import { resolveRedisUrl } from "@shenron/config/services";
+import { resolveRedisUrl } from "@aphrody/shenron-config/services";
 type RateLimitOptions = {
   windowMs: number;
   limit: number;

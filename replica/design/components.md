@@ -2,7 +2,7 @@
 
 Rôles : `replica/design/tokens.json`. Tout texte visible passe par `apps/site/messages/{fr,en,ja}.json`.
 Icônes : Material Symbols (déjà dans `packages/ui`). Visuels, logos et textes des sites sources : jamais repris.
-« Existant » = composant déjà livré par `@shenron/ui` ; « À construire » = lot `replica-build`.
+« Existant » = composant déjà livré par `@aphrody/shenron-ui` ; « À construire » = lot `replica-build`.
 
 Tous : cible tactile ≥ 44 px (`.cible-44`), anneau de focus `work-ring` 2 px, animations coupées sous
 `prefers-reduced-motion`, enfants de grille en `min-width: 0` et colonnes `minmax(0, 1fr)`.
@@ -29,7 +29,7 @@ Carte vidéo                                                          [Existant 
   a11y      <button> nommé « Lire : <titre> », iframe titrée, jamais d'autolecture
   used on   S01, S04
 
-Carrousel                                         [Construit : @shenron/ui/public Carousel]
+Carrousel                                         [Construit : @aphrody/shenron-ui/public Carousel]
   variants  visuels (1 slide), personnages (N slides)
   states    default, premier/dernier, pause, focus-visible, reduced-motion (pas de défilement auto)
   tokens    flèches surface/accent, points work-border
@@ -37,14 +37,14 @@ Carrousel                                         [Construit : @shenron/ui/publi
             tabulation dans les slides visibles seulement
   used on   S04, S10
 
-Fiche personnage                             [Construit : @shenron/ui/public CharacterCard]
+Fiche personnage                             [Construit : @aphrody/shenron-ui/public CharacterCard]
   variants  compacte (nom + doubleur), détaillée
   states    default, hover, focus-visible, image absente (silhouette Toriyama)
   tokens    surface work-surface, radius md, nom type lg
   a11y      <article>, nom en titre, portrait alt = nom
   used on   S01, S04
 
-Bloc diffusion                           [Construit : @shenron/ui/public BroadcastSchedule]
+Bloc diffusion                           [Construit : @aphrody/shenron-ui/public BroadcastSchedule]
   variants  créneau (jour, heure, chaîne), grille de plateformes groupée par région
   states    default, à venir, terminé, lien externe (icône + rel="noopener")
   tokens    surface, texte muted pour l'heure, accent pour « à venir »

@@ -1,4 +1,4 @@
-import { resolveHostUrl } from "@shenron/config/public-urls";
+import { resolveHostUrl } from "@aphrody/shenron-config/public-urls";
 
 /**
  * Bun owns authentication. The site forwards cookies and Bearer credentials to

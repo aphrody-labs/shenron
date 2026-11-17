@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { tempPath } from "@shenron/kit/paths";
+import { tempPath } from "@aphrody/shenron-kit/paths";
 import { beforeEach, describe, expect, test } from "bun:test";
 import {
   DATA_PATH_ENV,

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * @shenron/engine — Unified Canvas & GPU Engine
+ * @aphrody/shenron-engine — Unified Canvas & GPU Engine
  *
  * WebGPU rendering for the Ki particle field, with a Canvas 2D fallback. Manga boards and
  * speech bubbles are drawn through Canvas 2D only.

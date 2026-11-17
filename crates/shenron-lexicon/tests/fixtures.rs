@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-//! Golden fixtures shared with `@shenron/lexicon` (`packages/lexicon/test/fixtures.test.ts`):
+//! Golden fixtures shared with `@aphrody/shenron-lexicon` (`packages/lexicon/test/fixtures.test.ts`):
 //! both implementations read the same files of `data/lexicon/fixtures/`, so they cannot diverge.
 
 use std::path::PathBuf;

@@ -21,13 +21,13 @@
  * requested, granted, reason, xp, ... }] }`, where `granted` is what was really credited. Only
  * `userId`, `granted` and `reason` matter here; the rest is the bot's business.
  */
-import { RECEIPT_TTL_MS, signReceipt, type SettlementReceipt } from "@shenron/activity/quiz";
+import { RECEIPT_TTL_MS, signReceipt, type SettlementReceipt } from "@aphrody/shenron-activity/quiz";
 import {
   RewardReasonSchema,
   RoundIdSchema,
   UserIdSchema,
   type Settled,
-} from "@shenron/activity/protocol";
+} from "@aphrody/shenron-activity/protocol";
 import { z } from "zod";
 import { silentLogger, type Logger } from "../log";
 

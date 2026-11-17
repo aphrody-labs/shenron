@@ -59,7 +59,7 @@ function flattenStandalone(root) {
       const previous = hoisted.get(name);
       if (previous && previous !== path) {
         throw new Error(
-          `@shenron/next-host: two versions of ${name} in the standalone trace: ${previous} and ${path}`,
+          `@aphrody/shenron-next-host: two versions of ${name} in the standalone trace: ${previous} and ${path}`,
         );
       }
       hoisted.set(name, path);

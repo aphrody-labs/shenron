@@ -20,17 +20,17 @@
 import type postgres from "postgres";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { loadDatabaseUrl } from "@shenron/db/env";
-import { createSql } from "@shenron/db/sql";
+import { loadDatabaseUrl } from "@aphrody/shenron-db/env";
+import { createSql } from "@aphrody/shenron-db/sql";
 import { chunkDocument } from "./_rag-chunk";
-import { defautDePlanche } from "@shenron/config/databooks-defauts";
-import { foldKey } from "@shenron/config/slug";
+import { defautDePlanche } from "@aphrody/shenron-config/databooks-defauts";
+import { foldKey } from "@aphrody/shenron-config/slug";
 import {
   CHARACTER_DUPLICATE_REDIRECTS,
   formatCharacterSlug,
   formatPlanetSlug,
   formatTransformationSlug,
-} from "@shenron/config/wiki-slugs";
+} from "@aphrody/shenron-config/wiki-slugs";
 
 type Sql = postgres.Sql;
 type Row = Record<string, unknown>;

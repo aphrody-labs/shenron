@@ -3,8 +3,8 @@ import {
   supportsPlaybackVariant,
   unavailablePlaybackCapabilities,
   type PlaybackCapabilities,
-} from "@shenron/api/contract";
-import { episodePlaybackMetadata } from "@shenron/media/episode-playback";
+} from "@aphrody/shenron-api/contract";
+import { episodePlaybackMetadata } from "@aphrody/shenron-media/episode-playback";
 import { approvedEpisodeVideoURL, isShenronEpisodeVideoURL } from "./episode-video-source";
 import { hlsMasterUrl } from "./assets";
 import { summarizeVideoSources } from "./video-source-coverage";

@@ -1,16 +1,16 @@
-# @shenron/site
+# @aphrody/shenron-site
 
 Site dragonballfr.com actuel (Next.js 16, pages fr/en/ja, wiki, lecteurs). Le site Leptos décrit dans `docs/decisions/0001-pile-du-site.md` le remplace.
 
 ## Commandes
 
 ```sh
-bun run --filter @shenron/site dev
-bun run --filter @shenron/site start
-bun run --filter @shenron/site build
-bun run --filter @shenron/site test
-bun run --filter @shenron/site lint
-bun run --filter @shenron/site typecheck
+bun run --filter @aphrody/shenron-site dev
+bun run --filter @aphrody/shenron-site start
+bun run --filter @aphrody/shenron-site build
+bun run --filter @aphrody/shenron-site test
+bun run --filter @aphrody/shenron-site lint
+bun run --filter @aphrody/shenron-site typecheck
 ```
 
 Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce dossier.

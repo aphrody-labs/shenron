@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { isBetterAuthPath } from "@shenron/api/server";
+import { isBetterAuthPath } from "@aphrody/shenron-api/server";
 import { sessionAuth } from "@/lib/host-auth";
 
 export const runtime = "nodejs";

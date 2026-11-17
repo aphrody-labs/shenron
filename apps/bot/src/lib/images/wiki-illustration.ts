@@ -1,5 +1,5 @@
 /**
- * Sourced illustration providers for the wiki, on top of `@shenron/images`.
+ * Sourced illustration providers for the wiki, on top of `@aphrody/shenron-images`.
  *
  * Every candidate comes from material we host — nothing is fetched, nothing is
  * generated:
@@ -26,7 +26,7 @@ import {
   type IllustrationProvider,
   type IllustrationSource,
   type SelectedIllustration,
-} from "@shenron/images";
+} from "@aphrody/shenron-images";
 
 export const MIN_ILLUSTRATION_WIDTH = 400;
 

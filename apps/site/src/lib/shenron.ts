@@ -1,7 +1,7 @@
 import "server-only";
 import { and, asc, eq, like, ne, sql, inArray, count } from "drizzle-orm";
-import { foldText } from "@shenron/config/slug";
-import { escapeLike } from "@shenron/db/repos/wiki";
+import { foldText } from "@aphrody/shenron-config/slug";
+import { escapeLike } from "@aphrody/shenron-db/repos/wiki";
 import {
   sortCharacterTransformations,
   stripCharacterVersionSuffix,
@@ -53,7 +53,7 @@ interface WithArticle {
 // dragonballfr.com (le site lui-même) → sinon les appels runtime boucleraient.
 import { API_URL as SHENRON_API_URL } from "@/lib/config";
 import { parseLeaderboardPayload } from "@/lib/leaderboard-state";
-import { graphiesDeRace, slugDeRace } from "@shenron/config/races-alias";
+import { graphiesDeRace, slugDeRace } from "@aphrody/shenron-config/races-alias";
 import {
   CHARACTER_DUPLICATE_REDIRECTS,
   formatCharacterSlug,

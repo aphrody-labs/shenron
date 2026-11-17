@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-//! Generated TypeScript of `@shenron/native`: the `bun:ffi` table (from `abi::SYMBOLS`) and the
+//! Generated TypeScript of `@aphrody/shenron-native`: the `bun:ffi` table (from `abi::SYMBOLS`) and the
 //! payload types (from `types`, through specta). Fails when a committed file is stale;
 //! `UPDATE=1` rewrites them (`bun packages/native/scripts/generate.ts`).
 

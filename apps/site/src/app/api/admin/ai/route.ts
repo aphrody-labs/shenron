@@ -22,7 +22,7 @@ import {
   CreateGoalBody,
   FeedbackStatus,
   GoldCaseBody,
-} from "@shenron/api/contract";
+} from "@aphrody/shenron-api/contract";
 import {
   botCockpit,
   CockpitActionError,

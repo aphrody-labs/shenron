@@ -3,7 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { dbUniverse } from "@/lib/db-universe";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
-import type { AccessSnapshot } from "@shenron/config/wiki-launch";
+import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import { searchExternalSources } from "@/lib/external-source-catalog";
 import { buildWikiSearchSections, isPublicWikiSearchHref } from "@/lib/wiki-search-catalogue";
 import { wikiSourceUrl } from "@/lib/wiki-ai-draft";

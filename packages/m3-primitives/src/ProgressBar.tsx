@@ -3,7 +3,7 @@
 
 "use client";
 
-import { m3Easings, useM3ReducedMotion } from "@shenron/m3-motion";
+import { m3Easings, useM3ReducedMotion } from "@aphrody/shenron-m3-motion";
 import { Progress as ProgressPrimitive } from "@base-ui/react/progress";
 import { clsx } from "clsx";
 import { motion } from "motion/react";

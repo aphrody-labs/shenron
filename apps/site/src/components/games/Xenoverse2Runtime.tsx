@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { steamLaunchUrl, steamStoreUrl } from "@shenron/config/public-urls";
+import { steamLaunchUrl, steamStoreUrl } from "@aphrody/shenron-config/public-urls";
 import { useLangue } from "@/lib/i18n/client";
 import {
   gameRuntimeMessages,

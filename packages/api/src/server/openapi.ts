@@ -72,7 +72,7 @@ function parameters(spec: EndpointSpec, components: Json): Json[] {
   return out;
 }
 
-/** OpenAPI 3.1 document of every endpoint served natively by `@shenron/api/server`. */
+/** OpenAPI 3.1 document of every endpoint served natively by `@aphrody/shenron-api/server`. */
 export function buildOpenApiDocument(): Json {
   const components: Json = {};
   const error = { "application/json": { schema: convert(ErrorEnvelope, "output", components) } };

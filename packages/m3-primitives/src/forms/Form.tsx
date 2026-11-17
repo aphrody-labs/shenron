@@ -2,7 +2,7 @@
 // Derived from SpaceUI (SpaceUI), MIT, rebuilt on Material Design 3.
 "use client";
 
-import { m3Durations, m3Easings } from "@shenron/m3-motion";
+import { m3Durations, m3Easings } from "@aphrody/shenron-m3-motion";
 import { cva, type VariantProps } from "class-variance-authority";
 import { AnimatePresence, motion } from "motion/react";
 import { type ComponentProps } from "react";

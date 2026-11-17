@@ -2,7 +2,7 @@
 /** Environment defaults of the VFS: CDN mirrors, asset cache, offline switch. Runtime class: `server`. */
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 import type { CdnOptions } from "./cdn";
 
 /** Shenron CDN mirrors in fallback order, overridable by `SHENRON_CDN_URL` (comma list). */

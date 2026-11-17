@@ -3,7 +3,7 @@ import { afterAll, expect, mock, test } from "bun:test";
 import { hostCurrentUser } from "../src/lib/host-current-user";
 
 mock.module("server-only", () => ({}));
-mock.module("@shenron/auth/next", () => ({
+mock.module("@aphrody/shenron-auth/next", () => ({
   requestHeaders: async () => new Headers({ cookie: "reader=session" }),
 }));
 mock.module("@/lib/env", () => ({ env: { OWNER_ID: "owner", OAUTH_ALLOWED_USERS: [] } }));

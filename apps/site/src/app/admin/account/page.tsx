@@ -4,7 +4,7 @@ import {
   type DiscordImageSize,
   discordUserAvatar,
   discordUserBanner,
-} from "@shenron/config/public-urls";
+} from "@aphrody/shenron-config/public-urls";
 import { useQuery } from "@tanstack/react-query";
 import { Crown, Server, ShieldCheck, Mail, AlertCircle, ExternalLink } from "lucide-react";
 import { apiAt, ApiError } from "@/lib/admin-api";

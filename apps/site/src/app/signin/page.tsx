@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { env } from "@/lib/env";
 import SignInForm from "./SignInForm";
 import { getReferenceTranslations } from "@/lib/i18n/reference";

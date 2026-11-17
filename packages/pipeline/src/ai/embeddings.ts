@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/pipeline/ai/embeddings` — E5 embedding models and hot-path helpers (D10).
+ * `@aphrody/shenron-pipeline/ai/embeddings` — E5 embedding models and hot-path helpers (D10).
  *
  * Runtime class: `pure`.
  *
@@ -17,7 +17,7 @@ import {
   type EmbeddingModelV4Middleware,
   type EmbeddingModelV4Result,
 } from "@ai-sdk/provider";
-import type { EnvSource } from "@shenron/config/env";
+import type { EnvSource } from "@aphrody/shenron-config/env";
 import { embed, embedMany } from "ai";
 import {
   type AiFailure,

@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { steamLaunchUrl, steamStoreUrl } from "@shenron/config/public-urls";
+import { steamLaunchUrl, steamStoreUrl } from "@aphrody/shenron-config/public-urls";
 import { gameRuntimeMessages, XENOVERSE_2_STEAM_APP_ID } from "../src/lib/game-runtime";
 
 describe("Xenoverse 2 runtime handoff", () => {

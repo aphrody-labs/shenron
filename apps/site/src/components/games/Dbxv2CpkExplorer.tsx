@@ -9,7 +9,7 @@ import {
   SHENRON_RE_WASM_FILENAME,
   type GameDataFileResult,
   type GameDataFormat,
-} from "@shenron/pipeline/re-wasm-web";
+} from "@aphrody/shenron-pipeline/re-wasm-web";
 
 type CpkRecord = { name: string; size: number; mtime: string };
 type CpkEntry = {

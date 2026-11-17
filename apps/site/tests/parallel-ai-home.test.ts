@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 // IA + Agent Home batch (dbfr): admin IA API access (401 vs 403, body, evaluation size) and the
 // `llm/chat` model adapter (blank model id, ignored call settings). Hermetic: no network, no
-// retrieval, no private profile read. Retrieval checks belong to @shenron/pipeline/testing/live-rag.
+// retrieval, no private profile read. Retrieval checks belong to @aphrody/shenron-pipeline/testing/live-rag.
 import { beforeEach, describe, expect, mock, test } from "bun:test";
 import { generateText, streamText } from "ai";
-import { createShenronCompute } from "@shenron/pipeline/ai/shenron";
-import { createShenronChatModel, ignoredSettingWarnings } from "@shenron/pipeline/ai/chat";
+import { createShenronCompute } from "@aphrody/shenron-pipeline/ai/shenron";
+import { createShenronChatModel, ignoredSettingWarnings } from "@aphrody/shenron-pipeline/ai/chat";
 import type { CurrentUser, SiteUser } from "@/lib/session";
 
 mock.module("server-only", () => ({}));

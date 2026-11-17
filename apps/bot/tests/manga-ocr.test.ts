@@ -11,7 +11,7 @@ import {
   normalizeMangaMarkdown,
   parseMangaResults,
   reviewedMangaResult,
-} from "@shenron/pipeline/manga-ocr";
+} from "@aphrody/shenron-pipeline/manga-ocr";
 
 const hash = "a".repeat(64);
 

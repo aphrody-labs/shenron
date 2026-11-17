@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Public route bodies shared by the bot and live HTTP qualification. */
 import type { Database } from "bun:sqlite";
-import { resolveSiteUrl } from "@shenron/config/public-urls";
+import { resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 import { buildRagContext, hybridSearch } from "../lib/rag";
 
 export async function searchPublicRag(req: Request, db: Database | null) {

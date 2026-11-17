@@ -10,7 +10,7 @@ mock.module("next/link", () => ({
   default: ({ href, children }: { href: string; children: ReactNode }) =>
     createElement("a", { href }, children),
 }));
-mock.module("@shenron/ui/reader", () => ({
+mock.module("@aphrody/shenron-ui/reader", () => ({
   MangaReader: () => createElement("div", { "data-reader": true }),
   useKoharuCanvasWarmup: () => false,
 }));

@@ -30,7 +30,7 @@ removal and the lockfiles.
 
 ## Failures against the base
 
-- Only failing test on bunos, vendor and web trees: `@shenron/ui portability > no @/ alias and
+- Only failing test on bunos, vendor and web trees: `@aphrody/shenron-ui portability > no @/ alias and
   no escaping relative imports`. It also fails on the pre-merge main (34a3aa3e with submodules): not new.
 - vps failure lists (frame analysis, Bun.Image, timeouts) are the known baseline plus load; the three
   site tests and two bot tests that failed once under load pass in isolation.

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Browser entry of scripts/ops/prove-browser.ts: drives the Shenron player stack on a local MP4.
-import { createVideoPlayback } from "@shenron/video/playback";
+import { createVideoPlayback } from "@aphrody/shenron-video/playback";
 
 const video = document.getElementById("v") as HTMLVideoElement;
 const out: Record<string, unknown> = {};

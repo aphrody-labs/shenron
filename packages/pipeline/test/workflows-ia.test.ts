@@ -4,8 +4,8 @@ import { afterAll, afterEach, beforeEach, describe, expect, test } from "bun:tes
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { GroundedAnswerInput } from "@shenron/pipeline/ai/generate";
-import { buildGroundingInstructions, INJECTION_GUARD } from "@shenron/pipeline/ai/prompts";
+import type { GroundedAnswerInput } from "@aphrody/shenron-pipeline/ai/generate";
+import { buildGroundingInstructions, INJECTION_GUARD } from "@aphrody/shenron-pipeline/ai/prompts";
 import { runIaTask as run, type IaTaskOptions } from "../src/workflows";
 
 type Model = GroundedAnswerInput["model"];

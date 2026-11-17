@@ -16,7 +16,7 @@
  */
 import { createHash, createHmac } from "node:crypto";
 import { type NextRequest, NextResponse } from "next/server";
-import { timingSafeEqualString } from "@shenron/auth/crypto";
+import { timingSafeEqualString } from "@aphrody/shenron-auth/crypto";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";

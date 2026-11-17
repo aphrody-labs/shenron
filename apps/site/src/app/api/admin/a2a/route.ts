@@ -14,7 +14,7 @@
  * Les erreurs amont sont ramenées à un code (`a2a_upstream_*`) : le message brut peut contenir une
  * adresse ou un chemin interne. Le détail va dans les journaux du serveur.
  */
-import { parseBearer } from "@shenron/auth/crypto";
+import { parseBearer } from "@aphrody/shenron-auth/crypto";
 import { fetchEnvelopes, postEnvelope, postJsonRpc, type UpstreamReply } from "@/lib/a2a-hub";
 import { getCurrentUser } from "@/lib/session";
 import {

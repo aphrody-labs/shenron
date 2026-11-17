@@ -4,7 +4,7 @@
 // models (`studio_native_*`, crates/shenron-studio/src/studio.rs). Outside the desktop app the
 // dashboard opens in place.
 import { useCallback, useEffect, useState } from "react";
-import { adminUrl } from "@shenron/config/admin";
+import { adminUrl } from "@aphrody/shenron-config/admin";
 import { StudioHeader } from "./StudioHeader";
 import {
   ErrorNote,

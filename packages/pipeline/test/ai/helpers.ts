@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** Shared test helpers of @shenron/pipeline/ai (fixtures, fake responses). */
+/** Shared test helpers of @aphrody/shenron-pipeline/ai (fixtures, fake responses). */
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 

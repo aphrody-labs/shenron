@@ -12,7 +12,7 @@ import {
   memberRaceId,
   raceLevelRoleIds,
 } from "~/lib/race-levels";
-import { RACES } from "@shenron/config/races";
+import { RACES } from "@aphrody/shenron-config/races";
 
 /** Membre minimal pour memberRaceId (seul `roles.cache.has` est lu). */
 function fakeMember(roleIds: string[]): GuildMember {

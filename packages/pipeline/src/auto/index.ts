@@ -5,7 +5,7 @@
  */
 import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import type { Provider } from "@shenron/decision";
+import type { Provider } from "@aphrody/shenron-decision";
 import { arbitrate, type Verdict } from "./arbiter";
 import { probeCapabilities, type Capabilities } from "./capabilities";
 import { crawl, type CrawlPassage, type CrawlResult } from "./crawl";

@@ -13,15 +13,17 @@ import {
 const FIXTURE = join(import.meta.dir, "fixture-server.ts");
 
 describe("YOLO WEB stdio client (fixture server with the web-cli mcp framing)", () => {
-  it("has no default entry: a missing YOLO_WEB_CLI is a configuration error", async () => {
-    const saved = process.env.YOLO_WEB_CLI;
+  it("has no default entry: a missing SHENRON_YOLO_WEB_CLI (or its alias YOLO_WEB_CLI) is a configuration error", async () => {
+    const saved = { own: process.env.SHENRON_YOLO_WEB_CLI, alias: process.env.YOLO_WEB_CLI };
+    delete process.env.SHENRON_YOLO_WEB_CLI;
     delete process.env.YOLO_WEB_CLI;
     try {
       await expect(yoloWebScrape("https://gemini.google.com/")).rejects.toBeInstanceOf(
         YoloWebNotConfiguredError,
       );
     } finally {
-      if (saved !== undefined) process.env.YOLO_WEB_CLI = saved;
+      if (saved.own !== undefined) process.env.SHENRON_YOLO_WEB_CLI = saved.own;
+      if (saved.alias !== undefined) process.env.YOLO_WEB_CLI = saved.alias;
     }
   });
 

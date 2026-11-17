@@ -15,7 +15,7 @@ import { CommandsChannelOnly } from "~/guards/CommandsChannelOnly";
 import { DatabaseService } from "~/db/index";
 import { users } from "~/db/schema";
 import { LevelService } from "~/services/LevelService";
-import { RACES, RACE_IDS, RACE_ROLE_IDS, getRace, type RaceId } from "@shenron/config/races";
+import { RACES, RACE_IDS, RACE_ROLE_IDS, getRace, type RaceId } from "@aphrody/shenron-config/races";
 import { logger } from "~/lib/logger";
 import { COLORS } from "~/lib/embeds";
 

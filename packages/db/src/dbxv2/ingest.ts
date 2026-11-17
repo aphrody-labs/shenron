@@ -2,7 +2,7 @@
 /**
  * Builds the private DBXV2 database from the two dump indexes (`meta/index.jsonl` of the asset
  * tree, `cpk-index.jsonl` of the CPK tables of contents), the on-demand assets and the
- * `@shenron/dbxv2` surface (`identify`, injected: no parser lives here). Runtime class: `bun`.
+ * `@aphrody/shenron-dbxv2` surface (`identify`, injected: no parser lives here). Runtime class: `bun`.
  */
 import type { Database } from "bun:sqlite";
 import { readFileSync } from "node:fs";
@@ -30,7 +30,7 @@ export interface IdentifyResult {
 
 export interface IngestOptions {
   assetsDir: string;
-  /** `identify(new Uint8Array(0), name)` of `@shenron/dbxv2` (extension fallback). */
+  /** `identify(new Uint8Array(0), name)` of `@aphrody/shenron-dbxv2` (extension fallback). */
   identify: (name: string) => IdentifyResult;
   /** Hash the extracted bytes of these kinds (small kinds only; default `text`, `data`). */
   hashKinds?: readonly string[];

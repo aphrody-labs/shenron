@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-//! C ABI of Shenron for `bun:ffi` (`@shenron/native`) and any C host.
+//! C ABI of Shenron for `bun:ffi` (`@aphrody/shenron-native`) and any C host.
 //!
 //! - ABI 1: the `shenron` command in process (inherited or captured stdio), RAG search,
 //!   statistics and chunking, the local corpus, persona and auth presence.

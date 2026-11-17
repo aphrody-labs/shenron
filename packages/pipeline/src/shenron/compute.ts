@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/pipeline/shenron/compute` — legacy facade over `@shenron/pipeline/ai/shenron`
+ * `@aphrody/shenron-pipeline/shenron/compute` — legacy facade over `@aphrody/shenron-pipeline/ai/shenron`
  * (docs/architecture/STACK.md §6.3, D16).
  *
  * `ShenronComputeClient` keeps its historical contract: constructor options
  * (`baseUrl`, `token`, `fetcher`), method signatures, thrown errors and
  * their messages, and `ocr` still asking for the `gemini-web` engine. Without
  * options, the address and token come from the single resolver
- * `@shenron/pipeline/ai/config` (`SHENRON_AI_HTTP_URL` / `SHENRON_AI_HTTP_TOKEN`, then
+ * `@aphrody/shenron-pipeline/ai/config` (`SHENRON_AI_HTTP_URL` / `SHENRON_AI_HTTP_TOKEN`, then
  * their legacy aliases); there is no address default, a missing one throws an
  * error naming the variables. Every request is delegated to
  * {@link createShenronCompute}; `fetch` is resolved at call time unless a
@@ -16,13 +16,13 @@
  * Registered behaviour change B18: `embed()` collapses whitespace, sends at
  * most 16 texts per request and rejects any vector that is not 384-dimensional.
  */
-import { JsonTransportError, requestJson } from "@shenron/kit/http";
+import { JsonTransportError, requestJson } from "@aphrody/shenron-kit/http";
 import {
   type AiFailure,
   type AiResult,
   type ShenronCompute,
   createShenronCompute,
-} from "@shenron/pipeline/ai/shenron";
+} from "@aphrody/shenron-pipeline/ai/shenron";
 import {
   AiConfigError,
   chatTimeoutMs,
@@ -30,7 +30,7 @@ import {
   requireAiHttpToken,
   requireAiHttpUrl,
   resolveDirectChat,
-} from "@shenron/pipeline/ai/config";
+} from "@aphrody/shenron-pipeline/ai/config";
 
 /** Private Shenron workload boundary served by the Shenron AI process. */
 export interface ShenronComputeOptions {
@@ -83,7 +83,7 @@ function unwrap<T>(result: AiResult<T>, invalid: string): T {
 }
 
 export class ShenronComputeClient {
-  /** Typed client every call is delegated to (`@shenron/pipeline/ai/shenron`). */
+  /** Typed client every call is delegated to (`@aphrody/shenron-pipeline/ai/shenron`). */
   readonly compute: ShenronCompute;
 
   constructor(options: ShenronComputeOptions = {}) {

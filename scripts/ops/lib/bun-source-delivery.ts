@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
-import { ShenronComputeClient } from "@shenron/pipeline/shenron/compute";
+import { ShenronComputeClient } from "@aphrody/shenron-pipeline/shenron/compute";
 import {
   crawlIngestPolicySchema,
   nativeDocumentSchema,
   projectNativeCrawl,
   readNativeCrawlDocuments,
-} from "@shenron/pipeline/dragon-ball/crawl-ingest";
+} from "@aphrody/shenron-pipeline/dragon-ball/crawl-ingest";
 
 export interface SourceDeliveryConfig {
   rag?: {

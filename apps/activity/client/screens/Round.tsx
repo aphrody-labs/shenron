@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { CHOICE_COUNT, type Locale, type PlayerPublic } from "@shenron/activity/protocol";
+import { CHOICE_COUNT, type Locale, type PlayerPublic } from "@aphrody/shenron-activity/protocol";
 import { useEffect } from "react";
 import { categoryLabel, formatNumber, translator, type Translate } from "../i18n";
 import { answerOf, msLeft, pointsOf, selectedChoice, type GameState } from "../state";

@@ -87,7 +87,7 @@ export function auditArchive(bytes: Uint8Array) {
   const manifestFile = files.find((file) => file.path === "package.json");
   if (!manifestFile) throw new Error("Archive manifest missing");
   const manifest = JSON.parse(new TextDecoder().decode(manifestFile.bytes));
-  if (manifest.private || !manifest.name.startsWith("@shenron/"))
+  if (manifest.private || !manifest.name.startsWith("@aphrody/shenron-"))
     throw new Error("Archive is not a public Shenron library");
   for (const field of [
     "dependencies",

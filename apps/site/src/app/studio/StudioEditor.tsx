@@ -13,8 +13,8 @@
 import dynamic from "next/dynamic";
 import { type ReactNode, useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslations } from "next-intl";
-import type { LocalHealthResponse } from "@shenron/api/contract";
-import { isTauri } from "@shenron/ui/studio/tauri-bridge";
+import type { LocalHealthResponse } from "@aphrody/shenron-api/contract";
+import { isTauri } from "@aphrody/shenron-ui/studio/tauri-bridge";
 import { SignInDiscord } from "@/components/SignInDiscord";
 import { ShenronWebStudio, type StudioSource } from "@/components/studio/ShenronWebStudio";
 
@@ -76,7 +76,7 @@ export function StudioEditor({
           setWebStatus("unavailable");
           return;
         }
-        const transport = await import("@shenron/koharu/transport");
+        const transport = await import("@aphrody/shenron-koharu/transport");
         if (controller.signal.aborted) return;
         transport.configureKoharuBridge("/api/studio", true);
         setBridge("hosted");
@@ -132,7 +132,7 @@ export function StudioEditor({
   useEffect(() => {
     // The editor is about to open: stream and compile its canvas module meanwhile.
     if (!active) return;
-    void import("@shenron/ui/koharu")
+    void import("@aphrody/shenron-ui/koharu")
       .then((editor) => editor.preloadCanvasModule())
       .catch(() => undefined);
   }, [active]);

@@ -4,7 +4,7 @@
 import { Database } from "bun:sqlite";
 import { SQL } from "bun";
 import { join } from "node:path";
-import { loadDatabaseUrl } from "@shenron/db/env";
+import { loadDatabaseUrl } from "@aphrody/shenron-db/env";
 import { readPublicMangaSnapshot, syncMangaSnapshot } from "../src/db/manga-search-replica";
 
 if (import.meta.main) {

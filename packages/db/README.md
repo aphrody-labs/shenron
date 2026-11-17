@@ -1,13 +1,13 @@
-# @shenron/db
+# @aphrody/shenron-db
 
 PostgreSQL partagé de Shenron: schéma Drizzle, pool postgres-js, driver Bun.SQL pour les scripts et l'API.
 
 ## Commandes
 
 ```sh
-bun run --filter @shenron/db test
-bun run --filter @shenron/db lint
-bun run --filter @shenron/db typecheck
+bun run --filter @aphrody/shenron-db test
+bun run --filter @aphrody/shenron-db lint
+bun run --filter @aphrody/shenron-db typecheck
 ```
 
 Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce dossier.

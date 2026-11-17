@@ -14,9 +14,9 @@ import type {
   StartupState,
   ModelResources,
   PageSize,
-} from "@shenron/koharu/protocol";
-// The editor mounts the @shenron/m3-primitives Toaster (providers.tsx): notices go straight to it.
-import { toast } from "@shenron/m3-primitives";
+} from "@aphrody/shenron-koharu/protocol";
+// The editor mounts the @aphrody/shenron-m3-primitives Toaster (providers.tsx): notices go straight to it.
+import { toast } from "@aphrody/shenron-m3-primitives";
 
 import i18n from "./i18n";
 

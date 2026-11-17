@@ -1,18 +1,18 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * W3-AUTH-07 — conformance of the `@shenron/db` repositories to the ports of
- * `@shenron/auth` (docs/architecture/STACK.md, D-ports). The `satisfies` clauses are the
+ * W3-AUTH-07 — conformance of the `@aphrody/shenron-db` repositories to the ports of
+ * `@aphrody/shenron-auth` (docs/architecture/STACK.md, D-ports). The `satisfies` clauses are the
  * contract: `tsc --noEmit -p packages/auth` fails when a repository drifts from
- * `AgentKeyStore` / `DiscordAccountLookup`. `@shenron/db` is a devDependency
+ * `AgentKeyStore` / `DiscordAccountLookup`. `@aphrody/shenron-db` is a devDependency
  * only: `src/` never imports it (checked below and by check-workspace-packages).
  */
 import { describe, expect, test } from "bun:test";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { drizzle } from "drizzle-orm/postgres-js";
-import { fullSchema } from "@shenron/db/full-schema";
-import { createAgentKeyRepository } from "@shenron/db/repos/agent-keys";
-import { createDiscordAccountLookup } from "@shenron/db/repos/accounts";
+import { fullSchema } from "@aphrody/shenron-db/full-schema";
+import { createAgentKeyRepository } from "@aphrody/shenron-db/repos/agent-keys";
+import { createDiscordAccountLookup } from "@aphrody/shenron-db/repos/accounts";
 import { agentKeyStrategy, authorize } from "../src/guards";
 import type { AgentKeyStore, DiscordAccountLookup } from "../src/ports";
 
@@ -40,11 +40,11 @@ describe("ports conformance", () => {
     expect(decision).toEqual({ ok: false, status: 401, code: "unauthenticated" });
   });
 
-  test("src/ never imports @shenron/db (dev-only edge)", () => {
+  test("src/ never imports @aphrody/shenron-db (dev-only edge)", () => {
     const dir = join(import.meta.dir, "..", "src");
     for (const file of readdirSync(dir)) {
       if (!file.endsWith(".ts")) continue;
-      expect(readFileSync(join(dir, file), "utf8")).not.toMatch(/from\s+["']@shenron\/db/);
+      expect(readFileSync(join(dir, file), "utf8")).not.toMatch(/from\s+["']@aphrody\/shenron-db/);
     }
   });
 });

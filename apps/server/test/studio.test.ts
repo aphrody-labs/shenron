@@ -4,7 +4,7 @@ import { mkdtemp, rm, readdir } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createStudioRuntime } from "../src/studio";
-import type { EngineProcess } from "@shenron/koharu/web-server";
+import type { EngineProcess } from "@aphrody/shenron-koharu/web-server";
 
 const homes: string[] = [];
 const runtimes: ReturnType<typeof createStudioRuntime>[] = [];

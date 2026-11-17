@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-//! Search key of a form, identical to `fold()` of `@shenron/lexicon` (fixtures
+//! Search key of a form, identical to `fold()` of `@aphrody/shenron-lexicon` (fixtures
 //! `data/lexicon/fixtures/fold.json`). Per character:
 //!
 //! 1. fullwidth ASCII (U+FF01–U+FF5E) becomes ASCII, the ideographic space a space;

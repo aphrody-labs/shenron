@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
-import { decodeRgba } from "@shenron/kit/image";
+import { decodeRgba } from "@aphrody/shenron-kit/image";
 import { mkdir, open, readdir, rename, rm } from "node:fs/promises";
 import { dirname, isAbsolute, join, relative, resolve } from "node:path";
 import { encoderPng } from "../../../plugin/skills/toriyama-svg/scripts/png";

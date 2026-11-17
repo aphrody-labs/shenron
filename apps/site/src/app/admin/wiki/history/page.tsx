@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FlecheGauche, Historique } from "@shenron/ui/icones";
+import { FlecheGauche, Historique } from "@aphrody/shenron-ui/icones";
 import { WikiHistory } from "@/components/admin/WikiHistory";
 
 export const dynamic = "force-dynamic";

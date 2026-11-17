@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { userHome } from "@shenron/kit/paths";
+import { userHome } from "@aphrody/shenron-kit/paths";
 /**
  * orchestre-donnees.ts — la chaîne complète qui mène les données du dépôt
  * jusqu'à ce que l'API sert réellement.
@@ -38,7 +38,7 @@ import { userHome } from "@shenron/kit/paths";
 import { Database } from "bun:sqlite";
 import postgres from "postgres";
 import { join } from "node:path";
-import { ShenronComputeClient } from "@shenron/pipeline/shenron";
+import { ShenronComputeClient } from "@aphrody/shenron-pipeline/shenron";
 
 const ROOT = new URL("..", import.meta.url).pathname; // apps/bot/
 const DEPOT = join(ROOT, "..", "..");

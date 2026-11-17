@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, expect, test } from "bun:test";
 import { Database } from "bun:sqlite";
 import { generateLlmAnswer } from "../src/lib/llm";
-import { AI_ENV } from "@shenron/pipeline/ai/config";
+import { AI_ENV } from "@aphrody/shenron-pipeline/ai/config";
 
 // No address default since the AI env contract (shenron-infra local-ai.json): the
 // tests pin the shenron-ai-http origin through its canonical name.
@@ -109,8 +109,8 @@ test("the same question only reuses a cached answer with the same evidence and m
 });
 
 test("B7: the cache scope binds the model, PROMPT_VERSION and the evidence", async () => {
-  const { semanticCacheScope } = await import("@shenron/pipeline/ai/ports");
-  const { PROMPT_VERSION } = await import("@shenron/pipeline/ai/prompts");
+  const { semanticCacheScope } = await import("@aphrody/shenron-pipeline/ai/ports");
+  const { PROMPT_VERSION } = await import("@aphrody/shenron-pipeline/ai/prompts");
   process.env.RAG_BACKEND = "shenron";
   const scopes: string[] = [];
   const cache = {

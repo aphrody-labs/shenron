@@ -5,10 +5,10 @@ Clients de calcul et pipeline de données Dragon Ball: IA, crawl, OCR, RAG. Bina
 Commands:
 
 ```sh
-bun run --filter @shenron/pipeline build
-bun run --filter @shenron/pipeline test
-bun run --filter @shenron/pipeline lint
-bun run --filter @shenron/pipeline typecheck
+bun run --filter @aphrody/shenron-pipeline build
+bun run --filter @aphrody/shenron-pipeline test
+bun run --filter @aphrody/shenron-pipeline lint
+bun run --filter @aphrody/shenron-pipeline typecheck
 ```
 
 Rules:

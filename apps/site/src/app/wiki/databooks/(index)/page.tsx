@@ -1,5 +1,5 @@
 // Keep the index loader scoped to the catalogue, not streamed detail routes.
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { GatedLink } from "@/components/GatedLink";
 import { WikiEditorialHero } from "@/components/wiki/WikiEditorialHero";
 import { WikiMediaMetrics, WikiMediaSpotlight } from "@/components/wiki/WikiMediaCatalogue";

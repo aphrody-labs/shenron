@@ -12,7 +12,7 @@ Shenron is the platform behind dragonballfr.com: web portal, Discord bot, API, e
 ## Layout
 
 - `apps/site` (web portal), `apps/bot` (Discord bot), `apps/server` (single Bun server), `apps/activity` (Discord Activity).
-- `packages/*` (`@shenron/*` workspace packages), `crates/*` (`shenron-*`, `koharu-*`, `dragon-pixel`).
+- `packages/*` (`@aphrody/shenron-*` workspace packages), `crates/*` (`shenron-*`, `koharu-*`, `dragon-pixel`).
 - `deploy/` (compose, nginx, units, SQL migrations), `scripts/`, `docs/` (ADRs and runbooks), `.agents/skills` (skills).
 
 ## Hosts

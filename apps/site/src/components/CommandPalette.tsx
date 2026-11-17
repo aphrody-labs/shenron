@@ -1,6 +1,6 @@
 "use client";
 
-import { CommandPalette as SharedCommandPalette } from "@shenron/ui/public/CommandPalette";
+import { CommandPalette as SharedCommandPalette } from "@aphrody/shenron-ui/public/CommandPalette";
 import { useRouter } from "next/navigation";
 import { useLocale } from "next-intl";
 import { assetUrl } from "@/lib/assets";

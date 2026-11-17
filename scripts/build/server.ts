@@ -49,9 +49,9 @@ import {
   writeFileSync,
 } from "node:fs";
 import { join, resolve } from "node:path";
-import { nextCommand } from "@shenron/next-host/run";
+import { nextCommand } from "@aphrody/shenron-next-host/run";
 import { flattenStandaloneExternals } from "./standalone-externals";
-import { getHlsPublicAssets } from "@shenron/video/hls";
+import { getHlsPublicAssets } from "@aphrody/shenron-video/hls";
 import { stageVideoPublic } from "./video-assets";
 
 import { pack, publicVfsProblems } from "../../apps/server/src/payload";
@@ -59,8 +59,8 @@ import { requireProductionVfs } from "./server-vfs-policy";
 import { ensureKoharuWasm } from "./koharu-wasm.ts";
 import { findDbxv2Leaks } from "../../packages/dbxv2/src/guard.ts";
 import { privateFiles, stagePublicData } from "./server-data.ts";
-import { templateProblems } from "@shenron/db/agent-homes/template";
-import { AGENT_HOME_DOCUMENTS } from "@shenron/db/agent-homes/types";
+import { templateProblems } from "@aphrody/shenron-db/agent-homes/template";
+import { AGENT_HOME_DOCUMENTS } from "@aphrody/shenron-db/agent-homes/types";
 import { syncUiAssets } from "../../packages/ui/scripts/sync-assets";
 import {
   aotBun,

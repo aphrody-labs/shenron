@@ -6,7 +6,7 @@
  * Aucune dépendance server-only — importé par l'éditeur DB, le studio wiki et la
  * vignette de grille (tous Client Components).
  */
-import { foldKey } from "@shenron/config/slug";
+import { foldKey } from "@aphrody/shenron-config/slug";
 import { DATABOOK_CATEGORIES } from "@/lib/databook-categories";
 import type { SectionAccent } from "@/lib/wiki-section-accents";
 import { PWS_GROUP_NAME } from "@/lib/wiki-section-groups";

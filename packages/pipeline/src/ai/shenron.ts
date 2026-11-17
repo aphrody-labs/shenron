@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/pipeline/ai/shenron` — typed client of the `/api/v1/shenron/*` routes of
+ * `@aphrody/shenron-pipeline/ai/shenron` — typed client of the `/api/v1/shenron/*` routes of
  * `shenron-ai-http` (docs/architecture/STACK.md §3.4).
  *
  * Runtime class: `pure`. Every call returns an {@link AiResult} instead of
@@ -15,8 +15,8 @@
  * checks (B18), and `ocr` defaults to the `ppocr` engine.
  */
 import type { z } from "zod";
-import { JsonTransportError, parseRetryAfter, requestJson } from "@shenron/kit/http";
-export { parseRetryAfter } from "@shenron/kit/http";
+import { JsonTransportError, parseRetryAfter, requestJson } from "@aphrody/shenron-kit/http";
+export { parseRetryAfter } from "@aphrody/shenron-kit/http";
 import { type AiTimeouts, chatTimeoutMs, DEFAULT_AI_TIMEOUTS, SHENRON_E5 } from "./config";
 import {
   SHENRON_LIMITS,

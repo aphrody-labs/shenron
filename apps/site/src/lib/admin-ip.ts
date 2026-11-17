@@ -6,7 +6,7 @@
  * L'adresse est celle que nginx écrit dans `X-Real-IP` (`$remote_addr`, jamais celle du
  * client) ; à défaut, la dernière entrée de `X-Forwarded-For`, ajoutée par le proxy
  * (`clientIpFromHeaders`). Une entrée invalide de la liste est ignorée, jamais élargie.
- * Liste vide ou absente : aucun accès par IP. Lue par `@shenron/config/env` comme les jetons
+ * Liste vide ou absente : aucun accès par IP. Lue par `@aphrody/shenron-config/env` comme les jetons
  * de `@/lib/api-token` : ce module reste importable sans valider tout l'environnement du site.
  */
 import {
@@ -14,8 +14,8 @@ import {
   ipInRanges,
   parseIpAllowlist,
   type IpRange,
-} from "@shenron/config/net";
-import { envString } from "@shenron/config/env";
+} from "@aphrody/shenron-config/net";
+import { envString } from "@aphrody/shenron-config/env";
 
 let cache: { raw: string | undefined; ranges: IpRange[] } | null = null;
 

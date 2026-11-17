@@ -5,7 +5,7 @@ import { describe, expect, test } from "bun:test";
 import en from "../messages/en.json";
 import fr from "../messages/fr.json";
 import ja from "../messages/ja.json";
-import type { ChatStreamEvent } from "@shenron/ui/chat/model";
+import type { ChatStreamEvent } from "@aphrody/shenron-ui/chat/model";
 import {
   createDesktopChatTransport,
   createDesktopMemoryTransport,

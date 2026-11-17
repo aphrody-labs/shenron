@@ -4,7 +4,7 @@ import type {
   OcrModel,
   PipelineConfig,
   Stage,
-} from "@shenron/koharu/protocol";
+} from "@aphrody/shenron-koharu/protocol";
 
 export type PipelineModel = DetectionModel | OcrModel | InpaintingModel;
 export type ModelStage = Exclude<Stage, "translation">;

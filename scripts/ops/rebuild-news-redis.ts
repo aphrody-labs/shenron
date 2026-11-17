@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Reconstruct the public article mirror from read-only PostgreSQL rows. */
 import { SQL, RedisClient } from "bun";
-import { resolveRedisUrl } from "@shenron/config/services";
+import { resolveRedisUrl } from "@aphrody/shenron-config/services";
 import {
   createPostsMirror,
   postCacheKey,

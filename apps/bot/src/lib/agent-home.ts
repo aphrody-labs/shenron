@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Agent homes of the Discord users who write to the bot in DM, in the cloud: one
- * `discord:<user_id>` instance of the public template (`@shenron/db/agent-homes`), stored in
+ * `discord:<user_id>` instance of the public template (`@aphrody/shenron-db/agent-homes`), stored in
  * PostgreSQL `chat.agent_homes` beside the conversation store (migration 0020 of the site),
  * else, without PostgreSQL, as native directories beside the bot's database
  * (`<dir of DATABASE_PATH>/agents/`). Created at the first DM, personalised with the Discord
@@ -19,7 +19,7 @@ import {
   LOCAL_AGENT_ID,
   PgAgentHomeStore,
   SHENRON_AGENT_TEMPLATE,
-} from "@shenron/db/agent-homes";
+} from "@aphrody/shenron-db/agent-homes";
 import { PgService } from "~/db/pg";
 import { env } from "~/lib/env";
 import { logger } from "~/lib/logger";

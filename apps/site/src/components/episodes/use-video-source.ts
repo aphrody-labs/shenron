@@ -6,7 +6,7 @@ import {
   createVideoPlayback,
   type VideoPlayback,
   type VideoPlaybackState,
-} from "@shenron/video/playback";
+} from "@aphrody/shenron-video/playback";
 
 const initialState = (source: string): VideoPlaybackState => ({
   source,

@@ -23,13 +23,13 @@ import {
   Reinitialiser,
   Tendance,
   Trophee,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { type FormEvent, useRef, useState } from "react";
 import { api } from "@/lib/admin-api";
 import { formatDuration } from "@/lib/admin-format";
 import { RoleBadge, RoleSelect } from "@/components/admin/RoleSelect";
 import { RolePicker } from "@/components/admin/RolePicker";
-import { formatZeni } from "@shenron/config/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 
 interface Threshold {
   level: number;

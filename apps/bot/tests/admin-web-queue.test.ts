@@ -4,7 +4,7 @@ import { chmodSync, mkdtempSync, renameSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { AdminWebQueue } from "../src/api/admin-web-queue";
-import type { NativeMcpTransport } from "@shenron/pipeline/shenron/jobs";
+import type { NativeMcpTransport } from "@aphrody/shenron-pipeline/shenron/jobs";
 
 test("native web placement survives a lost ACK and process restart, with private results", async () => {
   const home = mkdtempSync(join(tmpdir(), "shenron-web-admin-"));

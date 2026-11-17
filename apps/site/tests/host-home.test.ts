@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterAll, expect, mock, test } from "bun:test";
-import { DEFAULT_HOME_CONFIG, resolveHomeConfig } from "@shenron/config/home";
+import { DEFAULT_HOME_CONFIG, resolveHomeConfig } from "@aphrody/shenron-config/home";
 
 mock.module("server-only", () => ({}));
 mock.module("@/lib/db", () => {

@@ -4,7 +4,7 @@ import {
   type Locale,
   type PlayerPublic,
   type QuizCategory,
-} from "@shenron/activity/protocol";
+} from "@aphrody/shenron-activity/protocol";
 import { categoryLabel, formatNumber, translator, type Translate } from "../i18n";
 import { isHost, type GameState } from "../state";
 import { Avatar, Header } from "../ui";

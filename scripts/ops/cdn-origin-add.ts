@@ -12,7 +12,7 @@
 import { createHash } from "node:crypto";
 import { copyFileSync, existsSync, renameSync, writeFileSync, chmodSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { shenronRoot } from "@shenron/config/paths";
+import { shenronRoot } from "@aphrody/shenron-config/paths";
 
 const sha = (bytes: Uint8Array | string) => createHash("sha256").update(bytes).digest("hex");
 const [entriesPath, ...rest] = process.argv.slice(2);

@@ -18,9 +18,9 @@ let compiled: Root;
 
 beforeAll(async () => {
   const source = `@import "tailwindcss";
-@import "@shenron/ui/styles.css";
-@import "@shenron/ui/site.css";
-@import "@shenron/ui/toriyama.css";
+@import "@aphrody/shenron-ui/styles.css";
+@import "@aphrody/shenron-ui/site.css";
+@import "@aphrody/shenron-ui/toriyama.css";
 @source inline("bg-dbz-bg toriyama-panel toriyama-btn wiki-content-card");`;
   const result = await postcss([tailwindcss({ base: site, optimize: false })]).process(source, {
     from: join(site, "src/app/globals.css"),

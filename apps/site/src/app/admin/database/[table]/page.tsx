@@ -12,7 +12,7 @@ import {
   FlecheGauche,
   Plus,
   Recherche,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { useState, type ReactNode, useEffect, useMemo, useRef } from "react";
 import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";

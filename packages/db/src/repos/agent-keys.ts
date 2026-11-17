@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Agent key repository (`AgentKey`, `AgentAudit`). Structurally satisfies the
- * `AgentKeyStore` port of `@shenron/auth` and carries the admin operations of
+ * `AgentKeyStore` port of `@aphrody/shenron-auth` and carries the admin operations of
  * `apps/site/src/lib/agent-keys.ts` with the same surface. Only the SHA-256 of
  * a token is stored; revocation is soft (`revokedAt`), rows are never deleted.
  *

@@ -12,7 +12,7 @@ import { container, inject, singleton } from "tsyringe";
 import { COLORS } from "~/lib/embeds";
 import { env } from "~/lib/env";
 import { logger } from "~/lib/logger";
-import { formatZeni } from "@shenron/config/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 import { GameRewardService } from "~/services/GameRewardService";
 import {
   GameSessionJournal,

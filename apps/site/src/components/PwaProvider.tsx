@@ -4,9 +4,9 @@
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { useLangue } from "@/lib/i18n/client";
 import { pwaText } from "@/lib/pwa";
-import { isTauri } from "@shenron/ui/studio/tauri-bridge";
-import { InstallDesktopIcon } from "@shenron/ui/material-symbols";
-import { Rafraichir } from "@shenron/ui/icones";
+import { isTauri } from "@aphrody/shenron-ui/studio/tauri-bridge";
+import { InstallDesktopIcon } from "@aphrody/shenron-ui/material-symbols";
+import { Rafraichir } from "@aphrody/shenron-ui/icones";
 import { resolveEpisodeTheme } from "@/lib/episode-theme";
 
 interface InstallEvent extends Event {

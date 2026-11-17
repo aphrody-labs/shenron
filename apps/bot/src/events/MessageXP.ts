@@ -1,5 +1,5 @@
 import { injectable, inject } from "tsyringe";
-import { NotBot } from "@shenron/discord-kit";
+import { NotBot } from "@aphrody/shenron-discord-kit";
 import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
 import { and, eq, isNull, lt, or, sql } from "drizzle-orm";
 import { LevelService } from "~/services/LevelService";
@@ -11,7 +11,7 @@ import { DISCORD_INVITE_REGEX, ZENI_DAILY_QUEST } from "~/lib/constants";
 import { env } from "~/lib/env";
 import { levelFromXp, randomInt } from "~/lib/xp";
 import { DEFAULT_LEVEL_RACE, memberRaceId, tierEntitlement } from "~/lib/race-levels";
-import { applyZeniRace, hasRegen, regenTuning } from "@shenron/config/races";
+import { applyZeniRace, hasRegen, regenTuning } from "@aphrody/shenron-config/races";
 import { resolveLevelChannel } from "~/lib/announce";
 import { boosterXpMultiplier } from "~/lib/booster";
 import {

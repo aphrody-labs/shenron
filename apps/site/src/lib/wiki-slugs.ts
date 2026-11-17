@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-// Compatibility entry; domain rules are owned by @shenron/config.
-export * from "@shenron/config/wiki-slugs";
+// Compatibility entry; domain rules are owned by @aphrody/shenron-config.
+export * from "@aphrody/shenron-config/wiki-slugs";
 
-import { formatCharacterSlug } from "@shenron/config/wiki-slugs";
+import { formatCharacterSlug } from "@aphrody/shenron-config/wiki-slugs";
 
 type CharacterSlugInput = {
   id: number;

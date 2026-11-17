@@ -12,7 +12,7 @@
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { Coche, Copie, Film, Lecture, Livre, Recherche, Telecharger, Tv } from "@shenron/ui/icones";
+import { Coche, Copie, Film, Lecture, Livre, Recherche, Telecharger, Tv } from "@aphrody/shenron-ui/icones";
 import { assetUrl } from "@/lib/assets";
 import Image from "next/image";
 import { isEditableAsset } from "@/lib/images";
@@ -29,7 +29,7 @@ import {
   type Era,
   type SortMode,
   type ResolvedTimelineItem,
-} from "@shenron/config/chronology";
+} from "@aphrody/shenron-config/chronology";
 
 const yearOf = (sec: number | null) => (sec ? new Date(sec * 1000).getFullYear() : null);
 

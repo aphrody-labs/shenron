@@ -5,7 +5,7 @@ import {
   parseSkillTable,
   SHENRON_RE_WASM_FILENAME,
   type SkillCategory,
-} from "@shenron/pipeline/re-wasm-web";
+} from "@aphrody/shenron-pipeline/re-wasm-web";
 
 export type SceneKind = "model" | "audio" | "dialogue";
 export type SceneEntry = { path: string; extract_size: number };

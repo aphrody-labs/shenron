@@ -22,9 +22,9 @@ describe("client bundle", () => {
     /^\.\.?\//, // relative
     /^react(?:-dom(?:\/client)?)?$/,
     /^@discord\/embedded-app-sdk$/,
-    /^@shenron\/activity\/(?:protocol|i18n)$/, // pure: zod schemas and dictionaries
+    /^@aphrody\/shenron-activity\/(?:protocol|i18n)$/, // pure: zod schemas and dictionaries
     /^virtual:shenron-tokens\.css$/,
-    /^@shenron\/ui\/assets\/[a-z/-]+\.svg$/, // brand images, bundled as files
+    /^@aphrody\/shenron-ui\/assets\/[a-z/-]+\.svg$/, // brand images, bundled as files
   ];
 
   test("imports only the browser-safe packages", () => {

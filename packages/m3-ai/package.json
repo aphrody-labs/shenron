@@ -1,8 +1,8 @@
 {
-  "name": "@shenron/m3-ai",
+  "name": "@aphrody/shenron-m3-ai",
   "version": "1.0.0",
   "private": true,
-  "description": "Material Design 3 agent-interaction components (tool calls, markdown, chat composer, workers, tasks): the SpaceUI (@spacedrive/ai) set rebuilt on @shenron/m3-primitives.",
+  "description": "Material Design 3 agent-interaction components (tool calls, markdown, chat composer, workers, tasks): the SpaceUI (@spacedrive/ai) set rebuilt on @aphrody/shenron-m3-primitives.",
   "keywords": [
     "material-3",
     "md3",
@@ -25,8 +25,8 @@
     }
   },
   "dependencies": {
-    "@shenron/m3-motion": "workspace:*",
-    "@shenron/m3-primitives": "workspace:*",
+    "@aphrody/shenron-m3-motion": "workspace:*",
+    "@aphrody/shenron-m3-primitives": "workspace:*",
     "clsx": "^2.1.1",
     "motion": "^13.4.4",
     "react-markdown": "^10.1.0",

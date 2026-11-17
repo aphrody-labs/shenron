@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * The front server of `shenron-server` with the real API host (`@shenron/api/host`) on a test
+ * The front server of `shenron-server` with the real API host (`@aphrody/shenron-api/host`) on a test
  * VFS, a fake Next upstream and no external service: routing order, WebSocket upgrade, SSE,
  * local health groups, disabled groups, production split and the MCP sidecar.
  */
@@ -8,8 +8,8 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { chmodSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { LocalHealthResponse } from "@shenron/api/contract";
-import { SSE_KEEPALIVE_MS } from "@shenron/api/server";
+import { LocalHealthResponse } from "@aphrody/shenron-api/contract";
+import { SSE_KEEPALIVE_MS } from "@aphrody/shenron-api/server";
 
 import { type Backend, planBackend, startBackend, startMcpSidecar } from "../src/backend";
 import type { ServerPaths } from "../src/config";

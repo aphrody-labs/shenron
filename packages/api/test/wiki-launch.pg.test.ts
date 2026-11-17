@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { createBunSql } from "@shenron/db/bun-sql";
-import { DEFAULT_LAUNCH_CONFIG } from "@shenron/config/wiki-launch-config";
+import { createBunSql } from "@aphrody/shenron-db/bun-sql";
+import { DEFAULT_LAUNCH_CONFIG } from "@aphrody/shenron-config/wiki-launch-config";
 import { createHostWikiLaunch } from "../src/host/wiki-launch";
 import { createShenronApiClient } from "../src/client";
 import { endpoints } from "../src/contract";

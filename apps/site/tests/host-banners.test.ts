@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterAll, expect, mock, test } from "bun:test";
-import { DEFAULT_PAGE_BANNERS, resolvePageBanners } from "@shenron/config/page-banners";
+import { DEFAULT_PAGE_BANNERS, resolvePageBanners } from "@aphrody/shenron-config/page-banners";
 
 mock.module("server-only", () => ({}));
 mock.module("@/lib/db", () => {

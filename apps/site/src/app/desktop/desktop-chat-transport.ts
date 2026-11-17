@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Chat transport of the desktop home: the `@shenron/ui/chat` surface talks to the host API of
+ * Chat transport of the desktop home: the `@aphrody/shenron-ui/chat` surface talks to the host API of
  * `shenron-server` on the same origin (`POST /api/v1/chat` SSE, `/api/v1/conversations`).
  * Runtime class: `pure` (fetch injectable, no DOM global).
  */
-import { cancelChat, createShenronApiClient, streamChat } from "@shenron/api/client";
-import { endpoints } from "@shenron/api/contract";
-import type { ChatMessageView, ChatTransport } from "@shenron/ui/chat/model";
-import type { ChatModelView, MemoryTransport, ModelsTransport } from "@shenron/ui/chat";
+import { cancelChat, createShenronApiClient, streamChat } from "@aphrody/shenron-api/client";
+import { endpoints } from "@aphrody/shenron-api/contract";
+import type { ChatMessageView, ChatTransport } from "@aphrody/shenron-ui/chat/model";
+import type { ChatModelView, MemoryTransport, ModelsTransport } from "@aphrody/shenron-ui/chat";
 
 export interface DesktopChatTransportOptions {
   baseUrl: string;

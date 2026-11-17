@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Transport only: model, tools, Responses state and compaction belong to the native provider. */
 import { timingSafeEqual } from "node:crypto";
-import { AI_ENV, readAiEnv } from "@shenron/pipeline/ai/config";
+import { AI_ENV, readAiEnv } from "@aphrody/shenron-pipeline/ai/config";
 
 import { local } from "./koharu";
 import type { LocalApi } from "./local-api";

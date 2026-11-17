@@ -10,8 +10,8 @@
  */
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { SHENRON_FFI_FILE } from "@shenron/native/shenron";
-import { closeShenronWorkerPool } from "@shenron/native/worker";
+import { SHENRON_FFI_FILE } from "@aphrody/shenron-native/shenron";
+import { closeShenronWorkerPool } from "@aphrody/shenron-native/worker";
 
 import {
   ensureDirectories,
@@ -76,7 +76,7 @@ export async function main(
       console.error("shenron-server llama-daemon : bibliothèque native absente (SHENRON_FFI_LIB)");
       process.exit(70);
     }
-    const { shenronLoad, shenronLlamaDaemon } = await import("@shenron/native/shenron");
+    const { shenronLoad, shenronLlamaDaemon } = await import("@aphrody/shenron-native/shenron");
     shenronLoad(library);
     process.exit(shenronLlamaDaemon(named ? rest.slice(2) : rest));
   }

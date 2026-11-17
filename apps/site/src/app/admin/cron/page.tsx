@@ -1,6 +1,6 @@
 "use client";
 
-import { StatusBadge } from "@shenron/ui/admin";
+import { StatusBadge } from "@aphrody/shenron-ui/admin";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { CalendarClock, Check, Clock, Pencil, Play, X } from "lucide-react";
 import { useTranslations } from "next-intl";

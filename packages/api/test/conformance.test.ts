@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import { fullSchema } from "@shenron/db/full-schema";
-import { createWikiReadRepository } from "@shenron/db/repos/wiki";
+import { fullSchema } from "@aphrody/shenron-db/full-schema";
+import { createWikiReadRepository } from "@aphrody/shenron-db/repos/wiki";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { createMemoryRateLimiter, createPublicCache, noopInvalidation } from "../src/http";
 import { createShenronApi, type WikiReadPort } from "../src/server";

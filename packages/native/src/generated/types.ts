@@ -12,7 +12,7 @@ export type AuthStatus = {
 	admin_credentials_present: boolean,
 };
 
-/**  Identity of the loaded library (`shenron_build_info`), checked by `@shenron/native` before use. */
+/**  Identity of the loaded library (`shenron_build_info`), checked by `@aphrody/shenron-native` before use. */
 export type BuildInfo = {
 	/**  Version of the `shenron-ffi` crate (the workspace version). */
 	version: string,

@@ -1,4 +1,4 @@
-import { decodeRgba } from "@shenron/kit/image";
+import { decodeRgba } from "@aphrody/shenron-kit/image";
 import { resolve } from "node:path";
 
 type Point = readonly [number, number];

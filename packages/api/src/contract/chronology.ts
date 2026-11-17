@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { z } from "zod";
-import { ERA_ORDER } from "@shenron/config/chronology";
+import { ERA_ORDER } from "@aphrody/shenron-config/chronology";
 const override = z.object({
   hidden: z.boolean().optional(),
   era: z.enum(ERA_ORDER).optional(),

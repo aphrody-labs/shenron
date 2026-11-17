@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { BetterAuthOptions } from "better-auth";
-import type { AccountDeletionIdentity, AccountIdentity } from "@shenron/db/repos/accounts";
+import type { AccountDeletionIdentity, AccountIdentity } from "@aphrody/shenron-db/repos/accounts";
 
 interface AccountDeletionRepository {
   identityForAuthUser(authUserId: string): Promise<AccountIdentity | null>;

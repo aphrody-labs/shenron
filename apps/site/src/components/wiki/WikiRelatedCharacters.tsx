@@ -8,7 +8,7 @@
  * gating est résolu ici, une fois, plutôt que par carte.
  */
 import type { ReactNode } from "react";
-import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 import { CharacterCardGrid, CharacterPosterCard } from "@/components/wiki/CharacterPosterCard";
 import { wikiAccess } from "@/components/wiki/wiki-access";
 

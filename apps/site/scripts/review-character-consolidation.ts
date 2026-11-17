@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
-import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 import { CHARACTER_MERGES, validateCharacterMerge } from "../src/lib/character-consolidation";
 import type { CharacterConsolidationPlan } from "../src/lib/wiki-character-consolidation";
 import { wikiUpdateSnapshotHash as hash } from "../src/lib/wiki-update-precondition";

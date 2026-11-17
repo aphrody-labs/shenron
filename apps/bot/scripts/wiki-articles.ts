@@ -36,7 +36,7 @@ import { Database } from "bun:sqlite";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import postgres from "postgres";
-import { ShenronComputeClient } from "@shenron/pipeline/shenron";
+import { ShenronComputeClient } from "@aphrody/shenron-pipeline/shenron";
 import {
   applyIllustration,
   illustrationTypeFor,

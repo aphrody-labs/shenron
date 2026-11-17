@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * @shenron/engine/games/canon-game-engine
+ * @aphrody/shenron-engine/games/canon-game-engine
  *
  * Sovereign Dragon Ball 2.5D Full Canon Game Engine.
  *

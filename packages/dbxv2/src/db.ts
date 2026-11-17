@@ -1,6 +1,6 @@
 /**
  * Typed access to the private DBXV2 database (hybrid search, files, characters, messages).
- * The logic lives in `@shenron/db/dbxv2`; this module only re-exports it and adds the
+ * The logic lives in `@aphrody/shenron-db/dbxv2`; this module only re-exports it and adds the
  * environment gating. The database is a local private file (`DBXV2_DB_PATH`), never shipped.
  */
 import {
@@ -8,7 +8,7 @@ import {
   type Dbxv2Db,
   type Dbxv2File,
   type OpenDbxv2Options,
-} from "@shenron/db/dbxv2";
+} from "@aphrody/shenron-db/dbxv2";
 import {
   currentEnv,
   dbxv2DbPath,
@@ -34,7 +34,7 @@ export {
   type Dbxv2SearchResult,
   type MsgEntry,
   type OpenDbxv2Options,
-} from "@shenron/db/dbxv2";
+} from "@aphrody/shenron-db/dbxv2";
 
 /** Opens the database at `DBXV2_DB_PATH` (read-only by default); throws when disabled. */
 export function openDbxv2DbFromEnv(

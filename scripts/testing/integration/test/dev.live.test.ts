@@ -2,7 +2,7 @@
 import { expect, test } from "bun:test";
 import { join } from "node:path";
 import { chromium, type BunBrowser, type BunBrowserPage } from "../../bun-browser";
-import { createShenronApiClient } from "@shenron/api/client";
+import { createShenronApiClient } from "@aphrody/shenron-api/client";
 import { freePort } from "../../../../apps/server/src/front";
 import { createFixture } from "../fixture";
 

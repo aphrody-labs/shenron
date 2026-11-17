@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { tempPath } from "@shenron/kit/paths";
+import { tempPath } from "@aphrody/shenron-kit/paths";
 /**
  * Écrit les motifs de couverture depuis la géométrie de `src/lib/couverture.ts` :
  *   public/dbz/marque/banc-nuage.svg   tuile de volutes, répétable en x
@@ -21,7 +21,7 @@ import {
   etoilePath,
   etoileViewBox,
   svgBancNuage,
-} from "@shenron/ui/toriyama-svg/couverture";
+} from "@aphrody/shenron-ui/toriyama-svg/couverture";
 
 const racine = new URL("../public/", import.meta.url).pathname;
 const sorties: [string, string][] = [["dbz/marque/banc-nuage.svg", svgBancNuage()]];

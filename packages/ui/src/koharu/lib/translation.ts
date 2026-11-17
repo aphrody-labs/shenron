@@ -4,7 +4,7 @@ import type {
   ModelSelection,
   Provider,
   ProviderPreference,
-} from "@shenron/koharu/protocol";
+} from "@aphrody/shenron-koharu/protocol";
 
 export function providerName(entries: ProviderPreference[], provider: Provider): string {
   return entries.find((entry) => entry.config.provider === provider)?.name ?? provider;

@@ -3,7 +3,7 @@
 
 "use client";
 
-import { CircleButton } from "@shenron/m3-primitives";
+import { CircleButton } from "@aphrody/shenron-m3-primitives";
 import { clsx } from "clsx";
 
 import { type ChatLabels, resolveChatLabels } from "./chatLabels";

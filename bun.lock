@@ -5,18 +5,18 @@
     "": {
       "name": "shenron",
       "devDependencies": {
-        "@shenron/api": "workspace:*",
-        "@shenron/compression": "workspace:*",
-        "@shenron/config": "workspace:*",
-        "@shenron/db": "workspace:*",
-        "@shenron/filmcraft": "workspace:*",
-        "@shenron/hyperframes": "workspace:*",
-        "@shenron/kit": "workspace:*",
-        "@shenron/next-host": "workspace:*",
-        "@shenron/pipeline": "workspace:*",
-        "@shenron/remotion": "workspace:*",
-        "@shenron/ui": "workspace:*",
-        "@shenron/video": "workspace:*",
+        "@aphrody/shenron-api": "workspace:*",
+        "@aphrody/shenron-compression": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
+        "@aphrody/shenron-filmcraft": "workspace:*",
+        "@aphrody/shenron-hyperframes": "workspace:*",
+        "@aphrody/shenron-kit": "workspace:*",
+        "@aphrody/shenron-next-host": "workspace:*",
+        "@aphrody/shenron-pipeline": "workspace:*",
+        "@aphrody/shenron-remotion": "workspace:*",
+        "@aphrody/shenron-ui": "workspace:*",
+        "@aphrody/shenron-video": "workspace:*",
         "@types/bun": "catalog:",
         "@types/node": "catalog:",
         "@types/react": "catalog:",
@@ -28,42 +28,42 @@
       },
     },
     "apps/activity": {
-      "name": "@shenron/activity-app",
+      "name": "@aphrody/shenron-activity-app",
       "version": "1.4.7",
       "dependencies": {
+        "@aphrody/shenron-activity": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
         "@discord/embedded-app-sdk": "catalog:",
-        "@shenron/activity": "workspace:*",
-        "@shenron/config": "workspace:*",
         "react": "catalog:",
         "react-dom": "catalog:",
         "zod": "catalog:",
       },
       "devDependencies": {
-        "@shenron/ui": "workspace:*",
+        "@aphrody/shenron-ui": "workspace:*",
         "@types/bun": "catalog:",
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
       },
     },
     "apps/bot": {
-      "name": "@shenron/bot",
+      "name": "@aphrody/shenron-bot",
       "version": "1.4.5",
       "dependencies": {
+        "@aphrody/shenron-activity": "workspace:*",
+        "@aphrody/shenron-api": "workspace:*",
+        "@aphrody/shenron-auth": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
+        "@aphrody/shenron-discord-kit": "workspace:*",
+        "@aphrody/shenron-images": "workspace:*",
+        "@aphrody/shenron-kit": "workspace:*",
+        "@aphrody/shenron-media": "workspace:*",
+        "@aphrody/shenron-native": "workspace:*",
+        "@aphrody/shenron-pipeline": "workspace:*",
         "@discordx/di": "catalog:",
         "@discordx/pagination": "catalog:",
         "@napi-rs/canvas": "catalog:",
         "@pothos/core": "catalog:",
-        "@shenron/activity": "workspace:*",
-        "@shenron/api": "workspace:*",
-        "@shenron/auth": "workspace:*",
-        "@shenron/config": "workspace:*",
-        "@shenron/db": "workspace:*",
-        "@shenron/discord-kit": "workspace:*",
-        "@shenron/images": "workspace:*",
-        "@shenron/kit": "workspace:*",
-        "@shenron/media": "workspace:*",
-        "@shenron/native": "workspace:*",
-        "@shenron/pipeline": "workspace:*",
         "better-auth": "catalog:",
         "discord.js": "catalog:",
         "discordx": "catalog:",
@@ -80,24 +80,24 @@
         "zod": "catalog:",
       },
       "devDependencies": {
-        "@shenron/ui": "workspace:*",
+        "@aphrody/shenron-ui": "workspace:*",
         "drizzle-kit": "catalog:",
         "undici-types": "catalog:",
       },
     },
     "apps/server": {
-      "name": "@shenron/server",
+      "name": "@aphrody/shenron-server",
       "version": "1.4.5",
       "bin": {
         "shenron-server": "./src/cli.ts",
       },
       "dependencies": {
-        "@shenron/api": "workspace:*",
-        "@shenron/config": "workspace:*",
-        "@shenron/db": "workspace:*",
-        "@shenron/koharu": "workspace:*",
-        "@shenron/native": "workspace:*",
-        "@shenron/pipeline": "workspace:*",
+        "@aphrody/shenron-api": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
+        "@aphrody/shenron-koharu": "workspace:*",
+        "@aphrody/shenron-native": "workspace:*",
+        "@aphrody/shenron-pipeline": "workspace:*",
       },
       "devDependencies": {
         "@types/bun": "catalog:",
@@ -105,9 +105,30 @@
       },
     },
     "apps/site": {
-      "name": "@shenron/site",
+      "name": "@aphrody/shenron-site",
       "version": "1.4.5",
       "dependencies": {
+        "@aphrody/shenron-api": "workspace:*",
+        "@aphrody/shenron-auth": "workspace:*",
+        "@aphrody/shenron-compression": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
+        "@aphrody/shenron-decision": "workspace:*",
+        "@aphrody/shenron-discord-kit": "workspace:*",
+        "@aphrody/shenron-engine": "workspace:*",
+        "@aphrody/shenron-filmcraft": "workspace:*",
+        "@aphrody/shenron-hyperframes": "workspace:*",
+        "@aphrody/shenron-images": "workspace:*",
+        "@aphrody/shenron-kit": "workspace:*",
+        "@aphrody/shenron-koharu": "workspace:*",
+        "@aphrody/shenron-lexicon": "workspace:*",
+        "@aphrody/shenron-media": "workspace:*",
+        "@aphrody/shenron-native": "workspace:*",
+        "@aphrody/shenron-next-host": "workspace:*",
+        "@aphrody/shenron-pipeline": "workspace:*",
+        "@aphrody/shenron-remotion": "workspace:*",
+        "@aphrody/shenron-ui": "workspace:*",
+        "@aphrody/shenron-video": "workspace:*",
         "@codemirror/lang-markdown": "catalog:",
         "@codemirror/language-data": "catalog:",
         "@codemirror/state": "catalog:",
@@ -116,27 +137,6 @@
         "@next/third-parties": "catalog:",
         "@remotion/player": "^4.0.541",
         "@sglkc/kuromoji": "catalog:",
-        "@shenron/api": "workspace:*",
-        "@shenron/auth": "workspace:*",
-        "@shenron/compression": "workspace:*",
-        "@shenron/config": "workspace:*",
-        "@shenron/db": "workspace:*",
-        "@shenron/decision": "workspace:*",
-        "@shenron/discord-kit": "workspace:*",
-        "@shenron/engine": "workspace:*",
-        "@shenron/filmcraft": "workspace:*",
-        "@shenron/hyperframes": "workspace:*",
-        "@shenron/images": "workspace:*",
-        "@shenron/kit": "workspace:*",
-        "@shenron/koharu": "workspace:*",
-        "@shenron/lexicon": "workspace:*",
-        "@shenron/media": "workspace:*",
-        "@shenron/native": "workspace:*",
-        "@shenron/next-host": "workspace:*",
-        "@shenron/pipeline": "workspace:*",
-        "@shenron/remotion": "workspace:*",
-        "@shenron/ui": "workspace:*",
-        "@shenron/video": "workspace:*",
         "@t3-oss/env-nextjs": "catalog:",
         "@tanstack/react-query": "catalog:",
         "@tauri-apps/plugin-opener": "catalog:",
@@ -193,9 +193,9 @@
         "zod": "catalog:",
       },
       "devDependencies": {
+        "@aphrody/shenron-kit": "workspace:*",
+        "@aphrody/shenron-test-dom": "workspace:*",
         "@huggingface/transformers": "catalog:",
-        "@shenron/kit": "workspace:*",
-        "@shenron/test-dom": "workspace:*",
         "@tailwindcss/postcss": "catalog:",
         "@types/howler": "catalog:",
         "@types/react": "catalog:",
@@ -207,10 +207,10 @@
       },
     },
     "packages/activity": {
-      "name": "@shenron/activity",
+      "name": "@aphrody/shenron-activity",
       "version": "1.4.7",
       "dependencies": {
-        "@shenron/lexicon": "workspace:*",
+        "@aphrody/shenron-lexicon": "workspace:*",
         "zod": "catalog:",
       },
       "devDependencies": {
@@ -218,34 +218,34 @@
       },
     },
     "packages/api": {
-      "name": "@shenron/api",
+      "name": "@aphrody/shenron-api",
       "version": "1.4.7",
       "dependencies": {
+        "@aphrody/shenron-auth": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
+        "@aphrody/shenron-kit": "workspace:*",
+        "@aphrody/shenron-lexicon": "workspace:*",
+        "@aphrody/shenron-pipeline": "workspace:*",
         "@better-auth/cimd": "catalog:",
         "@better-auth/mcp": "catalog:",
         "@better-auth/oauth-provider": "catalog:",
         "@better-auth/passkey": "catalog:",
-        "@shenron/auth": "workspace:*",
-        "@shenron/config": "workspace:*",
-        "@shenron/db": "workspace:*",
-        "@shenron/kit": "workspace:*",
-        "@shenron/lexicon": "workspace:*",
-        "@shenron/pipeline": "workspace:*",
         "better-auth": "catalog:",
         "drizzle-orm": "catalog:",
         "zod": "catalog:",
       },
     },
     "packages/auth": {
-      "name": "@shenron/auth",
+      "name": "@aphrody/shenron-auth",
       "version": "1.4.7",
       "dependencies": {
+        "@aphrody/shenron-config": "workspace:*",
         "@better-auth/oauth-provider": "catalog:",
         "@better-auth/passkey": "catalog:",
-        "@shenron/config": "workspace:*",
       },
       "devDependencies": {
-        "@shenron/db": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
         "@types/react": "catalog:",
         "better-auth": "catalog:",
         "drizzle-orm": "catalog:",
@@ -263,7 +263,7 @@
       ],
     },
     "packages/compression": {
-      "name": "@shenron/compression",
+      "name": "@aphrody/shenron-compression",
       "version": "1.4.7",
       "bin": {
         "compression-cli": "./src/cli.ts",
@@ -273,44 +273,44 @@
       },
     },
     "packages/config": {
-      "name": "@shenron/config",
+      "name": "@aphrody/shenron-config",
       "version": "1.4.7",
       "dependencies": {
         "zod": "catalog:",
       },
       "devDependencies": {
-        "@shenron/kit": "workspace:*",
+        "@aphrody/shenron-kit": "workspace:*",
       },
     },
     "packages/crunchyroll": {
-      "name": "@shenron/crunchyroll",
+      "name": "@aphrody/shenron-crunchyroll",
       "version": "1.0.0",
       "bin": {
         "crunchyroll-cli": "./src/cli.ts",
         "crunchyroll-mcp": "./src/mcp.ts",
       },
       "dependencies": {
+        "@aphrody/shenron-media": "workspace:*",
         "@modelcontextprotocol/sdk": "catalog:",
-        "@shenron/media": "workspace:*",
       },
       "devDependencies": {
         "@types/bun": "catalog:",
       },
     },
     "packages/db": {
-      "name": "@shenron/db",
+      "name": "@aphrody/shenron-db",
       "version": "1.4.7",
       "dependencies": {
-        "@shenron/config": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
         "drizzle-orm": "catalog:",
         "postgres": "catalog:",
       },
     },
     "packages/dbxv2": {
-      "name": "@shenron/dbxv2",
+      "name": "@aphrody/shenron-dbxv2",
       "version": "1.4.7",
       "dependencies": {
-        "@shenron/db": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
         "zod": "catalog:",
       },
       "devDependencies": {
@@ -318,7 +318,7 @@
       },
     },
     "packages/decision": {
-      "name": "@shenron/decision",
+      "name": "@aphrody/shenron-decision",
       "version": "1.0.0",
       "dependencies": {
         "@typesafe-ai/sdk": "0.6.0",
@@ -328,7 +328,7 @@
       },
     },
     "packages/discord-kit": {
-      "name": "@shenron/discord-kit",
+      "name": "@aphrody/shenron-discord-kit",
       "version": "1.0.0",
       "dependencies": {
         "@discordjs/rest": "^2.6.3",
@@ -343,17 +343,17 @@
       },
     },
     "packages/engine": {
-      "name": "@shenron/engine",
+      "name": "@aphrody/shenron-engine",
       "version": "1.4.7",
       "dependencies": {
-        "@shenron/compression": "workspace:*",
+        "@aphrody/shenron-compression": "workspace:*",
       },
       "devDependencies": {
         "@types/bun": "catalog:",
       },
     },
     "packages/filmcraft": {
-      "name": "@shenron/filmcraft",
+      "name": "@aphrody/shenron-filmcraft",
       "version": "1.4.7",
       "bin": {
         "filmcraft-cli": "./src/cli.ts",
@@ -363,21 +363,21 @@
       },
     },
     "packages/hyperframes": {
-      "name": "@shenron/hyperframes",
+      "name": "@aphrody/shenron-hyperframes",
       "version": "1.4.7",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
     },
     "packages/images": {
-      "name": "@shenron/images",
+      "name": "@aphrody/shenron-images",
       "version": "1.4.7",
       "dependencies": {
         "sharp": "catalog:",
       },
     },
     "packages/kit": {
-      "name": "@shenron/kit",
+      "name": "@aphrody/shenron-kit",
       "version": "1.0.0",
       "dependencies": {
         "sharp": "catalog:",
@@ -387,7 +387,7 @@
       },
     },
     "packages/koharu": {
-      "name": "@shenron/koharu",
+      "name": "@aphrody/shenron-koharu",
       "version": "1.4.7",
       "dependencies": {
         "@tauri-apps/api": "catalog:",
@@ -397,18 +397,18 @@
       },
     },
     "packages/lexicon": {
-      "name": "@shenron/lexicon",
+      "name": "@aphrody/shenron-lexicon",
       "version": "1.4.7",
       "devDependencies": {
         "@types/bun": "catalog:",
       },
     },
     "packages/m3-ai": {
-      "name": "@shenron/m3-ai",
+      "name": "@aphrody/shenron-m3-ai",
       "version": "1.0.0",
       "dependencies": {
-        "@shenron/m3-motion": "workspace:*",
-        "@shenron/m3-primitives": "workspace:*",
+        "@aphrody/shenron-m3-motion": "workspace:*",
+        "@aphrody/shenron-m3-primitives": "workspace:*",
         "clsx": "^2.1.1",
         "motion": "^13.4.4",
         "react-markdown": "^10.1.0",
@@ -422,7 +422,7 @@
       },
     },
     "packages/m3-motion": {
-      "name": "@shenron/m3-motion",
+      "name": "@aphrody/shenron-m3-motion",
       "version": "1.0.0",
       "dependencies": {
         "motion": "^13.4.4",
@@ -436,11 +436,11 @@
       },
     },
     "packages/m3-primitives": {
-      "name": "@shenron/m3-primitives",
+      "name": "@aphrody/shenron-m3-primitives",
       "version": "1.0.0",
       "dependencies": {
+        "@aphrody/shenron-m3-motion": "workspace:*",
         "@base-ui/react": "catalog:",
-        "@shenron/m3-motion": "workspace:*",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "motion": "^13.4.4",
@@ -456,7 +456,7 @@
       },
     },
     "packages/m3-reader": {
-      "name": "@shenron/m3-reader",
+      "name": "@aphrody/shenron-m3-reader",
       "version": "1.0.0",
       "dependencies": {
         "@tanstack/react-virtual": "3.14.13",
@@ -470,10 +470,10 @@
       },
     },
     "packages/m3-theme": {
-      "name": "@shenron/m3-theme",
+      "name": "@aphrody/shenron-m3-theme",
       "version": "1.0.0",
       "dependencies": {
-        "@shenron/m3-tokens": "workspace:*",
+        "@aphrody/shenron-m3-tokens": "workspace:*",
       },
       "devDependencies": {
         "@material/material-color-utilities": "^0.4.0",
@@ -483,20 +483,20 @@
       },
     },
     "packages/m3-tokens": {
-      "name": "@shenron/m3-tokens",
+      "name": "@aphrody/shenron-m3-tokens",
       "version": "1.0.0",
       "dependencies": {
         "@material/material-color-utilities": "^0.4.0",
       },
     },
     "packages/media": {
-      "name": "@shenron/media",
+      "name": "@aphrody/shenron-media",
       "version": "1.4.7",
       "dependencies": {
-        "@shenron/filmcraft": "workspace:*",
-        "@shenron/hyperframes": "workspace:*",
-        "@shenron/kit": "workspace:*",
-        "@shenron/remotion": "workspace:*",
+        "@aphrody/shenron-filmcraft": "workspace:*",
+        "@aphrody/shenron-hyperframes": "workspace:*",
+        "@aphrody/shenron-kit": "workspace:*",
+        "@aphrody/shenron-remotion": "workspace:*",
         "mediabunny": "catalog:",
       },
       "devDependencies": {
@@ -504,7 +504,7 @@
       },
     },
     "packages/native": {
-      "name": "@shenron/native",
+      "name": "@aphrody/shenron-native",
       "version": "1.4.7",
       "dependencies": {
         "@modelcontextprotocol/sdk": "catalog:",
@@ -514,14 +514,14 @@
       },
     },
     "packages/next-host": {
-      "name": "@shenron/next-host",
+      "name": "@aphrody/shenron-next-host",
       "version": "1.0.0",
       "peerDependencies": {
         "next": ">=16.0.0",
       },
     },
     "packages/pipeline": {
-      "name": "@shenron/pipeline",
+      "name": "@aphrody/shenron-pipeline",
       "version": "1.4.7",
       "bin": {
         "pipeline": "./src/cli.ts",
@@ -529,14 +529,14 @@
       "dependencies": {
         "@ai-sdk/openai-compatible": "catalog:",
         "@ai-sdk/provider": "catalog:",
-        "@shenron/config": "workspace:*",
-        "@shenron/db": "workspace:*",
-        "@shenron/decision": "workspace:*",
-        "@shenron/kit": "workspace:*",
-        "@shenron/koharu": "workspace:*",
-        "@shenron/lexicon": "workspace:*",
-        "@shenron/media": "workspace:*",
-        "@shenron/native": "workspace:*",
+        "@aphrody/shenron-config": "workspace:*",
+        "@aphrody/shenron-db": "workspace:*",
+        "@aphrody/shenron-decision": "workspace:*",
+        "@aphrody/shenron-kit": "workspace:*",
+        "@aphrody/shenron-koharu": "workspace:*",
+        "@aphrody/shenron-lexicon": "workspace:*",
+        "@aphrody/shenron-media": "workspace:*",
+        "@aphrody/shenron-native": "workspace:*",
         "@typesafe-ai/sdk": "0.6.0",
         "ai": "catalog:",
         "postgres": "catalog:",
@@ -546,7 +546,7 @@
       },
     },
     "packages/remotion": {
-      "name": "@shenron/remotion",
+      "name": "@aphrody/shenron-remotion",
       "version": "1.4.7",
       "devDependencies": {
         "@types/bun": "catalog:",
@@ -554,25 +554,25 @@
       },
     },
     "packages/test-dom": {
-      "name": "@shenron/test-dom",
+      "name": "@aphrody/shenron-test-dom",
       "version": "1.0.0",
       "dependencies": {
         "@happy-dom/global-registrator": "^21.0.4",
       },
     },
     "packages/ui": {
-      "name": "@shenron/ui",
+      "name": "@aphrody/shenron-ui",
       "version": "1.4.7",
       "dependencies": {
+        "@aphrody/shenron-config": "workspace:*",
+        "@aphrody/shenron-koharu": "workspace:*",
+        "@aphrody/shenron-m3-ai": "workspace:*",
+        "@aphrody/shenron-m3-primitives": "workspace:*",
+        "@aphrody/shenron-m3-reader": "workspace:*",
+        "@aphrody/shenron-m3-theme": "workspace:*",
+        "@aphrody/shenron-m3-tokens": "workspace:*",
+        "@aphrody/shenron-pipeline": "workspace:*",
         "@base-ui/react": "catalog:",
-        "@shenron/config": "workspace:*",
-        "@shenron/koharu": "workspace:*",
-        "@shenron/m3-ai": "workspace:*",
-        "@shenron/m3-primitives": "workspace:*",
-        "@shenron/m3-reader": "workspace:*",
-        "@shenron/m3-theme": "workspace:*",
-        "@shenron/m3-tokens": "workspace:*",
-        "@shenron/pipeline": "workspace:*",
         "@tanstack/react-query": "catalog:",
         "@tanstack/react-virtual": "catalog:",
         "@tauri-apps/api": "catalog:",
@@ -596,8 +596,8 @@
         "zustand": "catalog:",
       },
       "devDependencies": {
-        "@shenron/kit": "workspace:*",
-        "@shenron/test-dom": "workspace:*",
+        "@aphrody/shenron-kit": "workspace:*",
+        "@aphrody/shenron-test-dom": "workspace:*",
         "@tailwindcss/postcss": "catalog:",
         "@testing-library/jest-dom": "catalog:",
         "@testing-library/react": "catalog:",
@@ -617,7 +617,7 @@
       },
     },
     "packages/video": {
-      "name": "@shenron/video",
+      "name": "@aphrody/shenron-video",
       "version": "1.0.0",
       "dependencies": {
         "hls.js": "1.7.4",
@@ -778,6 +778,76 @@
     "@ai-sdk/provider-utils": ["@ai-sdk/provider-utils@5.0.81", "", { "dependencies": { "@ai-sdk/provider": "4.0.38", "@standard-schema/spec": "^1.1.0", "@workflow/serde": "4.1.0", "eventsource-parser": "^3.0.8" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-pfvvdQ3d1WxdBuug/mnGEP6E48cPokwD8dMBnsFeeAUp0/rb/H2aj0f3mwOiY62gu/Cu5GO44e+SE5nDHyBWMA=="],
 
     "@alloc/quick-lru": ["@alloc/quick-lru@5.3.0", "", {}, "sha512-U4+70Pc5ZS9osnCBCE5Jha/ciHM+Yp+CNMNC/7HvYbNRk1Ldd+f7qO65W5qfhu/TCv+/ozljlXXe9Nj8419DMA=="],
+
+    "@aphrody/shenron-activity": ["@aphrody/shenron-activity@workspace:packages/activity"],
+
+    "@aphrody/shenron-activity-app": ["@aphrody/shenron-activity-app@workspace:apps/activity"],
+
+    "@aphrody/shenron-api": ["@aphrody/shenron-api@workspace:packages/api"],
+
+    "@aphrody/shenron-auth": ["@aphrody/shenron-auth@workspace:packages/auth"],
+
+    "@aphrody/shenron-bot": ["@aphrody/shenron-bot@workspace:apps/bot"],
+
+    "@aphrody/shenron-compression": ["@aphrody/shenron-compression@workspace:packages/compression"],
+
+    "@aphrody/shenron-config": ["@aphrody/shenron-config@workspace:packages/config"],
+
+    "@aphrody/shenron-crunchyroll": ["@aphrody/shenron-crunchyroll@workspace:packages/crunchyroll"],
+
+    "@aphrody/shenron-db": ["@aphrody/shenron-db@workspace:packages/db"],
+
+    "@aphrody/shenron-dbxv2": ["@aphrody/shenron-dbxv2@workspace:packages/dbxv2"],
+
+    "@aphrody/shenron-decision": ["@aphrody/shenron-decision@workspace:packages/decision"],
+
+    "@aphrody/shenron-discord-kit": ["@aphrody/shenron-discord-kit@workspace:packages/discord-kit"],
+
+    "@aphrody/shenron-engine": ["@aphrody/shenron-engine@workspace:packages/engine"],
+
+    "@aphrody/shenron-filmcraft": ["@aphrody/shenron-filmcraft@workspace:packages/filmcraft"],
+
+    "@aphrody/shenron-hyperframes": ["@aphrody/shenron-hyperframes@workspace:packages/hyperframes"],
+
+    "@aphrody/shenron-images": ["@aphrody/shenron-images@workspace:packages/images"],
+
+    "@aphrody/shenron-kit": ["@aphrody/shenron-kit@workspace:packages/kit"],
+
+    "@aphrody/shenron-koharu": ["@aphrody/shenron-koharu@workspace:packages/koharu"],
+
+    "@aphrody/shenron-lexicon": ["@aphrody/shenron-lexicon@workspace:packages/lexicon"],
+
+    "@aphrody/shenron-m3-ai": ["@aphrody/shenron-m3-ai@workspace:packages/m3-ai"],
+
+    "@aphrody/shenron-m3-motion": ["@aphrody/shenron-m3-motion@workspace:packages/m3-motion"],
+
+    "@aphrody/shenron-m3-primitives": ["@aphrody/shenron-m3-primitives@workspace:packages/m3-primitives"],
+
+    "@aphrody/shenron-m3-reader": ["@aphrody/shenron-m3-reader@workspace:packages/m3-reader"],
+
+    "@aphrody/shenron-m3-theme": ["@aphrody/shenron-m3-theme@workspace:packages/m3-theme"],
+
+    "@aphrody/shenron-m3-tokens": ["@aphrody/shenron-m3-tokens@workspace:packages/m3-tokens"],
+
+    "@aphrody/shenron-media": ["@aphrody/shenron-media@workspace:packages/media"],
+
+    "@aphrody/shenron-native": ["@aphrody/shenron-native@workspace:packages/native"],
+
+    "@aphrody/shenron-next-host": ["@aphrody/shenron-next-host@workspace:packages/next-host"],
+
+    "@aphrody/shenron-pipeline": ["@aphrody/shenron-pipeline@workspace:packages/pipeline"],
+
+    "@aphrody/shenron-remotion": ["@aphrody/shenron-remotion@workspace:packages/remotion"],
+
+    "@aphrody/shenron-server": ["@aphrody/shenron-server@workspace:apps/server"],
+
+    "@aphrody/shenron-site": ["@aphrody/shenron-site@workspace:apps/site"],
+
+    "@aphrody/shenron-test-dom": ["@aphrody/shenron-test-dom@workspace:packages/test-dom"],
+
+    "@aphrody/shenron-ui": ["@aphrody/shenron-ui@workspace:packages/ui"],
+
+    "@aphrody/shenron-video": ["@aphrody/shenron-video@workspace:packages/video"],
 
     "@babel/code-frame": ["@babel/code-frame@7.29.7", "", { "dependencies": { "@babel/helper-validator-identifier": "^7.29.7", "js-tokens": "^4.0.0", "picocolors": "^1.1.1" } }, "sha512-Aup7aUOfpbAUg2ROOJN6Iw5f9DMBlzu0mIkm/malLQFN/YQgO48wCj0Kxa3sEHJvPVFg7siR+qRInwXd2qhQKw=="],
 
@@ -1402,76 +1472,6 @@
     "@sglkc/kuromoji": ["@sglkc/kuromoji@1.1.0", "", { "dependencies": { "async": "^2.0.1", "doublearray": "0.0.2", "fflate": "^0.8.0" } }, "sha512-uKxXYUM5XNjZw0ia0yMYTI3jHSh/c1gEMNvcvS6J49B4mI+PAq8iRYPTxh2ma0RWm45LyWWrILxCJAIXpi/pww=="],
 
     "@shadcn/registry": ["@shadcn/registry@0.2.1", "", { "dependencies": { "@babel/core": "^7.28.0", "@babel/parser": "^7.28.0", "@babel/plugin-transform-typescript": "^7.28.0", "@babel/preset-typescript": "^7.27.1", "@dotenvx/dotenvx": "^1.48.4", "cn": "^0.2.4", "code-block-writer": "^13.0.3", "deepmerge": "^4.3.1", "execa": "^9.6.0", "fast-glob": "^3.3.3", "fs-extra": "^11.3.1", "fuzzysort": "^3.1.0", "kleur": "^4.1.5", "ora": "^8.2.0", "postcss": "^8.5.23", "prompts": "^2.4.2", "recast": "^0.23.11", "socks": "^2.8.8", "stringify-object": "^5.0.0", "tsconfig-paths": "^4.2.0", "type-fest": "^4.41.0", "undici": "^7.30.1", "zod": "^4.2.0" } }, "sha512-wMvZ3DGdnhCwtpeFbwKybSGfCcP52bZX77jMKgZvupmirgyA5KRLlkeQXkI2RGHIaD8TX2iWe2wcIEjjqzg2FQ=="],
-
-    "@shenron/activity": ["@shenron/activity@workspace:packages/activity"],
-
-    "@shenron/activity-app": ["@shenron/activity-app@workspace:apps/activity"],
-
-    "@shenron/api": ["@shenron/api@workspace:packages/api"],
-
-    "@shenron/auth": ["@shenron/auth@workspace:packages/auth"],
-
-    "@shenron/bot": ["@shenron/bot@workspace:apps/bot"],
-
-    "@shenron/compression": ["@shenron/compression@workspace:packages/compression"],
-
-    "@shenron/config": ["@shenron/config@workspace:packages/config"],
-
-    "@shenron/crunchyroll": ["@shenron/crunchyroll@workspace:packages/crunchyroll"],
-
-    "@shenron/db": ["@shenron/db@workspace:packages/db"],
-
-    "@shenron/dbxv2": ["@shenron/dbxv2@workspace:packages/dbxv2"],
-
-    "@shenron/decision": ["@shenron/decision@workspace:packages/decision"],
-
-    "@shenron/discord-kit": ["@shenron/discord-kit@workspace:packages/discord-kit"],
-
-    "@shenron/engine": ["@shenron/engine@workspace:packages/engine"],
-
-    "@shenron/filmcraft": ["@shenron/filmcraft@workspace:packages/filmcraft"],
-
-    "@shenron/hyperframes": ["@shenron/hyperframes@workspace:packages/hyperframes"],
-
-    "@shenron/images": ["@shenron/images@workspace:packages/images"],
-
-    "@shenron/kit": ["@shenron/kit@workspace:packages/kit"],
-
-    "@shenron/koharu": ["@shenron/koharu@workspace:packages/koharu"],
-
-    "@shenron/lexicon": ["@shenron/lexicon@workspace:packages/lexicon"],
-
-    "@shenron/m3-ai": ["@shenron/m3-ai@workspace:packages/m3-ai"],
-
-    "@shenron/m3-motion": ["@shenron/m3-motion@workspace:packages/m3-motion"],
-
-    "@shenron/m3-primitives": ["@shenron/m3-primitives@workspace:packages/m3-primitives"],
-
-    "@shenron/m3-reader": ["@shenron/m3-reader@workspace:packages/m3-reader"],
-
-    "@shenron/m3-theme": ["@shenron/m3-theme@workspace:packages/m3-theme"],
-
-    "@shenron/m3-tokens": ["@shenron/m3-tokens@workspace:packages/m3-tokens"],
-
-    "@shenron/media": ["@shenron/media@workspace:packages/media"],
-
-    "@shenron/native": ["@shenron/native@workspace:packages/native"],
-
-    "@shenron/next-host": ["@shenron/next-host@workspace:packages/next-host"],
-
-    "@shenron/pipeline": ["@shenron/pipeline@workspace:packages/pipeline"],
-
-    "@shenron/remotion": ["@shenron/remotion@workspace:packages/remotion"],
-
-    "@shenron/server": ["@shenron/server@workspace:apps/server"],
-
-    "@shenron/site": ["@shenron/site@workspace:apps/site"],
-
-    "@shenron/test-dom": ["@shenron/test-dom@workspace:packages/test-dom"],
-
-    "@shenron/ui": ["@shenron/ui@workspace:packages/ui"],
-
-    "@shenron/video": ["@shenron/video@workspace:packages/video"],
 
     "@simplewebauthn/browser": ["@simplewebauthn/browser@13.3.0", "", {}, "sha512-BE/UWv6FOToAdVk0EokzkqQQDOWtNydYlY6+OrmiZ5SCNmb41VehttboTetUM3T/fr6EAFYVXjz4My2wg230rQ=="],
 
@@ -2943,6 +2943,12 @@
 
     "zwitch": ["zwitch@2.0.4", "", {}, "sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A=="],
 
+    "@aphrody/shenron-site/lucide-react": ["lucide-react@1.72.0", "", { "peerDependencies": { "@types/react": "*", "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" }, "optionalPeers": ["@types/react"] }, "sha512-fbF5i1GU8GODETa3Q7rXqrJrcx3iPYrQtxthom103zGx+Z0BGwKYAW9s+9435ohYJ7hQm0av0PoZcqI1CRwNrg=="],
+
+    "@aphrody/shenron-ui/@tanstack/react-virtual": ["@tanstack/react-virtual@3.14.26", "", { "dependencies": { "@tanstack/virtual-core": "3.19.11" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-HUDlfsrYH6ko5xH56L62Mcl/uzT+AGVNMHFuDNqDJMdZWc1AQa2oeVKNUvZ/RWBZQ4TYtyQerFrNvLnp39h65A=="],
+
+    "@aphrody/shenron-ui/lucide-react": ["lucide-react@1.72.0", "", { "peerDependencies": { "@types/react": "*", "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" }, "optionalPeers": ["@types/react"] }, "sha512-fbF5i1GU8GODETa3Q7rXqrJrcx3iPYrQtxthom103zGx+Z0BGwKYAW9s+9435ohYJ7hQm0av0PoZcqI1CRwNrg=="],
+
     "@babel/core/semver": ["semver@6.3.2", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-GYrCADwpu6yV5OAvchkQ27Z5wwMxWAEMg5NNWjyHh/5DboFFqbdbvYNIvZouQpxXyeMPoTOh0vdPYKlf0ZswdQ=="],
 
     "@babel/helper-compilation-targets/lru-cache": ["lru-cache@5.1.1", "", { "dependencies": { "yallist": "^3.0.2" } }, "sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w=="],
@@ -2970,12 +2976,6 @@
     "@graphql-tools/executor/@whatwg-node/promise-helpers": ["@whatwg-node/promise-helpers@2.0.2", "", { "dependencies": { "tslib": "^2.9.1" } }, "sha512-RKVGTBAuYfObHxUFjlTFmlDndmuXBxkN56yj3z6EQpNpT55R/xaMhTi4+9yXZ5UoDXbKLAsZHCP8ycoWHM/Vdg=="],
 
     "@graphql-tools/utils/@whatwg-node/promise-helpers": ["@whatwg-node/promise-helpers@2.0.2", "", { "dependencies": { "tslib": "^2.9.1" } }, "sha512-RKVGTBAuYfObHxUFjlTFmlDndmuXBxkN56yj3z6EQpNpT55R/xaMhTi4+9yXZ5UoDXbKLAsZHCP8ycoWHM/Vdg=="],
-
-    "@shenron/site/lucide-react": ["lucide-react@1.72.0", "", { "peerDependencies": { "@types/react": "*", "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" }, "optionalPeers": ["@types/react"] }, "sha512-fbF5i1GU8GODETa3Q7rXqrJrcx3iPYrQtxthom103zGx+Z0BGwKYAW9s+9435ohYJ7hQm0av0PoZcqI1CRwNrg=="],
-
-    "@shenron/ui/@tanstack/react-virtual": ["@tanstack/react-virtual@3.14.26", "", { "dependencies": { "@tanstack/virtual-core": "3.19.11" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-HUDlfsrYH6ko5xH56L62Mcl/uzT+AGVNMHFuDNqDJMdZWc1AQa2oeVKNUvZ/RWBZQ4TYtyQerFrNvLnp39h65A=="],
-
-    "@shenron/ui/lucide-react": ["lucide-react@1.72.0", "", { "peerDependencies": { "@types/react": "*", "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" }, "optionalPeers": ["@types/react"] }, "sha512-fbF5i1GU8GODETa3Q7rXqrJrcx3iPYrQtxthom103zGx+Z0BGwKYAW9s+9435ohYJ7hQm0av0PoZcqI1CRwNrg=="],
 
     "@tailwindcss/oxide-wasm32-wasi/@emnapi/core": ["@emnapi/core@1.11.3", "", { "dependencies": { "@emnapi/wasi-threads": "1.2.3", "tslib": "^2.4.0" }, "bundled": true }, "sha512-zLpS5asjEb7lq8jYLq37N6XKaE41DIexlY1rF/z4/tIl3wo13Sqm28fRyfIsKZD+NZ8mM5RoKkpW/rBcuoSZSg=="],
 
@@ -3049,6 +3049,8 @@
 
     "wsl-utils/is-wsl": ["is-wsl@3.1.1", "", { "dependencies": { "is-inside-container": "^1.0.0" } }, "sha512-e6rvdUCiQCAuumZslxRJWR/Doq4VpPR82kqclvcS0efgt430SlGIk05vdCN58+VrzgtIcfNODjozVielycD4Sw=="],
 
+    "@aphrody/shenron-ui/@tanstack/react-virtual/@tanstack/virtual-core": ["@tanstack/virtual-core@3.19.11", "", {}, "sha512-/5iHb0RHBvj8Di59FDs4ESNm45jls33aZAi4zccVXZjc/6ZvwQP6nzEYeT6weXjTf9E6/vrp2JhYWRyO+ZP13A=="],
+
     "@dotenvx/dotenvx/execa/get-stream": ["get-stream@6.0.1", "", {}, "sha512-ts6Wi+2j3jQjqi70w5AlN8DFnkSwC+MqmxEzdEALB2qXZYV3X/b1CTfgPLGJNMeAWxdPfU8FO1ms3NUfaHCPYg=="],
 
     "@dotenvx/dotenvx/execa/human-signals": ["human-signals@2.1.0", "", {}, "sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw=="],
@@ -3108,8 +3110,6 @@
     "@esbuild-kit/core-utils/esbuild/@esbuild/win32-ia32": ["@esbuild/win32-ia32@0.18.20", "", { "os": "win32", "cpu": "ia32" }, "sha512-Wv7QBi3ID/rROT08SABTS7eV4hX26sVduqDOTe1MvGMjNd3EjOz4b7zeexIR62GTIEKrfJXKL9LFxTYgkyeu7g=="],
 
     "@esbuild-kit/core-utils/esbuild/@esbuild/win32-x64": ["@esbuild/win32-x64@0.18.20", "", { "os": "win32", "cpu": "x64" }, "sha512-kTdfRcSiDfQca/y9QIkng02avJ+NCaQvrMejlsB3RRv5sE9rRoeBPISaZpKxHELzRxZyLvNts1P27W3wV+8geQ=="],
-
-    "@shenron/ui/@tanstack/react-virtual/@tanstack/virtual-core": ["@tanstack/virtual-core@3.19.11", "", {}, "sha512-/5iHb0RHBvj8Di59FDs4ESNm45jls33aZAi4zccVXZjc/6ZvwQP6nzEYeT6weXjTf9E6/vrp2JhYWRyO+ZP13A=="],
 
     "enquirer/strip-ansi/ansi-regex": ["ansi-regex@5.0.1", "", {}, "sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ=="],
 

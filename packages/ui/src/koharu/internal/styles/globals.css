@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 @source '../../components/**/*.{ts,tsx}';
 @source '../**/*.{ts,tsx}';
-/* Shared @shenron/ui primitives the editor composes. */
+/* Shared @aphrody/shenron-ui primitives the editor composes. */
 @source '../../../components/{alert-dialog,button,dialog,dropdown-menu,input,popover,select,separator,slider,textarea,tooltip}.tsx';
 
 /* Translate the Koharu-internal primitive class vocabulary to host M3 roles. */

@@ -1,5 +1,5 @@
 /**
- * Design tokens of `@shenron/ui`, generated from `src/styles.css`.
+ * Design tokens of `@aphrody/shenron-ui`, generated from `src/styles.css`.
  *
  * Do not edit by hand: run `bun packages/ui/scripts/generate-tokens.ts`.
  * `--check` and `test/tokens.test.ts` fail when this file drifts from the

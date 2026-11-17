@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { decodeRgba } from "@shenron/kit/image";
+import { decodeRgba } from "@aphrody/shenron-kit/image";
 import { describe, expect, test } from "bun:test";
 import { TECHNIQUE_ARTWORK, resolveTechniqueArtwork } from "../src/lib/technique-artwork";
 import { uiAssetPaths } from "../../../packages/ui/src/assets";

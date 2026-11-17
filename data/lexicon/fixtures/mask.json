@@ -1,5 +1,5 @@
 {
-  "description": "maskText() then restoreTokens(): `entries` are { sources, target }; `options` are { prefix, width, maxTokens }. `tokens` lists [token, target] in token order. When `translation` is given, restoring it with the tokens must give `restored`, `unresolved` and `missing`. Shared by shenron_lexicon (Rust) and @shenron/lexicon (TypeScript).",
+  "description": "maskText() then restoreTokens(): `entries` are { sources, target }; `options` are { prefix, width, maxTokens }. `tokens` lists [token, target] in token order. When `translation` is given, restoring it with the tokens must give `restored`, `unresolved` and `missing`. Shared by shenron_lexicon (Rust) and @aphrody/shenron-lexicon (TypeScript).",
   "cases": [
     {
       "name": "longest first, one pass, no overlap, one token per entry",

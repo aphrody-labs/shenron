@@ -3,7 +3,7 @@
  * Runs a callback against a local YOLO WEB CDP server (`yolo-browser serve --port N`).
  *
  * Uses native BunBrowser CDP client to drive the session with zero external dependencies.
- * `YOLO_WEB_BIN` overrides the executable.
+ * `SHENRON_YOLO_WEB_BIN` (alias `YOLO_WEB_BIN`) overrides the executable.
  */
 import { BunBrowser, type BunBrowserPage } from "./bun-browser";
 
@@ -62,10 +62,10 @@ export async function withCdpServer<T>(
 }
 
 export async function withObscura<T>(run: (session: ObscuraSession) => Promise<T>): Promise<T> {
-  const binary = process.env.YOLO_WEB_BIN ?? Bun.which("yolo-browser");
+  const binary = process.env.SHENRON_YOLO_WEB_BIN ?? process.env.YOLO_WEB_BIN ?? Bun.which("yolo-browser");
   if (!binary)
     throw new Error(
-      "yolo-browser not found; build apps/yolo-browser-cli from yolo-rs/yolo-web or set YOLO_WEB_BIN",
+      "yolo-browser not found; build apps/yolo-browser-cli from yolo-rs/yolo-web or set SHENRON_YOLO_WEB_BIN",
     );
   return withCdpServer((port) => [binary, "serve", "--port", String(port)], run);
 }

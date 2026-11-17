@@ -1,6 +1,6 @@
 import "./setup"; // must be first
 import { afterEach, describe, expect, test } from "bun:test";
-import { tokens } from "@shenron/ui/tokens";
+import { tokens } from "@aphrody/shenron-ui/tokens";
 import { isUpToDate, projectColors, renderTokensModule } from "~/render/generate-tokens";
 import {
   luminance,

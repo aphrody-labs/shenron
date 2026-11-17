@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { FooterFrame } from "@shenron/ui/navigation/FooterFrame";
-import { DragonBall } from "@shenron/ui/toriyama";
-import { FooterFabGuard } from "@shenron/ui/navigation/FooterFabGuard";
+import { FooterFrame } from "@aphrody/shenron-ui/navigation/FooterFrame";
+import { DragonBall } from "@aphrody/shenron-ui/toriyama";
+import { FooterFabGuard } from "@aphrody/shenron-ui/navigation/FooterFabGuard";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { T } from "@/components/T";
 import { DISCORD_INVITE } from "@/lib/config";
-import { isPathPublic } from "@shenron/config/wiki-launch";
+import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { destinationsOf, type Journey } from "@/lib/site-map";
 import { nowDate } from "@/lib/clock";

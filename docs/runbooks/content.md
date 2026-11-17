@@ -136,13 +136,13 @@ Couverture.
 Commandes.
 
 - `bun apps/site/scripts/traduction-boucle.ts [--lots N --taille N --databook ID --moteur auto|shenron|shenron-translate|agy|google|nllb --modele Xenova/nllb-200-distilled-600M --shards K --shard-index i] [--appliquer]`
-- Ou la même chose via `bun run --filter @shenron/pipeline pipeline translation …`
+- Ou la même chose via `bun run --filter @aphrody/shenron-pipeline pipeline translation …`
 - Statut : `bun scripts/ops/translate-databooks-corpus.ts --statut`
 - Lexique : `bun scripts/data/lexicon.ts coverage --json` (en lecture seule, exécuté pour cet audit), `--check`, `build`
 
 Dry-run. La simulation est le défaut de `traduction-boucle.ts`, mais elle appelle les moteurs et se connecte à la base. `translate-databooks-session.ts` écrit par défaut.
 
-Lexique réellement consommé. Le lexique par lot est lu en direct depuis `bot.db_characters`, `db_planets`, `db_races`, `db_sagas` et `db_techniques` (`name_ja`/`name`, voir `apps/site/scripts/planches-a-traduire.ts:185-191`). Le masquage des termes vient de `@shenron/lexicon`. Koharu lit `KOHARU_GLOSSARY` ; son modèle local est `gemma4-12b-it`.
+Lexique réellement consommé. Le lexique par lot est lu en direct depuis `bot.db_characters`, `db_planets`, `db_races`, `db_sagas` et `db_techniques` (`name_ja`/`name`, voir `apps/site/scripts/planches-a-traduire.ts:185-191`). Le masquage des termes vient de `@aphrody/shenron-lexicon`. Koharu lit `KOHARU_GLOSSARY` ; son modèle local est `gemma4-12b-it`.
 
 Hôte. NLLB tourne sur CPU : prod en tmux (31 Gio) ou vps. Gemini web et `agy` tournent en local, là où sont les cookies.
 
@@ -219,7 +219,7 @@ Couverture.
 Commandes.
 
 - Temps réel : `apps/bot/src/events/NewsScan.ts`, qui capture les salons d'annonce Discord (persona `grandPretre`) dans le bot prod.
-- `bun --filter @shenron/bot db:sync-news` → `apps/bot/scripts/sync-news.ts` : prend les 5 dernières URL du sitemap officiel FR. Pas de dry-run.
+- `bun --filter @aphrody/shenron-bot db:sync-news` → `apps/bot/scripts/sync-news.ts` : prend les 5 dernières URL du sitemap officiel FR. Pas de dry-run.
 - `NewsService.syncFromSitemap` n'est qu'un stub (`apps/bot/src/services/NewsService.ts:146`).
 
 Cadence. Aucune hors des évènements Discord : pas de cron ni de timer.
@@ -251,7 +251,7 @@ Configuration.
 
 Commandes.
 
-- `bun run --filter @shenron/pipeline pipeline crawl <dragonballcn|kanzenshuu|official|databooks|guides|custom|universal> [URL] --dry-run [--max-depth --max-requests --out]`. La cible `custom` refuse Fandom.
+- `bun run --filter @aphrody/shenron-pipeline pipeline crawl <dragonballcn|kanzenshuu|official|databooks|guides|custom|universal> [URL] --dry-run [--max-depth --max-requests --out]`. La cible `custom` refuse Fandom.
 - `pipeline unify --dry-run` : réindexe les exports existants sans recrawler.
 - Skill publish-source : `bun scripts/ops/publish-source.ts --source URL --target https://dragonballfr.com/publications/<slug> --job /abs/private [--apply]`.
   - Sans `--apply`, il ne produit que `plan.json`.
@@ -562,7 +562,7 @@ Prochaine étape.
 
 ### 14. Outils média
 
-- Bun Video. `@shenron/bun-video` est épinglé en `1.4.4-video.1` (`package.json:223-231`), avec les exports `/hls`, `/playback` et `/crunchyroll`. Il dispose d'une exception `minimumReleaseAge` accordée par le propriétaire. La version `.6` n'était pas publiée au 25/10, faute de 32 Gio de disque.
+- Bun Video. `@aphrody/shenron-bun-video` est épinglé en `1.4.4-video.1` (`package.json:223-231`), avec les exports `/hls`, `/playback` et `/crunchyroll`. Il dispose d'une exception `minimumReleaseAge` accordée par le propriétaire. La version `.6` n'était pas publiée au 25/10, faute de 32 Gio de disque.
 - Remotion. Seulement des libellés dans `apps/site/src/app/studio/video/*`. Le vrai rendu est `scripts/video/render.ts` (Bun.WebView vers l'encodeur, `SHENRON_VIDEO_*`).
 - Archives. Scripts `scripts/ops/apply-archive-catalog.ts`, `enrich-internet-archive.ts`, `archive-bot-sqlite-variants.ts [--apply]` et `shenron-offsite-backup.ts`. En base, `bot.archive_catalog_files` compte 62 lignes.
 - Images. `packages/images` est une bibliothèque sharp (hash, variantes, WebP), pas un service. Le redimensionnement passe par `/_next/image` derrière `origin-cdn.dragonballfr.com`. Il n'existe pas de service d'images Bun auto-hébergé.

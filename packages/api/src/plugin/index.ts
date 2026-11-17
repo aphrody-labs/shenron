@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/api/plugin` — le plugin « shenron » (`plugin/` du dépôt) servi tel qu'il est
+ * `@aphrody/shenron-api/plugin` — le plugin « shenron » (`plugin/` du dépôt) servi tel qu'il est
  * déployé, à tout type de LLM : index JSON, export complet en Markdown, texte, HTML ou JSON,
  * et chaque fichier un par un.
  *
@@ -18,7 +18,7 @@ import { dirname, join, relative, resolve, sep } from "node:path";
 import {
   PUBLIC_TEMPLATE_DOCUMENTS,
   templateProblems,
-} from "@shenron/db/agent-homes/public-template";
+} from "@aphrody/shenron-db/agent-homes/public-template";
 
 export const PLUGIN_FORMATS = ["json", "md", "txt", "html"] as const;
 export type PluginFormat = (typeof PLUGIN_FORMATS)[number];
@@ -273,7 +273,7 @@ export function isLoopbackOrigin(origin: string): boolean {
 /**
  * Public origin for the absolute links of the plugin (index, exports, archive).
  *
- * 1. `configured` (the site passes its `SITE_URL`, `@shenron/config/public-urls`) wins;
+ * 1. `configured` (the site passes its `SITE_URL`, `@aphrody/shenron-config/public-urls`) wins;
  * 2. otherwise, on a request that reached the process through a loopback origin (reverse
  *    proxy in front of it), `X-Forwarded-Host` and `X-Forwarded-Proto` give the public
  *    host; they are ignored on a direct request, where a client could forge them;

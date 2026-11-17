@@ -2,7 +2,7 @@ import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi, mock } from "bun:test";
 import { hoisted } from "../hoisted";
 
-import { useCanvas } from "@shenron/ui/koharu/components/editor/useCanvas";
+import { useCanvas } from "@aphrody/shenron-ui/koharu/components/editor/useCanvas";
 
 const renderer = hoisted(() => ({
   resize: vi.fn(),
@@ -36,7 +36,7 @@ const adapter = hoisted(() => ({
   lost: null as ((reason: string) => void) | null,
 }));
 
-mock.module("@shenron/koharu/canvas", () => ({
+mock.module("@aphrody/shenron-koharu/canvas", () => ({
   createCanvas: vi.fn(
     async (_element: HTMLCanvasElement, onDeviceLost: (reason: string) => void) => {
       adapter.lost = onDeviceLost;

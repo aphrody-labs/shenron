@@ -30,7 +30,7 @@ import {
   type ModelSelection,
   type ProviderPreference,
   type Stage,
-} from "@shenron/koharu/protocol";
+} from "@aphrody/shenron-koharu/protocol";
 import { Button } from "../../../components/button";
 import { Popover, PopoverPopup, PopoverTrigger } from "../../../components/popover";
 import { cn } from "../../../lib/utils";

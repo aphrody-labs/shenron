@@ -23,7 +23,7 @@
  *   row's name must still equal the lexicon's guard.
  */
 import postgres from "postgres";
-import { defautDePlanche } from "@shenron/config/databooks-defauts";
+import { defautDePlanche } from "@aphrody/shenron-config/databooks-defauts";
 import { urlBase } from "./_databooks-base";
 import {
   BOOK_LABELS,

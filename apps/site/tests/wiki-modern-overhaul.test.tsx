@@ -8,7 +8,7 @@ import fr from "../messages/fr.json";
 import wikiPublicFr from "../messages/wiki-public/fr.json";
 import wikiPublicEn from "../messages/wiki-public/en.json";
 import wikiPublicJa from "../messages/wiki-public/ja.json";
-import { entryByKey } from "@shenron/config/wiki-launch";
+import { entryByKey } from "@aphrody/shenron-config/wiki-launch";
 import { resolveWikiCategoryBlurb, WIKI_CATEGORIES } from "../src/lib/wiki-categories";
 import {
   getWikiPortalMessages,

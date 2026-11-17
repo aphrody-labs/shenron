@@ -1,5 +1,5 @@
 {
-  "name": "@shenron/remotion",
+  "name": "@aphrody/shenron-remotion",
   "version": "1.4.7",
   "private": true,
   "description": "Shenron's vendorized, zero-overhead Remotion composition and timeline engine, optimized for Bun and streaming video.",

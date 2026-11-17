@@ -9,8 +9,9 @@
  * pass through the inherited environment.
  *
  * Configuration (no default, a missing value is an error, never a fallback):
- *   YOLO_WEB_CLI  path of the `web-cli` entry: `packages/web-cli/src/index.ts` of a yolo-web
- *                 checkout (run with the current Bun) or a compiled executable taking `mcp`.
+ *   SHENRON_YOLO_WEB_CLI  path of the `web-cli` entry: `packages/web-cli/src/index.ts` of a yolo-web
+ *                         checkout (run with the current Bun) or a compiled executable taking `mcp`.
+ *                         The variable of the upstream tool, `YOLO_WEB_CLI`, is read only as an alias.
  */
 import { spawn, type ChildProcessWithoutNullStreams } from "node:child_process";
 import { createInterface } from "node:readline";
@@ -26,7 +27,7 @@ export class YoloWebNotConfiguredError extends Error {
 }
 
 export interface YoloWebOptions {
-  /** Overrides `YOLO_WEB_CLI`. */
+  /** Overrides `SHENRON_YOLO_WEB_CLI`. */
   cli?: string;
   /** Environment of the spawned server (defaults to `process.env`). */
   env?: Record<string, string | undefined>;
@@ -55,8 +56,8 @@ function assertPageUrl(url: string): URL {
 }
 
 export function resolveYoloWebCli(explicit?: string): string {
-  const cli = (explicit ?? process.env.YOLO_WEB_CLI)?.trim();
-  if (!cli) throw new YoloWebNotConfiguredError("YOLO_WEB_CLI");
+  const cli = (explicit ?? process.env.SHENRON_YOLO_WEB_CLI ?? process.env.YOLO_WEB_CLI)?.trim();
+  if (!cli) throw new YoloWebNotConfiguredError("SHENRON_YOLO_WEB_CLI");
   return cli;
 }
 

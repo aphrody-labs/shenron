@@ -2,7 +2,7 @@
 import { expect, test } from "bun:test";
 import { betterAuth } from "better-auth";
 import { memoryAdapter } from "better-auth/adapters/memory";
-import type { AccountDeletionIdentity } from "@shenron/db/repos/accounts";
+import type { AccountDeletionIdentity } from "@aphrody/shenron-db/repos/accounts";
 import { buildAccountDeletionHooks } from "../src/host/account-deletion";
 
 const user = (id: string) => ({

@@ -1,6 +1,6 @@
 /**
  * Disk resolution of the bot's static files through the dedup alias manifest
- * (`@shenron/images/asset-aliases.json`).
+ * (`@aphrody/shenron-images/asset-aliases.json`).
  *
  * Byte-identical copies shared with the site (fonts, `dbz/`, banners) live once,
  * under `apps/site/public/`; the bot keeps serving them at their historical
@@ -16,7 +16,7 @@
  */
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { type AssetRoots, resolveAppFile } from "@shenron/images/resolve";
+import { type AssetRoots, resolveAppFile } from "@aphrody/shenron-images/resolve";
 
 function assetRoots(cwd: string = process.cwd()): AssetRoots {
   return { bot: resolve(cwd), site: resolve(cwd, "..", "site") };

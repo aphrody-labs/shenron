@@ -14,7 +14,7 @@
 export type { SectionAccent } from "@/lib/wiki-section-accents";
 export { sectionAccent } from "@/lib/wiki-section-accents";
 
-import { foldKey } from "@shenron/config/slug";
+import { foldKey } from "@aphrody/shenron-config/slug";
 import { sectionAccent, type SectionAccent } from "@/lib/wiki-section-accents";
 
 export interface ArticleSection {

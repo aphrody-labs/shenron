@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Dragon Ball Z: Budokai Tenkaichi 3 WebAssembly runtime configuration & runner
- * Re-exported through @shenron/engine for the web platform.
+ * Re-exported through @aphrody/shenron-engine for the web platform.
  */
 
 export type TenkaichiPlatform = "wii" | "ps2";

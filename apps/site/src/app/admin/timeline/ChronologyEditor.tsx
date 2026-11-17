@@ -37,7 +37,7 @@ import {
   Info,
 } from "lucide-react";
 import { assetUrl } from "@/lib/assets";
-import { DragonBallLoader } from "@shenron/ui/toriyama";
+import { DragonBallLoader } from "@aphrody/shenron-ui/toriyama";
 import {
   ERA_ORDER,
   ERA_LABELS,
@@ -50,7 +50,7 @@ import {
   type ChronologyConfig,
   type TimelineItem,
   type ResolvedTimelineItem,
-} from "@shenron/config/chronology";
+} from "@aphrody/shenron-config/chronology";
 import { PlainField } from "@/components/editor/PlainField";
 
 interface LoadResponse {

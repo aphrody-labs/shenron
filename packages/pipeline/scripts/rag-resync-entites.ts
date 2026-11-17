@@ -33,7 +33,7 @@
  *   bun apps/bot/scripts/rag-resync-entites.ts --reparer --appliquer
  */
 import { PG_SOURCES } from "./_rag-sources-pg";
-import { warnIgnoredEmbedBaseUrl } from "@shenron/pipeline/ai/config";
+import { warnIgnoredEmbedBaseUrl } from "@aphrody/shenron-pipeline/ai/config";
 
 const args = process.argv.slice(2);
 const TOUTES = args.includes("--toutes");

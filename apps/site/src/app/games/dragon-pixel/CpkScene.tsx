@@ -3,12 +3,12 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useLangue } from "@/lib/i18n/client";
-import { createGlbScene, type GlbSceneRenderer } from "@shenron/engine/glb-scene";
+import { createGlbScene, type GlbSceneRenderer } from "@aphrody/shenron-engine/glb-scene";
 import {
   initShenronReWeb,
   parseMessageFile,
   SHENRON_RE_WASM_FILENAME,
-} from "@shenron/pipeline/re-wasm-web";
+} from "@aphrody/shenron-pipeline/re-wasm-web";
 import fr from "../../../../messages/dragon-pixel-scene/fr.json";
 import en from "../../../../messages/dragon-pixel-scene/en.json";
 import ja from "../../../../messages/dragon-pixel-scene/ja.json";

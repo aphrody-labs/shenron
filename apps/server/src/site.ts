@@ -11,8 +11,8 @@
  */
 import { existsSync, readdirSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
-import { AccountSessionResponse } from "@shenron/api/contract";
-import { resolveSiteUrl } from "@shenron/config/public-urls";
+import { AccountSessionResponse } from "@aphrody/shenron-api/contract";
+import { resolveSiteUrl } from "@aphrody/shenron-config/public-urls";
 
 import { type Backend, startBackend } from "./backend";
 import type { ServerPaths } from "./config";

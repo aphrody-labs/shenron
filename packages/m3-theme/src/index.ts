@@ -5,8 +5,8 @@
 // stylesheet. Nothing here computes a colour or writes a colour role inline, so the Rust
 // `@media (prefers-contrast: more)` blocks keep their effect.
 
-export { M3_PLATFORM_CONTRACT, platformState } from "@shenron/m3-tokens/platform-contract";
-export type { M3PlatformState } from "@shenron/m3-tokens/platform-contract";
+export { M3_PLATFORM_CONTRACT, platformState } from "@aphrody/shenron-m3-tokens/platform-contract";
+export type { M3PlatformState } from "@aphrody/shenron-m3-tokens/platform-contract";
 export { M3_UI_CATALOG, resolveM3Layer } from "./catalog";
 export type { M3UiLayer } from "./catalog";
 export {
@@ -88,7 +88,7 @@ export function applyM3Mode(dark: boolean, target: HTMLElement): void {
 export function schemeDeclarations(css: string): string {
   const body = /:root\s*\{([^{}]*)\}/.exec(css.replace(/\/\*[\s\S]*?\*\//g, ""))?.[1];
   if (body === undefined || !/--md-sys-color-primary\s*:\s*#[0-9a-f]{6}\s*;/i.test(body))
-    throw new Error("@shenron/m3-theme: the scheme sheet is not a Rust m3Css `scheme` sheet");
+    throw new Error("@aphrody/shenron-m3-theme: the scheme sheet is not a Rust m3Css `scheme` sheet");
   return body.trim().replace(/\s*\n\s*/g, "\n  ");
 }
 
@@ -128,7 +128,7 @@ export function httpSchemeSheet(
     const response = await fetcher(`${endpoint}?${query}`);
     const body = await response.text();
     if (!response.ok)
-      throw new Error(`@shenron/m3-theme: ${endpoint} answered ${response.status}: ${body.trim()}`);
+      throw new Error(`@aphrody/shenron-m3-theme: ${endpoint} answered ${response.status}: ${body.trim()}`);
     return body;
   };
 }
@@ -154,7 +154,7 @@ export async function applyDynamicFusionTheme(
   if (!target) return;
   if (!options.sheet)
     throw new Error(
-      "@shenron/m3-theme: a seed, variant or contrast change needs the Rust scheme sheet (`sheet`: m3Css from the Rust renderer or an app-server route); colours are not computed in JS",
+      "@aphrody/shenron-m3-theme: a seed, variant or contrast change needs the Rust scheme sheet (`sheet`: m3Css from the Rust renderer or an app-server route); colours are not computed in JS",
     );
   const contrast = options.contrastLevel ?? 0;
   if (!Number.isFinite(contrast) || contrast < -1 || contrast > 1)

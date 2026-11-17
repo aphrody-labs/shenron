@@ -10,7 +10,7 @@ import {
   fetchCanvasManifest,
   fetchCanvasResource,
   type Canvas,
-} from "@shenron/koharu/canvas";
+} from "@aphrody/shenron-koharu/canvas";
 
 export type CanvasStatus = "loading" | "switching" | "ready" | "recovering" | "error";
 

@@ -14,8 +14,8 @@
  *   SHENRON_AI_HTTP_TOKEN (ou leurs alias ; obligatoires, aucun défaut).
  */
 import { Database } from "bun:sqlite";
-import { ShenronComputeClient } from "@shenron/pipeline/shenron";
-import { warnIgnoredEmbedBaseUrl } from "@shenron/pipeline/ai/config";
+import { ShenronComputeClient } from "@aphrody/shenron-pipeline/shenron";
+import { warnIgnoredEmbedBaseUrl } from "@aphrody/shenron-pipeline/ai/config";
 import { syncSource, type SyncResult } from "./_rag-shenron-sync";
 import type { SourceChunk } from "./_rag-sources-pg";
 import {

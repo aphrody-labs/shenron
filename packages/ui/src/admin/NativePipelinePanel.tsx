@@ -1,7 +1,7 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 "use client";
-import { Button, Banner } from "@shenron/m3-primitives";
+import { Button, Banner } from "@aphrody/shenron-m3-primitives";
 
 export interface NativePipelineSnapshot {
   native: {

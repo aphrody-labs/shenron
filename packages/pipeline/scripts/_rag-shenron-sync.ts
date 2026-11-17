@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Deterministic PostgreSQL-source documents for Shenron's generation-based RAG sync. */
 import { createHash, randomUUID } from "node:crypto";
-import type { ShenronComputeClient, ShenronRagDocument } from "@shenron/pipeline/shenron";
+import type { ShenronComputeClient, ShenronRagDocument } from "@aphrody/shenron-pipeline/shenron";
 import type { SourceChunk } from "./_rag-sources-pg";
 
 export interface SourceState {

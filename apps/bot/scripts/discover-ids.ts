@@ -52,7 +52,7 @@ if (!TOKEN || !GUILD_ID || TOKEN === "ton-token-ici") {
   process.exit(1);
 }
 
-// ── REST : client du bot (transport `@shenron/discord-kit`, 429 et 5xx rejoués) ──
+// ── REST : client du bot (transport `@aphrody/shenron-discord-kit`, 429 et 5xx rejoués) ──
 const api = clientDiscord(TOKEN);
 
 interface Role {

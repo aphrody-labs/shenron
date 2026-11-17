@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { resolveApiUrl } from "@shenron/config/public-urls";
+import { resolveApiUrl } from "@aphrody/shenron-config/public-urls";
 import { injectable, inject } from "tsyringe";
 import { Bot, ButtonComponent, Discord, Guard, Slash, SlashGroup, SlashOption } from "discordx";
 import {

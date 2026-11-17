@@ -1,6 +1,6 @@
 import { readdir } from "node:fs/promises";
 import { join, relative } from "node:path";
-import { shenronRoot } from "@shenron/config/paths";
+import { shenronRoot } from "@aphrody/shenron-config/paths";
 
 const ROOT = shenronRoot();
 const CONFIG = join(ROOT, "config", "cloudflare");

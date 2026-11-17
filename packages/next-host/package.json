@@ -1,5 +1,5 @@
 {
-  "name": "@shenron/next-host",
+  "name": "@aphrody/shenron-next-host",
   "version": "1.0.0",
   "private": true,
   "description": "Next.js configuration and standalone helpers for the Bun host (Turbopack root, transpiled workspace sources, flattened standalone output).",

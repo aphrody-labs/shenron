@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-import sphere from "@shenron/ui/assets/wiki-objects/dragon-ball-one-star.svg";
-import senzu from "@shenron/ui/assets/wiki-objects/senzu-icon.svg";
+import sphere from "@aphrody/shenron-ui/assets/wiki-objects/dragon-ball-one-star.svg";
+import senzu from "@aphrody/shenron-ui/assets/wiki-objects/senzu-icon.svg";
 import styles from "./wiki-measured-artwork.module.css";
 
 /** A small measured illustration supplements a label without describing official artwork. */

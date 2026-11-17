@@ -12,7 +12,7 @@
  */
 import { adminUserOrToken, isAdminOrToken } from "@/lib/admin-guard";
 import { HostChronologyError } from "@/lib/host-chronology-error";
-import { ENV_ALIASES, envFirst } from "@shenron/config/env";
+import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
 import {
   getChronologyConfig,
   getTimelineItems,

@@ -5,7 +5,7 @@ import { checkEmptyEnvImports, checkNoEscapingImports, checkPackageRuntimes } fr
 
 const PACKAGE_DIR = join(import.meta.dir, "..");
 
-describe("@shenron/config portability", () => {
+describe("@aphrody/shenron-config portability", () => {
   test("runtime classes hold for every exported entry", async () => {
     expect(await checkPackageRuntimes(PACKAGE_DIR)).toEqual([]);
   });

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * @shenron/engine/games/canon-scenario
+ * @aphrody/shenron-engine/games/canon-scenario
  *
  * Sovereign Dragon Ball Canon Story & Scenario Resolver.
  *

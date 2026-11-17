@@ -1,5 +1,5 @@
 import { eq, sql } from "drizzle-orm";
-import type { Favorite } from "@shenron/config/favorites";
+import type { Favorite } from "@aphrody/shenron-config/favorites";
 import { userPreferences } from "../schema";
 import type { ShenronPgDatabase } from "../types";
 

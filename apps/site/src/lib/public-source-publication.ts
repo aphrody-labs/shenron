@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import "server-only";
-import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 
 export type PublicationObject = { path: string; sha256: string; size: number; mime?: string };
 export type PublicationDocument = {

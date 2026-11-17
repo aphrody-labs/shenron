@@ -1,21 +1,21 @@
 import "server-only";
-import { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } from "@shenron/config/chat-model";
+import { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } from "@aphrody/shenron-config/chat-model";
 import {
   AiConfigError,
   chatTimeoutMs,
   resolveChatModel,
   resolveDirectChat,
-} from "@shenron/pipeline/ai/config";
+} from "@aphrody/shenron-pipeline/ai/config";
 import {
   ShenronComputeClient,
   shenronComputeFromChat,
   type ShenronRagHit,
   type ChatFn,
-} from "@shenron/pipeline/shenron/compute";
-import { buildGroundingInstructions, resolvePersona } from "@shenron/pipeline/ai/prompts";
-import { createOpenAICompatibleChat, createShenronProvider } from "@shenron/pipeline/ai/provider";
+} from "@aphrody/shenron-pipeline/shenron/compute";
+import { buildGroundingInstructions, resolvePersona } from "@aphrody/shenron-pipeline/ai/prompts";
+import { createOpenAICompatibleChat, createShenronProvider } from "@aphrody/shenron-pipeline/ai/provider";
 import { generateText } from "ai";
-import { judgePublicChatHits, jevSourceKind } from "@shenron/api/chat";
+import { judgePublicChatHits, jevSourceKind } from "@aphrody/shenron-api/chat";
 import { siteChatJev } from "./jev";
 
 export function usesShenronRag(): boolean {
@@ -98,7 +98,7 @@ export async function chatShenronRag(
     ? `[Page consultée] ${options.context.trim().slice(0, 1500)}\n\n${sources}`
     : sources;
   // Serveur direct déclaré (SHENRON_AI_CHAT_BASE_URL), sinon shenron-ai-http ; modèle :
-  // `SHENRON_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @shenron/pipeline/ai/config).
+  // `SHENRON_AI_CHAT_MODEL`, puis les alias hérités (résolveur unique @aphrody/shenron-pipeline/ai/config).
   const direct = resolveDirectChat(process.env);
   if (!direct.ok) throw new AiConfigError("direct chat server", direct.issues);
   const model = direct.value

@@ -4,8 +4,8 @@ import { chmodSync, mkdirSync, readFileSync, statSync } from "node:fs";
 import { isAbsolute, join } from "node:path";
 import { Database } from "bun:sqlite";
 import { z } from "zod";
-import { createCrawlJobIntent } from "@shenron/pipeline";
-import { ShenronWebJobs, type NativeMcpTransport } from "@shenron/pipeline/shenron/jobs";
+import { createCrawlJobIntent } from "@aphrody/shenron-pipeline";
+import { ShenronWebJobs, type NativeMcpTransport } from "@aphrody/shenron-pipeline/shenron/jobs";
 
 const CrawlSource = z.enum([
   "official",
@@ -192,7 +192,7 @@ export class AdminWebQueue {
     const transport =
       this.transport ??
       ((async (request, options) => {
-        const owner = await import("@shenron/native/web/pipeline");
+        const owner = await import("@aphrody/shenron-native/web/pipeline");
         return owner.mcpTool(request, options);
       }) satisfies NativeMcpTransport);
     const probes = await Promise.allSettled(

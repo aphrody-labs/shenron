@@ -3,7 +3,7 @@
 import { mkdir, realpath, writeFile } from "node:fs/promises";
 import { extname, isAbsolute, join, relative, resolve } from "node:path";
 import type postgres from "postgres";
-import { createDatabooksFreezeGate } from "@shenron/db/guards";
+import { createDatabooksFreezeGate } from "@aphrody/shenron-db/guards";
 import { runShenronCommand, type NativeCommandExecutor } from "../shenron/native-commands";
 
 export interface NativeAcquiredAsset {

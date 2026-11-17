@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { decodeRgba } from "@shenron/kit/image";
+import { decodeRgba } from "@aphrody/shenron-kit/image";
 /** Bounded pixel modes from the official key visual, with readable M3 tones. */
 export function mix(hex: string, target: string, amount: number): string {
   return (

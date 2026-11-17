@@ -74,7 +74,7 @@ personnages (pas `.ema`). `.emo` agrège par ailleurs plusieurs `.emd` et leur h
 nœuds au niveau moteur (`EmObjectShared`).
 
 Vérité terrain (2026-10-22, octets réels extraits du CPK Steam local légitime du propriétaire
-via l'outil déjà présent `@shenron/dbxv2`, aucune archive extraite en totalité) : `data.cpk`
+via l'outil déjà présent `@aphrody/shenron-dbxv2`, aucune archive extraite en totalité) : `data.cpk`
 seul contient 1 832 `.emo` et 4 743 `.ema`. En-tête confirmée sur quatre fichiers réels et
 indépendants : `#EMO`/`#EMA` + `u16 0xFFFE` + `u16 header_size=32` (fixe) + `u32` constant
 `0x92c0` (version de format du build, pas un champ par fichier) ; pour `#EMO`, l'octet `0xc`
@@ -94,7 +94,7 @@ propriétaire — pas dans `crates/shenron-re/src/formats` de ce dépôt.
 
 - `/games/xenoverse-2` demande à l’utilisateur de sélectionner des fichiers locaux puis analyse
   seulement `BAC`, `BDM`, `CUS`, `MSG` et `PUP` avec le module `shenron_re` compilé en WASM.
-- Le moteur `@shenron/engine` possède un build `wasm32-unknown-unknown` et des surfaces
+- Le moteur `@aphrody/shenron-engine` possède un build `wasm32-unknown-unknown` et des surfaces
   WebGPU/canvas génériques. Aucun raccord source ne montre qu’il exécute le moteur commercial.
 - Le serveur CPK peut servir les données DBXV2. Le propriétaire demande leur publication ; la
   route publique et sa livraison restent à réaliser via Infra.

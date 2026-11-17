@@ -7,7 +7,7 @@
  * receipt allows, remembers every idempotency key (a second POST of the same key pays nothing and
  * reports what was paid the first time, like the real bot), and keeps no state beyond the process.
  */
-import { verifyReceipt } from "@shenron/activity/quiz";
+import { verifyReceipt } from "@aphrody/shenron-activity/quiz";
 
 export interface FakeBot {
   readonly url: string;

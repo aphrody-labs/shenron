@@ -129,11 +129,11 @@ describe("probeSource — chaque source rend son propre état", () => {
 
   test("configuration absente : non configuré, sans latence", async () => {
     const report = await probeSource(
-      failing("Web", new SourceNotConfiguredError("YOLO_WEB_CLI absent")),
+      failing("Web", new SourceNotConfiguredError("SHENRON_YOLO_WEB_CLI absent")),
     );
     expect(report.status).toBe("unconfigured");
     expect(report.latencyMs).toBeNull();
-    expect(report.error).toBe("YOLO_WEB_CLI absent");
+    expect(report.error).toBe("SHENRON_YOLO_WEB_CLI absent");
   });
 
   test("délai dépassé : nommé comme tel", async () => {
@@ -230,7 +230,7 @@ describe("collectIaCockpit — règles d'agrégation sur des rapports de sources
     });
     fetchers.yoloWeb = failing(
       "YOLO WEB — crawl",
-      new SourceNotConfiguredError("YOLO_WEB_CLI absent de l'environnement du site"),
+      new SourceNotConfiguredError("SHENRON_YOLO_WEB_CLI absent de l'environnement du site"),
     );
     fetchers.feedbacks = failing("Retours", new Error("connect ECONNREFUSED"));
 

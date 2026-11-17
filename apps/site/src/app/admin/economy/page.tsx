@@ -18,11 +18,11 @@ import {
   Rafraichir,
   Tendance,
   Trophee,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { useState } from "react";
 import { api } from "@/lib/admin-api";
 import { fmtNum } from "@/lib/admin-format";
-import { formatZeni } from "@shenron/config/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 
 interface EconomyStats {
   zeni: {

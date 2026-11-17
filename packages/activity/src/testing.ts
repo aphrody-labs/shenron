@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/activity/testing` — test helpers shared with the Activity server's own tests.
+ * `@aphrody/shenron-activity/testing` — test helpers shared with the Activity server's own tests.
  * Runtime class `pure`.
  */
 import type { Clock } from "./clock";

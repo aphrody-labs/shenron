@@ -2,7 +2,7 @@
 /**
  * api-harness.ts — `Bun.serve` local (boucle locale, port aléatoire) qui reproduit
  * l'ordre de résolution du bot pour l'API publique : table `routes` historique
- * d'abord, puis le repli `fetch` (`/graphql` limité S9, `@shenron/api` B14,
+ * d'abord, puis le repli `fetch` (`/graphql` limité S9, `@aphrody/shenron-api` B14,
  * 404 JSON historique). Sert aux essais `curl` et au test de montage.
  *
  *   bun apps/bot/scripts/api-harness.ts            # port wiki de démonstration (en mémoire)
@@ -11,9 +11,9 @@
  *
  * Les routes historiques de ce banc répondent `{ legacy: "<route>" }` : elles
  * n'ont pas les services du bot (SQLite, Discord) et ne servent qu'à prouver
- * qu'elles gardent la priorité sur le routeur natif de @shenron/api.
+ * qu'elles gardent la priorité sur le routeur natif de @aphrody/shenron-api.
  */
-import type { PluginPort, WikiReadPort } from "@shenron/api/server";
+import type { PluginPort, WikiReadPort } from "@aphrody/shenron-api/server";
 import {
   createBotShenronApi,
   createPublicFallback,

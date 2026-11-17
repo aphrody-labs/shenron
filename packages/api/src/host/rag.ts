@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { isPublicRagRow } from "@shenron/db/vfs/build";
+import { isPublicRagRow } from "@aphrody/shenron-db/vfs/build";
 import type { RagPort } from "../server";
 
 /** A product-injected index still obeys the public editorial boundary. */

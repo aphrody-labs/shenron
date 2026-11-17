@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, mock, test } from "bun:test";
-import { createDb } from "@shenron/db/postgres-js";
+import { createDb } from "@aphrody/shenron-db/postgres-js";
 import { NextRequest } from "next/server";
 
 // Explicit opt-in: this suite owns and truncates only a disposable loopback database.

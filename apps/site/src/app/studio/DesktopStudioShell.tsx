@@ -8,8 +8,8 @@ import {
   SHELL_LABELS_FR,
   type ShellNavItem,
   type ShellNavSection,
-} from "@shenron/ui/navigation/AppShell";
-import { DragonRadar, Maison, PlancheManga, Curseurs } from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/navigation/AppShell";
+import { DragonRadar, Maison, PlancheManga, Curseurs } from "@aphrody/shenron-ui/icones";
 import { useLangue } from "@/lib/i18n/client";
 
 function StudioLink({ href, children, ...props }: React.ComponentProps<typeof Link>) {

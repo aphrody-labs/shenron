@@ -13,9 +13,9 @@ import {
 import { CanonService } from "~/services/CanonService";
 import { ragTrainingFeedback } from "~/db/schema";
 import { sendAdminLabMessage } from "~/lib/admin-lab";
-import { ShenronComputeClient } from "@shenron/pipeline/shenron";
-import { resolveDataPath, warnIfEphemeral } from "@shenron/config/paths";
-import { resolveBotApiInternalUrl, resolveSiteInternalUrl } from "@shenron/config/services";
+import { ShenronComputeClient } from "@aphrody/shenron-pipeline/shenron";
+import { resolveDataPath, warnIfEphemeral } from "@aphrody/shenron-config/paths";
+import { resolveBotApiInternalUrl, resolveSiteInternalUrl } from "@aphrody/shenron-config/services";
 import { logger } from "~/lib/logger";
 // Embedded in the binary: `tests/` is not shipped, and a path-only gold set read as empty in production.
 import bundledGold from "../../tests/rag-gold.jsonl" with { type: "text" };

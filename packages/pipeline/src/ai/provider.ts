@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `@shenron/pipeline/ai/provider` — the Shenron AI SDK provider (docs/architecture/STACK.md §3.4).
+ * `@aphrody/shenron-pipeline/ai/provider` — the Shenron AI SDK provider (docs/architecture/STACK.md §3.4).
  *
  * Runtime class: `pure`. Language models: `chat` (configured model),
  * `chat-flash-lite`, `chat-pro`; embedding models: `e5-query`, `e5-passage`.

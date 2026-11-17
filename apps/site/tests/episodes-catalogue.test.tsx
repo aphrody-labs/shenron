@@ -42,7 +42,7 @@ mock.module("@/lib/db-universe", () => ({
 mock.module("@/lib/assets", () => ({
   assetUrl: (path: string) => `https://cdn.dragonballfr.com${path}`,
 }));
-mock.module("@shenron/config/chronology", () => ({
+mock.module("@aphrody/shenron-config/chronology", () => ({
   eraOf: () => "DB",
   ERA_ACCENT: { DB: "#ff9900" },
 }));

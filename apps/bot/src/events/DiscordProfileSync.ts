@@ -1,5 +1,5 @@
 import { injectable } from "tsyringe";
-import { createMonoGuildGuard, NotBot } from "@shenron/discord-kit";
+import { createMonoGuildGuard, NotBot } from "@aphrody/shenron-discord-kit";
 import { Bot, Discord, Guard, On, type ArgsOf } from "discordx";
 import { env } from "~/lib/env";
 import { logger } from "~/lib/logger";

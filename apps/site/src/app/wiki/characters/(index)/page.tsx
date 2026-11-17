@@ -1,8 +1,8 @@
 // Keep the index loader scoped to the catalogue, not streamed detail routes.
 // SPDX-License-Identifier: Apache-2.0
 import { GatedLink } from "@/components/GatedLink";
-import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
-import { Shenron } from "@shenron/ui/icones";
+import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
+import { Shenron } from "@aphrody/shenron-ui/icones";
 import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import { CharacterGrid } from "@/components/wiki/CharacterGrid";

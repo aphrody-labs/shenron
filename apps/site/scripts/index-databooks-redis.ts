@@ -13,7 +13,7 @@
  */
 import postgres from "postgres";
 import { RedisClient } from "bun";
-import { resolveRedisUrl } from "@shenron/config/services";
+import { resolveRedisUrl } from "@aphrody/shenron-config/services";
 import { transcriptionsDe } from "../src/lib/databooks-index-shared";
 
 const DB_INDEX = 4;

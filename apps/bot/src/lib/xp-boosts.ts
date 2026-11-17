@@ -20,7 +20,7 @@ import {
   getRace,
   regenTuning,
   type RaceId,
-} from "@shenron/config/races";
+} from "@aphrody/shenron-config/races";
 import {
   FUSION_XP_BONUS_RATIO,
   XP_MESSAGE_COOLDOWN_MS,

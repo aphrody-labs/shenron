@@ -6,9 +6,9 @@
  */
 
 /*
- * Import after `tailwindcss`, `@shenron/m3-tokens/m3-tokens.css` (shape,
+ * Import after `tailwindcss`, `@aphrody/shenron-m3-tokens/m3-tokens.css` (shape,
  * typescale, elevation, motion, state) and a palette sheet
- * (`@shenron/m3-theme/tokens.css` or `@shenron/m3-theme/spaceui.css`).
+ * (`@aphrody/shenron-m3-theme/tokens.css` or `@aphrody/shenron-m3-theme/spaceui.css`).
  * State layers are opacity modifiers on the content role, as in M3:
  * `hover:bg-on-surface/8`, `active:bg-on-surface/10`, `hover:bg-on-primary/8`.
  */

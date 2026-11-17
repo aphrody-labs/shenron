@@ -4,14 +4,14 @@ import config from "../next.config";
 
 test("Next keeps native modules outside the server bundle and checks types", async () => {
   const resolved = await config("phase-production-build", {});
-  expect(resolved.serverExternalPackages).toContain("@shenron/native");
-  expect(resolved.serverExternalPackages).not.toContain("@shenron/decision");
+  expect(resolved.serverExternalPackages).toContain("@aphrody/shenron-native");
+  expect(resolved.serverExternalPackages).not.toContain("@aphrody/shenron-decision");
   expect(resolved.typescript?.ignoreBuildErrors).not.toBe(true);
 });
 
 test("the browser HLS adapter compiles without native runtime dependencies", async () => {
   const result = await Bun.build({
-    entrypoints: [Bun.resolveSync("@shenron/video/hls", import.meta.dir)],
+    entrypoints: [Bun.resolveSync("@aphrody/shenron-video/hls", import.meta.dir)],
     target: "browser",
   });
   expect(result.success).toBe(true);

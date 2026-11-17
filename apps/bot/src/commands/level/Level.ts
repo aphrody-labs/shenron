@@ -1,4 +1,4 @@
-import { discordEmbedAvatar } from "@shenron/config/public-urls";
+import { discordEmbedAvatar } from "@aphrody/shenron-config/public-urls";
 import { injectable, inject } from "tsyringe";
 import { Bot, Discord, Guard, Slash, SlashOption } from "discordx";
 import { userTransformer } from "~/lib/slash-user";
@@ -24,7 +24,7 @@ import { LeaderboardService, type LeaderboardEntry } from "~/services/Leaderboar
 import { logger } from "~/lib/logger";
 import { levelForXP, xpProgress, formatXP } from "~/lib/xp";
 import { DEFAULT_LEVEL_RACE, memberRaceId, tierEntitlement } from "~/lib/race-levels";
-import { formatZeni } from "@shenron/config/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 import { fusionBonusLabel } from "~/lib/fusion-names";
 import { SHENRON_THEME, SHENRON_SEPARATORS, renderProgressBar } from "~/lib/embeds";
 import { SettingsService } from "~/services/SettingsService";

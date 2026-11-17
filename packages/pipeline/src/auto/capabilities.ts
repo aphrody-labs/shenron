@@ -57,7 +57,7 @@ export async function probeCapabilities(
     webView: typeof bun.WebView === "function",
     vectorIndex: flag(bun.VectorIndex?.available),
     adblock: await importable("bun:adblock"),
-    yolo: await importable("@shenron/decision"),
+    yolo: await importable("@aphrody/shenron-decision"),
     vpn: await vpnState(options.vpnTimeoutMs ?? 4000),
   };
 }

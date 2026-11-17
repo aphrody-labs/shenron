@@ -3,11 +3,11 @@ import { hostCurrentUser } from "@/lib/host-current-user";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { redirect } from "next/navigation";
-import { staffPolicyFromEnv, type StaffPolicy } from "@shenron/auth/staff";
-import { requestHeaders } from "@shenron/auth/next";
-import { readCookie } from "@shenron/auth/guards";
-import { parseBearer } from "@shenron/auth/crypto";
-import { createDiscordAccountLookup } from "@shenron/db/repos/accounts";
+import { staffPolicyFromEnv, type StaffPolicy } from "@aphrody/shenron-auth/staff";
+import { requestHeaders } from "@aphrody/shenron-auth/next";
+import { readCookie } from "@aphrody/shenron-auth/guards";
+import { parseBearer } from "@aphrody/shenron-auth/crypto";
+import { createDiscordAccountLookup } from "@aphrody/shenron-db/repos/accounts";
 import { env } from "@/lib/env";
 import {
   ADMIN_COOKIE,

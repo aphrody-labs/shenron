@@ -2,8 +2,8 @@
 import { auth } from "@/lib/auth";
 import { getCurrentUser } from "@/lib/session";
 import { botAdmin } from "@/lib/bot-admin";
-import { discordFetch, DiscordRESTError } from "@shenron/discord-kit/rest";
-import { discordGuildIcon as guildIcon } from "@shenron/config/public-urls";
+import { discordFetch, DiscordRESTError } from "@aphrody/shenron-discord-kit/rest";
+import { discordGuildIcon as guildIcon } from "@aphrody/shenron-config/public-urls";
 
 export const dynamic = "force-dynamic";
 

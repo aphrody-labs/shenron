@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import type { Locale } from "@shenron/activity/protocol";
+import type { Locale } from "@aphrody/shenron-activity/protocol";
 import { closeLabel, kickLabel, translator, type UiKey } from "../i18n";
 import type { GameState } from "../state";
 import { DragonBall, Header } from "../ui";

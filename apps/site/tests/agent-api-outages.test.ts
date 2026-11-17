@@ -6,7 +6,7 @@ let recordCalls = 0;
 const agent = { keyId: "agent-1", name: "Test", scopes: ["read"], rateLimitPerHour: 20 };
 
 mock.module("server-only", () => ({}));
-mock.module("@shenron/auth/agent-keys", () => ({
+mock.module("@aphrody/shenron-auth/agent-keys", () => ({
   decideWriteQuota: () => ({ allowed: true }),
   hasScope: (scopes: string[], scope: string) => scopes.includes(scope),
   isQuotaExemptMethod: (method: string) => method === "GET" || method === "HEAD",

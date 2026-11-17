@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { assetUrl } from "../src/lib/assets";
-import { ownImageRemotePatterns } from "@shenron/config/public-urls";
+import { ownImageRemotePatterns } from "@aphrody/shenron-config/public-urls";
 import { CDN_ORIGIN, SITE_URL } from "../src/lib/config";
 
 describe("wiki catalogue artwork routing", () => {

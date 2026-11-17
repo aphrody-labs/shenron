@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { tempPath } from "@shenron/kit/paths";
+import { tempPath } from "@aphrody/shenron-kit/paths";
 /**
  * rag-status.ts — Script de diagnostic et statut du RAG et de la base Dragon Ball.
  *
@@ -20,7 +20,7 @@ import { Database } from "bun:sqlite";
 import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
 import * as sqliteVec from "sqlite-vec";
-import { ShenronComputeClient, ShenronEmbeddingsClient } from "@shenron/pipeline/shenron";
+import { ShenronComputeClient, ShenronEmbeddingsClient } from "@aphrody/shenron-pipeline/shenron";
 import { requireShenronApiUrl } from "./lib/script-env";
 
 const ROOT = Bun.fileURLToPath(new URL("../../../", import.meta.url));

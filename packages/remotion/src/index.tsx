@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * @shenron/remotion
+ * @aphrody/shenron-remotion
  *
  * Shenron's vendorized Remotion composition, player, and sequencing engine.
  */

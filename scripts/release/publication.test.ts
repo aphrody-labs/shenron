@@ -57,16 +57,16 @@ describe("publication archive boundary", () => {
     const request = async () =>
       ++calls === 1
         ? new Response("", { status: 404 })
-        : Response.json({ name: "@shenron/fixture", version: "1.4.4" });
+        : Response.json({ name: "@aphrody/shenron-fixture", version: "1.4.4" });
     expect(
-      await readPublishedVersion("@shenron/fixture", "1.4.4", request, async () => {
+      await readPublishedVersion("@aphrody/shenron-fixture", "1.4.4", request, async () => {
         pauses++;
       }),
-    ).toEqual({ name: "@shenron/fixture", version: "1.4.4" });
+    ).toEqual({ name: "@aphrody/shenron-fixture", version: "1.4.4" });
     expect([calls, pauses]).toEqual([2, 1]);
     const forbidden = async () => new Response("", { status: 403 });
     await expect(
-      readPublishedVersion("@shenron/fixture", "1.4.4", forbidden, async () => {
+      readPublishedVersion("@aphrody/shenron-fixture", "1.4.4", forbidden, async () => {
         pauses++;
       }),
     ).rejects.toThrow("HTTP 403");
@@ -78,7 +78,7 @@ describe("publication archive boundary", () => {
     const secret = "npm_" + "x".repeat(30);
     const result = auditArchive(
       archive({
-        "package.json": JSON.stringify({ name: "@shenron/fixture", private: false }),
+        "package.json": JSON.stringify({ name: "@aphrody/shenron-fixture", private: false }),
         ".env": "private",
         "README.md": secret,
       }),
@@ -93,7 +93,7 @@ describe("publication archive boundary", () => {
     const result = auditArchive(
       archive({
         "package.json": JSON.stringify({
-          name: "@shenron/fixture",
+          name: "@aphrody/shenron-fixture",
           private: false,
           dependencies: { zod: "catalog:" },
           exports: { ".": "./src/index.ts" },

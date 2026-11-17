@@ -1,10 +1,10 @@
 /**
- * Montage de `@shenron/api` dans le `Bun.serve` du bot (B14, S9 — docs/architecture/STACK.md §2.2, D7).
+ * Montage de `@aphrody/shenron-api` dans le `Bun.serve` du bot (B14, S9 — docs/architecture/STACK.md §2.2, D7).
  *
  * - Les routes historiques gardent la priorité : Bun résout la table `routes`
  *   avant `fetch`, et le repli n'est consulté qu'après tous les préfixes
  *   historiques du `fetch`, juste avant le 404 JSON.
- * - Budget public unique : le limiteur de `@shenron/api` est un adaptateur sur
+ * - Budget public unique : le limiteur de `@aphrody/shenron-api` est un adaptateur sur
  *   les MÊMES seaux (`publicRateBuckets`) que `publicRateLimit` de `server.ts`.
  * - `/graphql` (S9) passe par ce même limiteur (60/min/IP, 429 + `Retry-After: 60`).
  *
@@ -14,31 +14,31 @@
 import {
   clientIpFromHeaders,
   isDirectLoopback as isDirectLoopbackHeaders,
-} from "@shenron/config/net";
+} from "@aphrody/shenron-config/net";
 import {
   DEV_SITE_ORIGIN,
   originOf,
   type PublicUrlEnv,
   resolveSiteUrl,
-} from "@shenron/config/public-urls";
-import { VERCEL_PRODUCTION_ALIAS } from "@shenron/auth/origins";
-import { createWikiReadRepository } from "@shenron/db/repos/wiki";
+} from "@aphrody/shenron-config/public-urls";
+import { VERCEL_PRODUCTION_ALIAS } from "@aphrody/shenron-auth/origins";
+import { createWikiReadRepository } from "@aphrody/shenron-db/repos/wiki";
 import {
   createPublicCache,
   noopInvalidation,
   PUBLIC_RATE_LIMIT,
   type RateLimitPort,
-} from "@shenron/api/http";
-import { createPluginPort, resolvePluginRoot } from "@shenron/api/plugin";
+} from "@aphrody/shenron-api/http";
+import { createPluginPort, resolvePluginRoot } from "@aphrody/shenron-api/plugin";
 import {
   createShenronApi,
   type AuthPort,
   type PluginPort,
   type ShenronApi,
   type WikiReadPort,
-} from "@shenron/api/server";
-import { verifyActingUser } from "@shenron/auth/acting-user";
-import { PgConversationStore, type ConversationStore } from "@shenron/db/conversations";
+} from "@aphrody/shenron-api/server";
+import { verifyActingUser } from "@aphrody/shenron-auth/acting-user";
+import { PgConversationStore, type ConversationStore } from "@aphrody/shenron-db/conversations";
 import { resolveBotDatabaseUrl } from "~/db/pg-url";
 import type { Database } from "bun:sqlite";
 import {
@@ -58,7 +58,7 @@ export type PublicRateBuckets = Map<string, { count: number; resetAt: number }>;
 
 /**
  * Origines CORS publiques du bot : l'origine du site résolue par
- * `@shenron/config/public-urls`, sa variante `www`, l'alias Vercel nommé
+ * `@aphrody/shenron-config/public-urls`, sa variante `www`, l'alias Vercel nommé
  * (INFRA-4) et, hors production, le site Next local.
  */
 export function buildPublicCorsOrigins(env: PublicUrlEnv): string[] {
@@ -98,7 +98,7 @@ export function hitPublicBucket(
 }
 
 /**
- * Port `RateLimitPort` adossé aux seaux historiques. `@shenron/api` préfixe
+ * Port `RateLimitPort` adossé aux seaux historiques. `@aphrody/shenron-api` préfixe
  * ses clés par `public:` : on le retire pour partager le budget par IP avec
  * les routes historiques (clé = IP nue).
  */
@@ -192,7 +192,7 @@ function pluginPortFrom(o: BotShenronApiOptions): PluginPort | null {
   return root ? createPluginPort(root) : null;
 }
 
-/** Application `@shenron/api` du bot. */
+/** Application `@aphrody/shenron-api` du bot. */
 export function createBotShenronApi(o: BotShenronApiOptions): ShenronApi {
   const remote = o.remoteAddress ?? (() => null);
   return createShenronApi(
@@ -247,7 +247,7 @@ function publicCorsHeaders(
 /**
  * Repli du `fetch` du bot pour les chemins servis par ce module :
  * - `/graphql` : limiteur public (S9 ; préflight OPTIONS non compté) puis handler inchangé ;
- * - chemins `@shenron/api` (B14) : délégués à l'application `@shenron/api` ;
+ * - chemins `@aphrody/shenron-api` (B14) : délégués à l'application `@aphrody/shenron-api` ;
  * - sinon `null` (l'appelant continue sa chaîne historique).
  */
 export function createPublicFallback(o: PublicFallbackOptions) {
@@ -288,7 +288,7 @@ export function createPublicFallback(o: PublicFallbackOptions) {
   };
 }
 
-/** Suivi des adresses de socket par requête, lu par `isDirectLoopback` du port `@shenron/api`. */
+/** Suivi des adresses de socket par requête, lu par `isDirectLoopback` du port `@aphrody/shenron-api`. */
 export function createRemoteAddressRegistry() {
   const addresses = new WeakMap<Request, string | null>();
   return {

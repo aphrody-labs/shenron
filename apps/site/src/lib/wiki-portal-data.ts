@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import "server-only";
 import { asc, eq, sql } from "drizzle-orm";
-import { botBattles } from "@shenron/db/bot-schema";
+import { botBattles } from "@aphrody/shenron-db/bot-schema";
 import { db } from "./db";
 
 /** One server-loader clock sample is serialized with the ISR catalogue, never read at hydration. */

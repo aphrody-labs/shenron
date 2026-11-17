@@ -35,7 +35,7 @@ contour, puisque l’espacement a été modifié.
 
 ## Versions web minimisées
 
-Les faces WOFF2 sont produites par la recette propriétaire de `@shenron/m3-fonts`
+Les faces WOFF2 sont produites par la recette propriétaire de `@aphrody/shenron-m3-fonts`
 (`scripts/subset.py`), sans copier cette source ni reconstruire le package M3.
 Le générateur Shenron l’appelle par `bun uv run --script`, avec ses dépendances
 isolées et épinglées `fonttools==4.60.1` et `brotli==1.1.0`.

@@ -3,7 +3,7 @@
 "use client";
 
 import { clsx } from "clsx";
-import { useM3ReducedMotion } from "@shenron/m3-motion";
+import { useM3ReducedMotion } from "@aphrody/shenron-m3-motion";
 
 // M3 circular indeterminate indicator: a 4-unit primary arc on a 48-unit box.
 // Reduced motion retains a static half-circle; CSS cannot stop SVG SMIL animation.

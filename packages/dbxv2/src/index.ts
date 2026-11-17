@@ -1,4 +1,4 @@
-/** Public API of `@shenron/dbxv2` (private package: DBXV2 data is never public). */
+/** Public API of `@aphrody/shenron-dbxv2` (private package: DBXV2 data is never public). */
 export * from "./cache";
 export * from "./client";
 export * from "./db";

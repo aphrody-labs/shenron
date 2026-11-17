@@ -39,7 +39,7 @@ describe("constants", () => {
     expect([...GOAL_PRIORITIES]).toEqual(["p0", "p1", "p2", "p3"]);
     const cockpit = readFileSync(IA_COCKPIT, "utf8");
     // The cockpit re-exports the single source instead of keeping its own copy.
-    expect(cockpit).toContain('from "@shenron/db/constants"');
+    expect(cockpit).toContain('from "@aphrody/shenron-db/constants"');
     expect(cockpit).not.toMatch(/FEEDBACK_STATUSES\s*=|GOAL_PRIORITIES\s*=/);
   });
 

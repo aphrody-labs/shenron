@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import type { SiteReportInsert } from "@shenron/db/schema";
+import type { SiteReportInsert } from "@aphrody/shenron-db/schema";
 import { createReportHandler } from "../src/host/reports";
 import { createMemoryRateLimiter } from "../src/http";
 import type { BetterAuthPort } from "../src/server";

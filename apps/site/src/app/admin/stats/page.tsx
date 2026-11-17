@@ -1,10 +1,10 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Bulle, Eclair, Tendance, Trophee } from "@shenron/ui/icones";
+import { Bulle, Eclair, Tendance, Trophee } from "@aphrody/shenron-ui/icones";
 import { api } from "@/lib/admin-api";
 import { fmtNum } from "@/lib/admin-format";
-import { formatZeni } from "@shenron/config/zeni";
+import { formatZeni } from "@aphrody/shenron-config/zeni";
 
 interface User {
   id: string;

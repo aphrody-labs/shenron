@@ -7,7 +7,7 @@
  */
 import dynamic from "next/dynamic";
 import { type ReactNode, useSyncExternalStore } from "react";
-import { isTauri } from "@shenron/ui/studio/tauri-bridge";
+import { isTauri } from "@aphrody/shenron-ui/studio/tauri-bridge";
 
 const ControlDesktop = dynamic(() => import("./ControlDesktop"), { ssr: false });
 

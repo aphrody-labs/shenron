@@ -15,7 +15,7 @@ import {
   resolvePluginRoot,
   type PluginArchiver,
   type PluginPort,
-} from "@shenron/api/plugin";
+} from "@aphrody/shenron-api/plugin";
 
 /** `/plugin.tar.gz` : tarball gzip de `Bun.Archive` (le site tourne sous `bun --bun`). */
 const bunArchiver: PluginArchiver = (entries) =>

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import { WIKI_CATEGORIES } from "@shenron/db/constants";
+import { WIKI_CATEGORIES } from "@aphrody/shenron-db/constants";
 import { z } from "zod";
 import * as contract from "../src/contract";
 import bodies from "./fixtures/cockpit-bodies.json";
@@ -79,7 +79,7 @@ describe("ia-cockpit bodies (bot limits)", () => {
     expect(EvalRequestBody.parse(bodies.evalRequestFull)).toEqual({});
   });
 
-  test("title <= 200, description <= 4000, enums from @shenron/db/constants", () => {
+  test("title <= 200, description <= 4000, enums from @aphrody/shenron-db/constants", () => {
     const base = { title: "x", userId: "1" };
     expect(CreateGoalBody.safeParse({ ...base, title: "a".repeat(200) }).success).toBe(true);
     expect(CreateGoalBody.safeParse({ ...base, title: "a".repeat(201) }).success).toBe(false);
@@ -97,7 +97,7 @@ describe("ia-cockpit bodies (bot limits)", () => {
 });
 
 describe("wiki schemas", () => {
-  test("WikiCategoryName options equal @shenron/db WIKI_CATEGORIES names", () => {
+  test("WikiCategoryName options equal @aphrody/shenron-db WIKI_CATEGORIES names", () => {
     expect(WikiCategoryName.options).toEqual(WIKI_CATEGORIES.map((c) => c.name));
   });
 

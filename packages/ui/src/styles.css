@@ -1,5 +1,5 @@
 /*
- * @shenron/ui — shared design-token layer (Tailwind v4, CSS-first).
+ * @aphrody/shenron-ui — shared design-token layer (Tailwind v4, CSS-first).
  *
  * Moved verbatim from apps/site/src/app/globals.css (HEAD f602c132): the two
  * `@theme inline` blocks, their `:root, .dark` mirrors (without the site-only
@@ -10,7 +10,7 @@
  * Consumers import it right after Tailwind. The package registers its own
  * component sources, including when installed under node_modules:
  *   @import "tailwindcss";
- *   @import "@shenron/ui/styles.css";
+ *   @import "@aphrody/shenron-ui/styles.css";
  *
  * Every palette value stays `var(--dbz-*, <default>)`: /admin/design overrides
  * `--dbz-*` at runtime. `src/tokens.ts` is generated from this file

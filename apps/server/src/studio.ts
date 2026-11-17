@@ -6,7 +6,7 @@ import {
   KOHARU_PATH,
   type KoharuBridge,
   type SpawnEngine,
-} from "@shenron/koharu/web-server";
+} from "@aphrody/shenron-koharu/web-server";
 
 const MAX_UPLOAD = 96 * 1024 * 1024;
 const MAX_FILES = 100;

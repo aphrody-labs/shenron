@@ -7,9 +7,9 @@ import { StudioSourceLink } from "@/components/studio/StudioSourceLink";
 import {
   MangaReader as BaseMangaReader,
   type MangaReaderProps as ReaderProps,
-} from "@shenron/ui/reader";
+} from "@aphrody/shenron-ui/reader";
 import { mangaReaderAssetUrl } from "@/lib/manga-reader-assets";
-import { useKoharuCanvasWarmup } from "@shenron/ui/reader";
+import { useKoharuCanvasWarmup } from "@aphrody/shenron-ui/reader";
 import { MangaPreviewNotice, type MangaReaderExtent } from "./MangaPreviewNotice";
 
 export type MangaReaderProps = Pick<

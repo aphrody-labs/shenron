@@ -5,7 +5,7 @@ import { botLang, t } from "~/lib/i18n";
 /**
  * Interaction dispatcher with a fallback reply that cannot collide with other handlers.
  *
- * It replaces `safeExecuteInteraction` of `@shenron/discord-kit` (same contract: errors are
+ * It replaces `safeExecuteInteraction` of `@aphrody/shenron-discord-kit` (same contract: errors are
  * logged, a deferred interaction that failed is edited, an unanswered one gets an ephemeral
  * reply), which has two production defects:
  *

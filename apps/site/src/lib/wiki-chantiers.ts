@@ -20,7 +20,7 @@
 import "server-only";
 import { sql } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { formatCharacterSlug, formatPlanetSlug } from "@shenron/config/wiki-slugs";
+import { formatCharacterSlug, formatPlanetSlug } from "@aphrody/shenron-config/wiki-slugs";
 
 export interface Chantier {
   table: string;

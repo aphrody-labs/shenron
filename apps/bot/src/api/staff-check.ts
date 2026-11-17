@@ -21,7 +21,7 @@ export function isBotStaff(discordId: string | null | undefined): boolean {
  * Discord snowflake linked to a Better Auth user (`ba_account`, provider
  * `discord`), or `null` when the user has no Discord account. Same lookup as
  * `getDiscordSession` in `oauth-session.ts`. The bot keeps its own SQLite
- * lookup (the `@shenron/db` repository targets PostgreSQL).
+ * lookup (the `@aphrody/shenron-db` repository targets PostgreSQL).
  */
 export async function discordIdForBaUser(
   baUserId: string,

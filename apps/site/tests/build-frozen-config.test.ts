@@ -1,6 +1,6 @@
 /**
  * `next start` serves the asset prefix and deployment id the build baked into the Turbopack
- * runtime, whatever the service environment says (`withBun` of `@shenron/next-host`). A mismatch
+ * runtime, whatever the service environment says (`withBun` of `@aphrody/shenron-next-host`). A mismatch
  * left the site unhydrated: HTML chunks under the CDN, a runtime waiting for them under
  * `/_next/`, every handler dead.
  */

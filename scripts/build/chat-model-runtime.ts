@@ -24,7 +24,7 @@ import {
 } from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 
-import { CHAT_ADAPTER, LLAMA_RUNTIME, llamaRuntimeUrl } from "@shenron/config/chat-model";
+import { CHAT_ADAPTER, LLAMA_RUNTIME, llamaRuntimeUrl } from "@aphrody/shenron-config/chat-model";
 
 const ROOT = resolve(import.meta.dir, "../..");
 export type DesktopTarget = keyof typeof LLAMA_RUNTIME.assets;

@@ -3,7 +3,7 @@
  * sont paresseux (une URL invalide dégrade en lexical au lieu de jeter à l'import).
  */
 import { describe, expect, test } from "bun:test";
-import { isLive, loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
+import { isLive, loadLiveRagEnv, requireLiveRag } from "@aphrody/shenron-pipeline/testing/live-rag";
 import { readFileSync } from "node:fs";
 import { dirname, join, resolve, sep } from "node:path";
 

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Messages between `@shenron/native/worker` (main thread) and its worker threads
+ * Messages between `@aphrody/shenron-native/worker` (main thread) and its worker threads
  * (`worker-thread.ts`). Types only: the worker imports this module with `import type`.
  *
  * Runtime class: pure.

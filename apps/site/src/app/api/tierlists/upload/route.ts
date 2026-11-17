@@ -1,7 +1,7 @@
 import { getCurrentUser } from "@/lib/session";
 import { API_URL } from "@/lib/config";
 import { env } from "@/lib/env";
-import { signActingUser } from "@shenron/auth/acting-user";
+import { signActingUser } from "@aphrody/shenron-auth/acting-user";
 
 /**
  * Upload d'une image custom pour l'éditeur de tierlist.

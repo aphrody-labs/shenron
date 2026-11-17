@@ -5,13 +5,13 @@
  *   bun src/render/generate-tokens.ts          # rewrite tokens.generated.ts
  *   bun src/render/generate-tokens.ts --check  # exit 1 when tokens.generated.ts is stale
  *
- * The bot does not depend on `@shenron/ui` (it would pull the whole UI layer into
+ * The bot does not depend on `@aphrody/shenron-ui` (it would pull the whole UI layer into
  * the bot binary), so the cards read this projection instead of a hand-written copy:
  * `tests/render-tokens.test.ts` fails as soon as the two drift apart. Only literal hex
  * colours are projected; a token that aliases another (`ember`) is skipped.
  */
 import { join } from "node:path";
-import { tokens } from "@shenron/ui/tokens";
+import { tokens } from "@aphrody/shenron-ui/tokens";
 
 export const GENERATED_PATH = join(import.meta.dir, "tokens.generated.ts");
 

@@ -4,7 +4,7 @@
  * (docs/products/bot-discord-refonte.md §7.2, lot A3). Runtime class: `pure`.
  *
  * The Activity never credits anything: at the end of a round it signs a settlement receipt
- * (`@shenron/activity/quiz`, HMAC-SHA256 under `SHENRON_ACTIVITY_SECRET`) and posts it to
+ * (`@aphrody/shenron-activity/quiz`, HMAC-SHA256 under `SHENRON_ACTIVITY_SECRET`) and posts it to
  * `POST /api/activity/settle`. The bot verifies the signature, the validity window and its own
  * caps, refuses a receipt it already settled, applies the daily budget and the account checks, and
  * credits through its economy service. The response says what was really paid, so the Activity can
@@ -13,7 +13,7 @@
  * Both routes are bot-owned service routes (they stay out of the public OpenAPI document) behind a
  * bearer token: `SHENRON_ACTIVITY_TOKEN`, or the admin token (503 when none is configured).
  *
- * The request shape below mirrors `SignedReceiptSchema` of `@shenron/activity/quiz`, which
+ * The request shape below mirrors `SignedReceiptSchema` of `@aphrody/shenron-activity/quiz`, which
  * stays the validator of record (the bot hands the raw body to `verifyReceipt`); a bot test keeps
  * the two in step. This package cannot depend on the private activity package.
  */
@@ -31,7 +31,7 @@ const RoundId = z.string().regex(/^[a-z0-9]{1,12}-\d{1,4}$/);
 
 /**
  * Why a member got what they got. The first group is decided by the Activity rules, the second by
- * the bot when it settles. Mirrors `REWARD_REASONS` of `@shenron/activity/protocol`.
+ * the bot when it settles. Mirrors `REWARD_REASONS` of `@aphrody/shenron-activity/protocol`.
  */
 export const ActivityRewardReason = z
   .enum([

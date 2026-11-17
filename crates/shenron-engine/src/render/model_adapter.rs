@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
-//! Adapter from the `ModelJson` produced by the private `@shenron/dbxv2` package (served by
+//! Adapter from the `ModelJson` produced by the private `@aphrody/shenron-dbxv2` package (served by
 //! `scripts/ops/dbxv2-serve.ts` at `/cpk/<name>/model/<emd>.json`) to the
 //! [`AssembledCharacterModel`] consumed by [`super::model_serve`].
 //!

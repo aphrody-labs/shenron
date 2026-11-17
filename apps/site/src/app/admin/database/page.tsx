@@ -2,7 +2,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { Base, Cadenas, Crayon } from "@shenron/ui/icones";
+import { Base, Cadenas, Crayon } from "@aphrody/shenron-ui/icones";
 import { useRouter } from "next/navigation";
 import { api } from "@/lib/admin-api";
 import { mergeAdminTableCatalog } from "@/lib/admin-table-catalog";

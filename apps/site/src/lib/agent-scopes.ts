@@ -7,7 +7,7 @@
  * publique qui les explique, et les tests qui vérifient qu'une portée inventée
  * ne peut pas entrer en base.
  */
-import { parseScopes as parseScopesIn } from "@shenron/auth/agent-keys";
+import { parseScopes as parseScopesIn } from "@aphrody/shenron-auth/agent-keys";
 import { AGENT_SCOPES, type AgentScope } from "@/db/schema";
 
 /** Description courte de chaque portée — reprise telle quelle dans la doc. */
@@ -25,7 +25,7 @@ export const SCOPE_DESCRIPTIONS: Record<AgentScope, string> = {
  *
  * Dédoublonnée et bornée au vocabulaire connu : une portée inventée ne doit
  * jamais atteindre la base, sinon un contrôle `includes()` plus loin laisserait
- * passer ce que personne n'a relu. `parseScopes` de `@shenron/auth/agent-keys`
+ * passer ce que personne n'a relu. `parseScopes` de `@aphrody/shenron-auth/agent-keys`
  * lié à `AGENT_SCOPES` ; une entrée qui n'est pas un tableau donne `[]`.
  */
 export function parseScopes(input: unknown): AgentScope[] {

@@ -19,7 +19,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
-import { StatusBadge } from "@shenron/ui/admin";
+import { StatusBadge } from "@aphrody/shenron-ui/admin";
 import { useTranslations } from "next-intl";
 import { useConfirm } from "@/components/admin/admin-ui";
 import { EmptyState, ErrorState, errorMessage, SkeletonRows } from "@/components/admin/bot/BotUi";

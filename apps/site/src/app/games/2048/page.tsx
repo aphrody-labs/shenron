@@ -1,6 +1,6 @@
 import DragonBall2048 from "./DragonBall2048";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

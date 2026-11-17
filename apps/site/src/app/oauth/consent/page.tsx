@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { T } from "@/components/T";
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { getSessionUser } from "@/lib/session";
 import ConsentForm from "./ConsentForm";
 

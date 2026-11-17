@@ -11,7 +11,7 @@ import {
   initApplicationCommandsSafe,
   registerGracefulShutdown,
   resolveGrantedIntents,
-} from "@shenron/discord-kit";
+} from "@aphrody/shenron-discord-kit";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
 import { env } from "./lib/env";
 import { admittedGuildIds } from "./lib/guild-admission";
@@ -256,7 +256,7 @@ registerGracefulShutdown({
     {
       name: "native inference",
       action: async () =>
-        (await import("@shenron/pipeline/ai/native")).closeNativeShenronInference(),
+        (await import("@aphrody/shenron-pipeline/ai/native")).closeNativeShenronInference(),
     },
     {
       name: "Bun vector retrieval",

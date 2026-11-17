@@ -3,11 +3,11 @@ import {
   discordFetch as sharedDiscordFetch,
   type AuthMode,
   type DiscordResponse,
-} from "@shenron/discord-kit/rest";
+} from "@aphrody/shenron-discord-kit/rest";
 import { env } from "./env";
 import { logger } from "./logger";
-export { DiscordRESTError } from "@shenron/discord-kit/rest";
-export type { AuthMode, DiscordResponse } from "@shenron/discord-kit/rest";
+export { DiscordRESTError } from "@aphrody/shenron-discord-kit/rest";
+export type { AuthMode, DiscordResponse } from "@aphrody/shenron-discord-kit/rest";
 export function discordFetch<T = unknown>(
   path: string,
   opts: { mode: AuthMode; token?: string; method?: string; body?: unknown } = { mode: "Bot" },

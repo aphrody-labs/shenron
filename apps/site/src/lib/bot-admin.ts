@@ -6,15 +6,15 @@
  * Pour le browser, passer par le proxy `/api/bot-admin/[...path]` (forwarde + auth).
  *
  * B11 (docs/architecture/STACK.md §2.2) : `stats`, `services`, `tables`, `table`, `wikiStats`
- * et `economyStats` passent par le client typé `@shenron/api/client` et sont
+ * et `economyStats` passent par le client typé `@aphrody/shenron-api/client` et sont
  * VALIDÉS par les schémas du contrat (forme réelle du bot). Une réponse non
  * conforme lève `BotAdminError` au lieu d'être castée silencieusement.
  * Les autres alias restent des lectures JSON non validées (`botRequest`),
  * migrées au fil de SH-API-4.
  */
 import "server-only";
-import { createShenronApiClient, type ApiResult } from "@shenron/api/client";
-import { ENV_ALIASES, envFirst } from "@shenron/config/env";
+import { createShenronApiClient, type ApiResult } from "@aphrody/shenron-api/client";
+import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
 import { API_URL as API, botApiBaseUrl } from "@/lib/config";
 
 /** `SHENRON_ADMIN_TOKEN` (alias `API_ADMIN_TOKEN`), blanc = absent. */

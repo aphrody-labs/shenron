@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
-import { createCrunchyrollClient, CrunchyrollError } from "@shenron/video/crunchyroll";
+import { createCrunchyrollClient, CrunchyrollError } from "@aphrody/shenron-video/crunchyroll";
 import {
   createCrunchyrollApi,
   type CrunchyrollMetadataClient,
-} from "@shenron/video/crunchyroll/api";
+} from "@aphrody/shenron-video/crunchyroll/api";
 
 export interface CrunchyrollServerConfiguration {
   accessToken?: string;

@@ -1,9 +1,9 @@
 import { db } from "@/lib/db";
 import Link from "next/link";
-import { Crayon, Document, Etoile, Plus } from "@shenron/ui/icones";
-import { Badge } from "@shenron/ui/badge";
-import { Button } from "@shenron/ui/button";
-import { cn } from "@shenron/ui/lib/utils";
+import { Crayon, Document, Etoile, Plus } from "@aphrody/shenron-ui/icones";
+import { Badge } from "@aphrody/shenron-ui/badge";
+import { Button } from "@aphrody/shenron-ui/button";
+import { cn } from "@aphrody/shenron-ui/lib/utils";
 import type { PostStatus } from "@/db/schema";
 import { nowDate } from "@/lib/clock";
 

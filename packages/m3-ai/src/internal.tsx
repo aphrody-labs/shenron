@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-// Shared Material Design 3 building blocks for @shenron/m3-ai (internal, not exported).
+// Shared Material Design 3 building blocks for @aphrody/shenron-m3-ai (internal, not exported).
 
-import { m3Durations, m3Easings } from "@shenron/m3-motion";
+import { m3Durations, m3Easings } from "@aphrody/shenron-m3-motion";
 import { clsx } from "clsx";
 import type { ReactNode } from "react";
 

@@ -1,4 +1,4 @@
-# @shenron/discord-kit
+# @aphrody/shenron-discord-kit
 
 <!-- catalog:begin unit -->
 
@@ -18,7 +18,7 @@ bun run --cwd packages/discord-kit typecheck
 
 <!-- catalog:end -->
 
-Shared Discord bot core kit, published as `@shenron/discord-kit` and used by the Shenron and Rose Griffon bots.
+Shared Discord bot core kit, published as `@aphrody/shenron-discord-kit` and used by the Shenron and Rose Griffon bots.
 
 ## Features
 

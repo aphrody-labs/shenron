@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Bridge HTTP fallback of @shenron/pipeline against the real public RAG route bodies of the bot
+ * Bridge HTTP fallback of @aphrody/shenron-pipeline against the real public RAG route bodies of the bot
  * (native RAG + PG, no stub). Lives with the route owner: a package never imports apps/.
  */
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
-import { DbuiBridge } from "@shenron/pipeline";
-import { isLive, loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
+import { DbuiBridge } from "@aphrody/shenron-pipeline";
+import { isLive, loadLiveRagEnv, requireLiveRag } from "@aphrody/shenron-pipeline/testing/live-rag";
 import { contextPublicRag, searchPublicRag } from "../src/api/public-rag";
 
 if (isLive()) loadLiveRagEnv();

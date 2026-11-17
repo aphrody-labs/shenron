@@ -6,7 +6,7 @@
  * Remplace rag_chunks (FTS5) + vec_chunks (vec0) + rag_meta en préservant les
  * rowid (alignement chunk↔vecteur). Source = $RAG_COPY (défaut /tmp/ragbuild.db).
  */
-import { tempPath } from "@shenron/kit/paths";
+import { tempPath } from "@aphrody/shenron-kit/paths";
 import { Database } from "bun:sqlite";
 import * as sqliteVec from "sqlite-vec";
 import { join } from "node:path";

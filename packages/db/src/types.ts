@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** Type-only surface of `@shenron/db`. Runtime class: `pure`. */
+/** Type-only surface of `@aphrody/shenron-db`. Runtime class: `pure`. */
 import type { PgDatabase, PgQueryResultHKT } from "drizzle-orm/pg-core";
 import type { FullSchema } from "./full-schema";
 import type { AgentAuditRow, AgentKeyRow } from "./schema";

@@ -4,7 +4,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { LOCALES_INFO, SUPPORTED_LOCALES, type SupportedLocale } from "@/lib/i18n/types";
 import { useLangue } from "@/lib/i18n/client";
-import { ChevronBas, MaterialSymbol } from "@shenron/ui/icones";
+import { ChevronBas, MaterialSymbol } from "@aphrody/shenron-ui/icones";
 
 /**
  * Le code affiché dans le bouton. `ja` se dit « JP » pour un lecteur français,

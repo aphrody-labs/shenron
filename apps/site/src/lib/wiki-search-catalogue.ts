@@ -1,7 +1,7 @@
 import type { SearchResults } from "./db-universe";
-import { isPathPublic, type AccessSnapshot } from "@shenron/config/wiki-launch";
-import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
-import { formatCharacterSlug, formatTransformationSlug } from "@shenron/config/wiki-slugs";
+import { isPathPublic, type AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
+import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
+import { formatCharacterSlug, formatTransformationSlug } from "@aphrody/shenron-config/wiki-slugs";
 
 export type WikiSearchGroup = Exclude<keyof SearchResults, "q">;
 

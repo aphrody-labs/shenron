@@ -3,8 +3,8 @@
 
 "use client";
 
-import { CircleButton, Popover, SelectPill, usePopover } from "@shenron/m3-primitives";
-import { m3Durations, m3Easings } from "@shenron/m3-motion";
+import { CircleButton, Popover, SelectPill, usePopover } from "@aphrody/shenron-m3-primitives";
+import { m3Durations, m3Easings } from "@aphrody/shenron-m3-motion";
 import { clsx } from "clsx";
 import { AnimatePresence, motion } from "motion/react";
 import { type ReactNode } from "react";

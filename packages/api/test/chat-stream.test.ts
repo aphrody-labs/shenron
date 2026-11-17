@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// Typed SSE chat stream of `@shenron/api/client`: framing, validation, resumption, fallbacks,
+// Typed SSE chat stream of `@aphrody/shenron-api/client`: framing, validation, resumption, fallbacks,
 // and an end-to-end run against the native server with a scripted chat engine.
 import { describe, expect, test } from "bun:test";
 import {

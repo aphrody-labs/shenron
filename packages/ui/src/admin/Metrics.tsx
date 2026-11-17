@@ -2,7 +2,7 @@
  * Compteurs d'administration : la rangée de chiffres en tête des tableaux de
  * bord (membres, Zénis en circulation, tâches en échec…).
  *
- * `StatTiles` (`@shenron/ui/public`) ne prend que des nombres ; l'admin affiche
+ * `StatTiles` (`@aphrody/shenron-ui/public`) ne prend que des nombres ; l'admin affiche
  * aussi des durées, des tailles et des états (« 12 Mo », « 3 h », « OK »). Même
  * grammaire visuelle — bordure fine, rayon 12 px, chiffre tabulaire — avec une
  * valeur libre et un ton. Deux colonnes sur mobile, quatre sur grand écran.

@@ -8,14 +8,14 @@
  * Évite d'ajouter une table game_sessions pour des parties courtes.
  */
 
-import { timingSafeEqualString } from "@shenron/auth/crypto";
+import { timingSafeEqualString } from "@aphrody/shenron-auth/crypto";
 import type { MorpionCell } from "./morpion";
 
 function hmacHex(secret: string, msg: string): string {
   return new Bun.CryptoHasher("sha256", secret).update(msg).digest("hex");
 }
 
-/** Égalité à durée constante (`timingSafeEqualString` de `@shenron/auth/crypto`). */
+/** Égalité à durée constante (`timingSafeEqualString` de `@aphrody/shenron-auth/crypto`). */
 export function constantTimeEqualStr(a: string, b: string): boolean {
   return timingSafeEqualString(a, b);
 }

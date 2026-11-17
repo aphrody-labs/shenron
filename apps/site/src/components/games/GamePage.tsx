@@ -1,12 +1,12 @@
 import type { ReactNode } from "react";
-import { PageHeader } from "@shenron/ui/layout/PageHeader";
-import { PageShell } from "@shenron/ui/layout/PageShell";
+import { PageHeader } from "@aphrody/shenron-ui/layout/PageHeader";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { requireUser } from "@/lib/session";
 
 /**
  * Cadre des mini-jeux jouables contre le bot (pfc, morpion, bingo) : connexion
  * exigée (les parties débitent et créditent des Zénis), puis la colonne commune
- * du site — `PageShell` + `PageHeader` de `@shenron/ui`, aucune largeur ni
+ * du site — `PageShell` + `PageHeader` de `@aphrody/shenron-ui`, aucune largeur ni
  * gouttière maison. La largeur `prose` garde le plateau à portée de pouce sur
  * mobile et centré sans s'étaler sur desktop.
  */

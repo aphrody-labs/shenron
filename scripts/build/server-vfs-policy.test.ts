@@ -4,8 +4,8 @@ import { test, expect } from "bun:test";
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { applyVfsSchema } from "@shenron/db/vfs/schema";
-import { exportPublicWikiRag } from "@shenron/db/vfs/public-wiki-rag";
+import { applyVfsSchema } from "@aphrody/shenron-db/vfs/schema";
+import { exportPublicWikiRag } from "@aphrody/shenron-db/vfs/public-wiki-rag";
 import { requireProductionVfs } from "./server-vfs-policy";
 
 test("production rejects disabled, missing, private and empty knowledge snapshots", () => {

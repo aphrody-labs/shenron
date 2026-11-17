@@ -6,7 +6,7 @@
  */
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { TabNav } from "@shenron/ui/navigation/TabNav";
+import { TabNav } from "@aphrody/shenron-ui/navigation/TabNav";
 import { useT } from "@/components/T";
 
 const ITEMS = [

@@ -9,7 +9,7 @@
  * latency are reported; the report is written next to the gold file. The route
  * is asked with the persona only (no retrieval context), so this is a chat
  * groundedness score, never a RAG metric: any RAG evaluation goes through
- * `@shenron/pipeline/testing/live-rag` against the real Shenron stores.
+ * `@aphrody/shenron-pipeline/testing/live-rag` against the real Shenron stores.
  *
  *   bun scripts/eval-chat-gold.ts [--gold F] [--limit 40] [--label base] [--out F]
  */
@@ -137,7 +137,7 @@ async function main(): Promise<void> {
   const tone = soulTone(
     existsSync(values.soul as string) ? readFileSync(values.soul as string, "utf8") : "",
   );
-  const { ShenronComputeClient } = await import("@shenron/pipeline/shenron");
+  const { ShenronComputeClient } = await import("@aphrody/shenron-pipeline/shenron");
   const client = new ShenronComputeClient();
   const score = await runEval(
     sample,

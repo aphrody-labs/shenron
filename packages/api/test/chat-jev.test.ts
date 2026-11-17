@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import type { RagHit, RagSearchOptions } from "@shenron/db/vfs";
+import type { RagHit, RagSearchOptions } from "@aphrody/shenron-db/vfs";
 import { createChatEngine, NO_SOURCE_ANSWER } from "../src/chat/engine";
 import { createChatJevPort, judgePublicChatHits, type ChatJevRequest } from "../src/chat/jev";
 import type { LlmBackend, LlmMessage } from "../src/chat/llm";

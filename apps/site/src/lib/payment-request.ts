@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { siteTrustedOrigins } from "@shenron/auth/origins";
+import { siteTrustedOrigins } from "@aphrody/shenron-auth/origins";
 import { SITE_URL } from "@/lib/config";
 
 /**

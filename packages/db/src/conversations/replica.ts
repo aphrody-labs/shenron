@@ -9,7 +9,7 @@ import { Database } from "bun:sqlite";
 import { rowToConversation, rowToMessage } from "./sqlite";
 import { type Conversation, type Message, newerThan } from "./types";
 
-/** Port implemented by every replica (SQLite here, memory/Storage in `@shenron/api/client`). */
+/** Port implemented by every replica (SQLite here, memory/Storage in `@aphrody/shenron-api/client`). */
 export interface ConversationReplica {
   cursor(): Promise<string | null>;
   setCursor(cursor: string): Promise<void>;

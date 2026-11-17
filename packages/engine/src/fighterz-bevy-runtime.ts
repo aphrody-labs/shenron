@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * @shenron/engine/fighterz-bevy-runtime
+ * @aphrody/shenron-engine/fighterz-bevy-runtime
  *
  * Deterministic browser combat simulation, Taffy flexbox layout hierarchy,
  * and WebGPU render packets for Dragon Ball FighterZ.

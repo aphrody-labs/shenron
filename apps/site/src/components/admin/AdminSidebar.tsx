@@ -6,7 +6,7 @@
  * feuille « Plus » (mobile), avec un retour au site. Les liens (et leurs routes) restent
  * déclarés ici : les tests de navigation admin les lisent dans ce fichier.
  */
-import { ShellContextNav, type ShellNavSection } from "@shenron/ui/navigation/AppShell";
+import { ShellContextNav, type ShellNavSection } from "@aphrody/shenron-ui/navigation/AppShell";
 import {
   PenLine,
   LayoutDashboard,

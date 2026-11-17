@@ -1,5 +1,5 @@
 {
-  "description": "fold(): search key of a form. Rust shenron_lexicon::fold and TypeScript @shenron/lexicon fold() must both return `output` for `input`.",
+  "description": "fold(): search key of a form. Rust shenron_lexicon::fold and TypeScript @aphrody/shenron-lexicon fold() must both return `output` for `input`.",
   "cases": [
     {
       "input": "Kaïō-ken",

@@ -3,8 +3,8 @@ import { injectable, inject } from "tsyringe";
 import { Bot, Discord, Once, Client } from "discordx";
 import { CronRegistry } from "~/api/cron-registry";
 import { logger } from "~/lib/logger";
-import { SHENRON_DISCORD } from "@shenron/config/discord-ai";
-import { initApplicationCommandsSafe } from "@shenron/discord-kit";
+import { SHENRON_DISCORD } from "@aphrody/shenron-config/discord-ai";
+import { initApplicationCommandsSafe } from "@aphrody/shenron-discord-kit";
 
 /**
  * LabSyncCron — Cron périodique de synchronisation et télémétrie des commandes

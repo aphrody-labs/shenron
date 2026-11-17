@@ -4,7 +4,7 @@ import { mkdtempSync, rmSync, chmodSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { AdminPipeline, loadAdminPlans } from "../src/api/admin-pipeline";
-import type { runShenronCommand } from "@shenron/pipeline/shenron/native-commands";
+import type { runShenronCommand } from "@aphrody/shenron-pipeline/shenron/native-commands";
 
 const success = {
   kind: "exit",

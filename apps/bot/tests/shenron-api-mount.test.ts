@@ -1,10 +1,10 @@
 import "./setup";
 import { afterAll, describe, expect, it } from "bun:test";
-import type { WikiReadPort } from "@shenron/api/server";
+import type { WikiReadPort } from "@aphrody/shenron-api/server";
 import { startHarness } from "../scripts/api-harness";
 import { bucketRateLimiter, hitPublicBucket } from "../src/api/shenron-api";
 
-// B14 : repli `@shenron/api` monté après les routes historiques du bot.
+// B14 : repli `@aphrody/shenron-api` monté après les routes historiques du bot.
 const calls: string[] = [];
 const fakeWiki: WikiReadPort = {
   async categories() {
@@ -25,7 +25,7 @@ const fakeWiki: WikiReadPort = {
 };
 
 const withPg = startHarness({ wiki: fakeWiki });
-// Sans PostgreSQL ni plugin : aucun groupe, donc aucun chemin `@shenron/api` revendiqué.
+// Sans PostgreSQL ni plugin : aucun groupe, donc aucun chemin `@aphrody/shenron-api` revendiqué.
 const withoutPg = startHarness({ wiki: null, plugin: null });
 afterAll(async () => {
   await withPg.stop(true);
@@ -35,7 +35,7 @@ afterAll(async () => {
 const get = (server: ReturnType<typeof startHarness>, path: string) =>
   fetch(new URL(path, server.url), { headers: { "x-real-ip": "198.51.100.1" } });
 
-describe("montage @shenron/api dans le Bun.serve du bot", () => {
+describe("montage @aphrody/shenron-api dans le Bun.serve du bot", () => {
   it("/api/public/wiki/categories → 200 via le repli", async () => {
     const res = await get(withPg, "/api/public/wiki/categories");
     expect(res.status).toBe(200);
@@ -61,7 +61,7 @@ describe("montage @shenron/api dans le Bun.serve du bot", () => {
     expect(calls.some((c) => c.startsWith("get:transformations"))).toBe(false);
   });
 
-  it("/api/public/wiki/battles/12 atteint @shenron/api", async () => {
+  it("/api/public/wiki/battles/12 atteint @aphrody/shenron-api", async () => {
     const res = await get(withPg, "/api/public/wiki/battles/12");
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ id: 12, name: "Goku vs Freezer" });
@@ -87,7 +87,7 @@ describe("montage @shenron/api dans le Bun.serve du bot", () => {
     }
   });
 
-  it("un seul budget public : @shenron/api et routes historiques partagent les seaux", async () => {
+  it("un seul budget public : @aphrody/shenron-api et routes historiques partagent les seaux", async () => {
     const buckets = new Map<string, { count: number; resetAt: number }>();
     const limiter = bucketRateLimiter(buckets, () => 1_000);
     for (let i = 0; i < 59; i++) hitPublicBucket(buckets, "203.0.113.9", undefined, 1_000);

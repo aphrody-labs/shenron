@@ -26,16 +26,9 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
-      # The scanner is pinned to a commit of aphrody-dev/ay; never fetched from a branch.
-      - uses: actions/checkout@v7
-        with:
-          repository: aphrody-dev/ay
-          ref: 02e2737216665ff8ee1a8f470df8f16c604d2de0
-          path: .ay
-          sparse-checkout: tools
-          persist-credentials: false
       - uses: ./.github/actions/setup-bun
-      - run: PATHS_SCANNER=.ay/tools/paths.ts bun scripts/audit/check-paths.ts
+      # The script fetches its pinned scanner into the gitignored .cache/ and skips when offline.
+      - run: bun scripts/audit/check-paths.ts
 
   check:
     name: Check (Bun)
@@ -72,7 +65,7 @@ jobs:
 
       - name: Generate entries barrel
         run: |
-          bun --filter @shenron/bot gen:entries
+          bun --filter @aphrody/shenron-bot gen:entries
           git diff --exit-code -- apps/bot/src/_entries.ts
 
       - name: OpenAPI document is up to date
@@ -94,7 +87,7 @@ jobs:
         run: bun scripts/audit/check-workspace-packages.ts --strict
 
       - name: Migrations (offline audit)
-        run: bun run --filter @shenron/db audit:migrations
+        run: bun run --filter @aphrody/shenron-db audit:migrations
 
       - name: Plugin offline snapshots are up to date
         run: bun scripts/plugin/sync.ts --check

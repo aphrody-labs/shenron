@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { z } from "zod";
-import { THEME_COLOR_VARS } from "@shenron/config/site-theme";
+import { THEME_COLOR_VARS } from "@aphrody/shenron-config/site-theme";
 
 const color = z.string().regex(/^#(?:[\da-fA-F]{3}|[\da-fA-F]{6}|[\da-fA-F]{8})$/);
 export const SiteThemeSchema = z

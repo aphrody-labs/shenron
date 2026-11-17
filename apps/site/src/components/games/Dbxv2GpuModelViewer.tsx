@@ -1,12 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 "use client";
 
-import { createGlbScene } from "@shenron/engine/glb-scene";
+import { createGlbScene } from "@aphrody/shenron-engine/glb-scene";
 import {
   Dbxv2ModelViewer,
   type Dbxv2ModelRendererFactory,
   type Dbxv2ModelViewerProps,
-} from "@shenron/ui/dbxv2";
+} from "@aphrody/shenron-ui/dbxv2";
 
 const openModel: Dbxv2ModelRendererFactory = createGlbScene;
 

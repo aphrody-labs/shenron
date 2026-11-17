@@ -1,5 +1,5 @@
 import "server-only";
-import { resolveRedisUrl } from "@shenron/config/services";
+import { resolveRedisUrl } from "@aphrody/shenron-config/services";
 import { createPostsMirror, type PostsRedisClient } from "./posts-redis-shared";
 let client: (PostsRedisClient & { onclose: ((error: Error) => void) | null }) | null = null;
 let connecting: Promise<PostsRedisClient> | null = null;

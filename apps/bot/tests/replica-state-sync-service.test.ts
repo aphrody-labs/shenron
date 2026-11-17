@@ -6,8 +6,8 @@
  */
 import "./setup";
 import { beforeEach, describe, expect, it, spyOn } from "bun:test";
-import { BOT_STATE_REPLICA_NAMES } from "@shenron/db/bot-schema";
-import type { ReplicaPassOptions, ReplicaPassReport } from "@shenron/db/replica";
+import { BOT_STATE_REPLICA_NAMES } from "@aphrody/shenron-db/bot-schema";
+import type { ReplicaPassOptions, ReplicaPassReport } from "@aphrody/shenron-db/replica";
 import { DatabaseService } from "../src/db/index";
 import { PgService, type PgHandle } from "../src/db/pg";
 import { logger } from "../src/lib/logger";

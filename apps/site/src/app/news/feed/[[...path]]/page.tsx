@@ -21,8 +21,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { FeedStream } from "@/components/feed/FeedStream";
-import { PageShell } from "@shenron/ui/layout/PageShell";
-import { SectionHeading } from "@shenron/ui/layout/SectionHeading";
+import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
+import { SectionHeading } from "@aphrody/shenron-ui/layout/SectionHeading";
 import { EmptyState, LinkPager, StatTiles, TabNav } from "@/components/kit";
 import { DISCORD_INVITE } from "@/lib/config";
 import {

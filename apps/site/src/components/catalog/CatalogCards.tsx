@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import Link from "next/link";
 import type { ComponentProps } from "react";
-import { MangaCard } from "@shenron/ui/public/MangaCard";
+import { MangaCard } from "@aphrody/shenron-ui/public/MangaCard";
 import { EmptyState } from "@/components/kit/EmptyState";
 import { T } from "@/components/T";
 import type { CatalogCard, CatalogSummary } from "@/lib/catalog-explorer-contract";

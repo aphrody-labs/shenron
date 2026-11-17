@@ -6,7 +6,7 @@
  * their own depth and follow the pointer.
  *
  * The renderer is injected (`renderer`, the site passes `createMangaSceneRenderer` from
- * `@shenron/engine/manga-scene`): `@shenron/ui` does not depend on the engine.
+ * `@aphrody/shenron-engine/manga-scene`): `@aphrody/shenron-ui` does not depend on the engine.
  * The page must be an authorised scan readable by the canvas (same origin or CORS). Without a
  * renderer, without WebGPU, on a lost device or when no panel is found, the flat page stays:
  * the 3D view is an enhancement, never the only way to read the page.

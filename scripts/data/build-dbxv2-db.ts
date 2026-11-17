@@ -10,7 +10,7 @@
  * Game data (Bandai Namco / Dimps) never enters Git, the public VFS, a build artifact or the
  * production PostgreSQL: the output lives under `~/var/dbxv2-db/` (700, file 600) and the
  * script refuses any path inside the repository. `build` reads the dump indexes and calls
- * `identify` of `@shenron/dbxv2` (`SHENRON_DBXV2_SRC`, `SHENRON_DBXV2_LIB`); `embed` calls a
+ * `identify` of `@aphrody/shenron-dbxv2` (`SHENRON_DBXV2_SRC`, `SHENRON_DBXV2_LIB`); `embed` calls a
  * local `shenron-embed serve` (multilingual-e5-small) and must run in tmux under the heavy
  * lock (`plan` prints the command). Never run `rag:build` on the production bot.
  */
@@ -27,8 +27,8 @@ import {
   pendingChunks,
   type AssetRow,
   type CpkRow,
-} from "@shenron/db/dbxv2";
-import { createE5Embedder } from "@shenron/db/vfs/rag";
+} from "@aphrody/shenron-db/dbxv2";
+import { createE5Embedder } from "@aphrody/shenron-db/vfs/rag";
 
 const REPO = resolve(import.meta.dir, "../..");
 const HOME = process.env.HOME ?? homedir();

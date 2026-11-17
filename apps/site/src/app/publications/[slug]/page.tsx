@@ -7,7 +7,7 @@ import { PageShell } from "@/components/kit";
 import { T } from "@/components/T";
 import { CatalogControls } from "@/components/catalog/CatalogControls";
 import { ogMeta } from "@/lib/og";
-import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 import {
   readSourcePublication,
   readPublicationBody,

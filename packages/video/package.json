@@ -1,5 +1,5 @@
 {
-  "name": "@shenron/video",
+  "name": "@aphrody/shenron-video",
   "version": "1.0.0",
   "private": true,
   "description": "Browser HLS playback, the HLS decoder assets and the Crunchyroll client used by the Shenron site and ops scripts.",

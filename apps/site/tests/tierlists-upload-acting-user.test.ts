@@ -10,7 +10,7 @@
 import { afterAll, beforeEach, describe, expect, mock, test } from "bun:test";
 import { createHmac } from "node:crypto";
 import { NextRequest } from "next/server";
-import { ACTING_USER_TEST_VECTOR, verifyActingUser } from "@shenron/auth/acting-user";
+import { ACTING_USER_TEST_VECTOR, verifyActingUser } from "@aphrody/shenron-auth/acting-user";
 
 const VECTOR = ACTING_USER_TEST_VECTOR;
 const FIXED_NOW = Number(VECTOR.ts);

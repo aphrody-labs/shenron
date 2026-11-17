@@ -3,7 +3,7 @@
  * Relays a request to the Bun host with the reader's credentials. Storage and reader identity
  * belong to the host; the site only forwards headers it needs and never reads a session itself.
  */
-import { resolveHostUrl } from "@shenron/config/public-urls";
+import { resolveHostUrl } from "@aphrody/shenron-config/public-urls";
 
 const FORWARDED = ["cookie", "authorization", "user-agent", "origin", "content-type"] as const;
 export const PRIVATE_JSON_HEADERS = {

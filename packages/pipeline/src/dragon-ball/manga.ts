@@ -2,7 +2,7 @@
 /** Product manga policy over native Web acquisition; no network/image engine. */
 import { join, relative, resolve } from "node:path";
 import type postgres from "postgres";
-import { createDatabooksFreezeGate } from "@shenron/db/guards";
+import { createDatabooksFreezeGate } from "@aphrody/shenron-db/guards";
 import { runShenronCommand, type NativeCommandExecutor } from "../shenron/native-commands";
 import {
   copyEditorialAsset,

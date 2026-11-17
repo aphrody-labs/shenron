@@ -10,7 +10,7 @@ import {
   type Camera,
   type ResizeHandle,
 } from "../../lib/geometry";
-import type { EntityId, Frame, Point, TransformFrame } from "@shenron/koharu/protocol";
+import type { EntityId, Frame, Point, TransformFrame } from "@aphrody/shenron-koharu/protocol";
 
 interface SelectionControlsProps {
   container: RefObject<HTMLDivElement | null>;

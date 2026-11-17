@@ -14,7 +14,7 @@
  *   bun scripts/plugin/agy-manifest.ts --check   # échoue en cas de dérive (test:scripts)
  */
 import { join } from "node:path";
-import { DEFAULT_PUBLIC_ORIGINS } from "@shenron/config/public-urls";
+import { DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
 import { RACINE } from "./build-references";
 
 const SOURCE = "plugin/.claude-plugin/plugin.json";

@@ -1,5 +1,5 @@
 {
-  "name": "@shenron/kit",
+  "name": "@aphrody/shenron-kit",
   "version": "1.0.0",
   "private": true,
   "description": "Small shared helpers: JSON HTTP transport, filesystem locations, native inference binding.",

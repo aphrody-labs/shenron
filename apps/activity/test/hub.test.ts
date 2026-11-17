@@ -1,14 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
 /** The hub on fake sockets and a manual clock: presence, expiry, spam, back-pressure, membership. */
 import { describe, expect, test } from "bun:test";
-import { seededRng } from "@shenron/activity";
+import { seededRng } from "@aphrody/shenron-activity";
 import {
   parseServerMessage,
   PROTOCOL_VERSION,
   type ClientMessage,
   type ServerMessage,
-} from "@shenron/activity/protocol";
-import { ManualClock } from "@shenron/activity/testing";
+} from "@aphrody/shenron-activity/protocol";
+import { ManualClock } from "@aphrody/shenron-activity/testing";
 import { ActivityHub, newSocketState, type HubSocket } from "../src/ws/hub";
 import { fakeDiscord, INSTANCE, testBank, U1, U2 } from "./support";
 

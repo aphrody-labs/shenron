@@ -1,7 +1,7 @@
 import { afterAll, describe, expect, mock, test } from "bun:test";
-import type { WikiReadPort } from "@shenron/api/server";
+import type { WikiReadPort } from "@aphrody/shenron-api/server";
 
-// B14 : catch-all `/api/public/[...route]` du site monté sur `@shenron/api`.
+// B14 : catch-all `/api/public/[...route]` du site monté sur `@aphrody/shenron-api`.
 mock.module("server-only", () => ({}));
 
 const calls: string[] = [];

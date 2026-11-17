@@ -16,7 +16,7 @@
  *     transformerait une panne du bot en ouverture publique de pages privées.
  */
 import "server-only";
-import { ENV_ALIASES, envFirst } from "@shenron/config/env";
+import { ENV_ALIASES, envFirst } from "@aphrody/shenron-config/env";
 import { API_URL } from "@/lib/config";
 
 /** `SHENRON_ADMIN_TOKEN` (alias `API_ADMIN_TOKEN`), blanc = absent. */

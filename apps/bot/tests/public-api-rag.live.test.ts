@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { contextPublicRag, searchPublicRag } from "../src/api/public-rag";
-import { loadLiveRagEnv, requireLiveRag } from "@shenron/pipeline/testing/live-rag";
-import { createShenronApiClient } from "@shenron/api/client";
-import { RagContextResponse, RagSearchResponse } from "@shenron/api/contract";
+import { loadLiveRagEnv, requireLiveRag } from "@aphrody/shenron-pipeline/testing/live-rag";
+import { createShenronApiClient } from "@aphrody/shenron-api/client";
+import { RagContextResponse, RagSearchResponse } from "@aphrody/shenron-api/contract";
 
 loadLiveRagEnv();
 let server: ReturnType<typeof Bun.serve> | undefined;

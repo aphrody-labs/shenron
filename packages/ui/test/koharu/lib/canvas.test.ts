@@ -7,7 +7,7 @@ import {
   previewCanvasOpacity,
   showCanvasPage,
   type Canvas,
-} from "@shenron/koharu/canvas";
+} from "@aphrody/shenron-koharu/canvas";
 
 const commands = hoisted(() => ({
   prepareCanvasPage: vi.fn(),
@@ -15,7 +15,7 @@ const commands = hoisted(() => ({
   getCanvasPageResource: vi.fn(),
 }));
 
-mock.module("@shenron/koharu/protocol", () => ({ commands }));
+mock.module("@aphrody/shenron-koharu/protocol", () => ({ commands }));
 
 describe("canvas runtime", () => {
   it("routes inspector previews only to the active canvas", () => {

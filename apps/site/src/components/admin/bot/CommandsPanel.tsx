@@ -1,6 +1,6 @@
 "use client";
 
-import { StatusBadge } from "@shenron/ui/admin";
+import { StatusBadge } from "@aphrody/shenron-ui/admin";
 import { useQuery } from "@tanstack/react-query";
 import { ChevronDown, SearchX, Terminal } from "lucide-react";
 import { useTranslations } from "next-intl";

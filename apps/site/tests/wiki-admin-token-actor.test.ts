@@ -26,7 +26,7 @@ let discordSession: { user: { id: string; name: string; image: null } } | null =
 const revisions: Array<{ action: string; actor: unknown }> = [];
 
 mock.module("server-only", () => ({}));
-mock.module("@shenron/auth/next", () => ({ requestHeaders: async () => headers }));
+mock.module("@aphrody/shenron-auth/next", () => ({ requestHeaders: async () => headers }));
 const previousHost = process.env.SHENRON_HOST_URL;
 const authHost = Bun.serve({
   hostname: "127.0.0.1",
@@ -63,7 +63,7 @@ mock.module("@/lib/agent-keys", () => ({
     rateLimitPerHour: 60,
   }),
 }));
-mock.module("@shenron/db/repos/accounts", () => ({
+mock.module("@aphrody/shenron-db/repos/accounts", () => ({
   createDiscordAccountLookup: () => ({ discordIdForUser: async () => "owner-discord" }),
 }));
 mock.module("@/lib/db", () => {

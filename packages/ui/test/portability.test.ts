@@ -5,7 +5,7 @@ import {
   checkNoEscapingImports,
   checkPackageRuntimes,
   listExportEntries,
-} from "@shenron/config/guards";
+} from "@aphrody/shenron-config/guards";
 
 const pkgDir = Bun.fileURLToPath(new URL("..", import.meta.url));
 const WRAPPERS = [
@@ -42,7 +42,7 @@ const WRAPPERS = [
   "toriyama-speech-bubble",
 ];
 
-describe("@shenron/ui portability", () => {
+describe("@aphrody/shenron-ui portability", () => {
   test("every wrapper is exported with the react class", () => {
     const entries = listExportEntries(pkgDir).filter((e) => e.key === "./*");
     expect(entries.map((e) => e.subpath.slice(2)).toSorted()).toEqual([...WRAPPERS].toSorted());

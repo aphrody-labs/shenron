@@ -1,5 +1,5 @@
 {
-  "name": "@shenron/test-dom",
+  "name": "@aphrody/shenron-test-dom",
   "version": "1.0.0",
   "private": true,
   "description": "bun:test preload registering happy-dom globals while keeping Bun's native network primitives.",

@@ -82,7 +82,7 @@ Créer pour `dragonballfr.com` les pages d'œuvres exhaustives (séries TV, film
 
 ## 6. Les Points de Vigilance (The Parts that Bite)
 
-1. **Intégrité Canonique & Droits** : Aucune image sous copyright direct ne doit être hébergée sans transformation ou licence autorisée. Les portraits de personnages utilisent les rendus vectoriels propres du monorepo (`@shenron/ui/toriyama-svg`).
+1. **Intégrité Canonique & Droits** : Aucune image sous copyright direct ne doit être hébergée sans transformation ou licence autorisée. Les portraits de personnages utilisent les rendus vectoriels propres du monorepo (`@aphrody/shenron-ui/toriyama-svg`).
 2. **SEO International & Hreflang** : Chaque page d'œuvre doit obligatoirement déclarer ses balises alternatives `<link rel="alternate" hreflang="fr" href="...">`, `en` et `ja`.
 3. **Fuseaux Horaires de Diffusion** : Les horaires de programmation télévisée doivent être stockés avec fuseau explicite (`timestamptz` ou fuseau IANA) et convertis à la volée selon le fuseau de l'internaute.
 

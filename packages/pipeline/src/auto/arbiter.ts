@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /** bun:yolo arbitrates between two drafts; abstention below the confidence floor keeps review. */
-import type { Provider } from "@shenron/decision";
+import type { Provider } from "@aphrody/shenron-decision";
 import type { Draft, DraftTask } from "./workers";
 
 export interface Verdict {
@@ -20,7 +20,7 @@ export async function arbitrate(
   if (mine.length === 1)
     return { taskId: task.id, winner: mine[0]!, status: "single", confidence: null };
   const [a, b] = mine as [Draft, Draft];
-  const { inspect, selections, confidenceThreshold, choice } = await import("@shenron/decision");
+  const { inspect, selections, confidenceThreshold, choice } = await import("@aphrody/shenron-decision");
   const minimum = confidenceThreshold(options.minimumConfidence ?? 0.6);
   const request = {
     state: {

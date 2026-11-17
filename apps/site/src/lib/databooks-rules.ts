@@ -1,4 +1,4 @@
-import { CLE_VERIFIEE } from "@shenron/config/databooks-defauts";
+import { CLE_VERIFIEE } from "@aphrody/shenron-config/databooks-defauts";
 import { publicDatabookImage } from "./databook-media";
 
 /**

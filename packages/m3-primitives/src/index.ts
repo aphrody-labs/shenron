@@ -1,4 +1,4 @@
-// @shenron/m3-primitives — SpaceUI primitives rebuilt on Material Design 3, on the Base UI
+// @aphrody/shenron-m3-primitives — SpaceUI primitives rebuilt on Material Design 3, on the Base UI
 // (@base-ui/react) headless layer
 // (fusion rules: docs/design)
 

@@ -11,9 +11,9 @@
  *
  * Source: `data/lexicon/terms.json` (schema `data/lexicon/terms.schema.json`), edited by hand.
  * Derived outputs, never edited:
- *   - `packages/lexicon/src/terms.generated.ts`: the data embedded by `@shenron/lexicon/data`;
+ *   - `packages/lexicon/src/terms.generated.ts`: the data embedded by `@aphrody/shenron-lexicon/data`;
  *   - `data/lexique-db-canonique.json`: the legacy `{ ja, fr, kind, length }[]` read by the
- *     consumers not yet on `@shenron/lexicon` or `shenron-lexicon` (end of life:
+ *     consumers not yet on `@aphrody/shenron-lexicon` or `shenron-lexicon` (end of life:
  *     docs/architecture/lexicon.md).
  * The Rust crate `shenron-lexicon` embeds `terms.json` itself (`include_str!`).
  *

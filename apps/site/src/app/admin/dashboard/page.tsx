@@ -26,7 +26,7 @@ import {
 import { api } from "@/lib/admin-api";
 import { formatBytes } from "@/lib/admin-format";
 import { type BotSummary } from "@/components/admin/BotSelector";
-import { AdminPageHeader } from "@shenron/ui/admin";
+import { AdminPageHeader } from "@aphrody/shenron-ui/admin";
 import styles from "./Dashboard.module.css";
 import { NativePipelinePanel } from "@/components/admin/NativePipelinePanel";
 

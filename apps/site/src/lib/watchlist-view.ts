@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
-import { sanitizeFavorites, type Favorite } from "@shenron/config/favorites";
-import { watchStatus, type WatchEntry, type WatchStatus } from "@shenron/api/contract";
+import { sanitizeFavorites, type Favorite } from "@aphrody/shenron-config/favorites";
+import { watchStatus, type WatchEntry, type WatchStatus } from "@aphrody/shenron-api/contract";
 
 export interface WatchlistItem {
   kind: "episode" | "movie";

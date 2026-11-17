@@ -14,7 +14,7 @@ test("preserves isolated suites, quoted glob arguments and UI gate stages", () =
   ).toEqual([["bun", "test", "--isolate", "--path-ignore-patterns=**/*.live.test.ts", "tests/"]]);
   expect(
     splitGateScript(
-      "bun test && bun test/koharu/run.ts && bun test --preload @shenron/test-dom ./test/dom",
+      "bun test && bun test/koharu/run.ts && bun test --preload @aphrody/shenron-test-dom ./test/dom",
     ),
   ).toHaveLength(3);
 });
@@ -45,7 +45,7 @@ test("discovers every current package gate and retains the scripts typecheck", a
     expect(referenced.has(configPath), relative(root, configPath)).toBe(true);
   }
   expect(
-    workspaceCommands(root, "test").filter((command) => command.packageName === "@shenron/ui"),
+    workspaceCommands(root, "test").filter((command) => command.packageName === "@aphrody/shenron-ui"),
   ).toHaveLength(3);
 });
 

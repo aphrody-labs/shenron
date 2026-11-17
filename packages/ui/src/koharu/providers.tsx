@@ -27,9 +27,9 @@ import {
   type Job,
   type ModelResources,
   type ProjectInfo,
-} from "@shenron/koharu/protocol";
-import { Toaster } from "@shenron/m3-primitives";
-import { TooltipProvider } from "@shenron/m3-primitives";
+} from "@aphrody/shenron-koharu/protocol";
+import { Toaster } from "@aphrody/shenron-m3-primitives";
+import { TooltipProvider } from "@aphrody/shenron-m3-primitives";
 import { AtlasPreviewContext, type AtlasPreviewFactory } from "./lib/atlas-preview";
 export type { AtlasPreviewFactory } from "./lib/atlas-preview";
 

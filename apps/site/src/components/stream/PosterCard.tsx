@@ -1,7 +1,7 @@
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import Link from "next/link";
-import { Lecture, Livre } from "@shenron/ui/icones";
+import { Lecture, Livre } from "@aphrody/shenron-ui/icones";
 import { assetUrl } from "@/lib/assets";
 import { isEditableAsset } from "@/lib/images";
 

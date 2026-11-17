@@ -4,7 +4,7 @@ import { InferenceControl } from "./InferenceControl";
 import { call } from "../../lib/backend";
 import { usePage } from "../../lib/queries";
 import { pipelineStages, useKoharuStore, type PipelineScope } from "../../lib/store";
-import { commands, type Scope, type Stage } from "@shenron/koharu/protocol";
+import { commands, type Scope, type Stage } from "@aphrody/shenron-koharu/protocol";
 
 export function CanvasCommandBar() {
   const page = usePage().data;

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { afterEach, describe, expect, test } from "bun:test";
 import { join } from "node:path";
-import { createRecordingFetch, type RecordedCall } from "@shenron/config/testing";
+import { createRecordingFetch, type RecordedCall } from "@aphrody/shenron-config/testing";
 import { type ShenronCompute, createShenronCompute, parseRetryAfter } from "../../src/ai/shenron";
 import { fixture, json, loopbackBase, TOKEN, vector } from "./helpers";
 
@@ -13,7 +13,7 @@ type LegacyClient = new (o: {
   token: string;
   fetcher: typeof fetch;
 }) => LegacyInstance;
-// Dynamic path import: the legacy client lives in @shenron/pipeline/shenron (parity reference only).
+// Dynamic path import: the legacy client lives in @aphrody/shenron-pipeline/shenron (parity reference only).
 const legacyPath = join(import.meta.dir, "..", "..", "src", "shenron", "compute.ts");
 const { ShenronComputeClient } = (await import(legacyPath)) as {
   ShenronComputeClient: LegacyClient;

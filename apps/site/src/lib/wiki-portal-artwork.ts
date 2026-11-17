@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { slugDeRace } from "@shenron/config/races-alias";
+import { slugDeRace } from "@aphrody/shenron-config/races-alias";
 import { assetUrl } from "./assets";
 import { mangaLibraryImageUrl } from "./manga-library-image";
 

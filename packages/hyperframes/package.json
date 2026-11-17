@@ -1,5 +1,5 @@
 {
-  "name": "@shenron/hyperframes",
+  "name": "@aphrody/shenron-hyperframes",
   "version": "1.4.7",
   "private": true,
   "description": "Shenron's vendorized HyperFrames engine: zero-download byte-range streaming, ISOBMFF atom parsing, and on-demand frame decoding.",

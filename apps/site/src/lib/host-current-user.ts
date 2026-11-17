@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { AccountSessionResponse } from "@shenron/api/contract";
+import { AccountSessionResponse } from "@aphrody/shenron-api/contract";
 import type { CurrentUser } from "./current-user-cache";
 
 /** Resolve the business profile on Bun; never fall back to a local DB or stale cache. */

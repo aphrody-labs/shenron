@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * The first frame of every socket. It belongs to the transport, not to the game protocol of
- * `@shenron/activity/protocol`: it carries the credentials, which must never reach a room.
+ * `@aphrody/shenron-activity/protocol`: it carries the credentials, which must never reach a room.
  * The token travels in this frame and not in the URL, so it stays out of access logs and referrers.
  */
-import { InstanceIdSchema, PROTOCOL_VERSION } from "@shenron/activity/protocol";
+import { InstanceIdSchema, PROTOCOL_VERSION } from "@aphrody/shenron-activity/protocol";
 import { z } from "zod";
 import { TOKEN_PATTERN } from "../auth/discord";
 

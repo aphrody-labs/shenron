@@ -3,12 +3,12 @@
  * Salon admin du lab IA (Discord), partagé par le bot et le site.
  *
  * Le salon vient de `resolveDiscordAi` (`ADMIN_LAB_CHANNEL_ID`, sinon le salon général de la
- * guilde Shenron). Les transports Discord (`@shenron/discord-kit`, `@shenron/discord-kit/messaging`) sont
+ * guilde Shenron). Les transports Discord (`@aphrody/shenron-discord-kit`, `@aphrody/shenron-discord-kit/messaging`) sont
  * fournis par l'application qui les déclare : ce paquet ne les importe pas.
  */
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { resolveDiscordAi } from "@shenron/config/discord-ai";
+import { resolveDiscordAi } from "@aphrody/shenron-config/discord-ai";
 
 export interface AdminLabMessageOptions {
   content?: string;
@@ -16,13 +16,13 @@ export interface AdminLabMessageOptions {
   channelId?: string;
 }
 
-/** Le sous-ensemble de `discordFetch` (`@shenron/discord-kit/rest`) utilisé ici. */
+/** Le sous-ensemble de `discordFetch` (`@aphrody/shenron-discord-kit/rest`) utilisé ici. */
 export type AdminLabDiscordFetch = <T>(
   path: string,
   opts: { mode: "Bot"; token: string; method?: string; body?: unknown; fetch?: typeof fetch },
 ) => Promise<{ data: T }>;
 
-/** Le sous-ensemble de `DiscordChannel` (`@shenron/discord-kit/messaging`) utilisé ici. */
+/** Le sous-ensemble de `DiscordChannel` (`@aphrody/shenron-discord-kit/messaging`) utilisé ici. */
 export interface AdminLabChannel {
   sendText(channelId: string, content: string): Promise<{ id: string }>;
 }
@@ -140,8 +140,8 @@ export function createAdminLab(transports: AdminLabTransports): AdminLab {
 
   /**
    * Poste un message dans un salon. Texte seul : canal de messagerie d'Shenron
-   * (`@shenron/discord-kit/messaging`, `@discordjs/rest` : seaux de rate-limit, reprises). Avec embeds :
-   * client REST de `@shenron/discord-kit`, car `DiscordChannel` 0.1.0 n'envoie que du texte
+   * (`@aphrody/shenron-discord-kit/messaging`, `@discordjs/rest` : seaux de rate-limit, reprises). Avec embeds :
+   * client REST de `@aphrody/shenron-discord-kit`, car `DiscordChannel` 0.1.0 n'envoie que du texte
    * ou un fichier. `transport` remplace `fetch` (tests).
    */
   async function postAdminLabMessage(

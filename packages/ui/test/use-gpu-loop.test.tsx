@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import "@shenron/test-dom";
+import "@aphrody/shenron-test-dom";
 import { act, cleanup, render } from "@testing-library/react";
 import { expect, test, vi } from "bun:test";
 import { useRef } from "react";

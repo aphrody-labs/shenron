@@ -18,7 +18,7 @@ import {
   FlecheHaut,
   Groupe,
   Plus,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import {
   ALL_ENTRIES,
   ALWAYS_OPEN_KEYS,
@@ -26,7 +26,7 @@ import {
   resolveAccess,
   type AccessMode,
   type AccessRule,
-} from "@shenron/config/wiki-launch";
+} from "@aphrody/shenron-config/wiki-launch";
 import { RoleBadge, RoleSelect } from "@/components/admin/RoleSelect";
 
 const MODES: { value: AccessMode; label: string; hint: string; tone: string }[] = [

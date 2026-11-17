@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: Apache-2.0
-/** Salon admin du lab IA : logique partagée dans `@shenron/api/admin-lab`. */
+/** Salon admin du lab IA : logique partagée dans `@aphrody/shenron-api/admin-lab`. */
 import "server-only";
-import { discordFetch, DiscordRESTError } from "@shenron/discord-kit/rest";
-import { ChannelError, DiscordChannel } from "@shenron/discord-kit/messaging";
-import { createAdminLab } from "@shenron/api/admin-lab";
+import { discordFetch, DiscordRESTError } from "@aphrody/shenron-discord-kit/rest";
+import { ChannelError, DiscordChannel } from "@aphrody/shenron-discord-kit/messaging";
+import { createAdminLab } from "@aphrody/shenron-api/admin-lab";
 
-export type { AdminLabMessageOptions } from "@shenron/api/admin-lab";
+export type { AdminLabMessageOptions } from "@aphrody/shenron-api/admin-lab";
 
 const lab = createAdminLab({
   discordFetch,

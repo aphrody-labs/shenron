@@ -2,7 +2,7 @@
 // Derived from SpaceUI (SpaceUI), MIT, rebuilt on Material Design 3.
 // adapted from https://github.com/martyan/react-customizable-progressbar/
 import { clsx } from "clsx";
-import { useM3ReducedMotion } from "@shenron/m3-motion";
+import { useM3ReducedMotion } from "@aphrody/shenron-m3-motion";
 import React, { type FunctionComponent, useEffect, useState } from "react";
 
 // M3 circular progress: `primary` arc over a `secondary-container` track, 4 dp stroke. The color

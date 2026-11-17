@@ -5,9 +5,9 @@ Lexique de traduction Dragon Ball (ja/fr/en) côté TypeScript: recherche, repli
 Commands:
 
 ```sh
-bun run --filter @shenron/lexicon test
-bun run --filter @shenron/lexicon lint
-bun run --filter @shenron/lexicon typecheck
+bun run --filter @aphrody/shenron-lexicon test
+bun run --filter @aphrody/shenron-lexicon lint
+bun run --filter @aphrody/shenron-lexicon typecheck
 ```
 
 Rules:

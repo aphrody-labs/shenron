@@ -13,7 +13,7 @@
  * ne sont qu'un confort souris. `scrollBy` d'environ 85 % de la largeur visible.
  */
 import { Children, useCallback, useEffect, useRef, useState } from "react";
-import { ChevronDroite, ChevronGauche } from "@shenron/ui/icones";
+import { ChevronDroite, ChevronGauche } from "@aphrody/shenron-ui/icones";
 
 export function StreamRail({
   children,

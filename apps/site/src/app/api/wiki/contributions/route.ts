@@ -24,7 +24,7 @@ import {
   withdrawContribution,
 } from "@/lib/wiki-contributions";
 import { canContribute, scopeOf } from "@/lib/contribution-rights";
-import { sanitizeInternalPath } from "@shenron/config/favorites";
+import { sanitizeInternalPath } from "@aphrody/shenron-config/favorites";
 import { createMemoryRateLimiter } from "@/lib/memory-rate-limit";
 import { parseContributionListQuery } from "@/lib/wiki-editorial-contracts";
 

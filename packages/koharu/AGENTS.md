@@ -5,9 +5,9 @@ Client du moteur de traduction manga Koharu: protocole IPC typé généré depui
 Commands:
 
 ```sh
-bun run --filter @shenron/koharu test
-bun run --filter @shenron/koharu lint
-bun run --filter @shenron/koharu typecheck
+bun run --filter @aphrody/shenron-koharu test
+bun run --filter @aphrody/shenron-koharu lint
+bun run --filter @aphrody/shenron-koharu typecheck
 ```
 
 Rules:
@@ -16,5 +16,5 @@ Rules:
 - Code identifiers and comments in English; documentation in French.
 - No secret, private data or generated artifact in a tracked file.
 - No heavy build on the Windows PC: run builds on vps or bunos.
-- `src/protocol.ts` se régénère avec `bun run --filter @shenron/koharu protocol`.
+- `src/protocol.ts` se régénère avec `bun run --filter @aphrody/shenron-koharu protocol`.
 - Repo-wide rules: `AGENTS.md` at the root.

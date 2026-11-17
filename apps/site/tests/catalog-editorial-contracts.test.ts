@@ -8,7 +8,7 @@ import {
 } from "../src/lib/catalog-media-contracts";
 import { WIKI_TABLE_SPECS } from "../src/lib/wiki-tables";
 import { z } from "zod";
-import { DatabooksFrozenError } from "@shenron/db/guards";
+import { DatabooksFrozenError } from "@aphrody/shenron-db/guards";
 import {
   WikiUpdatePreconditionError,
   wikiUpdateSnapshotHash,

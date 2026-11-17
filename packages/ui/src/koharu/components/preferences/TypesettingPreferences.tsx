@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import { FontPicker } from "../controls/FontPicker";
 import { PreferencePage } from "./PreferenceFields";
 import { useFonts } from "../../lib/queries";
-import type { TypesettingConfig } from "@shenron/koharu/protocol";
+import type { TypesettingConfig } from "@aphrody/shenron-koharu/protocol";
 import { Button } from "../../../components/button";
 
 export function TypesettingPreferences({

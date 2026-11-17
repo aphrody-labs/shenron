@@ -4,7 +4,7 @@
  * Real account data only; a signed-out reader gets an explicit empty list. Writes go through
  * `/api/favorites` (save) and `/api/progress` (playback), which the host owns.
  */
-import { endpoints, type WatchEntry } from "@shenron/api/contract";
+import { endpoints, type WatchEntry } from "@aphrody/shenron-api/contract";
 import { callHost, PRIVATE_JSON_HEADERS } from "@/lib/host-forward";
 import { buildWatchlist, WATCHLIST_STATUSES } from "@/lib/watchlist-view";
 

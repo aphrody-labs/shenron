@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
-import { createBunSql } from "@shenron/db/bun-sql";
-import { createDefaultPageBanners } from "@shenron/config/page-banners";
+import { createBunSql } from "@aphrody/shenron-db/bun-sql";
+import { createDefaultPageBanners } from "@aphrody/shenron-config/page-banners";
 import { createHostPageBanners } from "../src/host/page-banners";
 import { createShenronApiClient } from "../src/client";
 import { endpoints } from "../src/contract";

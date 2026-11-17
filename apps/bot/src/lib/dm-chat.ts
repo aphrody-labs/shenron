@@ -3,9 +3,9 @@
  * Admission of the DM chat: one model for every member, so every request goes through a global
  * queue with bounded concurrency (`SHENRON_DM_CONCURRENCY`, 2), each user has one request in
  * flight and a quota per window, and owners skip the quotas and go first in the queue. Settings
- * and defaults: `@shenron/config/dm-chat`.
+ * and defaults: `@aphrody/shenron-config/dm-chat`.
  */
-import type { DmChatSettings } from "@shenron/config/dm-chat";
+import type { DmChatSettings } from "@aphrody/shenron-config/dm-chat";
 
 export type DmAdmission =
   | { ok: true; ticket: DmTicket }

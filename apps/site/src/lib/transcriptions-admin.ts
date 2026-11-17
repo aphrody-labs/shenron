@@ -339,7 +339,7 @@ export async function getBatchesOverview(): Promise<{
 }
 
 /**
- * Canonical lexicon (`@shenron/lexicon`) rows, one per Japanese spelling, with an optional ranked
+ * Canonical lexicon (`@aphrody/shenron-lexicon`) rows, one per Japanese spelling, with an optional ranked
  * search (any language) and a legacy kind filter.
  */
 export async function getCanonLexiconOverview(options?: {
@@ -351,8 +351,8 @@ export async function getCanonLexiconOverview(options?: {
   total: number;
   stats: Record<string, number>;
 }> {
-  const { LEGACY_KIND, codePoints } = await import("@shenron/lexicon");
-  const { lexicon } = await import("@shenron/lexicon/data");
+  const { LEGACY_KIND, codePoints } = await import("@aphrody/shenron-lexicon");
+  const { lexicon } = await import("@aphrody/shenron-lexicon/data");
   const lex = lexicon();
   const rowsOf = (term: (typeof lex.terms)[number]): LexiconOverviewItem[] =>
     [term.ja, ...(term.aliases?.ja ?? [])].map((ja) => ({

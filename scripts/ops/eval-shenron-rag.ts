@@ -13,16 +13,16 @@ import { createReadStream } from "node:fs";
 import { homedir } from "node:os";
 import { join, resolve } from "node:path";
 import { realpath } from "node:fs/promises";
-import { ShenronComputeClient } from "@shenron/pipeline/shenron/compute";
+import { ShenronComputeClient } from "@aphrody/shenron-pipeline/shenron/compute";
 import {
   aggregate,
   aggregateByTag,
   parseGold,
   runCase,
   type CaseResult,
-} from "@shenron/pipeline/ai/eval";
-import { requireAiHttpUrl } from "@shenron/pipeline/ai/config";
-import { resolveDataPath } from "@shenron/config/paths";
+} from "@aphrody/shenron-pipeline/ai/eval";
+import { requireAiHttpUrl } from "@aphrody/shenron-pipeline/ai/config";
+import { resolveDataPath } from "@aphrody/shenron-config/paths";
 
 const REPO_ROOT = Bun.fileURLToPath(new URL("../../", import.meta.url));
 const COMPUTE_SERVICES = ["shenron-embed", "shenron-ai-http"];
@@ -73,7 +73,7 @@ async function requireListenerBinary(url: URL, release: string, binary: string):
 async function prepareAttestation(releasePath: string) {
   if (process.platform !== "linux")
     throw new Error("Compute attestation requires Linux process provenance");
-  const { loadLiveRagEnv, requireLiveRag } = await import("@shenron/pipeline/testing/live-rag");
+  const { loadLiveRagEnv, requireLiveRag } = await import("@aphrody/shenron-pipeline/testing/live-rag");
   loadLiveRagEnv();
   const preload = await requireLiveRag();
   const release = await realpath(resolve(releasePath));
@@ -213,7 +213,7 @@ async function attestCompute(
 
 /**
  * B13: the private Shenron API address has no default here. Returns the origin
- * resolved by `@shenron/pipeline/ai/config` (`SHENRON_AI_HTTP_URL`, then the legacy
+ * resolved by `@aphrody/shenron-pipeline/ai/config` (`SHENRON_AI_HTTP_URL`, then the legacy
  * `SHENRON_API_URL`), or throws an error naming the variables.
  */
 export function shenronApiUrlFromEnv(

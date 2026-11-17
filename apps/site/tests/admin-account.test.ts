@@ -25,7 +25,7 @@ mock.module("@/lib/auth", () => ({
 mock.module("@/lib/bot-admin", () => ({
   botAdmin: { discord: { guild: async () => ({ guild: { id: "99" } }) } },
 }));
-mock.module("@shenron/discord-kit/rest", () => ({
+mock.module("@aphrody/shenron-discord-kit/rest", () => ({
   DiscordRESTError: class extends Error {},
   discordFetch: async (_path: string, opts: { token: string }) => {
     reads++;

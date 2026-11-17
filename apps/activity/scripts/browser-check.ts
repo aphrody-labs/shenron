@@ -13,7 +13,7 @@
  * Also checked: the Tab key shows a visible focus ring, reduced motion removes the animations, the
  * Japanese and English renderings, and that the zeni paid by the bot reach the results screen.
  */
-import { lexiconQuizBank } from "@shenron/activity/quiz/lexicon";
+import { lexiconQuizBank } from "@aphrody/shenron-activity/quiz/lexicon";
 import { mkdirSync, mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";

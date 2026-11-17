@@ -3,8 +3,8 @@
 
 import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useVideoUIText } from "@/lib/video-ui-text";
-import { GDS_COLORS, GDS_ELEVATION, GdsChip } from "@shenron/ui/gds";
-import { formatTimecodeSMPTE, generateWaveformPeaks, type WaveformPoint } from "@shenron/remotion";
+import { GDS_COLORS, GDS_ELEVATION, GdsChip } from "@aphrody/shenron-ui/gds";
+import { formatTimecodeSMPTE, generateWaveformPeaks, type WaveformPoint } from "@aphrody/shenron-remotion";
 import {
   Play,
   Pause,

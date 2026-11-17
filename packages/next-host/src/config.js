@@ -128,7 +128,7 @@ function aliasTables(projectDir, alias = {}, dedupe = []) {
   for (const name of dedupe) {
     const dir = findPackageDir(name, projectDir);
     if (!dir)
-      throw new Error(`@shenron/next-host: dedupe: ${name} is not installed for ${projectDir}`);
+      throw new Error(`@aphrody/shenron-next-host: dedupe: ${name} is not installed for ${projectDir}`);
     absolute[name] = dir;
     absolute[`${name}/*`] = `${dir}/*`;
   }

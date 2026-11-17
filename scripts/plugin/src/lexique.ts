@@ -4,7 +4,7 @@
  * Point d'entrée empaqueté par `scripts/plugin/build-references.ts` dans
  * `plugin/skills/dragon-ball-japonais/scripts/lexique.js`. Les règles (recherche, masquage le plus
  * long d'abord aux frontières de mot katakana, jetons `Zeta001`, restauration tolérante) sont
- * celles de `@shenron/lexicon`, identiques au crate Rust `shenron-lexicon` ; les termes sont ceux
+ * celles de `@aphrody/shenron-lexicon`, identiques au crate Rust `shenron-lexicon` ; les termes sont ceux
  * de `references/lexique-canonique.json`, instantané de `data/lexicon/terms.json`.
  *
  *   bun lexique.js cherche <terme>          recherche JA, FR ou EN (alias et romaji compris)

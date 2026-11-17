@@ -26,7 +26,7 @@
 import { readdir } from "node:fs/promises";
 import { basename, join } from "node:path";
 import postgres from "postgres";
-import { classerDefaut, noteQualite } from "@shenron/config/databooks-defauts";
+import { classerDefaut, noteQualite } from "@aphrody/shenron-config/databooks-defauts";
 
 const args = process.argv.slice(2);
 const opt = (nom: string, defaut?: string) => {

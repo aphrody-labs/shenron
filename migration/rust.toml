@@ -301,7 +301,7 @@ ts = [
 rust = "crates/shenron-ui"
 state = "ts"
 ts_lines = 15606
-note = "Material 3 components, motion and tokens consumed by @shenron/ui"
+note = "Material 3 components, motion and tokens consumed by @aphrody/shenron-ui"
 
 [[unit]]
 name = "test-dom"

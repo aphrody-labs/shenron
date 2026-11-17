@@ -1,10 +1,10 @@
 "use client";
 
-import { ExternalLink } from "@shenron/ui/external";
+import { ExternalLink } from "@aphrody/shenron-ui/external";
 import Link from "next/link";
 import Image from "next/image";
 import { mangaLibraryImageUrl } from "@/lib/manga-library-image";
-import { CadreCase, PastilleTome } from "@shenron/ui/toriyama/MotifsCouverture";
+import { CadreCase, PastilleTome } from "@aphrody/shenron-ui/toriyama/MotifsCouverture";
 import { useMangaUIText } from "@/lib/manga-ui-text";
 import { useState } from "react";
 import { MangaPreviewBadge } from "./MangaPreviewNotice";

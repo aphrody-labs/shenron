@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import { schemeFromSeed } from "@shenron/m3-tokens/dynamic-color";
+import { schemeFromSeed } from "@aphrody/shenron-m3-tokens/dynamic-color";
 import reference from "../src/episode-theme-reference.json";
 
 const aliases = {

@@ -21,7 +21,7 @@ import type {
   Role,
   ServerMessage,
   Settled,
-} from "@shenron/activity/protocol";
+} from "@aphrody/shenron-activity/protocol";
 
 export type Connection = "booting" | "connecting" | "online" | "reconnecting" | "failed";
 export type BootStep = "sdk" | "auth" | "room";

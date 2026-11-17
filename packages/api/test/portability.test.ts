@@ -7,7 +7,7 @@ import {
   checkPackageRuntimes,
   importSpecifiers,
   stripNonCode,
-} from "@shenron/config/guards";
+} from "@aphrody/shenron-config/guards";
 
 const PKG_DIR = join(import.meta.dir, "..");
 const manifest = JSON.parse(readFileSync(join(PKG_DIR, "package.json"), "utf8")) as {
@@ -32,8 +32,8 @@ const RUNTIME: Record<string, string> = {
   "./openapi.json": "json",
 };
 
-/** Doctrine subpaths of `@shenron/pipeline` that `./chat` and `./host` may import (§4.1). */
-const PIPELINE_SUBPATHS = new Set(["@shenron/pipeline/ai/prompts", "@shenron/pipeline/agent-home"]);
+/** Doctrine subpaths of `@aphrody/shenron-pipeline` that `./chat` and `./host` may import (§4.1). */
+const PIPELINE_SUBPATHS = new Set(["@aphrody/shenron-pipeline/ai/prompts", "@aphrody/shenron-pipeline/agent-home"]);
 
 // The source tree is an immutable snapshot for this suite.
 const sourceCache = new Map<
@@ -87,7 +87,7 @@ function bareImports(key: string): { file: string; specifier: string; typeOnly: 
   );
 }
 
-describe("@shenron/api manifest", () => {
+describe("@aphrody/shenron-api manifest", () => {
   test("exports and runtime classes of docs/architecture/STACK.md §3.6, no root export", () => {
     expect(manifest.exports).not.toHaveProperty(".");
     expect(Object.keys(manifest.exports).toSorted()).toEqual(Object.keys(RUNTIME).toSorted());
@@ -116,7 +116,7 @@ describe("@shenron/api manifest", () => {
     for (const key of ["./server", "./next"]) {
       const offending = bareImports(key).filter(
         ({ specifier, typeOnly }) =>
-          /^(?:next(?:\/|$)|server-only$|tsyringe$|@shenron\/di$|discord\.js$)/.test(specifier) ||
+          /^(?:next(?:\/|$)|server-only$|tsyringe$|@aphrody\/shenron-di$|discord\.js$)/.test(specifier) ||
           (!typeOnly && /^bun(?::|$)/.test(specifier)),
       );
       expect(offending).toEqual([]);
@@ -133,11 +133,11 @@ describe("@shenron/api manifest", () => {
     () => {
       for (const key of ["./contract", "./client", "./http", "./server", "./next"]) {
         expect(
-          bareImports(key).filter(({ specifier }) => specifier.startsWith("@shenron/pipeline")),
+          bareImports(key).filter(({ specifier }) => specifier.startsWith("@aphrody/shenron-pipeline")),
         ).toEqual([]);
       }
       const reached = ["./chat", "./host"].flatMap((key) =>
-        bareImports(key).filter(({ specifier }) => specifier.startsWith("@shenron/pipeline")),
+        bareImports(key).filter(({ specifier }) => specifier.startsWith("@aphrody/shenron-pipeline")),
       );
       expect(reached.length).toBeGreaterThan(0);
       expect(reached.filter(({ specifier }) => !PIPELINE_SUBPATHS.has(specifier))).toEqual([]);

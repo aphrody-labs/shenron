@@ -14,8 +14,8 @@
  * reverse-sync `scripts/sync-neon-to-sqlite.ts`).
  */
 import type { SQL } from "bun";
-import type { EnvSource } from "@shenron/db/config";
-import { createBunDb, type ShenronBunDb } from "@shenron/db/bun-sql";
+import type { EnvSource } from "@aphrody/shenron-db/config";
+import { createBunDb, type ShenronBunDb } from "@aphrody/shenron-db/bun-sql";
 import { singleton } from "tsyringe";
 import { logger } from "~/lib/logger";
 import { resolveBotDatabaseUrl } from "./pg-url";

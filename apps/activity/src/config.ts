@@ -4,9 +4,9 @@
  * section "Activité Discord"). A missing secret disables the capability that needs it, never the
  * whole server: `/health` reports what is available.
  */
-import { MIN_SECRET_BYTES } from "@shenron/activity/quiz";
-import { ACTIVITY_ENV, envString, isProduction, type EnvSource } from "@shenron/config/env";
-import { resolveBotApiInternalUrl } from "@shenron/config/services";
+import { MIN_SECRET_BYTES } from "@aphrody/shenron-activity/quiz";
+import { ACTIVITY_ENV, envString, isProduction, type EnvSource } from "@aphrody/shenron-config/env";
+import { resolveBotApiInternalUrl } from "@aphrody/shenron-config/services";
 import { join } from "node:path";
 
 export interface ActivityConfig {

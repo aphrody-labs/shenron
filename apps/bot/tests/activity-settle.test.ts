@@ -15,8 +15,8 @@ import {
   type RewardLine,
   type SettlementReceipt,
   type SignedReceipt,
-} from "@shenron/activity/quiz";
-import { ActivityBudgetResponse, ActivitySettleResponse } from "@shenron/api/contract";
+} from "@aphrody/shenron-activity/quiz";
+import { ActivityBudgetResponse, ActivitySettleResponse } from "@aphrody/shenron-api/contract";
 import { DatabaseService } from "~/db/index";
 import { actionLogs, activitySettlements, users } from "~/db/schema";
 import { getLevelThresholds } from "~/lib/xp";

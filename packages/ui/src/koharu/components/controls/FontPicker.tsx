@@ -8,8 +8,8 @@ import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useFontPreview } from "../../lib/queries";
-import type { FontFamily, FontSource } from "@shenron/koharu/protocol";
-import { Badge } from "@shenron/m3-primitives";
+import type { FontFamily, FontSource } from "@aphrody/shenron-koharu/protocol";
+import { Badge } from "@aphrody/shenron-m3-primitives";
 import { Button } from "../../../components/button";
 import {
   DropdownMenu,

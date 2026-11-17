@@ -1,5 +1,5 @@
 {
-  "name": "@shenron/media",
+  "name": "@aphrody/shenron-media",
   "version": "1.4.7",
   "private": false,
   "homepage": "https://dragonballfr.com",
@@ -37,10 +37,10 @@
     "lint": "bun lint -c ../../.oxlintrc.json src"
   },
   "dependencies": {
-    "@shenron/filmcraft": "workspace:*",
-    "@shenron/hyperframes": "workspace:*",
-    "@shenron/kit": "workspace:*",
-    "@shenron/remotion": "workspace:*",
+    "@aphrody/shenron-filmcraft": "workspace:*",
+    "@aphrody/shenron-hyperframes": "workspace:*",
+    "@aphrody/shenron-kit": "workspace:*",
+    "@aphrody/shenron-remotion": "workspace:*",
     "mediabunny": "catalog:"
   },
   "devDependencies": {

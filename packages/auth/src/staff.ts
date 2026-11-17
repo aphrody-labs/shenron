@@ -8,7 +8,7 @@
  * The environment is injected: nothing is read at module load.
  */
 
-/** Structural environment source (same shape as `@shenron/config/env` `EnvSource`). */
+/** Structural environment source (same shape as `@aphrody/shenron-config/env` `EnvSource`). */
 export type StaffEnvSource = Readonly<Record<string, string | undefined>>;
 
 const SNOWFLAKE = /^\d{17,20}$/;

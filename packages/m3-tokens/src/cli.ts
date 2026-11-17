@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-// @shenron/m3-tokens — CLI / demo (bun)
+// @aphrody/shenron-m3-tokens — CLI / demo (bun)
 // -----------------------------------------------------------------------------
 // Usage:
 //   bun run demo                 # emit tokens from a realistic MUI theme

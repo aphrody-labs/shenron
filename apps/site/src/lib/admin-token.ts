@@ -4,8 +4,8 @@ import {
   ADMIN_COOKIE_TTL_MS,
   createAdminCookieCodec,
   type AdminCookieCodec,
-} from "@shenron/auth/tokens";
-import { timingSafeEqualString } from "@shenron/auth/crypto";
+} from "@aphrody/shenron-auth/tokens";
+import { timingSafeEqualString } from "@aphrody/shenron-auth/crypto";
 import { env } from "@/lib/env";
 
 /**
@@ -16,7 +16,7 @@ import { env } from "@/lib/env";
  * On pose alors un cookie httpOnly **signé** (HMAC `BETTER_AUTH_SECRET`) que
  * `getCurrentUser()` reconnaît pour élever la session en admin.
  *
- * Façade de `createAdminCookieCodec` (`@shenron/auth/tokens`), format identique
+ * Façade de `createAdminCookieCodec` (`@aphrody/shenron-auth/tokens`), format identique
  * octet pour octet : `${exp}.${hex(HMAC(secret, "admin:" + exp + ":" + fp))}`.
  *
  * Sécurité :

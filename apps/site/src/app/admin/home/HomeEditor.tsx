@@ -27,9 +27,9 @@ import {
   OeilBarre,
   Plus,
   Reinitialiser,
-} from "@shenron/ui/icones";
+} from "@aphrody/shenron-ui/icones";
 import { assetUrl } from "@/lib/assets";
-import { DragonBallLoader } from "@shenron/ui/toriyama";
+import { DragonBallLoader } from "@aphrody/shenron-ui/toriyama";
 import { MarkdownField } from "@/components/admin/MarkdownField";
 import { ImageField } from "@/components/admin/ImageField";
 import {
@@ -48,7 +48,7 @@ import {
   type HomeJourneyDestination,
   type HomeSectionConfig,
   type PlayCard,
-} from "@shenron/config/home";
+} from "@aphrody/shenron-config/home";
 import { PlainField } from "@/components/editor/PlainField";
 import { errorMessageFromBody, seedConfig } from "./home-config-client";
 import { HomeThumbnail } from "./HomeThumbnail";

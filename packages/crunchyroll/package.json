@@ -1,5 +1,5 @@
 {
-  "name": "@shenron/crunchyroll",
+  "name": "@aphrody/shenron-crunchyroll",
   "version": "1.0.0",
   "private": true,
   "description": "Crunchyroll headless CLI, MCP server, and AI service provider for Shenron.",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "catalog:",
-    "@shenron/media": "workspace:*"
+    "@aphrody/shenron-media": "workspace:*"
   },
   "devDependencies": {
     "@types/bun": "catalog:"

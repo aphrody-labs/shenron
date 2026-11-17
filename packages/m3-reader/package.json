@@ -1,5 +1,5 @@
 {
-  "name": "@shenron/m3-reader",
+  "name": "@aphrody/shenron-m3-reader",
   "version": "1.0.0",
   "private": true,
   "description": "Material 3 manga and illustrated book readers for React",

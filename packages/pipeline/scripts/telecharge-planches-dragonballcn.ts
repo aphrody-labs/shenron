@@ -2,7 +2,7 @@
 
 import { chmod, mkdir, statfs } from "node:fs/promises";
 import { join } from "node:path";
-import { yoloWebScrape } from "@shenron/pipeline/yolo-web";
+import { yoloWebScrape } from "@aphrody/shenron-pipeline/yolo-web";
 
 const args = process.argv.slice(2);
 const flag = (nom: string) => args.includes(`--${nom}`);

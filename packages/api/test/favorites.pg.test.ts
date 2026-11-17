@@ -1,5 +1,5 @@
 import { expect, test } from "bun:test";
-import { createBunSql } from "@shenron/db/bun-sql";
+import { createBunSql } from "@aphrody/shenron-db/bun-sql";
 import { createHostFavorites } from "../src/host/favorites";
 import { createShenronApi } from "../src/server";
 import { createMemoryRateLimiter, createPublicCache, noopInvalidation } from "../src/http";

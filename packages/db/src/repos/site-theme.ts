@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { eq, sql } from "drizzle-orm";
-import type { SiteTheme } from "@shenron/config/site-theme";
+import type { SiteTheme } from "@aphrody/shenron-config/site-theme";
 import { siteTheme } from "../schema";
 import type { ShenronPgDatabase } from "../types";
 

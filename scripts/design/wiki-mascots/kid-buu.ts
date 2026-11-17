@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /** Original vector construction from the inspected FighterZ pose; no bitmap tracing. */
-import { decodeRgba } from "@shenron/kit/image";
+import { decodeRgba } from "@aphrody/shenron-kit/image";
 import { mkdir } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { arcs, inkStroke } from "../../../packages/ui/src/toriyama-svg/geometry";
