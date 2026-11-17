@@ -7,7 +7,7 @@
       "date": "2026-11-16",
       "sources": {
         "apps/site/src/lib/canon-engine.ts": "d611bfc31d4762d0409c898062b13170b76bbc5eee518ac8fa7a30dfd63647f9",
-        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
+        "scripts/plugin/build-references.ts": "fe82b56c7ed2bb119223c94e082f419b191e8b048fab028d67c5be087ebb070b"
       },
       "sha256": "b157c4110079db7b1bee51c0ea3f31d90147c3628d91c4c92501aa7ff55cb0b9"
     },
@@ -26,7 +26,7 @@
       "date": "2026-11-13",
       "sources": {
         "data/lexicon/terms.json": "e3ed079515e911cf2020275c1862a719ac887754359bcd57f66a496ef59f950c",
-        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
+        "scripts/plugin/build-references.ts": "fe82b56c7ed2bb119223c94e082f419b191e8b048fab028d67c5be087ebb070b"
       },
       "sha256": "17694ebe552869676da30e7732154d0a015c4f7d629e570d5a589de08cf75d97"
     },
@@ -35,7 +35,7 @@
       "date": "2026-11-13",
       "sources": {
         "data/lexicon/terms.json": "e3ed079515e911cf2020275c1862a719ac887754359bcd57f66a496ef59f950c",
-        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
+        "scripts/plugin/build-references.ts": "fe82b56c7ed2bb119223c94e082f419b191e8b048fab028d67c5be087ebb070b"
       },
       "sha256": "77f71a4ad866640c79c379b3c0aafbe44fdd36bbe18765de410e3730a6517145"
     },
@@ -45,11 +45,11 @@
       "sources": {
         "data/lexicon/terms.json": "e3ed079515e911cf2020275c1862a719ac887754359bcd57f66a496ef59f950c",
         "packages/lexicon/src/fold.ts": "631e52bbeb5fa9836e90299070f69271e299fbf6eeb966aa163efdda9c9f131c",
-        "packages/lexicon/src/index.ts": "60415246de2784c0b3dd743e3836aad72a531f7a92f9fea17b22a7ae0d6ef62b",
+        "packages/lexicon/src/index.ts": "f5d153755929d01195b80b3402221dce0e1733f815741393b214893758e402ed",
         "packages/lexicon/src/lexicon.ts": "d600f7bd89a5d979027b66b43b05a69b8b862fd6fe325bb21d2810e949d5a233",
         "packages/lexicon/src/mask.ts": "4ad41d4c3c11bd64b66108b3a8732ebc435caa49c022b1edb1713db636f55f65",
         "packages/lexicon/src/types.ts": "b8c222a0d0d8785ee2931e6da406c1a4485b7cde8d3d5e720cf7b3fafe36be11",
-        "scripts/plugin/src/lexique.ts": "d23481af17a7a435a7a112e11818af4dc6ed388cf764be73de0d461a46ce11f6"
+        "scripts/plugin/src/lexique.ts": "14e87e8c1db9769f2c4d4c89cb01f90b4aad896c55cc9f07fe47b24b3cb8c135"
       },
       "sha256": "710a521b580f56a7eb258a898a6acac37c22285dbea3e002f9bc6ae85a5fa161",
       "paquet": true
@@ -67,7 +67,7 @@
         "packages/config/src/economy-canon.ts": "a7e66d707f8ca1730f3cd2a25ae27516eeeb46582add8859aeec9fbc7bac60cb",
         "packages/config/src/shenron-corpus.ts": "24063bf4cf4d53f8940c6f638ed138c8d963bf3ef84beba339e54de34d55af6f",
         "scripts/plugin/faits.ts": "4b43483cf9142968c5b3f671cd72118c9ffbf0b480f46c8639ac915503ffbd74",
-        "scripts/plugin/src/faits-sources.ts": "8cb527beb11aff0b6687fea023178fdb06923e816ef158569d3a9ed7d81e5312"
+        "scripts/plugin/src/faits-sources.ts": "56ed7a15278349d3641a65e27eba1f83bb994453715be14ca84b2b49c46fba76"
       },
       "sha256": "7d34fee105f45fd7206c9e8566f56acfe34c3f554fbe6d00e3f969f234ff21b3"
     },
@@ -91,7 +91,7 @@
       "revision": "inconnue",
       "date": "inconnue",
       "sources": {
-        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
+        "scripts/plugin/build-references.ts": "fe82b56c7ed2bb119223c94e082f419b191e8b048fab028d67c5be087ebb070b"
       },
       "sha256": "57e68e17073ed9a2ea6ec8733d2fc50db1408364f37df441047b77d15cd96517"
     },
@@ -99,7 +99,7 @@
       "revision": "inconnue",
       "date": "inconnue",
       "sources": {
-        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
+        "scripts/plugin/build-references.ts": "fe82b56c7ed2bb119223c94e082f419b191e8b048fab028d67c5be087ebb070b"
       },
       "sha256": "6e47924e33dce431342e2a0a48d77bbfed2fc059b8b7a9824efde25b6ef92554"
     },
@@ -107,7 +107,7 @@
       "revision": "inconnue",
       "date": "inconnue",
       "sources": {
-        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
+        "scripts/plugin/build-references.ts": "fe82b56c7ed2bb119223c94e082f419b191e8b048fab028d67c5be087ebb070b"
       },
       "sha256": "be1e0e7b28237fdbfc936119281e6df2b43e49bbfa9a99498c174f58481b3f5b"
     },
@@ -115,7 +115,7 @@
       "revision": "inconnue",
       "date": "inconnue",
       "sources": {
-        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
+        "scripts/plugin/build-references.ts": "fe82b56c7ed2bb119223c94e082f419b191e8b048fab028d67c5be087ebb070b"
       },
       "sha256": "44fecf92a42d341c404127de8a9341181a303fef22b8fbd003ec8ec11a0dcada"
     },
@@ -123,7 +123,7 @@
       "revision": "inconnue",
       "date": "inconnue",
       "sources": {
-        "scripts/plugin/build-references.ts": "88e458e9e5344e0a8dbcbfd905407e433d43731641655a91292315f0fc880d72"
+        "scripts/plugin/build-references.ts": "fe82b56c7ed2bb119223c94e082f419b191e8b048fab028d67c5be087ebb070b"
       },
       "sha256": "808401eef60340c493e23af9380bd806e3f46528f5b0b492ec33a98ffb6969df"
     },
@@ -142,7 +142,7 @@
         "packages/ui/src/toriyama-svg/potara.ts": "e0d2f40c58b92850437b00a5380cc42ca1a40987e2f0ae0ac235769ff3636863",
         "packages/ui/src/toriyama-svg/senzu.ts": "20e9c4d397d4a7dd4fa4c151ddbec8250c1866e543eded730fbbb425a275381a",
         "packages/ui/src/toriyama-svg/sphere.ts": "7feed0aba0942253273204814be68bcfad44cbd1f64897f1d45eadf18959b8df",
-        "scripts/plugin/src/toriyama.ts": "da5c27a2e114bad307aeb6461c7aa2566859a683052e51f2c9f4e0940abf936a"
+        "scripts/plugin/src/toriyama.ts": "6ced9b484051c16b7deffefec12c44f4b870781e1a82a7bbd4917a5ab92054dd"
       },
       "sha256": "db830d9a508d2c6d20e0287816986f736ae40eaad2189a1fbd6a57b4a7025f3f",
       "paquet": true
