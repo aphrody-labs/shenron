@@ -1,8 +1,9 @@
 telemetry = false
 
 [install]
+exact = true
 linker = "isolated"
-globalStore = false
+globalStore = true
 hoist = true
 # Only react and react-dom are reachable from the store fallback: swiper (and other packages
 # importing react without declaring the peer) resolve them; everything else stays strict.

@@ -292,7 +292,10 @@ verbose_file_reads = "warn"
 
 # Line tables keep file:line backtraces for workspace code; dependencies carry no debuginfo.
 [profile.dev]
-debug = "line-tables-only"
+split-debuginfo = "unpacked"
+incremental = true
+codegen-units = 16
+debug = "limited"
 
 [profile.dev.package."*"]
 debug = false
@@ -322,3 +325,8 @@ strip = "symbols"
 [profile.production-abort]
 inherits = "production"
 panic = "abort"
+
+[profile.dev.build-override]
+codegen-units = 16
+split-debuginfo = "unpacked"
+debug = "limited"
