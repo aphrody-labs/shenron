@@ -562,7 +562,7 @@ Prochaine étape.
 
 ### 14. Outils média
 
-- Bun Video. `@aphrody/shenron-bun-video` est épinglé en `1.4.4-video.1` (`package.json:223-231`), avec les exports `/hls`, `/playback` et `/crunchyroll`. Il dispose d'une exception `minimumReleaseAge` accordée par le propriétaire. La version `.6` n'était pas publiée au 25/10, faute de 32 Gio de disque.
+- Bun Video. `@aphrody/bun-video` est épinglé en `1.4.4-video.1` (`package.json:223-231`), avec les exports `/hls`, `/playback` et `/crunchyroll`. Il dispose d'une exception `minimumReleaseAge` accordée par le propriétaire. La version `.6` n'était pas publiée au 25/10, faute de 32 Gio de disque.
 - Remotion. Seulement des libellés dans `apps/site/src/app/studio/video/*`. Le vrai rendu est `scripts/video/render.ts` (Bun.WebView vers l'encodeur, `SHENRON_VIDEO_*`).
 - Archives. Scripts `scripts/ops/apply-archive-catalog.ts`, `enrich-internet-archive.ts`, `archive-bot-sqlite-variants.ts [--apply]` et `shenron-offsite-backup.ts`. En base, `bot.archive_catalog_files` compte 62 lignes.
 - Images. `packages/images` est une bibliothèque sharp (hash, variantes, WebP), pas un service. Le redimensionnement passe par `/_next/image` derrière `origin-cdn.dragonballfr.com`. Il n'existe pas de service d'images Bun auto-hébergé.

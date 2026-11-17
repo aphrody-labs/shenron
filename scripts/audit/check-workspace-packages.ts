@@ -581,7 +581,7 @@ function checkCycles(): void {
   for (const node of [...graph.keys()].toSorted()) visit(node, []);
 }
 
-/** Shenron is standalone: workspace links stay inside the repository and no manifest depends on an @aphrody/* package. */
+/** Shenron is standalone: workspace links stay inside the repository and no manifest depends on an @aphrody/* package other than its own @aphrody/shenron-* ones. */
 function checkDependencyDirection(): void {
   const root = readJson<{
     workspaces?: { packages?: string[]; catalog?: Record<string, string> };

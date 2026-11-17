@@ -269,6 +269,7 @@
       "justfile",
       "llms.txt",
       "migration",
+      "naming.toml",
       "paths.allow",
       "replica",
       "reports",

@@ -138,13 +138,14 @@ export function publicFileViolations(directory: string, files: readonly string[]
   return issues;
 }
 
-/** Shenron is standalone: no manifest may depend on an @aphrody/* package. */
+/** Shenron is standalone: no manifest may depend on an @aphrody/* package other than its own @aphrody/shenron-* workspace packages. */
 export function standaloneDependency(
   name: string,
   version: string,
   localIdentities: ReadonlySet<string>,
 ): boolean {
-  if (name.startsWith("@aphrody/")) return false;
-  if (version === "workspace:*") return name.startsWith("@aphrody/shenron-") && localIdentities.has(name);
+  const own = name.startsWith("@aphrody/shenron-");
+  if (name.startsWith("@aphrody/") && !own) return false;
+  if (version === "workspace:*") return own && localIdentities.has(name);
   return true;
 }
