@@ -143,6 +143,7 @@
     "build:site": "bun --filter @shenron/site build",
     "build:server": "bun scripts/build/server.ts",
     "build:bot": "bun scripts/build/bot.ts",
+    "check:paths": "bun scripts/audit/check-paths.ts",
     "check:rust": "bun scripts/build/rust/cargo.ts ck",
     "clippy:rust": "bun scripts/build/rust/cargo.ts lint",
     "test:rust": "bun scripts/build/rust/test.ts",

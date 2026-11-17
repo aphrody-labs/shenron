@@ -1,0 +1,6 @@
+# Allowlist of the absolute-path scanner (tools/paths.ts of the ay repository): one repo-relative glob per line.
+# Per-line exemptions use the marker `paths:ok` instead; every entry below needs a reason.
+Dockerfile.build  # image-internal builder user home (/home/builder) in multi-line RUN/ENV; a marker cannot follow a line continuation
+deploy/docker/all-in-one/Dockerfile  # image-internal /root/.bun build cache in a multi-line RUN, same constraint
+scripts/ops/storage-cluster-plan.test.ts  # tests win32 and POSIX report-root semantics with deliberate path fixtures
+packages/pipeline/test/rag-lexique-path.test.ts  # tests win32 and POSIX script-location semantics with deliberate path fixtures

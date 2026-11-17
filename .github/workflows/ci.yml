@@ -47,6 +47,11 @@ jobs:
           bun scripts/deploy/environment.ts --check
           bun scripts/deploy/lanes.ts --check
 
+      - name: No hardcoded absolute paths
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/aphrody-dev/ay/main/tools/paths.ts -o "$RUNNER_TEMP/paths.ts"
+          PATHS_SCANNER="$RUNNER_TEMP/paths.ts" bun scripts/audit/check-paths.ts
+
       - name: Install
         run: bun ci
 
