@@ -57,6 +57,6 @@ test("scan URLs cannot select external or privileged endpoints", () => {
 
 test("reports stay inside the private report directory", () => {
   expect(privateOutputDirectory("var/reports/book/")).toBe("var/reports/book");
-  for (const path of ["docs/report", "var/reports/../../public", "C:/temp", "/var/reports/book"])
-    expect(() => privateOutputDirectory(path)).toThrow();
+  const escapes = ["docs/report", "var/reports/../../public", "C:/temp", "/var/reports/book"]; // paths:ok
+  for (const path of escapes) expect(() => privateOutputDirectory(path)).toThrow();
 });

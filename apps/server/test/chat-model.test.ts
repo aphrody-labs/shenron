@@ -188,11 +188,11 @@ describe("planChatModel", () => {
       expect(
         daemonLauncher(
           null,
-          "C:\\S\\shenron-server.exe",
-          ["C:\\S\\shenron-server.exe", main],
+          "C:\\S\\shenron-server.exe", // paths:ok
+          ["C:\\S\\shenron-server.exe", main], // paths:ok
           main,
         ),
-      ).toEqual({ program: "C:\\S\\shenron-server.exe", args: [LLAMA_DAEMON_VERB] });
+      ).toEqual({ program: "C:\\S\\shenron-server.exe", args: [LLAMA_DAEMON_VERB] }); // paths:ok
     }
     expect(
       daemonLauncher(
@@ -200,10 +200,10 @@ describe("planChatModel", () => {
         "bun",
         ["bun", "B:/~BUN/root/shenron-server.exe", "serve", "site"],
         "B:/~BUN/root/shenron-server.exe",
-        "C:\\S\\shenron-server.exe",
+        "C:\\S\\shenron-server.exe", // paths:ok
       ),
     ).toEqual({
-      program: "C:\\S\\shenron-server.exe",
+      program: "C:\\S\\shenron-server.exe", // paths:ok
       args: [LLAMA_DAEMON_VERB, "--library", "/app/libshenron_ffi.dll"],
     });
   });

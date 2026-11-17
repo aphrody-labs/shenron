@@ -18,14 +18,15 @@ describe("dbxv2 steamcmd automation", () => {
   });
 
   test("generates valid headless steamcmd script with validate flag", () => {
+    const installDir = join(tmpdir(), "shenron-games", "dbxv2");
     const script = generateSteamcmdScript({
-      installDir: "/srv/shenron/games/dbxv2",
+      installDir,
       username: "shenron_ci",
       password: "secret_token",
       validate: true,
     });
 
-    expect(script).toContain('force_install_dir "/srv/shenron/games/dbxv2"');
+    expect(script).toContain(`force_install_dir "${installDir.replaceAll("\\", "/")}"`);
     expect(script).toContain("login shenron_ci secret_token");
     expect(script).toContain("app_update 323470 validate");
     expect(script).toContain("quit");

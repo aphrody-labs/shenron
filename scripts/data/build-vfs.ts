@@ -170,10 +170,10 @@ if (!skip.has("home")) {
     docs.push({ path: `shenron:home:${name}`, title: name, text });
   }
   if (profile === "complet" && existsSync(join(homeDir, "memory"))) {
-    vfs.mkdirAll("/home/memory");
+    vfs.mkdirAll("/home/memory"); // paths:ok
     for (const file of new Bun.Glob("*.md").scanSync({ cwd: join(homeDir, "memory") })) {
       const text = await Bun.file(join(homeDir, "memory", file)).text();
-      vfs.write(`/home/memory/${file}`, text, { visibility: "private", mime: "text/markdown" });
+      vfs.write(`/home/memory/${file}`, text, { visibility: "private", mime: "text/markdown" }); // paths:ok
       docs.push({
         path: `shenron:home:memory/${file}`,
         title: `Mémoire — ${file.replace(/\.md$/, "")}`,

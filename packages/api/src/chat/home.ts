@@ -84,10 +84,10 @@ function fromTexts(
   };
 }
 
-/** Agent home from a VFS (`/home/SOUL.md`, `/home/IDENTITY.md`). */
+/** Agent home from a VFS (`/home/SOUL.md`, `/home/IDENTITY.md`). */ // paths:ok
 export function agentHomeFromVfs(vfs: TextReader): AgentHome {
   const read = (path: string) => (vfs.exists(path) ? vfs.readTextSync(path) : null);
-  return fromTexts(read("/home/SOUL.md"), read("/home/IDENTITY.md"), "vfs");
+  return fromTexts(read("/home/SOUL.md"), read("/home/IDENTITY.md"), "vfs"); // paths:ok
 }
 
 /** Agent home from a directory (live agent home). */

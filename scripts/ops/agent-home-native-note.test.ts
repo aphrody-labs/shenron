@@ -67,7 +67,7 @@ test("a verified note produces only a private one-note native plan and no store 
   const input = await fixture();
   const plan = await prepareNativeNoteImport({
     ...input,
-    remoteHome: "/srv/owner/.shenron/workspaces/dbfr",
+    remoteHome: "/srv/owner/.shenron/workspaces/dbfr", // paths:ok
   });
   expect(plan.mode).toBe("prepared-only");
   expect(plan.remoteMutationExecuted).toBe(false);
@@ -83,7 +83,7 @@ test("a verified note produces only a private one-note native plan and no store 
     "index",
     "--label",
     `wiki-reviewed-note-${input.id}`,
-    `/srv/owner/.shenron/workspaces/dbfr/notes/native-index-input/${input.id}`,
+    `/srv/owner/.shenron/workspaces/dbfr/notes/native-index-input/${input.id}`, // paths:ok
   ]);
   expect(plan.retrieval.semanticHybridQualified).toBe(false);
   expect(await Bun.file(join(input.home, "memory", `${input.id}.md`)).text()).toBe(input.source);
@@ -130,5 +130,5 @@ test("the CLI refuses --apply before any file lookup or native invocation", asyn
 
 test("the remote workspace follows SHENRON_DBFR_WORKSPACE, else the home directory", () => {
   expect(defaultRemoteHome({ SHENRON_DBFR_WORKSPACE: "/w/dbfr" })).toBe("/w/dbfr");
-  expect(defaultRemoteHome({ HOME: "/home/owner" })).toBe("/home/owner/.shenron/workspaces/dbfr");
+  expect(defaultRemoteHome({ HOME: "/home/owner" })).toBe("/home/owner/.shenron/workspaces/dbfr"); // paths:ok
 });

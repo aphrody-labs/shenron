@@ -363,7 +363,7 @@ export function fakeVfs(o: { publicOnly?: boolean; local?: boolean; failInfo?: b
   const port: VfsPort = {
     info() {
       calls.push("info");
-      if (o.failInfo) throw new Error("SQLITE_CANTOPEN: /srv/private/shenron-vfs.sqlite");
+      if (o.failInfo) throw new Error("SQLITE_CANTOPEN: /srv/private/shenron-vfs.sqlite"); // paths:ok
       return VFS_INFO;
     },
     stat(path) {

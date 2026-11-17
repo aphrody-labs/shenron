@@ -8,8 +8,9 @@
  */
 import { existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { dbfzGameRoot } from "./lib/dbfz-game-root";
 
-const DBFZ_ROOT = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ";
+const DBFZ_ROOT = dbfzGameRoot();
 const OUTPUT_DIR = resolve("var/games/dbfz-deploy-bundle");
 const MANIFEST_PATH = resolve("docs/games/dbfz-full-deploy-manifest.json");
 const CDN_BASE_URL = "https://cdn.dragonballfr.com/games/dbfz";

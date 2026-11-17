@@ -76,7 +76,7 @@ const upstream = Bun.serve({
       body,
     });
     if (upstreamMode === "http-500")
-      return Response.json({ error: "disk /srv/coord full" }, { status: 500 });
+      return Response.json({ error: "disk /srv/coord full" }, { status: 500 }); // paths:ok
     if (pathname === "/coord") {
       return new Response(
         [
@@ -104,7 +104,7 @@ const upstream = Bun.serve({
         id: null,
         error: {
           code: -32603,
-          message: "mailbox: /home/aphro/.coord/outbox.jsonl permission denied",
+          message: "mailbox: /home/aphro/.coord/outbox.jsonl permission denied", // paths:ok
         },
       });
     }
@@ -275,7 +275,7 @@ describe("états d'échec de la console A2A", () => {
   test("le texte affiché ne reprend jamais un message amont", () => {
     const failure = view.describeA2AFailure(
       502,
-      "connect ECONNREFUSED 127.0.0.1:8788 /home/aphro/.coord",
+      "connect ECONNREFUSED 127.0.0.1:8788 /home/aphro/.coord", // paths:ok
     );
     expect(failure.text).not.toMatch(/127\.0\.0\.1|\/home\/|ECONNREFUSED/);
   });
@@ -690,7 +690,7 @@ describe("/api/admin/a2a : pannes amont", () => {
     expect(read.status).toBe(502);
     const text = await read.text();
     expect(JSON.parse(text)).toEqual({ error: "a2a_upstream_error", upstreamStatus: 500 });
-    expect(text).not.toContain("/srv/coord");
+    expect(text).not.toContain("/srv/coord"); // paths:ok
     const write = await POST(adminPost({ target: "ocr", kind: "fact", instruction: "x" }));
     expect(write.status).toBe(502);
     expect(await write.json()).toEqual({ error: "a2a_upstream_error", upstreamStatus: 500 });
@@ -702,7 +702,7 @@ describe("/api/admin/a2a : pannes amont", () => {
     expect(res.status).toBe(502);
     const text = await res.text();
     expect(JSON.parse(text)).toEqual({ error: "a2a_upstream_rejected", rpcCode: -32603 });
-    expect(text).not.toContain("/home/aphro");
+    expect(text).not.toContain("/home/aphro"); // paths:ok
     expect(errorLogs.some((entry) => JSON.stringify(entry).includes("permission denied"))).toBe(
       true,
     );

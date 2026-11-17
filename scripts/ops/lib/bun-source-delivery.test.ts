@@ -285,7 +285,7 @@ test("private RAG uses existing owner and qualifies actual product source retrie
 
 test("sealed deployment revalidates owner plan and rolls back a failed public probe", async () => {
   const deployment = {
-    release: "/home/ubuntu/apps/shenron/releases/docker-" + "a".repeat(40),
+    release: "/home/ubuntu/apps/shenron/releases/docker-" + "a".repeat(40), // paths:ok
     manifestSha256: "b".repeat(64),
     probeUrl: "https://dragonballfr.com/health",
     probeSha256: "c".repeat(64),
@@ -297,7 +297,7 @@ test("sealed deployment revalidates owner plan and rolls back a failed public pr
       calls.push(args);
       if (args.includes("sha256sum")) return deployment.manifestSha256 + "  release.json";
       if (args.includes("--apply"))
-        return "Docker activation verified; rollback=/home/ubuntu/apps/shenron/deploy-backups/docker-fixture";
+        return "Docker activation verified; rollback=/home/ubuntu/apps/shenron/deploy-backups/docker-fixture"; // paths:ok
       if (args.includes("readlink")) return deployment.release;
       return args.includes("deploy") ? "stable-owner-plan" : "verified";
     },
@@ -333,7 +333,7 @@ test("sealed deployment revalidates owner plan and rolls back a failed public pr
 test("qualified production delivery verifies current identity and rechecks without activation", async () => {
   const body = "qualified public artifact";
   const deployment = {
-    release: "/home/ubuntu/apps/shenron/releases/docker-" + "d".repeat(40),
+    release: "/home/ubuntu/apps/shenron/releases/docker-" + "d".repeat(40), // paths:ok
     manifestSha256: "e".repeat(64),
     probeUrl: "https://dragonballfr.com/health",
     probeSha256: new Bun.CryptoHasher("sha256").update(body).digest("hex"),
@@ -346,7 +346,7 @@ test("qualified production delivery verifies current identity and rechecks witho
       if (args.includes("readlink")) return deployment.release;
       if (args.includes("--apply")) {
         activations++;
-        return "Docker activation verified; rollback=/home/ubuntu/apps/shenron/deploy-backups/docker-fixture";
+        return "Docker activation verified; rollback=/home/ubuntu/apps/shenron/deploy-backups/docker-fixture"; // paths:ok
       }
       return "stable owner plan";
     },

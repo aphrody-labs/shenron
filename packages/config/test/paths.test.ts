@@ -26,18 +26,18 @@ describe("DATA_PATH_ENV", () => {
 
 describe("resolveDataPath", () => {
   test("first set alias wins", () => {
-    const env = { RAG_GOLD_PATH: "/srv/shared/rag-gold.jsonl", RAG_GOLD: tempPath("other.jsonl") };
+    const env = { RAG_GOLD_PATH: "/srv/shared/rag-gold.jsonl", RAG_GOLD: tempPath("other.jsonl") }; // paths:ok
     expect(resolveDataPath("ragGold", { env, legacyDefault: "tests/rag-gold.jsonl" })).toEqual({
       key: "ragGold",
-      path: "/srv/shared/rag-gold.jsonl",
+      path: "/srv/shared/rag-gold.jsonl", // paths:ok
       source: "env",
       envName: "RAG_GOLD_PATH",
     });
     const coord = resolveDataPath("coordDir", {
-      env: { A2A_COORD_DIR: " ", COORD_DIR: "/srv/coord" },
+      env: { A2A_COORD_DIR: " ", COORD_DIR: "/srv/coord" }, // paths:ok
       legacyDefault: ".coord",
     });
-    expect(coord).toMatchObject({ path: "/srv/coord", envName: "COORD_DIR", source: "env" });
+    expect(coord).toMatchObject({ path: "/srv/coord", envName: "COORD_DIR", source: "env" }); // paths:ok
   });
 
   test("legacy default is passed through byte for byte", () => {
@@ -68,7 +68,7 @@ describe("warnIfEphemeral", () => {
     expect(logs[0]).toContain("RAG_LEXIQUE");
 
     const fromEnv = resolveDataPath("adminDocsDir", {
-      env: { SHENRON_ADMIN_DOCS_DIR: "/srv/docs" },
+      env: { SHENRON_ADMIN_DOCS_DIR: "/srv/docs" }, // paths:ok
       legacyDefault: "docs",
     });
     warnIfEphemeral(fromEnv, production, log);

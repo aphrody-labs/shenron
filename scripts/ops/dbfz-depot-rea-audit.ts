@@ -3,13 +3,14 @@
 /**
  * Sovereign REA & Tree-Sitter Automation Engine for DRAGON BALL FighterZ.
  * Executes depot CLI (depot re & depot ast) across the installation at:
- * C:\Program Files (x86)\Steam\steamapps\common\DRAGON BALL FighterZ
+ * the DRAGON BALL FighterZ install directory (`DBFZ_GAME_ROOT`, see lib/dbfz-game-root.ts)
  * Generates structured JSON telemetries and Markdown architectural blueprints for WebGPU & WASM conversion.
  */
 import { existsSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { dbfzGameRoot } from "./lib/dbfz-game-root";
 
-const GAME_ROOT = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ";
+const GAME_ROOT = dbfzGameRoot();
 const OUTPUT_DIR = "docs/games";
 mkdirSync(OUTPUT_DIR, { recursive: true });
 

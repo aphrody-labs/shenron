@@ -130,7 +130,7 @@ test("reviewed observations projection is experimental and preserves the full ca
   expect(sha256(await Bun.file(lexical.output).arrayBuffer())).toBe(expected.indexSha256);
   const opened = openShenronVfs(indexed.output, { readOnly: true });
   try {
-    expect(opened.vfs.readTextSync(`/home/memory/${prepared.note.id}.md`)).toBe(prepared.markdown);
+    expect(opened.vfs.readTextSync(`/home/memory/${prepared.note.id}.md`)).toBe(prepared.markdown); // paths:ok
     expect(opened.vfs.meta("notes_projection_sha256")).toBe(projection.sha256);
     expect(opened.rag.stats().vectorsF32).toBe(1);
   } finally {

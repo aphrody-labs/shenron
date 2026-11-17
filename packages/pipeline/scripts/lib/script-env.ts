@@ -5,7 +5,7 @@
  * - B13 / D16: scripts carry no URL, host or port default. A missing endpoint
  *   is an explicit error naming the variable(s) to set.
  * - B6: repository paths are derived with `fileURLToPath` (never
- *   `URL.pathname`, which yields `/C:/...` on Windows).
+ *   `URL.pathname`, which yields `/<drive>:/...` on Windows).
  * - Rule 9 (CLAUDE.md): destructive RAG rebuilds refuse the served database.
  *
  * Pure helpers only: importing this module has no side effect.

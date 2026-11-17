@@ -28,7 +28,9 @@ function validSnapshot(path: string): void {
   db.close();
 }
 
-function fakeNativeExecutor(remoteHome = "/home/ocr user's home"): NativeCommandExecutor {
+const FAKE_REMOTE_HOME = "/home/ocr user's home"; // paths:ok
+
+function fakeNativeExecutor(remoteHome = FAKE_REMOTE_HOME): NativeCommandExecutor {
   return async (args) => {
     const call = [...args];
     commands.push(call);

@@ -2,6 +2,7 @@
 import { promisify } from "node:util";
 import { exec as execCb } from "node:child_process";
 import { join } from "node:path";
+import { homedir } from "node:os";
 import { writeFile, mkdir } from "node:fs/promises";
 
 const exec = promisify(execCb);
@@ -50,7 +51,9 @@ export async function runReaProbe(targetPath?: string): Promise<any> {
  */
 export async function runReplicaContrast(tokensPath?: string): Promise<any> {
   try {
-    const pythonScript = "C:\\Users\\omara\\.gemini\\config\\skills\\replica-design\\contrast.py";
+    const pythonScript =
+      process.env.REPLICA_CONTRAST_SCRIPT ??
+      join(homedir(), ".gemini", "config", "skills", "replica-design", "contrast.py");
     const args = tokensPath ? `"${pythonScript}" "${tokensPath}"` : `"${pythonScript}" --help`;
     const { stdout } = await exec(`python ${args}`, { windowsHide: true });
     return { output: stdout.trim() };

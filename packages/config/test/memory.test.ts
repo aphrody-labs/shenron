@@ -9,8 +9,9 @@ import {
 
 describe("chat memory settings", () => {
   test("defaults: under the data directory, injected for every backend", () => {
-    expect(resolveChatMemory({}, "/home/u/.shenron/data/")).toEqual({
-      dbPath: "/home/u/.shenron/data/memory.sqlite",
+    const dataDir = "/home/u/.shenron/data/"; // paths:ok
+    expect(resolveChatMemory({}, dataDir)).toEqual({
+      dbPath: `${dataDir}memory.sqlite`,
       recall: CHAT_MEMORY_DEFAULTS.recall,
       remote: true,
     });
@@ -20,13 +21,13 @@ describe("chat memory settings", () => {
     expect(
       resolveChatMemory(
         {
-          SHENRON_MEMORY_DB: "/srv/m.sqlite",
+          SHENRON_MEMORY_DB: "/srv/m.sqlite", // paths:ok
           SHENRON_MEMORY_RECALL: "0",
           SHENRON_MEMORY_REMOTE: "off",
         },
         "/d",
       ),
-    ).toEqual({ dbPath: "/srv/m.sqlite", recall: 0, remote: false });
+    ).toEqual({ dbPath: "/srv/m.sqlite", recall: 0, remote: false }); // paths:ok
     expect(resolveChatMemory({ SHENRON_MEMORY: "off" }, "/d").dbPath).toBeNull();
     expect(resolveChatMemory({ SHENRON_MEMORY_RECALL: "99" }, "/d").recall).toBe(
       CHAT_MEMORY_DEFAULTS.recall,

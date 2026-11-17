@@ -115,7 +115,7 @@ test("browser commands cannot choose host import/export paths", async () => {
   for (const body of [
     { command: "import", args: { source: "folder" } },
     { command: "export", args: { format: "png" } },
-    { command: "get_project", args: { _webImport: ["C:/protected/file.png"] } },
+    { command: "get_project", args: { _webImport: ["C:/protected/file.png"] } }, // paths:ok
   ]) {
     expect((await runtime.handle(request("invoke", body), "alice")).status).toBe(400);
   }

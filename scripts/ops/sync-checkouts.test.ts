@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
   acquireLock,
+  expandPath,
   plan,
   runSync,
   type CheckoutSpec,
@@ -71,6 +72,19 @@ const base: RepoState = {
   behind: 0,
   hasUpstream: true,
 };
+
+describe("expandPath", () => {
+  test("expands ${VAR} and $VAR from the environment", () => {
+    const env = { SHENRON_ROOT: join(root, "prod") };
+    expect(expandPath("$SHENRON_ROOT/build/source", env)).toBe(
+      join(root, "prod", "build", "source"),
+    );
+    expect(expandPath("${SHENRON_ROOT}/b", env)).toBe(join(root, "prod", "b"));
+  });
+  test("an unset variable is an error", () => {
+    expect(() => expandPath("$SHENRON_ROOT/x", {})).toThrow("SHENRON_ROOT is not set");
+  });
+});
 
 describe("plan", () => {
   test("decisions", () => {

@@ -167,7 +167,7 @@ async function ensureDocker(): Promise<void> {
   const ping = () => run(["docker", "info", "--format", "{{.ServerVersion}}"]).exitCode === 0;
   if (ping()) return;
   if (process.platform !== "win32") throw new Error("docker daemon unreachable");
-  const exe = "C:/Program Files/Docker/Docker/Docker Desktop.exe";
+  const exe = join(process.env.ProgramFiles ?? "", "Docker", "Docker", "Docker Desktop.exe");
   if (!existsSync(exe))
     throw new Error("docker daemon unreachable and Docker Desktop is not installed");
   console.error(

@@ -13,7 +13,10 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { publish } from "./publish-downloads";
 
-const REMOTE = "/srv/shenron/shared/releases";
+/** Remote releases directory: `SHENRON_REMOTE_RELEASES`, else `shenron/shared/releases` under the SSH login home. */
+const REMOTE = process.env.SHENRON_REMOTE_RELEASES ?? "shenron/shared/releases";
+/** The same directory as the remote shell sees it (scp resolves a relative path itself). */
+const REMOTE_SH = REMOTE.startsWith("/") ? REMOTE : `$HOME/${REMOTE}`;
 const SSH = ["-o", "ConnectTimeout=15", "-o", "BatchMode=yes"];
 
 async function run(command: string[], timeoutMs: number, cwd?: string): Promise<void> {
@@ -48,8 +51,9 @@ try {
     args.map((a) => resolve(a)),
   );
   const fresh = `${REMOTE}.new`;
+  const freshSh = `${REMOTE_SH}.new`;
   await run(
-    ["ssh", ...SSH, host, `sudo rm -rf ${fresh} && sudo install -d -m 755 -o ubuntu ${fresh}`],
+    ["ssh", ...SSH, host, `sudo rm -rf ${freshSh} && sudo install -d -m 755 -o ubuntu ${freshSh}`],
     60_000,
   );
   await run(["scp", "-q", "-r", ...SSH, ".", `${host}:${fresh}/`], 3_600_000, stage);
@@ -60,7 +64,7 @@ try {
       "ssh",
       ...SSH,
       host,
-      `sudo chmod -R a+rX ${fresh} && sudo install -d -m 755 -o ubuntu ${REMOTE} && cd ${fresh} && for f in $(ls | grep -v -e '^latest.json$' -e '^SHA256SUMS$'); do sudo mv -f $f ${REMOTE}/$f; done && sudo mv -f SHA256SUMS ${REMOTE}/SHA256SUMS && sudo mv -f latest.json ${REMOTE}/latest.json && cd / && sudo rm -rf ${fresh} && cd ${REMOTE} && for f in $(ls | grep -v -e '^latest.json$' -e '^SHA256SUMS$'); do grep -q " ${"$"}{f%.sig}$" SHA256SUMS || sudo rm -f ${"$"}f; done`,
+      `sudo chmod -R a+rX ${freshSh} && sudo install -d -m 755 -o ubuntu ${REMOTE_SH} && cd ${freshSh} && for f in $(ls | grep -v -e '^latest.json$' -e '^SHA256SUMS$'); do sudo mv -f $f ${REMOTE_SH}/$f; done && sudo mv -f SHA256SUMS ${REMOTE_SH}/SHA256SUMS && sudo mv -f latest.json ${REMOTE_SH}/latest.json && cd / && sudo rm -rf ${freshSh} && cd ${REMOTE_SH} && for f in $(ls | grep -v -e '^latest.json$' -e '^SHA256SUMS$'); do grep -q " ${"$"}{f%.sig}$" SHA256SUMS || sudo rm -f ${"$"}f; done`,
     ],
     300_000,
   );

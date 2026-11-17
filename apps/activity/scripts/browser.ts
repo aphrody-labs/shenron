@@ -9,10 +9,19 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 
+/** Windows install locations, derived from the Program Files variables of the session. */
+function windowsBrowsers(): string[] {
+  const programFiles = [process.env.ProgramFiles, process.env["ProgramFiles(x86)"]].filter(
+    (dir): dir is string => !!dir,
+  );
+  return programFiles.flatMap((dir) => [
+    join(dir, "Google", "Chrome", "Application", "chrome.exe"),
+    join(dir, "Microsoft", "Edge", "Application", "msedge.exe"),
+  ]);
+}
+
 const CHROME_CANDIDATES = [
-  "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-  "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
-  "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+  ...windowsBrowsers(),
   "/usr/bin/google-chrome",
   "/usr/bin/chromium",
   "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",

@@ -13,7 +13,12 @@ import {
   type GamePlatform,
   type GameRelease,
 } from "./catalog";
-import { DB_STEAM_METADATA, generateSteamcmdScript, detectSteamInstallation } from "./steamdb";
+import {
+  DB_STEAM_METADATA,
+  defaultSteamInstallRoot,
+  detectSteamInstallation,
+  generateSteamcmdScript,
+} from "./steamdb";
 import { resolveCoreForGame, getCoreDownloadUrl, generateRetroarchGameConfig } from "./retroarch";
 import { GameStorageManager } from "./r2-storage";
 
@@ -77,7 +82,7 @@ export class DragonBallGamesManager {
         metadata: meta,
         steamcmdScript: generateSteamcmdScript({
           appId: game.steamAppId,
-          installDir: `/srv/games/steam/${game.steamAppId}`,
+          installDir: `${defaultSteamInstallRoot()}/${game.steamAppId}`,
         }),
         localDetection: detectSteamInstallation(game.steamAppId),
       };

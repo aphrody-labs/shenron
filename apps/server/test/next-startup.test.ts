@@ -232,17 +232,17 @@ test.skipIf(process.platform === "win32")(
 );
 
 test("the Next child runs under the Bun shipped beside an AOT executable", () => {
-  const exists = (path: string) => path === "/srv/shenron/runtime/bun";
-  const base = { compiled: true, execPath: "/srv/shenron/shenron-server", env: {}, exists };
-  expect(resolveNextRuntime(base)).toEqual({ program: "/srv/shenron/runtime/bun", beBun: false });
+  const exists = (path: string) => path === "/srv/shenron/runtime/bun"; // paths:ok
+  const base = { compiled: true, execPath: "/srv/shenron/shenron-server", env: {}, exists }; // paths:ok
+  expect(resolveNextRuntime(base)).toEqual({ program: "/srv/shenron/runtime/bun", beBun: false }); // paths:ok
   // No runtime shipped: the bytecode executable is its own Bun.
   expect(resolveNextRuntime({ ...base, exists: () => false })).toEqual({
-    program: "/srv/shenron/shenron-server",
+    program: "/srv/shenron/shenron-server", // paths:ok
     beBun: true,
   });
   // A source run uses the Bun running it, whatever sits next to it.
   expect(resolveNextRuntime({ ...base, compiled: false })).toEqual({
-    program: "/srv/shenron/shenron-server",
+    program: "/srv/shenron/shenron-server", // paths:ok
     beBun: false,
   });
   expect(resolveNextRuntime({ ...base, env: { SHENRON_NEXT_BUN: "/opt/bun/bin/bun" } })).toEqual({
@@ -253,7 +253,7 @@ test("the Next child runs under the Bun shipped beside an AOT executable", () =>
     resolveNextRuntime({
       compiled: true,
       platform: "win32",
-      execPath: "C:/shenron/shenron-server.exe",
+      execPath: "C:/shenron/shenron-server.exe", // paths:ok
       env: {},
       exists: (path) => path.endsWith("bun.exe"),
     }).beBun,

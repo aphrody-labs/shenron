@@ -123,8 +123,18 @@ export async function readState(path: string, branch: string): Promise<RepoState
   };
 }
 
-export function expandPath(path: string): string {
-  return resolve(path.startsWith("~") ? join(homedir(), path.slice(1)) : path);
+/** Expands a leading `~` and `$VAR` / `${VAR}` references; an unset variable is an error. */
+export function expandPath(path: string, env: NodeJS.ProcessEnv = process.env): string {
+  const withVars = path.replace(
+    /\$(?:\{(\w+)\}|(\w+))/g,
+    (_match, braced?: string, bare?: string) => {
+      const name = braced ?? bare!;
+      const value = env[name];
+      if (!value) throw new Error(`${name} is not set (needed by checkout path ${path})`);
+      return value;
+    },
+  );
+  return resolve(withVars.startsWith("~") ? join(homedir(), withVars.slice(1)) : withVars);
 }
 
 async function syncSubmodules(

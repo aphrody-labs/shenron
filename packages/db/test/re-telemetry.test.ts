@@ -15,7 +15,7 @@ describe("RE Telemetry SQLite Persistence Engine", () => {
       game_slug: "fighterz",
       binary_name: "RED-Win64-Shipping.exe",
       binary_path:
-        "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\RED\\Binaries\\Win64\\RED-Win64-Shipping.exe",
+        "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ\\RED\\Binaries\\Win64\\RED-Win64-Shipping.exe", // paths:ok
       architecture: "x64" as const,
       format: "PE (Protected/Overlay)",
       entry_point: "0xB762000",

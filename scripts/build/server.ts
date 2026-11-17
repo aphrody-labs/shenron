@@ -28,7 +28,7 @@
  *    translation, which shenron-manga looks up through SHENRON_LEXIQUE).
  * 4. One zstd payload embedded in a `bun build --compile` executable (unless --no-embed,
  *    which keeps site/, the library, vfs/, home/, data/ and plugin/ beside the binary).
- * 5. dist/cdn/: what the nginx CDN adds (additively, never --delete) to /srv/shenron-cdn:
+ * 5. dist/cdn/: what the nginx CDN adds (additively, never --delete) to the CDN root of the origin host:
  *    _next/static/ and site/ (public/ of the site).
  *
  * `--site-only` runs step 1 alone so a factory can overlap it with the native lanes, then package

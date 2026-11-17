@@ -78,7 +78,7 @@ describe("vfs group: info, stat, list", () => {
       status: 503,
       code: "pg_unavailable",
     });
-    expect(JSON.stringify(body)).not.toContain("/srv/private");
+    expect(JSON.stringify(body)).not.toContain("/srv/private"); // paths:ok
   });
 
   test("stat: node metadata with its path; missing → 404, invalid → 400", async () => {

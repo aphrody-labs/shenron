@@ -83,7 +83,7 @@ describe("real CPK world resources", () => {
       "../private.nsk",
       "/LBY/shared.nsk",
       "LBY/missing.nsk",
-      "C:/private.nsk",
+      "C:/private.nsk", // paths:ok
     ])
       expect(() => resolveStageReference(reference, catalogue)).toThrow("reference");
     const bad = (instances: Xv2StageLayoutInfo["instances"]) => ({ ...layout, instances });

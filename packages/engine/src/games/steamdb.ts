@@ -117,12 +117,38 @@ export function generateSteamcmdScript(options: SteamcmdScriptOptions): string {
   );
 }
 
+/** SteamCMD install root: `GAMES_STEAM_DIR`, else `<home>/.shenron/games/steam`. */
+export function defaultSteamInstallRoot(): string {
+  const env =
+    (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {};
+  return (
+    env.GAMES_STEAM_DIR ?? join(env.HOME ?? env.USERPROFILE ?? ".", ".shenron", "games", "steam")
+  );
+}
+
+/**
+ * Steam library roots of this machine: `STEAM_LIBRARIES` (`;`-separated), else the default
+ * Steam installs derived from `ProgramFiles(x86)` (Windows) and the home directory (Linux).
+ */
+export function defaultSteamLibraries(): string[] {
+  const env =
+    (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {};
+  const listed = env.STEAM_LIBRARIES?.split(";").filter(Boolean);
+  if (listed?.length) return listed;
+  const home = env.HOME ?? env.USERPROFILE;
+  return [
+    env["ProgramFiles(x86)"] && join(env["ProgramFiles(x86)"], "Steam"),
+    home && join(home, ".steam", "steam"),
+    home && join(home, ".local", "share", "Steam"),
+  ].filter((lib): lib is string => !!lib);
+}
+
 /**
  * Resolves local Steam library folder and verifies if a game is installed.
  */
 export function detectSteamInstallation(
   appId: number,
-  steamLibraries: string[] = ["C:/Program Files (x86)/Steam", "D:/SteamLibrary", "E:/SteamLibrary"],
+  steamLibraries: string[] = defaultSteamLibraries(),
 ): { installed: boolean; path?: string; manifestPath?: string } {
   for (const lib of steamLibraries) {
     const manifest = join(lib, "steamapps", `appmanifest_${appId}.acf`);

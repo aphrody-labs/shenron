@@ -191,7 +191,8 @@ test("archived attachments survive deletion of the temporary source; reviewed no
   const opened = openShenronVfs(receipt.output, { readOnly: true });
   try {
     expect(opened.vfs.profile).toBe("complet");
-    expect(opened.vfs.readTextSync(`/home/memory/${prepared.note.id}.md`)).toContain(
+    const memoryDir = "/home/memory"; // paths:ok
+    expect(opened.vfs.readTextSync(`${memoryDir}/${prepared.note.id}.md`)).toContain(
       prepared.note.limitations,
     );
     expect(opened.rag.search("contour extérieur")).toHaveLength(1);

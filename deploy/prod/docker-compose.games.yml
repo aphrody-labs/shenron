@@ -18,6 +18,7 @@ services:
       - R2_ACCESS_KEY_ID=${R2_ACCESS_KEY_ID}
       - R2_SECRET_ACCESS_KEY=${R2_SECRET_ACCESS_KEY}
       - NEXT_PUBLIC_CDN_URL=https://cdn.dragonballfr.com
+      - GAMES_STEAM_DIR=/srv/games/steam # paths:ok
     volumes:
       - games-cache:/srv/games/cache # paths:ok
       - games-steam:/srv/games/steam # paths:ok

@@ -787,11 +787,11 @@ mod tests {
         let env = env_of(&[("SHENRON_HOME", "/h")]);
         assert_eq!(rag_store_with(&env), PathBuf::from("/h/workspaces/dbfr/crawl/rag.sqlite"));
         let env = env_of(&[("SHENRON_HOME", "/h"), ("SHENRON_CORPUS_CRAWL_DIR", "/c")]);
-        assert_eq!(rag_store_with(&env), PathBuf::from("/c/rag.sqlite"));
+        assert_eq!(rag_store_with(&env), PathBuf::from("/c/rag.sqlite")); // paths:ok
         let env = env_of(&[("SHENRON_DRAGONBALL_RAG_DB", "/db.sqlite")]);
         assert_eq!(rag_store_with(&env), PathBuf::from("/db.sqlite"));
         let env = env_of(&[("SHENRON_DRAGONBALL_DATASET_DIR", "/d")]);
-        assert_eq!(corpus_path_with(&env), PathBuf::from("/d/corpus"));
+        assert_eq!(corpus_path_with(&env), PathBuf::from("/d/corpus")); // paths:ok
         let env = env_of(&[("SHENRON_DRAGONBALL_CORPUS", "/x.jsonl")]);
         assert_eq!(corpus_path_with(&env), PathBuf::from("/x.jsonl"));
     }
@@ -1003,8 +1003,8 @@ mod tests {
                 .contains("Nail : chapitre 295")
         );
         for locator in [
-            "/home/private/note.md",
-            "C:\\private\\note.md",
+            "/home/private/note.md", // paths:ok
+            "C:\\private\\note.md",  // paths:ok
             "memory/note.md",
             "shenron:home:memory/review.md",
             "https://gemini.google.com/wiki?q=Nail",

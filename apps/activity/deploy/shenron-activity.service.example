@@ -19,7 +19,7 @@ EnvironmentFile=/etc/shenron/activity.env
 Environment=NODE_ENV=production
 Environment=SHENRON_ACTIVITY_HOST=127.0.0.1
 Environment=SHENRON_ACTIVITY_PORT=5013
-ExecStart=/srv/shenron-activity/shenron-activity
+ExecStart=/usr/local/bin/shenron-activity
 Restart=on-failure
 RestartSec=2
 # Arrêt propre : le serveur prévient les salons (`closed: shutdown`) avant de fermer.

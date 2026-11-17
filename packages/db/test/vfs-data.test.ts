@@ -120,15 +120,15 @@ describe("storage kinds", () => {
   test("query() is read-only and single-statement", () => {
     const vfs = new ShenronVfs(new Database(":memory:"));
     vfs.mkdirAll("/home");
-    vfs.write("/home/SOUL.md", "---\ntone: solennel\n---\n");
+    vfs.write("/home/SOUL.md", "---\ntone: solennel\n---\n"); // paths:ok
     expect(
       vfs.query<{ n: number }>("SELECT COUNT(*) AS n FROM vfs_nodes WHERE kind = 'file'")[0]?.n,
     ).toBe(1);
     expect(() => vfs.query("DELETE FROM vfs_nodes")).toThrow();
     expect(() => vfs.query("SELECT 1; DELETE FROM vfs_nodes")).toThrow("one statement");
-    expect(vfs.exists("/home/SOUL.md")).toBe(true);
+    expect(vfs.exists("/home/SOUL.md")).toBe(true); // paths:ok
     // The connection is writable again after a rejected query.
-    vfs.write("/home/IDENTITY.md", "x");
+    vfs.write("/home/IDENTITY.md", "x"); // paths:ok
     expect(vfs.stats().files).toBe(2);
   });
 });

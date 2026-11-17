@@ -7,7 +7,7 @@
  * ```ts
  * import db from "./shenron-vfs.sqlite" with { type: "sqlite", embed: "true" };
  * const vfs = openShenronVfs(db, { readOnly: true, cdn: defaultCdn() });
- * vfs.readDir("/home"); await vfs.readText("/home/SOUL.md");
+ * vfs.readDir("/home"); await vfs.readText("/home/SOUL.md"); // paths:ok
  * vfs.query("SELECT kind, COUNT(*) n FROM rag_doc_attrs GROUP BY kind");
  * ```
  */

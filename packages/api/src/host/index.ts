@@ -618,7 +618,7 @@ export function createLocalApi(env: EnvSource, options: LocalApiOptions = {}): L
     home: (ownerId) => {
       const own = options.agentHome?.(ownerId);
       if (own) return agentHomeFromDir(own);
-      return opened && opened.vfs.exists("/home/SOUL.md")
+      return opened && opened.vfs.exists("/home/SOUL.md") // paths:ok
         ? agentHomeFromVfs(opened.vfs)
         : agentHomeFromDir(paths.agentHome);
     },

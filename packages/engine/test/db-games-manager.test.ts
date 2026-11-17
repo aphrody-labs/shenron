@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import {
   DRAGON_BALL_GAMES_CATALOG,
   findGameBySlug,
@@ -60,15 +62,16 @@ describe("SteamDB & SteamCMD Automation", () => {
   });
 
   test("generates compliant headless SteamCMD script", () => {
+    const installDir = join(tmpdir(), "games", "steam", "1790600");
     const script = generateSteamcmdScript({
       appId: 1790600,
-      installDir: "/srv/games/steam/1790600",
+      installDir,
       username: "anonymous",
       validate: true,
     });
 
     expect(script).toContain("@ShutdownOnFailedCommand 1");
-    expect(script).toContain("force_install_dir /srv/games/steam/1790600");
+    expect(script).toContain(`force_install_dir ${installDir.replaceAll("\\", "/")}`);
     expect(script).toContain("login anonymous");
     expect(script).toContain("app_update 1790600 validate");
     expect(script).toContain("quit");

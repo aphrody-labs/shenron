@@ -125,7 +125,7 @@ export async function runPrivateVectorJob(job: PrivateVectorJob) {
       stats.chunks !== 9 ||
       stats.vectorsF32 ||
       stats.vectorsI8 ||
-      sha256(baseline.vfs.readTextSync(`/home/memory/${job.expected.noteId}.md`)) !==
+      sha256(baseline.vfs.readTextSync(`/home/memory/${job.expected.noteId}.md`)) !== // paths:ok
         job.expected.sourceSha256
     )
       throw new Error("Lexical baseline is not the exact approved private one-note snapshot");

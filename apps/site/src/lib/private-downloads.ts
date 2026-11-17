@@ -3,17 +3,13 @@ import { open, readFile, stat } from "node:fs/promises";
 import { join } from "node:path";
 import { Readable } from "node:stream";
 import { hasValidApiToken } from "@/lib/api-token";
-import {
-  DEFAULT_PRIVATE_DOWNLOADS_DIR,
-  resolveDataPath,
-  type DataPath,
-} from "@shenron/config/paths";
+import { defaultPrivateDownloadsDir, resolveDataPath, type DataPath } from "@shenron/config/paths";
 
 /**
  * Admin-only downloads (`/api/private-downloads`): files handed to administrators, such as the
  * Shenron Studio installer that carries the private `shenron-chat-v2` adapter. They are never in
  * a release nor on a public mirror: the operator drops them, flat, into
- * `SHENRON_PRIVATE_DOWNLOADS_DIR` (default {@link DEFAULT_PRIVATE_DOWNLOADS_DIR}) with their line
+ * `SHENRON_PRIVATE_DOWNLOADS_DIR` (default {@link defaultPrivateDownloadsDir}) with their line
  * in `SHA256SUMS` (`sha256sum` format).
  *
  * Guard: {@link hasValidApiToken} (admin bearer token, or an address of `SHENRON_ADMIN_IPS`).
@@ -47,7 +43,7 @@ export interface PrivateDownload {
 export function privateDownloadsDir(env: NodeJS.ProcessEnv = process.env): DataPath {
   return resolveDataPath("privateDownloadsDir", {
     env,
-    legacyDefault: DEFAULT_PRIVATE_DOWNLOADS_DIR,
+    legacyDefault: defaultPrivateDownloadsDir(env),
   });
 }
 

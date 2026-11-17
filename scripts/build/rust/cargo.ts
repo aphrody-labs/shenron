@@ -19,10 +19,10 @@ export function cargoCommand(args: readonly string[]): string[] {
 export function windowsBindgenEnv(base: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
   if (process.platform !== "win32" || base.BINDGEN_EXTRA_CLANG_ARGS) return base;
   const includes: string[] = [];
-  for (const root of [
-    "C:/Program Files/Microsoft Visual Studio",
-    "C:/Program Files (x86)/Microsoft Visual Studio",
-  ]) {
+  const programFiles = [base.ProgramFiles, base["ProgramFiles(x86)"]].filter(
+    (dir): dir is string => !!dir,
+  );
+  for (const root of programFiles.map((dir) => join(dir, "Microsoft Visual Studio"))) {
     if (!existsSync(root)) continue;
     const found = [
       ...new Bun.Glob("**/VC/Tools/MSVC/*/include/vcruntime.h").scanSync({
@@ -35,8 +35,8 @@ export function windowsBindgenEnv(base: NodeJS.ProcessEnv = process.env): NodeJS
       break;
     }
   }
-  const kitsRoot = "C:/Program Files (x86)/Windows Kits/10/Include";
-  if (existsSync(kitsRoot)) {
+  const kitsRoot = join(base["ProgramFiles(x86)"] ?? "", "Windows Kits", "10", "Include");
+  if (base["ProgramFiles(x86)"] && existsSync(kitsRoot)) {
     const ucrt = [
       ...new Bun.Glob("*/ucrt/stdio.h").scanSync({ cwd: kitsRoot, absolute: true }),
     ].toSorted();

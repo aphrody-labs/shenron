@@ -10,6 +10,8 @@
 
 ## Variables d'hôte
 
+Garde-fou: `bun run check:paths` (scanner `tools/paths.ts` du dépôt ay, exemptions dans `paths.allow` ou par `paths:ok`).
+
 Aucun chemin d'hôte n'est écrit en dur: chaque fichier compose, unité systemd et script lit une variable.
 
 | Variable | Rôle |
@@ -19,6 +21,12 @@ Aucun chemin d'hôte n'est écrit en dur: chaque fichier compose, unité systemd
 | `KOHARU_ROOT` | dossier de `prod/koharu.compose.yaml`; `koharu-stack.service` la lit dans `/etc/shenron/koharu.env` |
 | `SHENRON_BACKUP_DIR` | sauvegardes de `prod/apply-migrations.py`; défaut `~/backups-auth` |
 | `SHENRON_DEPLOY_COMMAND` | commande d'activation distante de `scripts/deploy/ship-image.sh`; défaut `bash ~/deploy-shenron-image.sh` (le `~` est résolu par l'hôte distant) |
+| `DEPLOY_LOCK` | fichier de verrou (`flock`) partagé avec rosegriffon avant tout changement sur prd; posé par l'hôte, jamais écrit dans le dépôt |
+| `SHENRON_REMOTE_RELEASES` | dossier des releases publiques côté hôte distant pour `scripts/release/ship-downloads.ts`; défaut `shenron/shared/releases` sous le home SSH |
+| `SHENRON_CRAWL_OUTPUT_ROOT` | racine des sorties de crawl du worker; défaut `<SHENRON_HOME ou ~/.shenron>/workspaces/dbfr/crawl/campaigns` |
+| `SHENRON_R2_MIRROR_ROOT` | miroir R2 du workflow Beerus; défaut `$SHENRON_ROOT/r2-mirror` |
+| `DBFZ_GAME_ROOT` | installation de DRAGON BALL FighterZ (scripts `scripts/ops/dbfz-*`, `sync-dbfz-to-r2.ts`); défaut: bibliothèque Steam sous `ProgramFiles(x86)` |
+| `GAMES_STEAM_DIR`, `STEAM_LIBRARIES` | dossier d'installation SteamCMD et bibliothèques Steam (`;`) du moteur de jeux |
 | `SHENRON_WINDOWS_BUN_EXE` | `bun.exe` de la tâche planifiée Windows enregistrée par `cloudflare/cli/register-infra.ts`; défaut `bun.exe` (dans le `PATH`) |
 
 Les unités `cloudflare/cli/*.service` utilisent `%h` (dossier personnel de `User=`); `install-cli.sh --install-owner-s3`

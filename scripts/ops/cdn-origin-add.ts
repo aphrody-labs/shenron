@@ -12,12 +12,14 @@
 import { createHash } from "node:crypto";
 import { copyFileSync, existsSync, renameSync, writeFileSync, chmodSync } from "node:fs";
 import { dirname, join } from "node:path";
+import { shenronRoot } from "@shenron/config/paths";
 
 const sha = (bytes: Uint8Array | string) => createHash("sha256").update(bytes).digest("hex");
 const [entriesPath, ...rest] = process.argv.slice(2);
 if (!entriesPath) throw new Error("usage: cdn-origin-add.ts <entries.json> [--config path]");
-const defaultConfigPath = existsSync("/srv/shenron/config/cloudflare/origin-cdn.json")
-  ? "/srv/shenron/config/cloudflare/origin-cdn.json"
+const rootConfigPath = join(shenronRoot(), "config", "cloudflare", "origin-cdn.json");
+const defaultConfigPath = existsSync(rootConfigPath)
+  ? rootConfigPath
   : "/etc/shenron/cloudflare/origin-cdn.json";
 const configPath =
   rest.includes("--config") && rest[rest.indexOf("--config") + 1]

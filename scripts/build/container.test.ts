@@ -4,7 +4,7 @@ import { containerArgs, gitToken, imageProblems } from "./container";
 
 test("builds run bounded, non-root, on shared caches, secrets by name only", () => {
   const args = containerArgs({
-    repo: "/home/shenron-build/runner/_work/shenron/shenron",
+    repo: "/home/shenron-build/runner/_work/shenron/shenron", // paths:ok
     command: ["bun", "ci"],
     uid: 1002,
     gid: 1002,

@@ -291,9 +291,10 @@ export async function indexPrivateNotes(
         opened.vfs.setMeta("notes_source_sha256", vectors!.expected.sourceSha256);
         opened.vfs.setMeta("notes_manifest_sha256", vectors!.expected.manifestSha256);
       }
-      opened.vfs.mkdirAll("/home/memory");
+      const memoryDir = "/home/memory"; // paths:ok
+      opened.vfs.mkdirAll(memoryDir);
       for (const doc of docs)
-        opened.vfs.write(`/home/memory/${doc.id}.md`, doc.text, {
+        opened.vfs.write(`${memoryDir}/${doc.id}.md`, doc.text, {
           visibility: "private",
           mime: "text/markdown",
         });

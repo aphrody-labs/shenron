@@ -5,7 +5,7 @@ JSON directement compatible avec `PIXI.Spritesheet`. Il ne publie rien dans le s
 ne lance ni build ni serveur et ne modifie jamais les sources.
 
 ```powershell
-$sceneBun = 'C:/Users/aphro/.local/opt/bun-shenron/bin/bun.exe'
+$sceneBun = if ($env:SHENRON_BUN) { $env:SHENRON_BUN } else { (Get-Command bun).Source }
 & $sceneBun scripts/media/wiki-scene-assets/index.ts scripts/media/wiki-scene-assets/archives-production.json var/exports/wiki-archives-v1
 & $sceneBun scripts/media/wiki-scene-assets/index.ts scripts/media/wiki-scene-assets/archives-production.json var/exports/wiki-archives-v1 --check
 ```

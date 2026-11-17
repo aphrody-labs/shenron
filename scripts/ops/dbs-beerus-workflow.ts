@@ -18,6 +18,7 @@ import {
   r2ObjectKey,
   r2ShardId,
 } from "../../packages/media/src/r2-sync";
+import { shenronRoot } from "@shenron/config/paths";
 import { crunchyrollWatchUrl } from "../../packages/media/src/crunchyroll-mapping";
 
 export interface BeerusEpisodeSpec {
@@ -248,7 +249,8 @@ export function buildBeerusEpisodeWorkflowPlan(options: WorkflowCliOptions) {
   ).slice(0, 64);
   const durationSec = options.durationSec ?? 1420;
 
-  const stagingDir = `/srv/shenron/staging/dbs-beerus/${spec.id}`;
+  const root = shenronRoot().replaceAll("\\", "/");
+  const stagingDir = `${root}/staging/dbs-beerus/${spec.id}`;
   const ytDlpArgs = buildYtDlpArgs({
     url: downloadTargetUrl,
     outputTemplate: `${stagingDir}/source.%(ext)s`,
@@ -301,7 +303,7 @@ export function buildBeerusEpisodeWorkflowPlan(options: WorkflowCliOptions) {
       }),
       rsyncMeshArgs: buildRsyncMeshArgs({
         source: `${stagingDir}/`,
-        destination: `cdn:/srv/shenron/r2-mirror/dbs-beerus/${spec.id}/`,
+        destination: `cdn:${process.env.SHENRON_R2_MIRROR_ROOT ?? `${root}/r2-mirror`}/dbs-beerus/${spec.id}/`,
       }),
     },
     commands: {

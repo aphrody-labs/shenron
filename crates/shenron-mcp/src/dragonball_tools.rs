@@ -1659,8 +1659,8 @@ mod tests {
     #[test]
     fn private_sources_never_become_public_links() {
         let sources = [
-            "/home/ubuntu/private/note.md",
-            "C:\\private\\note.md",
+            "/home/ubuntu/private/note.md", // paths:ok
+            "C:\\private\\note.md",         // paths:ok
             "shenron:home:memory/note.md",
             "https://dragonballfr.com/wiki/manga",
         ];

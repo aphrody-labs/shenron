@@ -3,14 +3,15 @@
  * scripts/ops/sync-dbfz-to-r2.ts
  *
  * Byte-exact synchronization engine and cryptographic manifest generator for
- * DRAGON BALL FighterZ (`C:\Program Files (x86)\Steam\steamapps\common\DRAGON BALL FighterZ`)
+ * DRAGON BALL FighterZ (install directory: `DBFZ_GAME_ROOT`, see lib/dbfz-game-root.ts)
  * targeting Cloudflare R2 / Shenron Garage S3 CDN (`cdn.dragonballfr.com`).
  */
 import { existsSync, mkdirSync, statSync, writeFileSync } from "node:fs";
 import { readdir } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
+import { dbfzGameRoot } from "./lib/dbfz-game-root";
 
-const SOURCE_DIR = "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ";
+const SOURCE_DIR = dbfzGameRoot();
 const MANIFEST_PATH = resolve("docs/games/dbfz-r2-manifest.json");
 const CDN_PREFIX = "https://cdn.dragonballfr.com/games/dbfz";
 const BUCKET_NAME = process.env.R2_BUCKET || "shenron-cdn";

@@ -92,7 +92,7 @@ const SHENRON_TRANSLATE_CANDIDATES = [
     process.platform === "win32" ? "shenron-translate.exe" : "shenron-translate",
   ),
   process.platform === "win32" ? "shenron-translate.exe" : "shenron-translate",
-  "/srv/shenron/current/bin/shenron-translate",
+  process.env.SHENRON_ROOT && join(process.env.SHENRON_ROOT, "current", "bin", "shenron-translate"),
 ].filter((value): value is string => Boolean(value));
 const SHENRON_TOKEN_PREFIX = "QXZ";
 /** Four digits make `QXZ0001` unambiguous when a source digit follows it. */

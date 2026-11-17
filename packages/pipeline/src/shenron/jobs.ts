@@ -2,7 +2,8 @@
 /** Durable placement receipts; native Shenron queues own execution and leases. */
 import { Database } from "bun:sqlite";
 import { chmodSync, mkdirSync, statSync } from "node:fs";
-import { dirname, isAbsolute } from "node:path";
+import { homedir } from "node:os";
+import { dirname, isAbsolute, posix } from "node:path";
 
 export interface ShenronJobHost {
   id: string;
@@ -51,14 +52,23 @@ interface IntentRow {
 }
 const states = new Set(["queued", "running", "succeeded", "failed", "cancelled"]);
 const terminal = (state: string) => ["succeeded", "failed", "cancelled"].includes(state);
-const crawlOutputRoot = "/home/ubuntu/.shenron/workspaces/dbfr/crawl/campaigns";
+/** Worker-side crawl root: `SHENRON_CRAWL_OUTPUT_ROOT`, else `<SHENRON_HOME or ~/.shenron>/workspaces/dbfr/crawl/campaigns` (POSIX, the workers are Linux). */
+function crawlOutputRoot(env: NodeJS.ProcessEnv = process.env): string {
+  return (
+    env.SHENRON_CRAWL_OUTPUT_ROOT?.trim() ||
+    posix.join(
+      env.SHENRON_HOME?.trim() || posix.join(homedir().replaceAll("\\", "/"), ".shenron"),
+      "workspaces/dbfr/crawl/campaigns",
+    )
+  );
+}
 
 /** The VPS and DBFR Shenron worker units share this Infra-owned SHENRON_HOME. */
 export function crawlJobOutputDirectory(key: string): string {
   if (!key.trim() || key.length > 256)
     throw new Error("Crawl job key must contain 1..256 characters");
   const digest = new Bun.CryptoHasher("sha256").update(key).digest("hex");
-  return `${crawlOutputRoot}/${digest}`;
+  return `${crawlOutputRoot()}/${digest}`;
 }
 
 function successfulCrawlOutput(row: IntentRow): string | undefined {

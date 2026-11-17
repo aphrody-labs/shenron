@@ -66,7 +66,7 @@ test("upload destinations and public reads reject traversal and active file exte
     "../secret.png",
     "/absolute.png",
     "..\\secret.png",
-    "C:\\secret.png",
+    "C:\\secret.png", // paths:ok
     "image\0.png",
   ])
     expect(await findWikiImage(path, roots)).toBeNull();

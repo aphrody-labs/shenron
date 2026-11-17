@@ -1,10 +1,16 @@
 import { readdir } from "node:fs/promises";
 import { join, relative } from "node:path";
+import { shenronRoot } from "@shenron/config/paths";
+
+const ROOT = shenronRoot();
+const CONFIG = join(ROOT, "config", "cloudflare");
+const CURRENT = join(ROOT, "current");
+const CDN_DATA = join(ROOT, "data", "cdn");
 import { createHash } from "node:crypto";
 
-const creds = await Bun.file("/srv/shenron/config/cloudflare/shenron-s3.json").json();
-const manifest = await Bun.file("/srv/shenron/config/cloudflare/manifest.json").json();
-const token = (await Bun.file("/srv/shenron/config/cloudflare/api-token").text()).trim();
+const creds = await Bun.file(join(CONFIG, "shenron-s3.json")).json();
+const manifest = await Bun.file(join(CONFIG, "manifest.json")).json();
+const token = (await Bun.file(join(CONFIG, "api-token")).text()).trim();
 
 const s3 = new Bun.S3Client({
   accessKeyId: creds.accessKeyId,
@@ -100,14 +106,14 @@ console.log("Scanning local release files...");
 const siteFiles: Array<{ publicPath: string; localFile: string }> = [];
 
 // 1. Next.js chunks & static
-for await (const file of walk("/srv/shenron/current/cdn/_next")) {
-  const rel = relative("/srv/shenron/current/cdn/_next", file).replaceAll("\\", "/");
+for await (const file of walk(join(CURRENT, "cdn", "_next"))) {
+  const rel = relative(join(CURRENT, "cdn", "_next"), file).replaceAll("\\", "/");
   siteFiles.push({ publicPath: `/_next/${rel}`, localFile: file });
 }
 
 // 2. Public assets
-for await (const file of walk("/srv/shenron/current/public")) {
-  const rel = relative("/srv/shenron/current/public", file).replaceAll("\\", "/");
+for await (const file of walk(join(CURRENT, "public"))) {
+  const rel = relative(join(CURRENT, "public"), file).replaceAll("\\", "/");
   if (rel.startsWith(".") && !rel.startsWith(".well-known/")) continue;
   if (/\.(?:sql|sqlite|db|env|jsonl|pem|key|toml|ya?ml|ini|log|bak)$/i.test(rel)) continue;
   siteFiles.push({ publicPath: `/${rel}`, localFile: file });
@@ -183,7 +189,7 @@ for (let i = 0; i < missingObjects.length; i += UPLOAD_CONCURRENCY) {
 console.log("All missing objects uploaded successfully.");
 
 // Load latest inventory
-const baseInvPath = "/srv/shenron/data/cdn/inventory-b5dc49b26611.json";
+const baseInvPath = join(CDN_DATA, "inventory-b5dc49b26611.json");
 const inv = await Bun.file(baseInvPath).json();
 console.log(`Loaded base inventory with ${Object.keys(inv.entries).length} entries.`);
 
@@ -278,23 +284,24 @@ console.log("Cloudflare Worker settings updated successfully.");
 // Save new inventory to disk
 const newInvJson = JSON.stringify(inv);
 const newInvSha = createHash("sha256").update(newInvJson).digest("hex");
-const newInvPath = `/srv/shenron/data/cdn/inventory-${newInvSha.slice(0, 12)}.json`;
+const newInvPath = join(CDN_DATA, `inventory-${newInvSha.slice(0, 12)}.json`);
 await Bun.write(newInvPath, newInvJson);
 console.log(`Saved new inventory to ${newInvPath} (${newInvSha})`);
 
 // Update origin-cdn.json
 const originCdnConfig = {
-  manifest: "/srv/shenron/config/cloudflare/manifest.json",
-  profile: "/srv/shenron/config/cloudflare/shenron-s3.json",
-  sdkModule: "/srv/shenron/config/cloudflare/sdk/node_modules/aws4fetch/dist/aws4fetch.esm.js",
+  manifest: join(CONFIG, "manifest.json"),
+  profile: join(CONFIG, "shenron-s3.json"),
+  sdkModule: join(CONFIG, "sdk", "node_modules", "aws4fetch", "dist", "aws4fetch.esm.js"),
   hostname: "127.0.0.1",
   port: 9077,
   inventoryPath: newInvPath,
   inventorySha256: newInvSha,
   manifestPrefix: prefix,
 };
-await Bun.write("/srv/shenron/config/cloudflare/origin-cdn.json", JSON.stringify(originCdnConfig));
-console.log("Updated /srv/shenron/config/cloudflare/origin-cdn.json");
+const originCdnPath = join(CONFIG, "origin-cdn.json");
+await Bun.write(originCdnPath, JSON.stringify(originCdnConfig));
+console.log(`Updated ${originCdnPath}`);
 
 // Purge Cloudflare cache for all purged endpoints
 console.log("Purging Cloudflare cache...");

@@ -167,7 +167,7 @@ describe("catalogue editorial writes", () => {
       { ...nativeFrame, imagePath: "https://cdn.example.test/frame.jpg" },
       { ...nativeFrame, imagePath: "https://bucket.r2.dev/frame.png" },
       { ...nativeFrame, imagePath: "https://cdn.example.test/frame.png?token=protected" },
-      { ...nativeFrame, sourceUrl: "C:/private/capture.mp4" },
+      { ...nativeFrame, sourceUrl: "C:/private/capture.mp4" }, // paths:ok
       { ...nativeFrame, width: null },
       { ...nativeFrame, timecodeSec: Number.NaN },
       { ...nativeFrame, privateHeaders: { authorization: "protected" } },

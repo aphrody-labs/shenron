@@ -117,10 +117,10 @@ describe("Vfs conformance (conformance.rs)", () => {
     v.write("/f", "");
     expect(code(() => v.mkdir("/f"))).toBe("AlreadyExists");
     expect(code(() => v.mkdir("/f/y"))).toBe("NotADirectory");
-    v.write("/d/b", "1");
-    v.write("/d/a", "22");
-    v.mkdir("/d/c");
-    v.write("/d/c/deep", "x");
+    v.write("/d/b", "1"); // paths:ok
+    v.write("/d/a", "22"); // paths:ok
+    v.mkdir("/d/c"); // paths:ok
+    v.write("/d/c/deep", "x"); // paths:ok
     const list = v.readDir("/d");
     expect(list.map((e) => e.name)).toEqual(["a", "b", "c"]);
     expect(list[0]?.kind).toBe("file");
@@ -134,12 +134,12 @@ describe("Vfs conformance (conformance.rs)", () => {
   test("remove", () => {
     const v = make();
     v.mkdir("/d");
-    v.write("/d/f", "x");
+    v.write("/d/f", "x"); // paths:ok
     expect(code(() => v.remove("/d"))).toBe("DirectoryNotEmpty");
     expect(code(() => v.remove("/"))).toBe("InvalidInput");
     expect(code(() => v.remove("/zzz"))).toBe("NotFound");
-    v.remove("/d/f");
-    expect(code(() => v.readSync("/d/f"))).toBe("NotFound");
+    v.remove("/d/f"); // paths:ok
+    expect(code(() => v.readSync("/d/f"))).toBe("NotFound"); // paths:ok
     v.remove("/d");
     expect(v.exists("/d")).toBe(false);
   });

@@ -12,7 +12,7 @@
         "vps": "~/src/shenron",
         "cdn": "~/src/shenron",
         "windows": "~/src/shenron",
-        "prod": "/srv/shenron/build/source"
+        "prod": "$SHENRON_ROOT/build/source"
       }
     }
   ],

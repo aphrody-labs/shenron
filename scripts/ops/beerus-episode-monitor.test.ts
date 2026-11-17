@@ -164,7 +164,7 @@ test("network failures are isolated and oversized bodies rejected", async () => 
   expect(oversized.status).toBe("body-limit");
 });
 test("CLI requires once and absolute output; clamps requested workers", () => {
-  const out = process.platform === "win32" ? "C:/reports/beerus" : "/tmp/beerus";
+  const out = process.platform === "win32" ? "C:/reports/beerus" : "/tmp/beerus"; // paths:ok
   expect(parseOptions(["--once", "--out", out, "--workers", "40"])).toEqual({ out, workers: 4 });
   expect(() => parseOptions(["--out", out])).toThrow("--once");
   expect(() => parseOptions(["--once", "--out", "relative"])).toThrow("absolute");

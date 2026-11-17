@@ -157,7 +157,7 @@ mod tests {
     fn rejects_absolute_outside_root() {
         let td = tempdir().unwrap();
         let guard = WorkspaceGuard::new(td.path());
-        let outside = if cfg!(windows) { "C:\\Windows\\system.ini" } else { "/etc/hosts" };
+        let outside = if cfg!(windows) { "C:\\Windows\\system.ini" } else { "/etc/hosts" }; // paths:ok
         let err = guard.resolve(outside).unwrap_err();
         assert!(matches!(err, HomeError::PathEscape { .. }));
     }

@@ -61,12 +61,11 @@ export function writeTestVfs(path: string, o: TestVfsOptions = {}): string {
   vfs.setMeta("profile", o.profile ?? "public");
   vfs.setMeta("generated_at", "2026-10-05T00:00:00.000Z");
   vfs.mkdirAll("/home");
-  vfs.write("/home/SOUL.md", '---\nidentity: "Shenron"\ntone: "solennel"\n---\n', {
-    visibility: "public",
-  });
+  const soul = "/home/SOUL.md"; // paths:ok
+  vfs.write(soul, '---\nidentity: "Shenron"\ntone: "solennel"\n---\n', { visibility: "public" });
   vfs.mkdirAll("/assets");
   vfs.write("/assets/logo.txt", "logo du VFS", { visibility: "public" });
-  if (o.private) vfs.write("/home/MEMORY.md", "mémoire privée", { visibility: "private" });
+  if (o.private) vfs.write("/home/MEMORY.md", "mémoire privée", { visibility: "private" }); // paths:ok
   if (o.embedded) vfs.index("/assets/planche.webp", { storage: "embedded", size: 3, sha256: null });
   writeWikiRows(db, [
     {

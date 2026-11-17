@@ -459,7 +459,7 @@ mod tests {
 
     #[test]
     fn absolute_leaves_an_already_absolute_path_alone() {
-        let input = if cfg!(windows) { "C:\\a\\b" } else { "/a/b" };
+        let input = if cfg!(windows) { "C:\\a\\b" } else { "/a/b" }; // paths:ok
         let resolved = absolute(Path::new(input)).unwrap();
         assert!(resolved.is_absolute());
     }

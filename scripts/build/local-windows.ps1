@@ -46,9 +46,9 @@ switch ($Action) {
     $drive = (Get-Item $Root).PSDrive
     "free disk $($drive.Name): {0:N1} GiB" -f ($drive.Free / 1GB)
     foreach ($t in 'docker', 'bun', 'cargo', 'git', 'gh') { "{0,-8} {1}" -f $t, (Or (Get-Command $t -ErrorAction SilentlyContinue).Source 'MISSING') }
-    "signtool $(Or (Find-Tool 'signtool' @('C:\Program Files (x86)\Windows Kits\10\bin\*\x64\signtool.exe')) 'MISSING (optional)')"
+    "signtool $(Or (Find-Tool 'signtool' @("${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe")) 'MISSING (optional)')"
     "NSIS     $(Or (Find-Tool 'makensis' @("$env:LOCALAPPDATA\tauri\NSIS\makensis.exe")) 'MISSING (Tauri downloads it on first desktop-native build)')"
-    "MSVC     $(Or (Find-Tool 'link-msvc-probe' @('C:\Program Files*\Microsoft Visual Studio\*\*\VC\Tools\MSVC\*\bin\Hostx64\x64\link.exe')) 'MISSING (needed by desktop-native only)')"
+    "MSVC     $(Or (Find-Tool 'link-msvc-probe' @("$env:ProgramFiles\Microsoft Visual Studio\*\*\VC\Tools\MSVC\*\bin\Hostx64\x64\link.exe", "${env:ProgramFiles(x86)}\Microsoft Visual Studio\*\*\VC\Tools\MSVC\*\bin\Hostx64\x64\link.exe")) 'MISSING (needed by desktop-native only)')"
     $vhd = Join-Path $env:LOCALAPPDATA 'Docker\wsl\disk\docker_data.vhdx'
     if (Test-Path $vhd) { "docker disk image: {0:N1} GiB at $vhd" -f ((Get-Item $vhd).Length / 1GB) }
   }
@@ -63,7 +63,7 @@ switch ($Action) {
   }
   'sign' {
     if (-not $env:SHENRON_SIGN_PFX -or -not (Test-Path $env:SHENRON_SIGN_PFX)) { throw 'SHENRON_SIGN_PFX not set: signing is optional, nothing done' }
-    $signtool = Find-Tool 'signtool' @('C:\Program Files (x86)\Windows Kits\10\bin\*\x64\signtool.exe')
+    $signtool = Find-Tool 'signtool' @("${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe")
     if (-not $signtool) { throw 'signtool.exe not found (Windows SDK)' }
     $ts = Or $env:SHENRON_SIGN_TIMESTAMP_URL 'http://timestamp.digicert.com'
     $files = Get-ChildItem $Win -Recurse -Include *.exe, *.dll | Where-Object { $_.FullName -notmatch '\\site\\' }

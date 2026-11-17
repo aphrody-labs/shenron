@@ -111,7 +111,7 @@ describe("manifestes et sorties OCR", () => {
 
   test("le manifeste, pas le chemin absolu, donne l'identité", () => {
     const line = JSON.stringify({
-      image: "C:\\tmp\\DB-vol1-0003.jpg",
+      image: "C:\\tmp\\DB-vol1-0003.jpg", // paths:ok
       text: { kind: "text", markdown: "- Bonjour !\n- Bulma ?" },
       engine: "hybrid-luna-ppocr",
       model: "gpt-5.6-luna",

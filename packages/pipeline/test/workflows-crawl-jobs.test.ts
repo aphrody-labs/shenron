@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
+import { tmpdir } from "node:os";
 import { crawlJobOutputDirectory } from "../src/shenron/jobs";
 import { createCrawlJobArgs, createCrawlJobIntent } from "../src/workflows";
 
@@ -137,7 +138,11 @@ describe("createCrawlJobArgs", () => {
       createCrawlJobArgs({ source: "custom", url: "https://user:pass@gemini.google.com/" }),
     ).toThrow("without credentials");
     expect(() =>
-      createCrawlJobArgs({ source: "custom", url: "https://gemini.google.com/", outDir: "C:/tmp" }),
+      createCrawlJobArgs({
+        source: "custom",
+        url: "https://gemini.google.com/",
+        outDir: tmpdir(),
+      }),
     ).toThrow("owned by the worker host");
     expect(() => createCrawlJobArgs({ source: "official", maxRequests: 0 })).toThrow(
       "maxRequests must be positive",

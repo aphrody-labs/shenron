@@ -11,6 +11,8 @@
  *
  * Runtime class: `server` (consumed by Bun and Next server code only).
  */
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { envFirst, isProduction, type EnvSource } from "./env";
 
 export type DataPathKey =
@@ -33,17 +35,26 @@ export const DATA_PATH_ENV: Readonly<Record<DataPathKey, readonly string[]>> = O
   releasesDir: Object.freeze(["SHENRON_RELEASES_DIR"]),
 });
 
+/** Host root of the shared (cross-release) data: `SHENRON_ROOT`, else `~/.shenron`. */
+export function shenronRoot(env: EnvSource = process.env): string {
+  return envFirst(env, ["SHENRON_ROOT"])?.value ?? join(homedir(), ".shenron");
+}
+
 /**
  * Public release files (`/download`, `/api/releases`): binaries and libraries with their
  * `SHA256SUMS` and `latest.json`, written by `scripts/release/publish-downloads.ts`.
  */
-export const DEFAULT_RELEASES_DIR = "/srv/shenron/shared/releases";
+export function defaultReleasesDir(env: EnvSource): string {
+  return join(shenronRoot(env), "shared", "releases");
+}
 
 /**
  * Admin-only downloads of the site (`/api/private-downloads`): Shenron Studio installers and
  * other private files handed to administrators. Outside every release, so a deploy keeps them.
  */
-export const DEFAULT_PRIVATE_DOWNLOADS_DIR = "/srv/shenron/shared/private-downloads";
+export function defaultPrivateDownloadsDir(env: EnvSource): string {
+  return join(shenronRoot(env), "shared", "private-downloads");
+}
 
 export interface DataPath {
   key: DataPathKey;

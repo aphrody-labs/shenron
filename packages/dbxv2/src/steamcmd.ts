@@ -8,7 +8,7 @@
  */
 import { existsSync } from "node:fs";
 import { readdir, stat } from "node:fs/promises";
-import { join, resolve } from "node:path";
+import { join, parse, resolve } from "node:path";
 import { homedir } from "node:os";
 
 export const DBXV2_STEAM_APP_ID = 323470;
@@ -67,11 +67,11 @@ export function findSteamcmdExecutable(): string | null {
 
   const candidateDirs: string[] = isWindows
     ? [
-        "C:\\steamcmd",
-        "C:\\tools\\steamcmd",
+        join(parse(homedir()).root, "steamcmd"),
+        join(parse(homedir()).root, "tools", "steamcmd"),
         join(homedir(), "steamcmd"),
         join(homedir(), "AppData", "Local", "SteamCMD"),
-        join(process.env.PROGRAMFILES ?? "C:\\Program Files", "SteamCMD"),
+        ...(process.env.PROGRAMFILES ? [join(process.env.PROGRAMFILES, "SteamCMD")] : []),
       ]
     : [
         "/usr/games/steamcmd",

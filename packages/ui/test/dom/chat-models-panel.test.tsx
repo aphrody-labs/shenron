@@ -268,7 +268,7 @@ describe("ModelsPanel", () => {
 
   test("uses the native dialog when the host has one, the path field when it has none", async () => {
     const t = transport();
-    const pick = mock(async () => "/home/me/shenron-chat-v2.gguf");
+    const pick = mock(async () => "/home/me/shenron-chat-v2.gguf"); // paths:ok
     render(
       <ModelsPanel
         transport={t}
@@ -279,7 +279,7 @@ describe("ModelsPanel", () => {
     );
     const choose = await screen.findByRole("button", { name: "Choose the file" });
     await act(async () => fireEvent.click(choose));
-    expect(t.importAdapter).toHaveBeenCalledWith(base[0], "/home/me/shenron-chat-v2.gguf");
+    expect(t.importAdapter).toHaveBeenCalledWith(base[0], "/home/me/shenron-chat-v2.gguf"); // paths:ok
     cleanup();
     render(
       <ModelsPanel

@@ -12,7 +12,7 @@ import {
 const sum = "a".repeat(64);
 
 test("the remote root follows shenron-container-backup.service", () => {
-  expect(remoteRoot("/home/owner/")).toBe("/home/owner/apps/shenron/shared/backups/container");
+  expect(remoteRoot("/home/owner/")).toBe("/home/owner/apps/shenron/shared/backups/container"); // paths:ok
 });
 
 test("snapshot names are parsed as UTC timestamps", () => {

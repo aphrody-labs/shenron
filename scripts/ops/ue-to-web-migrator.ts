@@ -17,6 +17,7 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { readdir, stat } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
+import { dbfzGameRoot } from "./lib/dbfz-game-root";
 
 export interface UeMigrationOptions {
   gameRoot: string;
@@ -329,9 +330,7 @@ export async function runUeToWebMigration(
 }
 
 if (import.meta.main) {
-  const gameRoot =
-    process.env.UE_GAME_ROOT ||
-    "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ";
+  const gameRoot = dbfzGameRoot();
   const outputDir = resolve("docs/games/migration");
   runUeToWebMigration({ gameRoot, outputDir }).catch((err) => {
     console.error("[ue-migrator] Error:", err);

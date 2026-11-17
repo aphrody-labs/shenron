@@ -54,14 +54,14 @@ afterEach(() => {
 
 describe("native dialogs (Tauri simulé)", () => {
   test("open returns the chosen paths with the filters handed to the plugin", async () => {
-    simulateTauri({ "plugin:dialog|open": () => ["/scans/p001.png", "C:\\scans\\p002.jpg"] });
+    simulateTauri({ "plugin:dialog|open": () => ["/scans/p001.png", "C:\\scans\\p002.jpg"] }); // paths:ok
     const picked = await openFiles({
       multiple: true,
       filters: [{ name: "Images", extensions: ["png", "jpg"] }],
     });
     expect(picked).toEqual([
       { source: "native", name: "p001.png", path: "/scans/p001.png" },
-      { source: "native", name: "p002.jpg", path: "C:\\scans\\p002.jpg" },
+      { source: "native", name: "p002.jpg", path: "C:\\scans\\p002.jpg" }, // paths:ok
     ]);
     expect(calls[0]?.payload).toMatchObject({
       options: { multiple: true, filters: [{ name: "Images", extensions: ["png", "jpg"] }] },
@@ -78,14 +78,14 @@ describe("native dialogs (Tauri simulé)", () => {
 
   test("save writes the bytes through the fs plugin at the chosen path", async () => {
     simulateTauri({
-      "plugin:dialog|save": () => "/home/goku/reponse.md",
+      "plugin:dialog|save": () => "/home/goku/reponse.md", // paths:ok
       "plugin:fs|write_file": () => null,
     });
     const result = await saveFile("# Réponse", {
       suggestedName: "reponse.md",
       filters: [{ name: "Markdown", extensions: ["md"] }],
     });
-    expect(result).toEqual({ status: "native", path: "/home/goku/reponse.md" });
+    expect(result).toEqual({ status: "native", path: "/home/goku/reponse.md" }); // paths:ok
     expect(calls.map((call) => call.cmd)).toEqual(["plugin:dialog|save", "plugin:fs|write_file"]);
     expect(new TextDecoder().decode(calls[1]?.payload as Uint8Array)).toBe("# Réponse");
     expect(calls[0]?.payload).toMatchObject({ options: { defaultPath: "reponse.md" } });

@@ -157,7 +157,9 @@ function assertPrivateDestination(destination: string): void {
 
 function windowsOwnerSid(): string {
   // The System32 binary: a POSIX `whoami` earlier on PATH (Git Bash, MSYS) rejects `/user`.
-  const whoami = join(process.env.SystemRoot ?? "C:\\Windows", "System32", "whoami.exe");
+  const whoami = process.env.SystemRoot
+    ? join(process.env.SystemRoot, "System32", "whoami.exe")
+    : "whoami.exe";
   const identity = Bun.spawnSync([whoami, "/user", "/fo", "csv", "/nh"], {
     stdout: "pipe",
     stderr: "ignore",

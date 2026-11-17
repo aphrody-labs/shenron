@@ -133,7 +133,7 @@ describe("static files", () => {
     expect(safeAssetPath("/../secret.txt")).toBeNull();
     expect(safeAssetPath("/a/../b")).toBeNull();
     expect(safeAssetPath("/a\\b")).toBeNull();
-    expect(safeAssetPath("/C:/windows/win.ini")).toBeNull();
+    expect(safeAssetPath("/C:/windows/win.ini")).toBeNull(); // paths:ok
     expect(safeAssetPath("/")).toBe("index.html");
     expect(safeAssetPath("/fonts/x-0a1b2c3d4e.woff2")).toBe("fonts/x-0a1b2c3d4e.woff2");
   });

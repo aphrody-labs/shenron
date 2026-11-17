@@ -53,9 +53,12 @@ export function findBrowserExecutable(customPath?: string): string {
   }
 
   const candidates = [
-    "C:/Program Files/Google/Chrome/Application/chrome.exe",
-    "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
-    "C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe",
+    ...[process.env.ProgramFiles, process.env["ProgramFiles(x86)"]]
+      .filter((dir): dir is string => !!dir)
+      .flatMap((dir) => [
+        join(dir, "Google", "Chrome", "Application", "chrome.exe"),
+        join(dir, "Microsoft", "Edge", "Application", "msedge.exe"),
+      ]),
     "/usr/bin/google-chrome",
     "/usr/bin/chromium",
     "/usr/bin/chromium-browser",

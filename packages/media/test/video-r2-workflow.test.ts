@@ -167,7 +167,7 @@ describe("r2-sync pure helpers", () => {
 
   test("buildRcloneR2Args and buildRsyncMeshArgs build best-practice transfer flags", () => {
     const rcloneArgs = buildRcloneR2Args({
-      source: "/srv/shenron/staging/_objects",
+      source: "/srv/shenron/staging/_objects", // paths:ok
       bucket: "shenron-cdn/_objects",
     });
     expect(rcloneArgs).toContain("copy");
@@ -181,8 +181,8 @@ describe("r2-sync pure helpers", () => {
     expect(rcloneArgs).toContain(`Cache-Control: ${IMMUTABLE_CACHE_CONTROL}`);
 
     const rsyncArgs = buildRsyncMeshArgs({
-      source: "/srv/shenron/staging/",
-      destination: "cdn:/srv/shenron/r2-mirror/",
+      source: "/srv/shenron/staging/", // paths:ok
+      destination: "cdn:/srv/shenron/r2-mirror/", // paths:ok
     });
     expect(rsyncArgs).toContain("-aH");
     expect(rsyncArgs).toContain("--partial");

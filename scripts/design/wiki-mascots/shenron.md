@@ -91,7 +91,7 @@ La qualification de rendu concerne l'actif, pas une page Pixi/WebGPU ni un build
 ## Reproduction sans build application
 
 ```powershell
-$mascotBun = 'C:/Users/aphro/.local/opt/bun-shenron/bin/bun.exe'
+$mascotBun = if ($env:SHENRON_BUN) { $env:SHENRON_BUN } else { (Get-Command bun).Source }
 & $mascotBun scripts/design/wiki-mascots/shenron.ts
 & $mascotBun scripts/design/wiki-mascots/shenron.ts --check
 $env:TORIYAMA_RASTER = 'magick'

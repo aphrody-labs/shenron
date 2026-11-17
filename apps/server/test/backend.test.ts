@@ -84,12 +84,13 @@ describe("planBackend", () => {
     touch(join(payloadDir, "home", "SOUL.md"));
     const desktop = planBackend(paths, { SHENRON_PROFILE: "desktop" }, { payloadDir });
     expect(desktop.env.SHENRON_WORKSPACE).toBe(join(payloadDir, "home"));
+    const dbfr = join(tmpdir(), "dbfr");
     const explicit = planBackend(
       paths,
-      { SHENRON_PROFILE: "desktop", SHENRON_WORKSPACE: "/srv/dbfr" },
+      { SHENRON_PROFILE: "desktop", SHENRON_WORKSPACE: dbfr },
       { payloadDir },
     );
-    expect(explicit.env.SHENRON_WORKSPACE).toBe("/srv/dbfr");
+    expect(explicit.env.SHENRON_WORKSPACE).toBe(dbfr);
     const production = planBackend(paths, { SHENRON_PROFILE: "production" }, { payloadDir });
     expect(production.env.SHENRON_WORKSPACE).toBeUndefined();
   });

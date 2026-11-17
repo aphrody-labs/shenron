@@ -2,7 +2,7 @@
 import "server-only";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { DEFAULT_RELEASES_DIR, resolveDataPath, type DataPath } from "@shenron/config/paths";
+import { defaultReleasesDir, resolveDataPath, type DataPath } from "@shenron/config/paths";
 import { serveSumsFile } from "@/lib/private-downloads";
 
 /**
@@ -34,7 +34,7 @@ const KINDS: readonly ReleaseKind[] = ["studio", "server", "cli", "mcp", "bot"];
 const SEMVER = /^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/;
 
 export function releasesDir(env: NodeJS.ProcessEnv = process.env): DataPath {
-  return resolveDataPath("releasesDir", { env, legacyDefault: DEFAULT_RELEASES_DIR });
+  return resolveDataPath("releasesDir", { env, legacyDefault: defaultReleasesDir(env) });
 }
 
 /** Validates an untrusted manifest; anything malformed yields `null`, never a partial result. */
