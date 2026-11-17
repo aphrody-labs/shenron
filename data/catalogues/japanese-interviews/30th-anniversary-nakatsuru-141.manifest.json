@@ -10,11 +10,11 @@
       "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nakatsuru-141.jsonl#L1",
       "printedPages": [141],
       "pdfPageIndices": [142],
-      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "imagePath": "%USERPROFILE%\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
-      "transcriptBytes": 3467,
-      "transcriptSha256": "378b2f24875e0d9167efb100219297f1a6646abf17dd1980036cec36cb11b95c",
+      "transcriptBytes": 3464,
+      "transcriptSha256": "e70646cb38ec699563fff6a90ad1fa0c72f7018435613ab882f2d1fc8c015b60",
       "completeness": "INCOMPLETE EXCERPT. Visual second pass requested; independent complete transcription/review is not finished. Do not treat as complete."
     }
   ],
@@ -26,6 +26,6 @@
     "La transcription du/des folio(s) de cet entretien reste un brouillon incomplet ; les lignes non relevées et la relecture indépendante restent à faire."
   ],
   "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-nakatsuru-141.jsonl",
-  "transcriptBytes": 3467,
-  "transcriptSha256": "378b2f24875e0d9167efb100219297f1a6646abf17dd1980036cec36cb11b95c"
+  "transcriptBytes": 3464,
+  "transcriptSha256": "e70646cb38ec699563fff6a90ad1fa0c72f7018435613ab882f2d1fc8c015b60"
 }

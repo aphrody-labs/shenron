@@ -18,7 +18,7 @@ Shenron is the platform behind dragonballfr.com: web portal, Discord bot, API, e
 ## Hosts
 
 - `prd`: production, shenron and rosegriffon only. `fr1`: builds and CI (self-hosted Vercel). `fr2`: previews, tests, edge (self-hosted Cloudflare). Always `timeout N ssh <host>`.
-- rosegriffon is a separate product repo (`C:\rosegriffon`) and a separate agent: coordinate through files, never touch its services, take `/srv/deploy.lock` before a prd deploy.
+- rosegriffon is a separate product repo (`$WORKSPACE_ROOT/rosegriffon`) and a separate agent: coordinate through files, never touch its services, take `$DEPLOY_LOCK` before a prd deploy.
 
 ## Rules
 
@@ -31,7 +31,7 @@ Shenron is the platform behind dragonballfr.com: web portal, Discord bot, API, e
 
 ## Shared with the sibling product
 
-Shenron (`C:\shenron`, dragonballfr.com) and Rose Griffon (`C:\rosegriffon`, rosegriffon.fr) share prd and part of their needs. Shared code exists once: a published crate or package, or a git dependency on the product that owns it; never a copy. The owner column is proposed; either agent may change it by editing this table in both files in the same step, and the other agent's work is never overwritten.
+Shenron (`$WORKSPACE_ROOT/shenron`, dragonballfr.com) and Rose Griffon (`$WORKSPACE_ROOT/rosegriffon`, rosegriffon.fr) share prd and part of their needs. Shared code exists once: a published crate or package, or a git dependency on the product that owns it; never a copy. The owner column is proposed; either agent may change it by editing this table in both files in the same step, and the other agent's work is never overwritten.
 
 | Need | Owner | Consumer |
 | --- | --- | --- |
@@ -42,6 +42,6 @@ Shenron (`C:\shenron`, dragonballfr.com) and Rose Griffon (`C:\rosegriffon`, ros
 | Auth and SSO (Better Auth: oauth-provider, passkey, api-key, agent-auth) | rosegriffon (`@rosegriffon/auth`, superset) | shenron-auth shrinks to Shenron configuration over it |
 | Wiki and databook formats, CPK and game archive readers (`shenron-re` game module, `yolo-re-core`) | rosegriffon for Inazuma Eleven formats, shenron for Dragon Ball formats; one shared crate for the generic archive code | both |
 | CDN (R2 origin, cdn-sync) | rosegriffon (`infra/docker/cdn-sync`) | shenron |
-| Deploy on prd: compose per product, `/srv/deploy.lock` (flock) before any prd change, nginx and tunnel routes in each product's own files | each product for its own units | never touch the other product's units |
+| Deploy on prd: compose per product, `$DEPLOY_LOCK` (flock) before any prd change, nginx and tunnel routes in each product's own files | each product for its own units | never touch the other product's units |
 
 Coordination goes through files (this table, `docs/` notes, commits on `main`), not through live edits of the other repository.

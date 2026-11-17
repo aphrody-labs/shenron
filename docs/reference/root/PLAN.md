@@ -340,7 +340,7 @@ Les cases historiques ci-dessus décrivent le relevé du 7 octobre ; elles ne pr
 - Restent ouverts : soft-404 du wiki (slug inconnu en 200 `noindex`, `app/loading.tsx` racine) et débit du LLM de prod (4,5 tok/s).
 - Le raccordement VFS/API des données de jeux et les consommateurs Studio restent ouverts comme indiqué dans `REPRISE.md` ; les claims non libérées sur `crates/shenron-re/**` et `REPRISE.md` ont été respectées.
 - Sondes publiques `/api/health`, `/.well-known/agent-card.json` et `/api/canon` : HTTP 200 le 8 octobre. Ce contrôle de disponibilité ne qualifie pas le contenu métier ni la conformité A2A.
-- Le gel des databooks décrit dans le relevé du 8 octobre a été levé explicitement par le propriétaire le 11 octobre. La configuration protégée DBFR `databooks-freeze.json` déclare `frozen:false` et son activation Infra est qualifiée. Chaque job distant utilise le fichier hôte `/srv/shenron/shared/server/config/databooks-freeze.json` (chemin conteneur `/var/lib/shenron/config/databooks-freeze.json`) ; les erreurs de lecture restent bloquantes. Les notices éditoriales passent toujours par l'API propriétaire et leurs révisions.
+- Le gel des databooks décrit dans le relevé du 8 octobre a été levé explicitement par le propriétaire le 11 octobre. La configuration protégée DBFR `databooks-freeze.json` déclare `frozen:false` et son activation Infra est qualifiée. Chaque job distant utilise le fichier hôte `$SHENRON_ROOT/shared/server/config/databooks-freeze.json` (chemin conteneur `/var/lib/shenron/config/databooks-freeze.json`) ; les erreurs de lecture restent bloquantes. Les notices éditoriales passent toujours par l'API propriétaire et leurs révisions.
 
 ## 7. Actualisation opérationnelle du 18 octobre 2026 — Mediabunny & Parité Vidéo 100%
 

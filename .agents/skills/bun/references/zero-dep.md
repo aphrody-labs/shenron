@@ -3,7 +3,7 @@
 ## 1. Rules
 
 1. No `bunx` (or `npx`) in scripts, `package.json`, `justfile`, CI workflows, code comments or docs: it resolves and runs npm tarballs on demand. Use `bun fmt`, `bun check`, `bun lint`, `bun test`, `bun build --compile`, `bun run <script>` or `bun <script.ts>`, or an installed binary from `~/.local/bin` (`ay`, `ai-os`, `wck`).
-3. Never touch `C:\Windows\System32`; install built executables in `~/.local/bin`. Never print, log or commit `.env` secrets. No emoji.
+3. Never touch `%SystemRoot%\System32`; install built executables in `~/.local/bin`. Never print, log or commit `.env` secrets. No emoji.
 
 ## 2. `bun check` without npm type packages
 

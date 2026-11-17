@@ -5,7 +5,7 @@
   "method": "Manual visual comparison against the local high-resolution scan; offline; no OCR or web sources.",
   "sourceImage": {
     "printedPage": 101,
-    "path": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Gold Selection 5\\Jump Gold Selection 5 Page 101.png",
+    "path": "%USERPROFILE%\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Gold Selection 5\\Jump Gold Selection 5 Page 101.png",
     "sha256": "e218caf74bc26dbaa3425c1b4c9b18f1623c08b68be308da012757ffefc6bbe0",
     "bytes": 88737083,
     "dimensions": "4953x7015"

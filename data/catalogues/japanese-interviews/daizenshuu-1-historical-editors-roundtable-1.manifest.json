@@ -5,7 +5,7 @@
   "records": [
     {
       "pages": [1],
-      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page001_6034223418_o.jpg",
+      "imagePath": "%USERPROFILE%\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page001_6034223418_o.jpg",
       "imageBytes": 839246,
       "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-1-historical-editors-roundtable-1.jsonl#L1",
       "imageSha256": "5992B0527FD51450E97CB8232A8B7FCFA1302DC8D3190C459B0F26B9F81978C2",
@@ -24,7 +24,7 @@
     },
     {
       "pages": [2],
-      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page002_6033668101_o.jpg",
+      "imagePath": "%USERPROFILE%\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page002_6033668101_o.jpg",
       "imageBytes": 887076,
       "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-1-historical-editors-roundtable-1.jsonl#L2",
       "imageSha256": "89414C15007374986E6F3C94751197CD37943FC3F4B8E6CC638866A4E0F957C5",
@@ -43,7 +43,7 @@
     },
     {
       "pages": [3],
-      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page003_6034224278_o.jpg",
+      "imagePath": "%USERPROFILE%\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page003_6034224278_o.jpg",
       "imageBytes": 754031,
       "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-1-historical-editors-roundtable-1.jsonl#L3",
       "imageSha256": "7F018E668A7C1011B80214EFC307B0C955CEAF88A6B1782EC1D29B808D193500",
@@ -62,7 +62,7 @@
     },
     {
       "pages": [6],
-      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page006_6033670355_o.jpg",
+      "imagePath": "%USERPROFILE%\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Daizenshuu 1\\daizenshuu_01_shenron-news_page006_6033670355_o.jpg",
       "imageBytes": 775092,
       "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-1-historical-editors-roundtable-1.jsonl#L4",
       "imageSha256": "D3C6855EEE06E775F3E6EF12C0C7117593AE20C5764CAF73741975797468858A",

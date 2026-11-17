@@ -8,6 +8,6 @@
 
 ## 2. Safety & Host Integrity
 
-- Never execute destructive host or remote container commands (`rm -rf /srv/shenron`, `docker rm`, `docker system prune`).
+- Never execute destructive host or remote container commands (`rm -rf $SHENRON_ROOT`, `docker rm`, `docker system prune`).
 - Never log or commit raw secrets.
 - Always validate modifications with `bun check` and `just lint`.

@@ -11,7 +11,7 @@ This skill conforms to:
 
 - **AgentSkills Specification** (`https://github.com/agentskills/agentskills`): Declarative frontmatter, actionable execution sections, idempotent verification steps.
 - **Vercel Labs Skills Engineering** (`https://github.com/vercel-labs/skills`): Production edge ergonomics, type-safe API patterns, sub-millisecond execution.
-- **Upstream Bun Docs Architecture** (`C:\aphrody\third_party\bun\docs`): 1,413 canonical MDX specifications across runtime, bundler, compiler, test runner, linter, and formatter.
+- **Upstream Bun Docs Architecture** (`$WORKSPACE_ROOT/aphrody/third_party/bun/docs`): 1,413 canonical MDX specifications across runtime, bundler, compiler, test runner, linter, and formatter.
 - **Sovereign Triad Directives**: `Linus Torvalds` (userspace integrity), `Jarred Sumner` (Full-Rust zero-dependency vertical speed), and `Larry Page` (ambient 10x clarity).
 
 ---

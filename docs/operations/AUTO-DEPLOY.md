@@ -9,7 +9,7 @@ bas ne sont pas installés.
 1. Push sur `main` → `.github/workflows/server-artifact.yml`, sur un runner `shenron-prod`.
 2. `scripts/deploy/release.sh --plan` lit la révision que chaque service exécute réellement
    (`scripts/deploy/active-release.sh` : tag d'image du conteneur, puis `.env` ; jamais
-   `/srv/shenron/current`) et compare les clés de lanes (`scripts/deploy/lanes.ts`).
+   `$SHENRON_ROOT/current`) et compare les clés de lanes (`scripts/deploy/lanes.ts`).
 3. Rien de déployable (docs, tests, scripts hors build) : fin, code 0, en quelques secondes.
    Diff touchant des migrations : **HOLD**, code 78, rien n'est construit ni appliqué.
 4. `release.sh --auto` : `build-image.sh` ne construit que les lanes dont la clé a changé ; une
@@ -31,7 +31,7 @@ services atteints), classification des chemins, holds. `bun scripts/deploy/envir
 classé. Les deux tournent dans `ci.yml`.
 
 Chemin primaire : **natif sur l'hôte de production** (`"primary": "native"`). Raison : Prod
-construit déjà les releases (journaux `/srv/shenron/build/prod-build-*.log`), a 8 CPU et
+construit déjà les releases (journaux `$SHENRON_ROOT/build/prod-build-*.log`), a 8 CPU et
 31 Gio, et garde sur disque le checkout unique, son `node_modules`, `target/`, le cache sccache,
 le cache Turbopack et le cache Bun global (`$HOME/.bun/install/cache`). Aucun octet ne traverse
 le réseau, la livraison coûte donc zéro. `Dockerfile.build` reste le chemin hermétique
@@ -80,16 +80,16 @@ les fichiers `.env` restent sur l'hôte.
 
 Changements à faire sur l'hôte, dans cet ordre :
 
-1. Installer `deploy/activation/activate.sh` en `/srv/shenron/bin/deploy-image.sh` (le lien
-   `/root/deploy-shenron-image.sh` reste valable) et, à côté, `activation.env` produit par
+1. Installer `deploy/activation/activate.sh` en `$SHENRON_ROOT/bin/deploy-image.sh` (le lien
+   `<login-home>/deploy-shenron-image.sh` reste valable) et, à côté, `activation.env` produit par
    `bun scripts/deploy/environment.ts --emit activation`. L'activateur refuse de tourner tant que
    le compose n'a pas de tags par service.
 2. Vérifier les deux valeurs masquées, puis installer `deploy/prod/compose.yaml` en
-   `/srv/shenron/compose.yaml`. L'installation ne recrée rien : l'image résolue reste la même.
+   `$SHENRON_ROOT/compose.yaml`. L'installation ne recrée rien : l'image résolue reste la même.
 3. Enregistrer un runner GitHub auto-hébergé sur Prod, labels `self-hosted, Linux, X64,
    shenron-prod`, sous un compte dédié non root avec une seule règle sudo vers
-   `/srv/shenron/bin/deploy-image.sh`, puis poser la variable
-   `SHENRON_DEPLOY_COMMAND=sudo -n /srv/shenron/bin/deploy-image.sh`. Le build exige l'accès Docker,
+   `$SHENRON_ROOT/bin/deploy-image.sh`, puis poser la variable
+   `SHENRON_DEPLOY_COMMAND=sudo -n $SHENRON_ROOT/bin/deploy-image.sh`. Le build exige l'accès Docker,
    donc le groupe `docker`, qui équivaut à root sur l'hôte : c'est le prix du chemin natif, à
    accepter explicitement. Le workflow ne s'exécute
    que sur `push` vers `main` et `workflow_dispatch`, jamais sur une pull request.
@@ -118,7 +118,7 @@ migrations par son runbook, puis relance le workflow en `workflow_dispatch` avec
 
 - Automatique : un service qui n'est pas sain revient à son tag précédent ; l'autre garde ce
   qu'il exécute ; la gateway revient au répertoire de release précédent si le site échoue.
-- Manuel, par Infra sur Prod : `SHENRON_SERVICES=site /srv/shenron/bin/deploy-image.sh <sha>`
+- Manuel, par Infra sur Prod : `SHENRON_SERVICES=site $SHENRON_ROOT/bin/deploy-image.sh <sha>`
   vers une révision encore présente (4 images, 6 répertoires de release gardés).
 - Depuis le dépôt : `release.sh` refuse une révision qui ne descend pas de celle qui tourne,
   sauf `SHENRON_ALLOW_ROLLBACK=1`.

@@ -1,6 +1,6 @@
 # Chaînes de contenu
 
-Audit en lecture seule réalisé le 2026-11-05 (environ 06:00-07:30 UTC). Dépôt `C:\shenron\apps\shenron` à HEAD `2e465772`. La production sert l'image `f04de517` (`/srv/shenron/current` → `releases/docker-f04de517…`).
+Audit en lecture seule réalisé le 2026-11-05 (environ 06:00-07:30 UTC). Dépôt `$WORKSPACE_ROOT/shenron` à HEAD `2e465772`. La production sert l'image `f04de517` (`$SHENRON_ROOT/current` → `releases/docker-f04de517…`).
 
 Aucune écriture n'a eu lieu :
 
@@ -13,14 +13,14 @@ Les mesures viennent de quatre sources :
 - PostgreSQL de production, `shenron-postgres`, base `shenron_site`, rôle `postgres` sur socket, chaque requête dans `BEGIN READ ONLY … ROLLBACK`.
 - Outils MCP publics `dragonball_data_coverage`, `dragonball_sources` et `dragonball_a2a_agent_card`.
 - Requêtes HEAD publiques sur `cdn.dragonballfr.com`.
-- L'inventaire CDN de prod `/srv/shenron/data/cdn/inventory-9a8ecae6371f.json` (246 420 chemins), lu sans écriture et comparé aux références en base.
+- L'inventaire CDN de prod `$SHENRON_ROOT/data/cdn/inventory-9a8ecae6371f.json` (246 420 chemins), lu sans écriture et comparé aux références en base.
 
-Les chemins de dépôt sont relatifs à `C:\shenron\apps\shenron`.
+Les chemins de dépôt sont relatifs à `$WORKSPACE_ROOT/shenron`.
 
 ## 0. Constats transverses (à lire avant tout lot massif)
 
-- Le gel databooks est levé. `/srv/shenron/data/server/config/databooks-freeze.json` contient `{"frozen":false}` : décision du propriétaire du 2026-10-11, restaurée le 2026-10-20. Le site le lit par `DATABOOKS_FREEZE_FILE`.
-  - Le chemin documenté dans `docs/reference/root/PLAN.md:343` (`/srv/shenron/shared/server/config/…`) est périmé.
+- Le gel databooks est levé. `$SHENRON_ROOT/data/server/config/databooks-freeze.json` contient `{"frozen":false}` : décision du propriétaire du 2026-10-11, restaurée le 2026-10-20. Le site le lit par `DATABOOKS_FREEZE_FILE`.
+  - Le chemin documenté dans `docs/reference/root/PLAN.md:343` (`$SHENRON_ROOT/shared/server/config/…`) est périmé.
   - En production, un fichier absent signifie « gelé » (fail-closed).
 - Les « 59 995 chunks » ne sont pas un retard d'indexation. Ce sont exactement les documents `shenron_compute.shenron_rag_documents` sans vecteur. Tous sont `visible=false` et n'ont pas de `syncGeneration` : ce sont des générations retirées (tombstones).
   - Index réellement servi : 257 436 documents visibles, tous vectorisés avec `Xenova/multilingual-e5-small`.
@@ -63,7 +63,7 @@ Les chemins de dépôt sont relatifs à `C:\shenron\apps\shenron`.
 | 12  | Frames                        | 830 / 878 épisodes avec frames (6 736 frames ; moyenne 8, entre 7 et 41). 41 PNG de l'épisode 876 absents de R2. 0 frame pour les 48 SDBH                                                                                                                      | `bun apps/bot/scripts/build-frame-catalog.ts [--check]` ; `scripts/ops/index-frames.ts --dry-run`                                                      | Oui (`--check`, `--dry-run`)                                                                            | vps (téléchargement + ffmpeg)                       | Recaler le catalogue (826 épisodes contre 830 en base) avec `--check`                                                 |
 | 13  | CDN R2                        | Inventaire de 246 420 chemins. Références en base : databooks 17 084/17 084, manga 53 304/53 304, sous-titres 2 738/2 738, personnages 683/683. Manquants : 51 SVG de techniques, 41 frames de l'ép. 876, couverture 486 (introuvable partout)                 | `deploy/cloudflare/cli/transfer.ts status` ; `publish-catalog.ts --options F` ; `scripts/ops/audit-cdn-gaps.ts`                                        | Oui (sans `--apply`)                                                                                    | Prod (origine 9077, `shenron-cdn-origin` actif)     | Plan `publish-catalog.ts` pour les 92 objets manquants                                                                |
 | 14  | Outils média                  | Bun Video épinglé `1.4.4-video.1`. Remotion : libellés seulement. Pas de service d'images autonome (`/_next/image`)                                                                                                                                            | `scripts/video/render.ts` ; `packages/images` (bibliothèque)                                                                                           | Sans objet                                                                                              | Local ou vps                                        | Aucune                                                                                                                |
-| 15  | Fournisseurs IA               | Prod : `shenron-chat-v2` local, puis gemma4-e2b, puis gemini-web (repli désactivé en prod), e5 local. Pas de clé Gemini API (mode web par cookies). Anthropic par HTTP direct (`ANTHROPIC_API_KEY`), pas de SDK Agent. `locally-uncensored` absent de `C:\shenron` | la configuration du modèle de chat ; `packages/pipeline/src/ai/config.ts`                                                                              | ,                                                                                                       | ,                                                   | Décider quels fournisseurs payants utiliser pour 1, 2 et 3                                                            |
+| 15  | Fournisseurs IA               | Prod : `shenron-chat-v2` local, puis gemma4-e2b, puis gemini-web (repli désactivé en prod), e5 local. Pas de clé Gemini API (mode web par cookies). Anthropic par HTTP direct (`ANTHROPIC_API_KEY`), pas de SDK Agent. `locally-uncensored` absent de `$WORKSPACE_ROOT/shenron` | la configuration du modèle de chat ; `packages/pipeline/src/ai/config.ts`                                                                              | ,                                                                                                       | ,                                                   | Décider quels fournisseurs payants utiliser pour 1, 2 et 3                                                            |
 
 ## 2. Détail par chaîne
 
@@ -259,7 +259,7 @@ Commandes.
   - Variables : `DATABASE_URL`, `SHENRON_SOURCE_CDN_MODULE`, `SHENRON_SOURCE_CDN_CONFIG`.
   - Il n'alimente pas le RAG.
 
-Hôte. vps (YOLO WEB, profils navigateur). Publication par la configuration CDN de prod (`/srv/shenron/config/cloudflare/source-publication.json`).
+Hôte. vps (YOLO WEB, profils navigateur). Publication par la configuration CDN de prod (`$SHENRON_ROOT/config/cloudflare/source-publication.json`).
 
 Coûts. Aucun, au-delà de la politesse envers les sites (robots, délais).
 
@@ -512,8 +512,8 @@ Prochaine étape. Lancer `build-frame-catalog.ts --check` pour recaler 826 → 8
 
 État.
 
-- `shenron-cdn-origin.service` est actif sur prod (127.0.0.1:9077). Il exécute `bun /srv/shenron/config/cloudflare/cli/cdn-origin.mjs origin-cdn.json`.
-- Inventaire : `/srv/shenron/data/cdn/inventory-9a8ecae6371f.json`, daté du 2026-11-01, 246 420 entrées et 154 344 objets uniques.
+- `shenron-cdn-origin.service` est actif sur prod (127.0.0.1:9077). Il exécute `bun $SHENRON_ROOT/config/cloudflare/cli/cdn-origin.mjs origin-cdn.json`.
+- Inventaire : `$SHENRON_ROOT/data/cdn/inventory-9a8ecae6371f.json`, daté du 2026-11-01, 246 420 entrées et 154 344 objets uniques.
 - Le catalogue public `https://cdn.dragonballfr.com/catalog/assets/index.json` est plus ancien : 2026-10-15, 112 718 fichiers, 54 Go.
 - Le Worker est `deploy/cloudflare/cdn-worker.ts`. Il ne sert que les chemins des manifestes `_migration/manifests/`, et les objets sous `_objects/<sha256>`.
 
@@ -543,7 +543,7 @@ Commandes.
 - `cloudflare-ops.ts status|r2|worker` : lecture seule sans `--apply`.
 - `scripts/ops/audit-cdn-gaps.ts` : HEAD publics.
 - `scripts/ops/cdn-origin-add.ts` : ajout à l'inventaire de l'origine.
-- Variables : `CLOUDFLARE_API_TOKEN(_FILE)`, `CLOUDFLARE_ACCOUNT_ID` ; profil S3 dans `/srv/shenron/config/cloudflare/shenron-s3.json`, renouvelé par timer.
+- Variables : `CLOUDFLARE_API_TOKEN(_FILE)`, `CLOUDFLARE_ACCOUNT_ID` ; profil S3 dans `$SHENRON_ROOT/config/cloudflare/shenron-s3.json`, renouvelé par timer.
 
 Hôte. Prod.
 
@@ -552,7 +552,7 @@ Coûts. R2 : stockage d'environ 54 Go et plus, et opérations de classe A. Le qu
 Risques.
 
 - Ne jamais modifier une release scellée.
-- Il y a 60 sauvegardes `origin-cdn.json.*.bak` dans `/srv/shenron/config/cloudflare` : à nettoyer sur prod après sauvegarde.
+- Il y a 60 sauvegardes `origin-cdn.json.*.bak` dans `$SHENRON_ROOT/config/cloudflare` : à nettoyer sur prod après sauvegarde.
 
 Prochaine étape.
 
@@ -571,13 +571,13 @@ Prochaine étape.
 
 - Chat. La configuration du modèle de chat définit l'ordre : `shenron-chat-v2` (Qwen3-4B Q4_K_M + LoRA), puis `gemma4-e2b`, puis `gemini-web/flash`.
   - En prod, `SHENRON_CHAT_BACKENDS` vaut `local` uniquement (`apps/server/src/chat-model.ts:102`).
-  - Sur prod : `/srv/shenron/models/{qwen3/base.gguf, adapter/shenron-chat-v2.gguf, e5, llama}`, restaurés le 2026-11-05 après la purge du 2026-11-04.
+  - Sur prod : `$SHENRON_ROOT/models/{qwen3/base.gguf, adapter/shenron-chat-v2.gguf, e5, llama}`, restaurés le 2026-11-05 après la purge du 2026-11-04.
 - Embedding. e5-small local (`shenron-embed`, `SHENRON_AI_EMBED_MODEL=Xenova/multilingual-e5-small`).
 - Gemini. Aucune `GEMINI_API_KEY` dans le dépôt. Le mode est web (`shenron-gemini-web`, cookies `SHENRON_GOOGLE_COOKIES_JSON` ou `~/.shenron/cookies/gemini-web.json`). Il sert à la relecture OCR (`SHENRON_AI_VISION_MODEL`) et au repli du chat hors prod. Le pair A2A `agycli` (Gemini 3.8 Flash) est décrit dans `config/ai.json`.
 - Anthropic. Pas de Claude Agent SDK ni de `@anthropic-ai`. Le runner HTTP direct est dans `packages/pipeline/src/auto/workers.ts:104` (`ANTHROPIC_API_KEY`, `claude-haiku-5-5`). Les traductions `machine:sonnet` (1 110 pages) prouvent un usage passé.
 - OpenAI/codex. `gpt-5.6-luna` via `codex exec` (wiki-fill, arbitre OCR). `SHENRON_OPENAI_API_KEY` en option.
-- locally-uncensored. Absent de `C:\shenron`. Le dépôt GitHub `aphrody-dev/locally-uncensored` n'a pas été consulté (pas d'appel réseau authentifié). Mémoire projet : ne pas utiliser le GGUF Qwen3 « Uncensored » HauhauCS comme base du chat.
-- yolo-ai (`C:\shenron\yolo-ai`). Crates Rust neutres vis-à-vis des fournisseurs (`yolo-model-client` : Anthropic, Ollama, OpenAI-compatible, vLLM ; `yolo-rag-core`, `yolo-agent-engine`). Aucun pipeline Shenron ne les consomme encore, et ce n'est pas un checkout Git.
+- locally-uncensored. Absent de `$WORKSPACE_ROOT/shenron`. Le dépôt GitHub `aphrody-dev/locally-uncensored` n'a pas été consulté (pas d'appel réseau authentifié). Mémoire projet : ne pas utiliser le GGUF Qwen3 « Uncensored » HauhauCS comme base du chat.
+- yolo-ai (`$WORKSPACE_ROOT/shenron/yolo-ai`). Crates Rust neutres vis-à-vis des fournisseurs (`yolo-model-client` : Anthropic, Ollama, OpenAI-compatible, vLLM ; `yolo-rag-core`, `yolo-agent-engine`). Aucun pipeline Shenron ne les consomme encore, et ce n'est pas un checkout Git.
 - A2A. `apps/site/src/app/api/a2a/route.ts`. Carte publique v1.4.5 (`dragonballfr.com/api/a2a`), skills `rag_query`, `ocr_dispatch`, `subagent_task`, `model_infer` et `task_update`. Écriture avec `SHENRON_A2A_TOKEN`. Une tâche reste `submitted` tant qu'un pair ne rend pas de résultat.
 - Agent wiki. Les outils `dragonball.agent_*` demandent `SHENRON_AGENT_API_KEY` ; les contributions passent en modération.
 - Commandes admin du bot. `dragonball.admin_bot_commands` et `…_execute` (`/api/bot/commands/catalog|exec`) demandent `SHENRON_API_ADMIN_TOKEN`. Non appelés, car l'accès élevé est indisponible.
@@ -691,4 +691,4 @@ Accès : `ssh prod "docker exec -i shenron-postgres psql -h /run/postgresql -U p
 - News : `bot.db_news` (source_id, published_at, fetched_at en epoch).
 - RAG : `shenron_compute.shenron_rag_documents` (`metadata->>'kind'`, `'visible'`, `'syncGeneration'`), et `shenron_compute.shenron_vectors` (model).
 - Sources : `public.external_source_records`, `public.canon_ingest_runs`, `bot.db_sources`.
-- CDN : clés de `entries` dans `/srv/shenron/data/cdn/inventory-9a8ecae6371f.json`, comparées aux chemins ci-dessus après normalisation `./` → `/`.
+- CDN : clés de `entries` dans `$SHENRON_ROOT/data/cdn/inventory-9a8ecae6371f.json`, comparées aux chemins ci-dessus après normalisation `./` → `/`.

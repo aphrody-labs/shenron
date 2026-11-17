@@ -3,7 +3,7 @@
 ## 1. Executive Summary & Runtime Topology
 
 - **Game Engine**: Unreal Engine 4 (UE4.17.2 customized RED Engine by Arc System Works).
-- **Target Installation**: `C:\Program Files (x86)\Steam\steamapps\common\DRAGON BALL FighterZ`
+- **Target Installation**: `%ProgramFiles(x86)%\Steam\steamapps\common\DRAGON BALL FighterZ`
 - **Total Asset Size**: ~6.3 GB across 2 UE4 Pak containers (`pakchunk0`, `pakchunk1`).
 - **Render Engine**: Direct3D 11 with custom non-photorealistic cel-shading pipeline (Guilty Gear Xrd / FighterZ anime shader).
 

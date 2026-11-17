@@ -31,9 +31,9 @@
     ]
   },
   "source": {
-    "pdfPath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+    "pdfPath": "%USERPROFILE%\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
     "pdfSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
-    "renderPath": "C:\\Users\\omara\\AppData\\Local\\Temp\\shenron-30th-pages\\page-130.png",
+    "renderPath": "%TEMP%\\shenron-30th-pages\\page-130.png",
     "renderBytes": 1259845,
     "renderSha256": "4f72b1c0d5b273e852ea6e5538a93a8efdcff4005a0b898fe588a58b1613495"
   },

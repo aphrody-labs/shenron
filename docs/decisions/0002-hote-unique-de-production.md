@@ -28,7 +28,7 @@ Nous retenons Prod comme seul hôte qui sert Shenron: site, API, bot, PostgreSQL
 
 ## Vérification
 
-Sur Prod: `docker compose -f /srv/shenron/compose.yaml ps` liste les services de `docs/operations/production.md`.
+Sur Prod: `docker compose -f $SHENRON_ROOT/compose.yaml ps` liste les services de `docs/operations/production.md`.
 
 ## Références
 

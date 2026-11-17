@@ -10,11 +10,11 @@
       "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-kido-148-149.jsonl#L1",
       "printedPages": [148, 149],
       "pdfPageIndices": [149, 150],
-      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "imagePath": "%USERPROFILE%\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "imageBytes": 100224986,
       "imageSha256": "449ec10003232f7c54839dcdbb77fa6d19983f5a2037e81e4920d2e203069fe2",
-      "transcriptBytes": 2629,
-      "transcriptSha256": "bd5efceaf80f1f1f0889898d5c3df9f5e4638ace39f51c3a95b61c4dde0f500d",
+      "transcriptBytes": 2626,
+      "transcriptSha256": "6ec1b787e6a33a1858c8bdb4dbe241504a410f83bbd781f9d8c4375030dd1818",
       "completeness": "INCOMPLETE EXCERPT. Visual second pass requested; independent complete transcription/review is not finished. Do not treat as complete."
     }
   ],
@@ -26,6 +26,6 @@
     "La transcription du/des folio(s) de cet entretien reste un brouillon incomplet ; les lignes non relevées et la relecture indépendante restent à faire."
   ],
   "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-kido-148-149.jsonl",
-  "transcriptBytes": 2629,
-  "transcriptSha256": "bd5efceaf80f1f1f0889898d5c3df9f5e4638ace39f51c3a95b61c4dde0f500d"
+  "transcriptBytes": 2626,
+  "transcriptSha256": "6ec1b787e6a33a1858c8bdb4dbe241504a410f83bbd781f9d8c4375030dd1818"
 }

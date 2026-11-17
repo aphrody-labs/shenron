@@ -13,12 +13,12 @@
     "Independent character-by-character review remains pending."
   ],
   "transcriptFile": "data/catalogues/japanese-interviews/vjump-2019-toriyama-broly-message-p83.jsonl",
-  "transcriptBytes": 860,
-  "transcriptSha256": "f3bc3eff1ce51a3312c20e7739e55d7811c9cf51b931e7e6bcc7dd3cd4c4f3a5",
+  "transcriptBytes": 857,
+  "transcriptSha256": "d9100d6eb4417dbc933794bcde6e856cda871d77afc1dc851c19622d961e4ff3",
   "records": [
     {
       "transcriptPath": "data/catalogues/japanese-interviews/vjump-2019-toriyama-broly-message-p83.jsonl#L1",
-      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\janvier\\654602916_1375733284596195_4865005340773771057_n.jpg",
+      "imagePath": "%USERPROFILE%\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\janvier\\654602916_1375733284596195_4865005340773771057_n.jpg",
       "title": "Vジャンプ",
       "participants": ["鳥山明"],
       "imageBytes": 587026,

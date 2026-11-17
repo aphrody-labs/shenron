@@ -6,7 +6,7 @@ blocks the release; four are build-host prerequisites or follow-ups, listed so t
 Tree: main at 82e81d30 (dd07e8db, the lint/format commits of other sessions and the fixes below).
 Host: vps (load average 15 to 35). Bun 1.4.4 AOT for install, lint, tests; pinned Bun 1.4.6 (sha256
 checked) for the build. Rust 1.99.1, Docker. Nothing was pushed to a registry, deployed or tagged;
-/srv/shenron on prod was only read.
+$SHENRON_ROOT on prod was only read.
 
 ## 1. Container image (scripts/deploy/build-image.sh, deploy/docker/Dockerfile, production cargo profile)
 
@@ -61,7 +61,7 @@ Not proven: signed-in /admin/ai, data-backed wiki pages, Windows gates (shenron-
 
 ## 5. Prod (read only)
 
-`/srv/shenron/current` is `releases/docker-f04de517fd72cca5b026950fc7f3d4e8921b362f`; shenron-site and
+`$SHENRON_ROOT/current` is `releases/docker-f04de517fd72cca5b026950fc7f3d4e8921b362f`; shenron-site and
 shenron-bot run `localhost/shenron:f04de517...` and are healthy. Public: / 200, /wiki 200,
 /api/local/health 200 ok:true. Prod still answers `/.well-known/security.txt` 503 and has no report-only
 CSP: main fixes both, a deploy is needed.

@@ -44,7 +44,7 @@ Le module [`packages/media/src/r2-sync.ts`](../../packages/media/src/r2-sync.ts)
 La fonction `buildRcloneR2Args` applique les parametres optimaux pour les gros objets MP4 et les lots de miniatures :
 
 ```sh
-rclone copy /srv/shenron/staging/_objects r2:shenron-cdn/_objects \
+rclone copy $SHENRON_ROOT/staging/_objects r2:shenron-cdn/_objects \
   --transfers 16 \
   --checkers 32 \
   --s3-upload-concurrency 8 \
@@ -62,7 +62,7 @@ Sur le reseau prive WireGuard (`10.200.77.0/24`), `buildRsyncMeshArgs` active la
 ```sh
 rsync -aH --partial --partial-dir=.rsync-partial --inplace \
   --compress --compress-choice=zstd --compress-level=3 --info=progress2 \
-  /srv/shenron/staging/ cdn:/srv/shenron/r2-mirror/
+  $SHENRON_ROOT/staging/ cdn:$SHENRON_ROOT/r2-mirror/
 ```
 
 ---

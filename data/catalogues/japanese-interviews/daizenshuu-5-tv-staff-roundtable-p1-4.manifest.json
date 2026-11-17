@@ -12,7 +12,7 @@
     {
       "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-5-tv-staff-roundtable-p1-4.jsonl#L1",
       "page": 1,
-      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times\\1.png",
+      "imagePath": "%USERPROFILE%\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times\\1.png",
       "imageBytes": 2590467,
       "imageSha256": "a163e3ef9a92cbc16ae4070a5295b33d10bb1ed1961788e7b22fabea80fdd271",
       "completeness": "Texte visible pertinent transcrit; images et appels décoratifs exclus."
@@ -20,7 +20,7 @@
     {
       "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-5-tv-staff-roundtable-p1-4.jsonl#L2",
       "page": 2,
-      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times\\2.png",
+      "imagePath": "%USERPROFILE%\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times\\2.png",
       "imageBytes": 1738387,
       "imageSha256": "c0215ac083e771f45d620ae76709e4a818d8d920b8575e7f59cd66b02e67ffe8",
       "completeness": "Texte visible pertinent transcrit; images et appels décoratifs exclus."
@@ -28,7 +28,7 @@
     {
       "transcriptPath": "data/catalogues/japanese-interviews/daizenshuu-5-tv-staff-roundtable-p1-4.jsonl#L3",
       "page": 3,
-      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times\\3.png",
+      "imagePath": "%USERPROFILE%\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times\\3.png",
       "imageBytes": 1339440,
       "imageSha256": "88c8253c974026cbb3e1c6e44f57924a7a049671056b828c81033ce5db39011e",
       "completeness": "Texte visible pertinent transcrit; images et appels décoratifs exclus."
@@ -37,7 +37,7 @@
   "excludedPages": [
     {
       "page": 4,
-      "imagePath": "C:\\Users\\omara\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times\\4-5.png",
+      "imagePath": "%USERPROFILE%\\Desktop\\Data et guide book\\Daizenshuu (Отсканировано 3 из 10)\\Dragon Ball - Daizenshuu 5 - TV Animation Part 2 (COMPLETE)\\Shenlong Times\\4-5.png",
       "imageBytes": 3757797,
       "imageSha256": "7c4c88723d1cc3cdd737dfa1ebcda3f59b168800eee96d4a6c8bbb7ef03ebb4e",
       "reason": "P.4 est un article distinct de Toriyama, ちかごろのワシ."

@@ -14,8 +14,8 @@
     "Independent character-by-character review remains pending."
   ],
   "transcriptFile": "data/catalogues/japanese-interviews/vjump-2019-db-fighterz-pro-players-p340.jsonl",
-  "transcriptBytes": 1170,
-  "transcriptSha256": "9f5551ca862f7c93fc97ef87c6c0059da281ff06496e81caffdd294f7664c469",
+  "transcriptBytes": 1167,
+  "transcriptSha256": "8e3b7662e8861b91d306ae9bd29e55c99403092a688b0997176a811c05f4d6be",
   "records": [
     {
       "imageBytes": 630777,
@@ -29,7 +29,7 @@
         "Kazunoko (pictured and named elsewhere on page; speech attribution not assumed)",
         "Unidentified pro player"
       ],
-      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\mars\\661198480_1387192866783570_6175762419575968923_n.jpg",
+      "imagePath": "%USERPROFILE%\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\mars\\661198480_1387192866783570_6175762419575968923_n.jpg",
       "id": "vjump-2019-db-fighterz-pro-players-p340",
       "title": "Vジャンプ",
       "pages": [340]

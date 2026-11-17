@@ -13,8 +13,8 @@
     "The V-Jump WEB interview is not included in the local source corpus and was not accessed."
   ],
   "transcriptFile": "data/catalogues/japanese-interviews/vjump-2019-db-fighterz-kazunoko-excerpt.jsonl",
-  "transcriptBytes": 1211,
-  "transcriptSha256": "c01de9db4bea52fe042e3937417330f6eafa74cc53cbf59500cbd598cac63702",
+  "transcriptBytes": 1208,
+  "transcriptSha256": "65390bcf28920a67cd4867fbaca0aa32c50daa0083469e6811139977ee7ad384",
   "records": [
     {
       "sectionTitle": "オレたちプロゲーマー!! — DBFZ / かずのこ",
@@ -24,7 +24,7 @@
       "transcriptPath": "data/catalogues/japanese-interviews/vjump-2019-db-fighterz-kazunoko-excerpt.jsonl#L1",
       "completeness": "Visible direct gamer comments and the clearly associated editorial reply transcribed from one page. The page is part of a larger feature; p.339 is inferred, not printed legibly in this crop.",
       "participants": ["かずのこ", "ビクトリー・ウチダ（編集部）"],
-      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\mars\\660461417_1387192693450254_3355142928239876073_n.jpg",
+      "imagePath": "%USERPROFILE%\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Les V-Jump\\V-Jump 2019\\mars\\660461417_1387192693450254_3355142928239876073_n.jpg",
       "transcriptRow": 1,
       "title": "Vジャンプ",
       "id": "vjump-2019-db-fighterz-kazunoko-excerpt"

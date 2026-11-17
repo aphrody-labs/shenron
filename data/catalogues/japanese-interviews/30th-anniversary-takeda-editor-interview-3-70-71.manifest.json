@@ -18,7 +18,7 @@
   "records": [
     {
       "printedPages": [70, 71],
-      "imagePath": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
+      "imagePath": "%USERPROFILE%\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\Dragon_Ball_30th_Anniversary_Super_History_Book_JP.pdf",
       "transcriptPath": "data/catalogues/japanese-interviews/30th-anniversary-takeda-editor-interview-3-70-71.jsonl#L1",
       "pdfPageIndices": [71, 72],
       "completeness": "Visible interview body on printed pp.70-71 transcribed; adjacent page-70 fragment separated because attribution/body status is uncertain; visual draft needs independent character-level review.",

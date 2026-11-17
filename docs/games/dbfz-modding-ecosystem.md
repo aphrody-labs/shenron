@@ -50,12 +50,12 @@ The Dragon Ball FighterZ modding ecosystem relies on specialized Unreal Engine 4
 - Requires exact mount point mapping in the response file to match the VFS root (`../../../RED/Content/`):
   ```text
   # responsefile.txt
-  "C:\Workspace\DBFZMod\RED\Content\Chara\GKN\GKN_Color01.uasset" "../../../RED/Content/Chara/GKN/GKN_Color01.uasset"
-  "C:\Workspace\DBFZMod\RED\Content\Chara\GKN\GKN_Color01.uexp" "../../../RED/Content/Chara/GKN/GKN_Color01.uexp"
+  "<mod-workspace>\DBFZMod\RED\Content\Chara\GKN\GKN_Color01.uasset" "../../../RED/Content/Chara/GKN/GKN_Color01.uasset"
+  "<mod-workspace>\DBFZMod\RED\Content\Chara\GKN\GKN_Color01.uexp" "../../../RED/Content/Chara/GKN/GKN_Color01.uexp"
   ```
 - Command execution:
   ```powershell
-  UnrealPak.exe "C:\Mods\pakchunk99-GokuSkin_P.pak" -create="responsefile.txt" -compress -compressionformats=Zlib
+  UnrealPak.exe "<mod-output>\pakchunk99-GokuSkin_P.pak" -create="responsefile.txt" -compress -compressionformats=Zlib
   ```
 
 ---

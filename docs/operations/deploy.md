@@ -48,8 +48,8 @@ Le worker CDN (`deploy/cloudflare/cdn-worker.ts`) assure la distribution des ass
 
 - `fr1` construit (`Dockerfile.build`, BuildKit), `fr2` sert les previews et l'edge, `prd` héberge la production (shenron et rosegriffon seulement).
 - `prd` n'exécute aucune image shenron : postgres (`pgvector/pgvector:pg18`), redis, embeddings (text-embeddings-inference), chat (llama.cpp) et cloudflared sont des images upstream (`deploy/prod/compose.yaml`).
-- Avant tout déploiement : `flock -n /srv/deploy.lock.flock` et lecture de `/srv/deploy.lock` (projet et date). Un verrou de rosegriffon interdit le déploiement. Ne jamais toucher aux conteneurs `rosegriffon-*`, aux unités `rg-*` ni au nginx de rosegriffon.
-- Bascule d'un service : `docker compose up -d --no-deps <service>`, images précédentes et `compose.yaml` d'avant conservés dans `/srv/shenron/deploy-backups/`.
+- Avant tout déploiement : `flock -n $DEPLOY_LOCK.flock` et lecture de `$DEPLOY_LOCK` (projet et date). Un verrou de rosegriffon interdit le déploiement. Ne jamais toucher aux conteneurs `rosegriffon-*`, aux unités `rg-*` ni au nginx de rosegriffon.
+- Bascule d'un service : `docker compose up -d --no-deps <service>`, images précédentes et `compose.yaml` d'avant conservés dans `$SHENRON_ROOT/deploy-backups/`.
 - Bascule de postgres sans coupure notable : réplication physique (`pg_basebackup -R`) vers la nouvelle image, arrêt de l'ancienne, `pg_ctl promote`, puis `compose up -d --no-deps postgres`.
 - Unité de démarrage : `deploy/prod/shenron-stack.service`.
 - Preuves : `docs/operations/proof/` (capture du site live, réponses d'API vérifiées sur leur contenu).

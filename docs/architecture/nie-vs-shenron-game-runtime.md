@@ -1,12 +1,12 @@
 # Architectural & Deployment Comparison: NIE vs Shenron Game Runtime
 
-This document provides a comparative analysis of the architecture, game runtimes, reverse-engineering pipelines, and deployment systems between **NIE** (`C:\shenron\apps\rosegriffon`) and **Shenron** (`C:\shenron\apps\shenron`), establishing a convergence roadmap.
+This document provides a comparative analysis of the architecture, game runtimes, reverse-engineering pipelines, and deployment systems between **NIE** (`$WORKSPACE_ROOT/rosegriffon`) and **Shenron** (`$WORKSPACE_ROOT/shenron`), establishing a convergence roadmap.
 
 ---
 
 ## 1. Executive Topology Matrix
 
-| Dimension               | NIE (`C:\shenron\apps\rosegriffon`)                                                         | Shenron (`C:\shenron\apps\shenron`)                                                                  |
+| Dimension               | NIE (`$WORKSPACE_ROOT/rosegriffon`)                                                         | Shenron (`$WORKSPACE_ROOT/shenron`)                                                                  |
 | :---------------------- | :-------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------- |
 | **Primary Domain**      | Game engine exploration, deep reverse-engineering (IEVR / CPK / Steam), 3D world engine | Sovereign Dragon Ball portal, encyclopedia, streaming engine, WebGPU mini-games, manga OCR       |
 | **Runtime Core**        | Rust 2024 (`shenron-nie-*`) + Bun v1.4.4 (`nie-sre-server.ts`)                          | Upstream Bun v1.4.4 + Next.js 16.5 standalone + Rust 2024 (`crates/*`)                           |
@@ -25,7 +25,7 @@ NIE is architected as a modular cluster of 45+ specialized Rust crates operating
 
 ```mermaid
 flowchart TD
-    subgraph NIE_Architecture["NIE Engine (C:/shenron/apps/rosegriffon)"]
+    subgraph NIE_Architecture["NIE Engine ($WORKSPACE_ROOT/rosegriffon)"]
         CORE["shenron-nie-core"]
         BEVY["shenron-nie-bevy (ECS)"]
         RENDER["shenron-nie-render3d (WGPU 30)"]
@@ -40,7 +40,7 @@ flowchart TD
         SRE --> VFS
     end
 
-    subgraph Shenron_Architecture["Shenron Platform (C:/shenron/apps/shenron)"]
+    subgraph Shenron_Architecture["Shenron Platform ($WORKSPACE_ROOT/shenron)"]
         SITE["apps/site (Next.js 16.5 + Bun)"]
         SERVER["apps/server (Single Bun Binary)"]
         WGPU_PLAYER["FighterZWasmPlayer (WebGPU / WGSL)"]
@@ -103,7 +103,7 @@ Shenron prioritizes instantaneous web delivery, zero client-side installation, a
 To unify the strengths of NIE and Shenron without code duplication or architectural drift:
 
 1. **Telemetry & RE Engine Unification**:
-   - Both platforms use `C:\shenron\crates\depot` (`depot-cli`) as the canonical binary triage and AST engine.
+   - Both platforms use `$WORKSPACE_ROOT/shenron/crates/depot` (`depot-cli`) as the canonical binary triage and AST engine.
    - Shenron's `packages/db/src/re-telemetry.ts` serves as the centralized SQLite/Redis telemetry store for all game assets.
 2. **WebGPU Shader Sharing**:
    - The ArcSys cel-shading pipeline documented in `docs/games/dbfz-modding-ecosystem.md` is standardized into WGSL shaders shared across `FighterZWasmPlayer` and NIE's browser viewport.

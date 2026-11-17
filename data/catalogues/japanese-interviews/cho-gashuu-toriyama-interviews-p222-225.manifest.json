@@ -10,12 +10,12 @@
   "unresolvedGlyphs": [],
   "sources": [
     {
-      "path": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\artbook\\Dragon Ball A Visual History Akira Toriyama  [DRAGON BALL 超画集 Akira Toriyama]\\img (202).jpg",
+      "path": "%USERPROFILE%\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\artbook\\Dragon Ball A Visual History Akira Toriyama  [DRAGON BALL 超画集 Akira Toriyama]\\img (202).jpg",
       "bytes": 395436,
       "sha256": "715e9db208a1efbcfe7234f0678d07b61fbaec0684f950eb691a13088bcfc294"
     },
     {
-      "path": "C:\\Users\\omara\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\artbook\\Dragon Ball A Visual History Akira Toriyama  [DRAGON BALL 超画集 Akira Toriyama]\\img (203).jpg",
+      "path": "%USERPROFILE%\\Desktop\\goku solo\\1 DragonWorld\\Data et guide book\\artbook\\Dragon Ball A Visual History Akira Toriyama  [DRAGON BALL 超画集 Akira Toriyama]\\img (203).jpg",
       "bytes": 347492,
       "sha256": "52fc65014bc32c0b292cb3e2a04e306860035108886758e812f4a41643925b0c"
     }
@@ -25,6 +25,6 @@
     "transcriptSha256": "21b044c0b7faf1d8cd2466d0913a5b31be074171409be739b1240790826cb887",
     "jsonlRecords": 4,
     "independentSecondTranscriber": false,
-    "visualCrop": "C:\\Users\\omara\\AppData\\Local\\Temp\\cho-gashu-crop-large.jpg"
+    "visualCrop": "%TEMP%\\cho-gashu-crop-large.jpg"
   }
 }

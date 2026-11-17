@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "game": "DRAGON BALL FighterZ",
-  "sourceRoot": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\DRAGON BALL FighterZ",
+  "sourceRoot": "%ProgramFiles(x86)%\\Steam\\steamapps\\common\\DRAGON BALL FighterZ",
   "generatedAt": "2026-11-11T10:02:14.407Z",
   "totalFiles": 63,
   "totalBytes": 6951922626,
