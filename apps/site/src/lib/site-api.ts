@@ -13,7 +13,11 @@
 import "server-only";
 import { clientIpFromHeaders } from "@aphrody/shenron-config/net";
 import { createWikiReadRepository } from "@aphrody/shenron-db/repos/wiki";
-import { createMemoryRateLimiter, createPublicCache, noopInvalidation } from "@aphrody/shenron-api/http";
+import {
+  createMemoryRateLimiter,
+  createPublicCache,
+  noopInvalidation,
+} from "@aphrody/shenron-api/http";
 import type { FetchableApi } from "@aphrody/shenron-api/next";
 import { createShenronApi, type ShenronApi, type WikiReadPort } from "@aphrody/shenron-api/server";
 import { SITE_HOST, SITE_URL } from "@/lib/config";

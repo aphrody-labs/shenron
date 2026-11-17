@@ -122,7 +122,10 @@ function fakeFetchers(): IaCockpitFetchers {
     shenronHealth: notExercised("Shenron AI — santé"),
     shenronRagStats: notExercised("Shenron RAG — statistiques"),
     shenronRagProbe: notExercised("Shenron RAG — sonde"),
-    yoloWeb: unconfigured("YOLO WEB — crawl", "SHENRON_YOLO_WEB_CLI absent de l'environnement du site"),
+    yoloWeb: unconfigured(
+      "YOLO WEB — crawl",
+      "SHENRON_YOLO_WEB_CLI absent de l'environnement du site",
+    ),
     botRag: notExercised("Bot Shenron — index local"),
     evalHistory: ok("Historique", []),
     goldSet: ok("Jeu doré", { cases: 3, sample: [] }),

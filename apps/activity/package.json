@@ -16,9 +16,9 @@
     "typecheck": "bun check --project tsconfig.json"
   },
   "dependencies": {
-    "@discord/embedded-app-sdk": "catalog:",
     "@aphrody/shenron-activity": "workspace:*",
     "@aphrody/shenron-config": "workspace:*",
+    "@discord/embedded-app-sdk": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
     "zod": "catalog:"

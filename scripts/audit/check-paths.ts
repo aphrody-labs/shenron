@@ -23,9 +23,12 @@ async function resolveScanner(): Promise<string | undefined> {
   const cached = join(repo, ".cache", "paths-scanner", SCANNER_SHA, "paths.ts");
   if (existsSync(cached)) return cached;
   try {
-    const res = await fetch(`https://raw.githubusercontent.com/${SCANNER_REPO}/${SCANNER_SHA}/tools/paths.ts`, {
-      signal: AbortSignal.timeout(30_000),
-    });
+    const res = await fetch(
+      `https://raw.githubusercontent.com/${SCANNER_REPO}/${SCANNER_SHA}/tools/paths.ts`,
+      {
+        signal: AbortSignal.timeout(30_000),
+      },
+    );
     if (!res.ok) return undefined;
     mkdirSync(join(cached, ".."), { recursive: true });
     writeFileSync(cached, await res.text());
@@ -37,7 +40,9 @@ async function resolveScanner(): Promise<string | undefined> {
 
 const scanner = await resolveScanner();
 if (!scanner) {
-  console.warn("check:paths skipped: the pinned path scanner is unavailable (set SHENRON_PATHS_SCANNER to a local paths.ts)");
+  console.warn(
+    "check:paths skipped: the pinned path scanner is unavailable (set SHENRON_PATHS_SCANNER to a local paths.ts)",
+  );
   process.exit(0);
 }
 const run = Bun.spawnSync([process.execPath, scanner, "--root", repo, ...process.argv.slice(2)], {

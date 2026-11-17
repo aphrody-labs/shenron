@@ -41,9 +41,9 @@
     "typecheck": "bun check"
   },
   "dependencies": {
+    "@aphrody/shenron-config": "workspace:*",
     "@better-auth/oauth-provider": "catalog:",
-    "@better-auth/passkey": "catalog:",
-    "@aphrody/shenron-config": "workspace:*"
+    "@better-auth/passkey": "catalog:"
   },
   "devDependencies": {
     "@aphrody/shenron-db": "workspace:*",

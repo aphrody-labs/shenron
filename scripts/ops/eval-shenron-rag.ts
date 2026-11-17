@@ -73,7 +73,8 @@ async function requireListenerBinary(url: URL, release: string, binary: string):
 async function prepareAttestation(releasePath: string) {
   if (process.platform !== "linux")
     throw new Error("Compute attestation requires Linux process provenance");
-  const { loadLiveRagEnv, requireLiveRag } = await import("@aphrody/shenron-pipeline/testing/live-rag");
+  const { loadLiveRagEnv, requireLiveRag } =
+    await import("@aphrody/shenron-pipeline/testing/live-rag");
   loadLiveRagEnv();
   const preload = await requireLiveRag();
   const release = await realpath(resolve(releasePath));

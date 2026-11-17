@@ -7,7 +7,11 @@ import { createLocalApi } from "@aphrody/shenron-api/host";
 import { openShenronVfs } from "@aphrody/shenron-db/vfs";
 import type { RagHit } from "@aphrody/shenron-db/vfs/rag";
 import { createShenronCompute, type ShenronCompute } from "@aphrody/shenron-pipeline/ai/shenron";
-import { requireAiHttpToken, requireAiHttpUrl, SHENRON_E5 } from "@aphrody/shenron-pipeline/ai/config";
+import {
+  requireAiHttpToken,
+  requireAiHttpUrl,
+  SHENRON_E5,
+} from "@aphrody/shenron-pipeline/ai/config";
 import { prepareNativeNoteImport } from "./agent-home-native-note";
 import {
   chunkReviewedMarkdown,

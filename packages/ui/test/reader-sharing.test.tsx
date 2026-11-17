@@ -26,7 +26,9 @@ describe("readers: generic ones shared with M3, the databook reader owned by She
     expect(source).not.toMatch(/from ["']@aphrody\/shenron-m3-reader/);
   });
   test("generic reader styles come from M3, the Dragon Ball skin lives here", async () => {
-    expect(await read("reader-styles.css")).toContain('@import "@aphrody/shenron-m3-reader/styles.css"');
+    expect(await read("reader-styles.css")).toContain(
+      '@import "@aphrody/shenron-m3-reader/styles.css"',
+    );
     const skin = await read("reader-dragon-ball.css");
     expect(skin).not.toContain("@import");
     expect(skin).toContain(".m3-reader--dragon-ball");

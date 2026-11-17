@@ -62,7 +62,8 @@ export async function withCdpServer<T>(
 }
 
 export async function withObscura<T>(run: (session: ObscuraSession) => Promise<T>): Promise<T> {
-  const binary = process.env.SHENRON_YOLO_WEB_BIN ?? process.env.YOLO_WEB_BIN ?? Bun.which("yolo-browser");
+  const binary =
+    process.env.SHENRON_YOLO_WEB_BIN ?? process.env.YOLO_WEB_BIN ?? Bun.which("yolo-browser");
   if (!binary)
     throw new Error(
       "yolo-browser not found; build apps/yolo-browser-cli from yolo-rs/yolo-web or set SHENRON_YOLO_WEB_BIN",

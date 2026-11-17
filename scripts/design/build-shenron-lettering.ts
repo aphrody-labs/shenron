@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-import { WORDMARK_LETTERS, WORDMARK_FRANCE_GLYPHS } from "@aphrody/shenron-ui/toriyama-svg/wordmark";
+import {
+  WORDMARK_LETTERS,
+  WORDMARK_FRANCE_GLYPHS,
+} from "@aphrody/shenron-ui/toriyama-svg/wordmark";
 import { uvCommand } from "./uv";
 
 export const LETTERING_COVERAGE = "DRAGNBLFCE";

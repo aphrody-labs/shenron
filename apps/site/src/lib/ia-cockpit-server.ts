@@ -206,7 +206,9 @@ export function createIaCockpitFetchers(): IaCockpitFetchers {
           return summarizeYoloWebProbe(await probeYoloWeb({ timeoutMs: SHENRON_TIMEOUT_MS }));
         } catch (error) {
           if (error instanceof YoloWebNotConfiguredError)
-            throw new SourceNotConfiguredError("SHENRON_YOLO_WEB_CLI absent de l'environnement du site");
+            throw new SourceNotConfiguredError(
+              "SHENRON_YOLO_WEB_CLI absent de l'environnement du site",
+            );
           throw error;
         }
       },

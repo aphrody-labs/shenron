@@ -42,7 +42,13 @@ import { Input } from "@aphrody/shenron-ui/input";
 import i18n, { resources } from "@aphrody/shenron-ui/koharu/lib/i18n";
 import { receiveError } from "@aphrody/shenron-ui/koharu/lib/store";
 import { Popover, PopoverPopup, PopoverTitle, PopoverTrigger } from "@aphrody/shenron-ui/popover";
-import { Select, SelectItem, SelectPopup, SelectTrigger, SelectValue } from "@aphrody/shenron-ui/select";
+import {
+  Select,
+  SelectItem,
+  SelectPopup,
+  SelectTrigger,
+  SelectValue,
+} from "@aphrody/shenron-ui/select";
 import { Slider } from "@aphrody/shenron-ui/slider";
 import { Tooltip, TooltipPopup, TooltipTrigger } from "@aphrody/shenron-ui/tooltip";
 import {

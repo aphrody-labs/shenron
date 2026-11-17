@@ -41,16 +41,16 @@
     "typecheck": "bun check --project tsconfig.json"
   },
   "dependencies": {
-    "@better-auth/cimd": "catalog:",
-    "@better-auth/mcp": "catalog:",
-    "@better-auth/oauth-provider": "catalog:",
-    "@better-auth/passkey": "catalog:",
     "@aphrody/shenron-auth": "workspace:*",
     "@aphrody/shenron-config": "workspace:*",
     "@aphrody/shenron-db": "workspace:*",
     "@aphrody/shenron-kit": "workspace:*",
     "@aphrody/shenron-lexicon": "workspace:*",
     "@aphrody/shenron-pipeline": "workspace:*",
+    "@better-auth/cimd": "catalog:",
+    "@better-auth/mcp": "catalog:",
+    "@better-auth/oauth-provider": "catalog:",
+    "@better-auth/passkey": "catalog:",
     "better-auth": "catalog:",
     "drizzle-orm": "catalog:",
     "zod": "catalog:"

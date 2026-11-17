@@ -2,7 +2,10 @@
 import { chmod, link, lstat, mkdir, realpath, unlink } from "node:fs/promises";
 import { isAbsolute, join, resolve } from "node:path";
 import { parseArgs } from "node:util";
-import { nativeAssetReport, readVerifiedNativeAsset } from "@aphrody/shenron-pipeline/dragon-ball/assets";
+import {
+  nativeAssetReport,
+  readVerifiedNativeAsset,
+} from "@aphrody/shenron-pipeline/dragon-ball/assets";
 import { validateSoshReaderManifest } from "@aphrody/shenron-pipeline/dragon-ball/sosh-reader-manifest";
 import { qualifyBundle } from "./manga-publication-worker";
 

@@ -1,7 +1,10 @@
 "use client";
 
 import { openUrl } from "@tauri-apps/plugin-opener";
-import { DEFAULT_DISCORD_INVITE, DEFAULT_PUBLIC_ORIGINS } from "@aphrody/shenron-config/public-urls";
+import {
+  DEFAULT_DISCORD_INVITE,
+  DEFAULT_PUBLIC_ORIGINS,
+} from "@aphrody/shenron-config/public-urls";
 import { FilePlus2, FolderOpen, LoaderCircle, Settings } from "lucide-react";
 import { useState, type ComponentProps } from "react";
 import { useTranslation } from "react-i18next";

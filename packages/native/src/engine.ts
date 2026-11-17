@@ -108,7 +108,9 @@ export function checkBunRuntime(version = Bun.version, range = SHENRON_NATIVE_BU
       (minimum && Bun.semver.order(version, minimum[1]!) >= 0)
     )
   ) {
-    throw new Error(`@aphrody/shenron-native requires Bun ${range}; this process runs Bun ${version}`);
+    throw new Error(
+      `@aphrody/shenron-native requires Bun ${range}; this process runs Bun ${version}`,
+    );
   }
 }
 
@@ -224,7 +226,8 @@ export function holdLib(): () => void {
  * is open: close the pools first (`closeShenronWorkerPool`, `ShenronWorkerPool.close`).
  */
 export function close(): void {
-  if (holders > 0) throw new Error("close the @aphrody/shenron-native worker pools before the library");
+  if (holders > 0)
+    throw new Error("close the @aphrody/shenron-native worker pools before the library");
   library?.close();
   library = undefined;
   libraryPath = undefined;

@@ -3,7 +3,11 @@
 import "server-only";
 import { cache } from "react";
 import { resolveHostUrl } from "@aphrody/shenron-config/public-urls";
-import { DEFAULT_SITE_THEME, resolveSiteTheme, type SiteTheme } from "@aphrody/shenron-config/site-theme";
+import {
+  DEFAULT_SITE_THEME,
+  resolveSiteTheme,
+  type SiteTheme,
+} from "@aphrody/shenron-config/site-theme";
 import { createShenronApiClient } from "@aphrody/shenron-api/client";
 import { endpoints } from "@aphrody/shenron-api/contract";
 

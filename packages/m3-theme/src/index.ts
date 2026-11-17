@@ -88,7 +88,9 @@ export function applyM3Mode(dark: boolean, target: HTMLElement): void {
 export function schemeDeclarations(css: string): string {
   const body = /:root\s*\{([^{}]*)\}/.exec(css.replace(/\/\*[\s\S]*?\*\//g, ""))?.[1];
   if (body === undefined || !/--md-sys-color-primary\s*:\s*#[0-9a-f]{6}\s*;/i.test(body))
-    throw new Error("@aphrody/shenron-m3-theme: the scheme sheet is not a Rust m3Css `scheme` sheet");
+    throw new Error(
+      "@aphrody/shenron-m3-theme: the scheme sheet is not a Rust m3Css `scheme` sheet",
+    );
   return body.trim().replace(/\s*\n\s*/g, "\n  ");
 }
 
@@ -128,7 +130,9 @@ export function httpSchemeSheet(
     const response = await fetcher(`${endpoint}?${query}`);
     const body = await response.text();
     if (!response.ok)
-      throw new Error(`@aphrody/shenron-m3-theme: ${endpoint} answered ${response.status}: ${body.trim()}`);
+      throw new Error(
+        `@aphrody/shenron-m3-theme: ${endpoint} answered ${response.status}: ${body.trim()}`,
+      );
     return body;
   };
 }

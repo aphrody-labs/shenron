@@ -11,7 +11,11 @@
  * construits avec des dépendances factices (aucune connexion PostgreSQL).
  */
 import { describe, expect, mock, test } from "bun:test";
-import { SESSION_COOKIE_CACHE, drizzleDebugLogs, loggingOptions } from "@aphrody/shenron-auth/options";
+import {
+  SESSION_COOKIE_CACHE,
+  drizzleDebugLogs,
+  loggingOptions,
+} from "@aphrody/shenron-auth/options";
 
 const fakeEnv = {
   NODE_ENV: "production" as const,

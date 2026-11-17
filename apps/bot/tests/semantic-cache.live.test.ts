@@ -11,7 +11,10 @@
 import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { randomUUID } from "node:crypto";
 import { ShenronComputeClient, type ShenronRagHit } from "@aphrody/shenron-pipeline/shenron";
-import { buildGroundedContext, DEFAULT_CONTEXT_LIMITS } from "@aphrody/shenron-pipeline/ai/generate";
+import {
+  buildGroundedContext,
+  DEFAULT_CONTEXT_LIMITS,
+} from "@aphrody/shenron-pipeline/ai/generate";
 import { semanticCacheScope } from "@aphrody/shenron-pipeline/ai/ports";
 import { PROMPT_VERSION } from "@aphrody/shenron-pipeline/ai/prompts";
 import { createResilientRedis, type ResilientRedis } from "@aphrody/shenron-db/redis";

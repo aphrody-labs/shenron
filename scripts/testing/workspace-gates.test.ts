@@ -45,7 +45,9 @@ test("discovers every current package gate and retains the scripts typecheck", a
     expect(referenced.has(configPath), relative(root, configPath)).toBe(true);
   }
   expect(
-    workspaceCommands(root, "test").filter((command) => command.packageName === "@aphrody/shenron-ui"),
+    workspaceCommands(root, "test").filter(
+      (command) => command.packageName === "@aphrody/shenron-ui",
+    ),
   ).toHaveLength(3);
 });
 

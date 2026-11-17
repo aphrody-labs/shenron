@@ -1,5 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
-import { buildVectorSidecar, type VectorGeneration } from "@aphrody/shenron-pipeline/ai/vector-sidecar";
+import {
+  buildVectorSidecar,
+  type VectorGeneration,
+} from "@aphrody/shenron-pipeline/ai/vector-sidecar";
 declare const self: Worker;
 const controller = new AbortController();
 let started = false,

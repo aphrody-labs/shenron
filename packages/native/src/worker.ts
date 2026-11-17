@@ -313,7 +313,8 @@ export class ShenronWorkerPool {
     signal: AbortSignal | undefined,
     onStart?: (job: number) => void,
   ): Promise<T> {
-    if (this.#closing) return Promise.reject(abortError("@aphrody/shenron-native worker pool closed"));
+    if (this.#closing)
+      return Promise.reject(abortError("@aphrody/shenron-native worker pool closed"));
     let call: JobCall;
     try {
       call = build();

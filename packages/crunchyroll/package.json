@@ -26,8 +26,8 @@
     "mcp": "bun src/mcp.ts"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "catalog:",
-    "@aphrody/shenron-media": "workspace:*"
+    "@aphrody/shenron-media": "workspace:*",
+    "@modelcontextprotocol/sdk": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:"

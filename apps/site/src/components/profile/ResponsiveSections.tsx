@@ -25,7 +25,12 @@
  * (visible ou `sr-only`) pour garder une hiérarchie de titres continue.
  */
 import { useState, useSyncExternalStore, type ReactNode } from "react";
-import { Accordion, AccordionItem, AccordionPanel, AccordionTrigger } from "@aphrody/shenron-ui/accordion";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionTrigger,
+} from "@aphrody/shenron-ui/accordion";
 
 export interface ResponsiveSection {
   /** Identifiant stable (valeur de l'accordéon, ancre). */

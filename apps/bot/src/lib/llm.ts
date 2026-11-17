@@ -16,8 +16,15 @@ import { ShenronComputeClient } from "@aphrody/shenron-pipeline/shenron";
 import { PUBLIC_RAG_CHAT_MAX_OUTPUT_TOKENS } from "@aphrody/shenron-config/chat-model";
 import { createOpenAICompatibleChat } from "@aphrody/shenron-pipeline/ai/provider";
 import { createShenronChatModel } from "@aphrody/shenron-pipeline/ai/chat";
-import { chatTimeoutMs, resolveChatModel, resolveDirectChat } from "@aphrody/shenron-pipeline/ai/config";
-import { createNativeShenronChatModel, SHENRON_NATIVE_MODEL } from "@aphrody/shenron-pipeline/ai/native";
+import {
+  chatTimeoutMs,
+  resolveChatModel,
+  resolveDirectChat,
+} from "@aphrody/shenron-pipeline/ai/config";
+import {
+  createNativeShenronChatModel,
+  SHENRON_NATIVE_MODEL,
+} from "@aphrody/shenron-pipeline/ai/native";
 import {
   generateGroundedAnswer,
   type GroundedAnswer,

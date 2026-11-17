@@ -18,7 +18,11 @@
  * Usage : bun scripts/genere-icones.ts
  */
 import sharp from "sharp";
-import { KINTO_UN_COULEURS, svgIcone, svgIllustration } from "@aphrody/shenron-ui/toriyama-svg/kinto-un";
+import {
+  KINTO_UN_COULEURS,
+  svgIcone,
+  svgIllustration,
+} from "@aphrody/shenron-ui/toriyama-svg/kinto-un";
 
 const site = new URL("../../../packages/ui/assets/", import.meta.url).pathname;
 const logoBot = new URL("../../bot/assets/logo.webp", import.meta.url).pathname;

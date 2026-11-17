@@ -7,7 +7,8 @@
 import { describe, expect, it } from "bun:test";
 import { probeYoloWeb, withYoloWeb } from "../../src/yolo-web";
 
-const live = process.env.SHENRON_YOLO_WEB_CLI ?? process.env.YOLO_WEB_CLI ? describe : describe.skip;
+const live =
+  (process.env.SHENRON_YOLO_WEB_CLI ?? process.env.YOLO_WEB_CLI) ? describe : describe.skip;
 
 live("YOLO WEB live (web-cli mcp over stdio)", () => {
   it("lists the real browser tools and probes the CDP endpoint", async () => {
@@ -18,7 +19,10 @@ live("YOLO WEB live (web-cli mcp over stdio)", () => {
   }, 60_000);
 
   it("navigates, extracts text and evaluates on a real page", async () => {
-    const url = process.env.SHENRON_YOLO_WEB_LIVE_URL ?? process.env.YOLO_WEB_LIVE_URL ?? "https://dragonballfr.com/";
+    const url =
+      process.env.SHENRON_YOLO_WEB_LIVE_URL ??
+      process.env.YOLO_WEB_LIVE_URL ??
+      "https://dragonballfr.com/";
     await withYoloWeb(async (mcp) => {
       const text = await mcp.markdown(url);
       expect(text).toContain(`Source: ${new URL(url).origin}`);

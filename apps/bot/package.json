@@ -42,10 +42,6 @@
     "typecheck": "bun check --project tsconfig.json && bun check --project tsconfig.scripts.json"
   },
   "dependencies": {
-    "@discordx/di": "catalog:",
-    "@discordx/pagination": "catalog:",
-    "@napi-rs/canvas": "catalog:",
-    "@pothos/core": "catalog:",
     "@aphrody/shenron-activity": "workspace:*",
     "@aphrody/shenron-api": "workspace:*",
     "@aphrody/shenron-auth": "workspace:*",
@@ -57,6 +53,10 @@
     "@aphrody/shenron-media": "workspace:*",
     "@aphrody/shenron-native": "workspace:*",
     "@aphrody/shenron-pipeline": "workspace:*",
+    "@discordx/di": "catalog:",
+    "@discordx/pagination": "catalog:",
+    "@napi-rs/canvas": "catalog:",
+    "@pothos/core": "catalog:",
     "better-auth": "catalog:",
     "discord.js": "catalog:",
     "discordx": "catalog:",

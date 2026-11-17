@@ -118,7 +118,12 @@ const ALLOWED_EDGES: Readonly<
   "@aphrody/shenron-lexicon": { runtime: [], dev: [] },
   // Video engines (filmcraft, hyperframes, remotion) and the kit HTTP transport.
   "@aphrody/shenron-media": {
-    runtime: ["@aphrody/shenron-filmcraft", "@aphrody/shenron-hyperframes", "@aphrody/shenron-kit", "@aphrody/shenron-remotion"],
+    runtime: [
+      "@aphrody/shenron-filmcraft",
+      "@aphrody/shenron-hyperframes",
+      "@aphrody/shenron-kit",
+      "@aphrody/shenron-remotion",
+    ],
     dev: [],
   },
   "@aphrody/shenron-native": { runtime: [], dev: [] },
@@ -143,12 +148,18 @@ const EDGE_SUBPATHS: Readonly<Record<string, Readonly<Record<string, readonly st
   "@aphrody/shenron-dbxv2": { "@aphrody/shenron-db": ["@aphrody/shenron-db/dbxv2"] },
   // Chat engine doctrine only (§4.1): personas and the agent home, never the pipeline runtime.
   "@aphrody/shenron-api": {
-    "@aphrody/shenron-pipeline": ["@aphrody/shenron-pipeline/ai/prompts", "@aphrody/shenron-pipeline/agent-home"],
+    "@aphrody/shenron-pipeline": [
+      "@aphrody/shenron-pipeline/ai/prompts",
+      "@aphrody/shenron-pipeline/agent-home",
+    ],
   },
   "@aphrody/shenron-ui": {
     // The editor speaks the generated protocol and draws on the wasm canvas; the koharu-sdk
     // transport (`./native`, class bun) stays with the pipeline.
-    "@aphrody/shenron-koharu": ["@aphrody/shenron-koharu/protocol", "@aphrody/shenron-koharu/canvas"],
+    "@aphrody/shenron-koharu": [
+      "@aphrody/shenron-koharu/protocol",
+      "@aphrody/shenron-koharu/canvas",
+    ],
     // Koharu export panel only.
     "@aphrody/shenron-pipeline": ["@aphrody/shenron-pipeline/koharu"],
   },

@@ -9,7 +9,8 @@ import { uiAssetPaths } from "../src/assets";
 
 const root = resolve(import.meta.dir, "..");
 const manifest = await Bun.file(resolve(root, "package.json")).json();
-const forbidden = /^(?:next(?:\/|$)|@\/|server-only$|@aphrody\/shenron-(?:site|bot|server|ui)(?:\/|$))/;
+const forbidden =
+  /^(?:next(?:\/|$)|@\/|server-only$|@aphrody\/shenron-(?:site|bot|server|ui)(?:\/|$))/;
 const declared = new Set(Object.keys({ ...manifest.dependencies, ...manifest.peerDependencies }));
 const failures: string[] = [];
 

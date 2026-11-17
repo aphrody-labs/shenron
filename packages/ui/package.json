@@ -96,7 +96,6 @@
     "typecheck": "bun check --project tsconfig.json"
   },
   "dependencies": {
-    "@base-ui/react": "catalog:",
     "@aphrody/shenron-config": "workspace:*",
     "@aphrody/shenron-koharu": "workspace:*",
     "@aphrody/shenron-m3-ai": "workspace:*",
@@ -105,6 +104,7 @@
     "@aphrody/shenron-m3-theme": "workspace:*",
     "@aphrody/shenron-m3-tokens": "workspace:*",
     "@aphrody/shenron-pipeline": "workspace:*",
+    "@base-ui/react": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-virtual": "catalog:",
     "@tauri-apps/api": "catalog:",
