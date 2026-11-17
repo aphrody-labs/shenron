@@ -205,8 +205,8 @@ name = "scripts"
 ts = ["scripts"]
 rust = "crates/shenron-cli"
 state = "ts"
-ts_lines = 75297
-note = "build, deploy, ops and data scripts -> shenron subcommands. Raised from 75273 by the uv helper and the native-runtime guard of 9d8b6701"
+ts_lines = 75448
+note = "build, deploy, ops and data scripts -> shenron subcommands. Raised from 75273 by the uv helper and the native-runtime guard of 9d8b6701, then to 75448 by the naming work of a57956b2 (own SHENRON_* variables, pinned scanner fetch, no sibling-repository checkouts)"
 
 [[unit]]
 name = "cloudflare"
