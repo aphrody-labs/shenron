@@ -1,6 +1,6 @@
 ---
-name: cli-just
-description: Use `just` (just 1.59.0): Command runner for project recipes.
+name: "cli-just"
+description: "Use `just` (just 1.59.0): Command runner for project recipes."
 ---
 
 # just 1.59.0

@@ -1,6 +1,6 @@
 ---
-name: bun
-description: bun reference (CLI, runtime API, upstream docs), bun:ffi bridge to native C ABIs, zero-dependency / zero-bunx package rules with native replacements (Bun.SQL, bun:sqlite, Bun.S3Client, Bun.Image, Bun.serve, Bun.Glob, bun fmt, bun check, bun build --compile). Use BEFORE any choice of JS/TS tool, script, test, format, typecheck, bundling, FFI, SQL, shell, HTTP, or when writing package.json/tsconfig: bun replaces node, npm, npx, bunx, tsc, prettier, biome, oxlint, eslint, vite, vitest, jest, esbuild.
+name: "bun"
+description: "bun reference (CLI, runtime API, upstream docs), bun:ffi bridge to native C ABIs, zero-dependency / zero-bunx package rules with native replacements (Bun.SQL, bun:sqlite, Bun.S3Client, Bun.Image, Bun.serve, Bun.Glob, bun fmt, bun check, bun build --compile). Use BEFORE any choice of JS/TS tool, script, test, format, typecheck, bundling, FFI, SQL, shell, HTTP, or when writing package.json/tsconfig: bun replaces node, npm, npx, bunx, tsc, prettier, biome, oxlint, eslint, vite, vitest, jest, esbuild."
 ---
 
 # bun

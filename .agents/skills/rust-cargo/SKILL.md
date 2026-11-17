@@ -1,6 +1,6 @@
 ---
-name: rust-cargo
-description: Rust and Cargo reference for shenron, grounded in upstream rust-lang/cargo, rust-lang/rust and crates.io : Edition 2024, resolver v3, workspace inheritance, sparse registry and credential providers, cargo-deny, crates.io sparse index and live API, publishing, the pinned Chromium nightly toolchain (rust-toolchain.toml) with LLVM cross-language LTO and lld, windows-rs, plus jj, gix, just, sccache, nextest, binstall, xwin and xtask. Use for any Cargo.toml, rust-toolchain, crate lookup or publish, Rust build speed or Rust VCS/task tooling question.
+name: "rust-cargo"
+description: "Rust and Cargo reference for shenron, grounded in upstream rust-lang/cargo, rust-lang/rust and crates.io : Edition 2024, resolver v3, workspace inheritance, sparse registry and credential providers, cargo-deny, crates.io sparse index and live API, publishing, the pinned Chromium nightly toolchain (rust-toolchain.toml) with LLVM cross-language LTO and lld, windows-rs, plus jj, gix, just, sccache, nextest, binstall, xwin and xtask. Use for any Cargo.toml, rust-toolchain, crate lookup or publish, Rust build speed or Rust VCS/task tooling question."
 ---
 
 # Rust Cargo (2026)
