@@ -141,7 +141,7 @@ Root `Cargo.toml` (resolver 3, edition 2024, rust-version 1.97, toolchain 1.99.1
 
 ### Cited Findings
 
-- Workspace header: "the shenron CLI, MCP server, C ABI, studio commands, desktop app and the Koharu manga translation engine… Aphrody capabilities (ML runtime, RAG, OCR, models, Tauri 3 fork) come from aphrody-labs/aphrody pinned by revision"; `exclude = ["crates/shenron-video", "crates/filmcraft"]` — [Cargo.toml](C:\aphrody\apps\shenron\Cargo.toml).
+- Workspace header: "the shenron CLI, MCP server, C ABI, studio commands, desktop app and the Koharu manga translation engine… Aphrody capabilities (ML runtime, RAG, OCR, models, Tauri 3 fork) come from aphrody-labs/legacy pinned by revision"; `exclude = ["crates/shenron-video", "crates/filmcraft"]` — [Cargo.toml](C:\aphrody\apps\shenron\Cargo.toml).
 - Pinned graphics/ML deps: `wgpu = "30.0.1"` ("The one wgpu of the workspace (crates/shenron-gpu owns it)"), `vello = "0.11.0"`, `bevy = 0.19.1` (features `3d, web, webgpu`, for dragon-pixel wasm32), `image 0.25.10`, `imageproc 0.27`, `fast_image_resize 6.1`, `webp 0.3.1`, `fontique 0.11.1`, `harfrust 0.13.3`, `skrifa`, `icu_*`, `tokenizers 0.23.2`, `hf-hub` (git), `rmcp =3.5.0`, `axum 0.8`, `rusqlite 0.40 bundled`, `tokio 1.53`, `reqwest 0.13.5`, Tauri 3 alpha fork (`aphrody-tauri =3.0.0-alpha.4`, `tauri-runtime-cef`), ML via `aphrody-{llama,diffusion,torch,ml-runtime,ocr,rag}` git deps — [Cargo.toml lines 24-180](C:\aphrody\apps\shenron\Cargo.toml).
 - Toolchain: `channel = "1.99.1"`, targets `x86_64-unknown-linux-gnu`, `x86_64-pc-windows-msvc`, `wasm32-unknown-unknown` — [rust-toolchain.toml](C:\aphrody\apps\shenron\rust-toolchain.toml).
 - Crates (name · .rs files · lines · description · key deps), from each `Cargo.toml`:
