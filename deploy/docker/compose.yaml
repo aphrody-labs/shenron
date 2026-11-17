@@ -23,7 +23,7 @@ services:
       HOSTNAME: 127.0.0.1
       PORT: "5011"
       NEXT_TELEMETRY_DISABLED: "1"
-      SHENRON_RELEASES_DIR: /srv/shenron/shared/releases
+      SHENRON_RELEASES_DIR: /var/lib/shenron-releases
     network_mode: host
     user: "${SHENRON_UID:-1000}:${SHENRON_GID:-1000}"
     init: true
@@ -34,11 +34,11 @@ services:
       - /tmp:rw,noexec,nosuid,size=64m
     volumes:
       - type: bind
-        source: ${SHENRON_SHARED_ROOT:-/srv/shenron/shared}/server
+        source: ${SHENRON_SHARED_ROOT:-${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/shared}/server
         target: /var/lib/shenron
       - type: bind
-        source: ${SHENRON_SHARED_ROOT:-/srv/shenron/shared}/releases
-        target: /srv/shenron/shared/releases
+        source: ${SHENRON_SHARED_ROOT:-${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/shared}/releases
+        target: /var/lib/shenron-releases
         read_only: true
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:5011/api/local/health"]
@@ -77,10 +77,10 @@ services:
       - /tmp:rw,noexec,nosuid,size=64m
     volumes:
       - type: bind
-        source: ${SHENRON_SHARED_ROOT:-/srv/shenron/shared}/bot/data
+        source: ${SHENRON_SHARED_ROOT:-${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/shared}/bot/data
         target: /app/data
       - type: bind
-        source: ${SHENRON_SHARED_ROOT:-/srv/shenron/shared}/bot/assets
+        source: ${SHENRON_SHARED_ROOT:-${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/shared}/bot/assets
         target: /app/assets
         read_only: true
       - type: bind

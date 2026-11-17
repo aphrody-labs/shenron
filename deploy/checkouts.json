@@ -11,7 +11,7 @@
       "paths": {
         "vps": "~/src/shenron",
         "cdn": "~/src/shenron",
-        "windows": "C:/shenron",
+        "windows": "~/src/shenron",
         "prod": "/srv/shenron/build/source"
       }
     }

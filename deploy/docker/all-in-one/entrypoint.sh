@@ -31,7 +31,7 @@ cleanup() {
 trap cleanup SIGTERM SIGINT SIGQUIT
 
 # 1. Vérification et création des répertoires d'état
-mkdir -p /var/lib/postgresql/data /var/lib/redis /var/lib/shenron /app/data /srv/shenron-cdn/wiki /srv/shenron-cdn/assets /srv/shenron-cdn/site /run/postgresql
+mkdir -p /var/lib/postgresql/data /var/lib/redis /var/lib/shenron /app/data /srv/shenron-cdn/wiki /srv/shenron-cdn/assets /srv/shenron-cdn/site /run/postgresql # paths:ok
 chown -R postgres:postgres /var/lib/postgresql /run/postgresql
 chmod 700 /var/lib/postgresql/data
 chown -R redis:redis /var/lib/redis

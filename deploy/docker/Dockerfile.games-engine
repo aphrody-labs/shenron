@@ -36,7 +36,7 @@ COPY scripts/ scripts/
 RUN bun install --frozen-lockfile
 
 # Volumes for game dumps and Steam depots
-RUN mkdir -p /srv/games/cache /srv/games/steam /srv/games/saves
+RUN mkdir -p /srv/games/cache /srv/games/steam /srv/games/saves # paths:ok
 
 EXPOSE 3030
 

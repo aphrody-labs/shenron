@@ -1,5 +1,6 @@
 # Starts the Shenron compose stack at boot; containers also carry restart: unless-stopped.
-# Installed as /etc/systemd/system/shenron-stack.service on the production host.
+# Installed as /etc/systemd/system/shenron-stack.service on the production host; /etc/shenron/stack.env
+# holds SHENRON_ROOT=<host root of the production layout> (deploy/README.md).
 [Unit]
 Description=Shenron production stack (docker compose)
 Requires=docker.service
@@ -9,8 +10,8 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-WorkingDirectory=/srv/shenron
-ExecStart=/usr/bin/docker compose -f /srv/shenron/compose.yaml up -d --no-recreate
+EnvironmentFile=/etc/shenron/stack.env
+ExecStart=/usr/bin/docker compose --project-directory ${SHENRON_ROOT} -f ${SHENRON_ROOT}/compose.yaml up -d --no-recreate
 ExecStop=/bin/true
 TimeoutStartSec=300
 

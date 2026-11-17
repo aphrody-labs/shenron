@@ -110,8 +110,7 @@ for (const name of files) {
       runLevel: "limited",
       periodic: true,
       execute: "pwsh.exe",
-      arguments:
-        '-NoLogo -NoProfile -NonInteractive -File "%USERPROFILE%\\.aphrody\\tools\\cloudflare-cli\\s3-profile.ps1" -Action renew -Apply -BunExe "C:/shenron/var/runtimes/bun-1.4.4-current-ae5a09dc/bun.exe"',
+      arguments: `-NoLogo -NoProfile -NonInteractive -File "%USERPROFILE%\\.aphrody\\tools\\cloudflare-cli\\s3-profile.ps1" -Action renew -Apply -BunExe "${process.env.SHENRON_WINDOWS_BUN_EXE ?? "bun.exe"}"`,
       timeLimitMinutes: 3,
       description:
         "Renew one-hour Shenron R2 S3 object credentials scoped to shenron-cdn _objects/ and _migration/, protected by DPAPI CurrentUser.",

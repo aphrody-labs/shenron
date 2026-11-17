@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Koharu manga page service on the production host: own project, own unit, no dependency on the
-# shenron stack. Installed as /srv/koharu/compose.yaml; routed by the Cloudflare tunnel / nginx
-# for the koharu subdomain (docs/operations/koharu.md). The model store persists in /srv/koharu/home.
+# shenron stack. Installed as $KOHARU_ROOT/compose.yaml; routed by the Cloudflare tunnel / nginx
+# for the koharu subdomain (docs/operations/koharu.md). The model store persists in ./home next to
+# this file ($KOHARU_ROOT/home).
 name: koharu
 
 services:
@@ -24,6 +25,6 @@ services:
       KOHARU_WEB_TRANSLATE_MODEL: shenron-chat-v2
       SHENRON_HOME: /var/lib/koharu
     volumes:
-      - /srv/koharu/home:/var/lib/koharu
+      - ./home:/var/lib/koharu
     mem_limit: 12g
     cpus: 4

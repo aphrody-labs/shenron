@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
-# Production Compose stack of Shenron (/srv/shenron/compose.yaml on prod), as a template without
+# Production Compose stack of Shenron ($SHENRON_ROOT/compose.yaml on prod), as a template without
 # secrets. Owner: this repository; installed on the production host by hand (docs/operations/AUTO-DEPLOY.md).
 #
-# Source: /srv/shenron/compose.yaml read on prod on 2026-11-05 (364 lines). Differences, all
+# Source: $SHENRON_ROOT/compose.yaml read on prod on 2026-11-05 (364 lines). Differences, all
 # deliberate, are marked `CHANGED`:
 #   1. site and bot each read their own tag (SHENRON_SITE_TAG, SHENRON_BOT_TAG) and fall back to
 #      SHENRON_IMAGE_TAG, so the current .env renders exactly the running containers and
@@ -10,7 +10,8 @@
 #   2. site and bot need postgres and redis healthy, but compute and chat only optionally: both
 #      degrade explicitly without them (docs/operations/production.md, "Services consommés"),
 #      and a missing model must not block them (2026-11-04 outage: one model blocked `up`).
-# Secrets stay in the host files named below (env_file, mounted key files); none is inlined.
+# SHENRON_ROOT is the host root of the production layout (deploy/README.md). Secrets stay in the
+# host files named below (env_file, mounted key files); none is inlined.
 # Two values were redacted while reading and are rewritten from the surrounding configuration:
 # the PostgreSQL key path and the cloudflared token mount. Infra checks both against the host
 # before installing (`docker compose config` diff against the live file).
@@ -31,9 +32,9 @@ services:
       - /run/postgresql:rw,nosuid,uid=999,gid=999,size=16m
       - /tmp:rw,nosuid,size=16m
     volumes:
-      - /srv/shenron/config/postgres:/etc/postgresql:ro
-      - /srv/shenron/config/postgres/tls18:/etc/postgresql/tls:ro
-      - /srv/shenron/data/postgres18:/var/lib/postgresql/data
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/config/postgres:/etc/postgresql:ro"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/config/postgres/tls18:/etc/postgresql/tls:ro"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/postgres18:/var/lib/postgresql/data"
     entrypoint:
       - postgres
       - -D
@@ -91,8 +92,8 @@ services:
     tmpfs:
       - /tmp:rw,nosuid,size=16m
     volumes:
-      - /srv/shenron/data/redis:/data
-      - /srv/shenron/config/redis:/etc/redis:ro
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/redis:/data"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/config/redis:/etc/redis:ro"
     entrypoint: [redis-server, /etc/redis/redis.conf]
     healthcheck:
       test: ["CMD", "redis-cli", "-h", "127.0.0.1", "-p", "6379", "ping"]
@@ -120,7 +121,7 @@ services:
     environment:
       HF_HUB_OFFLINE: "1"
     volumes:
-      - /srv/shenron/models/e5:/data/e5:ro
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/models/e5:/data/e5:ro"
     command:
       [
         --model-id,
@@ -152,15 +153,15 @@ services:
     security_opt: ["no-new-privileges:true"]
     tmpfs:
       - /tmp
-      - /home/ubuntu:uid=1000,gid=1000,mode=0700
-    working_dir: /srv/shenron/data/workspace
+      - /home/ubuntu:uid=1000,gid=1000,mode=0700 # paths:ok
+    working_dir: "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/workspace"
     env_file:
-      - /srv/shenron/config/compute.env
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/config/compute.env"
     environment:
-      HOME: /home/ubuntu
-      SHENRON_HOME: /srv/shenron/data/workspace
+      HOME: /home/ubuntu # paths:ok
+      SHENRON_HOME: "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/workspace"
     volumes:
-      - /srv/shenron/data/workspace:/srv/shenron/data/workspace
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/workspace:${SHENRON_ROOT}/data/workspace"
     command: [shenron-mcp, --http, "127.0.0.1:8789"]
     depends_on:
       postgres:
@@ -191,8 +192,8 @@ services:
     environment:
       HOME: /tmp
     volumes:
-      - /srv/shenron/models/qwen3/base.gguf:/models/base.gguf:ro
-      - /srv/shenron/models/adapter/shenron-chat-v2.gguf:/models/adapter.gguf:ro
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/models/qwen3/base.gguf:/models/base.gguf:ro"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/models/adapter/shenron-chat-v2.gguf:/models/adapter.gguf:ro"
     command:
       - --model
       - /models/base.gguf
@@ -239,8 +240,8 @@ services:
       - /tmp:uid=1000,gid=1000,mode=1777,size=64m
     working_dir: /app
     env_file:
-      - /srv/shenron/config/site.env
-      - /srv/shenron/config/compute-client.env
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/config/site.env"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/config/compute-client.env"
     environment:
       SHENRON_PROFILE: production
       HOSTNAME: 127.0.0.1
@@ -251,8 +252,8 @@ services:
       SHENRON_REVISION: ${SHENRON_SITE_TAG:-${SHENRON_IMAGE_TAG}}
       NEXT_TELEMETRY_DISABLED: "1"
     volumes:
-      - /srv/shenron/data/server:/var/lib/shenron
-      - /srv/shenron/data/releases:/srv/shenron/shared/releases:ro
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/server:/var/lib/shenron"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/releases:${SHENRON_ROOT}/shared/releases:ro"
     entrypoint: [/usr/local/bin/shenron-server, serve, --host, 127.0.0.1, --port, "5011"]
     # CHANGED (2): compute and chat are optional dependencies.
     depends_on:
@@ -292,16 +293,16 @@ services:
       - /tmp:uid=1000,gid=1000,mode=1777,size=64m
     working_dir: /app
     env_file:
-      - /srv/shenron/config/bot.env
-      - /srv/shenron/config/compute-client.env
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/config/bot.env"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/config/compute-client.env"
     environment:
       SHENRON_PROFILE: production
       API_HOST: 127.0.0.1
       API_PORT: "5006"
       SHENRON_REVISION: ${SHENRON_BOT_TAG:-${SHENRON_IMAGE_TAG}}
     volumes:
-      - /srv/shenron/data/bot/data:/app/data
-      - /srv/shenron/data/bot/assets:/app/assets:ro
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/bot/data:/app/data"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/bot/assets:/app/assets:ro"
     entrypoint: [/usr/local/bin/shenron-bot]
     # CHANGED (2)
     depends_on:
@@ -344,18 +345,18 @@ services:
     # current/ is resolved when the container is created: activate.sh recreates the gateway
     # (--no-deps) after each switch of the symlink.
     volumes:
-      - /srv/shenron/config/tls:/etc/letsencrypt:ro
-      - /srv/shenron/current/nginx:/etc/nginx/conf.d:ro
-      - /srv/shenron/data/site/creator:/srv/shenron-creator:ro
-      - /srv/shenron/data/site/downloads:/srv/shenron-downloads:ro
-      - /srv/shenron/data/bot/assets:/srv/shenron-cdn/assets:ro
-      - /srv/shenron/current/public/50x.html:/var/www/shenron/50x.html:ro
-      - /srv/shenron/current/public:/srv/shenron-cdn/site:ro
-      - /srv/shenron/data/site/public-extra:/srv/shenron-cdn/site-extra:ro
-      - /srv/shenron/data/site/wiki:/srv/shenron-cdn/wiki:ro
-      - /srv/shenron/data/site/letsencrypt:/var/www/letsencrypt:ro
-      - /srv/shenron/data/site/maintenance:/var/www/maintenance:ro
-      - /srv/shenron/current/cdn/_next:/srv/shenron-cdn/_next:ro
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/config/tls:/etc/letsencrypt:ro"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/current/nginx:/etc/nginx/conf.d:ro"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/site/creator:/srv/shenron-creator:ro" # paths:ok
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/site/downloads:/srv/shenron-downloads:ro" # paths:ok
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/bot/assets:/srv/shenron-cdn/assets:ro" # paths:ok
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/current/public/50x.html:/var/www/shenron/50x.html:ro"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/current/public:/srv/shenron-cdn/site:ro" # paths:ok
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/site/public-extra:/srv/shenron-cdn/site-extra:ro" # paths:ok
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/site/wiki:/srv/shenron-cdn/wiki:ro" # paths:ok
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/site/letsencrypt:/var/www/letsencrypt:ro"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/site/maintenance:/var/www/maintenance:ro"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/current/cdn/_next:/srv/shenron-cdn/_next:ro" # paths:ok
     depends_on:
       site:
         condition: service_healthy
@@ -383,7 +384,7 @@ services:
     security_opt: ["no-new-privileges:true"]
     volumes:
       # Redacted while reading: the mount of the token file (a path; the token stays on the host).
-      - /srv/shenron/config/cloudflare/tunnel-token:/etc/cloudflared/tunnel-token:ro
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/config/cloudflare/tunnel-token:/etc/cloudflared/tunnel-token:ro"
     command:
       [
         tunnel,

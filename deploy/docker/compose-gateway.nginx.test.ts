@@ -70,7 +70,7 @@ test("new persistent wiki uploads remain readable after CDN and VFS misses witho
 test("CDN chunks prefer the sealed rolling tree and use the active site on a miss", async () => {
   const source = await Bun.file(new URL("./cdn-dragonballfr-ssl.conf", import.meta.url)).text();
   expect(source).toContain("try_files $uri @release_static;");
-  expect(source).toContain("root /srv/shenron-cdn;");
+  expect(source).toContain("root /srv/shenron-cdn;"); // paths:ok
   expect(source).toContain("location @release_static {");
   expect(source).toContain("proxy_pass http://127.0.0.1:5011;");
   expect(source).toContain("error_page 404 502 503 504 = @cdn_native_chunk;");

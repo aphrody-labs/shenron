@@ -1,5 +1,6 @@
 # Starts the Koharu service at boot (own project; the container also carries restart: unless-stopped).
-# Installed as /etc/systemd/system/koharu-stack.service on the production host.
+# Installed as /etc/systemd/system/koharu-stack.service on the production host; /etc/shenron/koharu.env
+# holds KOHARU_ROOT=<directory of koharu.compose.yaml> (deploy/README.md).
 [Unit]
 Description=Koharu manga page service (docker compose)
 Requires=docker.service
@@ -9,8 +10,8 @@ Wants=network-online.target
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-WorkingDirectory=/srv/koharu
-ExecStart=/usr/bin/docker compose -f /srv/koharu/compose.yaml up -d --no-recreate
+EnvironmentFile=/etc/shenron/koharu.env
+ExecStart=/usr/bin/docker compose --project-directory ${KOHARU_ROOT} -f ${KOHARU_ROOT}/compose.yaml up -d --no-recreate
 ExecStop=/bin/true
 TimeoutStartSec=300
 

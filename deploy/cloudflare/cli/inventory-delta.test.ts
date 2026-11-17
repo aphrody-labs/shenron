@@ -112,7 +112,7 @@ test("delta pins the previous inventory and emits public shards without source p
 test("a deployment delta retains old chunk URLs and gateway precedence", () => {
   const previous = {
     "/_next/static/old.js": old("/old-payload/old.js"),
-    "/_next/static/shared.js": old("/srv/shenron-cdn/_next/static/shared.js"),
+    "/_next/static/shared.js": old("/srv/shenron-cdn/_next/static/shared.js"), // paths:ok
     "/logo.svg": old("/old-payload/logo.svg"),
   };
   const current = {

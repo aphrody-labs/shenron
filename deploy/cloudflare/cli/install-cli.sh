@@ -26,6 +26,8 @@ if [ "${1:-}" = "--install-owner-s3" ]; then
   # Explicit Infra SSH owner phase; require the existing credential, never create one.
   sudo -n test -r /etc/shenron/cloudflare/api-token
   sudo -n mkdir -p /etc/shenron/cloudflare/cli
+  # The renewal unit runs as root but reads the manifest of this user: record its path.
+  printf 'CLOUDFLARE_MANIFEST=%s\n' "$HOME/.config/aphrody/cloudflare/manifest.json" | sudo -n tee /etc/shenron/cloudflare/s3-renew.env >/dev/null
   sudo -n install -o root -g root -m 600 "$target_dir/s3-profile.ts" "$target_dir/cloudflare-ops.ts" "$target_dir/transfer.ts" "$target_dir/inventory-delta.ts" "$target_dir/publish-catalog.ts" "$target_dir/public-cdn-catalog.ts" /etc/shenron/cloudflare/cli/
   sudo -n install -o root -g root -m 644 "$target_dir/shenron-cloudflare-s3-renew.service" "$target_dir/shenron-cloudflare-s3-renew.timer" /etc/systemd/system/
   sudo -n systemd-analyze verify /etc/systemd/system/shenron-cloudflare-s3-renew.service /etc/systemd/system/shenron-cloudflare-s3-renew.timer

@@ -65,7 +65,7 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
  && useradd --uid 10001 --gid 10001 --home-dir /var/lib/shenron --no-create-home --shell /usr/sbin/nologin shenron \
  && install -d -m 0755 -o shenron -g shenron /app /app/data /app/assets /var/lib/shenron \
  && install -d -m 0755 -o shenron -g shenron /var/lib/shenron/config /var/lib/shenron/cache /var/lib/shenron/data /var/lib/shenron/logs \
- && install -d -m 0755 /srv/shenron-cdn /srv/shenron-cdn/site /srv/shenron-cdn/assets /srv/shenron-cdn/wiki /srv/shenron-cdn/site-extra
+ && install -d -m 0755 /srv/shenron-cdn /srv/shenron-cdn/site /srv/shenron-cdn/assets /srv/shenron-cdn/wiki /srv/shenron-cdn/site-extra # paths:ok
 
 WORKDIR /app
 

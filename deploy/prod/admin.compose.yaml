@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # admin. service on prd: its own compose project, never part of the shenron or rosegriffon stacks.
-# Secrets stay in /srv/shenron/config/admin.env (SHENRON_ADMIN_TOKEN, SHENRON_AUTH_URL); nothing inlined.
+# Secrets stay in $SHENRON_ROOT/config/admin.env (SHENRON_ADMIN_TOKEN, SHENRON_AUTH_URL); nothing inlined.
 name: shenron-admin
 services:
   admin:
@@ -11,14 +11,14 @@ services:
     read_only: true
     cap_drop: [ALL]
     security_opt: [no-new-privileges:true]
-    env_file: [/srv/shenron/config/admin.env]
+    env_file: ["${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/config/admin.env"]
     environment:
       SHENRON_ADMIN_BIND: 127.0.0.1:5020
       SHENRON_SITE_URL: http://127.0.0.1:5011
       SHENRON_BOT_URL: http://127.0.0.1:5006
-      SHENRON_ADMIN_PANELS_DIR: /srv/shenron/config/admin-panels
+      SHENRON_ADMIN_PANELS_DIR: /etc/shenron/admin-panels
     volumes:
-      - /srv/shenron/config/admin-panels:/srv/shenron/config/admin-panels:ro
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/config/admin-panels:/etc/shenron/admin-panels:ro"
     healthcheck:
       test: ["CMD", "curl", "-fsS", "http://127.0.0.1:5020/api/health"]
       interval: 15s

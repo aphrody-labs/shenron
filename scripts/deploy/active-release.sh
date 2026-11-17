@@ -5,7 +5,8 @@
 #   scripts/deploy/active-release.sh [site|bot]      (default: site)
 #
 # Order: the image tag of the running container (what serves traffic), then the per-service tag,
-# then SHENRON_IMAGE_TAG of /srv/shenron/.env. /srv/shenron/current is never used: it only names
+# then SHENRON_IMAGE_TAG of the .env in the compose project directory of that container (or
+# $SHENRON_ROOT on the target). $SHENRON_ROOT/current is never used: it only names
 # the static release directory of the gateway and lagged the image until 2026-11-03 (audit
 # surface-2026-11-05 E2). SHENRON_ACTIVE_COMMAND replaces the probe; empty prints nothing.
 # Prints nothing (exit 0) when no revision is found, e.g. on a first install.
@@ -23,7 +24,8 @@ resolve_host() {
 }
 upper=$(printf '%s' "$service" | tr a-z A-Z)
 probe="docker inspect -f '{{.Config.Image}}' shenron-$service 2>/dev/null | sed -n 's/.*://p'
-sed -n 's/^SHENRON_${upper}_TAG=//p; s/^SHENRON_IMAGE_TAG=//p' /srv/shenron/.env 2>/dev/null"
+root=\${SHENRON_ROOT:-\$(docker inspect -f '{{index .Config.Labels \"com.docker.compose.project.working_dir\"}}' shenron-$service 2>/dev/null)}
+[ -z \"\$root\" ] || sed -n 's/^SHENRON_${upper}_TAG=//p; s/^SHENRON_IMAGE_TAG=//p' \"\$root/.env\" 2>/dev/null"
 command=${SHENRON_ACTIVE_COMMAND-$probe}
 [ -n "$command" ] || exit 0
 case "$TARGET" in

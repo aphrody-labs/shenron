@@ -8,15 +8,15 @@ Type=oneshot
 User=ubuntu
 Group=ubuntu
 UMask=0077
-WorkingDirectory=/home/ubuntu/.local/share/aphrody/cloudflare-cli/orchestration
-Environment=CLOUDFLARE_OPS_STATE=/home/ubuntu/.local/state/aphrody/cloudflare
-ExecStart=/usr/local/bin/bun cloudflare-ops.ts reconcile --manifest /home/ubuntu/.config/aphrody/cloudflare/manifest.json
+WorkingDirectory=%h/.local/share/aphrody/cloudflare-cli/orchestration
+Environment=CLOUDFLARE_OPS_STATE=%h/.local/state/aphrody/cloudflare
+ExecStart=/usr/local/bin/bun cloudflare-ops.ts reconcile --manifest %h/.config/aphrody/cloudflare/manifest.json
 TimeoutStartSec=240
 NoNewPrivileges=true
 PrivateTmp=true
 ProtectSystem=strict
 ProtectHome=read-only
-ReadWritePaths=/home/ubuntu/.local/state/aphrody/cloudflare
+ReadWritePaths=%h/.local/state/aphrody/cloudflare
 [Install]
 WantedBy=multi-user.target
 

@@ -263,7 +263,7 @@ const entry = {
   path: "/assets/a.png",
   sha256: "a".repeat(64),
   size: 12,
-  sourcePath: process.platform === "win32" ? "C:/public/a.png" : "/public/a.png",
+  sourcePath: process.platform === "win32" ? "C:/public/a.png" : "/public/a.png", // paths:ok
   contentType: "image/png",
 };
 test("signed uploads attest byte digest as metadata and standard checksum", () => {

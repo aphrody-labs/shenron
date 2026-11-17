@@ -54,7 +54,7 @@ jobs:
       SHENRON_BUILD_REPO: ${{ vars.SHENRON_BUILD_REPO }}
       SHENRON_VFS_SOURCE: ${{ vars.SHENRON_VFS_SOURCE }}
       SHENRON_DEPLOY_TARGET: ${{ vars.SHENRON_DEPLOY_TARGET || 'local' }}
-      SHENRON_DEPLOY_COMMAND: ${{ vars.SHENRON_DEPLOY_COMMAND || 'bash /root/deploy-shenron-image.sh' }}
+      SHENRON_DEPLOY_COMMAND: ${{ vars.SHENRON_DEPLOY_COMMAND || 'bash ~/deploy-shenron-image.sh' }}
       SHENRON_ACCEPT_HOLDS: ${{ inputs.accept_holds && '1' || '0' }}
       REVISION: ${{ inputs.revision || github.sha }}
     steps:

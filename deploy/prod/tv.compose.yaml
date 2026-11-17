@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # tv.: its own Compose project (shenron-tv), independent of the main shenron stack.
-# Installed as /srv/shenron/tv.compose.yaml on the production host; secrets live in
-# /srv/shenron/config/tv.env (SHENRON_TV_TOKEN), never in this file.
+# Installed as $SHENRON_ROOT/tv.compose.yaml on the production host; secrets live in
+# $SHENRON_ROOT/config/tv.env (SHENRON_TV_TOKEN), never in this file.
 name: shenron-tv
 
 services:
@@ -17,7 +17,7 @@ services:
     cpus: 3
     mem_limit: 3g
     pids_limit: 512
-    env_file: [/srv/shenron/config/tv.env]
+    env_file: ["${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/config/tv.env"]
     environment:
       SHENRON_TV_BIND: 127.0.0.1:8793
       SHENRON_TV_DATA: /var/lib/shenron-tv
@@ -25,6 +25,6 @@ services:
       SHENRON_TV_JOBS: "1"
     tmpfs:
       - /tmp:rw,nosuid,exec,size=2g
-      - /home/tv:rw,nosuid,size=64m,uid=10001,gid=10001
+      - /home/tv:rw,nosuid,size=64m,uid=10001,gid=10001 # paths:ok
     volumes:
-      - /srv/shenron/data/tv:/var/lib/shenron-tv
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/data/tv:/var/lib/shenron-tv"

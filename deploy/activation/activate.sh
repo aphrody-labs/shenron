@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
 # Per-service activation of one Shenron image on the production host. Template owned by this
-# repository, installed on the production host by hand (it replaces /srv/shenron/bin/deploy-image.sh,
-# which /root/deploy-shenron-image.sh links to). Runbook: docs/operations/AUTO-DEPLOY.md.
+# repository, installed on the production host by hand (it replaces $SHENRON_ROOT/bin/deploy-image.sh,
+# which ~/deploy-shenron-image.sh links to). Runbook: docs/operations/AUTO-DEPLOY.md.
 #
 #   activate.sh <sha> [image-tar]
 #
 # Environment:
 #   SHENRON_SERVICES      services to switch, in this order (default: ACTIVATION_ORDER, "site bot");
 #                         scripts/deploy/ship-image.sh passes only the services the change reaches
-#   SHENRON_ROOT          default /srv/shenron
+#   SHENRON_ROOT          host root of the production layout; default: the parent of the directory
+#                         holding this script once symlinks are resolved ($SHENRON_ROOT/bin)
 #   SHENRON_COMPOSE_FILE  default $SHENRON_ROOT/compose.yaml (deploy/prod/compose.yaml)
 #   SHENRON_ACTIVATION_ENV  service table (default: activation.env next to this script, emitted by
 #                         `bun scripts/deploy/environment.ts --emit activation`; built-in defaults
@@ -36,7 +37,8 @@ TAR=${2:-}
 [[ $SHA =~ ^[0-9a-f]{40}$ ]] || { echo "error: invalid revision: $SHA" >&2; exit 64; }
 
 HERE=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
-ROOT=${SHENRON_ROOT:-/srv/shenron}
+ROOT=${SHENRON_ROOT:-$(dirname -- "$(dirname -- "$(readlink -f -- "${BASH_SOURCE[0]}")")")}
+export SHENRON_ROOT=$ROOT
 COMPOSE=${SHENRON_COMPOSE_FILE:-$ROOT/compose.yaml}
 ENV_FILE=$ROOT/.env
 IMAGE_REPO=${SHENRON_IMAGE:-localhost/shenron}

@@ -9,11 +9,12 @@ User=root
 Group=root
 UMask=0077
 LoadCredential=api-token:/etc/shenron/cloudflare/api-token
+EnvironmentFile=/etc/shenron/cloudflare/s3-renew.env
 Environment=CLOUDFLARE_API_TOKEN_FILE=/run/credentials/shenron-cloudflare-s3-renew.service/api-token
 # An interrupted run leaves its lock directory and O_EXCL temporaries (*.next) behind and every
 # later run fails; oneshot runs never overlap, so anything older than 3 min is stale.
 ExecStartPre=/usr/bin/find /etc/shenron/cloudflare -maxdepth 1 ( -name *.lock -type d -o -name *.next -type f ) -mmin +3 -delete
-ExecStart=/usr/local/bin/bun /etc/shenron/cloudflare/cli/s3-profile.ts renew --manifest /home/ubuntu/.config/aphrody/cloudflare/manifest.json --profile /etc/shenron/cloudflare/shenron-s3.json --apply
+ExecStart=/usr/local/bin/bun /etc/shenron/cloudflare/cli/s3-profile.ts renew --manifest ${CLOUDFLARE_MANIFEST} --profile /etc/shenron/cloudflare/shenron-s3.json --apply
 TimeoutStartSec=120
 NoNewPrivileges=true
 PrivateTmp=true

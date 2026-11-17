@@ -27,7 +27,7 @@ export function mergeEntries(
   for (const [path, entry] of Object.entries(current)) {
     if (
       path.startsWith("/_next/static/") &&
-      previous[path]?.sourcePath?.startsWith("/srv/shenron-cdn/_next/static/")
+      previous[path]?.sourcePath?.startsWith("/srv/shenron-cdn/_next/static/") // paths:ok
     )
       continue;
     entries[path] = entry;

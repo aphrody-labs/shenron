@@ -4,6 +4,8 @@
 
 Usage: apply-migrations.py <migrations-dir> [--dry-run]
 
+Backups go to $SHENRON_BACKUP_DIR (default: ~/backups-auth).
+
 Same rule as drizzle's migrator: a journal entry is pending when its `when` is greater than
 the newest `created_at` in drizzle.__drizzle_migrations; the row stores the sha256 of the SQL.
 Each file runs in one transaction (psql -1, ON_ERROR_STOP) after a pg_dump backup, so a
@@ -13,6 +15,7 @@ additive: the previous release keeps serving until the new one is activated.
 
 import hashlib
 import json
+import os
 import subprocess
 import sys
 import time
@@ -21,7 +24,7 @@ from pathlib import Path
 CONTAINER = "shenron-postgres"
 DB = "shenron_site"
 USER = "postgres"
-BACKUPS = Path("/root/backups-auth")
+BACKUPS = Path(os.environ.get("SHENRON_BACKUP_DIR") or Path.home() / "backups-auth")
 
 
 def psql(sql: str, *, single_tx: bool = False, capture: bool = True) -> str:

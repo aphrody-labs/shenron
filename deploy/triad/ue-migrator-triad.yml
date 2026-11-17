@@ -3,6 +3,7 @@
 #
 # Sovereign Fleet Triad Resource Allocation for Unreal Engine to Web Migration
 # Interconnected over private WireGuard mesh (10.200.77.0/24) with Zstd image streaming.
+# SHENRON_ROOT is the host root of the production layout (deploy/README.md).
 
 services:
   # ============================================================================
@@ -15,8 +16,8 @@ services:
     network_mode: host
     environment:
       - RUSTC_WRAPPER=sccache
-      - SCCACHE_DIR=/root/.cache/sccache
-      - MAGIKA_MODEL_DIR=/srv/shenron/models/magika
+      - SCCACHE_DIR=/var/cache/sccache
+      - MAGIKA_MODEL_DIR=${SHENRON_ROOT}/models/magika
       - DEPOT_CLI_PATH=/usr/local/bin/depot
       - WIRE_GUARD_PEER_CDN=10.200.77.3
       - WIRE_GUARD_PEER_PROD=10.200.77.5
@@ -29,9 +30,9 @@ services:
           cpus: "8.0"
           memory: 12G
     volumes:
-      - /srv/shenron/sccache:/root/.cache/sccache
-      - /srv/shenron/staging:/srv/shenron/staging
-      - /srv/shenron/models:/srv/shenron/models
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/sccache:/var/cache/sccache"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/staging:${SHENRON_ROOT}/staging"
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/models:${SHENRON_ROOT}/models"
     restart: unless-stopped
 
   # ============================================================================
@@ -56,7 +57,7 @@ services:
           cpus: "2.0"
           memory: 4G
     volumes:
-      - /srv/shenron/cdn:/srv/shenron/cdn
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/cdn:/var/lib/ue-vfs"
       - /var/cache/nginx/ue_vfs:/var/cache/nginx/ue_vfs
       - ./deploy/nginx/ue-game-vfs.conf:/etc/nginx/conf.d/ue-game-vfs.conf:ro
     restart: unless-stopped
@@ -84,5 +85,5 @@ services:
           cpus: "4.0"
           memory: 8G
     volumes:
-      - /srv/shenron/var:/srv/shenron/var
+      - "${SHENRON_ROOT:?set SHENRON_ROOT (see deploy/README.md)}/var:${SHENRON_ROOT}/var"
     restart: unless-stopped
