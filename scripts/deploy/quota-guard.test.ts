@@ -28,10 +28,11 @@ describe("VPS quota-guard & pre-prod CI plan", () => {
     expect(renderNginxWeights(high)).toContain("127.0.0.1:18081 down;");
   });
 
-  test("pre-prod CI targets /srv/xbuild cleanly without /home/ubuntu", () => {
+  test("pre-prod CI targets xbuild cleanly without user home directories", () => {
     const plan = buildPreprodPlan();
     expect(plan.remoteDir).toBe(XBUILD_ROOT);
-    expect(plan.remoteDir).not.toContain("/home/ubuntu");
+    expect(plan.remoteDir).toContain("xbuild/shenron");
+    expect(plan.remoteDir).not.toMatch(/^\/(?:home|Users)\//);
     expect(plan.deployCommands).toContain(
       "bunx vercel deploy --prebuilt --prod --archive=tgz --yes",
     );

@@ -59,10 +59,12 @@ test("a remote snapshot drops the checkout of a removed submodule", () => {
   const film = join(source, "film");
   const project = join(source, "project");
   const checkout = join(source, "checkout");
+  const programFilesGit =
+    process.platform === "win32" && process.env.ProgramFiles
+      ? join(process.env.ProgramFiles, "Git", "cmd", "git.exe")
+      : undefined;
   const gitBin =
-    process.platform === "win32" && existsSync("C:\\Program Files\\Git\\cmd\\git.exe")
-      ? "C:\\Program Files\\Git\\cmd\\git.exe"
-      : "git";
+    programFilesGit && existsSync(programFilesGit) ? programFilesGit : (Bun.which("git") ?? "git");
   const git = (cwd: string, args: string[]) => {
     const child = Bun.spawnSync(
       [

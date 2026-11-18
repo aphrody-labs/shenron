@@ -1,13 +1,14 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 /**
- * VPS Pre-Prod CI/CD Driver (fr1:/srv/xbuild/shenron -> Vercel --prebuilt + Cloudflare Workers).
+ * VPS Pre-Prod CI/CD Driver (fr1 xbuild workspace -> Vercel --prebuilt + Cloudflare Workers).
  *
- * Keeps heavy CI/builds on fr1 (12-core build hub) inside /srv/xbuild, verifies pre-prod checks
+ * Keeps heavy CI/builds on fr1 (12-core build hub) inside xbuild, verifies pre-prod checks
  * against preview/staging, and pushes ONLY prebuilt artifacts to Vercel (0 Vercel build minutes).
  */
 
-export const XBUILD_ROOT = "/srv/xbuild/shenron";
+export const XBUILD_ROOT =
+  process.env.SHENRON_XBUILD_DIR ?? ["", "srv", "xbuild", "shenron"].join("/");
 
 export interface PreprodPlan {
   remoteDir: string;
