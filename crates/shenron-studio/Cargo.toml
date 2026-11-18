@@ -1,9 +1,6 @@
-# SPDX-License-Identifier: Apache-2.0
 [package]
 name = "shenron-studio"
-description = "Tauri commands of the Shenron studio: health, RAG, training, local corpus, local models and the public Shenron chat."
 version.workspace = true
-publish = false
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
@@ -11,13 +8,16 @@ authors.workspace = true
 homepage.workspace = true
 repository.workspace = true
 
+[dependencies]
+anyhow = { workspace = true }
+gpui-kit = { workspace = true }
+serde = { workspace = true }
+shenron-cli = { path = "../shenron-cli" }
+shenron-rag = { path = "../shenron-rag" }
+shenron-theme = { workspace = true }
+
+[dev-dependencies]
+gpui-kit = { workspace = true, features = ["test-support"] }
+
 [lints]
 workspace = true
-
-[dependencies]
-reqwest = { workspace = true }
-serde = { workspace = true }
-serde_json = { workspace = true }
-shenron-cli = { workspace = true }
-shenron-rag = { workspace = true }
-tauri = { workspace = true }

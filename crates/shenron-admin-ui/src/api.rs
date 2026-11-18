@@ -12,6 +12,7 @@ impl Session {
         format!("{}{}", self.base.trim_end_matches('/'), path)
     }
 
+    #[cfg(not(target_family = "wasm"))]
     pub async fn get(&self, path: &str) -> Result<Value, String> {
         let response = reqwest::Client::new()
             .get(self.url(path))
@@ -27,5 +28,11 @@ impl Session {
             let detail = body.get("error").and_then(Value::as_str).unwrap_or("request failed");
             Err(format!("{} {}", status.as_u16(), detail))
         }
+    }
+
+    #[cfg(target_family = "wasm")]
+    pub async fn get(&self, path: &str) -> Result<Value, String> {
+        let _ = self.url(path);
+        Err("wasm fetch bridge pending".to_string())
     }
 }

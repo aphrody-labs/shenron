@@ -63,6 +63,8 @@ export function windowsBindgenEnv(base: NodeJS.ProcessEnv = process.env): NodeJS
       : {}),
     INCLUDE: base.INCLUDE ? `${base.INCLUDE};${includes.join(";")}` : includes.join(";"),
     BINDGEN_EXTRA_CLANG_ARGS: clangArgs,
+    CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_RUSTFLAGS:
+      base.CARGO_TARGET_X86_64_PC_WINDOWS_MSVC_RUSTFLAGS ?? "-C target-cpu=native",
   };
 }
 

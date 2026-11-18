@@ -8,10 +8,7 @@
     "allowImportingTsExtensions": true,
     "skipLibCheck": true,
     "types": ["bun"],
-    "lib": ["ESNext"],
-    "paths": {
-      "undici-types": ["./node_modules/undici-types"]
-    }
+    "lib": ["ESNext"]
   },
   "include": ["src/**/*.ts", "test/**/*.ts"]
 }

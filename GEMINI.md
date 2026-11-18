@@ -18,4 +18,5 @@
 ## 3. Autonomous Execution (NHITL)
 
 - **Zero Bottlenecks**: Eliminate redundant build steps, external network dependencies during builds, and sequential bottlenecks.
-- **Quality Gates**: Always validate changes with `bun fmt`, `bun lint`, `bun check`, and `bun test` / `cargo test` before committing.
+- **Migration Ratchet (`ADR 0004`)**: Every TypeScript file belongs to a unit in `migration/rust.toml` whose `ts_lines` may shrink, never grow. Check unit line budgets before adding TS lines, lower ratchets after deletions (`just migrate-ratchet`), enforce `[lints] workspace = true` on every Cargo crate (`just align-check`), and never stage concurrent unstaged paths.
+- **Quality Gates**: Always validate changes with `bun fmt`, `bun lint`, `bun check`, `just migrate-check`, and scoped `bun test <pkg>` / `fr1` `cargo nextest` before committing.

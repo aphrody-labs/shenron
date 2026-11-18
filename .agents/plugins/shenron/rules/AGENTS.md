@@ -10,4 +10,5 @@
 
 - Never execute destructive host or remote container commands (`rm -rf $SHENRON_ROOT`, `docker rm`, `docker system prune`).
 - Never log or commit raw secrets.
-- Always validate modifications with `bun check` and `just lint`.
+- Respect the `migration/rust.toml` TypeScript line ratchet (`ts_lines` must never increase) and `[lints] workspace = true` crate inheritance (`just align-check`).
+- Always validate modifications with `bun check`, `just lint`, and `just migrate-check` (running heavy Rust gates on `fr1`).

@@ -3,33 +3,20 @@ name = "koharu-app"
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
-description = "Tauri command layer (Specta) of the Koharu editor engine (koharu-library) for the Shenron desktop app"
-authors = ["Mayo Takanashi <mayo@linux.com>", "Wangchong Zhou <fffonion@gmail.com>"]
-homepage = "https://koharu.rs"
-repository = "https://github.com/koharu-rs/koharu"
-keywords = ["manga", "ocr", "translation", "deep_learning", "computer_vision"]
-publish = false
-license = "MIT OR Apache-2.0"
-
-[lints]
-workspace = true
+license.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
 
 [dependencies]
 anyhow = { workspace = true }
-koharu-agent = { workspace = true }
-koharu-desktop = { workspace = true }
-koharu-library = { workspace = true }
-koharu-pipeline = { workspace = true }
-koharu-renderer = { workspace = true }
-koharu-scene = { workspace = true }
-koharu-translator = { workspace = true }
-open = { workspace = true }
-rfd = { workspace = true }
+gpui-kit = { workspace = true }
+koharu-library = { path = "../koharu-library" }
 serde = { workspace = true }
-specta = { workspace = true }
-tauri = { workspace = true, features = ["dynamic-acl", "specta"] }
-tauri-specta = { workspace = true }
-tracing = { workspace = true }
+shenron-theme = { workspace = true }
 
 [dev-dependencies]
-specta-typescript = { workspace = true }
+gpui-kit = { workspace = true, features = ["test-support"] }
+
+[lints]
+workspace = true

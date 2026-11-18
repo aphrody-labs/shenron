@@ -25,8 +25,7 @@
     "@aphrody/shenron-pipeline": "workspace:*"
   },
   "devDependencies": {
-    "@types/bun": "catalog:",
-    "undici-types": "catalog:"
+    "@types/bun": "catalog:"
   },
   "engines": {
     "bun": ">=1.4.3"

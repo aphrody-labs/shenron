@@ -1,46 +1,26 @@
-# SPDX-License-Identifier: Apache-2.0
 [package]
 name = "shenron-desktop"
-description = "Shenron Studio (Tauri 3), the only Shenron desktop app: the site, the manga translation editor (koharu-library engine in process), the studio and administration in one native window, served locally by the shenron-server sidecar."
 version.workspace = true
-publish = false
 edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 authors.workspace = true
 homepage.workspace = true
 repository.workspace = true
-default-run = "shenron-desktop"
 
 [[bin]]
 name = "shenron-desktop"
 path = "src/main.rs"
 
+[dependencies]
+gpui-kit = { workspace = true }
+koharu-app = { path = "../koharu-app" }
+shenron-admin-ui = { workspace = true }
+shenron-studio = { path = "../shenron-studio" }
+shenron-theme = { workspace = true }
+
+[dev-dependencies]
+gpui-kit = { workspace = true, features = ["test-support"] }
+
 [lints]
 workspace = true
-
-[features]
-default = ["koharu"]
-# In-process Koharu editor (koharu-app commands on the koharu-library engine) and the studio.
-koharu = ["dep:koharu-app", "dep:koharu-library", "dep:shenron-studio"]
-# Serve the bundled frontendDist instead of devUrl (enabled by `cargo tauri build`).
-custom-protocol = ["tauri/custom-protocol"]
-
-[build-dependencies]
-tauri-build = { workspace = true }
-
-[dependencies]
-koharu-app = { workspace = true, optional = true }
-koharu-library = { workspace = true, optional = true }
-log = { workspace = true }
-serde_json = { workspace = true }
-shenron-studio = { workspace = true, optional = true }
-tauri = { workspace = true, features = ["dynamic-acl", "image-ico", "image-png"] }
-tauri-plugin-log = { workspace = true }
-tauri-plugin-opener = { workspace = true }
-tauri-plugin-process = { workspace = true }
-tauri-plugin-single-instance = { workspace = true }
-tauri-plugin-updater = { workspace = true }
-tauri-plugin-window-state = { workspace = true }
-tauri-runtime-cef = { workspace = true }
-tokio = { workspace = true }

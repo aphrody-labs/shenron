@@ -1,7 +1,5 @@
-# SPDX-License-Identifier: Apache-2.0
 [package]
 name = "shenron-admin-ui"
-description = "The admin. dashboard in Rust (Dioxus): one codebase for the desktop app (feature desktop) and the web build (feature web)."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -9,28 +7,28 @@ license.workspace = true
 authors.workspace = true
 homepage.workspace = true
 repository.workspace = true
-publish = false
 
 [[bin]]
 name = "shenron-admin-app"
 path = "src/main.rs"
 
-[features]
-default = []
-desktop = ["dioxus/desktop"]
-web = ["dioxus/web"]
-
-[lints.rust]
-unsafe_code = "forbid"
-
 [dependencies]
-dioxus = { version = "0.7.10" }
+gpui-kit = { workspace = true }
+shenron-theme = { workspace = true }
+serde = { workspace = true }
 serde_json = { workspace = true }
 
-[target.'cfg(target_arch = "wasm32")'.dependencies]
-reqwest = { version = "0.13.5", default-features = false, features = ["json"] }
-web-sys = { version = "0.3", features = ["Window", "Location"] }
-
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+[target.'cfg(not(target_family = "wasm"))'.dependencies]
 reqwest = { workspace = true }
-rustls = { workspace = true }
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }
+
+[target.'cfg(target_family = "wasm")'.dependencies]
+wasm-bindgen = "0.2"
+wasm-bindgen-futures = "0.4"
+web-sys = { version = "0.3", features = ["Window", "Request", "RequestInit", "Response", "Headers"] }
+
+[dev-dependencies]
+gpui-kit = { workspace = true, features = ["test-support"] }
+
+[lints]
+workspace = true

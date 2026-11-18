@@ -1,22 +1,15 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import pino from "pino";
+import { createLogger } from "../src/lib/logger";
 import { OperationalLogs } from "../src/lib/operational-logs";
 
 describe("container bot operational logs", () => {
   test("captures real logger messages without journald or structured private payloads", () => {
     const logs = new OperationalLogs();
-    const logger = pino(
-      {
-        hooks: {
-          logMethod(args, method, level) {
-            logs.record(level, args);
-            method.apply(this, args);
-          },
-        },
-      },
-      { write() {} },
-    );
+    const logger = createLogger({
+      onLog: (level, args) => logs.record(level, args),
+      write: () => {},
+    });
     logger.info({ token: "private-token", payload: "private-provider" }, "Bot ready");
     logger.error({ err: new Error("private-error") }, "Native owner unavailable");
     const result = logs.snapshot(100);

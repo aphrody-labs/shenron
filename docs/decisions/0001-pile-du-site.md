@@ -1,6 +1,6 @@
 # ADR 0001 : Pile du site et du natif
 
-- **Statut** : Accepté
+- **Statut** : Remplacé par [ADR 0008](0008-architecture-pure-gpui-kit.md)
 - **Date** : 2026-11-05
 - **Décideurs** : aphrody-dev, via ADR 0003 de yolo-stack
 - **Pilier(s) concerné(s)** : apps/site, packages/ui, crates/shenron-desktop

@@ -4,9 +4,14 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 description = "Portable OCR result contracts: page identity, provenance, blocks, quality, DocTags parsing and the SQLite deposit"
-license = "Apache-2.0"
+license.workspace = true
+authors.workspace = true
+homepage.workspace = true
 repository.workspace = true
 publish = false
+
+[lints]
+workspace = true
 
 [features]
 default = []

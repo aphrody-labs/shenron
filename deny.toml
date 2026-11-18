@@ -12,15 +12,7 @@ targets = ["x86_64-unknown-linux-gnu", "x86_64-pc-windows-msvc", "wasm32-unknown
 # RustSec database. An accepted advisory goes in `ignore` with its id and the reason.
 yanked = "deny"
 unmaintained = "workspace"
-ignore = [
-  # zip 4.6 reaches the desktop only through tauri-plugin-updater (tauri-apps/plugins-workspace,
-  # Tauri 3 pin), which extracts the app's own update archive after its minisign signature is
-  # verified: no attacker-controlled archive is extracted. Dropped when the v3 updater moves to zip 9.
-  { id = "RUSTSEC-2026-0367", reason = "signed updater archive only (tauri-plugin-updater)" },
-  { id = "RUSTSEC-2026-0368", reason = "signed updater archive only (tauri-plugin-updater)" },
-  { id = "RUSTSEC-2026-0369", reason = "signed updater archive only (tauri-plugin-updater)" },
-  { id = "RUSTSEC-2026-0429", reason = "signed updater archive only (tauri-plugin-updater)" },
-]
+ignore = []
 
 [licenses]
 # Shenron is Apache-2.0, the upstream Koharu crates are MIT OR Apache-2.0: only permissive
@@ -60,12 +52,9 @@ allow-wildcard-paths = true
 unknown-registry = "deny"
 unknown-git = "deny"
 allow-registry = ["https://github.com/rust-lang/crates.io-index"]
-# Git sources, each pinned by `rev` in [workspace.dependencies]: the Tauri tree, tauri-specta, the
-# Koharu engine crates, and the hf-hub revision those crates depend on.
+# Git sources, each pinned by `rev` in [workspace.dependencies]: the Koharu engine crates
+# and the hf-hub revision those crates depend on.
 allow-git = [
-  "https://github.com/tauri-apps/tauri",
-  "https://github.com/tauri-apps/plugins-workspace",
-  "https://github.com/tauri-apps/tauri-specta",
   "https://github.com/koharu-rs/koharu",
   "https://github.com/huggingface/hf-hub",
   "https://github.com/storytold/photocraft",

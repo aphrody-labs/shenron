@@ -1,8 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Shenron Rust workspace: the shenron CLI, MCP server, C ABI, studio commands,
-# desktop app and the Koharu manga translation engine (crates/koharu-*).
-# Koharu engine crates (ML runtime, torch, diffusion, llama) come from github.com/koharu-rs/koharu and
-# Tauri 3 and tauri-specta from github.com/tauri-apps, all pinned by revision (the pins of the koharu base).
+# Pure GPUI desktop/web apps (gpui-kit 0.10.0 + gpui-fast) and the Koharu engine (crates/koharu-*).
+# Koharu engine crates (ML runtime, torch, diffusion, llama) come from github.com/koharu-rs/koharu.
 [workspace]
 resolver = "3"
 members = ["crates/*"]
@@ -166,18 +165,9 @@ specta = { version = "=2.0.0-rc.26", features = ["derive", "url", "uuid"] }
 specta-typescript = "=0.0.13"
 strum = { version = "0.28.0", features = ["derive"] }
 sysinfo = { version = "0.39.6", features = ["system", "disk"], default-features = false }
-tauri = { git = "https://github.com/tauri-apps/tauri", rev = "78f49ba3993fed5a1b921235c547731006ad2a74", default-features = false, features = ["compression", "dynamic-acl", "specta", "tracing"] }
-tauri-build = { git = "https://github.com/tauri-apps/tauri", rev = "78f49ba3993fed5a1b921235c547731006ad2a74" }
-tauri-runtime-cef = { git = "https://github.com/tauri-apps/tauri", rev = "78f49ba3993fed5a1b921235c547731006ad2a74", features = ["unstable"] }
-tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", rev = "3d836244bcb97cb1620405e8d1887da285a793d4" }
-tauri-plugin-opener = { git = "https://github.com/tauri-apps/plugins-workspace", rev = "3d836244bcb97cb1620405e8d1887da285a793d4" }
-tauri-plugin-process = { git = "https://github.com/tauri-apps/plugins-workspace", rev = "3d836244bcb97cb1620405e8d1887da285a793d4" }
-tauri-plugin-single-instance = { git = "https://github.com/tauri-apps/plugins-workspace", rev = "3d836244bcb97cb1620405e8d1887da285a793d4" }
-tauri-plugin-updater = { git = "https://github.com/tauri-apps/plugins-workspace", rev = "3d836244bcb97cb1620405e8d1887da285a793d4" }
-tauri-plugin-window-state = { git = "https://github.com/tauri-apps/plugins-workspace", rev = "3d836244bcb97cb1620405e8d1887da285a793d4" }
-tauri-specta = { git = "https://github.com/tauri-apps/tauri-specta", rev = "6bcec0cdec0c92decf404c85ff01b4d8c3868599", features = ["derive", "typescript"] }
-# The native window and event types of `Cef::on_window_event`: the runtime's own winit fork.
-tauri-winit = { version = "=0.31.0-beta.3", default-features = false }
+gpui-kit = { version = "0.10.0", features = ["gpui-fast"] }
+shenron-theme = { path = "crates/shenron-theme" }
+shenron-admin-ui = { path = "crates/shenron-admin-ui" }
 koharu-config = { git = "https://github.com/koharu-rs/koharu", rev = "c38f2fd9bb0b7dd771d2c4c76a413f1be7757de6" }
 koharu-diffusion = { git = "https://github.com/koharu-rs/koharu", rev = "c38f2fd9bb0b7dd771d2c4c76a413f1be7757de6" }
 koharu-llama = { git = "https://github.com/koharu-rs/koharu", rev = "c38f2fd9bb0b7dd771d2c4c76a413f1be7757de6" }
@@ -243,10 +233,6 @@ windows = { version = "0.62.2", features = [
   "Win32_System",
   "Win32_System_Console",
 ] }
-
-[patch.crates-io]
-tauri = { git = "https://github.com/tauri-apps/tauri", rev = "78f49ba3993fed5a1b921235c547731006ad2a74" }
-tauri-utils = { git = "https://github.com/tauri-apps/tauri", rev = "78f49ba3993fed5a1b921235c547731006ad2a74" }
 
 # Inherited by every crate through `[lints] workspace = true` (scripts/build/rust/align-crates.ts);
 # CI denies warnings (`cargo lint`). Thresholds and test allowances live in clippy.toml.

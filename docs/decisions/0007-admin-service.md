@@ -1,6 +1,6 @@
 # ADR 0007: admin. in Rust, desktop first, web second
 
-Status: accepted, 2026-11-16.
+Status: superseded by [ADR 0008](0008-architecture-pure-gpui-kit.md) (2026-11-18).
 
 ## Decision
 

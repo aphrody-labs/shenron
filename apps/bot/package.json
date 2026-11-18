@@ -63,8 +63,6 @@
     "drizzle-orm": "catalog:",
     "graphql": "catalog:",
     "graphql-yoga": "catalog:",
-    "pino": "catalog:",
-    "pino-pretty": "catalog:",
     "postgres": "catalog:",
     "reflect-metadata": "catalog:",
     "sharp": "catalog:",
@@ -74,8 +72,7 @@
   },
   "devDependencies": {
     "@aphrody/shenron-ui": "workspace:*",
-    "drizzle-kit": "catalog:",
-    "undici-types": "catalog:"
+    "drizzle-kit": "catalog:"
   },
   "engines": {
     "bun": ">=1.4.3"

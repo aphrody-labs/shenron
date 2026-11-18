@@ -16,8 +16,7 @@
     "lib": ["ESNext"],
     "types": ["bun"],
     "paths": {
-      "~/*": ["./src/*"],
-      "undici-types": ["./node_modules/undici-types"]
+      "~/*": ["./src/*"]
     }
   },
   "include": ["src/**/*", "tests/**/*", "scripts/sync-neon-to-sqlite.ts", "drizzle.config.ts"]
