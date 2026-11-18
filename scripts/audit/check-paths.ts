@@ -4,7 +4,7 @@
  * Fails on hardcoded absolute paths (Windows drives, /home, /root, /srv, /Users) in tracked files;
  * exemptions live in paths.allow or on lines carrying `paths:ok`.
  *
- * The scanner is the single-file tools/paths.ts of aphrody-dev/ay, taken in this order:
+ * The scanner is the single-file tools/paths.ts of aphrody-labs/ay, taken in this order:
  * 1. `SHENRON_PATHS_SCANNER` (alias `PATHS_SCANNER`): a local file, for example a developer checkout;
  * 2. the copy of the pinned commit below, fetched once into the gitignored `.cache/` of this repository;
  * 3. when neither is available (offline), the check is skipped with a notice: a clean clone never depends on another repository.
@@ -12,7 +12,7 @@
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
-const SCANNER_REPO = "aphrody-dev/ay";
+const SCANNER_REPO = "aphrody-labs/ay";
 const SCANNER_SHA = "02e2737216665ff8ee1a8f470df8f16c604d2de0";
 
 const repo = resolve(import.meta.dir, "../..");

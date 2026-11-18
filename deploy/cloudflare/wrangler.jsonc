@@ -3,6 +3,16 @@
   "main": "cdn-worker.ts",
   "compatibility_date": "2026-10-11",
   "workers_dev": false,
+  "preview_urls": false,
+  "limits": {
+    "cpu_ms": 50
+  },
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 0.1,
+    "logs": { "enabled": true, "invocation_logs": true, "head_sampling_rate": 0.1 },
+    "traces": { "enabled": true, "head_sampling_rate": 0.05 }
+  },
   "routes": [{ "pattern": "cdn.dragonballfr.com/*", "zone_name": "dragonballfr.com" }],
   "r2_buckets": [{ "binding": "CDN", "bucket_name": "shenron-cdn" }],
   "vars": {

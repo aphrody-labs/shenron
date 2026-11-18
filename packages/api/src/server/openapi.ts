@@ -128,6 +128,22 @@ export function buildOpenApiDocument(): Json {
       schemas: Object.fromEntries(
         Object.entries(components).toSorted(([a], [b]) => a.localeCompare(b)),
       ),
+      parameters: {
+        AcceptLanguage: {
+          name: "Accept-Language",
+          in: "header",
+          required: false,
+          description: "Preferred response locale (BCP 47)",
+          schema: { type: "string", default: "fr" },
+        },
+      },
+      headers: {
+        ContentLanguage: {
+          name: "Content-Language",
+          description: "Resolved response locale (BCP 47)",
+          schema: { type: "string" },
+        },
+      },
       securitySchemes: { bearer: { type: "http", scheme: "bearer" } },
     },
   };

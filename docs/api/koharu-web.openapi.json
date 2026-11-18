@@ -1,7 +1,11 @@
 {
   "openapi": "3.1.0",
   "info": { "title": "Koharu web", "version": "1.0.0", "description": "Manga page pipeline: detection, OCR, translation, inpainting, typesetting." },
-  "components": { "securitySchemes": { "bearer": { "type": "http", "scheme": "bearer" } } },
+  "components": {
+    "parameters": { "AcceptLanguage": { "name": "Accept-Language", "in": "header", "required": false, "schema": { "type": "string", "default": "en" } } },
+    "headers": { "ContentLanguage": { "name": "Content-Language", "schema": { "type": "string" } } },
+    "securitySchemes": { "bearer": { "type": "http", "scheme": "bearer" } }
+  },
   "security": [{ "bearer": [] }, {}],
   "paths": {
     "/healthz": { "get": { "responses": { "200": { "description": "ok" } } } },
