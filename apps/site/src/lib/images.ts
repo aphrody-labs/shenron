@@ -66,14 +66,24 @@ export const LARGEURS_OPTIMISEUR = [
 export function optimizedSrc(src: string, width: number, quality = 70): string {
   // Standalone builds have no Next image optimizer. These exact reviewed scan
   // objects are already public and immutable; preserve their qualified source.
-  if (isEditableAsset(src) || reviewedPublishedImages.has(src)) return src;
+  if (
+    process.env.NEXT_PUBLIC_SHENRON_IMAGES_UNOPTIMIZED === "1" ||
+    isEditableAsset(src) ||
+    reviewedPublishedImages.has(src)
+  )
+    return src;
   const w = LARGEURS_OPTIMISEUR.find((c) => c >= width) ?? LARGEURS_OPTIMISEUR.at(-1)!;
   return `/_next/image?url=${encodeURIComponent(src)}&w=${w}&q=${quality}`;
 }
 
 /** `srcSet` sur plusieurs largeurs, pour laisser le navigateur choisir. */
 export function optimizedSrcSet(src: string, largeurs: readonly number[], quality = 70): string {
-  if (isEditableAsset(src) || reviewedPublishedImages.has(src)) return "";
+  if (
+    process.env.NEXT_PUBLIC_SHENRON_IMAGES_UNOPTIMIZED === "1" ||
+    isEditableAsset(src) ||
+    reviewedPublishedImages.has(src)
+  )
+    return "";
   return largeurs
     .map((l) => `${optimizedSrc(src, l, quality)} ${LARGEURS_OPTIMISEUR.find((c) => c >= l) ?? l}w`)
     .join(", ");

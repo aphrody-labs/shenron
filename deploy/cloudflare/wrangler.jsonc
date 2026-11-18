@@ -18,9 +18,9 @@
   "vars": {
     "IMPORT_ENABLED": "false",
     "VERIFY_UPLOADS": "false",
-    "DYNAMIC_ORIGIN": "",
+    "DYNAMIC_ORIGIN": "https://shenron-site.vercel.app",
     "GARAGE_ORIGIN": "",
-    "MANIFEST_PREFIX": "_migration/manifests/",
+    "MANIFEST_PREFIX": "_migration/manifests/publication-060903ac2850564646dfa3e9/",
     // MANIFEST_SHARD_HASHES_0..3 are written by the migration and kept on deploy (wrangler deploy --keep-vars).
   },
 }

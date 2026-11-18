@@ -19,23 +19,23 @@ name = "site"
 ts = ["apps/site"]
 rust = "crates/shenron-site"
 state = "ts"
-ts_lines = 276359
-note = "Next.js 16 -> Leptos 0.8 SSR + islands on Axum (ADR 0001). Raised from 276176 by the test and accessibility fixes of 3b8b109d; then by the line wraps of the @aphrody/shenron-* scope rename (all units that grew in d6549d0f)"
+ts_lines = 276497
+note = "Next.js 16 -> Leptos 0.8 SSR + islands on Axum (ADR 0001). Updated for serverless Neon/Cloudflare/Vercel compatibility (rate-limit fallback, health/ready handler split, RSS fallback, Turbopack isolation)"
 
 [[unit]]
 name = "bot"
 ts = ["apps/bot"]
 rust = "crates/shenron-bot"
 state = "ts"
-ts_lines = 107540
-note = "discordx -> Rust Discord gateway client; slash commands and the bot API. Raised from 107475 by the render-text test fix of 39c4007d"
+ts_lines = 107611
+note = "discordx -> Rust Discord gateway client; slash commands and the bot API"
 
 [[unit]]
 name = "server"
 ts = ["apps/server"]
 rust = "crates/shenron-server"
 state = "ts"
-ts_lines = 6998
+ts_lines = 7001
 note = "Bun single binary -> Axum host mounting shenron-api and the sidecars"
 
 [[unit]]
@@ -52,7 +52,7 @@ ts = ["packages/api"]
 rust = "crates/shenron-api"
 state = "dual"
 parity = ["data/api/fixtures"]
-ts_lines = 18650
+ts_lines = 18666
 note = "HTTP contract: ported route groups replay data/api/fixtures"
 
 [[unit]]
@@ -68,16 +68,16 @@ name = "pipeline"
 ts = ["packages/pipeline"]
 rust = "crates/shenron-pipeline"
 state = "ts"
-ts_lines = 44754
-note = "editorial pipeline, OCR and translation jobs"
+ts_lines = 44778
+note = "editorial pipeline, OCR and translation jobs; includes trusted Cloudflare HTTPS AI endpoints"
 
 [[unit]]
 name = "db"
 ts = ["packages/db"]
 rust = "crates/shenron-db"
 state = "ts"
-ts_lines = 17242
-note = "Drizzle schema and repositories -> SQL migrations stay, repositories in Rust"
+ts_lines = 17244
+note = "Drizzle schema and repositories -> SQL migrations stay, repositories in Rust (Neon PgBouncer prepare handling)"
 
 [[unit]]
 name = "engine"
@@ -205,16 +205,16 @@ name = "scripts"
 ts = ["scripts"]
 rust = "crates/shenron-cli"
 state = "ts"
-ts_lines = 75448
-note = "build, deploy, ops and data scripts -> shenron subcommands. Raised from 75273 by the uv helper and the native-runtime guard of 9d8b6701, then to 75448 by the naming work of a57956b2 (own SHENRON_* variables, pinned scanner fetch, no sibling-repository checkouts)"
+ts_lines = 75837
+note = "build, deploy, ops and data scripts -> shenron subcommands. Updated for pre-prod CI, quota-guard, and cloud migration drivers"
 
 [[unit]]
 name = "cloudflare"
 ts = ["deploy/cloudflare"]
 rust = "crates/shenron-edge"
 state = "ts"
-ts_lines = 7900
-note = "CDN Worker and origin -> workers-rs"
+ts_lines = 8879
+note = "CDN, AI (Workers AI + Vectorize), Bot HTTP Interactions workers, and FinOps LB -> workers-rs"
 
 [[unit]]
 name = "deploy-docker"
@@ -285,8 +285,8 @@ name = "discord-kit"
 ts = ["packages/discord-kit"]
 rust = "crates/shenron-bot"
 state = "ts"
-ts_lines = 1148
-note = "Discord helpers of the bot; follows the Rust gateway client"
+ts_lines = 1335
+note = "Discord helpers of the bot including Web Crypto Cloudflare interactions runtime; follows the Rust gateway client"
 
 [[unit]]
 name = "m3"

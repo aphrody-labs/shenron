@@ -6,6 +6,9 @@ version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
 license = "MIT OR Apache-2.0"
+authors = ["Mayo Takanashi <mayo@linux.com>", "Wangchong Zhou <fffonion@gmail.com>"]
+homepage = "https://koharu.rs"
+repository = "https://github.com/koharu-rs/koharu"
 publish = false
 
 [[bin]]

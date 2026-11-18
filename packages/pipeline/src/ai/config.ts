@@ -23,7 +23,7 @@ import type {
   LanguageModelV4StreamResult,
 } from "@ai-sdk/provider";
 import { envString, type EnvIssue, type EnvSource } from "@aphrody/shenron-config/env";
-import { parseLoopbackHttpUrl } from "@aphrody/shenron-config/net";
+import { parseHttpsOrLoopbackUrl, parseLoopbackHttpUrl } from "@aphrody/shenron-config/net";
 import { DIRECT_CHAT_MODEL_ID } from "@aphrody/shenron-config/services";
 import type { generateText } from "ai";
 
@@ -287,13 +287,28 @@ export interface AiHttpEndpoint {
   token: string;
 }
 
+function isTrustedShenronHttps(url: URL): boolean {
+  return (
+    url.protocol === "https:" &&
+    !url.username &&
+    !url.password &&
+    (url.hostname === "dragonballfr.com" ||
+      url.hostname.endsWith(".dragonballfr.com") ||
+      url.hostname.endsWith(".workers.dev"))
+  );
+}
+
 /** Origin of `shenron-ai-http`, or `null` when no URL variable is set. */
 export function resolveAiHttpUrl(env: EnvSource): Resolved<URL | null> {
   const hit = readAiEnv(env, AI_ENV.httpUrl);
   if (!hit) return { ok: true, value: null };
-  const parsed = parseLoopbackHttpUrl(hit.value, hit.name);
-  if (!parsed.ok) return { ok: false, issues: [parsed.issue] };
-  return { ok: true, value: new URL(parsed.url.origin) };
+  const parsed = parseHttpsOrLoopbackUrl(hit.value, hit.name);
+  if (parsed.ok && isTrustedShenronHttps(parsed.url)) {
+    return { ok: true, value: new URL(parsed.url.origin) };
+  }
+  const loopback = parseLoopbackHttpUrl(hit.value, hit.name);
+  if (!loopback.ok) return { ok: false, issues: [loopback.issue] };
+  return { ok: true, value: new URL(loopback.url.origin) };
 }
 
 /** Origin of `shenron-ai-http`; throws an {@link AiConfigError} when unset or invalid. */

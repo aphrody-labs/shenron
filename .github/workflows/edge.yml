@@ -27,6 +27,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: oven-sh/setup-bun@v2
-      - name: Deploy shenron-cdn
+      - name: Verify Cloudflare workers
+        run: bun test deploy/cloudflare/ai-worker.test.ts deploy/cloudflare/bot-worker.test.ts deploy/cloudflare/cdn-worker.test.ts
+      - name: Deploy shenron-cdn, shenron-ai, and shenron-bot
         working-directory: deploy/cloudflare
-        run: bun x wrangler@4.161.0 deploy -c wrangler.jsonc --keep-vars
+        run: |
+          bun x wrangler@4.162.0 deploy -c wrangler.jsonc --keep-vars
+          bun x wrangler@4.162.0 deploy -c wrangler.ai.jsonc
+          bun x wrangler@4.162.0 deploy -c wrangler.bot.jsonc

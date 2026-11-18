@@ -20,7 +20,7 @@
 #   sign_pfx    optional Windows code-signing certificate (unused here: see local-windows.ps1)
 
 ARG BASE_IMAGE=ubuntu:26.10
-ARG RUST_VERSION=1.99.1
+ARG RUST_VERSION=1.100.0
 ARG BUN_VERSION=1.4.4
 ARG BUN_LINUX_SHA256=bf8ccbfb2b0b80159e0f9a6d15c55317add8077534dbc6130a3edb52fccb395c
 # Windows base of `bun build --compile --target windows-x64`: the upstream Bun release of BUN_VERSION.

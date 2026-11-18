@@ -92,29 +92,35 @@ export async function JournalIndex({
     // des 12 articles (`body`, `contentJson`, `contentHtml`) pour n'afficher
     // qu'un titre, un chapô et une vignette. Idem pour l'auteur, dont seuls le
     // pseudo et l'avatar sont écrits.
-    db.query.posts.findMany({
-      where: visible,
-      orderBy: [desc(postsTable.publishedAt), desc(postsTable.id)],
-      limit: POSTS_PER_PAGE,
-      offset,
-      columns: {
-        id: true,
-        slug: true,
-        title: true,
-        excerpt: true,
-        cover: true,
-        coverAlt: true,
-        publishedAt: true,
-        readingMinutes: true,
-        tags: true,
-        featured: true,
-      },
-      with: { author: { columns: { username: true, avatar: true } } },
-    }),
-    comptePublies(),
+    Promise.resolve()
+      .then(() =>
+        db.query.posts.findMany({
+          where: visible,
+          orderBy: [desc(postsTable.publishedAt), desc(postsTable.id)],
+          limit: POSTS_PER_PAGE,
+          offset,
+          columns: {
+            id: true,
+            slug: true,
+            title: true,
+            excerpt: true,
+            cover: true,
+            coverAlt: true,
+            publishedAt: true,
+            readingMinutes: true,
+            tags: true,
+            featured: true,
+          },
+          with: { author: { columns: { username: true, avatar: true } } },
+        }),
+      )
+      .catch(() => []),
+    comptePublies().catch(() => 0),
     // Thèmes réellement utilisés par les articles en ligne (pas de liste figée
     // qui pointerait vers des pages vides).
-    db.select({ tags: postsTable.tags }).from(postsTable).where(visible).limit(300),
+    Promise.resolve()
+      .then(() => db.select({ tags: postsTable.tags }).from(postsTable).where(visible).limit(300))
+      .catch(() => []),
     // L'aperçu du fil n'a de sens qu'en page 1 : en page 2, le lecteur pagine
     // les archives, il ne regarde pas l'activité du jour.
     page === 1

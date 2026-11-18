@@ -123,6 +123,7 @@ fn router(app: App) -> Router {
     Router::new()
         .route("/", get(page))
         .route("/assets/hls.min.js", get(hls_js))
+        .route("/health", get(health))
         .route("/healthz", get(health))
         .route("/api/v1/videos", get(list).post(create))
         .route("/api/v1/videos/{id}", get(one))

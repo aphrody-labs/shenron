@@ -48,25 +48,39 @@ function xml(s: string): string {
 }
 
 export async function GET() {
-  const rows = await db.query.posts.findMany({
-    where: publicPostFilter(),
-    orderBy: [desc(postsTable.publishedAt), desc(postsTable.id)],
-    limit: 50,
-    // `contentJson` (le document Tiptap) et `body` (le Markdown historique) ne
-    // servent pas au flux : seul `contentHtml` y est publié.
-    columns: {
-      slug: true,
-      title: true,
-      excerpt: true,
-      cover: true,
-      publishedAt: true,
-      tags: true,
-      contentHtml: true,
-    },
-    // Seul le pseudo de l'auteur part dans le flux : la relation `true`
-    // ramenait toute la ligne `User` (dont `discordId` et `roleAdmin`).
-    with: { author: { columns: { username: true } } },
-  });
+  let rows: Array<{
+    slug: string;
+    title: string;
+    excerpt: string;
+    cover: string | null;
+    publishedAt: Date | null;
+    tags: string[] | null;
+    contentHtml: string | null;
+    author: { username: string | null } | null;
+  }> = [];
+  try {
+    rows = await db.query.posts.findMany({
+      where: publicPostFilter(),
+      orderBy: [desc(postsTable.publishedAt), desc(postsTable.id)],
+      limit: 50,
+      // `contentJson` (le document Tiptap) et `body` (le Markdown historique) ne
+      // servent pas au flux : seul `contentHtml` y est publié.
+      columns: {
+        slug: true,
+        title: true,
+        excerpt: true,
+        cover: true,
+        publishedAt: true,
+        tags: true,
+        contentHtml: true,
+      },
+      // Seul le pseudo de l'auteur part dans le flux : la relation `true`
+      // ramenait toute la ligne `User` (dont `discordId` et `roleAdmin`).
+      with: { author: { columns: { username: true } } },
+    });
+  } catch (err) {
+    console.warn("[news/rss.xml] database unavailable:", err instanceof Error ? err.message : err);
+  }
 
   const items = rows
     .map((post) => {

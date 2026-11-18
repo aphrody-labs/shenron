@@ -82,6 +82,15 @@ function unwrap<T>(result: AiResult<T>, invalid: string): T {
   return result.value;
 }
 
+function isTrustedCloudUrl(url: URL): boolean {
+  return (
+    url.protocol === "https:" &&
+    (url.hostname === "dragonballfr.com" ||
+      url.hostname.endsWith(".dragonballfr.com") ||
+      url.hostname.endsWith(".workers.dev"))
+  );
+}
+
 export class ShenronComputeClient {
   /** Typed client every call is delegated to (`@aphrody/shenron-pipeline/ai/shenron`). */
   readonly compute: ShenronCompute;
@@ -90,10 +99,10 @@ export class ShenronComputeClient {
     const baseUrl =
       options.baseUrl === undefined ? requireAiHttpUrl(process.env) : new URL(options.baseUrl);
     if (
-      baseUrl.protocol !== "http:" ||
-      !LOOPBACK_HOSTS.has(baseUrl.hostname) ||
       baseUrl.username ||
-      baseUrl.password
+      baseUrl.password ||
+      (!isTrustedCloudUrl(baseUrl) &&
+        (baseUrl.protocol !== "http:" || !LOOPBACK_HOSTS.has(baseUrl.hostname)))
     ) {
       throw new Error("Shenron compute URL must use loopback HTTP");
     }

@@ -39,17 +39,19 @@ export interface ResolvedPgClientOptions {
 /** Resolves URL and pool size; environment read inside the call only. */
 export function resolvePgClientOptions(options: PgClientOptions): ResolvedPgClientOptions {
   const env = options.env ?? process.env;
+  const url = resolveDatabaseUrl(options.url ?? env.DATABASE_URL);
+  const isPooled = /-pooler\.|pooler\.|:6543\b|pgbouncer=true|hyperdrive/i.test(url);
   const max =
     options.max !== undefined
       ? resolvePoolMax(String(options.max))
       : resolvePoolMax(env.DATABASE_POOL_MAX);
   return {
-    url: resolveDatabaseUrl(options.url ?? env.DATABASE_URL),
+    url,
     max,
     applicationName: options.applicationName,
     idleTimeoutSeconds: options.idleTimeoutSeconds ?? 30,
     connectTimeoutSeconds: options.connectTimeoutSeconds ?? 5,
-    prepare: options.prepare ?? true,
+    prepare: options.prepare ?? (env.DATABASE_PREPARE === "0" ? false : !isPooled),
   };
 }
 

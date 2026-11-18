@@ -32,15 +32,23 @@ export type ImmersionPack = Readonly<Record<string, ImmersionSlot>>;
 
 export const DEFAULT_IMMERSION_MAP = "var/dbxv2/immersion.json";
 
+function resolveImmersionCandidates(path: string): [string, string] {
+  const root = process.cwd();
+  return [
+    resolve(/* turbopackIgnore: true */ root, "..", "..", path),
+    resolve(/* turbopackIgnore: true */ root, path),
+  ];
+}
+
 /** Reads and validates the owner's map; null when absent or malformed. */
 export async function readImmersionMap(
   path = process.env.DBXV2_IMMERSION_MAP?.trim() || DEFAULT_IMMERSION_MAP,
 ): Promise<ImmersionMap | null> {
   try {
-    const text = await readFile(
-      /* turbopackIgnore: true */ resolve(process.cwd(), "../..", path),
-      "utf8",
-    ).catch(() => readFile(/* turbopackIgnore: true */ resolve(process.cwd(), path), "utf8"));
+    const [repoCandidate, cwdCandidate] = resolveImmersionCandidates(path);
+    const text = await readFile(/* turbopackIgnore: true */ repoCandidate, "utf8").catch(() =>
+      readFile(/* turbopackIgnore: true */ cwdCandidate, "utf8"),
+    );
     const parsed = ImmersionMapSchema.safeParse(JSON.parse(text));
     return parsed.success ? parsed.data : null;
   } catch {

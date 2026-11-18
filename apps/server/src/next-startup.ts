@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { existsSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { join, posix, win32 } from "node:path";
 
 export const NEXT_STARTUP_TIMEOUT_MS = 120_000;
 const PROBE_TIMEOUT_MS = 1_000;
@@ -62,8 +62,11 @@ export function resolveNextRuntime(
   const override = env.SHENRON_NEXT_BUN?.trim();
   if (override) return { program: override, beBun: false };
   if (!compiled) return { program: execPath, beBun: false };
-  const exe = (options.platform ?? process.platform) === "win32" ? "bun.exe" : "bun";
-  const shipped = join(dirname(execPath), "runtime", exe);
+  const isWin32 =
+    (options.platform ?? (execPath.startsWith("/") ? "linux" : process.platform)) === "win32";
+  const pathOps = isWin32 ? win32 : posix;
+  const exe = isWin32 ? "bun.exe" : "bun";
+  const shipped = pathOps.join(pathOps.dirname(execPath), "runtime", exe);
   if (exists(shipped)) return { program: shipped, beBun: false };
   return { program: execPath, beBun: true };
 }

@@ -179,9 +179,7 @@ async function main() {
     process.exit(drift || failed ? 1 : 0);
   }
   if (versionChanged) {
-    for (const command of [
-      ["cargo", "update", "--workspace"],
-    ]) {
+    for (const command of [["cargo", "update", "--workspace"]]) {
       console.log(`$ ${command.join(" ")}`);
       const run = Bun.spawnSync(command, { cwd: ROOT, stdio: ["inherit", "inherit", "inherit"] });
       if (run.exitCode !== 0) process.exit(run.exitCode ?? 1);

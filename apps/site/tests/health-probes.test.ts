@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
 import { GET as getLiveness } from "../src/app/api/health/route";
 import { GET as getLiveAlias } from "../src/app/api/health/live/route";
-import { createReadinessHandler } from "../src/app/api/health/ready/route";
+import { createReadinessHandler } from "../src/app/api/health/ready/_handler";
 import { probeRag, resetRagProbeCache, type ServiceHealth } from "../src/lib/service-health";
 
 describe("S2 — Site Liveness & Readiness Separation", () => {

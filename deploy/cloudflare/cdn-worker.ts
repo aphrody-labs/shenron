@@ -47,6 +47,12 @@ export interface CdnEnvironment {
 export type OriginFetch = (input: string, init: RequestInit) => Promise<Response>;
 
 const ORIGIN = "https://cdn.dragonballfr.com";
+const ALLOWED_DYNAMIC_ORIGINS = new Set([
+  "https://dragonballfr.com",
+  "https://www.dragonballfr.com",
+  "https://shenron-site.vercel.app",
+  "https://origin-cdn.dragonballfr.com",
+]);
 const HASH = /^[a-f0-9]{64}$/;
 const MANIFEST_SOURCE = `${ORIGIN}/assets/ext/cf-migrate-20261011/manifests/`;
 const MANIFEST_LIMIT = 2 * 1024 * 1024;
@@ -364,7 +370,11 @@ async function dynamicRoute(
   if (url.pathname !== "/api/health" && url.pathname !== "/_next/image") return;
   const isImage = url.pathname === "/_next/image";
   let source: URL | undefined;
-  const target = new URL(url.pathname, "https://origin-cdn.dragonballfr.com");
+  const dynamicOrigin = env.DYNAMIC_ORIGIN?.trim().replace(/\/+$/, "") ?? "";
+  const targetOrigin = ALLOWED_DYNAMIC_ORIGINS.has(dynamicOrigin)
+    ? dynamicOrigin
+    : "https://origin-cdn.dragonballfr.com";
+  const target = new URL(url.pathname, targetOrigin);
   if (isImage) {
     if ([...url.searchParams.keys()].some((key) => !["url", "w", "q"].includes(key)))
       return failure(400);
@@ -392,7 +402,7 @@ async function dynamicRoute(
     }
     return text('{"status":"down","cdn":"ok"}\n', "application/json", 503);
   };
-  if (env.DYNAMIC_ORIGIN !== "https://origin-cdn.dragonballfr.com") return unavailable();
+  if (!ALLOWED_DYNAMIC_ORIGINS.has(dynamicOrigin)) return unavailable();
   try {
     // Next retains ownership of its image source allowlist and optimizer constraints.
     const response = await fetchOrigin(target.href, {
@@ -508,7 +518,36 @@ export async function handleCdn(
       }
     }
     if (!entries || typeof entries !== "object" || Array.isArray(entries)) return failure(503);
-    if (!Object.hasOwn(entries, path)) return failure(404);
+    if (!Object.hasOwn(entries, path)) {
+      const dynamicOrigin = env.DYNAMIC_ORIGIN?.trim().replace(/\/+$/, "") ?? "";
+      if (path.startsWith("/_next/static/") && ALLOWED_DYNAMIC_ORIGINS.has(dynamicOrigin)) {
+        const upstreamUrl = new URL(request.url);
+        const target = new URL(`${upstreamUrl.pathname}${upstreamUrl.search}`, dynamicOrigin);
+        const upstream = await fetchOrigin(target.href, {
+          method: request.method,
+          redirect: "manual",
+          signal: AbortSignal.timeout(10000),
+          headers: { Accept: request.headers.get("Accept") ?? "*/*" },
+        });
+        if (upstream.status === 200) {
+          const proxyHeaders = applyZeroTrustHeaders(
+            new Headers({
+              "Content-Type": upstream.headers.get("Content-Type") ?? "application/octet-stream",
+              "Cache-Control": IMMUTABLE_CACHE_CONTROL,
+              "Access-Control-Allow-Origin": "*",
+            }),
+          );
+          const len = upstream.headers.get("Content-Length");
+          if (len) proxyHeaders.set("Content-Length", len);
+          return new Response(request.method === "HEAD" ? null : upstream.body, {
+            status: 200,
+            headers: proxyHeaders,
+          });
+        }
+        await upstream.body?.cancel();
+      }
+      return failure(404);
+    }
     const entry = entries[path];
     if (!validEntry(entry)) return failure(503);
     const key = `_objects/${entry.sha256}`;

@@ -7,6 +7,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./cloudflare": "./src/cloudflare.ts",
     "./rest": "./src/rest.ts",
     "./messaging": "./src/messaging.ts"
   },
@@ -24,6 +25,7 @@
   "shenron": {
     "runtime": {
       ".": "bun",
+      "./cloudflare": "pure",
       "./rest": "server",
       "./messaging": "server"
     }

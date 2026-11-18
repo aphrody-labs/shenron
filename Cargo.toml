@@ -93,7 +93,6 @@ futures = "0.3.34"
 image = "0.25.10"
 js-sys = "0.3.105"
 koharu-agent = { path = "crates/koharu-agent", version = "1.4.5" }
-koharu-app = { path = "crates/koharu-app", version = "1.4.5" }
 koharu-desktop = { path = "crates/koharu-desktop", version = "1.4.5" }
 koharu-library = { path = "crates/koharu-library", version = "1.4.5" }
 koharu-ml = { path = "crates/koharu-ml", version = "1.4.5" }
@@ -159,7 +158,6 @@ shenron-manga = { path = "crates/shenron-manga", version = "1.4.5" }
 shenron-panels = { path = "crates/shenron-panels", version = "1.4.5" }
 shenron-rag = { path = "crates/shenron-rag", version = "1.4.5" }
 shenron-re = { path = "crates/shenron-re", version = "1.4.5" }
-shenron-studio = { path = "crates/shenron-studio", version = "1.4.5" }
 skrifa = "0.47.0"
 specta = { version = "=2.0.0-rc.26", features = ["derive", "url", "uuid"] }
 specta-typescript = "=0.0.13"

@@ -28,7 +28,7 @@
     }
   },
   "toolchain": {
-    "rust": "1.99.1",
+    "rust": "1.100.0",
     "bun": "1.4.4",
     "bunLinuxSha256": "bf8ccbfb2b0b80159e0f9a6d15c55317add8077534dbc6130a3edb52fccb395c",
     "sccache": "0.18.0",
@@ -280,7 +280,9 @@
       "scripts",
       "src",
       "themes",
+      "third_party",
       "turbo.json",
+      ".vercelignore",
       "vercel.json"
     ],
     "ignoreInKeys": [

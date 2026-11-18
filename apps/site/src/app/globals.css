@@ -12,3 +12,7 @@
 @import "./neutral-theme.css";
 
 @import "@aphrody/shenron-ui/vie.css";
+
+main#contenu:has(.shenron-video[data-theater="true"]) {
+  z-index: 100;
+}

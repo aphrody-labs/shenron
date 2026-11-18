@@ -30,7 +30,7 @@ const cspCdnOrigin = (() => {
 const CSP_SCRIPT_SRC = [
   "'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:",
   ...(cspCdnOrigin ? [cspCdnOrigin] : []),
-  "https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.gstatic.com https://*.adtrafficquality.google https://*.google.com https://*.vercel-scripts.com",
+  "https://static.cloudflareinsights.com https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.gstatic.com https://*.adtrafficquality.google https://*.google.com https://*.vercel-scripts.com",
 ].join(" ");
 
 // Telemetry is disabled globally across all Next.js phases (`next dev`, `next build`, `next start`).
@@ -97,44 +97,43 @@ const nextConfig: NextConfig = {
   // `output: "standalone"` par défaut pour le binaire autonome (`bun run build:server`),
   // désactivable avec `NEXT_OUTPUT=default` pour un build classique (`next start`), ou automatiquement sous Vercel.
   ...(!process.env.VERCEL && process.env.NEXT_OUTPUT !== "default"
-    ? {
-        output: "standalone" as const,
-        // Dynamic fs access in shared packages must never drag the repository (sources, tests,
-        // databases, corpora) into the server. Globs are relative to apps/site.
-        outputFileTracingExcludes: {
-          "*": [
-            "../../crates/**",
-            "../../target/**",
-            "../../data/**",
-            "../../var/**",
-            "../../docs/**",
-            "../../plugin/**",
-            "../../scripts/**",
-            "../../deploy/**",
-            "../../apps/bot/**",
-            "../../apps/activity/**",
-            "../../packages/dbxv2/**",
-            "../../packages/*/test/**",
-            "../../packages/*/scripts/**",
-            "./tests/**",
-            "./src/**",
-            "./scripts/**",
-            "./data/**",
-            "./shenron-media-masters/**",
-            "./.next-build/**",
-            "./.next-dev/**",
-            "./public/**",
-            "**/*.db",
-            "**/*.db-*",
-            "**/*.sqlite*",
-            "**/*.env*",
-            "**/*.tsbuildinfo",
-            "**/*.map",
-            "**/*.d.ts",
-          ],
-        },
-      }
+    ? { output: "standalone" as const }
     : {}),
+  // Dynamic fs access in shared packages must never drag the repository (sources, tests,
+  // databases, third_party submodules, corpora) into Vercel or standalone functions.
+  outputFileTracingExcludes: {
+    "*": [
+      "../../crates/**",
+      "../../target/**",
+      "../../third_party/**",
+      "../../data/**",
+      "../../var/**",
+      "../../docs/**",
+      "../../plugin/**",
+      "../../scripts/**",
+      "../../deploy/**",
+      "../../apps/bot/**",
+      "../../apps/activity/**",
+      "../../packages/dbxv2/**",
+      "../../packages/*/test/**",
+      "../../packages/*/scripts/**",
+      "./tests/**",
+      "./src/**",
+      "./scripts/**",
+      "./data/**",
+      "./shenron-media-masters/**",
+      "./.next-build/**",
+      "./.next-dev/**",
+      "./public/**",
+      "**/*.db",
+      "**/*.db-*",
+      "**/*.sqlite*",
+      "**/*.env*",
+      "**/*.tsbuildinfo",
+      "**/*.map",
+      "**/*.d.ts",
+    ],
+  },
 
   // View Transitions API (React `<ViewTransition>`) — morph d'élément partagé
   // grille→fiche, slides directionnels. Sans support navigateur, navigation
@@ -151,30 +150,40 @@ const nextConfig: NextConfig = {
     webpackMemoryOptimizations: true,
     // Type-check via the TypeScript 7 native CLI (fixed decision 1, docs/architecture/STACK.md).
     useTypeScriptCli: true,
-    // Parallélisme de la génération statique — soupape mémoire éprouvée du build.
-    // Borner à 1 CPU et 2 de concurrence statique évite l'explosion RSS sur VPS.
-    ...(process.env.BUILD_CPUS ? { cpus: Number(process.env.BUILD_CPUS) } : { cpus: 1 }),
-    ...(process.env.BUILD_STATIC_CONCURRENCY
-      ? { staticGenerationMaxConcurrency: Number(process.env.BUILD_STATIC_CONCURRENCY) }
-      : { staticGenerationMaxConcurrency: 2 }),
+    // Parallélisme de la génération statique — soupape mémoire sur VPS uniquement.
+    ...(process.env.VERCEL
+      ? {}
+      : {
+          cpus: process.env.BUILD_CPUS ? Number(process.env.BUILD_CPUS) : 1,
+          staticGenerationMaxConcurrency: process.env.BUILD_STATIC_CONCURRENCY
+            ? Number(process.env.BUILD_STATIC_CONCURRENCY)
+            : 2,
+        }),
     // Enabled by default (`SHENRON_NEXT_BUILD_CACHE=0` opts out): Turbopack incremental
     // filesystem cache in `<distDir>/cache` accelerates rebuilds in reusable worktrees.
     turbopackFileSystemCacheForBuild: process.env.SHENRON_NEXT_BUILD_CACHE !== "0",
     // Source maps serveur : 101,6 Mio sur 184,4 Mio de `.next-build`. Coupées par défaut ;
     // `SHENRON_SERVER_SOURCEMAPS=1` les rallume pour un build de diagnostic.
     serverSourceMaps: process.env.SHENRON_SERVER_SOURCEMAPS === "1",
-    // `lucide-react` et `date-fns` sont déjà dans la liste par défaut de Next ;
-    // `schema-dts` (types) et `postgres` (serveur) ne sont pas des barils clients.
+    // Barrel import optimization (Vercel React Best Practices: bundle-barrel-imports).
     optimizePackageImports: [
       "@tanstack/react-query",
       "motion",
       "better-auth",
       "@tiptap/core",
+      "@tiptap/pm",
       "@tiptap/react",
       "@tiptap/starter-kit",
       "@tiptap/extensions",
       "@base-ui/react",
       "@aphrody/shenron-ui",
+      "@aphrody/shenron-kit",
+      "@aphrody/shenron-config",
+      "@aphrody/shenron-db",
+      "lucide-react",
+      "zod",
+      "swiper",
+      "three",
     ],
   },
 

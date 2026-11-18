@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useId, useSyncExternalStore } from "react";
 import { MaterialSymbol } from "@aphrody/shenron-ui/icones";
 import { useVideoUIText } from "@/lib/video-ui-text";
 import {
@@ -30,6 +30,7 @@ function subscribeTheme(onChange: () => void) {
 const serverTheme = (): EpisodeTheme => "neutral";
 
 export function EpisodeThemeSwitcher({ compact = false }: { compact?: boolean }) {
+  const selectId = useId();
   const t = useVideoUIText();
   const theme = useSyncExternalStore(subscribeTheme, themeSnapshot, serverTheme);
   useEffect(() => {
@@ -43,6 +44,8 @@ export function EpisodeThemeSwitcher({ compact = false }: { compact?: boolean })
       <MaterialSymbol name={theme !== "goku" ? "dark_mode" : "light_mode"} size={22} />
       <span className="sr-only">{t("themeChoice")}</span>
       <select
+        id={selectId}
+        name="episode-theme"
         aria-label={t("themeChoice")}
         value={theme}
         onChange={(event) => {

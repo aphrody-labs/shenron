@@ -1,0 +1,34 @@
+# Authoritative fork & submodule catalog for Shenron (Cloudflare + Vercel serverless path).
+# Every fork lives under org = "aphrody-labs" and is mounted shallowly under third_party/.
+
+[meta]
+org = "aphrody-labs"
+consumer = "shenron"
+
+[[submodule]]
+path = "third_party/discord.js"
+repo = "aphrody-labs/discord.js"
+upstream = "discordjs/discord.js"
+branch = "main"
+role = "discord"
+
+[[submodule]]
+path = "third_party/discordx"
+repo = "aphrody-labs/discordx"
+upstream = "discordx-ts/discordx"
+branch = "main"
+role = "discord"
+
+[[submodule]]
+path = "third_party/vinext"
+repo = "aphrody-labs/vinext"
+upstream = "cloudflare/vinext"
+branch = "main"
+role = "cloudflare-nextjs"
+
+[[submodule]]
+path = "third_party/next.js"
+repo = "aphrody-labs/next.js"
+upstream = "vercel/next.js"
+branch = "canary"
+role = "nextjs"

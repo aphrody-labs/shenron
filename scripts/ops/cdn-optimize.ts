@@ -464,9 +464,9 @@ async function optimize(kind: Kind, src: string, ws: Workspace): Promise<Candida
       if (!tools.webpmux || !tools.dwebp || !tools.cwebp) break;
       const info = await webpInfo(src);
       if (info.lossless && !info.animated) {
-        const pam = ws.file(".pam");
+        const png = ws.file(".png");
         const enc = ws.file(".webp");
-        if ((await run([tools.dwebp, "-quiet", src, "-pam", "-o", pam])).code === 0) {
+        if ((await run([tools.dwebp, "-quiet", src, "-o", png])).code === 0) {
           const r = await run([
             tools.cwebp,
             "-quiet",
@@ -477,7 +477,7 @@ async function optimize(kind: Kind, src: string, ws: Workspace): Promise<Candida
             "-mt",
             "-metadata",
             "none",
-            pam,
+            png,
             "-o",
             enc,
           ]);
@@ -498,7 +498,7 @@ async function optimize(kind: Kind, src: string, ws: Workspace): Promise<Candida
           }
           if (result) out.push({ path: result, tool: "cwebp -lossless -z 9 -exact" });
         }
-        await rm(pam, { force: true });
+        await rm(png, { force: true });
       } else if (info.xmp) {
         const s = ws.file(".webp");
         await attempt("webpmux -strip xmp", s, [tools.webpmux, "-strip", "xmp", src, "-o", s]);

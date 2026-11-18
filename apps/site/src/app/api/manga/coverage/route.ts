@@ -15,8 +15,12 @@ export function OPTIONS() {
 export async function GET() {
   try {
     const rows = await db.execute<{
-      id: number; series: string; volume_number: number | null;
-      chapters: number; listed_pages: number; reader_extents: unknown[];
+      id: number;
+      series: string;
+      volume_number: number | null;
+      chapters: number;
+      listed_pages: number;
+      reader_extents: unknown[];
     }>(sql`
       SELECT v.id, v.series, v.volume_number,
              count(c.id)::int AS chapters,
@@ -29,32 +33,55 @@ export async function GET() {
       GROUP BY v.id, v.series, v.volume_number
       ORDER BY v.series, v.volume_number, v.id
     `);
-    const volumes = rows.map(row => ({
-      id: Number(row.id), series: row.series === "DB_SOSH" ? "SOSH" : row.series,
+    const volumes = rows.map((row) => ({
+      id: Number(row.id),
+      series: row.series === "DB_SOSH" ? "SOSH" : row.series,
       number: row.volume_number === null ? null : Number(row.volume_number),
-      chapters: Number(row.chapters), listedPages: Number(row.listed_pages),
+      chapters: Number(row.chapters),
+      listedPages: Number(row.listed_pages),
       hasListedPages: Number(row.listed_pages) > 0,
-      readerExtent: (row.reader_extents ?? []).some(value => mangaReaderExtent(value).kind === "preview") ? "preview" : ((row.reader_extents ?? []).length > 0 && row.reader_extents.every(value => mangaReaderExtent(value).kind === "full") ? "full" : "unknown"),
+      readerExtent: (row.reader_extents ?? []).some(
+        (value) => mangaReaderExtent(value).kind === "preview",
+      )
+        ? "preview"
+        : (row.reader_extents ?? []).length > 0 &&
+            row.reader_extents.every((value) => mangaReaderExtent(value).kind === "full")
+          ? "full"
+          : "unknown",
       url: `${SITE_URL}/api/manga/volume/${row.id}`,
     }));
-    return Response.json({
-      observedAt: new Date().toISOString(),
-      scope: "visible-catalogue-and-declared-page-references",
-      assetAvailabilityVerified: false, fullEditionPaginationVerified: false,
-      complete: false,
-      totals: {
-        volumes: volumes.length,
-        volumesWithListedPages: volumes.filter(volume => volume.hasListedPages).length,
-        listedPages: volumes.reduce((sum, volume) => sum + volume.listedPages, 0),
+    return Response.json(
+      {
+        observedAt: new Date().toISOString(),
+        scope: "visible-catalogue-and-declared-page-references",
+        assetAvailabilityVerified: false,
+        fullEditionPaginationVerified: false,
+        complete: false,
+        totals: {
+          volumes: volumes.length,
+          volumesWithListedPages: volumes.filter((volume) => volume.hasListedPages).length,
+          listedPages: volumes.reduce((sum, volume) => sum + volume.listedPages, 0),
+        },
+        previewVolumeIds: volumes
+          .filter((volume) => volume.readerExtent === "preview")
+          .map((volume) => volume.id),
+        missingOrPartialReaderVolumeIds: volumes
+          .filter((volume) => !volume.hasListedPages || volume.readerExtent === "preview")
+          .map((volume) => volume.id),
+        missingReaderVolumeIds: volumes
+          .filter((volume) => !volume.hasListedPages)
+          .map((volume) => volume.id),
+        volumes,
       },
-      previewVolumeIds: volumes.filter(volume => volume.readerExtent === "preview").map(volume => volume.id),
-      missingOrPartialReaderVolumeIds: volumes.filter(volume => !volume.hasListedPages || volume.readerExtent === "preview").map(volume => volume.id),
-      missingReaderVolumeIds: volumes.filter(volume => !volume.hasListedPages).map(volume => volume.id),
-      volumes,
-    }, { headers: { ...CORS_MANGA, "Cache-Control": "public, max-age=30, s-maxage=30" } });
+      { headers: { ...CORS_MANGA, "Cache-Control": "public, max-age=30, s-maxage=30" } },
+    );
   } catch {
-    return Response.json({ error: "coverage_unavailable" }, {
-      status: 503, headers: { ...CORS_MANGA, "Cache-Control": "no-store" },
-    });
+    return Response.json(
+      { error: "coverage_unavailable" },
+      {
+        status: 503,
+        headers: { ...CORS_MANGA, "Cache-Control": "no-store" },
+      },
+    );
   }
 }
