@@ -1,17 +1,17 @@
 area	files	bytes	tier	gate
+(root)	42	830305	config	just check
 .agents	371	5709558	config	just check
-.cargo	1	2141	config	just check
+.cargo	1	2260	config	just check
 .claude	64	664935	config	just check
 .claude-plugin	1	492	config	just check
 .codex	2	845	config	just check
 .config	1	1795	config	just check
 .github	18	36746	ops	just check
 .vscode	3	2304	config	just check
-(root)	42	829922	config	just check
 apps/activity	63	330870	first-party	bun test apps/activity
-apps/bot	1439	29163052	first-party	bun test apps/bot
+apps/bot	1439	29163020	first-party	bun test apps/bot
 apps/server	40	281984	first-party	bun test apps/server
-apps/site	2401	67726386	first-party	bun test apps/site
+apps/site	2399	67356551	first-party	bun test apps/site
 config	5	11736	first-party	just check
 crates/dragon-pixel	19	163636	first-party	cargo clippy -p dragon-pixel --all-targets -- -D warnings (fr1)
 crates/koharu-agent	13	44843	first-party	cargo clippy -p koharu-agent --all-targets -- -D warnings (fr1)
@@ -49,16 +49,17 @@ crates/shenron-migrate	3	15120	first-party	cargo clippy -p shenron-migrate --all
 crates/shenron-ocr-core	7	91939	first-party	cargo clippy -p shenron-ocr-core --all-targets -- -D warnings (fr1)
 crates/shenron-panels	7	58784	first-party	cargo clippy -p shenron-panels --all-targets -- -D warnings (fr1)
 crates/shenron-rag	15	128803	first-party	cargo clippy -p shenron-rag --all-targets -- -D warnings (fr1)
-crates/shenron-rag-core	22	249880	first-party	cargo clippy -p shenron-rag-core --all-targets -- -D warnings (fr1)
+crates/shenron-rag-core	22	249830	first-party	cargo clippy -p shenron-rag-core --all-targets -- -D warnings (fr1)
 crates/shenron-re	49	556152	first-party	cargo clippy -p shenron-re --all-targets -- -D warnings (fr1)
 crates/shenron-studio	6	17160	first-party	cargo clippy -p shenron-studio --all-targets -- -D warnings (fr1)
 crates/shenron-theme	2	2210	first-party	cargo clippy -p shenron-theme --all-targets -- -D warnings (fr1)
 crates/shenron-tv	7	669659	first-party	cargo clippy -p shenron-tv --all-targets -- -D warnings (fr1)
 crates/shenron-video	4	21840	first-party	cargo clippy -p shenron-video --all-targets -- -D warnings (fr1)
+crates/xtask	2	9140	first-party	cargo clippy -p xtask --all-targets -- -D warnings (fr1)
 data	426	46419136	content	just check
-deploy	93	489980	ops	just check
+deploy	92	486523	ops	just check
 design-system	1	6513	first-party	just check
-docs	102	10004424	docs	link check
+docs	102	10004380	docs	link check
 migration	1	7543	ops	just check
 packages/activity	40	275225	first-party	bun test packages/activity
 packages/api	120	917264	first-party	bun test packages/api
@@ -69,7 +70,7 @@ packages/crunchyroll	21	79806	first-party	bun test packages/crunchyroll
 packages/db	104	676700	first-party	bun test packages/db
 packages/dbxv2	33	159599	first-party	bun test packages/dbxv2
 packages/decision	4	15669	first-party	bun test packages/decision
-packages/discord-kit	13	38850	first-party	bun test packages/discord-kit
+packages/discord-kit	13	38777	first-party	bun test packages/discord-kit
 packages/engine	51	2465902	first-party	bun test packages/engine
 packages/filmcraft	8	24105	first-party	bun test packages/filmcraft
 packages/hyperframes	7	9333	first-party	bun test packages/hyperframes
@@ -77,7 +78,7 @@ packages/images	17	69239	first-party	bun test packages/images
 packages/kit	5	13260	first-party	bun test packages/kit
 packages/koharu	21	2146203	first-party	bun test packages/koharu
 packages/lexicon	13	124620	first-party	bun test packages/lexicon
-packages/m3-ai	13	89038	first-party	bun test packages/m3-ai
+packages/m3-ai	12	84887	first-party	bun test packages/m3-ai
 packages/m3-motion	14	49548	first-party	bun test packages/m3-motion
 packages/m3-primitives	56	252520	first-party	bun test packages/m3-primitives
 packages/m3-reader	9	83483	first-party	bun test packages/m3-reader
@@ -96,7 +97,7 @@ plugin	68	884682	first-party	just check
 replica	36	258401	docs	just check
 reports	2	120188	docs	just check
 research_notes	5	286296	docs	just check
-scripts	386	3022481	ops	bun test scripts
+scripts	385	3018820	ops	bun test scripts
 src	3	4436	first-party	just check
 templates	8	11226	content	just check
 themes	8	286701	content	just check
