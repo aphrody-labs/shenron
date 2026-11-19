@@ -13,17 +13,17 @@
     {
       "id": "0b",
       "name": "Ship pending fixes to prd (23d70bf9 /.well-known, React #418) via fr1 build",
-      "status": "todo"
+      "status": "in_progress"
     },
     {
       "id": 1,
       "name": "shenron-deployd + signed manifest + fr1 runner; deploy shenron-tv without SSH, forced rollback",
-      "status": "todo"
+      "status": "in_progress"
     },
     {
       "id": "1b",
       "name": "shenron-mcp admin tier: Postgres (schema, read query, audited write), Redis (info/get/scan), real-time context via LISTEN/NOTIFY + MCP resource subscriptions, auto-learn into shenron-memory; Claude Code connects with a bearer from env",
-      "status": "todo"
+      "status": "in_progress"
     },
     {
       "id": 2,

@@ -12,6 +12,8 @@ const goal = JSON.parse(readFileSync(goalPath, "utf8"));
 if (!goal.active) process.exit(0);
 const open = goal.steps.filter((s: { status: string; blocked?: string }) => s.status !== "done" && !(s.status === "blocked"));
 if (open.length === 0) process.exit(0);
+// Delegated work running: its completion notification resumes the session, no block.
+if (open.some((s: { status: string }) => s.status === "in_progress")) process.exit(0);
 
 const state = existsSync(statePath) ? JSON.parse(readFileSync(statePath, "utf8")) : { count: 0 };
 if (state.count >= (goal.maxContinuations ?? 40)) process.exit(0);
