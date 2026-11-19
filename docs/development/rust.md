@@ -34,3 +34,12 @@ Le travail large passe par des boucles, pas par des agents à mandat général (
 4. un correcteur applique leurs constats ; la porte tourne une fois, puis le commit se fait par chemins explicites (`git commit -- <chemins>`).
 
 Essai sur trois éléments avant d'élargir. Quand la même erreur revient, on corrige la consigne de la boucle, pas la sortie.
+
+## `cargo xtask` et `just` (relevé du 2026-11-19)
+
+- Modèle : `matklad/cargo-xtask` (tête `1559f86ece`, 2025-10-28) : une crate binaire de l'espace de travail, appelée par l'alias `xtask = "run --package xtask --"`, sans outil à installer.
+- Zed (`zed-industries/zed`, tête `0cc1ffb6b3`, 2026-11-19) : `tooling/xtask` avec `src/tasks/` (`clippy.rs`, `licenses.rs`, `package_conformity.rs`, `workflow_checks.rs`) et `src/tasks/workflows/`, un fichier Rust par workflow GitHub Actions (`run_tests.rs`, `release.rs`, `deploy_docs.rs`...) : la CI est générée par `xtask`, pas écrite à la main.
+- rust-analyzer (`rust-lang/rust-analyzer`, tête `aa19822928`, 2026-11-19) : `xtask/src/` couvre `codegen`, `dist`, `release`, `publish`, `metrics`, `pgo`, `tidy`.
+- `just` 1.59.0 (dernière publication `casey/just`, 2026-10-15), version installée sur le poste.
+
+Règle du dépôt : `just` est la seule entrée humaine et agent ; une recette appelle soit `cargo xtask <tâche>` (logique de dépôt, déterministe, en Rust : `map`, `scripts`), soit un script Bun encore légitime. Un script sans recette, sans import et sans test est supprimé (`just scripts-orphans`). Suite prévue, dans l'ordre : générer `.github/workflows/*.yml` depuis `xtask` comme Zed, puis porter le contrôle de dérive des versions (`scripts/deploy/environment.ts`) et la publication de manifestes signés (`shenron-deployd publish`) derrière `cargo xtask`.
