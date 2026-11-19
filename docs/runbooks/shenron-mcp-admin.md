@@ -59,8 +59,8 @@ Lues dans l'environnement du processus `shenron-mcp` (en production, `$SHENRON_R
 ## Jeton côté client
 
 1. Générer un jeton de 32 octets: `bun -e "console.log(crypto.randomUUID().replaceAll('-','')+crypto.randomUUID().replaceAll('-',''))"`, ou `openssl rand -hex 32`. Ne jamais l'écrire dans le dépôt ni dans un journal.
-2. Côté serveur: l'ajouter à `SHENRON_MCP_TOKENS` dans `$SHENRON_ROOT/config/compute.env` de prd (verrou `$DEPLOY_LOCK` avant tout changement sur prd), puis relancer le service `compute`. Rotation: ajouter le nouveau jeton, mettre à jour les clients, retirer l'ancien.
-3. Côté poste: variable d'environnement `SHENRON_MCP_TOKEN` (Windows: variable utilisateur; Linux: profil du shell). `.mcp.json` envoie `Authorization: Bearer ${SHENRON_MCP_TOKEN}` par expansion; aucun secret n'est écrit dans le fichier. Variable absente: Claude Code n'ouvre pas le serveur `shenron` (un en-tête `Bearer` vide est refusé en 401, jamais rétrogradé en anonyme).
+2. Côté serveur: l'ajouter à `SHENRON_MCP_TOKENS` dans l’env du service qui lance `shenron-mcp` sur prd (aujourd’hui `site` : `$SHENRON_ROOT/config/site.env`, `shenron-mcp --http` est un processus enfant de `shenron-server`), sous le verrou de déploiement défini dans `AGENTS.md`, puis recréer ce seul service. Rotation: ajouter le nouveau jeton, mettre à jour les clients, retirer l'ancien.
+3. Côté poste: variable d'environnement `SHENRON_MCP_TOKEN` (Windows: variable utilisateur; Linux: profil du shell). `.mcp.json` reste anonyme (outils en lecture). Le niveau admin passe par une entrée locale non versionnée : `claude mcp add --scope local --transport http shenron-admin <origine>/mcp --header "Authorization: Bearer ${SHENRON_MCP_TOKEN}"`. Aucun secret n’est écrit ; variable absente, seul `shenron-admin` échoue (un `Bearer` vide est refusé en 401).
 4. Vérifier: `/mcp` dans Claude Code liste `db.schema`, `redis.info` et `memory.recall` sous `shenron`; sans jeton, `curl https://dragonballfr.com/.well-known/mcp.json` montre ces outils dans `elevatedTools` seulement.
 
 ## Tests d'intégration
