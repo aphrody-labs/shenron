@@ -12,7 +12,7 @@ This document specifies the end-to-end architecture for synchronizing the comple
 - **Total Tracked Files**: 63 files
 - **Total Payload Size**: **6,951,922,626 bytes** (6.474 GB / 6.95 GiB)
 - **Manifest Location**: [`docs/games/dbfz-r2-manifest.json`](https://github.com/aphrody-labs/shenron/blob/main/docs/games/dbfz-r2-manifest.json)
-- **Sync Tool**: [`scripts/ops/sync-dbfz-to-r2.ts`](https://github.com/aphrody-labs/shenron/blob/main/scripts/ops/sync-dbfz-to-r2.ts)
+- **Sync Tool**: removed; the CDN moved from R2 to Garage (ADR 0009) and the manifest is no longer regenerated
 
 ### Primary Asset Inventory
 
@@ -51,7 +51,7 @@ rclone sync "%ProgramFiles(x86)%\Steam\steamapps\common\DRAGON BALL FighterZ" "r
 ```mermaid
 flowchart TD
     subgraph Browser_Client["Client Browser (WebGPU / WASM)"]
-        GDS_UI["Google Design System (src/gds)"]
+        GDS_UI["Google Design System (packages/ui/src/gds)"]
         TAFFY["Taffy Flexbox Layout Engine"]
         BEVY_ECS["Bevy ECS Deterministic 60 FPS Combat Core"]
         WGPU_CANVAS["WGPU 30 Hardware Canvas (WGSL)"]
@@ -88,12 +88,12 @@ flowchart TD
 - Computes absolute coordinate boxes (`x`, `y`, `width`, `height`) for all UI widgets from CSS-like flexbox declarations.
 - Resolves Top Health Gauges (P1/P2), Round Timer, Bottom Ki Meters (0 to 7 Bars), and Assist character portraits dynamically based on viewport aspect ratio.
 
-### 3. Google Design System (GDS) Integration (`src/gds`)
+### 3. Google Design System (GDS) Integration (`packages/ui/src/gds`)
 
 - Uses Material Design 3 (M3) design tokens:
-  - **Primary**: `#e06000` (Dragon Ball Amber).
-  - **Secondary**: `#1e3a8a` (Royal Saiyan Navy).
-  - **Tertiary**: `#7c3aed` (Ultra Ego Violet).
+  - **Primary**: `var(--md-sys-color-primary, #6750a4)`.
+  - **Secondary**: `var(--md-sys-color-secondary, #625b71)`.
+  - **Tertiary**: `var(--md-sys-color-tertiary, #7d5260)`.
   - **Elevations**: Levels 0 through 5 with shadow depth.
   - **Components**: `GdsCard`, `GdsButton`, `GdsChip` adhering to semantic HTML and accessibility guidelines.
 

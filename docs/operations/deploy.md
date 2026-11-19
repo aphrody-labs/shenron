@@ -1,6 +1,6 @@
 # Deploiement Zero-Downtime
 
-## 1. Pipeline de Release (`bun run ship`)
+## 1. Pipeline de Release (`just ship`)
 
 `scripts/deploy/release.sh` orchestre la construction sur `vps` et l'expedition vers `prod` :
 

@@ -67,41 +67,12 @@ rsync -aH --partial --partial-dir=.rsync-partial --inplace \
 
 ---
 
-## 4. Workflow Reproductible d'Ingestion `DBS_BEERUS` (`875`..`879` et `880`+)
+## 4. Workflow d'Ingestion `DBS_BEERUS` retire
 
-Le script [`scripts/ops/dbs-beerus-workflow.ts`](../../scripts/ops/dbs-beerus-workflow.ts) automatise la preparation et l'execution de bout en bout.
-
-### 4.1 Registre Canonique des Episodes 1 a 5
-
-| ID Shenron | Episode | ID Crunchyroll   | Date de diffusion | Stills Officiels   | Titre FR                            |
-| :--------- | :------ | :--------------- | :---------------- | :----------------- | :---------------------------------- |
-| `875`      | 1       | `GE00389313JAJP` | `2026-10-04`      | `st01_01..04.webp` | Le reveil du dieu de la destruction |
-| `876`      | 2       | `GE00389314JAJP` | `2026-10-11`      | `st02_01..04.webp` | La prophetie du Super Saiyan Divin  |
-| `877`      | 3       | `GE00389315JAJP` | `2026-10-18`      | `st03_01..04.webp` | Beerus descend sur la planete Kaio  |
-| `878`      | 4       | `GE00389316JAJP` | `2026-10-25`      | `st04_01..04.webp` | La fureur de Vegeta                 |
-| `879`      | 5       | `GE00389317JAJP` | `2026-11-01`      | `st05_01..04.webp` | Le rituel des six Saiyans           |
-
-### 4.2 Etapes d'Ingestion d'un Nouvel Episode (ex. Episode 6 / ID `880`)
-
-1. **Generation du plan de workflow (`--plan` / `--dry-run`)** :
-   ```sh
-   bun run scripts/ops/dbs-beerus-workflow.ts --episode 6 --id 880 --plan --dry-run
-   ```
-2. **Export des cookies Crunchyroll et telechargement source** :
-   - Placer le fichier de cookies Netscape dans un chemin temporaire hors depot (`/run/user/1000/cr-cookies.txt`).
-   - Executer la commande `yt-dlp` generee par le planificateur pour recuperer `source.mp4` et les pistes `.ja.vtt` / `.fr-FR.vtt`.
-3. **Validation WebVTT et extraction `Bun.Video`** :
-   - Valider les fichiers `.vtt` avec `validateWebVttContent`.
-   - Extraire les 41 frames WebP, les 3 captures Hero (`240s`, `600s`, `1115s`) et le GIF d'apercu (`600s`, `2s`, `12 fps`, `480px`).
-4. **Publication R2 et mise a jour des shards** :
-   - Calculer le SHA-256 du fichier `source.mp4`, copier l'objet vers `_objects/<sha256>` via `rclone`, et fusionner le shard correspondant via `buildManifestShards`.
-5. **Upsert PostgreSQL et verification** :
-   - Mettre a jour la ligne de l'episode dans PostgreSQL (`players`, `subtitles`, `availability` Crunchyroll) en transaction et verifier la reponse HTTP `200`/`206` sur `https://cdn.dragonballfr.com/media/episodes/<id>/<sha256>/source.mp4`.
+Le script `scripts/ops/dbs-beerus-workflow.ts` est supprime : il telechargeait des flux Crunchyroll sous licence avec des cookies de compte, puis publiait `source.mp4` sur R2 (remplace par Garage, ADR 0009). Les episodes `DBS_BEERUS` sont maintenus par `scripts/ops/beerus-sync.ts`, voir la section 5.
 
 ## 5. Episodes 880 and later: metadata only (2026-11-19)
 
-From episode 6 (`880`, `GE00389318JAJP`, « La Bataille des dieux », published by Crunchyroll France on 2026-11-15 at 17:00 UTC), new episodes are added by `.github/workflows/beerus-sync.yml` (Sunday 17:30 UTC and on demand). It runs `scripts/ops/beerus-sync.ts --apply` on the fr1 runner, which writes `bot.db_episodes` on prd over ssh under the deploy lock: titles, air date, arc and official source link. The watch offer is the Crunchyroll page. Steps 2 to 4 of section 4 (download with account cookies, re-publication of `source.mp4` and subtitles on the CDN) are not part of this workflow: they copy a licensed stream and stay out of any automation.
+From episode 6 (`880`, `GE00389318JAJP`, « La Bataille des dieux », published by Crunchyroll France on 2026-11-15 at 17:00 UTC), new episodes are added by `.github/workflows/beerus-sync.yml` (Sunday 17:30 UTC and on demand). It runs `scripts/ops/beerus-sync.ts --apply` on the fr1 runner, which writes `bot.db_episodes` on prd over ssh under the deploy lock: titles, air date, arc and official source link. The watch offer is the Crunchyroll page. Downloading with account cookies and re-publishing `source.mp4` and subtitles on the CDN are not part of this workflow: they copy a licensed stream and stay out of any automation.
 
 Caches after a new row: the episode API answers at once; the fr2 nginx cache keeps a 404 for 1 minute and a 200 for 10 minutes; the Next episode lists revalidate after 1 hour. Redis holds no episode cache.
-
-The table in 4.1 does not match production: the dates and French titles there differ from `bot.db_episodes` and from the Crunchyroll pages (episode 1 aired on 2026-10-11, title « Le dieu de la Destruction »). Production and `scripts/ops/dbs-beerus-workflow.ts` are the reference.

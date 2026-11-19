@@ -99,7 +99,7 @@ Tire N chemins des manifestes epingles, puis compare le sha256 du corps servi pa
 Etat actuel verifie le 2026-11-19 : enregistrement `A cdn.dragonballfr.com` vers l'IP de `prd`, proxie Cloudflare, route Worker `cdn.dragonballfr.com/*` vers le script `shenron-cdn`, bucket R2 `shenron-cdn`.
 
 1. Prerequis : `shenron-edge` sert `cdn.` en pre-production (hote `fr2`, resolution par `curl --resolve cdn.dragonballfr.com:443:<ip>`), `cdn-parity.ts --samples 1000 --origin ...` a 0 difference, `Range` video verifie (206, `Content-Range`).
-2. Figer les ecritures : les publieurs (`deploy/cloudflare/cli/publish-catalog.ts`, `scripts/ops/sync-dbfz-to-r2.ts`, `r2-sync`) ciblent Garage (`GARAGE_ENDPOINT`, cle `-rw`) au lieu de R2 ; verifier qu'aucun ne cible plus R2.
+2. Figer les ecritures : les publieurs (`deploy/cloudflare/cli/publish-catalog.ts`, `r2-sync`) ciblent Garage (`GARAGE_ENDPOINT`, cle `-rw`) au lieu de R2 ; verifier qu'aucun ne cible plus R2.
 3. Rattrapage : `r2-to-garage.ts` complet une derniere fois (sort 0 : 0 manquant, 0 different), puis parite.
 4. Basculer : modifier l'enregistrement `A cdn` vers l'IP publique de l'hote `shenron-edge` (API DNS Cloudflare, ou Hickory DNS a l'etape 8), puis supprimer la route Worker `cdn.dragonballfr.com/*` (la route intercepte tout nom proxie tant qu'elle existe). Purger le cache Cloudflare de `cdn.`.
 5. Preuve publique : `cdn-parity.ts --samples 1000` contre `https://cdn.dragonballfr.com`, captures navigateur de pages qui chargent images, polices et video (aucune requete en echec, aucune erreur console), puis `curl -I` (absence de `cf-ray`/`server: cloudflare` des que le proxy est quitte).

@@ -26,9 +26,9 @@ This skill conforms to:
 | **Testing**                        | `jest`, `vitest`                     | `bun test` with built-in mocks and snapshot matching | `just test`                    |
 | **Database (PostgreSQL)**          | `pg`, `postgres.js`, `prisma`        | `import { sql, SQL } from "bun"` (`Bun.SQL`)         | `apps/server`, `deploy/prod`   |
 | **Database (Embedded/WAL)**        | `better-sqlite3`, `sqlite3`          | `import { Database } from "bun:sqlite"`              | `packages/bun-engine`          |
-| **Cloud Object Storage (R2/S3)**   | `@aws-sdk/client-s3`, `aws4fetch`    | `new Bun.S3Client(...)`, `s3.file(...)`              | `scripts/ops/sync-site-cdn.ts` |
+| **Object Storage (S3 API)**        | `@aws-sdk/client-s3`, `aws4fetch`    | `new Bun.S3Client(...)`, `s3.file(...)` (Garage after ADR 0009 step 4, R2 until the cutover) | `scripts/ops/web-engine-cdn.ts`, `deploy/garage/s3.ts` |
 | **Container & Archives**           | `tar`, `archiver`, `decompress`      | `Bun.Archive` native stream reader/writer            | `packages/bun-engine`          |
-| **Image Processing & ThumbHash**   | `sharp`, `jimp`                      | `Bun.Image`, `blob.image()` native WebP/AVIF         | `apps/site`, `apps/server`     |
+| **Image Processing & ThumbHash**   | `jimp`                               | `Bun.Image` for `metadata()` and WebP; `sharp` stays the publish encoder for AVIF (Bun 1.4.5 AVIF encode failed on the workstation, see `docs/research/media-formats-2026-11-19.md`) | `packages/images`, `apps/site` |
 | **Security & CSRF**                | `csurf`, `csrf-csrf`                 | `Bun.CSRF.generate()`, `Bun.CSRF.verify()`           | `apps/server`                  |
 | **Task Scheduling & Cron**         | `node-cron`, `cron`                  | `Bun.cron(pattern, callback)`                        | `apps/server`, `apps/bot`      |
 | **Markdown & MDX Compilation**     | `marked`, `markdown-it`              | `Bun.markdown.html()`, `Bun.markdown.render()`       | `apps/site`, `docs`            |
@@ -50,7 +50,8 @@ This skill conforms to:
    - Always validate package modifications using `bun check`.
    - Never insert `"types": ["bun"]` into packages with empty `devDependencies` (use ambient headers).
 3. **No External Network Leaks in CI / Production**:
-   - Production Docker images stream layers over WireGuard via Zstandard (`zstd -T0`).
-   - S3/R2 assets are mirrored through Pingora/Garage Edge Simulators.
+   - Target of ADR 0009: no Docker and no PaaS in production; static binaries released by `shenron-deployd`, systemd units, WireGuard mesh. Step status: `.claude/goal.json`, `migration/rust.toml`.
+   - Objects move from R2 and the Worker to Garage served by `shenron-edge` (`docs/runbooks/cdn-garage-cutover.md`); R2 stays the origin until that runbook says the cutover is done.
+   - Repository tasks: `just` recipes, then `cargo xtask` for Rust ones (`MAP.tsv` gives each area's gate); Rust builds run on `fr1`.
 4. **Strict Zero-Emoji Policy**:
    - Zero emojis in all code, comments, commit messages, and logs.

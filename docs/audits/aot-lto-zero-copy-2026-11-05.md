@@ -164,8 +164,9 @@ includes the profile), `Dockerfile.build` (`--build-arg CARGO_PROFILE=production
 the xwin Windows stage), `scripts/ops/build-shenron-video.sh` (`SHENRON_VIDEO_PROFILE`),
 `scripts/build/server.ts` and `packages/native/src/re.ts` (library lookup checks
 `target/production` first). Sccache and the `/work/target` cache mounts are unchanged; the profile
-only changes the output directory. `bench-old-pipeline.sh` is a historical benchmark and keeps
-`--release` on purpose.
+only changes the output directory. History: `bench-old-pipeline.sh`, a benchmark of the
+pre-2026-10-30 sequencing that kept `--release` on purpose, was deleted once its caller `bench.sh`
+was purged.
 
 WASM: `packages/koharu/scripts/build-wasm.ts` already built with fat LTO, `opt-level=3`,
 `panic=abort` through `CARGO_PROFILE_RELEASE_*` and wasm-bindgen. It now also runs `wasm-opt -O3` on

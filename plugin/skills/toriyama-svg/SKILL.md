@@ -15,7 +15,7 @@ ni palette. Tout tient dans cette skill : Bun suffit, sans `sharp`, Python ni d�
    [couverture de tankōbon et Dragon Ball](references/mesures/couverture-analyse-visuelle.md),
    [senzu](references/mesures/senzu-analyse-visuelle.md), [Potara, sans crochet](references/mesures/potara-analyse-visuelle.md).
 2. **Inspecter & Mesurer** :
-   - **Visuellement via l'outil image (`view_file`)** : inspecter directement les planches de tomes manga (`apps/bot/assets/manga/...` ou scans) et les photogrammes d'animé pour relever la composition, l'angle des cases (_koma_), le calibre de plume G (_G-pen_), les mèches et la décomposition multicouche de celluloïd ([protocole complet d'inspection](references/manga-anime-inspection.md)).
+   - **Visuellement via l'outil image (`view_file`)** : inspecter directement les planches de tomes manga (scans fournis ; mainteneurs : CDN public, voir [sources](references/sources.md)) et les photogrammes d'animé pour relever la composition, l'angle des cases (_koma_), le calibre de plume G (_G-pen_), les mèches et la décomposition multicouche de celluloïd ([protocole complet d'inspection](references/manga-anime-inspection.md)).
    - **Numériquement par script** : `bun scripts/inspecter-manga-anime.ts image.png --mode manga|anime` ou `bun scripts/mesurer.ts image.png --teinte 40 70 --sat 0.3` (ou `--sombre` pour l'encre). Les références PNG (même entrelacées), JPEG, WebP, GIF et BMP sont décodées par `Bun.Image`, sans ImageMagick ni ffmpeg. Regarder `masque.png` et `decoupe.png` avant d'accepter les nombres. Sans outil ni image exploitable, consigner les mesures faites à la main et le contrôle non effectué.
 3. **Consigner** sources, proportions, palette et décision → mesure dans un document
    de mesures livré avec l'asset (modèle : les deux analyses ci-dessus).
@@ -47,3 +47,19 @@ rendus de travail restent dans un dossier temporaire. Dans le dépôt Shenron
 l'utiliser plutôt qu'en copier une autre, puis régénérer `toriyama.js` par
 `bun scripts/plugin/build-references.ts`. Un déploiement n'est effectué que dans son
 périmètre autorisé, puis contrôlé par lecture du fichier servi et de son type.
+
+## Dépôt Shenron (mainteneurs)
+
+- Carte et portes : `MAP.tsv` (`just map`, colonne `gate`) ; `just toriyama-catalog-check`,
+  `just wordmark`, `just plugin-pack`, `just audit-assets` ; `bun test packages/ui` et
+  `bun test scripts/plugin` pour la géométrie et le plugin. Tâches de dépôt en Rust :
+  `cargo xtask` (`map`, `scripts`, `workflows`, `env-check`), compilé sur `fr1`, jamais sur le poste.
+- CDN : `cdn.dragonballfr.com` répond encore par Cloudflare (en-tête `Server` lu le 2026-11-19) ;
+  la cible est Garage derrière `shenron-edge` (ADR 0009, étape 4,
+  `docs/runbooks/cdn-garage-cutover.md`). Cette skill lit le CDN en GET ou HEAD et ne publie
+  rien ; la publication passe par `publish-source`.
+- Formats : un SVG reste un SVG ; l'optimiseur (svgo) ne s'applique qu'avec un contrôle de
+  pixels identiques : rastériser l'original et l'optimisé avec le même outil, comparer les octets
+  (`scripts/raster.ts`), garder l'original en cas d'écart. Les exports raster (favicons, Apple, OG) restent en PNG. Le choix
+  AVIF, WebP, PNG, polices et compression : `docs/research/media-formats-2026-11-19.md`.
+  Ne pas recopier de gain mesuré ailleurs sans le relancer.

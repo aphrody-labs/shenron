@@ -22,7 +22,7 @@ Développer une plateforme souveraine de combat Dragon Ball 2.5D complète, comb
 | **Tranche 1** | Boucle de combat minimale 60 FPS & Shaders WGSL     | **Terminé**  | `arcsys_toon.wgsl`, `arcsys-material.ts`, `canon-game-engine.ts`  |
 | **Tranche 2** | Scénario canonique, sagas et intégration Wiki       | **Terminé**  | `canon-story-manifest.json`, `canon-scenario.ts`, `/games/canon`  |
 | **Tranche 3** | Mécaniques de jeu (Beam Clash & Invocation Shenron) | **Terminé**  | Jauge de mash rate, `DragonRadarHud.tsx`, `FighterzHpBar.tsx`     |
-| **Tranche 4** | Pipeline d'extraction binaire et déchiffrement AES  | **Terminé**  | `game-asset-extractor-pipeline.ts`, tests unitaires d'extraction  |
+| **Tranche 4** | Pipeline d'extraction binaire et déchiffrement AES  | **Terminé**  | script retiré (sans consommateur)  |
 | **Tranche 5** | Mode Tournoi Tenkaichi & Laboratoire de Frame Data  | **En Cours** | Règles de ring-out, visualiseur de hitboxes et frame data         |
 | **Tranche 6** | Netcode Rollback Multijoueur P2P via Axum 0.8       | **À Livrer** | Intégration WebRTC DataChannels et endpoint `/api/game/bevy/tick` |
 

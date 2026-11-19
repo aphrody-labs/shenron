@@ -10,7 +10,7 @@ Owner architecture (2026-11-16): Next.js keeps only the wiki, the main site, com
 - Ingest: `yt-dlp` (checksum-pinned release) downloads and returns its metadata JSON (kept in the library DB); `ffprobe` reads height, duration and audio; `ffmpeg` writes an adaptive H.264/AAC HLS ladder (1080/720/480/360 at or below the source) and a poster frame. One job at a time by default.
 - FFmpeg and yt-dlp run as child processes with argument vectors (no shell). FFI bindings (ffmpeg-next, libvlc) are not used on the server: they add a native link step without changing the output; libvlc stays for the desktop and admin player, where playback happens in process.
 - Player: semantic HTML, keyboard reachable, `hls.js` served locally (no CDN); native HLS on Safari.
-- Filmcraft keeps one source, `github.com/aphrody-labs/filmcraft`; the vendored `packages/filmcraft` copy is to be replaced by a pinned dependency.
+- Filmcraft keeps one source, `github.com/aphrody-labs/filmcraft`; the vendored `packages/filmcraft` copy was removed (nothing imported it); Rust consumers use the published `filmcraft-*` crates and the `filmcraft-cli` binary comes from that repository.
 - Deploy: own Compose project (`deploy/prod/tv.compose.yaml`), own nginx server block (`deploy/nginx/tv.conf`), CPU and memory limited; Next.js routes and rosegriffon services are not touched.
 
 ## Not done yet

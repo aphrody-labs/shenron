@@ -8,7 +8,7 @@ bas ne sont pas installés.
 
 1. Push sur `main` → `.github/workflows/server-artifact.yml`, sur un runner `shenron-prod`.
 2. `scripts/deploy/release.sh --plan` lit la révision que chaque service exécute réellement
-   (`scripts/deploy/active-release.sh` : tag d'image du conteneur, puis `.env` ; jamais
+   (`scripts/deploy/active-release.ts` : tag d'image du conteneur, puis `.env` ; jamais
    `$SHENRON_ROOT/current`) et compare les clés de lanes (`scripts/deploy/lanes.ts`).
 3. Rien de déployable (docs, tests, scripts hors build) : fin, code 0, en quelques secondes.
    Diff touchant des migrations : **HOLD**, code 78, rien n'est construit ni appliqué.

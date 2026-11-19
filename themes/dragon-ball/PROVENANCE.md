@@ -31,7 +31,7 @@ Wallpapers dark (Toei stills and manga page, existing in the home hero; shas in 
 | wallpaper dark dbs-beerus-2026                                        | https://cdn.dragonballfr.com/banners/dbs-beerus-2026.jpg                                                  | ca4270c5b0fa8634dc827b18825cefa8bc51e59a7056d1731b27ffe0e4490352 |
 | logo mark                                                             | packages/ui/assets/dbz/kinto-un-icone.svg                                                                 | c7f00e5b5402d5e0d345290ac577f054df88ed50868175c8c25bd3b5731448f4 |
 | logo monochrome                                                       | derived (currentColor)                                                                                    | 6cba0a6cf39b61b6e954cfeb7fbfcfd257da1e3663f3d3b778240a6661fbbbc4 |
-| wordmark                                                              | packages/ui/assets/brand/dragonballfr-logo.svg (https://cdn.dragonballfr.com/brand/dragonballfr-logo.svg) | 39d0b5c665abc384fc8b5c9d3779ce6fa92c5bcdb5ec1da2b40076426ae29776 |
+| wordmark                                                              | packages/ui/assets/brand/dragonballfr-logo.svg, SVGO-optimised, pixel-identical to the original (identical copy: `assets/brand/dragonballfr-wordmark.svg`) | 84e3fa741ed12eea10dcac2363f7513c30eb654a0d3a0b80ef426c4d3994dcbf |
 | pet Shenron                                                           | packages/ui/assets/wiki-mascots/shenron-full.svg (site-drawn vector, static)                              | 22a774e170ac92e56a6a6799882ed525f240c2aeeeaf2a179fade2eb2b994e67 |
 | sounds shenron, nimbus, select, click, kamehameha, ki-charge          | https://cdn.dragonballfr.com/sfx/*.mp3 (apps/site/public/sfx, see its README)                             | in `theme.toml`                                                  |
 | technique stills kamehameha, genkidama, final-flash, kaioken, kienzan | https://cdn.dragonballfr.com/techniques/*.webp                                                            | in `theme.toml`                                                  |
@@ -39,6 +39,9 @@ Wallpapers dark (Toei stills and manga page, existing in the home hero; shas in 
 Hash provenance: the pack stores the full sha256; the CDN name for static theme assets would be
 `{sha16}.{ext}`, but nothing was uploaded to R2: all assets already exist on the CDN under their
 current names.
+
+The wordmark row hashes the optimised repo copy (19882 B). The CDN object `brand/dragonballfr-logo.svg` still serves the original
+(55207 B, sha256 39d0b5c665abc384fc8b5c9d3779ce6fa92c5bcdb5ec1da2b40076426ae29776) until it is re-synced.
 
 ## Missing
 

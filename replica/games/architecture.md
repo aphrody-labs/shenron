@@ -1,6 +1,6 @@
 # Architecture : Dragon Ball 2.5D Sovereign Game Replica
 
-Rédigé le 2026-11-11 avec `/replica-architect`. Sources : `replica/games/recon.md` (10 écrans, 5 parcours, 9 entités), `replica/games/features.csv` (28 fonctionnalités) et la suite d'extraction binaire `scripts/ops/game-asset-extractor-pipeline.ts`.
+Rédigé le 2026-11-11 avec `/replica-architect`. Sources : `replica/games/recon.md` (10 écrans, 5 parcours, 9 entités), `replica/games/features.csv` (28 fonctionnalités).
 
 ---
 
@@ -78,7 +78,7 @@ Fichier de définition : `replica/games/schema.sql`. Il structure 9 tables relat
 ## 4. Les Pièges & Points d'Attention (The Parts that Bite)
 
 1. **Déchiffrement AES-256 & Décompression Oodle** :
-   - Les archives PAK UE4 chiffrent l'index de répertoire à la fin du fichier. La clé AES doit être fournie ou dérivée de l'exécutable officiel. Le script `scripts/ops/game-asset-extractor-pipeline.ts` résout l'offset d'index et gère le fallback si non-chiffré.
+   - Les archives PAK UE4 chiffrent l'index de répertoire à la fin du fichier. La clé AES doit être fournie ou dérivée de l'exécutable officiel.
 2. **Synchronisation Rollback Netcode** :
    - Deux clients distants peuvent diverger si la physique utilise des nombres à virgule flottante non déterministes.
    - Solution : Le moteur `crates/dragon-pixel` utilise une arithmétique à virgule fixe ou des calculs entiers de positions pour garantir 100% de concordance d'états.
@@ -100,7 +100,7 @@ Fichier de définition : `replica/games/schema.sql`. Il structure 9 tables relat
 - **Tranche 3 : Mécaniques de jeu avancées (Fait)**
   - Affrontement de rayons simultanés (Beam Clash), collecte des 7 Dragon Balls sur le radar et invocation de Shenron.
 - **Tranche 4 : Pipeline d'extraction et déchiffrement binaire (Fait)**
-  - Script `game-asset-extractor-pipeline.ts` traitant les footers PAK, blocs AES-256, en-têtes UAsset et tables `.locres`.
+  - Pipeline retiré (script sans point d entrée ni consommateur).
 - **Tranche 5 : Mode Tournoi Tenkaichi & Salle de l'Esprit et du Temps**
   - Ajout des règles de ring-out et de l'inspecteur visuel de hitboxes/frame data dans `/games/canon`.
 - **Tranche 6 : Rollback Netcode multijoueur sur Axum 0.8**

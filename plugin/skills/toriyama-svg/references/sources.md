@@ -37,10 +37,13 @@ mesures déjà embarquées ([Kinto-Un](mesures/kinto-un-analyse-visuelle.md),
 [couverture et Dragon Ball](mesures/couverture-analyse-visuelle.md)). Ne pas
 dessiner sans l'une ou l'autre : le dire.
 
-Avec le dépôt Shenron (mainteneurs), le corpus auto-hébergé est sous
-`apps/bot/assets/manga/DB/regular/vol<N>/<planche>.webp` (trait),
-`apps/bot/assets/manga/DB/fullcolor/<arc>/t<N>/<planche>.webp` (couleur) et
-`apps/site/public/databooks/<uuid>.jpg` (databooks). Si les sources vivantes
+Avec le réseau (mainteneurs), les planches sont sur le CDN public, hors du dépôt (relevé du
+2026-11-19, GET en lecture seule) :
+`https://cdn.dragonballfr.com/assets/manga/DB/regular/vol<N>/<planche>.webp` (trait),
+`https://cdn.dragonballfr.com/assets/manga/DB/fullcolor/<arc>/t<N>/<planche>.webp` (couleur) et
+`https://cdn.dragonballfr.com/assets/manga/DBFC/ch<N>/<planche>.jpg` (édition couleur par
+chapitre). Les trois formes ont répondu 200 ce jour-là ; le CDN ne négocie pas le format, donc
+mesurer sur l'octet reçu. Les databooks passent par `dragonball_databooks_plates`. Si les sources vivantes
 répondent, `dragonball_manga_search`, `dragonball_manga_page`,
 `dragonball_databooks_search` et `dragonball_databooks_plates` (ou le RAG)
 retrouvent une planche par une réplique, puisqu'ils indexent le texte des planches.
