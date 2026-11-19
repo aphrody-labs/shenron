@@ -50,7 +50,6 @@ const ORIGIN = "https://cdn.dragonballfr.com";
 const ALLOWED_DYNAMIC_ORIGINS = new Set([
   "https://dragonballfr.com",
   "https://www.dragonballfr.com",
-  "https://shenron-site.vercel.app",
   "https://origin-cdn.dragonballfr.com",
 ]);
 const HASH = /^[a-f0-9]{64}$/;

@@ -1,4 +1,4 @@
-# Authoritative fork & submodule catalog for Shenron (Cloudflare + Vercel serverless path).
+# Authoritative fork & submodule catalog for Shenron.
 # Every fork lives under org = "aphrody-labs" and is mounted shallowly under third_party/.
 
 [meta]
@@ -18,13 +18,6 @@ repo = "aphrody-labs/discordx"
 upstream = "discordx-ts/discordx"
 branch = "main"
 role = "discord"
-
-[[submodule]]
-path = "third_party/vinext"
-repo = "aphrody-labs/vinext"
-upstream = "cloudflare/vinext"
-branch = "main"
-role = "cloudflare-nextjs"
 
 [[submodule]]
 path = "third_party/next.js"
