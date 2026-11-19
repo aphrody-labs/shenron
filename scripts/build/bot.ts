@@ -24,6 +24,7 @@ import {
   aotRequested,
   chooseCompileMode,
   compileModeFlags,
+  compileTuning,
   supportsAot,
   type CompileMode,
 } from "./compile-mode";
@@ -55,6 +56,14 @@ const canvasPlatform = {
 }[target];
 const canvasBinding = Bun.resolveSync(`@napi-rs/canvas-${canvasPlatform}`, dirname(canvas));
 async function compile(mode: CompileMode): Promise<number> {
+  const tuning = compileTuning({
+    product: "bot",
+    mode,
+    bun: aotBun(mode),
+    compileBun: process.env.SHENRON_COMPILE_BUN,
+  });
+  for (const note of tuning.notes)
+    console.error(JSON.stringify({ label: "bot-compile-tuning", note }));
   const child = Bun.spawn(
     [
       process.execPath,
@@ -83,9 +92,10 @@ async function compile(mode: CompileMode): Promise<number> {
       // of NAPI_RS_NATIVE_LIBRARY_PATH beside the binary (src/lib/canvas-binding.ts): AOT must
       // allow that load from disk.
       ...compileModeFlags(mode, { codeFromDisk: true }),
-      // Opt-in: removes the Bun APIs the code never calls (-45 MiB on Linux). --smoke does not exercise
-      // the gateway or the database, so it is not the default until a deploy has run it.
-      ...(mode === "aot" && process.env.SHENRON_AOT_TRIM === "1" ? ["--trim"] : []),
+      // SHENRON_TRIM=1 (opt-in): removes the Bun APIs the code never calls (-45 MiB on Linux) and the
+      // locales the bot does not ship. --smoke does not exercise the gateway or the database, so it
+      // is not the default until a deploy has run it. SHENRON_BOT_BYTECODE_ORDER adds the order file.
+      ...tuning.flags,
       ...(mode === "aot" && args.includes("--aot-log-type-mismatches")
         ? ["--aot-log-type-mismatches"]
         : []),

@@ -6,7 +6,7 @@
 #
 #   --plan   print what --auto would do against the revisions production runs, change nothing
 #   --auto   the auto-deploy entry: compare the revision (default origin/main) with what each
-#            service runs (scripts/deploy/active-release.sh), then build only the changed lanes
+#            service runs (scripts/deploy/active-release.ts), then build only the changed lanes
 #            and switch only the services they reach. Exit 0 with nothing to do; exit 78 when the
 #            diff touches database migrations (held: Infra applies them, then rerun with
 #            SHENRON_ACCEPT_HOLDS=1); exit 65 when a changed path is not classified.
@@ -35,7 +35,7 @@ if [ "$mode" = auto ] || [ "$mode" = plan ]; then
   declare -A active_revs=()
   declare -A pid_map=()
   for service in site bot; do
-    bash "$HERE/active-release.sh" "$service" > "/tmp/shenron-active-$service.$$" &
+    bun "$HERE/active-release.ts" "$service" > "/tmp/shenron-active-$service.$$" &
     pid_map[$service]=$!
   done
   for service in site bot; do

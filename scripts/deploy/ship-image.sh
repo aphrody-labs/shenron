@@ -19,7 +19,7 @@
 # Services (SHENRON_SERVICES, default "site bot"): passed to the activation command in its
 # environment; deploy/activation/activate.sh switches only those, each with --no-deps.
 #
-# Rollback guard (ssh and local targets, through scripts/deploy/active-release.sh):
+# Rollback guard (ssh and local targets, through scripts/deploy/active-release.ts):
 # SHENRON_ACTIVE_COMMAND prints the active release; the first 40-hex commit in its output must be an ancestor of the shipped commit unless
 # SHENRON_ALLOW_ROLLBACK=1. Default: the revision the running containers were created from
 # (the image tag of shenron-site, then SHENRON_IMAGE_TAG of $SHENRON_ROOT/.env), not
@@ -54,7 +54,7 @@ phase() { echo "== $1 (+$((SECONDS - STARTED))s)"; }
 guard_rollback() {
   local active
   [ "${SHENRON_ALLOW_ROLLBACK:-0}" = 1 ] && return
-  active=$(bash "$HERE/active-release.sh" site)
+  active=$(bun "$HERE/active-release.ts" site)
   [ -n "$active" ] || return 0
   if ! git -C "$W" cat-file -e "$active^{commit}" 2>/dev/null; then
     git -C "$W" fetch -q origin || true

@@ -208,7 +208,7 @@ if (command === "plan") {
   }
   const selectedFormats = formatFilter();
   const limit = rowLimit();
-  const serverUrl = values.server;
+  const serverUrl: string = values.server ?? "";
   if (!serverUrl) throw new Error("--server or DBXV2_SERVER_URL is required");
   // The DBXV2 FFI (loadDbxv2Ffi) is not part of this repository: name its entry explicitly.
   const source = process.env.SHENRON_DBXV2_SRC;

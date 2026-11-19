@@ -67,6 +67,7 @@ import {
   aotRequested,
   chooseCompileMode,
   compileModeFlags,
+  compileTuning,
   supportsAot,
   type CompileMode,
 } from "./compile-mode";
@@ -390,8 +391,16 @@ if (compileMode === "aot" && !supportsAot(aotBun(compileMode))) {
   );
   compileMode = "bytecode";
 }
-const compileServer = (mode: CompileMode) =>
-  measured(
+const compileServer = (mode: CompileMode) => {
+  const tuning = compileTuning({
+    product: "server",
+    mode,
+    bun: aotBun(mode),
+    compileBun: process.env.SHENRON_COMPILE_BUN,
+  });
+  for (const note of tuning.notes)
+    console.error(JSON.stringify({ label: "server-compile-tuning", note }));
+  return measured(
     `server-compile-${target}-${mode}`,
     [
       aotBun(mode),
@@ -405,11 +414,13 @@ const compileServer = (mode: CompileMode) =>
         : []),
       "--minify",
       ...compileModeFlags(mode),
+      ...tuning.flags,
       "--outfile",
       join(OUT, spec.exe),
     ],
     ROOT,
   );
+};
 try {
   await compileServer(compileMode);
 } catch (error) {

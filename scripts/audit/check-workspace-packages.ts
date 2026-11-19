@@ -116,10 +116,9 @@ const ALLOWED_EDGES: Readonly<
   "@aphrody/shenron-koharu": { runtime: [], dev: [] },
   // The one ja/fr/en lexicon (data embedded, no I/O): a leaf every layer may read.
   "@aphrody/shenron-lexicon": { runtime: [], dev: [] },
-  // Video engines (filmcraft, hyperframes, remotion) and the kit HTTP transport.
+  // Video engines (hyperframes, remotion) and the kit HTTP transport.
   "@aphrody/shenron-media": {
     runtime: [
-      "@aphrody/shenron-filmcraft",
       "@aphrody/shenron-hyperframes",
       "@aphrody/shenron-kit",
       "@aphrody/shenron-remotion",

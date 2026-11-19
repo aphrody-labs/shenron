@@ -7,7 +7,14 @@ import { afterAll, beforeAll, describe, expect, test } from "bun:test";
 import { mkdir, mkdtemp, rm, stat, unlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { brotliDecompressSync, gunzipSync } from "node:zlib";
+import { Database } from "bun:sqlite";
+import {
+  brotliDecompressSync,
+  constants as zlibConstants,
+  gunzipSync,
+  zstdCompressSync,
+  zstdDecompressSync,
+} from "node:zlib";
 import { decodedHash, mp4NeedsFaststart } from "./cdn-optimize.ts";
 
 const script = join(import.meta.dir, "cdn-optimize.ts");
@@ -31,7 +38,7 @@ interface Report {
     string,
     { processed: number; optimized: number; errors: number; srcBytes: number; outBytes: number }
   >;
-  siblings: { br: number; gz: number };
+  siblings: { br: number; zst: number; gz: number };
   deleted: number;
   dedup: { linked: number };
   errors: unknown[];
@@ -159,12 +166,111 @@ describe("cdn-optimize", () => {
     expect(await Bun.file(join(out, "tiny.txt.br")).exists()).toBe(false);
   });
 
+  test("text gets a verified zstd level 19 sibling, smaller than the edge's level 3", async () => {
+    const original = await Bun.file(join(src, "js", "app.js")).bytes();
+    const zst = await Bun.file(join(out, "js", "app.js.zst")).bytes();
+    expect(Buffer.compare(zstdDecompressSync(zst), original)).toBe(0);
+    expect(zst.length).toBeLessThan(original.length * 0.95);
+    const level3 = zstdCompressSync(original, {
+      params: { [zlibConstants.ZSTD_c_compressionLevel]: 3 },
+    });
+    expect(zst.length).toBeLessThanOrEqual(level3.length);
+    expect(await Bun.file(join(out, "tiny.txt.zst")).exists()).toBe(false);
+    expect(first.siblings.zst).toBeGreaterThanOrEqual(1);
+  });
+
+  test("a state written before .zst siblings existed republishes text once to gain them", async () => {
+    const legacy = join(root, "legacy");
+    const legacySrc = join(legacy, "src");
+    const legacyOut = join(legacy, "out");
+    const legacyState = join(legacy, "state", "manifest.sqlite");
+    await mkdir(join(legacy, "state"), { recursive: true });
+    await mkdir(legacySrc, { recursive: true });
+    await Bun.write(join(legacySrc, "a.json"), JSON.stringify({ k: "v".repeat(2000) }));
+    const run = async (): Promise<Report> => {
+      const p = Bun.spawn(
+        [
+          "bun",
+          script,
+          "--src",
+          legacySrc,
+          "--out",
+          legacyOut,
+          "--state",
+          legacyState,
+          "--jobs",
+          "2",
+        ],
+        { windowsHide: true, stdout: "pipe", stderr: "pipe" },
+      );
+      const [text, err, code] = await Promise.all([
+        new Response(p.stdout).text(),
+        new Response(p.stderr).text(),
+        p.exited,
+      ]);
+      if (code !== 0) throw new Error(`cdn-optimize exited ${code}: ${err}`);
+      return JSON.parse(text) as Report;
+    };
+    await run();
+    await unlink(join(legacyOut, "a.json.zst"));
+    const db = new Database(legacyState);
+    db.exec("ALTER TABLE files DROP COLUMN zst_size");
+    db.close();
+    const again = await run();
+    expect(again.siblings.zst).toBe(1);
+    expect(await Bun.file(join(legacyOut, "a.json.zst")).exists()).toBe(true);
+  });
+
+  test("an interrupted .zst backfill resumes on the next run without --force", async () => {
+    const resume = join(root, "resume");
+    const resumeSrc = join(resume, "src");
+    const resumeOut = join(resume, "out");
+    const resumeState = join(resume, "state", "manifest.sqlite");
+    await mkdir(join(resume, "state"), { recursive: true });
+    await mkdir(resumeSrc, { recursive: true });
+    await Bun.write(join(resumeSrc, "a.json"), JSON.stringify({ k: "v".repeat(2000) }));
+    await Bun.write(join(resumeSrc, "b.json"), JSON.stringify({ k: "w".repeat(2000) }));
+    const run = async (): Promise<Report> => {
+      const p = Bun.spawn(
+        ["bun", script, "--src", resumeSrc, "--out", resumeOut, "--state", resumeState, "--jobs", "2"],
+        { windowsHide: true, stdout: "pipe", stderr: "pipe" },
+      );
+      const [text, err, code] = await Promise.all([
+        new Response(p.stdout).text(),
+        new Response(p.stderr).text(),
+        p.exited,
+      ]);
+      if (code !== 0) throw new Error(`cdn-optimize exited ${code}: ${err}`);
+      return JSON.parse(text) as Report;
+    };
+    await run();
+    // State of a run killed after the ALTER: the column exists, the flag is pending, and the
+    // rows not yet republished still have no zst_size and no .zst sibling.
+    await unlink(join(resumeOut, "a.json.zst"));
+    await unlink(join(resumeOut, "b.json.zst"));
+    const db = new Database(resumeState);
+    db.exec("UPDATE files SET zst_size = NULL WHERE path = 'a.json'");
+    db.exec("UPDATE files SET zst_size = NULL WHERE path = 'b.json'");
+    db.exec("INSERT OR REPLACE INTO meta (key, value) VALUES ('zst_backfill', 'pending')");
+    db.close();
+    const again = await run();
+    expect(again.siblings.zst).toBe(2);
+    expect(await Bun.file(join(resumeOut, "a.json.zst")).exists()).toBe(true);
+    expect(await Bun.file(join(resumeOut, "b.json.zst")).exists()).toBe(true);
+    const after = new Database(resumeState);
+    expect(after.query("SELECT value FROM meta WHERE key = 'zst_backfill'").get()).toBeNull();
+    after.close();
+  });
+
   test("byte-identical outputs share one inode", async () => {
     const a = await stat(join(out, "js", "app.js"));
     const b = await stat(join(out, "js", "copy.js"));
     expect(a.ino).toBe(b.ino);
     expect((await stat(join(out, "js", "app.js.br"))).ino).toBe(
       (await stat(join(out, "js", "copy.js.br"))).ino,
+    );
+    expect((await stat(join(out, "js", "app.js.zst"))).ino).toBe(
+      (await stat(join(out, "js", "copy.js.zst"))).ino,
     );
     expect(first.dedup.linked).toBeGreaterThan(0);
   });
@@ -231,7 +337,9 @@ describe("cdn-optimize", () => {
     expect(r.deleted).toBeGreaterThanOrEqual(1);
     expect(await Bun.file(join(out, "js", "copy.js")).exists()).toBe(false);
     expect(await Bun.file(join(out, "js", "copy.js.br")).exists()).toBe(false);
+    expect(await Bun.file(join(out, "js", "copy.js.zst")).exists()).toBe(false);
     expect(await Bun.file(join(out, "js", "app.js.br")).exists()).toBe(true);
+    expect(await Bun.file(join(out, "js", "app.js.zst")).exists()).toBe(true);
   });
 
   test("an empty source is refused", async () => {

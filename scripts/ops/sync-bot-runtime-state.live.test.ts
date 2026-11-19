@@ -22,7 +22,7 @@ import {
   type MirrorOptions,
   type Row,
   type SqliteColumn,
-} from "./sync-bot-runtime-state";
+} from "@aphrody/shenron-db/replica";
 
 const url = process.env.SHENRON_TEST_DATABASE_URL;
 const live = process.env.SHENRON_LIVE === "1" && Boolean(url);

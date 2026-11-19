@@ -105,8 +105,8 @@ la recette de démonstration a aussi été exécutée sur les médias réels ci-
 ## Sources vidéo et qualification réelle
 
 Le propriétaire existant de la génération temporelle est
-`apps/site/src/lib/episode-video-generation.ts`, consommé par
-`scripts/ops/episode-video-service.ts`. `prepare-episode.ts` **réutilise ses exports**
+`apps/site/src/lib/episode-video-generation.ts`.
+`prepare-episode.ts` **réutilise ses exports**
 `episodeTimelineSource` et `downloadEpisodeVideoSource` pour l'admission des sources
 publiées, l'acquisition bornée et la vérification du cache. Il ne réimplémente pas le
 téléchargement. Une source locale existante et vérifiée évite tout téléchargement.

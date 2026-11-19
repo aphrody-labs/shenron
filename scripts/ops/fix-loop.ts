@@ -343,7 +343,7 @@ export async function checkFormat(root: string, files?: string[]): Promise<Findi
   if (files && !files.length) return [];
   const cmd = files
     ? `bun scripts/testing/native-quality.ts fmt --check ${files.map(q).join(" ")}`
-    : "bun run format:check";
+    : "bun scripts/testing/native-quality.ts fmt --check";
   const r = await sh(cmd, root);
   return parseOxfmtList(`${r.out}\n${r.err}`);
 }
@@ -361,7 +361,7 @@ async function tsWorkspaces(root: string): Promise<Workspace[]> {
       /* fall through */
     }
   }
-  return [{ cwd: root, args: ["bun", "run", "typecheck"] }];
+  return [{ cwd: root, args: ["bun", "scripts/testing/native-quality.ts", "check"] }];
 }
 
 export async function checkTsc(root: string, only?: string[]): Promise<Finding[]> {

@@ -106,8 +106,11 @@ mkdir -p "$STAMPS"
 LANES=scripts/deploy/lanes.ts
 STORE=scripts/deploy/artifacts.ts
 # Shipped Rust is built with --profile production (fat LTO, one codegen unit, stripped); the fast
-# lane for quick iterations is SHENRON_CARGO_PROFILE=release. Cargo writes a profile to
-# target/<profile> ("dev" excepted, which nothing here uses).
+# lane for quick iterations is SHENRON_CARGO_PROFILE=release. production keeps panic=unwind: the
+# shenron-mcp and koharu-sdk tokio runtimes isolate task panics and shenron-ffi catches panics at
+# the FFI boundary, so production-abort stays reserved for single-purpose executables
+# (shenron-video). Cargo writes a profile to target/<profile> ("dev" excepted, which nothing here
+# uses).
 CARGO_PROFILE=${SHENRON_CARGO_PROFILE:-production}
 EXTRAS=(--extra "rustc=$(rustc -V) $CARGO_PROFILE" --extra "bun=$(bun --revision)")
 eval "$(bun "$LANES" keys --rev HEAD --format shell "${EXTRAS[@]}")"

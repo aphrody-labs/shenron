@@ -7,7 +7,7 @@ import {
   sameRecord,
   stablePostgresId,
 } from "./sync-bot-runtime-sqlite-to-postgres";
-import { emptyReport } from "./sync-bot-runtime-state";
+import { emptyReport } from "@aphrody/shenron-db/replica";
 
 describe("bot runtime PostgreSQL mapping", () => {
   const row = {

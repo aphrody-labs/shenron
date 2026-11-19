@@ -9,7 +9,8 @@
  *
  * The source tree (an rsync mirror) is never written. For every source file the served tree
  * receives the smallest variant whose decoded content is proven identical, or a hardlink to
- * the source. Text files also get `.br` and `.gz` siblings (nginx brotli_static/gzip_static).
+ * the source. Text files also get `.br`, `.zst` and `.gz` siblings (nginx brotli_static/gzip_static,
+ * stored-variant serving by the edge).
  * Byte-identical outputs are hardlinked to one inode. A SQLite manifest (size, mtime, inode)
  * keeps runs incremental; files removed from the source are removed from the served tree.
  *
@@ -23,7 +24,7 @@
  *         XMP stripped -> identical dwebp pixels
  *   MP4   Bun.Video/FilmCraft remux -> identical canonical native remux hashes;
  *         keep the original when the native writer cannot produce fast start
- *   text  brotli q11/lgwin 24 and zopfli gzip siblings -> decompression gives the source bytes
+ *   text  brotli q11/lgwin 24, zstd level 19 and zopfli gzip siblings -> decompression gives the source bytes
  */
 // oxlint-disable no-await-in-loop -- sequential by design: header walks, candidate proofs, dedup links.
 import { Database } from "bun:sqlite";
@@ -41,7 +42,14 @@ import {
 } from "node:fs/promises";
 import { availableParallelism, tmpdir } from "node:os";
 import { dirname, extname, join, resolve, sep } from "node:path";
-import { brotliCompressSync, brotliDecompressSync, constants as zlib, gunzipSync } from "node:zlib";
+import {
+  brotliCompressSync,
+  brotliDecompressSync,
+  constants as zlib,
+  gunzipSync,
+  zstdCompressSync,
+  zstdDecompressSync,
+} from "node:zlib";
 
 type Kind = "jpeg" | "png" | "gif" | "webp" | "mp4" | "text" | "other";
 const KINDS: readonly Kind[] = ["jpeg", "png", "gif", "webp", "mp4", "text", "other"];
@@ -73,7 +81,9 @@ const TEXT_EXT = new Set([
 ]);
 const FONT_EXT = new Set([".ttf", ".otf"]);
 const MP4_EXT = new Set([".mp4", ".m4v", ".m4a"]);
-const SIBLINGS = [".br", ".gz"] as const;
+const SIBLINGS = [".br", ".zst", ".gz"] as const;
+/** zstd level for stored variants: 19 is 16.3% smaller than the edge level on a 725757 B JSON, level 22 adds nothing measurable. */
+const ZSTD_LEVEL = 19;
 /** Paths of an rsync run in progress (--partial-dir, --delay-updates) or of this tool are never published. */
 const TRANSIENT = /(^|\/)(\.rsync-partial|\.~tmp~|\.cdn-optimize-tmp)(\/|$)/;
 /** A precompressed sibling must save at least 5% and the source must be worth it. */
@@ -105,6 +115,7 @@ interface Row {
   out_sha256: string;
   br_size: number | null;
   gz_size: number | null;
+  zst_size: number | null;
 }
 
 interface KindStats {
@@ -565,6 +576,15 @@ function brotli(bytes: Uint8Array, font: boolean): Uint8Array {
   });
 }
 
+function zstd(bytes: Uint8Array): Uint8Array {
+  return zstdCompressSync(bytes, {
+    params: {
+      [zlib.ZSTD_c_compressionLevel]: ZSTD_LEVEL,
+    },
+    pledgedSrcSize: bytes.length,
+  });
+}
+
 async function gzip(src: string, bytes: Uint8Array<ArrayBuffer>): Promise<Uint8Array | null> {
   if (tools.zopfli) {
     const proc = Bun.spawn([tools.zopfli, "--i15", "-c", src], {
@@ -580,6 +600,7 @@ async function gzip(src: string, bytes: Uint8Array<ArrayBuffer>): Promise<Uint8A
 
 interface SiblingSizes {
   br: number | null;
+  zst: number | null;
   gz: number | null;
 }
 
@@ -591,12 +612,14 @@ async function writeSiblings(
   ws: Workspace,
 ): Promise<SiblingSizes> {
   const bytes = await Bun.file(src).bytes();
-  const sizes: SiblingSizes = { br: null, gz: null };
+  const sizes: SiblingSizes = { br: null, zst: null, gz: null };
   const font = FONT_EXT.has(extname(src).toLowerCase());
   const variants: [(typeof SIBLINGS)[number], Uint8Array | null][] = [];
   if (bytes.length >= SIBLING_MIN_SOURCE) {
     const br = brotli(bytes, font);
     variants.push([".br", Buffer.compare(brotliDecompressSync(br), bytes) === 0 ? br : null]);
+    const zst = zstd(bytes);
+    variants.push([".zst", Buffer.compare(zstdDecompressSync(zst), bytes) === 0 ? zst : null]);
     const gz = await gzip(src, bytes);
     variants.push([".gz", gz && Buffer.compare(gunzipSync(gz), bytes) === 0 ? gz : null]);
   }
@@ -605,6 +628,7 @@ async function writeSiblings(
     const target = outPath + suffix;
     if (data && data.length <= bytes.length * SIBLING_MAX_RATIO) {
       if (suffix === ".br") sizes.br = data.length;
+      else if (suffix === ".zst") sizes.zst = data.length;
       else sizes.gz = data.length;
       if (!opts.dryRun) {
         const tmp = ws.file(suffix);
@@ -707,11 +731,28 @@ async function main(): Promise<void> {
     path TEXT PRIMARY KEY, src_size INTEGER NOT NULL, src_mtime_ms REAL NOT NULL, src_ino INTEGER NOT NULL,
     src_sha256 TEXT NOT NULL, kind TEXT NOT NULL, action TEXT NOT NULL, out_size INTEGER NOT NULL,
     out_sha256 TEXT NOT NULL, br_size INTEGER, gz_size INTEGER, note TEXT, updated_at TEXT NOT NULL)`);
+  // State written before `.zst` siblings existed: text rows are republished once to gain them.
+  // The pending flag lives in the state file so an interrupted run resumes the backfill: it is
+  // set in the same transaction as the ALTER and cleared only after a complete, error-free run.
+  db.exec("CREATE TABLE IF NOT EXISTS meta (key TEXT PRIMARY KEY, value TEXT NOT NULL)");
+  const hasZstColumn = db
+    .query<{ name: string }, []>("PRAGMA table_info(files)")
+    .all()
+    .some((column) => column.name === "zst_size");
+  if (!hasZstColumn) {
+    db.transaction(() => {
+      db.exec("ALTER TABLE files ADD COLUMN zst_size INTEGER");
+      db.exec("INSERT OR REPLACE INTO meta (key, value) VALUES ('zst_backfill', 'pending')");
+    })();
+  }
+  const zstBackfill =
+    db.query<{ value: string }, []>("SELECT value FROM meta WHERE key = 'zst_backfill'").get()
+      ?.value === "pending";
   db.exec("CREATE INDEX IF NOT EXISTS files_out_sha ON files(out_sha256)");
   const getRow = db.query<Row, [string]>("SELECT * FROM files WHERE path = ?");
   const putRow = db.query(`INSERT OR REPLACE INTO files
-    (path, src_size, src_mtime_ms, src_ino, src_sha256, kind, action, out_size, out_sha256, br_size, gz_size, note, updated_at)
-    VALUES ($path, $src_size, $src_mtime_ms, $src_ino, $src_sha256, $kind, $action, $out_size, $out_sha256, $br_size, $gz_size, $note, $updated_at)`);
+    (path, src_size, src_mtime_ms, src_ino, src_sha256, kind, action, out_size, out_sha256, br_size, zst_size, gz_size, note, updated_at)
+    VALUES ($path, $src_size, $src_mtime_ms, $src_ino, $src_sha256, $kind, $action, $out_size, $out_sha256, $br_size, $zst_size, $gz_size, $note, $updated_at)`);
 
   const sources = await walk(opts.src);
   if (sources.length === 0)
@@ -724,7 +765,7 @@ async function main(): Promise<void> {
       { files: 0, processed: 0, optimized: 0, srcBytes: 0, outBytes: 0, rejected: 0, errors: 0 },
     ]),
   ) as Record<Kind, KindStats>;
-  const siblings = { br: 0, brBytes: 0, gz: 0, gzBytes: 0, textBytes: 0 };
+  const siblings = { br: 0, brBytes: 0, zst: 0, zstBytes: 0, gz: 0, gzBytes: 0, textBytes: 0 };
   const errors: { path: string; error: string }[] = [];
   let done = 0;
   let lastLog = performance.now();
@@ -749,6 +790,7 @@ async function main(): Promise<void> {
     const previous = getRow.get(rel);
     const unchanged =
       previous &&
+      !(zstBackfill && kind === "text" && previous.zst_size === null) &&
       previous.src_size === st.size &&
       previous.src_mtime_ms === st.mtimeMs &&
       previous.src_ino === st.ino;
@@ -757,6 +799,10 @@ async function main(): Promise<void> {
       if (previous.br_size !== null) {
         siblings.br++;
         siblings.brBytes += previous.br_size;
+      }
+      if (previous.zst_size !== null) {
+        siblings.zst++;
+        siblings.zstBytes += previous.zst_size;
       }
       if (previous.gz_size !== null) {
         siblings.gz++;
@@ -770,7 +816,7 @@ async function main(): Promise<void> {
     let note: string | null = null;
     let outSize = st.size;
     let outSha = "";
-    let sizes: SiblingSizes = { br: null, gz: null };
+    let sizes: SiblingSizes = { br: null, zst: null, gz: null };
     try {
       const srcSha = await sha256File(srcPath);
       outSha = srcSha;
@@ -802,6 +848,7 @@ async function main(): Promise<void> {
         $out_size: outSize,
         $out_sha256: outSha,
         $br_size: sizes.br,
+        $zst_size: sizes.zst,
         $gz_size: sizes.gz,
         $note: note,
         $updated_at: new Date().toISOString(),
@@ -818,6 +865,10 @@ async function main(): Promise<void> {
     if (sizes.br !== null) {
       siblings.br++;
       siblings.brBytes += sizes.br;
+    }
+    if (sizes.zst !== null) {
+      siblings.zst++;
+      siblings.zstBytes += sizes.zst;
     }
     if (sizes.gz !== null) {
       siblings.gz++;
@@ -882,6 +933,14 @@ async function main(): Promise<void> {
       }
     }
   }
+  if (
+    zstBackfill &&
+    !opts.dryRun &&
+    opts.limit === 0 &&
+    opts.only.has("text") &&
+    errors.length === 0
+  )
+    db.exec("DELETE FROM meta WHERE key = 'zst_backfill'");
   db.close();
   await rm(ws.dir, { recursive: true, force: true });
 

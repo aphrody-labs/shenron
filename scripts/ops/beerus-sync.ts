@@ -3,25 +3,21 @@
 /**
  * beerus-sync: keeps Dragon Ball Super: Beerus (series DBS_BEERUS) current without a human.
  *
- *   bun scripts/ops/beerus-sync.ts [--apply] [--complete] [--crawl]
+ *   bun scripts/ops/beerus-sync.ts [--apply] [--crawl]
  *
  * 1. Reads the episode table of the English Wikipedia article and the official site (dragonball-super.com).
  * 2. Adds each announced episode that has no row in bot.db_episodes and fills the empty fields of the others
  *    (existing values are never overwritten).
- * 3. With --complete, runs complete-episode.ts (Bun Video frames, subtitles, metadata, CDN) for every episode whose
- *    first-party video answers and that still has fewer than 20 frames.
- * 4. With --crawl, crawls the official site with the web engine and publishes the new image assets to the CDN.
+ * 3. With --crawl, crawls the official site with the web engine and publishes the new image assets to the CDN.
  *
  * Without --apply it prints the SQL it would run. Needs SHENRON_ADMIN_TOKEN, the Cloudflare env and ssh access to dbfr.
  */
 import { join } from "node:path";
 
 const apply = process.argv.includes("--apply");
-const complete = process.argv.includes("--complete");
 const crawl = process.argv.includes("--crawl");
 const SERIES = "DBS_BEERUS";
 const ARC_ID = 18;
-const SITE = "https://dragonballfr.com";
 const SSH_HOST = process.env.SHENRON_SSH_HOST ?? "prod";
 const ua = {
   "user-agent":
@@ -161,42 +157,6 @@ if (import.meta.main) {
   if (!apply) console.log(statements.join("\n"));
   else if (statements.length > 2)
     console.log((await psql(statements.join("\n"))).trim() || "database updated");
-
-  if (complete) {
-    const current = (
-      await psql(
-        `select id, coalesce(jsonb_array_length(frames), 0) from bot.db_episodes where series = ${lit(SERIES)} order by number_in_series`,
-      )
-    )
-      .trim()
-      .split("\n")
-      .filter(Boolean)
-      .map((l) => l.split("|").map(Number));
-    for (const [id, frames] of current) {
-      const head = await fetch(`${SITE}/api/episodes/${id}/video`, {
-        method: "HEAD",
-        headers: ua,
-      }).catch(() => null);
-      if (!head?.ok || (frames ?? 0) >= 20) continue;
-      console.log(`completing episode ${id} (${frames} frames)`);
-      const exitCode = await Bun.spawn(
-        [
-          "bun",
-          join(import.meta.dir, "complete-episode.ts"),
-          "--id",
-          String(id),
-          "--arc-id",
-          String(ARC_ID),
-          ...(apply ? ["--apply"] : []),
-        ],
-        { stdout: "inherit", stderr: "inherit" },
-      ).exited;
-      if (exitCode)
-        console.error(
-          `episode ${id}: complete-episode exited ${exitCode}; the next run retries it`,
-        );
-    }
-  }
 
   if (crawl) {
     const home = join(process.env.HOME ?? "/tmp", "apps", "shenron-beerus");

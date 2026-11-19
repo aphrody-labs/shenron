@@ -19,6 +19,9 @@ import { join, resolve } from "node:path";
 
 const ROOT = resolve(import.meta.dir, "../..");
 
+/** `stable` is a published release; `canary` adds `--aot` and `--trim` to `bun build --compile`. */
+export type BunChannel = "stable" | "canary";
+
 export type TriadNode = {
   alias: string;
   legacyAlias?: string;
@@ -38,6 +41,8 @@ export type Definition = {
   toolchain: {
     rust: string;
     bun: string;
+    bunChannel: BunChannel;
+    bunRevision: string;
     bunLinuxSha256: string;
     bunWindowsSha256: string;
     sccache: string;
@@ -159,6 +164,11 @@ export function driftProblems(root = ROOT, definition = loadDefinition(root)): s
   expect("Dockerfile.build BASE_IMAGE", arg(build, "BASE_IMAGE"), toolchain.baseImage);
   expect("Dockerfile.build RUST_VERSION", arg(build, "RUST_VERSION"), toolchain.rust);
   expect("Dockerfile.build BUN_VERSION", arg(build, "BUN_VERSION"), toolchain.bun);
+  expect("Dockerfile.build bun channel", "stable", toolchain.bunChannel);
+  if (!/^[0-9a-f]{7,40}$/.test(toolchain.bunRevision ?? ""))
+    problems.push(
+      `toolchain.bunRevision: found ${JSON.stringify(toolchain.bunRevision)}, the definition says a 7 to 40 digit lowercase hex commit`,
+    );
   expect(
     "Dockerfile.build BUN_LINUX_SHA256",
     arg(build, "BUN_LINUX_SHA256"),
@@ -176,7 +186,9 @@ export function driftProblems(root = ROOT, definition = loadDefinition(root)): s
   );
   expect(
     "deploy/docker/Dockerfile.games-engine bun image",
-    read(root, "deploy/docker/Dockerfile.games-engine").match(/^FROM oven\/bun:(\S+?)-debian\b/m)?.[1],
+    read(root, "deploy/docker/Dockerfile.games-engine").match(
+      /^FROM oven\/bun:(\S+?)-debian\b/m,
+    )?.[1],
     toolchain.bun,
   );
   expect(
@@ -199,20 +211,48 @@ export function driftProblems(root = ROOT, definition = loadDefinition(root)): s
   return problems;
 }
 
+/** Channel and commit of `bun --revision`: `1.4.5+a7733435c` is stable, `1.4.5-canary.1+6db952080` canary. */
+export function bunBuildOf(revision: string): { channel: string; commit: string } {
+  const text = revision.trim();
+  if (!text) return { channel: "", commit: "" };
+  return {
+    channel: text.includes("-canary") ? "canary" : "stable",
+    commit: text.split("+")[1]?.trim() ?? "",
+  };
+}
+
+/** A commit is the same one when either abbreviation is a prefix of the other. */
+const sameCommit = (found: string, wanted: string) =>
+  found !== "" && wanted !== "" && (found.startsWith(wanted) || wanted.startsWith(found));
+
+export type HostToolchain = { rustc: string; bun: string; revision: string };
+
+/** What this host runs against what the definition pins; the channel is not visible in `bun --version`. */
+export function hostProblems(definition: Definition, host: HostToolchain): string[] {
+  const { rust, bun, bunChannel, bunRevision } = definition.toolchain;
+  const problems: string[] = [];
+  if (!host.rustc.startsWith(`rustc ${rust} `))
+    problems.push(`rustc: found "${host.rustc}", wanted ${rust}`);
+  if (host.bun !== bun) problems.push(`bun: found "${host.bun}", wanted ${bun}`);
+  const build = bunBuildOf(host.revision);
+  if (build.channel !== bunChannel)
+    problems.push(`bun channel: found "${build.channel}", wanted ${bunChannel}`);
+  if (!sameCommit(build.commit, bunRevision))
+    problems.push(`bun revision: found "${build.commit}", wanted ${bunRevision}`);
+  return problems;
+}
+
 function versionProblems(definition: Definition): string[] {
   const output = (command: string[]) => {
     const run = Bun.spawnSync(command, { stdout: "pipe", stderr: "pipe" });
     return run.exitCode === 0 ? run.stdout.toString().trim() : "";
   };
-  const problems: string[] = [];
-  const rustc = output(["rustc", "-V"]);
-  if (!rustc.startsWith(`rustc ${definition.toolchain.rust} `))
-    problems.push(`rustc: found "${rustc}", wanted ${definition.toolchain.rust}`);
   const compile = process.env.SHENRON_COMPILE_BUN ?? "bun";
-  const bun = output([compile, "--version"]);
-  if (bun !== definition.toolchain.bun)
-    problems.push(`bun: found "${bun}", wanted ${definition.toolchain.bun}`);
-  return problems;
+  return hostProblems(definition, {
+    rustc: output(["rustc", "-V"]),
+    bun: output([compile, "--version"]),
+    revision: output([compile, "--revision"]),
+  });
 }
 
 /** Exports for a native build, with $HOME left to the shell. */

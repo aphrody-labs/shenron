@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Runs plain `cargo` for the Shenron workspace (aliases of .cargo/config.toml resolved by
- * Cargo itself). The `*:rust` scripts of package.json and the justfile go through it.
+ * Cargo itself). The `rust-*` recipes of the justfile go through it.
  *
  *   bun scripts/build/rust/cargo.ts <cargo arguments…>
  */

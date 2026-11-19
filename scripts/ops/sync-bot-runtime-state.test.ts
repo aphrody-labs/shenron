@@ -18,7 +18,7 @@ import {
   type PgColumn,
   type SqliteColumn,
   type TablePlan,
-} from "./sync-bot-runtime-state";
+} from "@aphrody/shenron-db/replica";
 
 const pg = (name: string, type: string, extra: Partial<PgColumn> = {}): PgColumn => ({
   name,

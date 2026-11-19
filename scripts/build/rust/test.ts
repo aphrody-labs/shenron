@@ -1,12 +1,12 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 /**
- * `bun run test:rust`: tests every crate of the Cargo workspace, listed by `cargo metadata`
+ * `just rust-test`: tests every crate of the Cargo workspace, listed by `cargo metadata`
  * (no hand-written list), through cargo-nextest when it is installed (profiles in
  * .config/nextest.toml) and `cargo test` otherwise. Other arguments go to the runner.
  *
- *   bun run test:rust                          # nextest, default profile (or cargo test)
- *   bun run test:rust --profile ci             # the CI profile
+ *   just rust-test                             # nextest, default profile (or cargo test)
+ *   just rust-test --profile ci                # the CI profile
  *   bun scripts/build/rust/test.ts --cargo-test -- --nocapture
  *   bun scripts/build/rust/test.ts --list      # print the crates and exit
  *

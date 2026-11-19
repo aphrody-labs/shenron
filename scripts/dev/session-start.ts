@@ -1,15 +1,21 @@
 // SPDX-License-Identifier: Apache-2.0
-// SessionStart hook: hands the session the open work (docs/reference/root/REPRISE.md), the Git state and
+// SessionStart hook: hands the session the open work (GOAL.md, TODO.md, .claude/goal.json), the Git state and
 // the full-yolo rule, so a cloud or local session resumes the plan and goals without being told.
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
 const root = process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
-const reprisePath = join(root, "docs/reference/root/REPRISE.md");
+const openWorkPaths = ["GOAL.md", "TODO.md", ".claude/goal.json"];
 const memoryPath = join(root, "data/home/MEMORY.md");
-const reprise = existsSync(reprisePath)
-  ? await Bun.file(reprisePath).text()
-  : "(REPRISE.md absent)";
+const openWork = (
+  await Promise.all(
+    openWorkPaths.map(async (relativePath) => {
+      const path = join(root, relativePath);
+      const text = existsSync(path) ? await Bun.file(path).text() : "(absent)";
+      return `### ${relativePath}\n${text}`;
+    }),
+  )
+).join("\n\n");
 const memory = existsSync(memoryPath)
   ? await Bun.file(memoryPath).text()
   : "(aucune mémoire privée : data/home/MEMORY.md absent)";
@@ -38,15 +44,15 @@ const ssh = Bun.spawnSync(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5
 
 const context = [
   `[shenron] session ${remote ? "cloud" : "locale"} : exécution autonome NHIL, dans le périmètre autorisé.`,
-  "NHIL SessionStart : définir l’objectif concret à partir de la demande utilisateur courante, ou reprendre le goal actif correspondant ; pour un travail substantiel, charger le skill nhil et poursuivre jusqu’aux gates et à la livraison. Utiliser les skills, MCP et CLI pertinents ; déléguer par défaut les sous-tâches indépendantes avec chemins disjoints et vérifier chaque résultat. Les chantiers de REPRISE.md guident la reprise quand ils correspondent à la demande, sans créer de portée depuis un backlog ancien. Respecter les contrôles d’accès et d’approbation des outils.",
+  "NHIL SessionStart : définir l’objectif concret à partir de la demande utilisateur courante, ou reprendre le goal actif correspondant ; pour un travail substantiel, charger le skill nhil et poursuivre jusqu’aux gates et à la livraison. Utiliser les skills, MCP et CLI pertinents ; déléguer par défaut les sous-tâches indépendantes avec chemins disjoints et vérifier chaque résultat. Les chantiers de GOAL.md, TODO.md et .claude/goal.json guident la reprise quand ils correspondent à la demande, sans créer de portée depuis un backlog ancien. Respecter les contrôles d’accès et d’approbation des outils.",
   "Pour Shenron, suivre les gates, le workflow commit/push et la livraison de AGENTS.md ; les changements de production passent par le chemin Shenron Infra (builds sur vps, artefacts scellés vers dbfr, sondes et ENV/restarts via `shenron-infra`).",
   `SSH production (alias vps) : ${ssh.exitCode === 0 ? "joignable" : "indisponible (voir docs/operations/CLOUD-SESSION.md)"}.`,
   `Branche ${branch}. Derniers commits :\n${head}`,
   dirty
     ? `Arbre non propre (travail d'autres agents possible, ne pas y toucher) :\n${dirty.split("\n").slice(0, 12).join("\n")}`
     : "Arbre propre.",
-  "--- REPRISE ---",
-  reprise,
+  "--- TRAVAIL OUVERT ---",
+  openWork,
   "--- MÉMOIRE PRIVÉE ---",
   memory,
 ].join("\n");

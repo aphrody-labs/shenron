@@ -21,7 +21,6 @@ Conformément à la doctrine du dépôt, tous les scripts s'exécutent avec **Bu
 - [`i18n/`](./i18n/) : Gestion et synchronisation des catalogues de traduction (fr, en, ja).
 - [`media/`](./media/) : Outils de traitement multimédia, découpe vidéo, encodage MP4/HLS et pipeline R2.
 - [`ops/`](./ops/) : Exploitation courante, maintenance des bases de données et surveillance de la flotte souveraine :
-  - `ops/sync-site-cdn.ts` : Synchronisation des fichiers de release Next.js/Bun vers Cloudflare R2.
   - `ops/purge-edge-cache.ts` : Invalidation immédiate du cache de bordure Cloudflare.
   - `ops/check-fleet-health.ts` : Vérification de la connectivité du maillage WireGuard (`vps`, `cdn`, `prod`).
 - [`plugin/`](./plugin/) : Compilation et tests des extensions Bun Engine et plugins d'émulation.
@@ -39,5 +38,5 @@ just check          # bun check sur packages et scripts + cargo check
 just lint           # bun lint + cargo clippy
 just test           # bun tests, tests de scripts, cargo nextest
 just deploy-check   # validation de l'environnement de déploiement
-bun run ship        # compilation sur VPS et déploiement zstd vers prod
+just ship           # compilation sur VPS et déploiement zstd vers prod
 ```

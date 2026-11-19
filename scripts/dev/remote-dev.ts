@@ -121,14 +121,17 @@ export function remoteScript(config: RemoteDevConfig, command: string): string {
 }
 
 export const GATES = [
-  "bun run typecheck",
-  "bun run lint",
-  "bun run format:check",
-  "bun run test",
-  "bun run test:scripts",
+  "bun scripts/testing/native-quality.ts check",
+  "bun scripts/testing/native-quality.ts lint",
+  "bun scripts/testing/native-quality.ts fmt --check",
+  "bun scripts/testing/workspace-gates.ts test",
+  "bun test --path-ignore-patterns='**/*.live.test.ts' ./scripts",
   "bun packages/api/scripts/openapi.ts --check",
 ];
-export const RUST_GATES = ["bun run clippy:rust", "bun run test:rust"];
+export const RUST_GATES = [
+  "bun scripts/build/rust/cargo.ts lint",
+  "bun scripts/build/rust/test.ts",
+];
 
 function sshArgs(config: RemoteDevConfig): string[] {
   return ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=10", config.host];
