@@ -574,7 +574,7 @@ const ASSET_CONTENT_TYPES: Record<string, string> = {
 // ── Proxy HLS ───────────────────────────────────────────────────────────────
 // Relaie le flux vidéo résolu (voir-anime → m3u8/segments) en injectant le
 // Referer côté serveur. CRITIQUE : le flux est lié à l'IP du résolveur (le VPS),
-// donc c'est le bot (même IP) qui doit fetch — pas Vercel. La map est écrite par
+// donc c'est le bot (même IP) qui doit fetch — pas le site. La map est écrite par
 // resolve-streams.ts dans data/streams.json. Les playlists publiques utilisent
 // des identifiants opaques temporaires, jamais les URL ou en-têtes amont.
 type HlsStream = { url: string; headers: Record<string, string>; type: string; at: number };
@@ -655,7 +655,7 @@ async function resolveArchiveMp4(identifier: string): Promise<string | null> {
  *   - un lecteur Archive.org (`provider:"archive"` ou `archive.org/embed|download/`)
  *     → MP4 direct dérivé de l'API metadata.
  * Les iframes tierces (vidmoly/voe/mailru) ne sont PAS des fichiers → ignorées.
- * `video_url`/`stream_url`/`players` sont Neon-only et **peuvent être absents du
+ * `video_url`/`stream_url`/`players` sont PostgreSQL-only et **peuvent être absents du
  * replica SQLite** → sélection défensive des colonnes réellement présentes.
  * Absence de source téléchargeable ⇒ `null` (le caller renvoie un 404 propre).
  */
@@ -1330,8 +1330,8 @@ export class ApiServer {
           }
         },
 
-        // Alias sans préfixe /api pour le site Vercel qui pingue /health/check.
-        // Inclut un CORS allowlist + Cache-Control pour que Vercel cache 5 s.
+        // Alias sans préfixe /api pour le site qui pingue /health/check.
+        // Inclut un CORS allowlist + Cache-Control pour que le CDN cache 5 s.
         "/health/check": (req) =>
           publicCachedJson(req, 5_000, async () => {
             const client = container.resolve(Client);
@@ -1660,10 +1660,10 @@ export class ApiServer {
         }),
 
         // ── Routes PUBLIQUES (CORS + rate-limit + ETag + Cache-Control) ─
-        // Cible : site Vercel dbfr-site qui mirror profil Discord.
+        // Cible : site dbfr-site qui mirror profil Discord.
         // Toutes utilisent `publicCachedJson` → 2 niveaux de cache :
         //   1) memo mémoire (TTL court) — absorbe les hits parallèles
-        //   2) Cache-Control public + ETag — Vercel edge cache + 304
+        //   2) Cache-Control public + ETag — cache CDN + 304
         "/api/public/user/:discordId": (req) =>
           publicCachedJson(req, 30_000, async () => {
             const id = req.params.discordId;
@@ -2877,9 +2877,9 @@ export class ApiServer {
           }),
 
         // ── Cards profile dynamiques (public, cache 1 h) ──────────────
-        // Le site Vercel peut faire `<img src="/api/public/profile/{id}/card.png"/>`
+        // Le site peut faire `<img src="/api/public/profile/{id}/card.png"/>`
         // pour afficher la card profil DBZ. Cache mémoire LRU + ETag +
-        // Vercel CDN = ~1 ms côté edge après warm-up.
+        // CDN = ~1 ms côté edge après warm-up.
         "/api/public/profile/:discordId/card.png": (req) =>
           publicCachedImage(
             req,
@@ -5974,7 +5974,7 @@ export class ApiServer {
             if (!spec) return Response.json({ error: "Table inconnue" }, { status: 404 });
             if (spec.name.startsWith("db_"))
               return Response.json(
-                { error: "Wiki en lecture seule côté bot — édition sur le site (Neon)." },
+                { error: "Wiki en lecture seule côté bot — édition sur le site (PostgreSQL)." },
                 { status: 409 },
               );
             if (spec.readonly) return Response.json({ error: "Table readonly" }, { status: 403 });
@@ -6010,7 +6010,7 @@ export class ApiServer {
             if (!spec) return Response.json({ error: "Table inconnue" }, { status: 404 });
             if (spec.name.startsWith("db_"))
               return Response.json(
-                { error: "Wiki en lecture seule côté bot — édition sur le site (Neon)." },
+                { error: "Wiki en lecture seule côté bot — édition sur le site (PostgreSQL)." },
                 { status: 409 },
               );
             const body = (await req.json().catch(() => null)) as Record<string, unknown> | null;
@@ -6046,7 +6046,7 @@ export class ApiServer {
             if (!spec) return Response.json({ error: "Table inconnue" }, { status: 404 });
             if (spec.name.startsWith("db_"))
               return Response.json(
-                { error: "Wiki en lecture seule côté bot — édition sur le site (Neon)." },
+                { error: "Wiki en lecture seule côté bot — édition sur le site (PostgreSQL)." },
                 { status: 409 },
               );
             try {
@@ -6383,11 +6383,10 @@ function publicRateLimit(ip: string): boolean {
 }
 
 // ── publicCachedJson : 2 niveaux de cache (mémoire + HTTP) ──────────────
-// Le site Vercel (`dragonballfr.com`) fetch ces routes avec `next: { revalidate: 60 }` —
+// Le site (`dragonballfr.com`) fetch ces routes avec `next: { revalidate: 60 }` —
 // le Cache-Control `public, s-maxage=…, stale-while-revalidate=…` permet à
-// l'edge Vercel + au browser de mettre en cache. Le memo cache local (TTL
-// court) absorbe les hits parallèles pendant le warming d'un déploiement
-// Vercel. Combiné, ça transforme une page profil de "1 req SQLite + 1 REST
+// au CDN + au browser de mettre en cache. Le memo cache local (TTL
+// court) absorbe les hits parallèles pendant le warming d'un déploiement. Combiné, ça transforme une page profil de "1 req SQLite + 1 REST
 // Discord par hit" à "1 req par minute en stable state".
 type PublicCacheEntry = { body: Uint8Array; etag: string; expiresAt: number };
 const publicCache = new Map<string, PublicCacheEntry>();
@@ -6751,7 +6750,7 @@ export async function a2aEventsStream(req: Request): Promise<Response> {
 
 /**
  * Variante publique de `cachedImage` : CORS allowlist + rate-limit 60/min/IP
- * + Cache-Control `public` (au lieu de `private`) pour activer le CDN Vercel.
+ * + Cache-Control `public` (au lieu de `private`) pour activer le CDN.
  * Réutilise le LRU cache buffer et le 304 d'ETag de `cachedImage` derrière.
  */
 async function publicCachedImage(
@@ -6774,7 +6773,7 @@ async function publicCachedImage(
   const headers = new Headers(res.headers);
   for (const [k, v] of Object.entries(cors)) headers.set(k, v);
   // Override le Cache-Control : `cachedImage` met `public, max-age=, must-revalidate`
-  // qui n'autorise pas Vercel/CDN à servir stale. Ici on veut `s-maxage` + `swr`.
+  // qui n'autorise pas le CDN à servir stale. Ici on veut `s-maxage` + `swr`.
   headers.set(
     "Cache-Control",
     res.ok || res.status === 304

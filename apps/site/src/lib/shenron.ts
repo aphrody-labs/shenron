@@ -687,9 +687,9 @@ export async function getWikiSections(
 }
 
 // ─────────────────────────────────────────────────────────────────────────
-// Wiki Dragon Ball — lu DIRECTEMENT depuis Neon (schéma `bot`, miroir du
+// Wiki Dragon Ball — lu DIRECTEMENT depuis PostgreSQL (schéma `bot`, miroir du
 // SQLite du bot). Découplé de l'API REST du bot : les pages /wiki ne dépendent
-// plus de la dispo du process bot. Lecture seule, ISR Vercel côté pages.
+// plus de la dispo du process bot. Lecture seule, ISR côté pages.
 // Les mappers ci-dessous reproduisent à l'identique les shapes que servait
 // l'API du bot (WikiService) pour ne rien casser côté pages.
 // ─────────────────────────────────────────────────────────────────────────

@@ -57,7 +57,7 @@ const PUBLIC_ENV = {
 
 /** Hôte canonique du bot (API REST + assets + SSE + canvas). */
 export const BOT_HOST: string = DEFAULT_PUBLIC_ORIGINS.api;
-/** Domaine canonique du site (Vercel). */
+/** Domaine canonique du site. */
 export const SITE_HOST: string = DEFAULT_PUBLIC_ORIGINS.site;
 
 /**

@@ -7,7 +7,6 @@
 import { botTrustedOrigins, siteAllowedHosts } from "./origins";
 
 export {
-  VERCEL_PRODUCTION_ALIAS,
   botTrustedOrigins,
   siteAllowedHosts,
   siteTrustedOrigins,
@@ -25,7 +24,7 @@ export const SHENRON_TRUSTED_ORIGINS: readonly string[] = Object.freeze(
 
 /**
  * Hosts accepted by the dynamic `baseURL` of the site (production values, S2:
- * no generic `*.vercel.app`, no `localhost`).
+ * no wildcard, no `localhost`).
  * @deprecated Use `siteAllowedHosts({ production })` from `@aphrody/shenron-auth/origins`.
  */
 export const SHENRON_ALLOWED_HOSTS: readonly string[] = Object.freeze(

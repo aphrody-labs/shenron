@@ -327,8 +327,3 @@ compression-bench:
 [group('turbo')]
 turbo *args="build":
     bun x turbo run {{ args }}
-
-# Build site using full Vercel compatibility pipeline
-[group('vercel')]
-vercel-build:
-    bun run build:site

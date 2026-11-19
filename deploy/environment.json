@@ -281,9 +281,7 @@
       "src",
       "themes",
       "third_party",
-      "turbo.json",
-      ".vercelignore",
-      "vercel.json"
+      "turbo.json"
     ],
     "ignoreInKeys": [
       "**/test/**",

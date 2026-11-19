@@ -23,7 +23,7 @@ import { type ConsentState, getConsent, onConsentChange } from "@/lib/consent";
 
 // --- Union typée des events du site -----------------------------------------
 
-/** Valeurs de propriété acceptées (contrainte Vercel Analytics : scalaires). */
+/** Valeurs de propriété acceptées (scalaires uniquement). */
 type TelemetryPropValue = string | number | boolean | null;
 
 /** Catalogue typé des events. Ajouter ici tout nouvel event web. */

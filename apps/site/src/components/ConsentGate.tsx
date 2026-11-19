@@ -8,7 +8,7 @@
  * pas Do-Not-Track (DNT = refus implicite, on ne demande rien). Le choix est
  * stocké côté client (`consent.ts` → localStorage) et propagé :
  *   - au Consent Mode v2 de Google (GTM) via `gtag('consent','update',…)`,
- *   - à la télémétrie first-party + Vercel Analytics (qui no-op sans accord).
+ *   - à la télémétrie first-party (qui no-op sans accord).
  *
  * Le strictement nécessaire (auth, sécurité) n'est jamais conditionné — seules
  * la mesure d'audience et la personnalisation le sont.

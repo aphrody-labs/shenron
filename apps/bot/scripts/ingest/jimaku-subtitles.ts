@@ -39,7 +39,7 @@
  * leurs lettres, et l'on passe au candidat suivant. Une piste « ja » qui
  * contiendrait de l'anglais serait pire qu'aucune piste.
  *
- * ── Cible Neon, jamais SQLite ────────────────────────────────────────────────
+ * ── Cible PostgreSQL, jamais SQLite ────────────────────────────────────────────────
  * `db_episodes` et `db_movies` figurent dans la liste de `_wiki-editorial.ts` :
  * le SQLite du bot est un réplica que le reverse-sync écrase tous les quarts
  * d'heure. Écrire ici, c'est écrire dans Postgres.
@@ -92,7 +92,7 @@
  *                 ja.wikipedia + interpolation), lecteurs VOSTFR réalignés requis
  *   --appliquer   télécharger et écrire réellement
  *
- * Env : DATABASE_URL (Neon) requis. JIMAKU_API_KEY optionnel.
+ * Env : DATABASE_URL (PostgreSQL) requis. JIMAKU_API_KEY optionnel.
  * Lancer via systemd-run avec EnvironmentFile.
  */
 import { mkdir } from "node:fs/promises";
@@ -484,7 +484,7 @@ async function enregistrerProvenance(sql: Sql) {
   // miroitent le SQLite du bot, où un booléen vaut 0/1. `true` échoue en 42804.
   await sql`
 		insert into bot.db_licenses (key, name, url, requires_attribution, share_alike)
-		values (${LICENSE_KEY}, 'Fair use éditorial fan-site (non commercial)', 'https://dbfr.vercel.app/licence', 1, 0)
+		values (${LICENSE_KEY}, 'Fair use éditorial fan-site (non commercial)', 'https://dragonballfr.com/licence', 1, 0)
 		on conflict (key) do nothing`;
   await sql`
 		insert into bot.db_sources (id, name, url, license_key, attribution_template)
@@ -1130,7 +1130,7 @@ async function modeFilms(sql: Sql) {
 async function main() {
   const url = process.env.DATABASE_URL;
   if (!url) {
-    console.error("✗ DATABASE_URL requis (Neon, via ~/.shenron-neon.env).");
+    console.error("✗ DATABASE_URL requis (PostgreSQL, via ~/.shenron-neon.env).");
     process.exit(1);
   }
   const sql = postgres(url, { max: 1 });

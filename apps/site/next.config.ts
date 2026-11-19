@@ -30,7 +30,7 @@ const cspCdnOrigin = (() => {
 const CSP_SCRIPT_SRC = [
   "'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:",
   ...(cspCdnOrigin ? [cspCdnOrigin] : []),
-  "https://static.cloudflareinsights.com https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.gstatic.com https://*.adtrafficquality.google https://*.google.com https://*.vercel-scripts.com",
+  "https://static.cloudflareinsights.com https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.gstatic.com https://*.adtrafficquality.google https://*.google.com",
 ].join(" ");
 
 // Telemetry is disabled globally across all Next.js phases (`next dev`, `next build`, `next start`).
@@ -62,8 +62,7 @@ const nextConfig: NextConfig = {
   // on audite justement des clics morts : le symptôme est identique à un bug
   // applicatif. Aucune incidence en production (`next start` ignore ce champ).
   allowedDevOrigins: ["127.0.0.1", "localhost", new URL(resolveSiteUrl(process.env)).host],
-  // Protection contre le version skew (self-hosting `next start` solo, sans le
-  // skew-protection Vercel). SHA court injecté par le workflow de build
+  // Protection contre le version skew (self-hosting `next start` solo). SHA court injecté par le workflow de build
   // `site-artifact` (`NEXT_DEPLOYMENT_ID`). Les assets portent `?dpl=<id>` et les
   // navigations un header `x-deployment-id` ; sur mismatch, Next force un reload
   // dur au lieu de throw `Failed to find Server Action` côté client périmé.
@@ -92,15 +91,13 @@ const nextConfig: NextConfig = {
   //      2026-08-14 : à froid ~8,1 Gio de RSS, en incrémental (cache Turbopack
   //      déjà présent) ~10,5 Gio → OOM killer sur ce VPS de 11 Gio.
   // Au runtime, aucun slot ne pose la variable : `next start` lit bien `.next`.
-  distDir: process.env.VERCEL ? ".next" : (process.env.NEXT_DIST_DIR ?? ".next"),
+  distDir: process.env.NEXT_DIST_DIR ?? ".next",
 
   // `output: "standalone"` par défaut pour le binaire autonome (`bun run build:server`),
-  // désactivable avec `NEXT_OUTPUT=default` pour un build classique (`next start`), ou automatiquement sous Vercel.
-  ...(!process.env.VERCEL && process.env.NEXT_OUTPUT !== "default"
-    ? { output: "standalone" as const }
-    : {}),
+  // désactivable avec `NEXT_OUTPUT=default` pour un build classique (`next start`).
+  ...(process.env.NEXT_OUTPUT !== "default" ? { output: "standalone" as const } : {}),
   // Dynamic fs access in shared packages must never drag the repository (sources, tests,
-  // databases, third_party submodules, corpora) into Vercel or standalone functions.
+  // databases, third_party submodules, corpora) into the standalone server.
   outputFileTracingExcludes: {
     "*": [
       "../../crates/**",
@@ -150,22 +147,18 @@ const nextConfig: NextConfig = {
     webpackMemoryOptimizations: true,
     // Type-check via the TypeScript 7 native CLI (fixed decision 1, docs/architecture/STACK.md).
     useTypeScriptCli: true,
-    // Parallélisme de la génération statique — soupape mémoire sur VPS uniquement.
-    ...(process.env.VERCEL
-      ? {}
-      : {
-          cpus: process.env.BUILD_CPUS ? Number(process.env.BUILD_CPUS) : 1,
-          staticGenerationMaxConcurrency: process.env.BUILD_STATIC_CONCURRENCY
-            ? Number(process.env.BUILD_STATIC_CONCURRENCY)
-            : 2,
-        }),
+    // Parallélisme de la génération statique — soupape mémoire éprouvée du build sur VPS.
+    cpus: process.env.BUILD_CPUS ? Number(process.env.BUILD_CPUS) : 1,
+    staticGenerationMaxConcurrency: process.env.BUILD_STATIC_CONCURRENCY
+      ? Number(process.env.BUILD_STATIC_CONCURRENCY)
+      : 2,
     // Enabled by default (`SHENRON_NEXT_BUILD_CACHE=0` opts out): Turbopack incremental
     // filesystem cache in `<distDir>/cache` accelerates rebuilds in reusable worktrees.
     turbopackFileSystemCacheForBuild: process.env.SHENRON_NEXT_BUILD_CACHE !== "0",
     // Source maps serveur : 101,6 Mio sur 184,4 Mio de `.next-build`. Coupées par défaut ;
     // `SHENRON_SERVER_SOURCEMAPS=1` les rallume pour un build de diagnostic.
     serverSourceMaps: process.env.SHENRON_SERVER_SOURCEMAPS === "1",
-    // Barrel import optimization (Vercel React Best Practices: bundle-barrel-imports).
+    // Barrel import optimization (bundle-barrel-imports).
     optimizePackageImports: [
       "@tanstack/react-query",
       "motion",
@@ -187,7 +180,7 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Image optimization Vercel CDN — AVIF prioritaire, WebP fallback.
+  // Image optimization — AVIF prioritaire, WebP fallback.
   // Docs : https://nextjs.org/docs/app/api-reference/components/image#formats
   // Note : chaque format est caché séparément (storage ↑ mais latence ↓ après warm).
   images: {
@@ -195,8 +188,8 @@ const nextConfig: NextConfig = {
     // sources as they are: no platform-specific image optimizer in the payload.
     unoptimized: process.env.SHENRON_IMAGES_UNOPTIMIZED === "1",
     // Optimisation RÉTABLIE (elle était coupée globalement). Le motif d'origine
-    // — sur Vercel, une image remplacée depuis l'admin restait figée à jamais —
-    // ne s'applique plus depuis l'auto-hébergement : l'optimiseur local expire
+    // — une image remplacée depuis l'admin restait figée à jamais sur un CDN
+    // d'optimisation tiers — ne s'applique plus : l'optimiseur local expire
     // son cache disque selon le `Cache-Control` de la source. Et les seules
     // images réellement remplaçables en place (`assets/wiki/**`) sont exclues
     // une par une, cf. `lib/images.ts` + `isEditableAsset`.
@@ -289,7 +282,7 @@ const nextConfig: NextConfig = {
   compress: true,
 
   // Dédoublonnage des anciennes routes films (id-based, API) vers la source
-  // canonique /wiki/movies (Neon, slug-based). Redirect au niveau routing → 308
+  // canonique /wiki/movies (PostgreSQL, slug-based). Redirect au niveau routing → 308
   // dur avant tout rendu (un redirect() en composant dégradait en navigation
   // client 200 à cause du layout /wiki force-dynamic qui flush en streaming).
   async redirects() {

@@ -38,7 +38,7 @@ Les chemins internes aux images (racines nginx, volumes du moteur de jeux, home 
 | Hôte  | Rôle                                                              |
 | ----- | ----------------------------------------------------------------- |
 | `fr1` | build : images (`Dockerfile.build`, BuildKit), CI, travaux lourds |
-| `fr2` | previews et edge (équivalents auto-hébergés de Vercel/Cloudflare) |
+| `fr2` | previews et edge (équivalent auto-hébergé de Cloudflare) |
 | `prd` | production, partagée avec rosegriffon uniquement                  |
 
 Production, tout en images upstream hors le site et le bot : `pgvector/pgvector:pg18`, `redis:8-alpine`,

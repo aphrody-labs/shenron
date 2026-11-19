@@ -3,12 +3,12 @@
  *
  * Stocke le choix de l'utilisateur (analytics oui/non) dans `localStorage` et
  * expose un petit bus de souscription. Pilote :
- *   - la télémétrie first-party + Vercel Analytics (`telemetry.ts`),
+ *   - la télémétrie first-party (`telemetry.ts`),
  *   - le Consent Mode v2 de Google (GTM) via `gtag('consent', 'update', …)`.
  *
  * Catégorisation RGPD : la mesure d'audience first-party anonymisée PEUT être
  * exemptée de consentement dans certains régimes (CNIL), mais on adopte ici une
- * posture stricte (opt-in) pour Vercel + GTM + first-party tant que la bannière
+ * posture stricte (opt-in) pour GTM + first-party tant que la bannière
  * n'a pas été tranchée. Le strictement nécessaire (auth, sécurité) n'est jamais
  * conditionné.
  */

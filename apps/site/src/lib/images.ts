@@ -2,8 +2,8 @@
  * Politique d'optimisation des images (client-safe).
  *
  * Le site servait **toutes** ses images en JPEG brut : `unoptimized: true` était
- * posé globalement dans `next.config.ts`. La raison était réelle — sur Vercel,
- * l'optimiseur figeait une image par URL source, si bien qu'un remplacement
+ * posé globalement dans `next.config.ts`. La raison était réelle — l'ancien
+ * hébergement serverless figeait une image par URL source, si bien qu'un remplacement
  * depuis l'admin du wiki n'apparaissait jamais. Mais elle ne vaut plus : le site
  * est auto-hébergé depuis le 2026-06-12, et l'optimiseur local respecte le
  * `Cache-Control` de la source.

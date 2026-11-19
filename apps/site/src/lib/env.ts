@@ -20,11 +20,10 @@ export const env = createEnv({
     SHENRON_CANON_YOLO_PER_DAY: z.coerce.number().int().min(1).max(1440).default(120),
     SHENRON_CANON_YOLO_MIN_SPACING_MS: z.coerce.number().int().min(1000).max(3600000).default(1000),
     TYPESAFE_API_KEY: z.string().trim().min(1).optional(),
-    // `.trim()` partout : les env Vercel sont régulièrement pollués par un
+    // `.trim()` partout : les variables d'environnement sont régulièrement polluées par un
     // `\n` final (posées via echo au lieu de printf). Un client_secret Discord
     // avec newline → Discord renvoie invalid_client à l'échange de code → aucun
-    // ba_user créé → login "marche" mais ne persiste pas. Cf. mémoire
-    // vercel-env-newline-pollution.
+    // ba_user créé → login "marche" mais ne persiste pas.
     DATABASE_URL: z.string().trim().url(),
     BETTER_AUTH_SECRET: z.string().trim().min(32),
     BETTER_AUTH_URL: z.string().trim().url().optional(),
@@ -126,7 +125,7 @@ export const env = createEnv({
     NEXT_PUBLIC_ADSENSE_SLOT_MULTIPLEX: process.env.NEXT_PUBLIC_ADSENSE_SLOT_MULTIPLEX,
     NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
   },
-  // Skip validation au build (Vercel injecte les env vars au runtime,
+  // Skip validation au build (les variables d'environnement sont injectées au runtime,
   // pas toutes en build-time). Le runtime crash de toute façon si une
   // var manque (auth(), db(), etc. throwent leurs propres erreurs).
   skipValidation:

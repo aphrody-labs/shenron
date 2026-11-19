@@ -18,9 +18,6 @@ let names: string[];
 try {
   names = readdirSync(store);
 } catch {
-  if (process.env.VERCEL) {
-    process.exit(0);
-  }
   console.error("node_modules/.bun is missing: run `just install`.");
   process.exit(1);
 }
@@ -32,7 +29,7 @@ const linked = names.filter((n) => {
     return false;
   }
 });
-if (linked.length > 0 && !process.env.VERCEL) {
+if (linked.length > 0) {
   const sample = linked[0]!;
   let target = "";
   try {

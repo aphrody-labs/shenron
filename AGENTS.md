@@ -17,7 +17,7 @@ Shenron is the platform behind dragonballfr.com: web portal, Discord bot, API, e
 
 ## Hosts
 
-- `prd`: production, shenron and rosegriffon only. `fr1`: builds and CI (self-hosted Vercel). `fr2`: previews, tests, edge (self-hosted Cloudflare). Always `timeout N ssh <host>`.
+- `prd`: production, shenron and rosegriffon only. `fr1`: builds and CI. `fr2`: previews, tests, edge (self-hosted Cloudflare). Always `timeout N ssh <host>`.
 - rosegriffon is a separate product repo (`$WORKSPACE_ROOT/rosegriffon`) and a separate agent: coordinate through files, never touch its services, take `$DEPLOY_LOCK` before a prd deploy.
 
 ## Rules

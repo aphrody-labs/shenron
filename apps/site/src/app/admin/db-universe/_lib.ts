@@ -1,6 +1,6 @@
 /**
  * Helper interne admin pour consommer l'API publique du bot avec no-cache.
- * L'admin doit voir la vraie data temps-réel, pas la version cachée Vercel.
+ * L'admin doit voir la vraie data temps-réel, pas une version en cache.
  */
 import { API_URL as API } from "@/lib/config";
 

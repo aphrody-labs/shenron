@@ -21,7 +21,6 @@ import {
   type PublicUrlEnv,
   resolveSiteUrl,
 } from "@aphrody/shenron-config/public-urls";
-import { VERCEL_PRODUCTION_ALIAS } from "@aphrody/shenron-auth/origins";
 import { createWikiReadRepository } from "@aphrody/shenron-db/repos/wiki";
 import {
   createPublicCache,
@@ -58,8 +57,7 @@ export type PublicRateBuckets = Map<string, { count: number; resetAt: number }>;
 
 /**
  * Origines CORS publiques du bot : l'origine du site résolue par
- * `@aphrody/shenron-config/public-urls`, sa variante `www`, l'alias Vercel nommé
- * (INFRA-4) et, hors production, le site Next local.
+ * `@aphrody/shenron-config/public-urls`, sa variante `www` et, hors production, le site Next local.
  */
 export function buildPublicCorsOrigins(env: PublicUrlEnv): string[] {
   const site = originOf(resolveSiteUrl(env));
@@ -69,7 +67,6 @@ export function buildPublicCorsOrigins(env: PublicUrlEnv): string[] {
     u.hostname = u.hostname.startsWith("www.") ? u.hostname.slice(4) : `www.${u.hostname}`;
     origins.push(u.origin);
   } catch {}
-  origins.push(`https://${VERCEL_PRODUCTION_ALIAS}`);
   if (env.NODE_ENV?.trim() !== "production") origins.push(DEV_SITE_ORIGIN);
   return [...new Set(origins)];
 }

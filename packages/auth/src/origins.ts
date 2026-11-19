@@ -4,9 +4,8 @@
  * Runtime class `pure`: no platform import, no environment read. The caller
  * says whether it runs in production; nothing is inferred here.
  *
- * - No generic `*.vercel.app` entry: a wildcard trusted host lets any Vercel
- *   deployment act as the site (open redirect through Better Auth callbacks).
- * - The named Vercel production alias stays until INFRA-4 retires it.
+ * - No wildcard entry: a wildcard trusted host lets any matching deployment act as
+ *   the site (open redirect through Better Auth callbacks).
  * - `localhost` entries exist only outside production.
  *
  * Every call returns a fresh array, so a consumer can never mutate the policy.
@@ -16,20 +15,12 @@ export interface OriginPolicyInput {
   production: boolean;
 }
 
-/** Named Vercel production alias, kept until INFRA-4. */
-export const VERCEL_PRODUCTION_ALIAS = "dbfr.vercel.app";
-
-const SITE_PRODUCTION_HOSTS = [
-  "dragonballfr.com",
-  "www.dragonballfr.com",
-  VERCEL_PRODUCTION_ALIAS,
-] as const;
+const SITE_PRODUCTION_HOSTS = ["dragonballfr.com", "www.dragonballfr.com"] as const;
 const SITE_DEVELOPMENT_HOSTS = ["localhost:3000"] as const;
 
 const SITE_PRODUCTION_ORIGINS = [
   "https://dragonballfr.com",
   "https://www.dragonballfr.com",
-  `https://${VERCEL_PRODUCTION_ALIAS}`,
 ] as const;
 const SITE_DEVELOPMENT_ORIGINS = ["http://localhost:3000"] as const;
 
@@ -37,7 +28,6 @@ const BOT_PRODUCTION_ORIGINS = [
   "https://dragonballfr.com",
   "https://www.dragonballfr.com",
   "https://bot.dragonballfr.com",
-  `https://${VERCEL_PRODUCTION_ALIAS}`,
 ] as const;
 const BOT_DEVELOPMENT_ORIGINS = ["http://localhost:3000", "http://localhost:5006"] as const;
 

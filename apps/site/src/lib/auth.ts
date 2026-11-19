@@ -98,10 +98,9 @@ export function buildAuthOptions(deps: SiteAuthDeps) {
   return {
     appName: "DBFR",
     // Dynamic baseURL avec allowlist → cookie domain = host courant.
-    // S2 (docs/architecture/STACK.md §2.2) : plus d'hôte générique `*.vercel.app` (un hôte
-    // de confiance joker = redirection ouverte) ; seul l'alias nommé
-    // dbfr.vercel.app reste (INFRA-4) et localhost n'existe que hors production.
-    // Doc: https://better-auth.com/docs/guides/dynamic-base-url#vercel-deployment
+    // S2 (docs/architecture/STACK.md §2.2) : aucun hôte joker (un hôte de confiance
+    // joker = redirection ouverte) ; localhost n'existe que hors production.
+    // Doc: https://better-auth.com/docs/guides/dynamic-base-url
     baseURL: {
       allowedHosts: siteAllowedHosts({ production }),
       protocol: "https" as const,

@@ -86,7 +86,6 @@ const TECH = [
   },
   { name: "Better Auth", link: "https://better-auth.com" },
   { name: "Drizzle ORM", link: "https://orm.drizzle.team" },
-  { name: "Vercel", link: "https://vercel.com" },
 ];
 
 export default function CreditsPage() {

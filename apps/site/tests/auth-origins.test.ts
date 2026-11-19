@@ -53,13 +53,13 @@ describe("S2 — auth.ts consomme la politique partagée", () => {
 });
 
 describe("S2 — proxy : hôte non canonique", () => {
-  test("un hôte de preview Vercel est redirigé (308) vers dragonballfr.com", async () => {
+  test("un hôte hérité de preview est redirigé (308) vers dragonballfr.com", async () => {
     const res = await proxy(request("dbfr-git-feature-shenron.vercel.app", "/wiki?x=1"));
     expect(res.status).toBe(308);
     expect(res.headers.get("location")).toBe("https://dragonballfr.com/wiki?x=1");
   });
 
-  test("l'alias nommé dbfr.vercel.app est redirigé aussi", async () => {
+  test("l'ancien alias dbfr.vercel.app est redirigé aussi", async () => {
     const res = await proxy(request("dbfr.vercel.app", "/"));
     expect(res.status).toBe(308);
     expect(res.headers.get("location")).toBe("https://dragonballfr.com/");

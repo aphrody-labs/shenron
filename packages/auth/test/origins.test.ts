@@ -4,12 +4,7 @@ import {
   SHENRON_TRUSTED_ORIGINS,
   botTrustedOrigins as rootBotTrustedOrigins,
 } from "../src/index";
-import {
-  VERCEL_PRODUCTION_ALIAS,
-  botTrustedOrigins,
-  siteAllowedHosts,
-  siteTrustedOrigins,
-} from "../src/origins";
+import { botTrustedOrigins, siteAllowedHosts, siteTrustedOrigins } from "../src/origins";
 
 const production = { production: true } as const;
 const development = { production: false } as const;
@@ -39,10 +34,8 @@ describe("S2 — origin policy", () => {
       for (const entry of dev) expect(entry).not.toContain("*");
     });
 
-    test(`${name}: the named Vercel alias is still trusted`, () => {
-      expect(policy(production).some((entry) => entry.includes(VERCEL_PRODUCTION_ALIAS))).toBe(
-        true,
-      );
+    test(`${name}: no Vercel host is trusted`, () => {
+      expect(policy(production).some((entry) => entry.includes("vercel"))).toBe(false);
     });
 
     test(`${name}: returns a fresh array on every call`, () => {
@@ -52,22 +45,16 @@ describe("S2 — origin policy", () => {
     });
   }
 
-  test("exact production lists (same entries as before minus *.vercel.app and localhost)", () => {
-    expect(siteAllowedHosts(production)).toEqual([
-      "dragonballfr.com",
-      "www.dragonballfr.com",
-      "dbfr.vercel.app",
-    ]);
+  test("exact production lists (canonical hosts only, no wildcard, no localhost)", () => {
+    expect(siteAllowedHosts(production)).toEqual(["dragonballfr.com", "www.dragonballfr.com"]);
     expect(siteTrustedOrigins(production)).toEqual([
       "https://dragonballfr.com",
       "https://www.dragonballfr.com",
-      "https://dbfr.vercel.app",
     ]);
     expect(botTrustedOrigins(production)).toEqual([
       "https://dragonballfr.com",
       "https://www.dragonballfr.com",
       "https://bot.dragonballfr.com",
-      "https://dbfr.vercel.app",
     ]);
   });
 
