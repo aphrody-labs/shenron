@@ -69,7 +69,9 @@ impl Service {
     pub fn shutdown(&mut self) {
         if let Some(login) = self.login.take() {
             login.cancelled.store(true, Ordering::SeqCst);
-            let _ = self.editor.cancel_agent_login();
+            if let Err(error) = self.editor.cancel_agent_login() {
+                tracing::warn!(%error, "failed to cancel the agent login");
+            }
             login.task.abort();
         }
         if let Some(pipeline) = self.pipeline.take() {
@@ -152,7 +154,7 @@ impl Service {
                         },
                         Err(error) => json!({"type": "failed", "message": format!("{error:#}")}),
                     };
-                    let _ = output.send(json!({"event": "agent_login", "value": value}));
+                    output.send(json!({"event": "agent_login", "value": value})).ok();
                 });
                 self.login = Some(ActiveLogin { cancelled, task });
                 Ok(json!({"started": true}))
@@ -472,16 +474,20 @@ impl Service {
                 let output = self.output.clone();
                 let task_stop = stop.clone();
                 let task = tokio::spawn(async move {
-                    let _ = output.send(
-                        json!({"event": "pipeline", "job": job, "value": {"type": "started"}}),
-                    );
+                    output
+                        .send(
+                            json!({"event": "pipeline", "job": job, "value": {"type": "started"}}),
+                        )
+                        .ok();
                     let progress_output = output.clone();
                     let progress = Arc::new(move |event: Progress| {
-                        let _ = progress_output.send(json!({
-                            "event": "pipeline",
-                            "job": job,
-                            "value": progress_value(event),
-                        }));
+                        progress_output
+                            .send(json!({
+                                "event": "pipeline",
+                                "job": job,
+                                "value": progress_value(event),
+                            }))
+                            .ok();
                     });
                     let result = editor
                         .run(
@@ -504,7 +510,7 @@ impl Service {
                         },
                         Err(error) => json!({"type": "failed", "message": format!("{error:#}")}),
                     };
-                    let _ = output.send(json!({"event": "pipeline", "job": job, "value": value}));
+                    output.send(json!({"event": "pipeline", "job": job, "value": value})).ok();
                 });
                 self.pipeline = Some(ActivePipeline { job, stop, task });
                 Ok(json!({"job": job}))

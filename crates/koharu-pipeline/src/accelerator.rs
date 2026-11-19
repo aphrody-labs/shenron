@@ -40,7 +40,7 @@ impl AcceleratorGate {
         }
         if unload_other_models(stage, stages) {
             let mut changed = self.resources.subscribe();
-            let _ = tokio::time::timeout(Duration::from_millis(600), changed.changed()).await;
+            tokio::time::timeout(Duration::from_millis(600), changed.changed()).await.ok();
         }
         permit
     }

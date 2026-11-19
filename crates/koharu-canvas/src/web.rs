@@ -384,13 +384,13 @@ impl CanvasRenderer {
             color
         });
         sample.buffer.unmap();
-        let _ = sample.complete.send(result);
+        sample.complete.send(result).ok();
     }
 
     fn cancel_sample(&mut self, message: &str) {
         if let Some(sample) = self.sample.take() {
             sample.buffer.unmap();
-            let _ = sample.complete.send(Err(message.to_owned()));
+            sample.complete.send(Err(message.to_owned())).ok();
         }
     }
 
@@ -529,7 +529,7 @@ impl CanvasState {
                 self.gpu.cache_external_raster(expected, (*width, *height), bitmap, &tiles)?;
             },
         }
-        let _ = self.resources.insert(resource);
+        self.resources.insert(resource);
         self.resource_usage.insert(expected);
         self.evict_resources();
         Ok(())
@@ -1823,7 +1823,7 @@ async fn next_animation_frame(window: &Window) -> Result<(), JsValue> {
         let send = Rc::clone(&send);
         Closure::<dyn FnMut(f64)>::new(move |_| {
             if let Some(send) = send.borrow_mut().take() {
-                let _ = send.send(());
+                send.send(()).ok();
             }
         })
     };

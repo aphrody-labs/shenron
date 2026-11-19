@@ -328,7 +328,7 @@ impl Renderer {
                 .build()
                 .map_err(|source| Error::Backend(anyhow!(source)))?,
         );
-        let _ = self.inner.workers.set(workers);
+        self.inner.workers.set(workers).ok();
         Ok(self.inner.workers.get().expect("renderer worker pool was initialized").clone())
     }
 

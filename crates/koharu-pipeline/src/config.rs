@@ -225,8 +225,8 @@ impl PipelineConfig {
     }
 
     pub fn validate(&self) -> Result<()> {
-        let _ = self.detection()?;
-        let _ = self.inpainting()?;
+        self.detection()?;
+        self.inpainting()?;
         if !matches!(
             self.ocr,
             OcrModel::PaddleOcrVl1_6

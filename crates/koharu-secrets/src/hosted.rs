@@ -141,7 +141,7 @@ impl Store {
             Ok(())
         })();
         if result.is_err() {
-            let _ = fs::remove_file(&temporary);
+            fs::remove_file(&temporary).ok();
         }
         result
     }

@@ -119,7 +119,7 @@ impl ResourceMonitor {
         if self.sampled.load(Ordering::Acquire) {
             return;
         }
-        let _ = tokio::time::timeout(std::time::Duration::from_secs(2), notified).await;
+        tokio::time::timeout(std::time::Duration::from_secs(2), notified).await.ok();
     }
 
     pub(crate) fn subscribe(&self) -> tokio::sync::watch::Receiver<ResourceSnapshot> {

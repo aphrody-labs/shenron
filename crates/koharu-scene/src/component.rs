@@ -166,7 +166,7 @@ pub(crate) fn encode<T: Component>(
         value.record_refs(),
         value.blob_refs(),
     )?;
-    let _ = record.decoded.set(Arc::new(value.clone()));
+    record.decoded.set(Arc::new(value.clone())).ok();
     Ok(record)
 }
 
@@ -197,7 +197,7 @@ pub(crate) fn decode<T: Component>(
     {
         return Err(Error::ReferenceMismatch(T::KIND.to_owned()));
     }
-    let _ = record.decoded.set(Arc::new(value.clone()));
+    record.decoded.set(Arc::new(value.clone())).ok();
     Ok(value)
 }
 
