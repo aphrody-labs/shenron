@@ -6,7 +6,7 @@ Relevé du 2026-11-19. Suite de [base-ui-vers-gpui.md](base-ui-vers-gpui.md) et 
 
 | Besoin | Outil | Version lue | Remarque |
 | --- | --- | --- | --- |
-| Capture et pilotage du rendu web | `agent-browser` | 0.43.0 | `open`, captures, évaluation de script ; guide intégré : `agent-browser skills get core` |
+| Capture, WebGPU et mesure du rendu web | navigateur Aphrody (`aphrody-labs/browser`, moteur `blink` : Chromium `headless_shell` avec Skia et Dawn, piloté par CDP) | tête `eec64646882` du 2026-11-18 | sans tête et automatisé ; `testing/acceptance.ts` sonde déjà `navigator.gpu.requestAdapter()`, prend les captures et lance `bench` (hyperfine et JetStream). `agent-browser` n'est pas utilisé |
 | Capture et pilotage de la fenêtre native GPUI | `agent-desktop` | 2.6 | `screenshot` (PNG d'une fenêtre), `snapshot` (arbre d'accessibilité en JSON), `list-displays`, `press`, `click` ; sur cette machine : écran 2560 x 1440, échelle 1,25, fréquence non rapportée |
 | Mesure de durées de commandes | `hyperfine` | 2.0.0 | démarrage à froid du binaire, instanciation wasm, `--warmup` et `--export-json` |
 | Différence d'images | `pixelmatch` | 8.0.0 (npm) | alternative : `odiff-bin` 4.5.0 |
@@ -28,7 +28,7 @@ Le DOM rastérise le texte avec le moteur du navigateur (crénage, hinting, sous
 
 Critère : sur une fenêtre de 1920 x 1080, pendant une interaction scriptée de 10 secondes (défilement, ouverture et fermeture de dialogue, survol, saisie), le temps de trame au 99e centile est au plus de 8,33 ms (1000 / 120) et aucune trame ne dépasse 16,7 ms. Sinon la porte échoue : pas de dérogation par composant.
 
-- Web : intervalles `requestAnimationFrame` et `PerformanceObserver` (`long-animation-frame`, `event`) relevés par script dans `agent-browser`. Un écran à 60 Hz plafonne `requestAnimationFrame` à 16,7 ms : le temps de travail par trame (script, mise en page, GPU) se lit via le profil, et la mesure à 120 Hz exige un écran capable de 120 Hz, à relever avant de conclure quoi que ce soit.
+- Web : intervalles `requestAnimationFrame` et `PerformanceObserver` (`long-animation-frame`, `event`) relevés par CDP dans le moteur `blink` du navigateur Aphrody ; l'adaptateur WebGPU obtenu en mode sans tête est consigné, et une mesure faite sur un adaptateur logiciel ne compte pas pour la porte. Un écran à 60 Hz plafonne `requestAnimationFrame` à 16,7 ms : le temps de travail par trame (script, mise en page, GPU) se lit via le profil, et la mesure à 120 Hz exige un écran capable de 120 Hz, à relever avant de conclure quoi que ce soit.
 - Natif : `gpui-fps` pour le compteur, `gpui-fast` (0.1.17) pour la réutilisation de trames ; relevé sur le même matériel que le web.
 - Démarrage : `hyperfine --warmup 3 --runs 20` sur le lancement du binaire de galerie et sur le chargement du wasm, en JSON.
 - Le matériel de mesure est consigné avec chaque résultat (processeur, GPU, écran, fréquence, pilote) ; un résultat sans matériel n'est pas une preuve.
