@@ -26,8 +26,8 @@ describe("Dragon Ball Canon Scenario Resolver", () => {
     const raditzChapter = saiyanSaga!.chapters.find((c) => c.id === 5);
     expect(raditzChapter).toBeDefined();
     expect(raditzChapter!.canon_refs.manga_url).toContain("/wiki/manga/volume/17");
-    expect(raditzChapter!.canon_refs.episode_id).toBe(875);
-    expect(raditzChapter!.canon_refs.episode_url).toContain("/wiki/episodes/875");
+    expect(raditzChapter!.canon_refs.episode_id).toBe(154);
+    expect(raditzChapter!.canon_refs.episode_url).toContain("/wiki/episodes/154");
     expect(raditzChapter!.canon_refs.daizenshuu).toContain("Daizenshuu 7");
   });
 

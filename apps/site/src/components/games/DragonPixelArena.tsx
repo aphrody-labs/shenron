@@ -17,8 +17,10 @@ import {
   MODE_IDS,
   STORY_CHAPTER_COUNT,
   parseBevyHud,
+  parseStoryChapters,
   type ArenaHud,
   type ArenaSelection,
+  type StoryChapterSummary,
 } from "@/lib/dragon-pixel-options";
 import fr from "../../../messages/dragon-pixel-arena/fr.json";
 import en from "../../../messages/dragon-pixel-arena/en.json";
@@ -60,6 +62,7 @@ export function DragonPixelArena() {
   const [selection, setSelection] = useState<ArenaSelection>(DEFAULT_SELECTION);
   const [gpu, setGpu] = useState<WebGpuStatus | null>(null);
   const [userPaused, setUserPaused] = useState(false);
+  const [chapters, setChapters] = useState<StoryChapterSummary[]>([]);
   const [hidden, setHidden] = useState(false);
   const [hud, setHud] = useState<(ArenaHud & { frames: number }) | null>(null);
 
@@ -124,6 +127,8 @@ export function DragonPixelArena() {
       setGpu(status);
       setPhase({ kind: "loading", loaded: 0 });
       const bindings = await loadDragonPixel((loaded) => setPhase({ kind: "loading", loaded }));
+      // A module built before `story_chapters_json` existed keeps the numbered picker.
+      if (typeof bindings.story_chapters_json === "function") setChapters(parseStoryChapters(bindings.story_chapters_json()));
       setPhase({ kind: "starting" });
       if (status.available) {
         const canvas = document.createElement("canvas");
@@ -269,10 +274,10 @@ export function DragonPixelArena() {
             label={text.chapter}
             value={String(selection.chapter)}
             onChange={(value) => update("chapter", Number(value))}
-            options={Array.from({ length: STORY_CHAPTER_COUNT }, (_, index) => [
-              String(index + 1),
-              format(text.chapterOption, { number: index + 1 }),
-            ])}
+            options={Array.from({ length: STORY_CHAPTER_COUNT }, (_, index) => {
+              const known = chapters.find((chapter) => chapter.id === index + 1);
+              return [String(index + 1), known ? known.title : format(text.chapterOption, { number: index + 1 })];
+            })}
           />
         ) : (
           <Select
@@ -298,6 +303,7 @@ export function DragonPixelArena() {
         >
           {userPaused ? text.resume : text.pause}
         </button>
+        {selection.mode === "story" ? <ChapterSources chapter={chapters.find((chapter) => chapter.id === selection.chapter)} text={text} /> : null}
       </form>
 
       <details className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
@@ -468,4 +474,29 @@ function rumbleFromBevy(bindings: DragonPixelBindings): void {
     weakMagnitude: event.weak_magnitude,
     strongMagnitude: event.strong_magnitude,
   });
+}
+
+function ChapterSources({ chapter, text }: { chapter: StoryChapterSummary | undefined; text: { chapterEpisode: string; chapterManga: string } }) {
+  if (!chapter || (chapter.episode_id === null && chapter.manga_volume_id === null)) return null;
+  return (
+    <p className="basis-full text-sm text-white/70">
+      {chapter.saga}
+      {chapter.manga_volume_id !== null ? (
+        <>
+          {" · "}
+          <a className="underline underline-offset-2" href={`/wiki/manga/volume/${chapter.manga_volume_id}`}>
+            {text.chapterManga}
+          </a>
+        </>
+      ) : null}
+      {chapter.episode_id !== null ? (
+        <>
+          {" · "}
+          <a className="underline underline-offset-2" href={`/wiki/episodes/${chapter.episode_id}`}>
+            {text.chapterEpisode}
+          </a>
+        </>
+      ) : null}
+    </p>
+  );
 }

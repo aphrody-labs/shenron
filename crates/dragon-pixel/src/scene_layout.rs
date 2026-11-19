@@ -61,6 +61,11 @@ pub fn arena_palette(arena: ArenaId) -> ArenaPalette {
             ground: [0.95, 0.91, 0.80],
             light: [1.0, 0.96, 0.9],
         },
+        ArenaId::KaioPlanet => ArenaPalette {
+            sky: [0.98, 0.86, 0.42],
+            ground: [0.40, 0.70, 0.30],
+            light: [1.0, 0.95, 0.8],
+        },
     }
 }
 
@@ -108,6 +113,11 @@ pub fn fighter_palette(id: FighterId) -> FighterPalette {
         FighterId::JackieChun => {
             FighterPalette { outfit: [0.20, 0.55, 0.30], hair: [0.92, 0.92, 0.92], skin: SKIN }
         },
+        FighterId::Beerus => FighterPalette {
+            outfit: [0.10, 0.10, 0.12],
+            hair: [0.62, 0.56, 0.78],
+            skin: [0.62, 0.56, 0.78],
+        },
     }
 }
 
@@ -148,6 +158,7 @@ mod tests {
             FighterId::Yamcha,
             FighterId::Krilin,
             FighterId::JackieChun,
+            FighterId::Beerus,
         ];
         let arenas = [
             ArenaId::Paozu,
@@ -156,6 +167,7 @@ mod tests {
             ArenaId::Namek,
             ArenaId::CellGames,
             ArenaId::Kaiohshin,
+            ArenaId::KaioPlanet,
         ];
         let in_range = |color: [f32; 3]| color.iter().all(|c| (0.0..=1.0).contains(c));
         for id in fighters {

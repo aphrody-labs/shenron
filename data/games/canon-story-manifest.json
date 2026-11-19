@@ -112,10 +112,10 @@
         "wiki_slug": "yamcha"
       },
       "canon_refs": {
-        "manga_url": "/wiki/manga/volume/1?chapter=8&edition=color&page=4",
+        "manga_url": "/wiki/manga/volume/82?chapter=8&edition=color&page=4",
         "episode_id": 5,
         "episode_url": "/wiki/episodes/5",
-        "wiki_arc_url": "/wiki/arcs/pilaf",
+        "wiki_arc_url": "/wiki/arcs/pilaf-quest",
         "technique_slug": "roga-fufuken",
         "daizenshuu": "Daizenshuu 7 : Le Rōga Fūfū-ken développé par Yamcha dans le désert.",
         "databook_lot": "databooks-lot-001"
@@ -176,10 +176,10 @@
         "wiki_slug": "kame-sennin"
       },
       "canon_refs": {
-        "manga_url": "/wiki/manga/volume/4?chapter=47&edition=color&page=1",
+        "manga_url": "/wiki/manga/volume/85?chapter=47&edition=color&page=1",
         "episode_id": 27,
         "episode_url": "/wiki/episodes/27",
-        "wiki_arc_url": "/wiki/arcs/21e-tenkaichi-budokai",
+        "wiki_arc_url": "/wiki/sagas/tournament-21",
         "technique_slug": "kamehameha",
         "daizenshuu": "Daizenshuu 7 : Kame Sennin max power 139 contre Goku enfant 120 (forme Ōzaru stoppée par la destruction de la Lune).",
         "databook_lot": "databooks-lot-002"
@@ -240,10 +240,10 @@
         "wiki_slug": "tenshinhan"
       },
       "canon_refs": {
-        "manga_url": "/wiki/manga/volume/11?chapter=133&edition=color&page=3",
+        "manga_url": "/wiki/manga/volume/92?chapter=133&edition=color&page=3",
         "episode_id": 100,
         "episode_url": "/wiki/episodes/100",
-        "wiki_arc_url": "/wiki/arcs/22e-tenkaichi-budokai",
+        "wiki_arc_url": "/wiki/sagas/tournament-22b",
         "technique_slug": "kikoho",
         "daizenshuu": "Daizenshuu 7 : Égalité technique 180 vs 180. Le Kikoho pulvérise le ring.",
         "databook_lot": "databooks-lot-003"
@@ -304,10 +304,10 @@
         "wiki_slug": "piccolo-daimao"
       },
       "canon_refs": {
-        "manga_url": "/wiki/manga/volume/14?chapter=161&edition=color&page=6",
+        "manga_url": "/wiki/manga/volume/95?chapter=161&edition=color&page=6",
         "episode_id": 122,
         "episode_url": "/wiki/episodes/122",
-        "wiki_arc_url": "/wiki/arcs/piccolo-daimao",
+        "wiki_arc_url": "/wiki/sagas/piccolo-daimao",
         "technique_slug": "ozaru-ken",
         "daizenshuu": "Daizenshuu 7 : Après l'ingestion de la Chōshinsui, la puissance latente de Goku atteint 260.",
         "databook_lot": "databooks-lot-004"
@@ -368,10 +368,10 @@
         "wiki_slug": "raditz"
       },
       "canon_refs": {
-        "manga_url": "/wiki/manga/volume/17?chapter=195&edition=color&page=2",
-        "episode_id": 875,
-        "episode_url": "/wiki/episodes/875",
-        "wiki_arc_url": "/wiki/arcs/saiyans",
+        "manga_url": "/wiki/manga/volume/98?chapter=195&edition=color&page=2",
+        "episode_id": 154,
+        "episode_url": "/wiki/episodes/154",
+        "wiki_arc_url": "/wiki/arcs/raditz-arc",
         "technique_slug": "makankosappo",
         "daizenshuu": "Daizenshuu 7 : Raditz scoute Goku à 416 et Piccolo à 408 (Makankōsappō monte à 1,330 et 1,480).",
         "databook_lot": "databooks-lot-005"
@@ -432,10 +432,10 @@
         "wiki_slug": "vegeta"
       },
       "canon_refs": {
-        "manga_url": "/wiki/manga/volume/20?chapter=230&edition=color&page=1",
-        "episode_id": 898,
-        "episode_url": "/wiki/episodes/898",
-        "wiki_arc_url": "/wiki/arcs/saiyans",
+        "manga_url": "/wiki/manga/volume/101?chapter=230&edition=color&page=1",
+        "episode_id": 183,
+        "episode_url": "/wiki/episodes/183",
+        "wiki_arc_url": "/wiki/arcs/vegeta-nappa",
         "technique_slug": "galick-ho",
         "daizenshuu": "Daizenshuu 7 : Goku de base 8,200. Kaiō-ken x3 = 24,000, Kaiō-ken x4 = 32,000 surpassant le Galick Gun à 24,000 de Vegeta.",
         "databook_lot": "databooks-lot-006"
@@ -496,10 +496,10 @@
         "wiki_slug": "freezer"
       },
       "canon_refs": {
-        "manga_url": "/wiki/manga/volume/27?chapter=318&edition=color&page=1",
-        "episode_id": 985,
-        "episode_url": "/wiki/episodes/985",
-        "wiki_arc_url": "/wiki/arcs/frieza",
+        "manga_url": "/wiki/manga/volume/108?chapter=318&edition=color&page=1",
+        "episode_id": 248,
+        "episode_url": "/wiki/episodes/248",
+        "wiki_arc_url": "/wiki/arcs/frieza-final",
         "technique_slug": "angry-kamehameha",
         "daizenshuu": "Daizenshuu 7 : Freezer 100% = 120,000,000. Son Goku Super Saiyan = 150,000,000 (multiplicateur x50 du niveau de base à 3,000,000).",
         "databook_lot": "databooks-lot-007"
@@ -560,10 +560,10 @@
         "wiki_slug": "cell"
       },
       "canon_refs": {
-        "manga_url": "/wiki/manga/volume/34?chapter=415&edition=color&page=1",
-        "episode_id": 1081,
-        "episode_url": "/wiki/episodes/1081",
-        "wiki_arc_url": "/wiki/arcs/cell",
+        "manga_url": "/wiki/manga/volume/115?chapter=415&edition=color&page=1",
+        "episode_id": 344,
+        "episode_url": "/wiki/episodes/344",
+        "wiki_arc_url": "/wiki/arcs/cell-games",
         "technique_slug": "father-son-kamehameha",
         "daizenshuu": "Daizenshuu 7 : Le Kamehameha Solaire de Cell menace tout le système solaire. Vegeta crée la diversion décisive.",
         "databook_lot": "databooks-lot-012"
@@ -624,10 +624,10 @@
         "wiki_slug": "majin-buu"
       },
       "canon_refs": {
-        "manga_url": "/wiki/manga/volume/42?chapter=516&edition=color&page=1",
-        "episode_id": 1184,
-        "episode_url": "/wiki/episodes/1184",
-        "wiki_arc_url": "/wiki/arcs/buu",
+        "manga_url": "/wiki/manga/volume/123?chapter=516&edition=color&page=1",
+        "episode_id": 439,
+        "episode_url": "/wiki/episodes/439",
+        "wiki_arc_url": "/wiki/arcs/kid-buu",
         "technique_slug": "cho-genki-dama",
         "daizenshuu": "Daizenshuu 7 : Le Chō Genki Dama alimenté par l'énergie des Terriens rassemblée par M. Satan.",
         "databook_lot": "databooks-lot-020"
@@ -688,10 +688,10 @@
         "wiki_slug": "beerus"
       },
       "canon_refs": {
-        "manga_url": "/wiki/manga/volume/43?chapter=4&edition=color&page=1",
-        "episode_id": 14,
-        "episode_url": "/wiki/episodes/14",
-        "wiki_arc_url": "/wiki/arcs/beerus",
+        "manga_url": "/wiki/manga",
+        "episode_id": 880,
+        "episode_url": "/wiki/episodes/880",
+        "wiki_arc_url": "/wiki/arcs/beerus-arc",
         "technique_slug": "dragon-smash",
         "daizenshuu": "Chouzenshuu 4 : L'éveil du Ki Divin via le rituel des 5 Saiyans au cœur pur.",
         "databook_lot": "databooks-lot-030"

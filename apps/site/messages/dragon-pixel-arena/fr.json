@@ -29,7 +29,8 @@
     "buu": "Majin Buu",
     "yamcha": "Yamcha",
     "krilin": "Krilin",
-    "jackie_chun": "Jackie Chun"
+    "jackie_chun": "Jackie Chun",
+    "beerus": "Beerus"
   },
   "arenas": {
     "paozu": "Mont Paozu",
@@ -37,7 +38,8 @@
     "wasteland": "Terres désolées",
     "namek": "Namek",
     "cell_games": "Cell Games",
-    "kaiohshin": "Monde des Kaioshin"
+    "kaiohshin": "Monde des Kaioshin",
+    "kaio_planet": "Planète de Kaïo"
   },
   "status": {
     "idle": "Prêt. Le moteur pèse environ {size} Mo et se télécharge au lancement.",
@@ -80,5 +82,7 @@
     "bevy": "Bevy 3D / WebGPU",
     "canvas": "Canvas 2D"
   },
-  "chapterOption": "Chapitre {number}"
+  "chapterOption": "Chapitre {number}",
+  "chapterManga": "Lire le tome",
+  "chapterEpisode": "Voir l’épisode"
 }

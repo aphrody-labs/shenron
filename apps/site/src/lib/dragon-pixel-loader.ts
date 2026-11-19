@@ -27,6 +27,7 @@ export interface DragonPixelBindings {
   dragon_pixel_frames(): number;
   dragon_pixel_hud_json(): string;
   dragon_pixel_take_haptics_json(): string;
+  story_chapters_json(): string;
   map_standard_gamepad(axes: Float32Array, pressed: Uint8Array, deadzone: number): string;
   DragonPixelEngineWasm: new (
     fighter: string,

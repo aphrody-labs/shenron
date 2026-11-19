@@ -903,6 +903,7 @@ impl DragonPixelEngineCore {
             ArenaId::Namek => 3,
             ArenaId::CellGames => 4,
             ArenaId::Kaiohshin => 5,
+            ArenaId::KaioPlanet => 6,
         };
 
         let arena = ArenaRenderData {
@@ -933,19 +934,7 @@ impl DragonPixelEngineCore {
             current_anim_frame: self.player.frame_in_move,
             form_level: self.player.form_level,
             flash_intensity: (self.player.flash_timer / 0.15).clamp(0.0, 1.0),
-            aura_type: match p_aura {
-                AuraType::None => 0,
-                AuraType::White => 1,
-                AuraType::KaioKen => 2,
-                AuraType::SuperSaiyan => 3,
-                AuraType::SuperSaiyan2 => 4,
-                AuraType::SuperSaiyan3 => 5,
-                AuraType::SuperNamek => 6,
-                AuraType::Mystic => 7,
-                AuraType::Golden => 8,
-                AuraType::Perfect => 9,
-                AuraType::Majin => 10,
-            },
+            aura_type: p_aura.shader_index(),
             aura_color: p_aura_color,
             aura_intensity: if self.player.is_charging {
                 1.0
@@ -968,11 +957,7 @@ impl DragonPixelEngineCore {
             current_anim_frame: self.enemy.frame_in_move,
             form_level: self.enemy.form_level,
             flash_intensity: (self.enemy.flash_timer / 0.15).clamp(0.0, 1.0),
-            aura_type: match e_aura {
-                AuraType::SuperSaiyan2 => 4,
-                AuraType::Majin => 10,
-                _ => 1,
-            },
+            aura_type: e_aura.shader_index(),
             aura_color: e_aura_color,
             aura_intensity: 0.5,
             has_ssj2_lightning: e_aura == AuraType::SuperSaiyan2,

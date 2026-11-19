@@ -48,6 +48,7 @@ const ARENA_COLORS: [string, string][] = [
   ["#80dbb8", "#348f6b"],
   ["#5275bd", "#ccccd4"],
   ["#e6cef5", "#f2e8cc"],
+  ["#fadb6b", "#66b34d"],
 ];
 
 const KEYS: Record<string, string[]> = {

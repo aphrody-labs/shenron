@@ -51,7 +51,7 @@ pub struct DialogueLine {
     pub text: String,
 }
 
-/// Chapitre du Mode Histoire (15 chapitres couvrant les 42 tomes de Toriyama).
+/// Chapitre du Mode Histoire : les 42 tomes de Toriyama, puis l'arc Beerus de Dragon Ball Super.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct StoryChapter {
     pub id: u32,
@@ -68,9 +68,15 @@ pub struct StoryChapter {
     pub objective: String,
     pub boss_hp: f32,
     pub target_transformation: Option<u32>,
+    /// Row of `bot.db_episodes` that tells this fight, linked as `/wiki/episodes/<id>`.
+    #[serde(default)]
+    pub episode_id: Option<u32>,
+    /// Row of `bot.db_manga_volumes` holding the chapter, linked as `/wiki/manga/volume/<id>`.
+    #[serde(default)]
+    pub manga_volume_id: Option<u32>,
 }
 
-/// Catalogue complet des 8 combattants jouables.
+/// Catalogue complet des combattants jouables.
 pub fn get_fighter_def(id: FighterId) -> FighterDefinition {
     match id {
         FighterId::Goku => FighterDefinition {
@@ -118,6 +124,15 @@ pub fn get_fighter_def(id: FighterId) -> FighterDefinition {
                     power_level: 1_200_000_000,
                     aura: AuraType::SuperSaiyan3,
                     aura_color: [1.0, 0.95, 0.2, 1.0],
+                },
+                FormDefinition {
+                    level: 4,
+                    name: "Super Saiyan divin".into(),
+                    name_ja: "超サイヤ人ゴッド".into(),
+                    power_multiplier: 2.8,
+                    power_level: 10_000_000_000,
+                    aura: AuraType::SuperSaiyanGod,
+                    aura_color: [0.95, 0.18, 0.22, 0.95],
                 },
             ],
             specials: vec![
@@ -485,6 +500,49 @@ pub fn get_fighter_def(id: FighterId) -> FighterDefinition {
                 sfx: "kamehameha".into(),
             }],
         },
+        FighterId::Beerus => FighterDefinition {
+            id,
+            name: "Beerus".into(),
+            name_ja: "ビルス".into(),
+            style: FighterStyle::Speed,
+            base_hp: 160.0,
+            base_ki: 150.0,
+            base_power_level: 15_000_000_000,
+            emblem: "破".into(),
+            forms: vec![FormDefinition {
+                level: 0,
+                name: "Dieu de la Destruction".into(),
+                name_ja: "破壊神".into(),
+                power_multiplier: 1.0,
+                power_level: 15_000_000_000,
+                aura: AuraType::Destroyer,
+                aura_color: [0.58, 0.32, 0.86, 0.9],
+            }],
+            specials: vec![
+                SpecialMoveDefinition {
+                    id: "shuto".into(),
+                    name: "Coup de main tranchant".into(),
+                    name_ja: "手刀".into(),
+                    ki_cost: 25.0,
+                    damage: 34.0,
+                    is_beam: false,
+                    is_ultimate: false,
+                    color: [0.75, 0.55, 0.95, 1.0],
+                    sfx: "whoosh".into(),
+                },
+                SpecialMoveDefinition {
+                    id: "hakai".into(),
+                    name: "Hakai".into(),
+                    name_ja: "破壊".into(),
+                    ki_cost: 90.0,
+                    damage: 85.0,
+                    is_beam: false,
+                    is_ultimate: true,
+                    color: [0.52, 0.2, 0.85, 1.0],
+                    sfx: "explosion".into(),
+                },
+            ],
+        },
         FighterId::Buu => FighterDefinition {
             id,
             name: "Majin Buu".into(),
@@ -632,7 +690,7 @@ pub fn get_fighter_def(id: FighterId) -> FighterDefinition {
     }
 }
 
-/// Les 15 chapitres du Mode Histoire Canonique de Toriyama (Tomes 1 à 42).
+/// Les chapitres du Mode Histoire : tomes 1 à 42 de Toriyama, puis les épisodes 2, 5 et 6 de Dragon Ball Super : Beerus.
 pub fn get_story_chapters() -> Vec<StoryChapter> {
     vec![
         StoryChapter {
@@ -655,6 +713,8 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Repoussez l'embuscade de Yamcha au Mont Paozu.".into(),
             boss_hp: 90.0,
             target_transformation: None,
+            episode_id: Some(5),
+            manga_volume_id: Some(82),
         },
         StoryChapter {
             id: 2,
@@ -676,6 +736,8 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Qualifiez-vous pour les phases finales du Budokai.".into(),
             boss_hp: 100.0,
             target_transformation: None,
+            episode_id: None,
+            manga_volume_id: Some(84),
         },
         StoryChapter {
             id: 3,
@@ -697,6 +759,8 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Poussez Jackie Chun dans ses derniers retranchements.".into(),
             boss_hp: 110.0,
             target_transformation: None,
+            episode_id: None,
+            manga_volume_id: Some(85),
         },
         StoryChapter {
             id: 4,
@@ -718,6 +782,8 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Transpercez le Démon Piccolo de votre dernier coup de poing.".into(),
             boss_hp: 120.0,
             target_transformation: None,
+            episode_id: Some(122),
+            manga_volume_id: Some(94),
         },
         StoryChapter {
             id: 5,
@@ -739,6 +805,8 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Remportez le titre de Champion du 23e Budokai.".into(),
             boss_hp: 130.0,
             target_transformation: None,
+            episode_id: None,
+            manga_volume_id: Some(97),
         },
         StoryChapter {
             id: 6,
@@ -760,6 +828,8 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Terrassez le guerrier de l'espace Raditz.".into(),
             boss_hp: 140.0,
             target_transformation: None,
+            episode_id: None,
+            manga_volume_id: Some(98),
         },
         StoryChapter {
             id: 7,
@@ -781,6 +851,8 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Repoussez le Canon Garric avec le Kaiō-ken x4.".into(),
             boss_hp: 155.0,
             target_transformation: Some(1),
+            episode_id: Some(183),
+            manga_volume_id: Some(100),
         },
         StoryChapter {
             id: 8,
@@ -802,6 +874,8 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Battez le Commando Ginyu sur la planète Namek.".into(),
             boss_hp: 165.0,
             target_transformation: None,
+            episode_id: None,
+            manga_volume_id: Some(104),
         },
         StoryChapter {
             id: 9,
@@ -823,6 +897,8 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Éveillez le Super Saiyan et triomphez de Freezer 100%.".into(),
             boss_hp: 185.0,
             target_transformation: Some(2),
+            episode_id: Some(248),
+            manga_volume_id: Some(108),
         },
         StoryChapter {
             id: 10,
@@ -844,6 +920,8 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Tranchez Méca Freezer avec Trunks Super Saiyan.".into(),
             boss_hp: 170.0,
             target_transformation: Some(1),
+            episode_id: None,
+            manga_volume_id: Some(109),
         },
         StoryChapter {
             id: 11,
@@ -865,6 +943,8 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Stopper l'assimilation des civils par Cell.".into(),
             boss_hp: 175.0,
             target_transformation: Some(1),
+            episode_id: None,
+            manga_volume_id: Some(111),
         },
         StoryChapter {
             id: 12,
@@ -886,6 +966,8 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Remportez le Beam Clash décisif avec le Père-Fils Kamehameha.".into(),
             boss_hp: 200.0,
             target_transformation: Some(1),
+            episode_id: Some(344),
+            manga_volume_id: Some(115),
         },
         StoryChapter {
             id: 13,
@@ -907,6 +989,8 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Neutralisez Majin Vegeta dans un duel SSJ2 acharné.".into(),
             boss_hp: 210.0,
             target_transformation: Some(2),
+            episode_id: None,
+            manga_volume_id: Some(119),
         },
         StoryChapter {
             id: 14,
@@ -928,6 +1012,8 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Gagnez du temps contre Majin Buu en SSJ3.".into(),
             boss_hp: 220.0,
             target_transformation: Some(3),
+            episode_id: None,
+            manga_volume_id: Some(120),
         },
         StoryChapter {
             id: 15,
@@ -949,6 +1035,104 @@ pub fn get_story_chapters() -> Vec<StoryChapter> {
             objective: "Terrassez définitivement Kid Buu avec le Chō Genki Dama.".into(),
             boss_hp: 240.0,
             target_transformation: Some(2),
+            episode_id: Some(439),
+            manga_volume_id: Some(123),
+        },
+        StoryChapter {
+            id: 16,
+            tome: 1,
+            saga: "Dragon Ball Super : Beerus".into(),
+            title: "Épisode 2 : Le dieu de la Destruction se rend sur la planète de Kaïo".into(),
+            title_ja: "破壊神界王星へ".into(),
+            arena_id: "kaio_planet".into(),
+            player_fighter: FighterId::Goku,
+            enemy_fighter: FighterId::Beerus,
+            enemy_name: "Beerus, dieu de la Destruction".into(),
+            intro_dialogue: vec![
+                DialogueLine { speaker: "Beerus".into(), text: "On m'a parlé d'un Saiyan qui a vaincu Freezer. Montre-moi ce que tu vaux.".into() },
+                DialogueLine { speaker: "Goku".into(), text: "Un dieu qui veut se battre ? Je passe tout de suite en Super Saiyan 3 !".into() },
+            ],
+            victory_dialogue: vec![
+                DialogueLine { speaker: "Beerus".into(), text: "Pas mal, pour un mortel. Mais ce n'est pas le Super Saiyan divin que j'ai vu en rêve.".into() },
+            ],
+            objective: "Tenez le plus longtemps possible face à Beerus en Super Saiyan 3.".into(),
+            boss_hp: 260.0,
+            target_transformation: Some(3),
+            episode_id: Some(876),
+            manga_volume_id: None,
+        },
+        StoryChapter {
+            id: 17,
+            tome: 1,
+            saga: "Dragon Ball Super : Beerus".into(),
+            title: "Épisode 5 : Le dieu de la Destruction et Son Goku".into(),
+            title_ja: "破壊神と孫悟空".into(),
+            arena_id: "wasteland".into(),
+            player_fighter: FighterId::Goku,
+            enemy_fighter: FighterId::Beerus,
+            enemy_name: "Beerus, dieu de la Destruction".into(),
+            intro_dialogue: vec![
+                DialogueLine { speaker: "Goku".into(), text: "Grâce aux autres, je sens un ki divin. Voilà le Super Saiyan divin !".into() },
+                DialogueLine { speaker: "Beerus".into(), text: "Enfin. Voyons si ce pouvoir mérite que j'épargne ta planète.".into() },
+            ],
+            victory_dialogue: vec![
+                DialogueLine { speaker: "Beerus".into(), text: "Tu apprends à te servir de ce pouvoir en plein combat. Intéressant.".into() },
+            ],
+            objective: "Affrontez Beerus en Super Saiyan divin.".into(),
+            boss_hp: 300.0,
+            target_transformation: Some(4),
+            episode_id: Some(879),
+            manga_volume_id: None,
+        },
+        StoryChapter {
+            id: 18,
+            tome: 1,
+            saga: "Dragon Ball Super : Beerus".into(),
+            title: "Épisode 6 : La Bataille des dieux".into(),
+            title_ja: "神と神".into(),
+            arena_id: "wasteland".into(),
+            player_fighter: FighterId::Goku,
+            enemy_fighter: FighterId::Beerus,
+            enemy_name: "Beerus, dieu de la Destruction".into(),
+            intro_dialogue: vec![
+                DialogueLine { speaker: "Goku".into(), text: "Le ki divin s'en va, mais mon corps s'en souvient. On continue en Super Saiyan !".into() },
+                DialogueLine { speaker: "Beerus".into(), text: "Tu perds ta forme divine et tu veux encore te battre ? Approche.".into() },
+            ],
+            victory_dialogue: vec![
+                DialogueLine { speaker: "Beerus".into(), text: "Je n'ai plus envie de détruire la Terre aujourd'hui. Je vais dormir.".into() },
+            ],
+            objective: "Gardez le pouvoir divin absorbé et résistez à Beerus en Super Saiyan.".into(),
+            boss_hp: 320.0,
+            target_transformation: Some(2),
+            episode_id: Some(880),
+            manga_volume_id: None,
         },
     ]
+}
+
+#[cfg(test)]
+mod story_tests {
+    use super::*;
+
+    #[test]
+    fn chapters_follow_the_chronology_and_link_their_sources() {
+        let chapters = get_story_chapters();
+        let ids: Vec<u32> = chapters.iter().map(|chapter| chapter.id).collect();
+        assert_eq!(ids, (1..=18).collect::<Vec<_>>());
+        for chapter in &chapters[..15] {
+            assert_eq!(chapter.manga_volume_id, Some(81 + chapter.tome), "chapter {}", chapter.id);
+        }
+        let beerus: Vec<_> = chapters.iter().filter(|chapter| chapter.enemy_fighter == FighterId::Beerus).collect();
+        assert_eq!(beerus.iter().map(|chapter| chapter.episode_id).collect::<Vec<_>>(), [Some(876), Some(879), Some(880)]);
+    }
+
+    #[test]
+    fn every_story_transformation_exists_on_the_player() {
+        for chapter in get_story_chapters() {
+            if let Some(level) = chapter.target_transformation {
+                let forms = get_fighter_def(chapter.player_fighter).forms;
+                assert!(forms.iter().any(|form| form.level == level), "chapter {} asks for form {level}", chapter.id);
+            }
+        }
+    }
 }

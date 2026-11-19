@@ -29,7 +29,8 @@
     "buu": "Majin Buu",
     "yamcha": "Yamcha",
     "krilin": "Krillin",
-    "jackie_chun": "Jackie Chun"
+    "jackie_chun": "Jackie Chun",
+    "beerus": "Beerus"
   },
   "arenas": {
     "paozu": "Mount Paozu",
@@ -37,7 +38,8 @@
     "wasteland": "Wasteland",
     "namek": "Namek",
     "cell_games": "Cell Games",
-    "kaiohshin": "Kaioshin Realm"
+    "kaiohshin": "Kaioshin Realm",
+    "kaio_planet": "King Kai's Planet"
   },
   "status": {
     "idle": "Ready. The engine is about {size} MB and downloads when you start.",
@@ -80,5 +82,7 @@
     "bevy": "Bevy 3D / WebGPU",
     "canvas": "Canvas 2D"
   },
-  "chapterOption": "Chapter {number}"
+  "chapterOption": "Chapter {number}",
+  "chapterManga": "Read the volume",
+  "chapterEpisode": "See the episode"
 }

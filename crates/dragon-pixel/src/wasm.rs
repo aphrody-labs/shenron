@@ -89,6 +89,34 @@ pub fn map_standard_gamepad(axes: &[f32], pressed: &[u8], deadzone: f32) -> Stri
     serde_json::to_string(&input).unwrap_or_else(|_| "{}".into())
 }
 
+/// Story chapters in chronological order with their sources (manga volume and episode rows), as JSON
+/// for the chapter picker of the site: the roster stays the only list of chapters.
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub fn story_chapters_json() -> String {
+    #[derive(serde::Serialize)]
+    struct ChapterSummary<'a> {
+        id: u32,
+        saga: &'a str,
+        title: &'a str,
+        title_ja: &'a str,
+        episode_id: Option<u32>,
+        manga_volume_id: Option<u32>,
+    }
+    let chapters = crate::roster::get_story_chapters();
+    let summaries: Vec<ChapterSummary<'_>> = chapters
+        .iter()
+        .map(|chapter| ChapterSummary {
+            id: chapter.id,
+            saga: &chapter.saga,
+            title: &chapter.title,
+            title_ja: &chapter.title_ja,
+            episode_id: chapter.episode_id,
+            manga_volume_id: chapter.manga_volume_id,
+        })
+        .collect();
+    serde_json::to_string(&summaries).unwrap_or_else(|_| "[]".into())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -101,5 +129,13 @@ mod tests {
         let input: EngineInput = serde_json::from_str(&json).unwrap_or_default();
         assert!(input.left && input.punch);
         assert!(!input.right);
+    }
+
+    #[test]
+    fn story_chapters_json_lists_every_chapter_with_its_sources() {
+        let chapters: Vec<serde_json::Value> = serde_json::from_str(&story_chapters_json()).unwrap_or_default();
+        assert_eq!(chapters.len(), crate::roster::get_story_chapters().len());
+        assert_eq!(chapters[17]["episode_id"], 880);
+        assert_eq!(chapters[0]["manga_volume_id"], 82);
     }
 }

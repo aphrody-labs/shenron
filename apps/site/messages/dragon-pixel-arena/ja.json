@@ -29,7 +29,8 @@
     "buu": "魔人ブウ",
     "yamcha": "ヤムチャ",
     "krilin": "クリリン",
-    "jackie_chun": "ジャッキー・チュン"
+    "jackie_chun": "ジャッキー・チュン",
+    "beerus": "ビルス"
   },
   "arenas": {
     "paozu": "パオズ山",
@@ -37,7 +38,8 @@
     "wasteland": "荒野",
     "namek": "ナメック星",
     "cell_games": "セルゲーム",
-    "kaiohshin": "界王神界"
+    "kaiohshin": "界王神界",
+    "kaio_planet": "界王星"
   },
   "status": {
     "idle": "準備完了。エンジンは約{size}MBで、開始時にダウンロードされます。",
@@ -80,5 +82,7 @@
     "bevy": "Bevy 3D / WebGPU",
     "canvas": "Canvas 2D"
   },
-  "chapterOption": "第{number}章"
+  "chapterOption": "第{number}章",
+  "chapterManga": "単行本を読む",
+  "chapterEpisode": "エピソードを見る"
 }

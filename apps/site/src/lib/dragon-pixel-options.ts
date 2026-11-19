@@ -13,6 +13,7 @@ export const FIGHTER_IDS = [
   "yamcha",
   "krilin",
   "jackie_chun",
+  "beerus",
 ] as const;
 
 export const ARENA_IDS = [
@@ -22,13 +23,36 @@ export const ARENA_IDS = [
   "namek",
   "cell_games",
   "kaiohshin",
+  "kaio_planet",
 ] as const;
 
 /** Only the story mode changes the match: the other engine modes share the free-fight rules. */
 export const MODE_IDS = ["arcade", "story"] as const;
 
 /** Chapters of the story mode of crates/dragon-pixel (`get_story_chapters`). */
-export const STORY_CHAPTER_COUNT = 15;
+export const STORY_CHAPTER_COUNT = 18;
+
+/** One entry of `story_chapters_json` (crates/dragon-pixel/src/wasm.rs): the roster is the only chapter list. */
+export interface StoryChapterSummary {
+  id: number;
+  saga: string;
+  title: string;
+  title_ja: string;
+  episode_id: number | null;
+  manga_volume_id: number | null;
+}
+
+/** Parses `story_chapters_json`; an unreadable payload gives no chapter titles, never a crash. */
+export function parseStoryChapters(json: string): StoryChapterSummary[] {
+  try {
+    const value: unknown = JSON.parse(json);
+    return Array.isArray(value)
+      ? value.filter((entry): entry is StoryChapterSummary => typeof entry?.id === "number" && typeof entry?.title === "string")
+      : [];
+  } catch {
+    return [];
+  }
+}
 
 export type FighterId = (typeof FIGHTER_IDS)[number];
 export type ArenaId = (typeof ARENA_IDS)[number];

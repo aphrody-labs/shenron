@@ -17,6 +17,7 @@ pub enum FighterId {
     Yamcha,
     Krilin,
     JackieChun,
+    Beerus,
 }
 
 impl FighterId {
@@ -33,6 +34,7 @@ impl FighterId {
             Self::Yamcha => "yamcha",
             Self::Krilin => "krilin",
             Self::JackieChun => "jackie_chun",
+            Self::Beerus => "beerus",
         }
     }
 
@@ -48,6 +50,7 @@ impl FighterId {
             "yamcha" => Self::Yamcha,
             "krilin" | "kuririn" => Self::Krilin,
             "jackie" | "jackie_chun" | "roshi" => Self::JackieChun,
+            "beerus" | "bills" => Self::Beerus,
             _ => Self::Goku,
         }
     }
@@ -77,6 +80,30 @@ pub enum AuraType {
     Golden,
     Perfect,
     Majin,
+    SuperSaiyanGod,
+    Destroyer,
+}
+
+impl AuraType {
+    /// Index of the aura in `FighterRenderData::aura_type`, read by the WGSL and Bevy renderers.
+    #[must_use]
+    pub const fn shader_index(self) -> u32 {
+        match self {
+            Self::None => 0,
+            Self::White => 1,
+            Self::KaioKen => 2,
+            Self::SuperSaiyan => 3,
+            Self::SuperSaiyan2 => 4,
+            Self::SuperSaiyan3 => 5,
+            Self::SuperNamek => 6,
+            Self::Mystic => 7,
+            Self::Golden => 8,
+            Self::Perfect => 9,
+            Self::Majin => 10,
+            Self::SuperSaiyanGod => 11,
+            Self::Destroyer => 12,
+        }
+    }
 }
 
 /// Identifiant d'arène canonique Toriyama.
@@ -89,6 +116,7 @@ pub enum ArenaId {
     Namek,
     CellGames,
     Kaiohshin,
+    KaioPlanet,
 }
 
 impl ArenaId {
@@ -100,6 +128,7 @@ impl ArenaId {
             Self::Namek => "namek",
             Self::CellGames => "cell_games",
             Self::Kaiohshin => "kaiohshin",
+            Self::KaioPlanet => "kaio_planet",
         }
     }
 
@@ -110,6 +139,7 @@ impl ArenaId {
             "namek" => Self::Namek,
             "cell_games" | "cell" => Self::CellGames,
             "kaiohshin" | "kaioshin" => Self::Kaiohshin,
+            "kaio_planet" | "kaio" | "north_kai" => Self::KaioPlanet,
             _ => Self::Budokai,
         }
     }
