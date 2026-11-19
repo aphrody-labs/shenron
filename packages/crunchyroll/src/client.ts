@@ -95,6 +95,20 @@ const CANONICAL_BEERUS_EPISODES: ReadonlyArray<
     watchUrl:
       "https://www.crunchyroll.com/fr/watch/GE00389317JAJP/the-god-of-destruction-and-son-goku",
   },
+  {
+    // Read from the watch page JSON-LD on 2026-11-19; the page exposes no season id or locales.
+    id: "GE00389318JAJP",
+    aliases: ["6", "880"],
+    seriesId: "GT00389311",
+    episodeNumber: 6,
+    title: "La Bataille des dieux",
+    slugTitle: "battle-of-gods",
+    durationMs: 1397773,
+    description: "Dans la \"Bataille des dieux\", Goku perd ses pouvoirs divins face à Beerus.",
+    airDate: "2026-11-15T17:00:00Z",
+    isPremiumOnly: false,
+    watchUrl: "https://www.crunchyroll.com/fr/watch/GE00389318JAJP/battle-of-gods",
+  },
 ];
 
 function stripAliases({
