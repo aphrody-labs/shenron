@@ -12,3 +12,4 @@ Claude Code guidance. The contract is `AGENTS.md`.
 - Over ssh, `pkill -f 'pattern'` also matches the remote shell that carries the pattern: write `[p]attern`.
 - `crates/shenron-deployd` and `shenron-tv` are standalone crates (own `Cargo.lock`, excluded from the workspace): build them from their own directory.
 - Sub-agent briefs name the files and gates, forbid deploys unless asked, and require `git commit -- <paths>`; a worker without that rule sweeps the shared index.
+- Multi-agent code work runs as loops: one narrow task from a queue file, one implementer, two adversarial reviewers that see only the diff (they reject stubs, skipped tests and workarounds that need a paragraph of comment), one fixer; trial on 3 items before fanning out. Broad "replace all X" agents produced nothing usable on 2026-11-19.
