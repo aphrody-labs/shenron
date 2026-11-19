@@ -85,3 +85,17 @@ test("without an auth port Bun returns unavailable without a Next relay loop", a
   expect(response.headers.get("cache-control")).toBe("private, no-store");
   expect(await response.json()).toEqual({ error: "auth_unavailable" });
 });
+
+test("OAuth/MCP metadata aliases under /.well-known/ go to Better Auth, not the Next relay", async () => {
+  for (const path of [
+    "/.well-known/oauth-protected-resource",
+    "/.well-known/oauth-protected-resource/mcp",
+    "/.well-known/oauth-authorization-server/api/auth",
+  ]) {
+    const response = await fetch(`http://127.0.0.1:${on.port}${path}`);
+    expect(await response.json()).toEqual({ from: "better-auth" });
+    expect(seen.at(-1)?.path).toBe(path);
+  }
+  const other = await fetch(`http://127.0.0.1:${on.port}/.well-known/security.txt`);
+  expect(await other.json()).toEqual({ from: "next" });
+});

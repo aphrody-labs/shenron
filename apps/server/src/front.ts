@@ -111,6 +111,8 @@ export function hostClaims(host: FrontHost, pathname: string): boolean {
   if (under(pathname, "/api/v1")) return true;
   if (under(pathname, "/api/auth")) return host.handles(pathname);
   if (pathname.startsWith("/api/public/") || under(pathname, "/mcp")) return host.handles(pathname);
+  // OAuth/MCP metadata aliases (RFC 9728, RFC 8414) live beside Better Auth on the host.
+  if (pathname.startsWith("/.well-known/")) return host.handles(pathname);
   return false;
 }
 
