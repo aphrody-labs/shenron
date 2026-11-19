@@ -23,7 +23,8 @@
     {
       "id": "1b",
       "name": "shenron-mcp admin tier: Postgres (schema, read query, audited write), Redis (info/get/scan), real-time context via LISTEN/NOTIFY + MCP resource subscriptions, auto-learn into shenron-memory; Claude Code connects with a bearer from env",
-      "status": "in_progress"
+      "status": "done",
+      "evidence": "commits a59a5a1a bb557ba5 91f72f8a on main; fr2 from a clean clone of 91f72f8a: cargo clippy -p shenron-mcp -- -D warnings clean; cargo test -p shenron-mcp 98 lib + 3 integration tests pass against postgres:18-alpine and redis:8-alpine containers (removed); real binary over HTTP: anonymous tools/list 48 tools, none of db/redis/memory; bearer 94 tools including the 12 data-plane tools; subscriptions/listen pushed notifications/resources/updated after NOTIFY and after the bot.shenron_mcp_notify trigger; migrations applied, rolled back and re-applied. Not deployed: prd needs SHENRON_MCP_TOKENS, SHENRON_MCP_DATABASE_URL, SHENRON_MCP_REDIS_URL in compute.env and the audit migration applied (docs/runbooks/shenron-mcp-admin.md)"
     },
     {
       "id": 2,
