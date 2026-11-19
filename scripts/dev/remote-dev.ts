@@ -17,8 +17,8 @@
  *   bun scripts/dev/remote-dev.ts clean-wsl [--apply] list (or delete) regenerable Shenron artefacts in WSL
  *   bun scripts/dev/remote-dev.ts backup [--apply]    archive the vital private state to /mnt/c/shenron/vital
  *
- * `--host <ssh alias>` (default `vps`, env SHENRON_DEV_HOST) picks the build host; `--host auto` probes
- * SHENRON_DEV_HOSTS (default `vps,cdn`; production is never a candidate unless listed) and takes the
+ * `--host <ssh alias>` (default `fr1`, env SHENRON_DEV_HOST) picks the build host; `--host auto` probes
+ * SHENRON_DEV_HOSTS (default `fr1,fr2`; production is never a candidate unless listed) and takes the
  * least loaded host with enough memory and disk. `--workspace <name>` (env SHENRON_DEV_WORKSPACE) gives
  * each local worktree its own remote checkout, so parallel worktrees never overwrite each other. See
  * docs/development/remote-dev.md.
@@ -46,7 +46,7 @@ export type RemoteDevConfig = {
 };
 
 export const DEFAULT_CONFIG: RemoteDevConfig = {
-  host: process.env.SHENRON_DEV_HOST ?? "vps",
+  host: process.env.SHENRON_DEV_HOST ?? "fr1",
   workspace: process.env.SHENRON_DEV_WORKSPACE ?? "shenron-dev",
   snapshotRef: "refs/dev/snapshot",
   seedRemote: process.env.SHENRON_DEV_SEED ?? "git@github.com:aphrody-labs/shenron.git",
@@ -501,7 +501,7 @@ async function main(argv: string[]): Promise<number> {
   const workspace = value("--workspace") ?? DEFAULT_CONFIG.workspace;
   let host = value("--host") ?? DEFAULT_CONFIG.host;
   if (host === "auto")
-    host = await pickHost((process.env.SHENRON_DEV_HOSTS ?? "vps,cdn").split(","));
+    host = await pickHost((process.env.SHENRON_DEV_HOSTS ?? "fr1,fr2").split(","));
   // One tmux session per workspace, so parallel dev servers do not kill each other.
   const config = { ...DEFAULT_CONFIG, host, workspace, devSession: workspace };
   const flag = (name: string) => options.includes(name);

@@ -234,7 +234,7 @@ async function loadStore(): Promise<Map<Service, EnvMap>> {
 
 async function main(): Promise<void> {
   const [command = "pull", ...args] = process.argv.slice(2);
-  const host = option(args, "--host", process.env.SHENRON_DEV_HOST ?? "vps");
+  const host = option(args, "--host", process.env.SHENRON_DEV_HOST ?? "fr1");
   switch (command) {
     case "pull":
       await writeDev(await pull(host), undefined, args.includes("--local-services"));

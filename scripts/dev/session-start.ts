@@ -37,7 +37,7 @@ const [branch, head, dirty] = await Promise.all([
   git("status", "--short"),
 ]);
 const remote = process.env.CLAUDE_CODE_REMOTE === "true";
-const ssh = Bun.spawnSync(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5", "vps", "true"], {
+const ssh = Bun.spawnSync(["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5", "fr1", "true"], {
   stdout: "ignore",
   stderr: "ignore",
 });
