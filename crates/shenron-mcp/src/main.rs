@@ -37,6 +37,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 .unwrap_or_else(|_| tracing_subscriber::EnvFilter::new("warn")),
         )
         .init();
+    shenron_mcp::admin::start_background();
     let public = args.iter().any(|arg| arg == "--public");
     let server = if public { ShenronMcp::public() } else { ShenronMcp::full() };
     if let Some(index) = args.iter().position(|arg| arg == "--http") {

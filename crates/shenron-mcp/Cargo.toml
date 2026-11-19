@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 [package]
 name = "shenron-mcp"
-description = "MCP server (stdio) exposing the dragonball.* and dbfr_* tools of dragonballfr.com and the local Shenron corpus."
+description = "MCP server (stdio and Streamable HTTP) exposing the dragonball.* and dbfr_* tools of dragonballfr.com, the local Shenron corpus and the admin data plane (db.*, redis.*, memory.*)."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -28,6 +28,11 @@ koharu = ["shenron-manga/koharu"]
 
 [dependencies]
 axum = { workspace = true }
+blake3 = { workspace = true }
+chrono = { workspace = true }
+deadpool-postgres = { workspace = true }
+futures-util = { workspace = true }
+redis = { workspace = true }
 reqwest = { workspace = true }
 rmcp = { workspace = true }
 rustls = { workspace = true }
@@ -36,8 +41,14 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 shenron-lexicon = { workspace = true }
 shenron-manga = { workspace = true }
+shenron-memory = { workspace = true }
 shenron-rag = { workspace = true }
 tokio = { workspace = true }
+tokio-postgres = { workspace = true }
+url = { workspace = true }
 tower-http = { workspace = true, features = ["cors", "limit"] }
 tracing = { workspace = true }
 tracing-subscriber = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

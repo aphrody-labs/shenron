@@ -161,6 +161,9 @@ async fn mcp(
         return unauthorized("invalid bearer token");
     }
     complete_accept(&mut request);
+    // The admin tools audit who called: the identity travels with the request into the handler.
+    let caller = state.access.caller(peer.ip(), request.headers(), decision);
+    request.extensions_mut().insert(caller);
     let service = if decision.is_elevated() { &state.full } else { &state.public };
     service.handle(request).await.map(Body::new)
 }
@@ -235,6 +238,12 @@ mod tests {
     use super::*;
 
     const TOKEN: &str = "test-mcp-token-0123456789";
+
+    /// The workspace builds reqwest without a bundled TLS provider: install one, as `main` does.
+    fn client() -> reqwest::Client {
+        let _ = rustls::crypto::ring::default_provider().install_default();
+        reqwest::Client::new()
+    }
 
     async fn spawn(access: Access) -> String {
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.expect("bind");
@@ -318,7 +327,7 @@ mod tests {
 
     async fn tools_for(access: Access, extra: &[(&str, &str)]) -> Result<Vec<String>, u16> {
         let base = spawn(access).await;
-        let client = reqwest::Client::new();
+        let client = client();
         let session = initialize(&client, &base, extra).await.map_err(|s| s.as_u16())?;
         Ok(tool_names_of(&client, &base, session.as_deref(), extra).await)
     }
@@ -379,7 +388,7 @@ mod tests {
     async fn an_invalid_token_is_a_401_with_a_bearer_challenge() {
         let access = Access::new(&[TOKEN], &[], &["127.0.0.0/8"]);
         let base = spawn(access).await;
-        let response = post(&reqwest::Client::new(), &base, None)
+        let response = post(&client(), &base, None)
             .header("authorization", "Bearer not-the-right-token-123")
             .json(&json!({ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }))
             .send()
@@ -424,7 +433,7 @@ mod tests {
     async fn anonymous_callers_cannot_call_an_elevated_tool() {
         let access = Access::new(&[TOKEN], &[], &["127.0.0.0/8"]);
         let base = spawn(access).await;
-        let client = reqwest::Client::new();
+        let client = client();
         let session = initialize(&client, &base, &[]).await.expect("session");
         let body = json_of(
             post(&client, &base, session.as_deref())
@@ -440,11 +449,108 @@ mod tests {
         assert!(body.get("error").is_some(), "an elevated tool must not be callable: {body}");
     }
 
+    const DATA_PLANE: [&str; 12] = [
+        "db.schema",
+        "db.query",
+        "db.exec",
+        "db.explain",
+        "redis.info",
+        "redis.get",
+        "redis.scan",
+        "redis.ttl",
+        "redis.set",
+        "redis.del",
+        "memory.learn",
+        "memory.recall",
+    ];
+
+    async fn call_tool(
+        base: &str,
+        extra: &[(&str, &str)],
+        name: &str,
+        arguments: &Value,
+    ) -> Value {
+        let client = client();
+        let session = initialize(&client, base, extra).await.expect("session");
+        let mut request = post(&client, base, session.as_deref()).json(&json!({
+            "jsonrpc": "2.0", "id": 3, "method": "tools/call",
+            "params": { "name": name, "arguments": arguments }
+        }));
+        for (header, value) in extra {
+            request = request.header(*header, *value);
+        }
+        json_of(request.send().await.expect("call")).await
+    }
+
+    fn text_of(body: &Value) -> String {
+        body["result"]["content"][0]["text"].as_str().unwrap_or_default().to_owned()
+    }
+
+    #[test]
+    fn the_data_plane_is_registered_for_elevated_callers_only() {
+        let all = tool_names(&ShenronMcp::all_tools());
+        let public = tool_names(&ShenronMcp::public_tools());
+        for name in DATA_PLANE {
+            assert!(all.iter().any(|tool| tool == name), "missing from the full set: {name}");
+            assert!(!public.iter().any(|tool| tool == name), "leaked to the public set: {name}");
+        }
+        assert!(!public.iter().any(|tool| crate::admin::is_admin_tool(tool)));
+    }
+
+    #[tokio::test]
+    async fn anonymous_callers_neither_list_nor_call_the_data_plane() {
+        let access = Access::new(&[TOKEN], &[], &["127.0.0.0/8"]);
+        let base = spawn(access).await;
+        let client = client();
+        let session = initialize(&client, &base, &[]).await.expect("session");
+        let tools = tool_names_of(&client, &base, session.as_deref(), &[]).await;
+        for name in DATA_PLANE {
+            assert!(!has(&tools, name), "anonymous tools/list exposes {name}");
+        }
+        for (name, arguments) in [
+            ("db.query", json!({ "sql": "SELECT 1" })),
+            ("db.exec", json!({ "sql": "DELETE FROM t", "confirm": true })),
+            ("redis.del", json!({ "keys": ["k"], "confirm": true })),
+            ("memory.learn", json!({ "fact": "x", "source_url": "https://example.com" })),
+        ] {
+            let body = call_tool(&base, &[], name, &arguments).await;
+            let refused = body.get("error").is_some() || body["result"]["isError"] == true;
+            assert!(refused, "anonymous call of {name} must fail: {body}");
+            assert!(!text_of(&body).contains("rows"), "{name} produced data: {body}");
+        }
+    }
+
+    #[tokio::test]
+    async fn elevated_callers_list_the_data_plane_and_meet_its_guards() {
+        let access = Access::new(&[TOKEN], &[], &["127.0.0.0/8"]);
+        let base = spawn(access).await;
+        let bearer = format!("Bearer {TOKEN}");
+        let auth = [("authorization", bearer.as_str())];
+        let client = client();
+        let session = initialize(&client, &base, &auth).await.expect("session");
+        let tools = tool_names_of(&client, &base, session.as_deref(), &auth).await;
+        for name in DATA_PLANE {
+            assert!(has(&tools, name), "elevated tools/list misses {name}");
+        }
+        let write = call_tool(&base, &auth, "db.exec", &json!({ "sql": "DELETE FROM t" })).await;
+        assert_eq!(write["result"]["isError"], true, "{write}");
+        assert!(text_of(&write).contains("confirm: true"), "{write}");
+        let insert =
+            call_tool(&base, &auth, "db.query", &json!({ "sql": "INSERT INTO t VALUES (1)" })).await;
+        assert_eq!(insert["result"]["isError"], true, "{insert}");
+        assert!(text_of(&insert).contains("read-only"), "{insert}");
+        let multi = call_tool(&base, &auth, "db.query", &json!({ "sql": "SELECT 1; SELECT 2" })).await;
+        assert_eq!(multi["result"]["isError"], true, "{multi}");
+        assert!(text_of(&multi).contains("statements"), "{multi}");
+        let redis = call_tool(&base, &auth, "redis.del", &json!({ "keys": ["k"] })).await;
+        assert!(text_of(&redis).contains("confirm: true"), "{redis}");
+    }
+
     #[tokio::test]
     async fn every_request_is_tiered_on_its_own_credentials() {
         let access = Access::new(&[TOKEN], &[], &["127.0.0.0/8"]);
         let base = spawn(access).await;
-        let client = reqwest::Client::new();
+        let client = client();
         let bearer = format!("Bearer {TOKEN}");
         let session =
             initialize(&client, &base, &[("authorization", &bearer)]).await.expect("initialize");
@@ -459,7 +565,7 @@ mod tests {
     async fn a_restart_or_a_stale_session_id_is_invisible_to_clients() {
         // No initialize on this instance: a client resuming after a release must still be served.
         let base = spawn(Access::default()).await;
-        let response = post(&reqwest::Client::new(), &base, Some("00000000-0000-0000-0000-0"))
+        let response = post(&client(), &base, Some("00000000-0000-0000-0000-0"))
             .json(&json!({
                 "jsonrpc": "2.0", "id": 7, "method": "tools/call",
                 "params": { "name": "dragonball.lexicon_search", "arguments": { "query": "Goku" } }
@@ -484,7 +590,7 @@ mod tests {
     async fn a_post_that_only_accepts_json_is_served() {
         let base = spawn(Access::default()).await;
         for accept in ["application/json", "*/*"] {
-            let response = reqwest::Client::new()
+            let response = client()
                 .post(format!("{base}/mcp"))
                 .header("accept", accept)
                 .header("content-type", "application/json")
@@ -501,7 +607,7 @@ mod tests {
     #[tokio::test]
     async fn resources_and_prompts_are_served_to_everyone() {
         let base = spawn(Access::default()).await;
-        let client = reqwest::Client::new();
+        let client = client();
         let session = initialize(&client, &base, &[]).await.expect("session");
         let resources = json_of(
             post(&client, &base, session.as_deref())
@@ -560,7 +666,7 @@ mod tests {
     #[tokio::test]
     async fn the_card_is_served_and_cors_allows_the_authorization_header() {
         let base = spawn(Access::default()).await;
-        let client = reqwest::Client::new();
+        let client = client();
         let card: Value = client
             .get(format!("{base}/.well-known/mcp.json"))
             .send()

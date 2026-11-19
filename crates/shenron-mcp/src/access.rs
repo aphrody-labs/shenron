@@ -21,6 +21,8 @@ use std::net::{IpAddr, SocketAddr};
 
 use axum::http::{HeaderMap, header};
 
+use crate::admin::Caller;
+
 /// Shortest bearer token accepted from `SHENRON_MCP_TOKENS` (shorter ones are ignored).
 pub const MIN_TOKEN_LEN: usize = 16;
 
@@ -264,6 +266,16 @@ impl Access {
         Some(peer)
     }
 
+    /// Who is behind an authorised request: the short hash of its bearer token, else its address.
+    /// Used by the audit of the admin tools; the token itself never leaves this module.
+    #[must_use]
+    pub fn caller(&self, peer: IpAddr, headers: &HeaderMap, decision: Decision) -> Caller {
+        match (decision, bearer(headers)) {
+            (Decision::ElevatedToken, Bearer::Token(token)) => Caller::token(token),
+            _ => Caller::ip(self.client_ip(peer, headers).unwrap_or(peer)),
+        }
+    }
+
     /// Authorise a request from `peer` carrying `headers`.
     #[must_use]
     pub fn authorize(&self, peer: IpAddr, headers: &HeaderMap) -> Decision {
@@ -412,6 +424,20 @@ mod tests {
         let real = headers(&[("x-real-ip", "203.0.113.50")]);
         assert_eq!(access.authorize(ip("8.8.8.8"), &real), Decision::Anonymous);
         assert_eq!(access.client_ip(ip("8.8.8.8"), &xff), Some(ip("8.8.8.8")));
+    }
+
+    #[test]
+    fn callers_are_identified_by_token_hash_or_address() {
+        let access = policy();
+        let auth = headers(&[("authorization", &format!("Bearer {TOKEN}"))]);
+        let by_token = access.caller(ip("8.8.8.8"), &auth, Decision::ElevatedToken);
+        assert_eq!(by_token, Caller::token(TOKEN));
+        assert!(!by_token.0.contains(TOKEN));
+        let forwarded = headers(&[("x-forwarded-for", "203.0.113.50")]);
+        let by_ip = access.caller(ip("127.0.0.1"), &forwarded, Decision::ElevatedIp);
+        assert_eq!(by_ip.0, "ip:203.0.113.50");
+        let anonymous = access.caller(ip("8.8.8.8"), &HeaderMap::new(), Decision::Anonymous);
+        assert_eq!(anonymous.0, "ip:8.8.8.8");
     }
 
     #[test]
