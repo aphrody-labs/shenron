@@ -6,8 +6,9 @@ Shenron is the platform behind dragonballfr.com: web portal, Discord bot, API, e
 
 - Runtime and tooling: Bun 1.4.5, the official upstream release (no fork). TypeScript only where it is justified; Rust 2024 for the engine, API units and native tools (`migration/rust.toml`, `docs/decisions/0004-migration-typescript-rust.md`).
 - Dependencies come from public npm, crates.io and PyPI at their newest versions, read live. Code that used to come from Aphrody packages lives in this repository.
-- UI: Next.js for the site; Dioxus (DioxusLabs: dioxus, blitz, taffy) where a Rust UI fits (Studio desktop).
-- Data: PostgreSQL and Redis from the official images.
+- UI: Next.js for the site until ADR 0009 step 7; GPUI (`gpui-kit`, ADR 0008) for native and web application surfaces, which replaced Dioxus and Leptos. ADR 0009 still names Leptos for the public site: open conflict, see `docs/plans/base-ui-vers-gpui.md`.
+- Data: PostgreSQL and Redis today (compose on prd); target is native PostgreSQL and no Redis (ADR 0009 steps 2 and 5).
+- Direction: self-hosted Rust stack without PaaS, Docker, SSH or nginx (`docs/decisions/0009-auto-hebergement-rust-integral.md`). Step status and evidence: `.claude/goal.json`. Runbooks: `docs/runbooks/` (deployd, Garage CDN, MCP admin); skill `shenron-selfhost`.
 
 ## Layout
 
@@ -22,7 +23,10 @@ Shenron is the platform behind dragonballfr.com: web portal, Discord bot, API, e
 
 ## Rules
 
-- Commit directly on `main` in logical commits; run gitleaks before every push. Never `git add -A`, stash or reset on a shared tree.
+- Commit directly on `main` in logical commits; run gitleaks before every push. Never `git add -A`, stash or reset on a shared tree. Commit with `git commit -- <paths>`: a plain `git commit` takes every file other agents have staged in the shared index (43 renames were swept into one commit on 2026-11-19). `git pull --rebase` refuses while the tree has unstaged edits: `git fetch`, then push only when behind is 0.
+- Tags: `v*` triggers `release.yml`; snapshots use `session-<date>-<sha>`.
+- Bun and Rust pins live in `package.json#packageManager`, `rust-toolchain.toml` and `deploy/environment.json`; `bun scripts/deploy/environment.ts --check` fails on drift.
+- fr1 is shared and often loaded (load above 90 on 12 cores was measured): run cargo as `nice -n 19 ionice -c3 cargo ... -j2`, one build at a time, and clean only build outputs you created. Garage replicates every object on each node: check `df` before a mirror or rebalance, and cap the rate, since an uncapped resync to prd (about 1.3 GB/min over WireGuard) cut its inbound UDP and returned 504 on the public site.
 - Rust builds on `fr1` or CI, never on the workstation. Never run bare `bun test` at the root: `bun test <package>`.
 - Secrets: never print, log or commit values; only `.env.example` is committed.
 - Proof is a screenshot of the rendered page or a checked API response, never an HTTP status alone.
