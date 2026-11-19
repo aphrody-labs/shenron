@@ -1,0 +1,1689 @@
+{
+  "system": "Shenron",
+  "root": {
+    "id": "sys",
+    "name": "Shenron",
+    "kind": "system",
+    "children": [
+      {
+        "id": "dom:API, MCP and knowledge",
+        "name": "API, MCP and knowledge",
+        "kind": "domain",
+        "children": [
+          {
+            "id": "crate:shenron-api",
+            "name": "shenron-api",
+            "kind": "module",
+            "language": "rust",
+            "loc": 492,
+            "file": "crates/shenron-api"
+          },
+          {
+            "id": "crate:shenron-cli",
+            "name": "shenron-cli",
+            "kind": "module",
+            "language": "rust",
+            "loc": 4755,
+            "file": "crates/shenron-cli"
+          },
+          {
+            "id": "crate:shenron-lexicon",
+            "name": "shenron-lexicon",
+            "kind": "module",
+            "language": "rust",
+            "loc": 1249,
+            "file": "crates/shenron-lexicon"
+          },
+          {
+            "id": "crate:shenron-manga",
+            "name": "shenron-manga",
+            "kind": "module",
+            "language": "rust",
+            "loc": 1420,
+            "file": "crates/shenron-manga"
+          },
+          {
+            "id": "crate:shenron-mcp",
+            "name": "shenron-mcp",
+            "kind": "module",
+            "language": "rust",
+            "loc": 9870,
+            "file": "crates/shenron-mcp"
+          },
+          {
+            "id": "crate:shenron-ocr-core",
+            "name": "shenron-ocr-core",
+            "kind": "module",
+            "language": "rust",
+            "loc": 2333,
+            "file": "crates/shenron-ocr-core"
+          },
+          {
+            "id": "crate:shenron-rag",
+            "name": "shenron-rag",
+            "kind": "module",
+            "language": "rust",
+            "loc": 3180,
+            "file": "crates/shenron-rag"
+          },
+          {
+            "id": "crate:shenron-rag-core",
+            "name": "shenron-rag-core",
+            "kind": "module",
+            "language": "rust",
+            "loc": 4149,
+            "file": "crates/shenron-rag-core"
+          },
+          {
+            "id": "crate:shenron-re",
+            "name": "shenron-re",
+            "kind": "module",
+            "language": "rust",
+            "loc": 14626,
+            "file": "crates/shenron-re"
+          }
+        ]
+      },
+      {
+        "id": "dom:Applications",
+        "name": "Applications",
+        "kind": "domain",
+        "children": [
+          {
+            "id": "app:apps/activity",
+            "name": "@aphrody/shenron-activity-app",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 1632,
+            "file": "apps/activity"
+          },
+          {
+            "id": "app:apps/bot",
+            "name": "@aphrody/shenron-bot",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 69786,
+            "file": "apps/bot"
+          },
+          {
+            "id": "app:apps/server",
+            "name": "@aphrody/shenron-server",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 4044,
+            "file": "apps/server"
+          },
+          {
+            "id": "app:apps/site",
+            "name": "@aphrody/shenron-site",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 197927,
+            "file": "apps/site"
+          }
+        ]
+      },
+      {
+        "id": "dom:Desktop and UI crates",
+        "name": "Desktop and UI crates",
+        "kind": "domain",
+        "children": [
+          {
+            "id": "crate:shenron-admin",
+            "name": "shenron-admin",
+            "kind": "module",
+            "language": "rust",
+            "loc": 471,
+            "file": "crates/shenron-admin"
+          },
+          {
+            "id": "crate:shenron-admin-ui",
+            "name": "shenron-admin-ui",
+            "kind": "module",
+            "language": "rust",
+            "loc": 188,
+            "file": "crates/shenron-admin-ui"
+          },
+          {
+            "id": "crate:shenron-desktop",
+            "name": "shenron-desktop",
+            "kind": "module",
+            "language": "rust",
+            "loc": 482,
+            "file": "crates/shenron-desktop"
+          },
+          {
+            "id": "crate:shenron-ffi",
+            "name": "shenron-ffi",
+            "kind": "module",
+            "language": "rust",
+            "loc": 3458,
+            "file": "crates/shenron-ffi"
+          },
+          {
+            "id": "crate:shenron-panels",
+            "name": "shenron-panels",
+            "kind": "module",
+            "language": "rust",
+            "loc": 1452,
+            "file": "crates/shenron-panels"
+          },
+          {
+            "id": "crate:shenron-studio",
+            "name": "shenron-studio",
+            "kind": "module",
+            "language": "rust",
+            "loc": 51,
+            "file": "crates/shenron-studio"
+          },
+          {
+            "id": "crate:shenron-theme",
+            "name": "shenron-theme",
+            "kind": "module",
+            "language": "rust",
+            "loc": 62,
+            "file": "crates/shenron-theme"
+          }
+        ]
+      },
+      {
+        "id": "dom:Games and rendering",
+        "name": "Games and rendering",
+        "kind": "domain",
+        "children": [
+          {
+            "id": "crate:dragon-pixel",
+            "name": "dragon-pixel",
+            "kind": "module",
+            "language": "rust",
+            "loc": 4945,
+            "file": "crates/dragon-pixel"
+          },
+          {
+            "id": "crate:shenron-engine",
+            "name": "shenron-engine",
+            "kind": "module",
+            "language": "rust",
+            "loc": 15190,
+            "file": "crates/shenron-engine"
+          },
+          {
+            "id": "crate:shenron-gallery",
+            "name": "shenron-gallery",
+            "kind": "module",
+            "language": "rust",
+            "loc": 2506,
+            "file": "crates/shenron-gallery"
+          },
+          {
+            "id": "crate:shenron-gpu",
+            "name": "shenron-gpu",
+            "kind": "module",
+            "language": "rust",
+            "loc": 2098,
+            "file": "crates/shenron-gpu"
+          },
+          {
+            "id": "crate:shenron-jev",
+            "name": "shenron-jev",
+            "kind": "module",
+            "language": "rust",
+            "loc": 2319,
+            "file": "crates/shenron-jev"
+          }
+        ]
+      },
+      {
+        "id": "dom:Koharu (manga studio)",
+        "name": "Koharu (manga studio)",
+        "kind": "domain",
+        "children": [
+          {
+            "id": "crate:koharu-agent",
+            "name": "koharu-agent",
+            "kind": "module",
+            "language": "rust",
+            "loc": 1391,
+            "file": "crates/koharu-agent"
+          },
+          {
+            "id": "crate:koharu-app",
+            "name": "koharu-app",
+            "kind": "module",
+            "language": "rust",
+            "loc": 55,
+            "file": "crates/koharu-app"
+          },
+          {
+            "id": "crate:koharu-canvas",
+            "name": "koharu-canvas",
+            "kind": "module",
+            "language": "rust",
+            "loc": 2086,
+            "file": "crates/koharu-canvas"
+          },
+          {
+            "id": "crate:koharu-desktop",
+            "name": "koharu-desktop",
+            "kind": "module",
+            "language": "rust",
+            "loc": 552,
+            "file": "crates/koharu-desktop"
+          },
+          {
+            "id": "crate:koharu-library",
+            "name": "koharu-library",
+            "kind": "module",
+            "language": "rust",
+            "loc": 7456,
+            "file": "crates/koharu-library"
+          },
+          {
+            "id": "crate:koharu-ml",
+            "name": "koharu-ml",
+            "kind": "module",
+            "language": "rust",
+            "loc": 29528,
+            "file": "crates/koharu-ml"
+          },
+          {
+            "id": "crate:koharu-pipeline",
+            "name": "koharu-pipeline",
+            "kind": "module",
+            "language": "rust",
+            "loc": 6642,
+            "file": "crates/koharu-pipeline"
+          },
+          {
+            "id": "crate:koharu-psd",
+            "name": "koharu-psd",
+            "kind": "module",
+            "language": "rust",
+            "loc": 2167,
+            "file": "crates/koharu-psd"
+          },
+          {
+            "id": "crate:koharu-rasterizer",
+            "name": "koharu-rasterizer",
+            "kind": "module",
+            "language": "rust",
+            "loc": 3006,
+            "file": "crates/koharu-rasterizer"
+          },
+          {
+            "id": "crate:koharu-renderer",
+            "name": "koharu-renderer",
+            "kind": "module",
+            "language": "rust",
+            "loc": 10131,
+            "file": "crates/koharu-renderer"
+          },
+          {
+            "id": "crate:koharu-scene",
+            "name": "koharu-scene",
+            "kind": "module",
+            "language": "rust",
+            "loc": 6399,
+            "file": "crates/koharu-scene"
+          },
+          {
+            "id": "crate:koharu-secrets",
+            "name": "koharu-secrets",
+            "kind": "module",
+            "language": "rust",
+            "loc": 408,
+            "file": "crates/koharu-secrets"
+          },
+          {
+            "id": "crate:koharu-storage",
+            "name": "koharu-storage",
+            "kind": "module",
+            "language": "rust",
+            "loc": 995,
+            "file": "crates/koharu-storage"
+          },
+          {
+            "id": "crate:koharu-translator",
+            "name": "koharu-translator",
+            "kind": "module",
+            "language": "rust",
+            "loc": 5980,
+            "file": "crates/koharu-translator"
+          },
+          {
+            "id": "crate:koharu-web",
+            "name": "koharu-web",
+            "kind": "module",
+            "language": "rust",
+            "loc": 412,
+            "file": "crates/koharu-web"
+          }
+        ]
+      },
+      {
+        "id": "dom:Operations and media services",
+        "name": "Operations and media services",
+        "kind": "domain",
+        "children": [
+          {
+            "id": "crate:shenron-deployd",
+            "name": "shenron-deployd",
+            "kind": "module",
+            "language": "rust",
+            "loc": 2409,
+            "file": "crates/shenron-deployd"
+          },
+          {
+            "id": "crate:shenron-edge",
+            "name": "shenron-edge",
+            "kind": "module",
+            "language": "rust",
+            "loc": 2910,
+            "file": "crates/shenron-edge"
+          },
+          {
+            "id": "crate:shenron-home",
+            "name": "shenron-home",
+            "kind": "module",
+            "language": "rust",
+            "loc": 6843,
+            "file": "crates/shenron-home"
+          },
+          {
+            "id": "crate:shenron-memory",
+            "name": "shenron-memory",
+            "kind": "module",
+            "language": "rust",
+            "loc": 260,
+            "file": "crates/shenron-memory"
+          },
+          {
+            "id": "crate:shenron-migrate",
+            "name": "shenron-migrate",
+            "kind": "module",
+            "language": "rust",
+            "loc": 410,
+            "file": "crates/shenron-migrate"
+          },
+          {
+            "id": "crate:shenron-tv",
+            "name": "shenron-tv",
+            "kind": "module",
+            "language": "rust",
+            "loc": 474,
+            "file": "crates/shenron-tv"
+          },
+          {
+            "id": "crate:shenron-video",
+            "name": "shenron-video",
+            "kind": "module",
+            "language": "rust",
+            "loc": 562,
+            "file": "crates/shenron-video"
+          },
+          {
+            "id": "crate:xtask",
+            "name": "xtask",
+            "kind": "module",
+            "language": "rust",
+            "loc": 255,
+            "file": "crates/xtask"
+          }
+        ]
+      },
+      {
+        "id": "dom:TypeScript packages",
+        "name": "TypeScript packages",
+        "kind": "domain",
+        "children": [
+          {
+            "id": "package:packages/activity",
+            "name": "@aphrody/shenron-activity",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 3301,
+            "file": "packages/activity"
+          },
+          {
+            "id": "package:packages/api",
+            "name": "@aphrody/shenron-api",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 10160,
+            "file": "packages/api"
+          },
+          {
+            "id": "package:packages/auth",
+            "name": "@aphrody/shenron-auth",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 1278,
+            "file": "packages/auth"
+          },
+          {
+            "id": "package:packages/compression",
+            "name": "@aphrody/shenron-compression",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 770,
+            "file": "packages/compression"
+          },
+          {
+            "id": "package:packages/config",
+            "name": "@aphrody/shenron-config",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 7306,
+            "file": "packages/config"
+          },
+          {
+            "id": "package:packages/crunchyroll",
+            "name": "@aphrody/shenron-crunchyroll",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 2192,
+            "file": "packages/crunchyroll"
+          },
+          {
+            "id": "package:packages/db",
+            "name": "@aphrody/shenron-db",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 13750,
+            "file": "packages/db"
+          },
+          {
+            "id": "package:packages/dbxv2",
+            "name": "@aphrody/shenron-dbxv2",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 2527,
+            "file": "packages/dbxv2"
+          },
+          {
+            "id": "package:packages/decision",
+            "name": "@aphrody/shenron-decision",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 505,
+            "file": "packages/decision"
+          },
+          {
+            "id": "package:packages/discord-kit",
+            "name": "@aphrody/shenron-discord-kit",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 1148,
+            "file": "packages/discord-kit"
+          },
+          {
+            "id": "package:packages/engine",
+            "name": "@aphrody/shenron-engine",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 7530,
+            "file": "packages/engine"
+          },
+          {
+            "id": "package:packages/hyperframes",
+            "name": "@aphrody/shenron-hyperframes",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 200,
+            "file": "packages/hyperframes"
+          },
+          {
+            "id": "package:packages/images",
+            "name": "@aphrody/shenron-images",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 721,
+            "file": "packages/images"
+          },
+          {
+            "id": "package:packages/kit",
+            "name": "@aphrody/shenron-kit",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 362,
+            "file": "packages/kit"
+          },
+          {
+            "id": "package:packages/koharu",
+            "name": "@aphrody/shenron-koharu",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 2239,
+            "file": "packages/koharu"
+          },
+          {
+            "id": "package:packages/lexicon",
+            "name": "@aphrody/shenron-lexicon",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 1659,
+            "file": "packages/lexicon"
+          },
+          {
+            "id": "package:packages/m3-ai",
+            "name": "@aphrody/shenron-m3-ai",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 2461,
+            "file": "packages/m3-ai"
+          },
+          {
+            "id": "package:packages/m3-motion",
+            "name": "@aphrody/shenron-m3-motion",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 1510,
+            "file": "packages/m3-motion"
+          },
+          {
+            "id": "package:packages/m3-primitives",
+            "name": "@aphrody/shenron-m3-primitives",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 7660,
+            "file": "packages/m3-primitives"
+          },
+          {
+            "id": "package:packages/m3-reader",
+            "name": "@aphrody/shenron-m3-reader",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 1937,
+            "file": "packages/m3-reader"
+          },
+          {
+            "id": "package:packages/m3-theme",
+            "name": "@aphrody/shenron-m3-theme",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 712,
+            "file": "packages/m3-theme"
+          },
+          {
+            "id": "package:packages/m3-tokens",
+            "name": "@aphrody/shenron-m3-tokens",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 1219,
+            "file": "packages/m3-tokens"
+          },
+          {
+            "id": "package:packages/media",
+            "name": "@aphrody/shenron-media",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 2612,
+            "file": "packages/media"
+          },
+          {
+            "id": "package:packages/native",
+            "name": "@aphrody/shenron-native",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 2566,
+            "file": "packages/native"
+          },
+          {
+            "id": "package:packages/next-host",
+            "name": "@aphrody/shenron-next-host",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 41,
+            "file": "packages/next-host"
+          },
+          {
+            "id": "package:packages/pipeline",
+            "name": "@aphrody/shenron-pipeline",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 21889,
+            "file": "packages/pipeline"
+          },
+          {
+            "id": "package:packages/remotion",
+            "name": "@aphrody/shenron-remotion",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 291,
+            "file": "packages/remotion"
+          },
+          {
+            "id": "package:packages/stores",
+            "name": "@aphrody/shenron-stores",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 527,
+            "file": "packages/stores"
+          },
+          {
+            "id": "package:packages/test-dom",
+            "name": "@aphrody/shenron-test-dom",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 72,
+            "file": "packages/test-dom"
+          },
+          {
+            "id": "package:packages/ui",
+            "name": "@aphrody/shenron-ui",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 35745,
+            "file": "packages/ui"
+          },
+          {
+            "id": "package:packages/video",
+            "name": "@aphrody/shenron-video",
+            "kind": "module",
+            "language": "typescript",
+            "loc": 907,
+            "file": "packages/video"
+          }
+        ]
+      },
+      {
+        "id": "dom:data",
+        "name": "Data stores",
+        "kind": "domain",
+        "children": [
+          {
+            "id": "ds:postgres",
+            "name": "PostgreSQL",
+            "kind": "datastore"
+          },
+          {
+            "id": "ds:redis",
+            "name": "Redis",
+            "kind": "datastore"
+          },
+          {
+            "id": "ds:s3",
+            "name": "Object storage (S3: Garage, R2)",
+            "kind": "datastore"
+          },
+          {
+            "id": "ds:sqlite",
+            "name": "SQLite",
+            "kind": "datastore"
+          }
+        ]
+      }
+    ]
+  },
+  "edges": [
+    {
+      "source": "crate:koharu-agent",
+      "target": "crate:koharu-secrets",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-app",
+      "target": "crate:koharu-library",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-canvas",
+      "target": "crate:koharu-rasterizer",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-desktop",
+      "target": "crate:koharu-rasterizer",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-desktop",
+      "target": "crate:koharu-renderer",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-desktop",
+      "target": "crate:koharu-scene",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-library",
+      "target": "crate:koharu-agent",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-library",
+      "target": "crate:koharu-desktop",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-library",
+      "target": "crate:koharu-ml",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-library",
+      "target": "crate:koharu-pipeline",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-library",
+      "target": "crate:koharu-psd",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-library",
+      "target": "crate:koharu-rasterizer",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-library",
+      "target": "crate:koharu-renderer",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-library",
+      "target": "crate:koharu-scene",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-library",
+      "target": "crate:koharu-secrets",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-library",
+      "target": "crate:koharu-storage",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-library",
+      "target": "crate:koharu-translator",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-pipeline",
+      "target": "crate:koharu-ml",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-pipeline",
+      "target": "crate:koharu-scene",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-pipeline",
+      "target": "crate:koharu-translator",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-psd",
+      "target": "crate:koharu-renderer",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-psd",
+      "target": "crate:koharu-rasterizer",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-psd",
+      "target": "crate:koharu-scene",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-renderer",
+      "target": "crate:koharu-rasterizer",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-renderer",
+      "target": "crate:koharu-scene",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-scene",
+      "target": "crate:koharu-storage",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-translator",
+      "target": "crate:koharu-ml",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-translator",
+      "target": "crate:koharu-secrets",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-translator",
+      "target": "crate:shenron-lexicon",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-web",
+      "target": "crate:koharu-library",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-web",
+      "target": "crate:koharu-pipeline",
+      "kind": "call"
+    },
+    {
+      "source": "crate:koharu-web",
+      "target": "crate:koharu-translator",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-admin-ui",
+      "target": "crate:shenron-theme",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-api",
+      "target": "crate:shenron-lexicon",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-cli",
+      "target": "crate:shenron-home",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-cli",
+      "target": "crate:shenron-manga",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-cli",
+      "target": "crate:shenron-ocr-core",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-cli",
+      "target": "crate:shenron-panels",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-cli",
+      "target": "crate:shenron-rag",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-desktop",
+      "target": "crate:koharu-app",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-desktop",
+      "target": "crate:shenron-admin-ui",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-desktop",
+      "target": "crate:shenron-studio",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-desktop",
+      "target": "crate:shenron-theme",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-engine",
+      "target": "crate:shenron-panels",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-engine",
+      "target": "crate:shenron-re",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-engine",
+      "target": "crate:dragon-pixel",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-ffi",
+      "target": "crate:shenron-cli",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-ffi",
+      "target": "crate:shenron-home",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-ffi",
+      "target": "crate:shenron-memory",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-ffi",
+      "target": "crate:shenron-rag-core",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-ffi",
+      "target": "crate:shenron-re",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-ffi",
+      "target": "crate:shenron-rag",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-gallery",
+      "target": "crate:shenron-theme",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-manga",
+      "target": "crate:shenron-ocr-core",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-manga",
+      "target": "crate:koharu-library",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-mcp",
+      "target": "crate:shenron-lexicon",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-mcp",
+      "target": "crate:shenron-manga",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-mcp",
+      "target": "crate:shenron-memory",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-mcp",
+      "target": "crate:shenron-rag",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-migrate",
+      "target": "crate:shenron-api",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-rag",
+      "target": "crate:shenron-jev",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-rag",
+      "target": "crate:shenron-rag-core",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/activity",
+      "target": "package:packages/activity",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/activity",
+      "target": "package:packages/config",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/activity",
+      "target": "package:packages/ui",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "package:packages/activity",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "package:packages/api",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "package:packages/auth",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "package:packages/config",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "package:packages/db",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "package:packages/discord-kit",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "package:packages/images",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "package:packages/kit",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "package:packages/media",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "package:packages/native",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "package:packages/pipeline",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "package:packages/ui",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/server",
+      "target": "package:packages/api",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/server",
+      "target": "package:packages/config",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/server",
+      "target": "package:packages/db",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/server",
+      "target": "package:packages/koharu",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/server",
+      "target": "package:packages/native",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/server",
+      "target": "package:packages/pipeline",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/api",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/auth",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/config",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/db",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/decision",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/discord-kit",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/engine",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/images",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/kit",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/koharu",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/lexicon",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/media",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/native",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/next-host",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/pipeline",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/remotion",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/ui",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/video",
+      "kind": "call"
+    },
+    {
+      "source": "app:apps/site",
+      "target": "package:packages/test-dom",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/activity",
+      "target": "package:packages/lexicon",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/api",
+      "target": "package:packages/auth",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/api",
+      "target": "package:packages/config",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/api",
+      "target": "package:packages/db",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/api",
+      "target": "package:packages/kit",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/api",
+      "target": "package:packages/lexicon",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/api",
+      "target": "package:packages/pipeline",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/auth",
+      "target": "package:packages/config",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/auth",
+      "target": "package:packages/db",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/config",
+      "target": "package:packages/kit",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/crunchyroll",
+      "target": "package:packages/media",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/db",
+      "target": "package:packages/config",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/dbxv2",
+      "target": "package:packages/db",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/engine",
+      "target": "package:packages/compression",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/m3-ai",
+      "target": "package:packages/m3-motion",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/m3-ai",
+      "target": "package:packages/m3-primitives",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/m3-primitives",
+      "target": "package:packages/m3-motion",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/m3-theme",
+      "target": "package:packages/m3-tokens",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/media",
+      "target": "package:packages/hyperframes",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/media",
+      "target": "package:packages/kit",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/media",
+      "target": "package:packages/remotion",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/pipeline",
+      "target": "package:packages/config",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/pipeline",
+      "target": "package:packages/db",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/pipeline",
+      "target": "package:packages/decision",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/pipeline",
+      "target": "package:packages/kit",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/pipeline",
+      "target": "package:packages/koharu",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/pipeline",
+      "target": "package:packages/lexicon",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/pipeline",
+      "target": "package:packages/media",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/pipeline",
+      "target": "package:packages/native",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/ui",
+      "target": "package:packages/config",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/ui",
+      "target": "package:packages/koharu",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/ui",
+      "target": "package:packages/m3-ai",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/ui",
+      "target": "package:packages/m3-primitives",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/ui",
+      "target": "package:packages/m3-reader",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/ui",
+      "target": "package:packages/m3-theme",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/ui",
+      "target": "package:packages/m3-tokens",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/ui",
+      "target": "package:packages/pipeline",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/ui",
+      "target": "package:packages/kit",
+      "kind": "call"
+    },
+    {
+      "source": "package:packages/ui",
+      "target": "package:packages/test-dom",
+      "kind": "call"
+    },
+    {
+      "source": "crate:shenron-cli",
+      "target": "ds:sqlite",
+      "kind": "read"
+    },
+    {
+      "source": "crate:shenron-deployd",
+      "target": "ds:s3",
+      "kind": "write"
+    },
+    {
+      "source": "crate:shenron-ffi",
+      "target": "ds:sqlite",
+      "kind": "read"
+    },
+    {
+      "source": "crate:shenron-home",
+      "target": "ds:sqlite",
+      "kind": "read"
+    },
+    {
+      "source": "crate:shenron-mcp",
+      "target": "ds:postgres",
+      "kind": "write"
+    },
+    {
+      "source": "crate:shenron-mcp",
+      "target": "ds:redis",
+      "kind": "read"
+    },
+    {
+      "source": "crate:shenron-mcp",
+      "target": "ds:sqlite",
+      "kind": "write"
+    },
+    {
+      "source": "crate:shenron-memory",
+      "target": "ds:sqlite",
+      "kind": "write"
+    },
+    {
+      "source": "crate:shenron-ocr-core",
+      "target": "ds:sqlite",
+      "kind": "write"
+    },
+    {
+      "source": "crate:shenron-rag",
+      "target": "ds:sqlite",
+      "kind": "write"
+    },
+    {
+      "source": "crate:shenron-re",
+      "target": "ds:sqlite",
+      "kind": "read"
+    },
+    {
+      "source": "crate:shenron-tv",
+      "target": "ds:sqlite",
+      "kind": "write"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "ds:postgres",
+      "kind": "write"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "ds:redis",
+      "kind": "write"
+    },
+    {
+      "source": "app:apps/bot",
+      "target": "ds:sqlite",
+      "kind": "write"
+    },
+    {
+      "source": "app:apps/server",
+      "target": "ds:postgres",
+      "kind": "read"
+    },
+    {
+      "source": "app:apps/server",
+      "target": "ds:redis",
+      "kind": "read"
+    },
+    {
+      "source": "app:apps/server",
+      "target": "ds:sqlite",
+      "kind": "read"
+    },
+    {
+      "source": "package:packages/api",
+      "target": "ds:postgres",
+      "kind": "read"
+    },
+    {
+      "source": "package:packages/api",
+      "target": "ds:redis",
+      "kind": "write"
+    },
+    {
+      "source": "package:packages/api",
+      "target": "ds:sqlite",
+      "kind": "read"
+    },
+    {
+      "source": "package:packages/config",
+      "target": "ds:redis",
+      "kind": "read"
+    },
+    {
+      "source": "package:packages/config",
+      "target": "ds:sqlite",
+      "kind": "read"
+    },
+    {
+      "source": "package:packages/crunchyroll",
+      "target": "ds:sqlite",
+      "kind": "read"
+    },
+    {
+      "source": "package:packages/db",
+      "target": "ds:postgres",
+      "kind": "write"
+    },
+    {
+      "source": "package:packages/db",
+      "target": "ds:redis",
+      "kind": "write"
+    },
+    {
+      "source": "package:packages/db",
+      "target": "ds:sqlite",
+      "kind": "write"
+    },
+    {
+      "source": "package:packages/engine",
+      "target": "ds:s3",
+      "kind": "write"
+    },
+    {
+      "source": "package:packages/pipeline",
+      "target": "ds:postgres",
+      "kind": "write"
+    },
+    {
+      "source": "package:packages/pipeline",
+      "target": "ds:redis",
+      "kind": "write"
+    },
+    {
+      "source": "package:packages/pipeline",
+      "target": "ds:sqlite",
+      "kind": "write"
+    }
+  ],
+  "entryPoints": [
+    "app:apps/activity",
+    "app:apps/bot",
+    "app:apps/server",
+    "app:apps/site",
+    "crate:dragon-pixel",
+    "crate:koharu-web",
+    "crate:shenron-admin",
+    "crate:shenron-admin-ui",
+    "crate:shenron-api",
+    "crate:shenron-cli",
+    "crate:shenron-deployd",
+    "crate:shenron-desktop",
+    "crate:shenron-edge",
+    "crate:shenron-gallery",
+    "crate:shenron-mcp",
+    "crate:shenron-migrate",
+    "crate:shenron-re",
+    "crate:shenron-tv",
+    "crate:shenron-video",
+    "crate:xtask"
+  ],
+  "deadEnds": [],
+  "observations": [
+    "Most depended-on modules: @aphrody/shenron-config (9 dependents), @aphrody/shenron-db (7 dependents), @aphrody/shenron-kit (7 dependents).",
+    "Redis has 4 writing modules: @aphrody/shenron-bot, @aphrody/shenron-api, @aphrody/shenron-db, @aphrody/shenron-pipeline.",
+    "SQLite has 8 writing modules: @aphrody/shenron-bot, shenron-mcp, shenron-memory, shenron-ocr-core, shenron-rag, shenron-tv....",
+    "PostgreSQL has 4 writing modules: @aphrody/shenron-bot, shenron-mcp, @aphrody/shenron-db, @aphrody/shenron-pipeline.",
+    "Every module is either depended on, an entry point or named somewhere outside its directory: no dead-end candidate survives the suppression rule (a name mention keeps a module alive, which can hide a module that is only mentioned in documentation).",
+    "Datastore edges come from source-text patterns (read versus write by SQL verbs, or by store-specific write calls for Redis and S3), not from a typed schema; a module that builds SQL at runtime from files can be misclassified.",
+    "No dynamic dispatch table was resolved: Next.js routes, Discord command registries and MCP tool registrations are not edges in this graph."
+  ],
+  "flows": [
+    {
+      "name": "A reader opens a wiki page",
+      "persona": "Reader",
+      "description": "A visitor requests a page of dragonballfr.com and gets rendered content from the database.",
+      "steps": [
+        {
+          "label": "The request reaches the site",
+          "nodes": [
+            "app:apps/site"
+          ]
+        },
+        {
+          "label": "Wiki content is read from the database",
+          "nodes": [
+            "package:packages/db",
+            "ds:postgres"
+          ]
+        },
+        {
+          "label": "The page is rendered with the shared interface kit",
+          "nodes": [
+            "package:packages/ui",
+            "package:packages/config"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "A member asks the Discord bot",
+      "persona": "Community member",
+      "description": "A member runs a command and receives an answer built from the same data as the site.",
+      "steps": [
+        {
+          "label": "The command reaches the bot",
+          "nodes": [
+            "app:apps/bot"
+          ]
+        },
+        {
+          "label": "Knowledge and rules are looked up",
+          "nodes": [
+            "package:packages/lexicon",
+            "package:packages/db",
+            "ds:sqlite",
+            "ds:postgres"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "An operator ships a release",
+      "persona": "Operator",
+      "description": "A signed release is published, fetched by each host agent and switched with a health check.",
+      "steps": [
+        {
+          "label": "The release is published and signed",
+          "nodes": [
+            "crate:shenron-deployd"
+          ]
+        },
+        {
+          "label": "The edge serves the new version",
+          "nodes": [
+            "crate:shenron-edge"
+          ]
+        },
+        {
+          "label": "Repository checks gate the change",
+          "nodes": [
+            "crate:xtask",
+            "crate:shenron-migrate"
+          ]
+        }
+      ]
+    }
+  ]
+}
