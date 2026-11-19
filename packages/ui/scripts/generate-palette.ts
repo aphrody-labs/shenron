@@ -8,7 +8,9 @@
  * Input: `tokens.color` (the stylesheet defaults, themselves measured on manga, colour editions and
  * anime frames: see plugin/skills/toriyama-svg/references/mesures). Output: `palette.generated.css`
  * (tonal scales as hex custom properties plus their OKLCH twins) and `docs/design/contrast-report.md`
- * (WCAG 2.x ratio and APCA Lc of every token as text on the page and card backgrounds).
+ * (WCAG 2.x ratio and APCA Lc of every token as text on the page and card backgrounds), and
+ * `crates/shenron-theme/themes/shenron.json`, the same palette as a gpui-kit theme set (dark
+ * "Shenron Nuit", light "Shenron Jour") for the native GPUI and NSH surfaces.
  */
 import { join } from "node:path";
 import { tokens } from "../src/tokens";
@@ -17,6 +19,7 @@ import { SCALE_STEPS, apcaLc, contrastRatio, hexToOklch, tonalScale } from "../s
 const PACKAGE = join(import.meta.dir, "..");
 export const PALETTE_PATH = join(PACKAGE, "src", "design-system", "palette.generated.css");
 export const REPORT_PATH = join(PACKAGE, "..", "..", "docs", "design", "contrast-report.md");
+export const GPUI_THEME_PATH = join(PACKAGE, "..", "..", "crates", "shenron-theme", "themes", "shenron.json");
 
 /** Measured hues that get a full tonal scale: the identity colours of the series. */
 const SCALED = ["orange", "blue", "gold", "green", "red", "cyan", "purple"] as const;
@@ -82,10 +85,160 @@ function reportMarkdown(): string {
   ].join("\n");
 }
 
+type Scale = Record<(typeof SCALE_STEPS)[number], string>;
+
+/** First step of `steps` whose text reaches the WCAG AA body ratio on `background`. */
+function readable(scale: Scale, background: string, steps: readonly (typeof SCALE_STEPS)[number][]): string {
+  for (const step of steps) if (contrastRatio(scale[step], background) >= AA_RATIO) return scale[step].toLowerCase();
+  throw new Error(`no step of the scale is readable on ${background}`);
+}
+
+/** The ink (page or bone colour) that contrasts most with a filled surface. */
+function inkOn(fill: string, inks: readonly string[]): string {
+  return [...inks].sort((a, b) => contrastRatio(b, fill) - contrastRatio(a, fill))[0]!.toLowerCase();
+}
+
+function gpuiTheme(): string {
+  const scales = Object.fromEntries(SCALED.map((name) => [name, tonalScale(colors[name]!)])) as Record<(typeof SCALED)[number], Scale>;
+  const paper = tonalScale(colors.os!);
+  const hex = (value: string) => value.toLowerCase();
+  const alpha = (value: string, byte: string) => `${hex(value)}${byte}`;
+  const lightSteps = [300, 200, 100] as const;
+  const darkSteps = [700, 800, 900] as const;
+
+  function mode(dark: boolean) {
+    const page = dark ? colors.bg! : colors.os!;
+    const surface = dark ? colors.card! : paper[50];
+    const line = dark ? colors.border! : paper[300];
+    const text = dark ? colors.os! : colors.encre!;
+    const muted = dark ? colors.border! : paper[200];
+    const steps = dark ? lightSteps : darkSteps;
+    const inks = [colors.bg!, colors.os!, colors.encre!];
+    const fill = (name: (typeof SCALED)[number], step: (typeof SCALE_STEPS)[number]) => hex(scales[name][step]);
+    const tone = (name: (typeof SCALED)[number]) => readable(scales[name], page, steps);
+    const primary = hex(colors.orange!);
+    const secondary = hex(colors.blue!);
+    return {
+      name: dark ? "Shenron Nuit" : "Shenron Jour",
+      mode: dark ? "dark" : "light",
+      "font.size": 14,
+      radius: 8,
+      "radius.lg": 11,
+      colors: {
+        background: hex(page),
+        foreground: hex(text),
+        border: hex(line),
+        caret: primary,
+        ring: hex(colors.ki!),
+        overlay: dark ? "#00000099" : "#131b0833",
+        "window.border": hex(line),
+        "accent.background": dark ? fill("blue", 800) : fill("orange", 100),
+        "accent.foreground": hex(text),
+        "accordion.background": hex(surface),
+        "group_box.background": hex(surface),
+        "group_box.foreground": hex(text),
+        "popover.background": hex(surface),
+        "popover.foreground": hex(text),
+        "list.background": hex(page),
+        "list.active.background": alpha(colors.orange!, "33"),
+        "list.active.border": primary,
+        "list.even.background": alpha(surface, "66"),
+        "list.head.background": hex(surface),
+        "list.highlight.foreground": tone("orange"),
+        "table.background": hex(page),
+        "table.head.foreground": readable(paper, page, steps),
+        "table.row.border": hex(line),
+        "muted.background": hex(muted),
+        "muted.foreground": readable(paper, muted, dark ? [400, 300, 200, 100] : [600, 700, 800]),
+        "primary.background": primary,
+        "primary.hover.background": fill("orange", dark ? 300 : 600),
+        "primary.active.background": fill("orange", dark ? 600 : 700),
+        "primary.foreground": inkOn(colors.orange!, inks),
+        "secondary.background": secondary,
+        "secondary.hover.background": fill("blue", 700),
+        "secondary.active.background": fill("blue", 800),
+        "secondary.foreground": inkOn(colors.blue!, inks),
+        "danger.background": hex(colors.red!),
+        "danger.foreground": tone("red"),
+        "success.background": hex(colors.green!),
+        "success.foreground": tone("green"),
+        "warning.background": hex(colors.gold!),
+        "warning.foreground": tone("gold"),
+        "info.background": hex(colors.ki!),
+        "info.foreground": tone("cyan"),
+        "link.foreground": tone("orange"),
+        "link.hover.foreground": fill("orange", dark ? 200 : 800),
+        "link.active.foreground": fill("orange", dark ? 400 : 600),
+        "selection.background": alpha(colors.ki!, "55"),
+        "drag_border": hex(colors.ki!),
+        "drop_target.background": alpha(colors.ki!, "26"),
+        "progress_bar.background": primary,
+        "skeleton.background": hex(muted),
+        "slider.bar.background": primary,
+        "slider.thumb.background": hex(page),
+        "switch.background": hex(line),
+        "scrollbar.background": alpha(page, "00"),
+        "scrollbar.thumb.background": alpha(paper[500], "cc"),
+        "scrollbar.thumb.hover.background": hex(paper[500]),
+        "sidebar.background": hex(surface),
+        "sidebar.foreground": hex(text),
+        "sidebar.border": hex(line),
+        "sidebar.accent.background": dark ? fill("blue", 800) : fill("orange", 100),
+        "sidebar.accent.foreground": hex(text),
+        "sidebar.primary.background": primary,
+        "sidebar.primary.foreground": inkOn(colors.orange!, inks),
+        "tab.background": "#00000000",
+        "tab.foreground": readable(paper, page, steps),
+        "tab.active.background": hex(page),
+        "tab.active.foreground": hex(text),
+        "tab_bar.background": hex(surface),
+        "tab_bar.segmented.background": hex(surface),
+        "title_bar.background": hex(surface),
+        "title_bar.border": hex(line),
+        "status_bar.background": hex(surface),
+        "status_bar.border": hex(line),
+        "description_list_label.background": hex(surface),
+        "description_list_label.foreground": hex(text),
+        "chart.1": primary,
+        "chart.2": hex(colors.ki!),
+        "chart.3": hex(colors.gold!),
+        "chart.4": hex(colors.green!),
+        "chart.5": hex(colors.purple!),
+        "chart.bullish": hex(colors.green!),
+        "chart.bearish": hex(colors.red!),
+        "chart.grid": alpha(line, "99"),
+        "base.red": fill("red", 400),
+        "base.red.light": fill("red", 300),
+        "base.green": fill("green", 400),
+        "base.green.light": fill("green", 300),
+        "base.blue": fill("blue", 400),
+        "base.blue.light": fill("blue", 300),
+        "base.yellow": fill("gold", 400),
+        "base.yellow.light": fill("gold", 300),
+        "base.magenta": fill("purple", 400),
+        "base.magenta.light": fill("purple", 300),
+        "base.cyan": fill("cyan", 400),
+        "base.cyan.light": fill("cyan", 300),
+      },
+    };
+  }
+
+  const set = {
+    $schema: "https://github.com/longbridge/gpui-kit/raw/refs/heads/main/.theme-schema.json",
+    name: "Shenron",
+    author: "dragonballfr.com",
+    url: "https://dragonballfr.com",
+    _generated: "bun packages/ui/scripts/generate-palette.ts from packages/ui/src/tokens.ts; do not edit",
+    themes: [mode(true), mode(false)],
+  };
+  return `${JSON.stringify(set, null, 2)}\n`;
+}
+
 if (import.meta.main) {
   const outputs: [string, string][] = [
     [PALETTE_PATH, paletteCss()],
     [REPORT_PATH, reportMarkdown()],
+    [GPUI_THEME_PATH, gpuiTheme()],
   ];
   if (process.argv.includes("--check")) {
     let stale = false;

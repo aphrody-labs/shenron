@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: Apache-2.0 */
 /*
- * Material 3 Expressive tokens: emphasized typescale, Expressive spatial springs, directional shapes.
- * GENERATED from src/expressive.ts - do not hand-edit: bun run generate:expressive.
+ * Material 3 Expressive tokens: emphasized typescale, Expressive springs, directional shapes.
+ * GENERATED from src/expressive.ts (Compose Material 3 snapshot) - do not hand-edit:
+ * bun packages/m3-tokens/src/expressive.ts
  * Requires m3-tokens.css (corner scale and typefaces).
  */
 
@@ -83,33 +84,29 @@
   --md-sys-typescale-label-small-emphasized-line-height: 1rem;
   --md-sys-typescale-label-small-emphasized-tracking: 0.03125rem;
 
-  /* Motion: Expressive spatial springs (damping ratio, stiffness). */
+  /* Motion: Expressive springs, spatial and effects (damping ratio, stiffness). */
   --md-sys-motion-spring-expressive-fast-spatial-damping: 0.6;
   --md-sys-motion-spring-expressive-fast-spatial-stiffness: 800;
+  --md-sys-motion-spring-expressive-fast-effects-damping: 1;
+  --md-sys-motion-spring-expressive-fast-effects-stiffness: 3800;
   --md-sys-motion-spring-expressive-default-spatial-damping: 0.8;
   --md-sys-motion-spring-expressive-default-spatial-stiffness: 380;
+  --md-sys-motion-spring-expressive-default-effects-damping: 1;
+  --md-sys-motion-spring-expressive-default-effects-stiffness: 1600;
   --md-sys-motion-spring-expressive-slow-spatial-damping: 0.8;
   --md-sys-motion-spring-expressive-slow-spatial-stiffness: 200;
+  --md-sys-motion-spring-expressive-slow-effects-damping: 1;
+  --md-sys-motion-spring-expressive-slow-effects-stiffness: 800;
 
   /* Shape: directional corners (LTR; start/end swap under RTL). */
-  --md-sys-shape-corner-extra-small-top: var(--md-sys-shape-corner-extra-small)
-    var(--md-sys-shape-corner-extra-small) var(--md-sys-shape-corner-none)
-    var(--md-sys-shape-corner-none);
-  --md-sys-shape-corner-large-top: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large)
-    var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-none);
-  --md-sys-shape-corner-large-start: var(--md-sys-shape-corner-large)
-    var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-large);
-  --md-sys-shape-corner-large-end: var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-large)
-    var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-none);
-  --md-sys-shape-corner-extra-large-top: var(--md-sys-shape-corner-extra-large)
-    var(--md-sys-shape-corner-extra-large) var(--md-sys-shape-corner-none)
-    var(--md-sys-shape-corner-none);
+  --md-sys-shape-corner-extra-small-top: var(--md-sys-shape-corner-extra-small) var(--md-sys-shape-corner-extra-small) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-none);
+  --md-sys-shape-corner-large-top: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-none);
+  --md-sys-shape-corner-large-start: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-large);
+  --md-sys-shape-corner-large-end: var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-none);
+  --md-sys-shape-corner-extra-large-top: var(--md-sys-shape-corner-extra-large) var(--md-sys-shape-corner-extra-large) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-none);
 }
 
 :root:dir(rtl) {
-  --md-sys-shape-corner-large-start: var(--md-sys-shape-corner-none)
-    var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large)
-    var(--md-sys-shape-corner-none);
-  --md-sys-shape-corner-large-end: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-none)
-    var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-large);
+  --md-sys-shape-corner-large-start: var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-none);
+  --md-sys-shape-corner-large-end: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-none) var(--md-sys-shape-corner-large);
 }

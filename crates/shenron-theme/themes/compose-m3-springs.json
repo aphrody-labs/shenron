@@ -1,0 +1,55 @@
+{
+  "version": "1.5.0",
+  "standard": {
+    "fast-spatial": {
+      "damping": 0.9,
+      "stiffness": 1400
+    },
+    "fast-effects": {
+      "damping": 1,
+      "stiffness": 3800
+    },
+    "default-spatial": {
+      "damping": 0.9,
+      "stiffness": 700
+    },
+    "default-effects": {
+      "damping": 1,
+      "stiffness": 1600
+    },
+    "slow-spatial": {
+      "damping": 0.9,
+      "stiffness": 300
+    },
+    "slow-effects": {
+      "damping": 1,
+      "stiffness": 800
+    }
+  },
+  "expressive": {
+    "fast-spatial": {
+      "damping": 0.6,
+      "stiffness": 800
+    },
+    "fast-effects": {
+      "damping": 1,
+      "stiffness": 3800
+    },
+    "default-spatial": {
+      "damping": 0.8,
+      "stiffness": 380
+    },
+    "default-effects": {
+      "damping": 1,
+      "stiffness": 1600
+    },
+    "slow-spatial": {
+      "damping": 0.8,
+      "stiffness": 200
+    },
+    "slow-effects": {
+      "damping": 1,
+      "stiffness": 800
+    }
+  }
+}

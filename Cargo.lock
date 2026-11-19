@@ -12295,6 +12295,8 @@ name = "shenron-theme"
 version = "1.4.5"
 dependencies = [
  "gpui-kit",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
