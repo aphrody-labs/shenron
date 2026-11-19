@@ -86,7 +86,7 @@ const { positionals, values } = parseArgs({
       type: "string",
       default: process.env.DBXV2_DB_PATH ?? "/games/private/shenron-dbxv2/dbxv2.sqlite",
     },
-    server: { type: "string", default: process.env.DBXV2_SERVER_URL ?? "http://10.200.77.1:8788" },
+    server: { type: "string", default: process.env.DBXV2_SERVER_URL },
     format: { type: "string" },
     limit: { type: "string" },
     concurrency: { type: "string", default: process.env.DBXV2_STRUCTURED_CONCURRENCY ?? "4" },
@@ -208,7 +208,8 @@ if (command === "plan") {
   }
   const selectedFormats = formatFilter();
   const limit = rowLimit();
-  const serverUrl = values.server ?? "http://10.200.77.1:8788";
+  const serverUrl = values.server;
+  if (!serverUrl) throw new Error("--server or DBXV2_SERVER_URL is required");
   // The DBXV2 FFI (loadDbxv2Ffi) is not part of this repository: name its entry explicitly.
   const source = process.env.SHENRON_DBXV2_SRC;
   if (!source) throw new Error("SHENRON_DBXV2_SRC must name the DBXV2 FFI entry (src/index.ts)");

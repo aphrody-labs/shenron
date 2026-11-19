@@ -164,7 +164,7 @@ export function isCanonSource(sourceId: string): boolean {
   return CANON_SOURCE_IDS.has(sourceId) || (sourceId.startsWith("db_") && sourceId !== "db_games");
 }
 
-/** Marker line of a collected document (`apps/site/scripts/_crawled-wiki-pages.ts`). */
+/** Marker line of a `wiki_pages` fiche that describes a collected document (rows materialized before the crawl scripts were removed). */
 export const COLLECTED_MARKER = "Cette fiche décrit un document collecté";
 
 const COLLECTED_URL = /\/wiki\/source-[0-9a-f]{12,}/;

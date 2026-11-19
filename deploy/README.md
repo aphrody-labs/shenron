@@ -16,7 +16,7 @@ Aucun chemin d'hôte n'est écrit en dur: chaque fichier compose, unité systemd
 
 | Variable | Rôle |
 | --- | --- |
-| `SHENRON_ROOT` | racine hôte de la disposition de production (`config/`, `data/`, `models/`, `releases/`, `current`, `shared/`, `compose.yaml`, `.env`). Requise par les fichiers compose de `prod/`, `docker/` et `triad/`. `activation/activate.sh` la déduit de son propre emplacement (`$SHENRON_ROOT/bin/`) et l'exporte; `shenron-stack.service` la lit dans `/etc/shenron/stack.env` |
+| `SHENRON_ROOT` | racine hôte de la disposition de production (`config/`, `data/`, `models/`, `releases/`, `current`, `shared/`, `compose.yaml`, `.env`). Requise par les fichiers compose de `prod/` et `docker/`. `activation/activate.sh` la déduit de son propre emplacement (`$SHENRON_ROOT/bin/`) et l'exporte; `shenron-stack.service` la lit dans `/etc/shenron/stack.env` |
 | `SHENRON_SHARED_ROOT` | données partagées de `docker/compose.yaml`; défaut `$SHENRON_ROOT/shared` |
 | `KOHARU_ROOT` | dossier de `prod/koharu.compose.yaml`; `koharu-stack.service` la lit dans `/etc/shenron/koharu.env` |
 | `SHENRON_BACKUP_DIR` | sauvegardes de `prod/apply-migrations.py`; défaut `~/backups-auth` |
