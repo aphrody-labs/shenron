@@ -47,4 +47,4 @@ Contributions follow the [organization guide](https://github.com/aphrody-labs/.g
 
 ## License
 
-Apache-2.0 — see [LICENSE](LICENSE).
+Apache-2.0, see [LICENSE](LICENSE).
