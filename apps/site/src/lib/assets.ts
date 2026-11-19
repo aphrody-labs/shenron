@@ -2,7 +2,7 @@
  * Helpers d'assets/URL **client-safe** (aucune dépendance server-only).
  *
  * Isolés de `shenron.ts` / `db-universe.ts` (désormais server-only car ils
- * tapent Neon via Drizzle) : ces fonctions sont importées par des Client
+ * tapent PostgreSQL via Drizzle) : ces fonctions sont importées par des Client
  * Components (jeu 2048, carte profil, admin DB). Les y laisser ferait fuiter
  * `postgres`/`drizzle` dans le bundle client.
  */

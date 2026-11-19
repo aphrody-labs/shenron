@@ -1,7 +1,7 @@
 /**
- * wiki-admin — accès **lecture + écriture** direct à Neon (schéma `bot`) pour
+ * wiki-admin — accès **lecture + écriture** direct à PostgreSQL (schéma `bot`) pour
  * l'admin du wiki Dragon Ball éditorial, sans aller-retour vers l'API REST du
- * bot. Neon `bot.*` est la **source de vérité** du wiki éditorial.
+ * bot. PostgreSQL `bot.*` est la **source de vérité** du wiki éditorial.
  *
  * Server-only : tape la DB Postgres via Drizzle (`@/lib/db`) → ne doit jamais
  * entrer dans un bundle client. Le route handler `/api/wiki-admin` et les Server

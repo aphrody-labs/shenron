@@ -3,7 +3,7 @@
  * à partir des planches **déjà self-hostées** sur le VPS (`apps/bot/assets/manga/`).
  *
  * Contexte : migration Neon → PostgreSQL local (2026-06-23). La colonne `pages`
- * (jsonb, Neon-only) était absente du réplica SQLite → le seed `bot.*` l'a laissée
+ * (jsonb, PostgreSQL-only) était absente du réplica SQLite → le seed `bot.*` l'a laissée
  * NULL. Mais les planches WebP sont déjà sur disque (rapatriées par
  * `selfhost-manga-pages.ts`), structurées en `assets/manga/<SERIES>/ch<id>/NNN.webp`.
  * On relit donc le disque pour reconstruire l'index ordonné des pages par chapitre.
@@ -14,7 +14,7 @@
  *
  * Seuls les chapitres ayant un dossier non vide sur disque sont réécrits ; les
  * autres gardent `pages = NULL` (ils étaient hotlinkés/externes → données perdues
- * avec Neon, à re-scraper plus tard si besoin).
+ * avec PostgreSQL, à re-scraper plus tard si besoin).
  *
  * Idempotent. Env requis : DATABASE_URL (PostgreSQL local).
  * Usage : cd apps/bot && bun scripts/reconstruct-manga-pages-from-disk.ts [--dry-run]
@@ -41,7 +41,7 @@ const isImg = (f: string) => /\.(webp|jpe?g|png)$/i.test(f);
  * `assets/manga/DB/regular/vol<N>/NNN.webp` = un dossier par tome, et UN chapitre
  * lisible « Tome N » (rattaché au volume `Dragon Ball Vol. N`) porte toutes ses
  * pages (cf. `ingest-dragonball-volumes.ts`). Le seed a recréé les lignes chapitre
- * « Tome N » mais `pages` (Neon-only) est NULL → la grille `/wiki/manga` masque
+ * « Tome N » mais `pages` (PostgreSQL-only) est NULL → la grille `/wiki/manga` masque
  * les tomes (elle n'affiche que les volumes ayant ≥1 chapitre lisible). On relit
  * le disque pour réécrire `pages` (+ `cover` si absente). Insère le chapitre s'il
  * manque (défensif). Retourne le nombre de tomes réécrits.

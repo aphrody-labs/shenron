@@ -1,6 +1,6 @@
 /**
  * ingest-dragonball-volumes.ts — Ingestion du **Dragon Ball original complet**
- * (43 tomes VF, N&B) depuis Sushi Scan vers nos assets + Neon. Remplit l'œuvre
+ * (43 tomes VF, N&B) depuis Sushi Scan vers nos assets + PostgreSQL. Remplit l'œuvre
  * originale (l'onglet « Dragon Ball » ne montrait que l'édition couleur).
  *
  * Source : pages-lecteur `sushiscan.fr/dragon-ball-volume-N-vf/` (ts_reader →
@@ -10,7 +10,7 @@
  * `Dragon Ball Vol. N`. Pages promo « SUSHISCAN » / crédits retirées par OCR
  * (bords du tome). Garde-fou disque + idempotent.
  *
- * Env requis : DATABASE_URL (Neon).
+ * Env requis : DATABASE_URL (PostgreSQL).
  * Usage : env DATABASE_URL=… bun scripts/ingest-dragonball-volumes.ts [--from 1] [--to 43] [--force] [--dry-run]
  */
 import postgres from "postgres";
@@ -19,9 +19,9 @@ import { mkdir, statfs, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { recogniseRemotePage } from "@aphrody/shenron-pipeline/shenron/remote-ocr";
 
-const NEON_URL = process.env.DATABASE_URL;
-if (!NEON_URL) {
-  console.error("✗ DATABASE_URL (Neon) requis.");
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  console.error("✗ DATABASE_URL (PostgreSQL) requis.");
   process.exit(1);
 }
 const args = process.argv.slice(2);
@@ -40,7 +40,7 @@ const ASSETS_ROOT = join(import.meta.dir, "..", "assets");
 const MIN_FREE_BYTES = 1200 * 1024 * 1024; // garde-fou conservateur : 1.2 Go
 const HEADERS = { "User-Agent": UA, Referer: "https://sushiscan.fr/" };
 
-const sql = postgres(NEON_URL, { max: 2, prepare: false });
+const sql = postgres(DATABASE_URL, { max: 2, prepare: false });
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 const freeBytes = async () => {
   const s = await statfs(ASSETS_ROOT);

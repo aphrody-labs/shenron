@@ -52,7 +52,7 @@ export const bot = pgSchema("bot");
  *
  * CONTRAT PARTAGÉ avec `apps/bot` — SOURCE DE VÉRITÉ = `apps/bot/src/db/episode-frames.ts`
  * (type `EpisodeFrame`). Le site ne peut pas importer depuis `apps/bot` → on
- * REDÉFINIT le type ici, IDENTIQUE au bot (le jsonb Neon `bot.db_episodes.frames`
+ * REDÉFINIT le type ici, IDENTIQUE au bot (le jsonb PostgreSQL `bot.db_episodes.frames`
  * remonte tel quel). Champs clés pour l'affichage :
  *  - `imagePath`  : chemin relatif `./assets/ext/db_episodes_frames/...` → passer
  *                   par `assetUrl()` pour l'URL absolue (bot.dragonballfr.com).
@@ -90,13 +90,13 @@ export type EpisodeFrame = {
   sortOrder: number;
 };
 
-/** bigint Neon → number JS (les ID wiki sont petits, < 2^53). */
+/** bigint PostgreSQL → number JS (les ID wiki sont petits, < 2^53). */
 const int = (name: string) => bigint(name, { mode: "number" });
 
 /**
  * Source citée dans un article wiki long-format (champ `article_sources`).
  * Alimenté par `apps/bot/scripts/wiki-articles.ts` (grounding RAG). Colonnes
- * PG-only : le reverse-sync Neon→SQLite les ignore (intersection de colonnes),
+ * PG-only : le reverse-sync PostgreSQL→SQLite les ignore (intersection de colonnes),
  * comme `players`/`frames`/`pages`. Seul le lecteur du site les lit.
  */
 export type WikiSource = {
@@ -474,11 +474,11 @@ export const botEpisodes = bot.table("db_episodes", {
   videoUrl: text("video_url"),
   // Pistes de sous-titres : [{ lang, label, src }] où `src` est un chemin
   // d'asset bot (assets/subtitles/...) en .vtt ou .srt, ou une URL .vtt.
-  // Colonne Neon-only (le reverse-sync l'ignore par intersection de colonnes ;
+  // Colonne PostgreSQL-only (le reverse-sync l'ignore par intersection de colonnes ;
   // seul le lecteur du site la lit).
   subtitles: jsonb("subtitles").$type<{ lang: string; label: string; src: string }[]>(),
   // Lecteurs externes (voir-anime) : [{ name, provider, embedUrl }] affichés en
-  // iframe. Colonne Neon-only, rafraîchie par import-voiranime-players.ts.
+  // iframe. Colonne PostgreSQL-only, rafraîchie par import-voiranime-players.ts.
   players: jsonb("players").$type<
     {
       name: string;
@@ -491,7 +491,7 @@ export const botEpisodes = bot.table("db_episodes", {
   availability: jsonb("availability").$type<Availability[]>(),
   // Flux résolu (HLS/mp4) + headers requis (Referer), pour le proxy HLS du
   // site qui le relaie à notre player hls.js. Rafraîchi par resolve-streams.ts
-  // (tokens ~12 h). Colonnes Neon-only.
+  // (tokens ~12 h). Colonnes PostgreSQL-only.
   streamUrl: text("stream_url"),
   streamHeaders: jsonb("stream_headers").$type<Record<string, string>>(),
   streamProvider: text("stream_provider"),
@@ -511,8 +511,8 @@ export const botEpisodes = bot.table("db_episodes", {
     >
   >(),
   // Scènes d'épisode : frames extraites (jsonb) + montage MP4 preview animé.
-  // Colonnes posées sur Neon ; alimentées par le pipeline bot (extraction +
-  // montage). Le reverse-sync Neon→SQLite les ignore (intersection de colonnes).
+  // Colonnes posées sur PostgreSQL ; alimentées par le pipeline bot (extraction +
+  // montage). Le reverse-sync PostgreSQL→SQLite les ignore (intersection de colonnes).
   // Santé des lecteurs et des flux (ajoutées par la migration d'exécution du bot, présentes sur PG).
   playersCheckedAt: bigint("players_checked_at", { mode: "number" }),
   playersRepairFailures: integer("players_repair_failures").notNull().default(0),
@@ -863,7 +863,7 @@ export const botMangaChapters = bot.table("db_manga_chapters", {
   publishedAt: int("published_at"),
   cover: text("cover"),
   // Pages du chapitre = liste ordonnée de chemins d'images (assetUrl côté site).
-  // Colonne Neon-only : le reverse-sync Neon→SQLite l'ignore (intersection de
+  // Colonne PostgreSQL-only : le reverse-sync PostgreSQL→SQLite l'ignore (intersection de
   // colonnes), le bot n'en a pas besoin (seul le reader du site lit les pages).
   pages: jsonb("pages").$type<string[]>(),
   readerExtent: jsonb("reader_extent").$type<MangaReaderExtent>(),

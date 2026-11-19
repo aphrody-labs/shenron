@@ -80,7 +80,7 @@ interface CrudClient {
 /**
  * Construit un client CRUD sur une base arbitraire (même contrat que `api`).
  * Utilisé pour router les tables wiki éditoriales vers `/api/wiki-admin`
- * (Neon direct) au lieu de `/api/bot-admin` (proxy bot). Cf. `crudBase()`.
+ * (PostgreSQL direct) au lieu de `/api/bot-admin` (proxy bot). Cf. `crudBase()`.
  */
 export function apiAt(base: string): CrudClient {
   return {

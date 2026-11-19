@@ -45,7 +45,7 @@ type Classe = Defaut;
 const RACINE = join(import.meta.dir, "..", "public", "wiki", "databooks");
 
 /** URL de la base, lue dans `apps/site/.env` (ancrage `^DATABASE_URL=` : le
- *  fichier porte une ligne Neon COMMENTÉE avant la ligne active). */
+ *  fichier porte une ligne PostgreSQL COMMENTÉE avant la ligne active). */
 async function urlBase(): Promise<string> {
   const direct = process.env.DATABASE_URL?.trim();
   if (direct) return direct;

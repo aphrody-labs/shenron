@@ -100,7 +100,7 @@ export function fkTarget(col: string): { table: string; pk: string } | null {
 /**
  * Valeurs possibles d'une colonne « enum » (text en base). `strict` → `<select>`
  * fermé ; sinon `<input list>` (suggestions + saisie libre, car de nouvelles
- * valeurs peuvent apparaître). Valeurs réelles relevées dans Neon.
+ * valeurs peuvent apparaître). Valeurs réelles relevées dans PostgreSQL.
  */
 const ENUM_OPTIONS: Record<string, { options: string[]; strict?: boolean }> = {
   "db_character_variant_technique_uses.sourceType": {

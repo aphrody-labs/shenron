@@ -114,11 +114,11 @@ function withAutomation(value: CurrentUser, automation: AutomationActor): Sessio
 }
 
 // Mémoïsation in-process de la jointure ba_account→users, par sessionUserId.
-// Évite un aller-retour Neon (us-east-1) sur chaque requête depuis cdg1 : sur une
-// instance chaude (Fluid Compute), la 2e+ résolution est servie depuis la RAM.
+// Évite un aller-retour PostgreSQL sur chaque requête : sur un process chaud,
+// la 2e+ résolution est servie depuis la RAM.
 // TTL court → un changement de roleAdmin/username se propage en ≤ 60 s.
 // Cache de la résolution token-admin (la valeur ne change jamais) → évite un
-// aller-retour Neon à chaque requête, vu que la console admin poll toutes les 5 s.
+// aller-retour PostgreSQL à chaque requête, vu que la console admin poll toutes les 5 s.
 let tokenAdminCache: { at: number; value: CurrentUser } | null = null;
 const TOKEN_ADMIN_TTL = 60_000;
 let warnedNoOwner = false;

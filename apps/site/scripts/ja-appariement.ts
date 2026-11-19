@@ -73,7 +73,7 @@ const XV2 =
   argument("xv2") ?? new URL("../../bot/data/rag/corpus-xv2.json", import.meta.url).pathname;
 
 // `pop()` et non `find()` : `apps/site/.env` porte DEUX lignes DATABASE_URL, la
-// Neon d'avant migration (commentée) précédant la locale. Ancrer sur la
+// PostgreSQL d'avant migration (commentée) précédant la locale. Ancrer sur la
 // dernière évite de lire une base décommissionnée.
 const url = (await Bun.file(new URL("../.env", import.meta.url)).text())
   .split("\n")

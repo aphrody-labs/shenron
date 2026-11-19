@@ -1,14 +1,14 @@
 #!/usr/bin/env bun
 /**
- * ingest-episode-frames.ts — Ingestion GARDÉE des « scènes d'épisode » vers Neon.
+ * ingest-episode-frames.ts — Ingestion GARDÉE des « scènes d'épisode » vers PostgreSQL.
  *
  * Lit un dataset orchestrateur `data/dbz-frames/<series>-ep<NNN>.json` (produit par
- * `build-episode-scenes.ts`) et écrit dans Neon `bot.db_episodes` :
+ * `build-episode-scenes.ts`) et écrit dans PostgreSQL `bot.db_episodes` :
  *   UPDATE bot.db_episodes
  *      SET frames = <jsonb EpisodeFrame[]>, scene_preview = <text>
  *    WHERE series = … AND number_in_series = …
  *
- * Source de vérité du wiki = Neon. On N'ÉCRIT PAS le SQLite (replica de lecture ;
+ * Source de vérité du wiki = PostgreSQL. On N'ÉCRIT PAS le SQLite (replica de lecture ;
  * le reverse-sync `shenron-neon-pull` rapatrie ensuite frames/scene_preview).
  *
  * ⚠ jsonb : on passe TOUJOURS la valeur via `sql.json(value)` (postgres-js), JAMAIS
@@ -17,7 +17,7 @@
  *
  * GARDE : dry-run par défaut. `--apply` requis pour écrire réellement.
  *
- * Env requis (avec --apply) : DATABASE_URL (Neon). NON sourçable en shell —
+ * Env requis (avec --apply) : DATABASE_URL (PostgreSQL). NON sourçable en shell —
  * lancer via systemd-run avec EnvironmentFile (cf. rappel affiché en fin).
  *
  * ── Usage ────────────────────────────────────────────────────────────────────
@@ -26,7 +26,7 @@
  *   --series   série db_episodes (sinon lue depuis le dataset).
  *   --ep       numberInSeries (sinon lu depuis le dataset).
  *   --file     chemin explicite du dataset (sinon résolu : data/dbz-frames/<series>-ep<NNN>.json).
- *   --apply    EXÉCUTE l'UPDATE Neon (sinon dry-run : affiche le plan, n'écrit rien).
+ *   --apply    EXÉCUTE l'UPDATE PostgreSQL (sinon dry-run : affiche le plan, n'écrit rien).
  */
 import { join } from "node:path";
 import { stat } from "node:fs/promises";
@@ -123,12 +123,12 @@ async function main(): Promise<void> {
   const scenePreview = ds.scenePreview ?? null;
 
   console.log(
-    `Ingestion scène d'épisode → Neon bot.db_episodes\n` +
+    `Ingestion scène d'épisode → PostgreSQL bot.db_episodes\n` +
       `  cible   : series=${series} number_in_series=${number}\n` +
       `  dataset : ${datasetPath}\n` +
       `  frames  : ${frames.length}\n` +
       `  preview : ${scenePreview ?? "(aucun)"}\n` +
-      `  mode    : ${args.apply ? "APPLY (écriture Neon)" : "DRY-RUN (rien écrit)"}`,
+      `  mode    : ${args.apply ? "APPLY (écriture PostgreSQL)" : "DRY-RUN (rien écrit)"}`,
   );
 
   if (!args.apply) {
@@ -149,10 +149,10 @@ async function main(): Promise<void> {
     return;
   }
 
-  const NEON_URL = process.env.DATABASE_URL;
-  if (!NEON_URL) {
+  const DATABASE_URL = process.env.DATABASE_URL;
+  if (!DATABASE_URL) {
     console.error(
-      "✗ DATABASE_URL (Neon) requis pour --apply.\n" +
+      "✗ DATABASE_URL (PostgreSQL) requis pour --apply.\n" +
         "  Non sourçable en shell — lancer via :\n" +
         `  sudo systemd-run --pipe -p EnvironmentFile=~/.shenron-neon.env \\\n` +
         `    --working-directory=${ROOT} \\\n` +
@@ -162,7 +162,7 @@ async function main(): Promise<void> {
   }
 
   const postgres = (await import("postgres")).default;
-  const sql = postgres(NEON_URL, { max: 2, prepare: false });
+  const sql = postgres(DATABASE_URL, { max: 2, prepare: false });
   try {
     // jsonb via sql.json() (JAMAIS JSON.stringify::jsonb → scalaire string).
     // La copie en littéral d'objet donne à chaque frame la signature d'index que
@@ -181,7 +181,7 @@ async function main(): Promise<void> {
     `;
     if (rows.length === 0) {
       console.error(
-        `✗ Aucune ligne mise à jour — aucun épisode series=${series} number_in_series=${number} dans Neon.`,
+        `✗ Aucune ligne mise à jour — aucun épisode series=${series} number_in_series=${number} dans PostgreSQL.`,
       );
       process.exitCode = 1;
     } else {

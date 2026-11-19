@@ -55,7 +55,7 @@ export async function connect(): Promise<Sql> {
     const text = await Bun.file(join(import.meta.dir, "..", ".env"))
       .text()
       .catch(() => "");
-    // `.env` carries two DATABASE_URL lines (the dead Neon one first): take the last.
+    // `.env` carries two DATABASE_URL lines (the dead PostgreSQL one first): take the last.
     url = text
       .split("\n")
       .findLast((l) => l.startsWith("DATABASE_URL="))

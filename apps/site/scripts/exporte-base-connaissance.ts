@@ -49,7 +49,7 @@ const RACINE = join(import.meta.dir, "..");
 /**
  * `apps/site/.env` porte DEUX lignes `DATABASE_URL` (l'ancienne Neon, en
  * commentaire mais placée avant, puis la locale). On ancre sur le début de
- * ligne et on prend la DERNIÈRE : un `grep | head -1` tape la Neon morte.
+ * ligne et on prend la DERNIÈRE : un `grep | head -1` tape la PostgreSQL morte.
  */
 function urlBase(): string {
   const lignes = readFileSync(join(RACINE, ".env"), "utf8").split("\n");

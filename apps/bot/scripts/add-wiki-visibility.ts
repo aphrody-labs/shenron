@@ -4,7 +4,7 @@
  * l'admin de masquer une entité du site public sans la supprimer.
  *
  * Colonne PG-ONLY (comme `article`/`players`/`frames`) : le forward-sync
- * SQLite→Neon EXCLUT ces tables éditoriales et le reverse-sync Neon→SQLite les
+ * SQLite→PostgreSQL EXCLUT ces tables éditoriales et le reverse-sync PostgreSQL→SQLite les
  * préserve par intersection de colonnes → jamais écrasée, jamais poussée en
  * SQLite. Idempotent (`ADD COLUMN IF NOT EXISTS`) — sûr à rejouer.
  *

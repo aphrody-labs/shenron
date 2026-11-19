@@ -6,9 +6,6 @@ let connecting: Promise<PostsRedisClient> | null = null;
 async function connect(): Promise<PostsRedisClient> {
   if (client) return client;
   if (connecting) return connecting;
-  if (!process.env.REDIS_URL?.trim() && !process.env.VALKEY_URL?.trim()) {
-    throw new Error("REDIS_URL non configuré en environnement sans serveur");
-  }
   connecting = (async () => {
     const { RedisClient } = await import("bun");
     const url = new URL(resolveRedisUrl(process.env));

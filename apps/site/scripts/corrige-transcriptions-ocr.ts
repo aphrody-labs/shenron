@@ -32,7 +32,7 @@
  *     le fait pas lui-même, il n'écrit que via l'API.
  *
  * Jeton : $DATABOOKS_API_TOKEN, sinon $SHENRON_ADMIN_TOKEN, lus dans
- * `apps/site/.env` (dernière ligne qui matche — le fichier a une ligne Neon
+ * `apps/site/.env` (dernière ligne qui matche — le fichier a une ligne PostgreSQL
  * commentée AVANT la ligne active, piège documenté dans CLAUDE.md).
  */
 import postgres from "postgres";

@@ -809,8 +809,8 @@ export const dbEpisodes = sqliteTable(
     streamRetryAfter: integer("stream_retry_after"),
     malId: integer("mal_id"), // MyAnimeList episode ID (via Jikan)
     // Feature « Scènes d'épisode » : frames extraites (ffmpeg) + preview animé.
-    // Source de vérité = Neon (jsonb `frames` + text `scene_preview`) ; SQLite = replica
-    // de lecture (reverse-sync Neon→SQLite). Colonnes nullable → boot safe.
+    // Source de vérité = PostgreSQL (jsonb `frames` + text `scene_preview`) ; SQLite = replica
+    // de lecture (reverse-sync PostgreSQL→SQLite). Colonnes nullable → boot safe.
     frames: text("frames", { mode: "json" }).$type<EpisodeFrame[]>(),
     scenePreview: text("scene_preview"), // chemin relatif MP4 montage, ex. ./assets/ext/db_episodes_frames/<series>/ep<NNN>/preview.mp4
     /** Visibilité éditoriale descendue de PostgreSQL (cf. db/wiki-visibility.ts). */
@@ -840,7 +840,7 @@ export const dbMangaVolumes = sqliteTable(
   (t) => [index("idx_db_manga_vol").on(t.series, t.volumeNumber)],
 );
 
-/** Réplica SQLite des publications dérivées éditées dans Neon. */
+/** Réplica SQLite des publications dérivées éditées dans PostgreSQL. */
 export const dbMediaPublications = sqliteTable(
   "db_media_publications",
   {
@@ -862,7 +862,7 @@ export const dbMediaPublications = sqliteTable(
   (t) => [index("idx_db_media_publications_type_date").on(t.publicationType, t.publishedAt)],
 );
 
-/** Réplica SQLite des œuvres média éditées dans Neon. */
+/** Réplica SQLite des œuvres média éditées dans PostgreSQL. */
 export const mediaWorks = sqliteTable(
   "media_works",
   {

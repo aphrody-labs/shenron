@@ -6,7 +6,7 @@ import { defineConfig } from "drizzle-kit";
  *
  * Sert à matérialiser les tables `bot.*` dans le PostgreSQL local du VPS
  * (migration Neon → PG local, 2026-06-23) à partir du schéma lecture du site
- * `src/db/bot-schema.ts` — y compris les colonnes Neon-only (`players`,
+ * `src/db/bot-schema.ts` — y compris les colonnes PostgreSQL-only (`players`,
  * `subtitles`, `frames`, `pages`, `stream_*`) absentes du SQLite du bot.
  *
  * `schemaFilter: ["bot"]` BORNE l'introspection/diff au seul schéma `bot` →

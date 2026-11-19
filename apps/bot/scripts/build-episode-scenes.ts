@@ -19,7 +19,7 @@
  *      scenePreview, meta, scrapedAt }`. `scenePreview` = chemin relatif
  *      `./assets/ext/db_episodes_frames/<series>/ep<NNN>/preview.mp4`.
  *
- * AUCUNE écriture DB ici (ingestion Neon gardée = `ingest-episode-frames.ts`).
+ * AUCUNE écriture DB ici (ingestion PostgreSQL gardée = `ingest-episode-frames.ts`).
  *
  * Bun-only : `Bun.spawn`, `Bun.file`, `Bun.write`. Pas de node/npm/tsx.
  *
@@ -314,7 +314,7 @@ async function main(): Promise<void> {
       `  dataset : ${datasetPath}\n` +
       `  frames  : ${selected.length} webp dans ${assetDir}\n` +
       `  preview : ${previewRel}\n` +
-      `  → ingestion Neon (gardée) :\n` +
+      `  → ingestion PostgreSQL (gardée) :\n` +
       `      bun apps/bot/scripts/ingest-episode-frames.ts --series ${args.series} --ep ${args.ep} --apply`,
   );
 }

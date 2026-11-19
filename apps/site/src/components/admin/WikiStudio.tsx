@@ -4,7 +4,7 @@
  * Studio d'édition visuelle d'une entité wiki (`db_*`) : formulaire à gauche
  * (champs typés + upload d'images drag-and-drop), aperçu live de la page publique
  * à droite. Charge la ligne via `/api/wiki-admin/:table/:id`, enregistre via le
- * même CRUD (Neon). `id === "new"` → création.
+ * même CRUD (PostgreSQL). `id === "new"` → création.
  */
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {

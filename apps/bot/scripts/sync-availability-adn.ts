@@ -44,8 +44,8 @@ import {
   type AdnVideo,
 } from "./lib/adn-availability";
 
-const NEON_URL = process.env.DATABASE_URL;
-if (!NEON_URL) {
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
   console.error("✗ DATABASE_URL requis.");
   process.exit(1);
 }
@@ -54,7 +54,7 @@ const DRY = !process.argv.includes("--apply") || process.argv.includes("--dry-ru
 const reportPath = process.argv
   .find((arg) => arg.startsWith("--report="))
   ?.slice("--report=".length);
-const sql = postgres(NEON_URL, { max: 2, prepare: false });
+const sql = postgres(DATABASE_URL, { max: 2, prepare: false });
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 const API = "https://gw.api.animationdigitalnetwork.fr";

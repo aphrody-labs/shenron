@@ -12,7 +12,7 @@
  * sauté. Garde-fou disque (stop si < 800 Mo libres). Un chapitre n'est réécrit
  * en base que si TOUTES ses planches ont été récupérées (pas de demi-chapitre).
  *
- * Env requis : DATABASE_URL (Neon).
+ * Env requis : DATABASE_URL (PostgreSQL).
  * Usage :
  *   env DATABASE_URL=… bun scripts/selfhost-manga-pages.ts [--series DBS] [--limit 20] [--chapter <id>] [--dry-run]
  */
@@ -20,9 +20,9 @@ import postgres from "postgres";
 import { mkdir, statfs } from "node:fs/promises";
 import { join } from "node:path";
 
-const NEON_URL = process.env.DATABASE_URL;
-if (!NEON_URL) {
-  console.error("✗ DATABASE_URL (Neon) requis.");
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  console.error("✗ DATABASE_URL (PostgreSQL) requis.");
   process.exit(1);
 }
 const args = process.argv.slice(2);
@@ -40,7 +40,7 @@ const UA =
 const ASSETS_ROOT = join(import.meta.dir, "..", "assets");
 const MIN_FREE_BYTES = 800 * 1024 * 1024;
 
-const sql = postgres(NEON_URL, { max: 2, prepare: false });
+const sql = postgres(DATABASE_URL, { max: 2, prepare: false });
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 /** Referer par hôte (anti-hotlink). */

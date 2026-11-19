@@ -5,7 +5,7 @@ import { mangaReaderExtent, type MangaReaderExtent } from "./manga-reader-extent
 import { episodeIdentityPredicate, episodeQueryPredicate } from "./episode-query";
 import type { VideoLanguage } from "@aphrody/shenron-media/episode-playback";
 /**
- * db-universe — accès au **wiki Dragon Ball** (schéma Neon `bot`, miroir du
+ * db-universe — accès au **wiki Dragon Ball** (schéma PostgreSQL `bot`, miroir du
  * SQLite du bot) via Drizzle, en LECTURE SEULE.
  *
  * Server-only : ce module tape la DB Postgres et ne doit jamais entrer dans un
@@ -970,7 +970,7 @@ function fuzzyOrder(term: string, cols: PgColumn[]) {
 
 export const dbUniverse = {
   /**
-   * Compte réel de chaque table wiki (Neon `bot.*`), source unique pour les
+   * Compte réel de chaque table wiki (PostgreSQL `bot.*`), source unique pour les
    * libellés « N personnages / N films … » — fini les nombres codés en dur qui
    * se désynchronisent dès que la DB grossit. Un seul round-trip groupé.
    */

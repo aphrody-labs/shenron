@@ -2,7 +2,7 @@
 import { posix, relative, resolve, win32 } from "node:path";
 import { open, realpath } from "node:fs/promises";
 
-const providers = ["dbfr", "r2", "supabase", "neon"] as const;
+const providers = ["dbfr", "r2", "supabase"] as const;
 export type StorageProvider = (typeof providers)[number];
 export interface Budget {
   used: number;
@@ -59,7 +59,7 @@ function budget(value: unknown) {
 }
 function compatible(entry: StorageInventoryEntry, destination: StorageProvider) {
   if (!entry.public || (entry.kind === "sql" && !entry.detachable)) return destination === "dbfr";
-  return entry.kind === "blob" ? destination !== "neon" : destination !== "r2";
+  return entry.kind === "blob" || destination !== "r2";
 }
 function validate(value: unknown, now: number): asserts value is StorageClusterInput {
   if (!record(value)) throw Error("Invalid snapshot");

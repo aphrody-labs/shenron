@@ -7,7 +7,7 @@
  * sans inverser la dépendance src → scripts. La fondation pipeline
  * `scripts/lib/frames-common.ts` ré-exporte ces types depuis ici.
  *
- * Le site (`apps/site/`) s'aligne sur CE shape (colonne Neon `bot.db_episodes.frames`
+ * Le site (`apps/site/`) s'aligne sur CE shape (colonne PostgreSQL `bot.db_episodes.frames`
  * jsonb = `EpisodeFrame[]`).
  */
 

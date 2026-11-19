@@ -23,7 +23,7 @@ function SaveButton() {
 /**
  * Éditeur média (vidéo + sous-titres) inline, réservé à l'admin, présent sur
  * chaque page d'épisode → permet d'attacher la source officielle et les pistes
- * de sous-titres à n'importe quel épisode. Écrit dans Neon via la server action
+ * de sous-titres à n'importe quel épisode. Écrit dans PostgreSQL via la server action
  * `updateEpisodeMedia` (aucun proxy bot).
  */
 export function EpisodeMediaEditor({

@@ -64,7 +64,7 @@ const flag = (nom: string) => args.includes(`--${nom}`);
 const APPLIQUER = flag("appliquer");
 
 /** URL de la base, lue dans `apps/site/.env` (ancrage `^DATABASE_URL=` : le
- *  fichier porte une ligne Neon COMMENTÉE avant la ligne active). */
+ *  fichier porte une ligne PostgreSQL COMMENTÉE avant la ligne active). */
 async function urlBase(): Promise<string> {
   const direct = process.env.DATABASE_URL?.trim();
   if (direct) return direct;

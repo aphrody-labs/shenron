@@ -274,7 +274,7 @@ async function main() {
   console.log(
     `\nOK — ${frames.length} webp dans ${assetDir}\n` +
       `  dataset : ${out}\n` +
-      `  ingestion DB (gardée) à faire séparément (Neon db_episodes).`,
+      `  ingestion DB (gardée) à faire séparément (PostgreSQL db_episodes).`,
   );
 }
 

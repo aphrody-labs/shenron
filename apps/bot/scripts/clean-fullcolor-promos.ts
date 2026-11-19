@@ -14,7 +14,7 @@
  * le lecteur lit le tableau, pas la continuité des noms) + `cover`, et supprime
  * les fichiers retirés du disque.
  *
- * Env requis : DATABASE_URL (Neon).
+ * Env requis : DATABASE_URL (PostgreSQL).
  * Usage : env DATABASE_URL=… bun scripts/clean-fullcolor-promos.ts [--dry-run]
  */
 import postgres from "postgres";
@@ -23,16 +23,16 @@ import { unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { recogniseRemotePage } from "@aphrody/shenron-pipeline/shenron/remote-ocr";
 
-const NEON_URL = process.env.DATABASE_URL;
-if (!NEON_URL) {
-  console.error("✗ DATABASE_URL (Neon) requis.");
+const DATABASE_URL = process.env.DATABASE_URL;
+if (!DATABASE_URL) {
+  console.error("✗ DATABASE_URL (PostgreSQL) requis.");
   process.exit(1);
 }
 const dryRun = process.argv.includes("--dry-run");
 const ASSETS_ROOT = join(import.meta.dir, "..", "assets");
 const MAX_DROP_RATIO = 0.18;
 
-const sql = postgres(NEON_URL, { max: 2, prepare: false });
+const sql = postgres(DATABASE_URL, { max: 2, prepare: false });
 
 /** Chemin DB (`./assets/...`) → chemin disque absolu. */
 const toAbs = (p: string) => join(ASSETS_ROOT, p.replace(/^\.?\/*(assets\/)?/, ""));

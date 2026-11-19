@@ -1,5 +1,5 @@
 /**
- * Liste **client-safe** des tables wiki éditoriales dont Neon (schéma `bot`) est
+ * Liste **client-safe** des tables wiki éditoriales dont PostgreSQL (schéma `bot`) est
  * la source de vérité, + leur schéma statique (pk + colonnes mutables) en
  * **camelCase** (clés des objets Drizzle `bot-schema.ts`, alignées sur le contrat
  * de l'API bot `/api/database`).
@@ -10,7 +10,7 @@
  * proxy bot `/api/bot-admin/database`, et de fournir le schéma de formulaire sans
  * aller-retour réseau vers le bot.
  *
- * La logique d'accès DB (lecture/écriture Neon) vit dans `wiki-admin.ts`
+ * La logique d'accès DB (lecture/écriture PostgreSQL) vit dans `wiki-admin.ts`
  * (`import "server-only"`). Garder les deux listes synchronisées.
  */
 
@@ -666,7 +666,7 @@ export const WIKI_TABLE_SPECS: Record<string, WikiTableSpec> = {
   },
 };
 
-/** Noms des tables wiki éditoriales (Neon source de vérité). */
+/** Noms des tables wiki éditoriales (PostgreSQL source de vérité). */
 export const WIKI_TABLE_NAMES = Object.keys(WIKI_TABLE_SPECS);
 
 /** True si l'écriture/lecture de `table` doit passer par `/api/wiki-admin`. */
@@ -675,7 +675,7 @@ export function isWikiTable(name: string): boolean {
 }
 
 /**
- * Base path CRUD pour une table : `/api/wiki-admin` (Neon direct) pour les tables
+ * Base path CRUD pour une table : `/api/wiki-admin` (PostgreSQL direct) pour les tables
  * wiki éditoriales, sinon `/api/bot-admin/database` (proxy API bot) — inchangé
  * pour users/shop_items/level_rewards/db_news/etc.
  */

@@ -36,7 +36,6 @@ function snapshot(inventory = [item()]): StorageClusterInput {
       dbfr: measured("host"),
       r2: measured("account"),
       supabase: measured("account"),
-      neon: measured("account"),
     },
     inventory,
   };
@@ -107,14 +106,13 @@ test("private existing external owners are rejected", () => {
     "protected data",
   );
 });
-test("only detachable public SQL can reach Neon, blobs never do", () => {
+test("public SQL never reaches R2, blobs can", () => {
   const input = snapshot([item(), item({ sha256: "b".repeat(64), kind: "sql", detachable: true })]);
   input.providers.dbfr.enabled = false;
-  input.providers.r2.enabled = false;
   input.providers.supabase.enabled = false;
   const plan = planStorageCluster(input, now);
   expect(plan.blocked).toHaveLength(1);
-  expect(plan.placements[0]?.owner).toBe("neon");
+  expect(plan.placements[0]?.owner).toBe("r2");
 });
 test("missing write costs and exhausted quotas leave a non ready plan", () => {
   const input = snapshot([item({ writeOperations: undefined })]);
@@ -139,9 +137,8 @@ test("account quota scope is mandatory for shared free plans", () => {
   input.providers.r2.scope = "host";
   expect(() => planStorageCluster(input, now)).toThrow("health");
 });
-test("Neon and Supabase accept explicit project quota measurements", () => {
+test("Supabase accepts explicit project quota measurements", () => {
   const input = snapshot();
-  input.providers.neon.scope = "project";
   input.providers.supabase.scope = "project";
   expect(planStorageCluster(input, now).ready).toBe(true);
 });

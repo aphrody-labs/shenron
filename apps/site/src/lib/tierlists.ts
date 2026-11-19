@@ -103,7 +103,7 @@ export function emptyTiers(): TierlistTier[] {
   }));
 }
 
-/** Charge le pool d'images d'un template depuis le wiki (Neon `bot.*`). */
+/** Charge le pool d'images d'un template depuis le wiki (PostgreSQL `bot.*`). */
 export async function getTierlistPool(templateKey: string): Promise<TierlistItem[]> {
   const tpl = getTierlistTemplate(templateKey);
   if (!tpl || tpl.source !== "characters") return [];

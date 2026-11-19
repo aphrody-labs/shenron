@@ -1,7 +1,7 @@
 /**
  * /api/search — recherche cross-entity du wiki pour la palette ⌘K (client).
  *
- * Server-only : appelle `dbUniverse.search()` (Drizzle/Neon, schéma `bot`) côté
+ * Server-only : appelle `dbUniverse.search()` (Drizzle/PostgreSQL, schéma `bot`) côté
  * serveur → le module `db-universe` (postgres-js) ne fuit jamais dans le bundle
  * client. La palette `CommandMenu` fetch cet endpoint en debounce.
  *

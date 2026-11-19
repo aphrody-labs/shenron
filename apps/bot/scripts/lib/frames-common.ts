@@ -11,7 +11,7 @@
  * interdite (cf. CLAUDE.md).
  *
  * AUCUNE écriture DB ici. La sortie est un dataset JSON + des fichiers webp/jpg sur
- * disque ; l'ingestion dans `db_episodes` (Neon, gardé) se fait séparément.
+ * disque ; l'ingestion dans `db_episodes` (PostgreSQL, gardé) se fait séparément.
  *
  * Bun-only : `Bun.write`, `Bun.file`, `Bun.spawn`. Pas de node/npm/tsx.
  */

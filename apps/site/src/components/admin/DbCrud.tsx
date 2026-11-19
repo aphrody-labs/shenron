@@ -68,7 +68,7 @@ type AdminWikiFieldKey =
 
 /**
  * Client + chemin CRUD pour une table :
- *   - wiki éditoriale → `apiAt("/api/wiki-admin")` + `/:table[/:id]` (Neon direct)
+ *   - wiki éditoriale → `apiAt("/api/wiki-admin")` + `/:table[/:id]` (PostgreSQL direct)
  *   - sinon → `api` (proxy bot) + `/database/:table[/:id]`
  */
 function useCrud(table: string) {

@@ -44,7 +44,7 @@ export const WIKI_EDITORIAL = [
   "db_assets",
   // Piliers encyclopédiques : créés et enrichis directement dans PG
   // (scripts/ops/create-mega-data-tables.ts, enrich-lore-batch.ts). Mirrorés
-  // SQLite→Neon, ils étaient DROP puis recréés toutes les 30 min avec `visible`
+  // SQLite→PostgreSQL, ils étaient DROP puis recréés toutes les 30 min avec `visible`
   // en bigint, ce qui cassait les requêtes booléennes du site et écrasait toute
   // édition faite dans PG.
   "db_battles",

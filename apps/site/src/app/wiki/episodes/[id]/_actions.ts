@@ -2,8 +2,8 @@
 
 /**
  * Server actions dédiées au média des épisodes (vidéo + sous-titres), écrites
- * **directement dans Neon** via Drizzle (aucun proxy bot). Le wiki est édité
- * côté site → Neon est la source de vérité (cf. CLAUDE.md). Gardé admin.
+ * **directement dans PostgreSQL** via Drizzle (aucun proxy bot). Le wiki est édité
+ * côté site → PostgreSQL est la source de vérité (cf. CLAUDE.md). Gardé admin.
  */
 import { db } from "@/lib/db";
 import { botEpisodes } from "@/db/bot-schema";

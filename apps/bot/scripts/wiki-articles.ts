@@ -6,7 +6,7 @@
  * peuple un vrai champ `article` long-format (markdown encyclopédique), sourcé sur
  * le corpus RAG (planches manga + databooks + données structurées) avec citations.
  *
- * Colonnes ajoutées (PG-only, ignorées par le reverse-sync Neon→SQLite via
+ * Colonnes ajoutées (PG-only, ignorées par le reverse-sync PostgreSQL→SQLite via
  * intersection de colonnes, comme `players`/`frames`/`pages`) :
  *   - article            text      → corps markdown long
  *   - article_sources    jsonb     → [{ n, label, url, kind }] citations

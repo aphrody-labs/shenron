@@ -11,9 +11,9 @@
  *  - on N'EXCLUT PAS le wiki éditorial (ici, SQLite est la SEULE source restante) ;
  *  - on N'IMPOSE PAS le type SQLite : les tables `bot.*` ont déjà été créées par
  *    Drizzle (`drizzle.config.bot.ts` → `bot-schema.ts`) avec leurs colonnes
- *    Neon-only (`players`, `subtitles`, `frames`, `pages`, `stream_*`). On insère
+ *    PostgreSQL-only (`players`, `subtitles`, `frames`, `pages`, `stream_*`). On insère
  *    donc par **intersection de colonnes** (SQLite ∩ Postgres) : les colonnes
- *    Neon-only, absentes du SQLite, restent NULL (re-dérivées ensuite par
+ *    PostgreSQL-only, absentes du SQLite, restent NULL (re-dérivées ensuite par
  *    `import-voiranime-players*.ts` et `selfhost-manga-pages.ts`).
  *
  * Pas de conversion de date : `bot-schema.ts` stocke les dates en **bigint
@@ -72,7 +72,7 @@ async function main() {
       continue;
     }
 
-    // Intersection, dans l'ordre SQLite. Les colonnes Neon-only (jsonb absentes
+    // Intersection, dans l'ordre SQLite. Les colonnes PostgreSQL-only (jsonb absentes
     // du SQLite) sont ainsi naturellement exclues → restent NULL côté PG.
     const cols = sqliteCols.filter((c) => pgColType.has(c));
 
