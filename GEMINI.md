@@ -1,6 +1,6 @@
 # shenron — Gemini & Antigravity Operating Guidelines (`GEMINI.md`)
 
-> **Doctrine**: No Human In The Loop (NHITL) | 100% Upstream Bun v1.4.4+ & Rust 2024 | Sovereign Triad (`vps`, `cdn`, `prod`)
+> **Doctrine**: No Human In The Loop (NHITL) | 100% Upstream Bun (version pinned by package.json#packageManager) & Rust 2024 | Sovereign Triad (`vps`, `cdn`, `prod`)
 
 ## 1. Context Window & Token Optimization
 

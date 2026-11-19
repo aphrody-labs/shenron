@@ -65,7 +65,7 @@ async function main() {
 
     case "--help":
     default: {
-      console.log(`FilmCraft CLI - Headless Video Timeline & Automation Engine (Bun v1.4.4+)`);
+      console.log(`FilmCraft CLI - Headless Video Timeline & Automation Engine (Bun v${Bun.version})`);
       console.log(`Usage: filmcraft-cli <inspect|commands|probe|render|export> [options]`);
       break;
     }

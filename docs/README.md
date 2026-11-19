@@ -4,7 +4,7 @@ Documentation officielle et guides d'architecture de Shenron, la plateforme souv
 
 ## Structure des Dossiers
 
-- [`architecture/`](./architecture/README.md) : Modèle architectural, runtimes Bun v1.4.4+ et Rust 2024, topologie réseau WireGuard.
+- [`architecture/`](./architecture/README.md) : Modèle architectural, runtimes Bun et Rust 2024, topologie réseau WireGuard.
 - [`decisions/`](./decisions/) : Architecture Decision Records (ADR) conformes au standard `yolo-stack`.
 - [`operations/`](./operations/) : Runbooks de production, pipelines de déploiement zstd, sauvegardes PostgreSQL et reprises après incident.
 - [`runbooks/`](./runbooks/) : Guides opérationnels reproductibles :
@@ -18,4 +18,4 @@ Documentation officielle et guides d'architecture de Shenron, la plateforme souv
 
 1. Strictement **aucun emoji** dans toute la documentation et les fichiers de code.
 2. Tout fait daté ou chiffré dans ces pages provient directement du code source, de la configuration active ou d'un relevé d'infrastructure vérifié.
-3. Les spécifications techniques respectent la doctrine No Human In The Loop (NHITL), Bun v1.4.4+ natif et Rust 2024.
+3. Les spécifications techniques respectent la doctrine No Human In The Loop (NHITL), Bun natif et Rust 2024.

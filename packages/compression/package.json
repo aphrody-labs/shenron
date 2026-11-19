@@ -2,7 +2,7 @@
   "name": "@aphrody/shenron-compression",
   "version": "1.4.7",
   "private": true,
-  "description": "Sovereign ultra-fast compression, decompression, and asset conversion suite for Bun v1.4.4+, WebGPU, and R2 CDN.",
+  "description": "Sovereign ultra-fast compression, decompression, and asset conversion suite for Bun, WebGPU, and R2 CDN.",
   "homepage": "https://dragonballfr.com",
   "license": "Apache-2.0",
   "repository": {

@@ -18,7 +18,7 @@ Shenron propulse **dragonballfr.com** au sein du monorepo YOLO (`$WORKSPACE_ROOT
 
 ### En production aujourd'hui (`ssh prod`)
 
-- **`apps/site`** (Next.js 16.5+ standalone sous Bun v1.4.4+) et **`apps/bot`** (`discordx`) tournent dans des conteneurs legers issus de l'image unifiee `localhost/shenron:<sha>`.
+- **`apps/site`** (Next.js 16.5+ standalone sous Bun) et **`apps/bot`** (`discordx`) tournent dans des conteneurs legers issus de l'image unifiee `localhost/shenron:<sha>`.
 - **`apps/server`** assemble le site, l'API Shenron et les routes internes en un binaire Bun (`scripts/build/server.ts`).
 - **Base de donnees et Cache** : PostgreSQL 18 avec `pgvector` (`shenron-postgres`, schemas `public` et `bot`) et Redis (`shenron-redis`).
 - **IA Locale & MCP** :

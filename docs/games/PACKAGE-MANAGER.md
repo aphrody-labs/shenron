@@ -66,5 +66,5 @@ docker compose -f deploy/prod/docker-compose.games.yml up -d
 
 ```sh
 curl http://localhost:3030/healthz
-# {"status":"ok","gamesCount":22,"engine":"Bun v1.4.4"}
+# {"status":"ok","gamesCount":22,"engine":"Bun v1.4.5"}
 ```

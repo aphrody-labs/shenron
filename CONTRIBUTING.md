@@ -4,7 +4,7 @@ Thank you for contributing to Shenron. Shenron is the sovereign technical platfo
 
 ## Architecture and Core Principles
 
-- **Runtime Pureness**: 100% Upstream Bun v1.4.4+ and Rust 2024. Node.js, npm, yarn, and pnpm are strictly prohibited.
+- **Runtime Pureness**: 100% Upstream Bun (version pinned by package.json#packageManager) and Rust 2024. Node.js, npm, yarn, and pnpm are strictly prohibited.
 - **Strict Zero-Emoji Policy**: No emojis in source code, documentation, pull requests, commit messages, or log outputs.
 - **No Human In The Loop (NHITL)**: Scripts and workflows must run non-interactively with deterministic exits and comprehensive error logs.
 - **Immutable References**: Factual data, IDs, and cryptographic hashes must originate from verified upstream references.

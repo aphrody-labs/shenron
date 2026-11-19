@@ -70,7 +70,7 @@ async function main() {
 
     case "--help":
     default: {
-      console.log(`Sovereign Compression & Asset Conversion CLI (Bun v1.4.4+)`);
+      console.log(`Sovereign Compression & Asset Conversion CLI (Bun v${Bun.version})`);
       console.log(
         `Usage: compression-cli <compress|decompress|convert-texture|inspect-pak> [options]`,
       );

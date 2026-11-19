@@ -2,7 +2,7 @@
 
 ## 1. Stack & Runtime
 
-- 100% Upstream Bun v1.4.4+ and Rust 2024.
+- 100% Upstream Bun (version pinned by package.json#packageManager) and Rust 2024.
 - Zero npm, node, yarn, or pnpm commands.
 - Zero emojis in all code, comments, logs, and commit messages.
 

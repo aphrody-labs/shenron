@@ -1,4 +1,4 @@
-// Shenron Stdio MCP Server (Pure Bun v1.4.4)
+// Shenron Stdio MCP Server (Pure Bun)
 import * as readline from "node:readline";
 
 const rl = readline.createInterface({
@@ -11,7 +11,7 @@ const tools = [
   {
     name: "shenron_ops",
     description:
-      "Execute sovereign Shenron platform verification, zero-downtime lane deployment checks, and Bun v1.4.4 gate commands across this repository.",
+      "Execute sovereign Shenron platform verification, zero-downtime lane deployment checks, and Bun gate commands across this repository.",
     inputSchema: {
       type: "object",
       properties: {
@@ -53,7 +53,7 @@ rl.on("line", (line) => {
               content: [
                 {
                   type: "text",
-                  text: `Shenron ops action '${args.action}' executed successfully via Bun v1.4.4.`,
+                  text: `Shenron ops action '${args.action}' executed successfully via Bun ${Bun.version}.`,
                 },
               ],
             },
