@@ -1,6 +1,6 @@
 area	files	bytes	tier	gate
 (root)	41	829937	config	just check
-.agents	371	5709558	config	just check
+.agents	353	5607787	config	just check
 .cargo	1	2260	config	just check
 .claude	64	664935	config	just check
 .claude-plugin	1	492	config	just check
@@ -95,8 +95,7 @@ patches	2	6109	first-party	just check
 plugin	68	884682	first-party	just check
 replica	36	258401	docs	just check
 reports	2	120188	docs	just check
-research_notes	5	286296	docs	just check
-scripts	385	3018820	ops	bun test scripts
+scripts	346	2803054	ops	bun test scripts
 src	3	4436	first-party	just check
 templates	8	11226	content	just check
 themes	8	286701	content	just check
