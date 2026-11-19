@@ -12178,6 +12178,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "shenron-gallery"
+version = "1.4.5"
+dependencies = [
+ "anyhow",
+ "clap",
+ "gpui-fast-wgpu",
+ "gpui-kit",
+ "image",
+ "serde",
+ "serde_json",
+ "shenron-theme",
+ "windows 0.62.2",
+]
+
+[[package]]
 name = "shenron-gpu"
 version = "1.4.5"
 dependencies = [

@@ -1,0 +1,38 @@
+[package]
+name = "shenron-gallery"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+homepage.workspace = true
+repository.workspace = true
+description = "GPUI side of the pixel-parity harness: renders the component states of scripts/parity/states.json."
+publish = false
+
+[[bin]]
+name = "shenron-gallery"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = { workspace = true }
+clap = { workspace = true }
+# `test-support` exposes the headless app context, `Window::render_to_image` and the input
+# simulation of `gpui_kit::test`: the harness drives real pointer and keyboard events.
+gpui-kit = { workspace = true, features = ["test-support"] }
+image = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+shenron-theme = { workspace = true }
+
+# The headless WGPU renderer of gpui-fast exists on Linux only (Metal on macOS). Its cosmic-text
+# system is built without the system font database so only the Inter files of states.json shape.
+[target.'cfg(target_os = "linux")'.dependencies]
+gpui-fast-wgpu = "0.1.17"
+
+# Refresh rate of the display for the frame-time report of `window`.
+[target.'cfg(target_os = "windows")'.dependencies]
+windows = { workspace = true }
+
+[lints]
+workspace = true
