@@ -6,7 +6,6 @@
     "types": ["bun"]
   },
   "include": [
-    "../../packages/pipeline/src/ai/bun-yolo.d.ts",
     "tests/**/*.ts",
     "tests/**/*.tsx",
     "scripts/**/*.ts",

@@ -3,7 +3,7 @@
 # Objectif courant Shenron
 
 Ce document contient uniquement les objectifs encore pertinents. Les preuves datées et
-l’historique sont dans [REPRISE.md](docs/reference/root/REPRISE.md) ; les invariants dans
+l’historique sont dans `REPRISE.md` (supprimé du dépôt, lisible par `git show 172cebb7^:docs/reference/root/REPRISE.md`) ; les invariants dans
 [PLAN.md](docs/reference/root/PLAN.md). Une ancienne note n’est pas une nouvelle demande.
 
 ## Priorités
@@ -63,8 +63,8 @@ interface, ses données et son API ; collecter et indexer récursivement les sou
 japonaises avec Bun et Aphrody, en utilisant le VPN configuré lorsqu’il est qualifié.
 La cible propriétaire confirmée est la livraison des 17 tomes SOSH manquants
 pour compléter les 18 (clarification du 15 octobre ; la mention «177» est corrigée).
-Les 18 identités canoniques et leurs bornes de contrat sont conservées. Plan :
-[`SOSH-DELIVERY-PLAN.md`](docs/reference/root/SOSH-DELIVERY-PLAN.md).
+Les 18 identités canoniques et leurs bornes de contrat sont conservées. Plan (supprimé du dépôt) :
+`git show 172cebb7^:docs/reference/root/SOSH-DELIVERY-PLAN.md`.
 Après l’unique livraison de code pour invalider l’ISR,
 la publication de chaque vague doit passer par workers, writer et index CDN sans
 rebuild Next backend.
@@ -87,7 +87,7 @@ commune puis vérifié sur la page réellement servie. Le moteur local et ses ga
 restent sous leur propriétaire ; la demande ne permet pas de déduire une nouvelle
 architecture distante multi-utilisateur.
 
-0. Demande propriétaire du 13 octobre livrée (contrôle du 15 octobre dans REPRISE) :
+0. Demande propriétaire du 13 octobre livrée (contrôle du 15 octobre dans l’ancien `REPRISE.md`, voir plus haut) :
    accueil, catalogue épisodes/sagas, cinq GIF, aperçus et téléchargements servis par
    la release `88ac0d23`. La prochaine image commune reste coordonnée avec le dashboard.
 
@@ -115,6 +115,6 @@ architecture distante multi-utilisateur.
 
 ## Prochain travail
 
-Choisir le premier lot explicitement non livré dans `REPRISE.md`, revendiquer ses chemins,
+Choisir le premier lot explicitement non livré dans `TODO.md`, revendiquer ses chemins,
 reproduire le défaut, qualifier le propriétaire, commiter le lot vert et pousser sans réécrire
 les migrations ni les historiques.

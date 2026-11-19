@@ -6,8 +6,8 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 
 - objectif courant : [GOAL.md](GOAL.md) ;
 - invariants et architecture : [PLAN.md](docs/reference/root/PLAN.md) ;
-- reprise, preuves et incidents : [REPRISE.md](docs/reference/root/REPRISE.md) ;
-- consignes agents : [AGENTS.md](AGENTS.md) et [START-HERE.md](START-HERE.md).
+- reprise, preuves et incidents : `REPRISE.md`, supprimé du dépôt (`git show 172cebb7^:docs/reference/root/REPRISE.md`) ;
+- consignes agents : [AGENTS.md](AGENTS.md).
 
 ## Actions ouvertes
 
@@ -19,7 +19,7 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 - Vidéo native : extraction et preuves navigateur réelles, ainsi que l'optimiseur
   CDN, passent par Bun Video/FilmCraft. Terminer la qualification fabrique du
   wrapper d'encodage Shenron Video et de l'archive PNG exacte (portes natives et
-  rendu complet qualifiés le 20 octobre, voir REPRISE) ; terminer les voies encore
+  rendu complet qualifiés le 20 octobre, voir l’ancien `REPRISE.md`, supprimé du dépôt) ; terminer les voies encore
   ouvertes HLS et WebP animé. Ne pas déclarer
   une parité FFmpeg pour les opérations natives qui restent indisponibles.
 
@@ -58,7 +58,7 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
   le chargement des données administratives authentifiées en production.
 
 - Exécuter la livraison des 17 tomes SOSH manquants pour compléter 18 selon
-  [le plan confirmé](docs/reference/root/SOSH-DELIVERY-PLAN.md). Conserver les
+  le plan confirmé (`git show 172cebb7^:docs/reference/root/SOSH-DELIVERY-PLAN.md`). Conserver les
   identités existantes et le contrat 18 tomes. Réconcilier pagination/provenance,
   acquérir un tome pilote intégral puis les 16 autres ; chaque vague passe par
   relecture, backup/CAS, CDN, API et rendu réel en production. Une fois
@@ -115,4 +115,4 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
 - Construire sur VPS, transférer des artefacts scellés vers DBFR via Infra.
 - Ne jamais publier une capture, un modèle, une base ou un secret sans preuve et autorisation.
 
-Les tâches livrées et les anciennes décisions restent dans `REPRISE.md`, pas dans cette file.
+Les tâches livrées et les anciennes décisions restent dans l’ancien `REPRISE.md` (supprimé du dépôt, voir l’en-tête), pas dans cette file.
