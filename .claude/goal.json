@@ -3,15 +3,62 @@
   "active": true,
   "maxContinuations": 40,
   "steps": [
-    { "id": 0, "name": "Purge Vercel/Neon/Workers (code + accounts)", "status": "done", "evidence": "commits 154d7db2 dd85f40e d4cd6e92; Vercel project deleted; fr2 pool prd-only", "blocked": "Neon shenron-overflow export after quota reset" },
-    { "id": "0b", "name": "Ship pending fixes to prd (23d70bf9 /.well-known, React #418) via fr1 build", "status": "todo" },
-    { "id": 1, "name": "shenron-deployd + signed manifest + fr1 runner; deploy shenron-tv without SSH, forced rollback", "status": "todo" },
-    { "id": 2, "name": "Leave Docker: native Postgres/Redis, systemd units per service, restore test on fr2", "status": "todo" },
-    { "id": 3, "name": "shenron-edge (Pingora + rustls + ACME) replaces nginx on fr2 then prd, header diff empty", "status": "todo" },
-    { "id": 4, "name": "Garage replaces R2 and the shenron-cdn Worker", "status": "todo" },
-    { "id": 5, "name": "Remove Redis (moka, Postgres queues)", "status": "todo" },
-    { "id": 6, "name": "Bot in Rust (twilight), unit bot = rust", "status": "todo" },
-    { "id": 7, "name": "Site in Rust (Leptos), route by route, unit site = rust", "status": "todo" },
-    { "id": 8, "name": "Leave cloudflared and Cloudflare proxy (Hickory DNS, OVH anti-DDoS)", "status": "todo" }
+    {
+      "id": 0,
+      "name": "Purge Vercel/Neon/Workers (code + accounts)",
+      "status": "done",
+      "evidence": "commits 154d7db2 dd85f40e d4cd6e92; Vercel project deleted; fr2 pool prd-only",
+      "blocked": "Neon shenron-overflow export after quota reset"
+    },
+    {
+      "id": "0b",
+      "name": "Ship pending fixes to prd (23d70bf9 /.well-known, React #418) via fr1 build",
+      "status": "todo"
+    },
+    {
+      "id": 1,
+      "name": "shenron-deployd + signed manifest + fr1 runner; deploy shenron-tv without SSH, forced rollback",
+      "status": "todo"
+    },
+    {
+      "id": "1b",
+      "name": "shenron-mcp admin tier: Postgres (schema, read query, audited write), Redis (info/get/scan), real-time context via LISTEN/NOTIFY + MCP resource subscriptions, auto-learn into shenron-memory; Claude Code connects with a bearer from env",
+      "status": "todo"
+    },
+    {
+      "id": 2,
+      "name": "Leave Docker: native Postgres/Redis, systemd units per service, restore test on fr2",
+      "status": "todo"
+    },
+    {
+      "id": 3,
+      "name": "shenron-edge (Pingora + rustls + ACME) replaces nginx on fr2 then prd, header diff empty",
+      "status": "todo"
+    },
+    {
+      "id": 4,
+      "name": "Garage replaces R2 and the shenron-cdn Worker",
+      "status": "todo"
+    },
+    {
+      "id": 5,
+      "name": "Remove Redis (moka, Postgres queues)",
+      "status": "todo"
+    },
+    {
+      "id": 6,
+      "name": "Bot in Rust (twilight), unit bot = rust",
+      "status": "todo"
+    },
+    {
+      "id": 7,
+      "name": "Site in Rust (Leptos), route by route, unit site = rust",
+      "status": "todo"
+    },
+    {
+      "id": 8,
+      "name": "Leave cloudflared and Cloudflare proxy (Hickory DNS, OVH anti-DDoS)",
+      "status": "todo"
+    }
   ]
 }
