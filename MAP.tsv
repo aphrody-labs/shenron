@@ -1,0 +1,103 @@
+area	files	bytes	tier	gate
+.agents	371	5709558	config	just check
+.cargo	1	2141	config	just check
+.claude	64	664935	config	just check
+.claude-plugin	1	492	config	just check
+.codex	2	845	config	just check
+.config	1	1795	config	just check
+.github	18	36746	ops	just check
+.vscode	3	2304	config	just check
+(root)	42	829922	config	just check
+apps/activity	63	330870	first-party	bun test apps/activity
+apps/bot	1439	29163052	first-party	bun test apps/bot
+apps/server	40	281984	first-party	bun test apps/server
+apps/site	2401	67726386	first-party	bun test apps/site
+config	5	11736	first-party	just check
+crates/dragon-pixel	19	163636	first-party	cargo clippy -p dragon-pixel --all-targets -- -D warnings (fr1)
+crates/koharu-agent	13	44843	first-party	cargo clippy -p koharu-agent --all-targets -- -D warnings (fr1)
+crates/koharu-app	10	23931	first-party	cargo clippy -p koharu-app --all-targets -- -D warnings (fr1)
+crates/koharu-canvas	7	86741	first-party	cargo clippy -p koharu-canvas --all-targets -- -D warnings (fr1)
+crates/koharu-desktop	3	20467	first-party	cargo clippy -p koharu-desktop --all-targets -- -D warnings (fr1)
+crates/koharu-library	23	267305	first-party	cargo clippy -p koharu-library --all-targets -- -D warnings (fr1)
+crates/koharu-ml	132	3522440	first-party	cargo clippy -p koharu-ml --all-targets -- -D warnings (fr1)
+crates/koharu-pipeline	27	229709	first-party	cargo clippy -p koharu-pipeline --all-targets -- -D warnings (fr1)
+crates/koharu-psd	10	82659	first-party	cargo clippy -p koharu-psd --all-targets -- -D warnings (fr1)
+crates/koharu-rasterizer	10	118782	first-party	cargo clippy -p koharu-rasterizer --all-targets -- -D warnings (fr1)
+crates/koharu-renderer	18	376619	first-party	cargo clippy -p koharu-renderer --all-targets -- -D warnings (fr1)
+crates/koharu-scene	27	230831	first-party	cargo clippy -p koharu-scene --all-targets -- -D warnings (fr1)
+crates/koharu-secrets	5	27386	first-party	cargo clippy -p koharu-secrets --all-targets -- -D warnings (fr1)
+crates/koharu-storage	12	45842	first-party	cargo clippy -p koharu-storage --all-targets -- -D warnings (fr1)
+crates/koharu-translator	26	203773	first-party	cargo clippy -p koharu-translator --all-targets -- -D warnings (fr1)
+crates/koharu-web	3	19899	first-party	cargo clippy -p koharu-web --all-targets -- -D warnings (fr1)
+crates/shenron-admin	5	18196	first-party	cargo clippy -p shenron-admin --all-targets -- -D warnings (fr1)
+crates/shenron-admin-ui	8	12046	first-party	cargo clippy -p shenron-admin-ui --all-targets -- -D warnings (fr1)
+crates/shenron-api	7	22847	first-party	cargo clippy -p shenron-api --all-targets -- -D warnings (fr1)
+crates/shenron-cli	18	196511	first-party	cargo clippy -p shenron-cli --all-targets -- -D warnings (fr1)
+crates/shenron-deployd	16	184899	first-party	cargo clippy -p shenron-deployd --all-targets -- -D warnings (fr1)
+crates/shenron-desktop	11	93692	first-party	cargo clippy -p shenron-desktop --all-targets -- -D warnings (fr1)
+crates/shenron-edge	18	121042	first-party	cargo clippy -p shenron-edge --all-targets -- -D warnings (fr1)
+crates/shenron-engine	47	565533	first-party	cargo clippy -p shenron-engine --all-targets -- -D warnings (fr1)
+crates/shenron-ffi	12	149637	first-party	cargo clippy -p shenron-ffi --all-targets -- -D warnings (fr1)
+crates/shenron-gpu	14	95425	first-party	cargo clippy -p shenron-gpu --all-targets -- -D warnings (fr1)
+crates/shenron-home	36	266229	first-party	cargo clippy -p shenron-home --all-targets -- -D warnings (fr1)
+crates/shenron-jev	20	142712	first-party	cargo clippy -p shenron-jev --all-targets -- -D warnings (fr1)
+crates/shenron-lexicon	8	50864	first-party	cargo clippy -p shenron-lexicon --all-targets -- -D warnings (fr1)
+crates/shenron-manga	7	52779	first-party	cargo clippy -p shenron-manga --all-targets -- -D warnings (fr1)
+crates/shenron-mcp	21	398519	first-party	cargo clippy -p shenron-mcp --all-targets -- -D warnings (fr1)
+crates/shenron-memory	2	8899	first-party	cargo clippy -p shenron-memory --all-targets -- -D warnings (fr1)
+crates/shenron-migrate	3	15120	first-party	cargo clippy -p shenron-migrate --all-targets -- -D warnings (fr1)
+crates/shenron-ocr-core	7	91939	first-party	cargo clippy -p shenron-ocr-core --all-targets -- -D warnings (fr1)
+crates/shenron-panels	7	58784	first-party	cargo clippy -p shenron-panels --all-targets -- -D warnings (fr1)
+crates/shenron-rag	15	128803	first-party	cargo clippy -p shenron-rag --all-targets -- -D warnings (fr1)
+crates/shenron-rag-core	22	249880	first-party	cargo clippy -p shenron-rag-core --all-targets -- -D warnings (fr1)
+crates/shenron-re	49	556152	first-party	cargo clippy -p shenron-re --all-targets -- -D warnings (fr1)
+crates/shenron-studio	6	17160	first-party	cargo clippy -p shenron-studio --all-targets -- -D warnings (fr1)
+crates/shenron-theme	2	2210	first-party	cargo clippy -p shenron-theme --all-targets -- -D warnings (fr1)
+crates/shenron-tv	7	669659	first-party	cargo clippy -p shenron-tv --all-targets -- -D warnings (fr1)
+crates/shenron-video	4	21840	first-party	cargo clippy -p shenron-video --all-targets -- -D warnings (fr1)
+data	426	46419136	content	just check
+deploy	93	489980	ops	just check
+design-system	1	6513	first-party	just check
+docs	102	10004424	docs	link check
+migration	1	7543	ops	just check
+packages/activity	40	275225	first-party	bun test packages/activity
+packages/api	120	917264	first-party	bun test packages/api
+packages/auth	34	112054	first-party	bun test packages/auth
+packages/compression	10	28060	first-party	bun test packages/compression
+packages/config	113	358022	first-party	bun test packages/config
+packages/crunchyroll	21	79806	first-party	bun test packages/crunchyroll
+packages/db	104	676700	first-party	bun test packages/db
+packages/dbxv2	33	159599	first-party	bun test packages/dbxv2
+packages/decision	4	15669	first-party	bun test packages/decision
+packages/discord-kit	13	38850	first-party	bun test packages/discord-kit
+packages/engine	51	2465902	first-party	bun test packages/engine
+packages/filmcraft	8	24105	first-party	bun test packages/filmcraft
+packages/hyperframes	7	9333	first-party	bun test packages/hyperframes
+packages/images	17	69239	first-party	bun test packages/images
+packages/kit	5	13260	first-party	bun test packages/kit
+packages/koharu	21	2146203	first-party	bun test packages/koharu
+packages/lexicon	13	124620	first-party	bun test packages/lexicon
+packages/m3-ai	13	89038	first-party	bun test packages/m3-ai
+packages/m3-motion	14	49548	first-party	bun test packages/m3-motion
+packages/m3-primitives	56	252520	first-party	bun test packages/m3-primitives
+packages/m3-reader	9	83483	first-party	bun test packages/m3-reader
+packages/m3-theme	9	69125	first-party	bun test packages/m3-theme
+packages/m3-tokens	11	62755	first-party	bun test packages/m3-tokens
+packages/media	27	134440	first-party	bun test packages/media
+packages/native	21	130021	first-party	bun test packages/native
+packages/next-host	8	20691	first-party	bun test packages/next-host
+packages/pipeline	236	2246717	first-party	bun test packages/pipeline
+packages/remotion	7	11461	first-party	bun test packages/remotion
+packages/test-dom	2	4218	first-party	bun test packages/test-dom
+packages/ui	510	43236474	first-party	bun test packages/ui
+packages/video	6	31566	first-party	bun test packages/video
+patches	2	6109	first-party	just check
+plugin	68	884682	first-party	just check
+replica	36	258401	docs	just check
+reports	2	120188	docs	just check
+research_notes	5	286296	docs	just check
+scripts	386	3022481	ops	bun test scripts
+src	3	4436	first-party	just check
+templates	8	11226	content	just check
+themes	8	286701	content	just check
+third_party	4	621	vendored	-
