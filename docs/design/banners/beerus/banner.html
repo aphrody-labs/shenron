@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Dragon Ball Super : Beerus</title>
+<!--
+  Banners of the Dragon Ball Super: Beerus arc on DBFR. Built from CSS, the DBFR logo and the measured
+  palette only (packages/ui/src/tokens.ts, crates/dragon-pixel roster aura colours): no official artwork.
+  ?style=ki|type|manga  &w=<px>&h=<px>   exported by docs/design/banners/beerus/export.ts
+-->
+<style>
+@font-face { font-family: "Inter Display"; font-weight: 900; src: url("../../../../apps/site/public/fonts/InterDisplay-Black.ttf"); }
+@font-face { font-family: "Inter"; font-weight: 600; src: url("../../../../apps/site/public/fonts/Inter-SemiBold.ttf"); }
+@font-face { font-family: "Inter"; font-weight: 800; src: url("../../../../apps/site/public/fonts/Inter-ExtraBold.ttf"); }
+:root {
+  --bg: #0a0a0a; --card: #141410; --bone: #efe9d8; --ink: #131b08;
+  --orange: #e78220; --orange-300: #ff9c48; --navy: #1e244d; --ki: #4ba8ff;
+  --hakai: #9452db; --hakai-deep: #2a1446; --god: #f22e38; --gold: #fefd03;
+}
+* { box-sizing: border-box; margin: 0; }
+html, body { width: var(--w); height: var(--h); overflow: hidden; background: var(--bg); }
+.banner { position: relative; width: var(--w); height: var(--h); overflow: hidden; font-family: "Inter", system-ui, sans-serif; color: var(--bone); }
+/* Safe zone: the central 80 %. */
+.safe { position: absolute; inset: 18% 10% 30% 10%; display: flex; flex-direction: column; justify-content: center; gap: calc(var(--u) * 1); }
+.logo { position: absolute; top: 7%; left: 10%; height: calc(var(--u) * 2.6); width: auto; }
+.kicker { font-weight: 800; letter-spacing: .14em; text-transform: uppercase; font-size: calc(var(--u) * 1.5); color: var(--orange-300); }
+h1 { font-family: "Inter Display", "Inter", sans-serif; font-weight: 900; line-height: .95; font-size: calc(var(--u) * 5); letter-spacing: -.02em; }
+p { font-weight: 600; font-size: calc(var(--u) * 1.4); line-height: 1.35; max-width: 46ch; color: var(--bone); }
+.cta { position: absolute; right: 10%; bottom: 9%; min-height: 44px; display: inline-flex; align-items: center; gap: .6em;
+  padding: calc(var(--u) * .9) calc(var(--u) * 1.8); border-radius: 999px; font-weight: 800; font-size: calc(var(--u) * 1.6);
+  background: var(--orange); color: var(--bg); border: 3px solid var(--bg); box-shadow: 0 0 0 3px var(--orange); }
+.eps { position: absolute; left: 10%; bottom: 10%; display: flex; gap: calc(var(--u) * .6); }
+.eps span { display: grid; place-items: center; width: calc(var(--u) * 3); height: calc(var(--u) * 3); border-radius: 50%;
+  font-weight: 800; font-size: calc(var(--u) * 1.4); }
+
+/* 1. Ki contre Hakai: two energies meeting in the middle. */
+.ki { background:
+  radial-gradient(60% 120% at 18% 55%, rgba(231,130,32,.85), transparent 60%),
+  radial-gradient(60% 120% at 82% 45%, rgba(148,82,219,.9), transparent 62%),
+  radial-gradient(12% 40% at 50% 50%, rgba(246,255,255,.95), transparent 70%),
+  linear-gradient(100deg, #2b1200 0%, var(--bg) 45%, var(--bg) 55%, var(--hakai-deep) 100%); }
+.ki::before { content: ""; position: absolute; inset: 0;
+  background: repeating-conic-gradient(from 0deg at 50% 50%, rgba(255,255,255,.07) 0 2deg, transparent 2deg 9deg); mix-blend-mode: screen; }
+.ki h1 { text-shadow: 0 0 calc(var(--u) * 1.4) rgba(148,82,219,.65); }
+.ki .eps span { background: rgba(10,10,10,.6); border: 2px solid var(--orange-300); color: var(--bone); }
+
+/* 2. Typographie: the name as the image. */
+.type { background: var(--navy); }
+.type .word { position: absolute; right: -2%; top: 50%; transform: translateY(-50%); font-family: "Inter Display", sans-serif; font-weight: 900;
+  font-size: calc(var(--h) * .62); line-height: 1; color: transparent; -webkit-text-stroke: calc(var(--u) * .25) rgba(239,233,216,.18); letter-spacing: -.04em; }
+.type .bar { position: absolute; left: 0; top: 0; bottom: 0; width: 1.6%; background: linear-gradient(var(--orange), var(--god)); }
+.type h1 span { color: var(--orange); }
+.type .eps span { background: var(--orange); color: var(--bg); }
+
+/* 3. Planche: manga page, screentone and ink panels. */
+.manga { background: var(--bone); color: var(--ink); }
+.manga .panels { position: absolute; inset: 4%; display: grid; grid-template-columns: 1.15fr .85fr; grid-template-rows: 1fr 1fr; gap: 2%; }
+.manga .panels i { border: calc(var(--u) * .35) solid var(--ink); background: radial-gradient(circle, rgba(19,27,8,.22) 22%, transparent 24%) 0 0 / calc(var(--u) * .9) calc(var(--u) * .9); }
+.manga .panels i:first-child { grid-row: span 2; background: var(--bone); }
+.manga .panels i:nth-child(2) { background:
+  repeating-linear-gradient(115deg, var(--ink) 0 2px, transparent 2px calc(var(--u) * 1.1)), var(--bone); opacity: .9; }
+.manga .safe { inset: 20% 50% 26% 9%; justify-content: flex-start; }
+.manga h1 { font-size: calc(var(--u) * 4.2); }
+.manga .logo { top: 8%; }
+.manga .logo { left: 9%; }
+.manga .eps { left: 9%; }
+.manga .kicker { color: #844500; }
+.manga p { color: var(--ink); }
+.manga .eps span { border: 2px solid var(--ink); background: var(--bone); color: var(--ink); }
+.manga .cta { box-shadow: 0 0 0 3px var(--ink); border-color: var(--bone); }
+
+/* Square and tall formats stack everything. */
+.square .safe, .square.manga .safe { inset: 20% 10% 24% 10%; justify-content: flex-end; }
+.square h1 { font-size: calc(var(--u) * 8.5); }
+.square p { font-size: calc(var(--u) * 2.6); }
+.square .eps { bottom: 9%; }
+.square .eps span { width: calc(var(--u) * 4.4); height: calc(var(--u) * 4.4); font-size: calc(var(--u) * 2); }
+.square .logo { height: calc(var(--u) * 4.5); }
+.square .cta { font-size: calc(var(--u) * 2.4); }
+.square.manga .panels { grid-template-columns: 1fr; grid-template-rows: 1fr .28fr; }
+.square.manga .safe { inset: 20% 10% 31% 10%; }
+.square.manga .panels i:first-child { grid-row: auto; }
+.square.manga .panels i:last-child { display: none; }
+.square .type-word-fit { font-size: calc(var(--w) * .32); }
+</style>
+</head>
+<body>
+<div class="banner" id="banner">
+  <div class="word" aria-hidden="true"></div>
+  <div class="bar" aria-hidden="true"></div>
+  <div class="panels" aria-hidden="true"><i></i><i></i><i></i></div>
+  <img class="logo" src="../../../../apps/site/public/brand/dragonballfr-logo.svg" alt="DragonBall.fr">
+  <div class="eps" aria-label="Épisodes 1 à 6"><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span></div>
+  <div class="safe">
+    <div class="kicker">Dragon Ball Super</div>
+    <h1>Beerus,<br><span>dieu de la Destruction</span></h1>
+    <p>Les six épisodes de l'arc, leurs résumés et la chronologie, du réveil de Beerus au combat des dieux.</p>
+  </div>
+  <a class="cta" href="https://dragonballfr.com/wiki/episodes/875">Voir les épisodes</a>
+</div>
+<script>
+const q = new URLSearchParams(location.search);
+const w = Number(q.get("w") || 1500), h = Number(q.get("h") || 500), style = q.get("style") || "ki";
+const root = document.documentElement.style;
+root.setProperty("--w", `${w}px`); root.setProperty("--h", `${h}px`);
+root.setProperty("--u", `${Math.min(w, h * 3) / 100}px`);
+const banner = document.getElementById("banner");
+banner.classList.add(style);
+if (w / h < 1.6) banner.classList.add("square");
+const word = banner.querySelector(".word");
+if (style === "type") { word.textContent = "BEERUS"; if (w / h < 1.6) word.classList.add("type-word-fit"); } else word.remove();
+if (style !== "type") banner.querySelector(".bar").remove();
+if (style !== "manga") banner.querySelector(".panels").remove();
+document.title = `${style}-${w}x${h}`;
+</script>
+</body>
+</html>
