@@ -129,14 +129,14 @@ pub fn accepted_lang(headers: &HeaderMap) -> Lang {
         .map(|part| {
             let mut pieces = part.trim().split(';');
             let tag = pieces.next().unwrap_or("").trim();
-            let q = pieces
+            let quality = pieces
                 .map(str::trim)
                 .find(|param| param.starts_with("q="))
                 .map_or(Some(1.0), |param| js_number(&param[2..]))
                 .unwrap_or(0.0);
-            (tag.chars().take(2).collect::<String>().to_lowercase(), q)
+            (tag.chars().take(2).collect::<String>().to_lowercase(), quality)
         })
-        .filter(|(_, q)| *q > 0.0)
+        .filter(|(_, quality)| *quality > 0.0)
         .collect();
     ranked.sort_by(|a, b| b.1.total_cmp(&a.1));
     ranked

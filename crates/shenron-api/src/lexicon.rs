@@ -153,8 +153,8 @@ async fn list(
         Err(message) => return invalid(message),
     };
     let lang = query.lang.unwrap_or_else(|| accepted_lang(&headers));
-    let q = query.q.as_deref().map(str::trim).unwrap_or_default();
-    let page: Vec<(&Term, Option<u32>)> = if q.is_empty() {
+    let search = query.q.as_deref().map(str::trim).unwrap_or_default();
+    let page: Vec<(&Term, Option<u32>)> = if search.is_empty() {
         lexicon
             .terms()
             .iter()
@@ -163,7 +163,7 @@ async fn list(
             .collect()
     } else {
         let options = SearchOptions { kind: query.kind, limit: Some(SEARCH_MAX_LIMIT) };
-        lexicon.search(q, options).into_iter().map(|hit| (hit.term, Some(hit.score))).collect()
+        lexicon.search(search, options).into_iter().map(|hit| (hit.term, Some(hit.score))).collect()
     };
     let items = page
         .iter()

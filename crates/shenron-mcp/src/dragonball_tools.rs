@@ -1127,8 +1127,8 @@ pub(crate) struct CanonCheckRequest {
 }
 
 pub(crate) async fn canon_check(r: CanonCheckRequest) -> CallToolResult {
-    let q = r.question.map(|q| q.trim().to_owned()).filter(|q| !q.is_empty());
-    done(site_get("/api/canon", vec![("q", q)]).await)
+    let question = r.question.map(|text| text.trim().to_owned()).filter(|text| !text.is_empty());
+    done(site_get("/api/canon", vec![("q", question)]).await)
 }
 
 /// Input of `dragonball.canon_references`.

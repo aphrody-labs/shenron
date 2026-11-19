@@ -592,21 +592,21 @@ pub fn filter_by_engine(engine: &GameEngine) -> Vec<DragonBallGame> {
 
 /// Search games matching a freeform query against id, title, developer, or package ids.
 pub fn search_catalog(query: &str) -> Vec<DragonBallGame> {
-    let q = query.trim().to_ascii_lowercase();
-    if q.is_empty() {
+    let needle = query.trim().to_ascii_lowercase();
+    if needle.is_empty() {
         return get_dragon_ball_catalog();
     }
 
     get_dragon_ball_catalog()
         .into_iter()
         .filter(|g| {
-            g.id.to_ascii_lowercase().contains(&q)
-                || g.title.to_ascii_lowercase().contains(&q)
-                || g.title_ja.as_deref().unwrap_or("").contains(&q)
-                || g.developer.to_ascii_lowercase().contains(&q)
-                || g.publisher.to_ascii_lowercase().contains(&q)
-                || g.android_package_ids.iter().any(|p| p.to_ascii_lowercase().contains(&q))
-                || g.steam_app_id.map(|id| id.to_string().contains(&q)).unwrap_or(false)
+            g.id.to_ascii_lowercase().contains(&needle)
+                || g.title.to_ascii_lowercase().contains(&needle)
+                || g.title_ja.as_deref().unwrap_or("").contains(&needle)
+                || g.developer.to_ascii_lowercase().contains(&needle)
+                || g.publisher.to_ascii_lowercase().contains(&needle)
+                || g.android_package_ids.iter().any(|p| p.to_ascii_lowercase().contains(&needle))
+                || g.steam_app_id.map(|id| id.to_string().contains(&needle)).unwrap_or(false)
         })
         .collect()
 }
