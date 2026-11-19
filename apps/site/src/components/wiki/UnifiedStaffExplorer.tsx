@@ -277,6 +277,9 @@ export function UnifiedStaffExplorer({ items, initialTier = "all" }: UnifiedStaf
                   {item.image ? (
                     <img
                       src={item.image}
+                      width={48}
+                      height={48}
+                      decoding="async"
                       alt={`Portrait de ${item.nameFr}`}
                       loading="lazy"
                       className="h-12 w-12 shrink-0 rounded-full border border-orange-400/40 object-cover bg-black/40"

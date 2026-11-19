@@ -12,6 +12,24 @@ export {
 export { provePixelEquality, prouverEgalitePixels, psnr, type PixelEqualityResult } from "./pixels";
 export { toWebp, type ToWebpOptions, type ToWebpResult } from "./webp";
 export {
+  DEFAULT_IMAGE_CLASS,
+  ENCODE_PROFILES,
+  convertWithProof,
+  isMonochrome,
+  plannedVariants,
+  supportedImageEncoders,
+  toAvif,
+  type AvifSettings,
+  type ConvertOptions,
+  type ConvertResult,
+  type EncodeProfile,
+  type EncoderSupport,
+  type ImageClass,
+  type ModernImageFormat,
+  type ToAvifOptions,
+  type WebpSettings,
+} from "./encode";
+export {
   selectionnerIllustration,
   selectIllustration,
   scoreCandidate,

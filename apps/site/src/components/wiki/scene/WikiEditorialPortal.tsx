@@ -88,6 +88,7 @@ export function WikiEditorialPortal({
                 className={styles.mascot}
                 data-mascot={mascot.id}
                 src={mascot.src}
+                decoding="async"
                 width={mascot.width}
                 height={mascot.height}
                 alt=""
@@ -167,7 +168,14 @@ export function WikiEditorialPortal({
             {releases.map((entry) => (
               <Link key={entry.id} href={entry.href} className={styles.release}>
                 {entry.image && (
-                  <img src={entry.image} width={76} height={104} alt="" loading="lazy" />
+                  <img
+                    src={entry.image}
+                    width={76}
+                    height={104}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                  />
                 )}
                 <div>
                   <time dateTime={new Date(entry.date).toISOString()}>

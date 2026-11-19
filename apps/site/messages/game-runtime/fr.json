@@ -4,5 +4,6 @@
   "description": "Dragon Ball Xenoverse 2 (Steam App ID 454650) s’exécute nativement via le client Steam ou s’installe en headless via SteamCMD pour l’inspection des dépôts et l’extraction des archives CPK.",
   "wasm": "Analyse locale en WebAssembly",
   "wasmDescription": "L’explorateur ci-dessous analyse vos fichiers CPK et modèles 3D directement dans le navigateur.",
-  "details": "Accéder au jeu et à l’explorateur"
+  "details": "Accéder au jeu et à l’explorateur",
+  "webgpuMissing": "Ce jeu demande WebGPU, absent de ce navigateur ou de cet appareil. Utilise une version récente de Chrome, Edge ou Safari sur un ordinateur compatible."
 }

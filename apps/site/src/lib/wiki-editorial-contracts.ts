@@ -9,11 +9,17 @@ export const CONTRIBUTION_STATUSES = [
   "withdrawn",
 ] as const;
 
-export const reviewContributionSchema = z.object({
-  id: z.string().trim().min(1).max(64),
-  action: z.enum(["accept", "reject"]),
-  note: z.string().trim().max(4000).optional(),
-});
+/** A rejection must explain itself: the note is what the contributor reads. */
+export const reviewContributionSchema = z
+  .object({
+    id: z.string().trim().min(1).max(64),
+    action: z.enum(["accept", "reject"]),
+    note: z.string().trim().max(4000).optional(),
+  })
+  .refine((review) => review.action !== "reject" || (review.note?.length ?? 0) > 0, {
+    path: ["note"],
+    message: "A rejection needs a reason",
+  });
 
 export const wikiAiRequestSchema = z.object({
   query: z.string().trim().min(1).max(2000),

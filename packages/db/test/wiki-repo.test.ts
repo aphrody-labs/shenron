@@ -100,11 +100,29 @@ describe("wiki read repository SQL", () => {
     expect(compiled["bun-sql"]).toEqual(compiled["postgres-js"]!);
   });
 
-  test("search is an ILIKE over the search columns with escaped metacharacters", () => {
+  test("search folds accents, tolerates typos on name columns and escapes metacharacters", () => {
+    const FUZZY_EXCLUDED = new Set(["slug", "description", "wishText"]);
+    const count = (sql: string, fragment: string) => sql.split(fragment).length - 1;
+    for (const category of ["techniques", "tools", "wishes"] as const) {
+      const q = compiled["postgres-js"]![`${category}:list-q`]!;
+      const columns = WIKI_REGISTRY[category].searchColumns;
+      const fuzzy = columns.filter((key) => !FUZZY_EXCLUDED.has(key));
+      expect(q.sql).not.toContain(" ilike ");
+      expect(count(q.sql, "unaccent(lower(")).toBe(columns.length * 2 + fuzzy.length * 2);
+      expect(count(q.sql, " like unaccent(lower($")).toBe(columns.length);
+      expect(count(q.sql, "similarity(unaccent(lower(")).toBe(fuzzy.length);
+      expect(count(q.sql, ") > $")).toBe(fuzzy.length);
+      expect(q.params).toContain("%Son 50\\%\\_%");
+      expect(q.params).toContain("Son 50%_");
+      expect(q.params).toContain(0.3);
+    }
+    const tools = compiled["postgres-js"]!["tools:list-q"]!;
+    expect(tools.sql).not.toContain('similarity(unaccent(lower("bot"."db_tools"."slug"))');
+    expect(tools.sql).not.toContain('similarity(unaccent(lower("bot"."db_tools"."description"))');
+    expect(tools.sql).toContain('similarity(unaccent(lower("bot"."db_tools"."name"))');
     const q = compiled["postgres-js"]!["techniques:list-q"]!;
-    expect(q.sql.match(/ ilike /g)?.length).toBe(WIKI_REGISTRY.techniques.searchColumns.length);
-    expect(q.params).toContain("%Son 50\\%\\_%");
     expect(q.sql).toMatch(/order by "bot"\."db_techniques"\."id" asc limit \$\d+$/);
+    expect(compiled["bun-sql"]!["techniques:list-q"]).toEqual(q);
     expect(escapeLike("a\\b")).toBe("a\\\\b");
   });
 

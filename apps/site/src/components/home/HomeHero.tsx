@@ -38,6 +38,9 @@ export function HomeHero({
       id="hero"
       className={`${styles.hero} ${carousel ? styles.hasCarousel : ""} ${className}`}
     >
+      <h1 className="sr-only">
+        <T k="accueil.hero.title" />
+      </h1>
       {carousel ? (
         <HomeBeerusCarousel slides={slides} />
       ) : (
@@ -45,16 +48,13 @@ export function HomeHero({
       )}
       <KintoUnVolant />
       <div className={styles.content}>
-        <h1 className="sr-only">
-          <T k="accueil.hero.title" />
-        </h1>
         <div className={styles.heroBrandRow}>
           <img
             src="/brand/dragonballfr-logo.svg"
             alt=""
             width={416}
             height={106}
-            fetchPriority="high"
+            decoding="async"
             className={styles.siteLogo}
           />
           {hero.lede.trim() && <p className={styles.lede}>{hero.lede.trim()}</p>}

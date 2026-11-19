@@ -75,6 +75,14 @@ export function isContributableColumn(col: string): boolean {
   return col in CONTRIBUTABLE_COLUMNS;
 }
 
+/** Préfixe de `wiki_contributions.authorId` pour une proposition déposée par un agent. */
+export const AGENT_AUTHOR_PREFIX = "agent:";
+
+/** Vrai si l'auteur est un agent (clé d'API), pas un membre : exclu du palmarès public. */
+export function isAgentAuthor(authorId: string | null | undefined): boolean {
+  return typeof authorId === "string" && authorId.startsWith(AGENT_AUTHOR_PREFIX);
+}
+
 /** Bornes de saisie — alignées sur celles de `depose-wiki.ts`. */
 export const CONTRIBUTION_MAX = 40_000;
 export const CONTRIBUTION_COMMENT_MAX = 1_000;

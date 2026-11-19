@@ -288,6 +288,8 @@ export function EpisodeScenes({
                 <figure className="flex min-w-0 flex-wrap items-center gap-3">
                   <img
                     src={gifUrl}
+                    loading="lazy"
+                    decoding="async"
                     alt={`GIF de scènes — ${title}`}
                     width={160}
                     height={90}

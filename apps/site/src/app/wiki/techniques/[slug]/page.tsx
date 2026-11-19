@@ -147,10 +147,10 @@ export default async function TechniqueDetailPage({
           name={tech.name}
           chips={
             <>
-              <span className="font-scouter text-xs uppercase tracking-widest px-3 py-1 rounded bg-black/60 border border-dbz-blue/40 text-dbz-blue-light shadow-[2px_2px_0px_#000]">
+              <span className="font-scouter text-xs uppercase tracking-widest px-3 py-1 rounded bg-black/60 border border-dbz-blue/40 text-dbz-blue-light shadow-[2px_2px_0px_black]">
                 TECH #{tech.id}
               </span>
-              <span className="font-saiyan text-xs uppercase tracking-widest px-3 py-1 rounded bg-dbz-orange/20 border border-dbz-orange/50 text-dbz-orange shadow-[2px_2px_0px_#000]">
+              <span className="font-saiyan text-xs uppercase tracking-widest px-3 py-1 rounded bg-dbz-orange/20 border border-dbz-orange/50 text-dbz-orange shadow-[2px_2px_0px_black]">
                 {libelleType(tech.type)}
               </span>
             </>

@@ -109,7 +109,7 @@ export default async function WikiPage({ params }: { params: Promise<{ slug: str
         {isAdmin && (
           <Link
             href={`/admin/wiki/page/${page.id}`}
-            className="shrink-0 inline-flex items-center gap-2 rounded border-2 border-black bg-dbz-orange/20 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-dbz-orange shadow-[2px_2px_0px_#000] hover:bg-dbz-orange hover:text-black transition-all"
+            className="shrink-0 inline-flex items-center gap-2 rounded border-2 border-black bg-dbz-orange/20 px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider text-dbz-orange shadow-[2px_2px_0px_black] hover:bg-dbz-orange hover:text-black transition-all"
           >
             {r("editPage")}
           </Link>

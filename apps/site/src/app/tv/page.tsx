@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { dbUniverse } from "@/lib/db-universe";
 import { assetUrl } from "@/lib/assets";
 import { TvWatchView, type TvEpisodeItem } from "@/components/tv/TvWatchView";
-import type { VideoSourceOption } from "@/components/tv/TvPlayer";
-import { isShenronEpisodeVideoURL } from "@/lib/episode-video-source";
+import { tvSourcesForEpisode } from "@/lib/tv-sources";
 
 export const dynamic = "force-dynamic";
 
@@ -41,62 +41,8 @@ export default async function TvHubPage({
 
   const nav = await dbUniverse.episodeNav(ep.series, ep.number_in_series);
 
-  const candidateUrls = [
-    ep.video_url,
-    ep.stream_url,
-    ...(ep.players ?? []).map((entry: { embedUrl?: string }) => entry.embedUrl),
-  ].filter((src): src is string => Boolean(src && URL.canParse(src)));
-
-  const cdnSourceUrl = candidateUrls.find((source) => {
-    const url = new URL(source);
-    return (
-      isShenronEpisodeVideoURL(url) &&
-      (url.pathname.includes(`/episodes/${ep.id}/`) ||
-        (ep.id === 875 && url.pathname.includes("/episodes/beerus-01/")))
-    );
-  });
-
-  const sources: VideoSourceOption[] = [];
-
-  if (cdnSourceUrl) {
-    sources.push({
-      id: "shenron-cdn",
-      name: "Shenron 1080p FHD",
-      type: "direct",
-      url: cdnSourceUrl,
-      quality: "1080p",
-    });
-  } else if (ep.video_url && !ep.video_url.includes("youtube.com")) {
-    sources.push({
-      id: "direct-stream",
-      name: "Direct Stream",
-      type: "direct",
-      url: ep.video_url,
-    });
-  }
-
-  (ep.players ?? []).forEach(
-    (player: { name: string; embedUrl: string; lang?: string }, index: number) => {
-      if (!player.embedUrl) return;
-      const label = `${player.name || "Lecteur " + (index + 1)}${player.lang ? ` (${player.lang.toUpperCase()})` : ""}`;
-      sources.push({
-        id: `player-${index}`,
-        name: label,
-        type: "iframe",
-        url: player.embedUrl,
-      });
-    },
-  );
-
-  if (sources.length === 0) {
-    sources.push({
-      id: "default-stream",
-      name: "Flux Officiel DBFR",
-      type: "direct",
-      url: "https://cdn.dragonballfr.com/media/episodes/beerus-01/master.mp4",
-      quality: "1080p",
-    });
-  }
+  const sources = tvSourcesForEpisode(ep);
+  if (sources.length === 0) redirect(`/wiki/episodes/${ep.id}`);
 
   const aroundEpisodes = nav?.around ?? [ep];
   const episodesList: TvEpisodeItem[] = aroundEpisodes.map((item) => ({

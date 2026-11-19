@@ -137,7 +137,7 @@ export function ChronologyAtlas({
                       className="absolute inset-0 h-full w-full object-cover object-center opacity-20 transition-opacity duration-300 group-hover:opacity-30"
                     />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#101116] via-[#101116]/85 to-[#101116]/35" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-dbz-bg via-dbz-bg/85 to-dbz-bg/35" />
                   <div className="relative flex h-full flex-col">
                     <div className="flex items-start justify-between gap-3">
                       <p className="text-xs font-bold uppercase tracking-[0.14em] text-dbz-orange">

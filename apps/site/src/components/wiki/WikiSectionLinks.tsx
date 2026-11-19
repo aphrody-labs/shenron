@@ -20,6 +20,9 @@ export function WikiSectionLinks({ links }: { links: WikiSectionLink[] }) {
           {l.image ? (
             <img
               src={l.image}
+              width={56}
+              height={56}
+              decoding="async"
               alt=""
               loading="lazy"
               className="h-14 w-14 shrink-0 rounded-md object-cover object-top ring-1 ring-white/10"

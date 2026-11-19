@@ -68,7 +68,7 @@ export function EventsStream() {
         <div className="flex items-center gap-3">
           <div
             className={`w-2.5 h-2.5 rounded-full ${
-              connected ? "bg-green-500 shadow-[0_0_8px_#22c55e]" : "bg-red-500"
+              connected ? "bg-green-500 shadow-[0_0_8px_var(--color-dbz-green)]" : "bg-red-500"
             }`}
           />
           <span className="font-saiyan text-sm uppercase tracking-widest">

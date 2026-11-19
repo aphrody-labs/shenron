@@ -53,7 +53,7 @@
   border: 1px solid color-mix(in srgb, var(--foreground) 25%, transparent);
   border-radius: 0.75rem;
   background: var(--card);
-  box-shadow: 0 1.25rem 2.5rem color-mix(in srgb, #000 35%, transparent);
+  box-shadow: 0 1.25rem 2.5rem color-mix(in srgb, black 35%, transparent);
 }
 .featuredCover img {
   object-fit: contain;

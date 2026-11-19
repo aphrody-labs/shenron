@@ -231,7 +231,7 @@ export function WikiSearchField({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder ?? label}
           aria-label={label}
-          className="h-11 w-full rounded-xl border border-white/[0.12] bg-white/[0.04] pl-11 pr-12 text-base text-white placeholder:text-white/45 transition-colors focus:border-dbz-orange/60 focus:bg-white/[0.06] focus:outline-none sm:text-sm"
+          className="h-11 w-full rounded-xl border border-white/[0.12] bg-white/[0.04] pl-11 pr-12 text-base text-white placeholder:text-white/45 transition-colors focus:border-dbz-orange/60 focus:bg-white/[0.06] focus:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60 sm:text-sm"
         />
         {value && (
           <button
@@ -298,7 +298,7 @@ export function WikiFacet({
           })}
           aria-label={l("facetSearchLabel", { title })}
           aria-controls={`${id}-options`}
-          className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.05] px-3 text-base text-white placeholder:text-white/45 focus:border-dbz-orange/60 focus:outline-none sm:text-sm"
+          className="h-11 w-full rounded-xl border border-white/10 bg-white/[0.05] px-3 text-base text-white placeholder:text-white/45 focus:border-dbz-orange/60 focus:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60 sm:text-sm"
         />
       )}
       <div

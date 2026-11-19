@@ -8,13 +8,23 @@
  * Même moteur que la page `/wiki/search` (ILIKE + proximité trigramme pg_trgm
  * + ranking exact > préfixe > similarité) → résultats tolérants aux fautes.
  */
+import { clientIp } from "@/app/api/_client-ip";
 import { dbUniverse, type SearchResults } from "@/lib/db-universe";
+import { createMemoryRateLimiter } from "@/lib/memory-rate-limit";
 import { getLaunchConfig } from "@/lib/wiki-launch-config";
 import { isPathPublic } from "@aphrody/shenron-config/wiki-launch";
 import { searchExternalSources, type ExternalSourceRecord } from "@/lib/external-source-catalog";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+// Public route, no cache per query: each call costs pg_trgm over every entity
+// category. The command palette debounces, so 60 per minute per IP is generous.
+const searchRateLimit = createMemoryRateLimiter({
+  namespace: "search-ip",
+  windowMs: 60_000,
+  limit: 60,
+});
 
 type GlobalSearchResults = SearchResults & { sources: ExternalSourceRecord[] };
 
@@ -99,6 +109,18 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const q = (url.searchParams.get("q") ?? "").trim().slice(0, 100);
   if (q.length < 2) return Response.json(empty(q));
+  // Read-only route: only a real Redis verdict limits. The shared limiter fails
+  // closed when Redis is down (`backend: "unavailable"`); here that would turn a
+  // Redis slowdown into a search outage, so the request is served instead.
+  const decision = await searchRateLimit.consume(clientIp(req));
+  if (decision.limited && decision.backend === "redis")
+    return Response.json(
+      { error: "rate_limited" },
+      {
+        status: 429,
+        headers: { "retry-after": String(decision.retryAfter), "cache-control": "no-store" },
+      },
+    );
   const [results, cfg, external] = await Promise.all([
     dbUniverse.search(q).catch(() => null),
     getLaunchConfig(),

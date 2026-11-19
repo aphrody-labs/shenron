@@ -223,7 +223,7 @@ export function HomeBeerusCarousel({ slides }: { slides: readonly BeerusSlide[] 
                   width={1440}
                   height={810}
                   loading={position === 0 || near ? "eager" : "lazy"}
-                  fetchPriority={position === 0 ? "high" : "auto"}
+                  fetchPriority={position === 0 ? "high" : "low"}
                   decoding={position === 0 ? "sync" : "async"}
                   className={styles.mediaImage}
                 />

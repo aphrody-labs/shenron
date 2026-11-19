@@ -210,6 +210,9 @@ export default async function ContributorDetailPage({ params }: ContributorPageP
             <div className="relative mx-auto h-28 w-28 sm:h-32 sm:w-32 shrink-0 overflow-hidden rounded-2xl border-2 border-orange-500/30 bg-black/60 shadow-xl">
               <img
                 src={contributor.image}
+                width={128}
+                height={128}
+                decoding="async"
                 alt={contributor.name}
                 className="h-full w-full object-cover object-top"
               />

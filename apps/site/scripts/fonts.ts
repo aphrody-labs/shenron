@@ -45,7 +45,7 @@ const FAMILIES: readonly Family[] = [
   {
     name: "Google Sans Flex",
     slug: "google-sans-flex",
-    query: "Google+Sans+Flex:opsz,wdth,wght,ROND@6..144,25..151,1..1000,0..100",
+    query: "Google+Sans+Flex:opsz,wght,ROND@6..144,1..1000,0..100",
     subsets: ["latin", "latin-ext"],
     preload: ["latin"],
     fallback:

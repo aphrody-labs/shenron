@@ -1,6 +1,6 @@
 # @aphrody/shenron-koharu
 
-Client du moteur de traduction manga Koharu: protocole IPC typé généré depuis `koharu-app`, transport JSON Lines `koharu-sdk`, canvas wasm.
+Client du moteur de traduction manga Koharu: protocole IPC typé, transport JSON Lines `koharu-sdk`, canvas wasm.
 
 ## Commandes
 
@@ -14,6 +14,6 @@ Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce do
 
 ## Règles du dossier
 
-- `src/protocol.ts` se régénère avec `bun run --filter @aphrody/shenron-koharu protocol`.
+- `src/protocol.ts` reflète les types de `koharu-library` (`editor::types`) et les noms de `editor::dispatch::COMMANDS`.
 
 Règles générales: `AGENTS.md` à la racine.

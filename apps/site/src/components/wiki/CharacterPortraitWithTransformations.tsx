@@ -33,7 +33,7 @@ export function CharacterPortraitWithTransformations({
   return (
     <>
       <div className="wiki-infobox-header">{selected?.label ?? officialLabel}</div>
-      <div className="group relative flex items-center justify-center overflow-hidden border-b-2 border-black bg-[#0a0a0c] p-4">
+      <div className="group relative flex items-center justify-center overflow-hidden border-b-2 border-black bg-dbz-bg p-4">
         <div aria-hidden className="halftone absolute inset-0 z-0 opacity-10" />
         <ViewTransition name={viewTransitionName} share="morph">
           <WikiImg

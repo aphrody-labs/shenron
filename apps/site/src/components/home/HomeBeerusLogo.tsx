@@ -17,6 +17,7 @@ export function HomeBeerusLogo() {
       aria-hidden="true"
       width={1233}
       height={563}
+      decoding="async"
       className={styles.seriesLogo}
     />
   );

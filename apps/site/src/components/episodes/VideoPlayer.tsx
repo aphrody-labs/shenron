@@ -29,6 +29,8 @@ import {
   videoSeekTarget,
   videoResumeKey,
   videoResumePosition,
+  readResume,
+  writeResume,
   videoVolumeStep,
   isHlsSource,
 } from "@/lib/video-controls";
@@ -54,21 +56,6 @@ function trackUrl(src: string): string {
   return /^https?:\/\//i.test(src)
     ? src
     : `/api/subtitles?src=${encodeURIComponent(src.replace(/^\.?\/*/, ""))}`;
-}
-function readResume(key: string): number {
-  try {
-    return Number(localStorage.getItem(key)) || 0;
-  } catch {
-    return 0;
-  }
-}
-function writeResume(key: string, seconds: number | null) {
-  try {
-    if (seconds === null) localStorage.removeItem(key);
-    else localStorage.setItem(key, String(Math.floor(seconds)));
-  } catch {
-    // Storage can be blocked (private window); resume is a convenience only.
-  }
 }
 function timeLabel(seconds: number): string {
   const value = Math.max(0, Math.floor(Number.isFinite(seconds) ? seconds : 0));

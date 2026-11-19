@@ -24,7 +24,9 @@ const allowed = (rel: string): boolean =>
   rel === join("components", "games", "Dbxv2GpuModelViewer.tsx") ||
   // Both navigation surfaces are mounted exclusively behind the admin layout guard.
   rel === join("components", "admin", "AdminSidebar.tsx") ||
-  rel === join("components", "admin", "AdminWorkspace.tsx");
+  rel === join("components", "admin", "AdminWorkspace.tsx") ||
+  // CSP route list: names the admin DBXV2 route among the paths that may instantiate Wasm.
+  rel === join("lib", "csp-wasm-routes.ts");
 
 function* walk(dir: string): Generator<string> {
   for (const entry of readdirSync(dir, { withFileTypes: true })) {

@@ -55,6 +55,27 @@ describe("llms.txt & AI discoverability", () => {
     expect(text).toContain("/api/movies");
     expect(text).toContain("/news/rss.xml");
     expect(text).toContain("/.well-known/agent-card.json");
+    expect(text).toContain("https://dragonballfr.com/api/public/openapi.json");
+  });
+
+  test("GET /.well-known/api-catalog returns an RFC 9727 linkset", async () => {
+    const { GET } = await import("@/app/.well-known/api-catalog/route");
+    const res = GET();
+    expect(res.status).toBe(200);
+    expect(res.headers.get("content-type")).toContain("application/linkset+json");
+    const body = (await res.json()) as {
+      linkset: {
+        anchor: string;
+        "service-desc": { href: string; type: string }[];
+        "service-doc": { href: string }[];
+      }[];
+    };
+    const [entry] = body.linkset;
+    expect(entry?.anchor).toBe("https://dragonballfr.com/api");
+    expect(entry?.["service-desc"]).toEqual([
+      { href: "https://dragonballfr.com/api/public/openapi.json", type: "application/openapi+json" },
+    ]);
+    expect(entry?.["service-doc"]?.[0]?.href).toBe("https://dragonballfr.com/llms.txt");
   });
 
   test("PUBLIC_API_PREFIXES includes episodes and movies for AI crawlers in robots.txt", () => {

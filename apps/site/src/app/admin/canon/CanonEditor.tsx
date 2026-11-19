@@ -690,7 +690,8 @@ export default function CanonEditor({
                   className="h-2 w-2 shrink-0 rounded-full"
                   style={{
                     background:
-                      config.tiers.find((t) => t.id === entree.tier)?.couleur ?? "#9ca3af",
+                      config.tiers.find((t) => t.id === entree.tier)?.couleur ??
+                      "var(--color-dbz-blue-light)",
                   }}
                 />
                 <span className="font-saiyan text-sm text-white">

@@ -121,7 +121,7 @@ export function EpisodeSeriesGrid({ episodes }: { episodes: SeriesEpisode[] }) {
             }}
             aria-label={labels("searchLabel")}
             placeholder={labels("searchPlaceholder")}
-            className="min-h-11 w-full rounded-full border border-white/12 bg-card pl-10 pr-4 text-sm text-foreground placeholder:text-[var(--muted-foreground)] focus:border-primary focus:outline-none"
+            className="min-h-11 w-full rounded-full border border-white/12 bg-card pl-10 pr-4 text-sm text-foreground placeholder:text-[var(--muted-foreground)] focus:border-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
           />
         </div>
         <a

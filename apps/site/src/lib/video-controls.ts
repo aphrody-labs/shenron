@@ -80,6 +80,24 @@ export function videoResumePosition(saved: number, duration: number): number | n
   return saved;
 }
 
+/** Saved position for a resume key; 0 when storage is blocked or empty. */
+export function readResume(key: string): number {
+  try {
+    return Number(localStorage.getItem(key)) || 0;
+  } catch {
+    return 0;
+  }
+}
+/** Persist or clear a resume position; storage failures are ignored. */
+export function writeResume(key: string, seconds: number | null) {
+  try {
+    if (seconds === null) localStorage.removeItem(key);
+    else localStorage.setItem(key, String(Math.floor(seconds)));
+  } catch {
+    // Storage can be blocked (private window); resume is a convenience only.
+  }
+}
+
 /** Volume stepping that stays inside [0, 1] without float drift. */
 export function videoVolumeStep(volume: number, delta: number): number {
   return Math.round(Math.min(1, Math.max(0, volume + delta)) * 100) / 100;

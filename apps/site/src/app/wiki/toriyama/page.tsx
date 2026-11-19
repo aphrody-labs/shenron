@@ -305,6 +305,8 @@ export default async function ToriyamaPage() {
         <div className="pointer-events-none absolute right-4 bottom-2 select-none opacity-5">
           <img
             src="/api/ext-image/upload/wikipedia/commons/5/58/Signature_of_Akira_Toriyama.svg"
+            loading="lazy"
+            decoding="async"
             alt=""
             className="h-24 w-auto invert"
             aria-hidden="true"
@@ -378,6 +380,9 @@ export default async function ToriyamaPage() {
                     <img
                       src={assetUrl(o.coverUrl)}
                       alt={o.fallbackTitle}
+                      width={80}
+                      height={112}
+                      decoding="async"
                       loading="lazy"
                       className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                     />
@@ -541,6 +546,9 @@ export default async function ToriyamaPage() {
                           <img
                             src={assetUrl(group.cover)}
                             alt={group.document}
+                            width={48}
+                            height={64}
+                            decoding="async"
                             loading="lazy"
                             className="h-full w-full object-cover"
                           />

@@ -201,6 +201,10 @@ export default async function RaceDetailPage({ params }: { params: Promise<{ slu
               <div className="relative w-28 h-28 overflow-hidden bg-black/40 rounded-full flex items-center justify-center p-3 border border-white/5">
                 <img
                   src={assetUrl(race.homePlanet.image)}
+                  width={88}
+                  height={88}
+                  loading="lazy"
+                  decoding="async"
                   alt={race.homePlanet.name}
                   className="w-full h-full object-contain drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]"
                 />

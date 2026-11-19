@@ -2,6 +2,16 @@
 
 import React, { useRef, useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
+import { useVideoSource } from "@/components/episodes/use-video-source";
+import {
+  isHlsSource,
+  readResume,
+  videoResumeKey,
+  videoResumePosition,
+  writeResume,
+} from "@/lib/video-controls";
+import { useVideoUIText } from "@/lib/video-ui-text";
 
 export interface VideoSourceOption {
   id: string;
@@ -19,6 +29,37 @@ export interface SubtitleTrack {
 }
 
 const DEFAULT_SUBTITLES: SubtitleTrack[] = [];
+
+interface PlayerKeyEvent {
+  key: string;
+  ctrlKey: boolean;
+  metaKey: boolean;
+  altKey: boolean;
+  target: EventTarget | null;
+}
+
+interface KeyTarget {
+  tagName?: string;
+  isContentEditable?: boolean;
+  getAttribute?: (name: string) => string | null;
+}
+
+const TEXT_ENTRY_TAGS = ["INPUT", "TEXTAREA", "SELECT"];
+const ACTIVATION_TAGS = ["BUTTON", "A", "SUMMARY"];
+
+/** True when the key event is a player shortcut and the player may consume it. */
+export function isPlayerShortcut(event: PlayerKeyEvent): boolean {
+  if (event.ctrlKey || event.metaKey || event.altKey) return false;
+  const target = event.target as KeyTarget | null;
+  const tag = target?.tagName?.toUpperCase() ?? "";
+  if (TEXT_ENTRY_TAGS.includes(tag) || target?.isContentEditable) return false;
+  const activation = event.key === " " || event.key === "Enter";
+  if (activation) {
+    const role = target?.getAttribute?.("role");
+    if (ACTIVATION_TAGS.includes(tag) || role === "slider") return false;
+  }
+  return true;
+}
 
 export interface TvPlayerProps {
   title: string;
@@ -47,6 +88,8 @@ export function TvPlayer({
   onToggleTheater,
   onEnded,
 }: TvPlayerProps) {
+  const t = useTranslations("mediaPlayback");
+  const ui = useVideoUIText();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const scrubTrackRef = useRef<HTMLDivElement | null>(null);
@@ -63,6 +106,7 @@ export function TvPlayer({
   const [showControls, setShowControls] = useState(true);
   const [playbackRate, setPlaybackRate] = useState(1);
   const [ambientMode, setAmbientMode] = useState(true);
+  const [waiting, setWaiting] = useState(false);
 
   // Scrubber hover preview state
   const [hoverTime, setHoverTime] = useState<number | null>(null);
@@ -74,7 +118,12 @@ export function TvPlayer({
   const feedbackTimeoutRef = useRef<Timer | null>(null);
 
   const controlsTimeoutRef = useRef<Timer | null>(null);
+  const focusWithinRef = useRef(false);
   const currentSource = sources[activeSourceIndex] ?? sources[0];
+  const directUrl = currentSource?.type === "direct" ? currentSource.url : "";
+  const { status, retry } = useVideoSource(videoRef, directUrl);
+  const resumeKey = videoResumeKey(directUrl);
+  const lastSaved = useRef(0);
 
   const isTheater = externalIsTheater !== undefined ? externalIsTheater : internalIsTheater;
 
@@ -90,8 +139,28 @@ export function TvPlayer({
     setShowControls(true);
     if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
     controlsTimeoutRef.current = setTimeout(() => {
-      if (isPlaying && !isScrubbing) setShowControls(false);
+      if (isPlaying && !isScrubbing && !focusWithinRef.current) setShowControls(false);
     }, 2800);
+  };
+
+  const handleFocusCapture = (event: React.FocusEvent<HTMLDivElement>) => {
+    let keyboardFocus = false;
+    try {
+      keyboardFocus = event.target.matches(":focus-visible");
+    } catch {
+      keyboardFocus = false;
+    }
+    if (!keyboardFocus) return;
+    focusWithinRef.current = true;
+    if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+    setShowControls(true);
+  };
+
+  const handleBlurCapture = (event: React.FocusEvent<HTMLDivElement>) => {
+    const next = event.relatedTarget as Node | null;
+    if (next && containerRef.current?.contains(next)) return;
+    focusWithinRef.current = false;
+    handleMouseMove();
   };
 
   const togglePlay = useCallback(() => {
@@ -99,13 +168,13 @@ export function TvPlayer({
     if (videoRef.current.paused) {
       videoRef.current.play().catch(() => {});
       setIsPlaying(true);
-      triggerFeedback("Play");
+      triggerFeedback(t("play"));
     } else {
       videoRef.current.pause();
       setIsPlaying(false);
-      triggerFeedback("Pause");
+      triggerFeedback(t("pause"));
     }
-  }, [triggerFeedback]);
+  }, [triggerFeedback, t]);
 
   const seekRelative = useCallback(
     (delta: number) => {
@@ -136,8 +205,8 @@ export function TvPlayer({
     if (!videoRef.current) return;
     videoRef.current.muted = !videoRef.current.muted;
     setIsMuted(videoRef.current.muted);
-    triggerFeedback(videoRef.current.muted ? "Mute" : "Unmute");
-  }, [triggerFeedback]);
+    triggerFeedback(videoRef.current.muted ? t("mute") : t("unmute"));
+  }, [triggerFeedback, t]);
 
   const toggleFullscreen = useCallback(() => {
     if (!containerRef.current) return;
@@ -159,10 +228,30 @@ export function TvPlayer({
     }
   }, [isTheater, onToggleTheater]);
 
+  useEffect(() => {
+    lastSaved.current = 0;
+    setWaiting(false);
+  }, [directUrl]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!directUrl) return;
+    const save = () => {
+      if (!video) return;
+      const resume = videoResumePosition(video.currentTime, video.duration);
+      if (resume !== null) writeResume(resumeKey, resume);
+    };
+    window.addEventListener("pagehide", save);
+    return () => {
+      window.removeEventListener("pagehide", save);
+      save();
+    };
+  }, [directUrl, resumeKey]);
+
   // YouTube standard keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (["INPUT", "TEXTAREA", "SELECT"].includes((e.target as HTMLElement)?.tagName)) return;
+      if (!isPlayerShortcut(e)) return;
 
       const key = e.key.toLowerCase();
       if (key === " " || key === "k") {
@@ -242,14 +331,16 @@ export function TvPlayer({
       {ambientMode && (
         <div
           aria-hidden="true"
-          className="absolute -inset-4 bg-gradient-to-r from-rose-600/25 via-amber-500/20 to-orange-600/25 blur-3xl rounded-3xl opacity-50 transition-opacity duration-700 pointer-events-none -z-10"
+          className="absolute -inset-4 bg-gradient-to-r from-rose-600/25 via-amber-500/20 to-orange-600/25 blur-3xl rounded-3xl opacity-50 transition-opacity duration-700 motion-reduce:transition-none pointer-events-none -z-10"
         />
       )}
 
       <div
         ref={containerRef}
         onMouseMove={handleMouseMove}
-        className={`relative bg-black select-none overflow-hidden transition-all duration-300 font-sans group ${
+        onFocusCapture={handleFocusCapture}
+        onBlurCapture={handleBlurCapture}
+        className={`relative bg-black select-none overflow-hidden transition-all duration-300 motion-reduce:transition-none font-sans group ${
           isTheater
             ? "w-full max-h-[82vh] aspect-[16/9]"
             : "w-full aspect-[16/9] rounded-xl shadow-2xl border border-zinc-800/80"
@@ -259,49 +350,118 @@ export function TvPlayer({
         {currentSource?.type === "direct" ? (
           <video
             ref={videoRef}
-            src={currentSource.url}
+            src={isHlsSource(currentSource.url) ? undefined : currentSource.url}
             poster={poster}
             className="w-full h-full object-contain cursor-pointer"
             onClick={togglePlay}
             onDoubleClick={toggleFullscreen}
-            onTimeUpdate={() => {
-              setCurrentTime(videoRef.current?.currentTime || 0);
+            onTimeUpdate={(event) => {
+              const video = event.currentTarget;
+              setCurrentTime(video.currentTime || 0);
               updateBufferedProgress();
+              if (Math.abs(video.currentTime - lastSaved.current) < 5) return;
+              lastSaved.current = video.currentTime;
+              const resume = videoResumePosition(video.currentTime, video.duration);
+              if (resume !== null) writeResume(resumeKey, resume);
             }}
             onProgress={updateBufferedProgress}
-            onLoadedMetadata={() => setDuration(videoRef.current?.duration || 0)}
+            onWaiting={() => setWaiting(true)}
+            onStalled={() => setWaiting(true)}
+            onPlaying={() => setWaiting(false)}
+            onCanPlay={() => setWaiting(false)}
+            onSeeked={() => setWaiting(false)}
+            onLoadedMetadata={() => {
+              const video = videoRef.current;
+              setDuration(video?.duration || 0);
+              if (!video) return;
+              const resume = videoResumePosition(readResume(resumeKey), video.duration);
+              if (resume !== null && video.currentTime < 1) {
+                video.currentTime = resume;
+                lastSaved.current = resume;
+              }
+            }}
             onEnded={() => {
               setIsPlaying(false);
+              writeResume(resumeKey, null);
+              lastSaved.current = 0;
               if (onEnded) onEnded();
             }}
             playsInline
           >
-            <track kind="captions" srcLang="fr" label="Français (auto)" />
-            {subtitles.map((sub) => (
-              <track
-                key={sub.srcLang}
-                kind="subtitles"
-                label={sub.label}
-                srcLang={sub.srcLang}
-                src={sub.src}
-                default={sub.default}
-              />
-            ))}
+            {subtitles
+              .filter((sub) => sub.src)
+              .map((sub) => (
+                <track
+                  key={sub.srcLang}
+                  kind="subtitles"
+                  label={sub.label}
+                  srcLang={sub.srcLang}
+                  src={sub.src}
+                  default={sub.default}
+                />
+              ))}
           </video>
-        ) : (
+        ) : currentSource ? (
           <iframe
-            src={currentSource?.url}
+            src={currentSource.url}
             title={title}
             className="w-full h-full border-0"
             sandbox="allow-scripts allow-presentation allow-popups"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen
           />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center p-6 text-center text-sm text-zinc-300">
+            {ui("unavailableHeading")}
+          </div>
+        )}
+
+        {/* Playback state: buffering, loading, recovery, failure */}
+        {currentSource?.type === "direct" && (
+          <>
+            {status === "failed" && (
+              <div className="pointer-events-none absolute inset-0 z-30 flex items-center justify-center">
+                <button
+                  type="button"
+                  onClick={retry}
+                  className="pointer-events-auto min-h-[44px] rounded-full bg-rose-600 px-5 py-2 text-sm font-semibold text-white hover:bg-rose-500 focus:outline-none focus:ring-2 focus:ring-white"
+                >
+                  {t("retryVideo")}
+                </button>
+              </div>
+            )}
+            <p
+              role={status === "failed" ? "alert" : "status"}
+              className={
+                status === "ready" && !waiting
+                  ? "sr-only"
+                  : "absolute left-1/2 top-16 z-30 -translate-x-1/2 rounded-full bg-black/75 px-4 py-1.5 text-xs font-medium text-white"
+              }
+            >
+              {waiting && status !== "failed"
+                ? t("videoBuffering")
+                : t(
+                    status === "loading"
+                      ? "videoLoading"
+                      : status === "recovering"
+                        ? "videoRecovering"
+                        : status === "failed"
+                          ? "videoError"
+                          : "videoReady",
+                  )}
+            </p>
+          </>
         )}
 
         {/* Center Action Feedback Ripple (Play / Pause / Seek) */}
+        <p role="status" aria-live="polite" className="sr-only">
+          {actionFeedback ?? ""}
+        </p>
         {actionFeedback && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-30 animate-in fade-in zoom-in-75 duration-200">
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 flex items-center justify-center pointer-events-none z-30 animate-in fade-in zoom-in-75 duration-200"
+          >
             <div className="bg-black/75 backdrop-blur-md text-white text-sm font-semibold px-4 py-2 rounded-full border border-white/10 shadow-2xl">
               {actionFeedback}
             </div>
@@ -334,7 +494,7 @@ export function TvPlayer({
                     ? "bg-rose-600 text-white font-semibold shadow"
                     : "text-zinc-400 hover:text-white"
                 }`}
-                aria-label={`Source ${src.name}`}
+                aria-label={t("playerTitle", { number: idx + 1, name: src.name })}
               >
                 {src.name}
               </button>
@@ -367,7 +527,7 @@ export function TvPlayer({
               )}
 
               {/* Background Track */}
-              <div className="absolute inset-x-0 h-1 group-hover/scrub:h-1.5 bg-zinc-700/60 rounded-full transition-all overflow-hidden pointer-events-none">
+              <div className="absolute inset-x-0 h-1 group-hover/scrub:h-1.5 bg-zinc-700/60 rounded-full transition-all motion-reduce:transition-none overflow-hidden pointer-events-none group-has-[:focus-visible]/scrub:ring-2 group-has-[:focus-visible]/scrub:ring-amber-400">
                 {/* Buffered Progress */}
                 <div
                   className="absolute left-0 top-0 bottom-0 bg-white/25 transition-all duration-150"
@@ -382,14 +542,14 @@ export function TvPlayer({
 
               {/* Scrubber Thumb */}
               <div
-                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-rose-600 rounded-full shadow scale-0 group-hover/scrub:scale-100 transition-transform pointer-events-none z-10"
+                className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-3.5 h-3.5 bg-rose-600 rounded-full shadow scale-0 group-hover/scrub:scale-100 group-has-[:focus-visible]/scrub:scale-100 transition-transform motion-reduce:transition-none pointer-events-none z-10"
                 style={{ left: `${currentPercent}%` }}
               />
 
               {/* Semantic Native Range Input for WAI-ARIA and Keyboard Accessibility */}
               <input
                 type="range"
-                aria-label="Position de lecture"
+                aria-label={t("seekPosition")}
                 min={0}
                 max={duration || 100}
                 step={0.1}
@@ -405,11 +565,11 @@ export function TvPlayer({
                 onMouseUp={() => setIsScrubbing(false)}
                 onTouchStart={() => setIsScrubbing(true)}
                 onTouchEnd={() => setIsScrubbing(false)}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10 focus-visible:outline-none"
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                 aria-valuemin={0}
                 aria-valuemax={duration || 100}
                 aria-valuenow={currentTime}
-                aria-valuetext={`${formatTime(currentTime)} sur ${formatTime(duration)}`}
+                aria-valuetext={`${formatTime(currentTime)} / ${formatTime(duration)}`}
               />
             </div>
 
@@ -419,9 +579,9 @@ export function TvPlayer({
                 {/* Play/Pause Button */}
                 <button
                   onClick={togglePlay}
-                  className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:text-rose-500 transition-colors focus:outline-none focus:ring-1 focus:ring-rose-500 rounded-md"
-                  aria-label={isPlaying ? "Pause (k)" : "Lecture (k)"}
-                  title={isPlaying ? "Pause (k)" : "Lecture (k)"}
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:text-rose-500 transition-colors rounded-md focus-visible:ring-2 focus-visible:ring-amber-400"
+                  aria-label={`${isPlaying ? t("pause") : t("play")} (k)`}
+                  title={`${isPlaying ? t("pause") : t("play")} (k)`}
                 >
                   {isPlaying ? (
                     <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -438,8 +598,8 @@ export function TvPlayer({
                 <button
                   onClick={() => seekRelative(-10)}
                   className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:text-rose-500 transition-colors rounded-md"
-                  aria-label="Reculer de 10 secondes (j)"
-                  title="Reculer de 10s (j)"
+                  aria-label={`${ui("backward")} (j)`}
+                  title={`${ui("backwardShort")} (j)`}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -455,8 +615,8 @@ export function TvPlayer({
                 <button
                   onClick={() => seekRelative(10)}
                   className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:text-rose-500 transition-colors rounded-md"
-                  aria-label="Avancer de 10 secondes (l)"
-                  title="Avancer de 10s (l)"
+                  aria-label={`${ui("forward")} (l)`}
+                  title={`${ui("forwardShort")} (l)`}
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -473,8 +633,8 @@ export function TvPlayer({
                   <Link
                     href={prevEpisodeHref}
                     className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:text-rose-500 transition-colors rounded-md"
-                    title="Episode précédent"
-                    aria-label="Episode précédent"
+                    title={t("previousEpisode")}
+                    aria-label={t("previousEpisode")}
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z" />
@@ -485,8 +645,8 @@ export function TvPlayer({
                   <Link
                     href={nextEpisodeHref}
                     className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:text-rose-500 transition-colors rounded-md"
-                    title="Episode suivant"
-                    aria-label="Episode suivant"
+                    title={t("nextEpisode")}
+                    aria-label={t("nextEpisode")}
                   >
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z" />
@@ -499,10 +659,8 @@ export function TvPlayer({
                   <button
                     onClick={toggleMute}
                     className="min-w-[44px] min-h-[44px] flex items-center justify-center hover:text-rose-500 transition-colors rounded-md"
-                    aria-label={
-                      isMuted || volume === 0 ? "Activer le son (m)" : "Couper le son (m)"
-                    }
-                    title="Son (m)"
+                    aria-label={`${isMuted || volume === 0 ? t("unmute") : t("mute")} (m)`}
+                    title={`${isMuted || volume === 0 ? t("unmute") : t("mute")} (m)`}
                   >
                     {isMuted || volume === 0 ? (
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -530,7 +688,7 @@ export function TvPlayer({
                       setIsMuted(v === 0);
                     }}
                     className="w-16 h-1 bg-zinc-600 appearance-none rounded-full cursor-pointer accent-rose-600 hidden group-hover/vol:block transition-all"
-                    aria-label="Niveau du volume"
+                    aria-label={t("volume")}
                   />
                 </div>
 
@@ -545,9 +703,10 @@ export function TvPlayer({
                 {/* Ambient Mode Toggle */}
                 <button
                   onClick={() => setAmbientMode((prev) => !prev)}
-                  className={`min-w-[40px] min-h-[40px] flex items-center justify-center p-1 rounded-md transition-colors ${
+                  className={`min-w-[40px] min-h-[40px] flex items-center justify-center p-1 rounded-md transition-colors focus-visible:ring-2 focus-visible:ring-amber-400 ${
                     ambientMode ? "text-amber-400" : "text-zinc-400 hover:text-white"
                   }`}
+                  aria-pressed={ambientMode}
                   aria-label="Mode ambiant"
                   title="Éclairage ambiant"
                 >
@@ -569,8 +728,8 @@ export function TvPlayer({
                     setPlaybackRate(rate);
                     if (videoRef.current) videoRef.current.playbackRate = rate;
                   }}
-                  className="bg-black/60 text-xs text-zinc-300 hover:text-white border border-white/20 rounded-md px-2 py-1 focus:outline-none cursor-pointer"
-                  aria-label="Vitesse de lecture"
+                  className="bg-black/60 text-xs text-zinc-300 hover:text-white border border-white/20 rounded-md px-2 py-1 focus-visible:ring-2 focus-visible:ring-amber-400 cursor-pointer"
+                  aria-label={t("speed")}
                 >
                   <option value={0.5} className="bg-zinc-900">
                     0.5x
@@ -596,8 +755,8 @@ export function TvPlayer({
                 <button
                   onClick={toggleTheater}
                   className="min-w-[40px] min-h-[40px] flex items-center justify-center hover:text-rose-500 transition-colors p-1 rounded-md"
-                  aria-label="Mode Cinema (t)"
-                  title="Mode Cinéma (t)"
+                  aria-label={`${isTheater ? t("exitTheater") : t("theater")} (t)`}
+                  title={`${isTheater ? t("exitTheater") : t("theater")} (t)`}
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M19 6H5c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 10H5V8h14v8z" />
@@ -608,8 +767,8 @@ export function TvPlayer({
                 <button
                   onClick={toggleFullscreen}
                   className="min-w-[40px] min-h-[40px] flex items-center justify-center hover:text-rose-500 transition-colors p-1 rounded-md"
-                  aria-label="Plein ecran (f)"
-                  title="Plein écran (f)"
+                  aria-label={`${t("fullscreen")} (f)`}
+                  title={`${t("fullscreen")} (f)`}
                 >
                   {isFullscreen ? (
                     <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">

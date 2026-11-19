@@ -9,6 +9,7 @@
  * la base morte. Une seule lecture, ici, ancrée et prenant la DERNIÈRE.
  */
 import { existsSync } from "node:fs";
+import { homedir } from "node:os";
 import { join } from "node:path";
 import type postgres from "postgres";
 import { loadDatabaseUrl } from "@aphrody/shenron-db/env";
@@ -72,6 +73,15 @@ export function cheminPlanche(image: string | null | undefined): string | null {
   const m = /assets\/wiki\/(.+)$/.exec(brut.replace(/\\/g, "/"));
   if (!m) return null;
   return join(RACINE_PLANCHES, m[1]!);
+}
+
+/**
+ * Répertoire des lots d'OCR databooks : `SHENRON_DATABOOKS_OCR_DIR`, sinon
+ * `<home>/databooks-ocr`. `homedir()` résout aussi Windows, où `HOME` n'existe pas.
+ */
+export function repertoireOcrDatabooks(): string {
+  const configure = process.env.SHENRON_DATABOOKS_OCR_DIR?.trim();
+  return configure || join(homedir(), "databooks-ocr");
 }
 
 /** L'URL de la base du site, lue une seule fois et correctement. */

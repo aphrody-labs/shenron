@@ -57,7 +57,7 @@ export function locateSite(paths: ServerPaths, env: NodeJS.ProcessEnv = process.
     };
   }
   throw new Error(
-    `Shenron site build not found (looked in ${candidates.join(", ")}); set SHENRON_SITE_DIR or run bun run build:server`,
+    `Shenron site build not found (looked in ${candidates.join(", ")}); set SHENRON_SITE_DIR or run just build-server`,
   );
 }
 

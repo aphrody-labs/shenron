@@ -68,7 +68,7 @@ export function HomeCanonArbitre({
             placeholder={placeholder}
             autoComplete="off"
             enterKeyHint="search"
-            className="min-h-12 min-w-0 flex-1 rounded-lg border border-white/15 bg-dbz-bg/80 px-4 text-base text-white placeholder:text-white/45 focus:border-dbz-orange focus:outline-none"
+            className="min-h-12 min-w-0 flex-1 rounded-lg border border-white/15 bg-dbz-bg/80 px-4 text-base text-white placeholder:text-white/45 focus:border-dbz-orange focus:outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
           />
           <button
             type="submit"
@@ -114,7 +114,7 @@ export function HomeCanonArbitre({
                       <span
                         aria-hidden
                         className="inline-block size-2.5 shrink-0 rounded-full"
-                        style={{ backgroundColor: rang?.couleur ?? "#9ca3af" }}
+                        style={{ backgroundColor: rang?.couleur ?? "var(--muted-foreground)" }}
                       />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-semibold text-white transition-colors group-hover:text-dbz-gold">

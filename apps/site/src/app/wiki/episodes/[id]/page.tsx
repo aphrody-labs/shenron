@@ -1,3 +1,4 @@
+import { getDictionary } from "@/lib/i18n";
 import { readPlaybackCapabilities } from "@/lib/playback-capabilities";
 /* oxlint-disable react/iframe-missing-sandbox -- legacy UI kept as-is (behavior-preserving lint pass) */
 import { clampTitle } from "@/lib/seo-title";
@@ -42,7 +43,7 @@ import { TrackHistory } from "@/components/history/TrackHistory";
 import { ShareButton } from "@/components/ShareButton";
 import { FavoriteButton } from "@/components/FavoriteButton";
 import { AdUnit } from "@/components/ads/AdUnit";
-import type { TVEpisode, WithContext } from "schema-dts";
+import { buildEpisodeSchema } from "@/lib/episode-schema";
 import { excerpt } from "../_text";
 import { idDeFiche } from "../../_id-fiche";
 
@@ -117,7 +118,7 @@ function NavCard({ ep, dir }: { ep: EpisodeNavItem; dir: "prev" | "next" }) {
     <Link href={`/wiki/episodes/${ep.id}`} className={detailStyles.navCard}>
       <div className={detailStyles.navImage}>
         {image ? (
-          <img src={image} alt="" aria-hidden loading="lazy" />
+          <img src={image} alt="" aria-hidden loading="lazy" decoding="async" />
         ) : (
           <div className={detailStyles.navPlaceholder}>
             {ep.number_in_series === null ? (
@@ -267,34 +268,7 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
     </div>
   ) : null;
 
-  const episodeSchema: WithContext<TVEpisode> = {
-    "@context": "https://schema.org",
-    "@type": "TVEpisode",
-    ...(ep.number_in_series === null ? {} : { episodeNumber: String(ep.number_in_series) }),
-    name: ep.title,
-    description: excerpt(ep.synopsis) || undefined,
-    image: ep.image ? assetUrl(ep.image) : undefined,
-    partOfSeries: {
-      "@type": "TVSeries",
-      name: seriesLabel,
-    },
-    datePublished: ep.air_date ? new Date(ep.air_date * 1000).toISOString() : undefined,
-    ...(ep.video_url || ep.stream_url
-      ? {
-          video: {
-            "@type": "VideoObject" as const,
-            name: ep.title,
-            description: excerpt(ep.synopsis) || undefined,
-            thumbnailUrl: ep.image ? assetUrl(ep.image) : undefined,
-            contentUrl: (ep.video_url || ep.stream_url) ?? undefined,
-            uploadDate: ep.air_date ? new Date(ep.air_date * 1000).toISOString() : undefined,
-            duration: ep.duration_sec
-              ? `PT${Math.floor(ep.duration_sec / 60)}M${ep.duration_sec % 60}S`
-              : undefined,
-          },
-        }
-      : {}),
-  };
+  const episodeSchema = buildEpisodeSchema(ep, { seriesLabel });
 
   return (
     <div className="relative">
@@ -368,7 +342,10 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
                 />
               )}
               {nav && (nav.prev || nav.next) && (
-                <nav className="grid gap-3">
+                <nav
+                  aria-label={getDictionary().mediaPlayback.episodeNavigation}
+                  className="grid gap-3"
+                >
                   {nav.prev && <NavCard ep={nav.prev} dir="prev" />}
                   {nav.next && <NavCard ep={nav.next} dir="next" />}
                 </nav>
@@ -526,6 +503,9 @@ export default async function EpisodeDetailPage({ params }: { params: Promise<{ 
                           {e.image ? (
                             <img
                               src={assetUrl(e.image)}
+                              width={160}
+                              height={90}
+                              decoding="async"
                               alt=""
                               aria-hidden
                               className="h-full w-full object-cover opacity-75 group-hover:opacity-100 transition-opacity"

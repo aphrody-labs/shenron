@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { GECKO_WASM } from "@/lib/gecko-wasm.generated";
+import { gameRuntimeMessages } from "@/lib/game-runtime";
+import { useLangue } from "@/lib/i18n/client";
 
 const CHUNK_BYTES = 8 * 1024 * 1024;
 const DEFAULT_DISC_URL = "/cdn/shenron/games/budokai-tenkaichi-3-eu.rvz";
@@ -32,12 +34,25 @@ function wasmUrl(path: string): string {
   return process.env.NODE_ENV === "production" && cdn ? `${cdn}/assets/${path}` : `/wasm/${path}`;
 }
 
+/** `navigator.gpu` alone does not prove a usable GPU: the adapter request must resolve too. */
+async function hasWebGpu(): Promise<boolean> {
+  if (!navigator.gpu) return false;
+  try {
+    return (await navigator.gpu.requestAdapter()) !== null;
+  } catch {
+    return false;
+  }
+}
+
 export default function Bt3Player() {
+  const { locale } = useLangue();
+  const messages = gameRuntimeMessages(locale);
   const containerRef = useRef<HTMLDivElement>(null);
   const frameRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(true);
+  const [gpuMissing, setGpuMissing] = useState(false);
   const [running, setRunning] = useState(false);
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState("Initialisation du moteur Wii…");
@@ -132,6 +147,12 @@ export default function Bt3Player() {
     let active = true;
 
     async function preloadAndBoot() {
+      if (!(await hasWebGpu())) {
+        if (!active) return;
+        setGpuMissing(true);
+        setLoading(false);
+        return;
+      }
       try {
         setStatusText("Pré-chargement du moteur Gecko WebGPU…");
         const mod = (await import(
@@ -306,7 +327,14 @@ export default function Bt3Player() {
               Dragon Ball Z : Budokai Tenkaichi 3
             </h1>
 
-            {loading ? (
+            {gpuMissing ? (
+              <p
+                role="alert"
+                className="max-w-md rounded-lg border border-amber-400/40 bg-amber-400/10 p-4 text-sm leading-relaxed text-amber-100"
+              >
+                {messages.webgpuMissing}
+              </p>
+            ) : loading ? (
               <div className="flex flex-col items-center gap-3 w-72">
                 <div className="h-2 w-full overflow-hidden rounded-full bg-slate-800 border border-slate-700">
                   <div

@@ -28,7 +28,9 @@ export function RoleBadge({ roleId }: { roleId: string }) {
   });
   const role = data?.roles.find((r) => r.id === roleId);
   const color =
-    role && role.color !== 0 ? `#${role.color.toString(16).padStart(6, "0")}` : "#71717a";
+    role && role.color !== 0
+      ? `#${role.color.toString(16).padStart(6, "0")}`
+      : "var(--color-dbz-blue-light)";
   return (
     <span className="inline-flex items-center gap-1.5">
       <span
@@ -94,7 +96,7 @@ export function RoleSelect({
         <span
           className="h-3 w-3 shrink-0 rounded-full border border-dbz-border"
           style={{
-            backgroundColor: selected.color === 0 ? "#71717a" : dotColor,
+            backgroundColor: selected.color === 0 ? "var(--color-dbz-blue-light)" : dotColor,
           }}
           aria-hidden
         />

@@ -100,7 +100,7 @@ function PreviewBattleCard({
           className="h-full w-full object-cover object-top opacity-65"
           loading="lazy"
         />
-        <div className={`absolute inset-0 bg-gradient-to-r ${accent} via-black/20 to-[#0b0b0b]`} />
+        <div className={`absolute inset-0 bg-gradient-to-r ${accent} via-black/20 to-dbz-bg`} />
       </div>
       <div className="relative z-10 flex min-h-36 flex-col justify-center py-4 pl-24 pr-4 sm:py-5 sm:pl-[28%] sm:pr-6">
         <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-dbz-red sm:text-xs">
@@ -1984,7 +1984,7 @@ export default async function CharacterPage({
                     className="h-full w-full object-cover object-left opacity-75"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-[#0b0b0b]/45 to-[#0b0b0b]" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-dbz-bg/45 to-dbz-bg" />
                 </div>
               )}
               <div

@@ -2,15 +2,13 @@
 
 L'éditeur React de Koharu (projets, planches, détection, OCR, traduction, nettoyage,
 lettrage, export PSD) vit ici, dans la couche UI unique de Shenron. Le site le monte sur `/studio`
-(`apps/site/src/app/studio/StudioEditor.tsx`) et Shenron Studio le rend utilisable en Tauri ou
-dans un navigateur servi par `shenron-server` lorsque le moteur local est disponible.
+(`apps/site/src/app/studio/StudioEditor.tsx`) et Shenron Studio le rend utilisable dans un navigateur servi par `shenron-server` lorsque le moteur local est disponible.
 
 ## Moteur et transports
 
-- Les commandes et leurs types viennent de `@aphrody/shenron-koharu/protocol`, généré par Specta
-  depuis `koharu-app` (`bun --filter @aphrody/shenron-koharu protocol`, ne pas éditer à la main).
-  `shenron-desktop` (fonctionnalité `koharu`) enregistre ces commandes sous leurs noms
-  d'origine et exécute le moteur `koharu-library` dans son propre processus.
+- Les commandes et leurs types viennent de `@aphrody/shenron-koharu/protocol`, reflet des types
+  de `koharu-library` (`editor::types`) et des noms de `editor::dispatch::COMMANDS`.
+  `koharu-sdk` (JSON Lines) et `shenron-server` exécutent le moteur `koharu-library`.
 - Le canevas passe par `@aphrody/shenron-koharu/canvas` (WASM WebGPU de `crates/koharu-canvas`,
   construit par `bun --filter @aphrody/shenron-koharu build:wasm` avant tout build du site et émis par
   Next sous `_next/static/media/`). Le module se compile en streaming ;

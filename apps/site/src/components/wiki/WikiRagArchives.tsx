@@ -43,7 +43,7 @@ export default async function WikiRagArchives({
   if (!ragData || ragData.results.length === 0) return null;
 
   return (
-    <section className="space-y-8 pt-12 reveal-up animate-fade-in">
+    <section className="space-y-8 pt-12 reveal-up motion-safe:animate-fade-in">
       <div className="flex items-center gap-6">
         <h2 className="font-saiyan text-2xl sm:text-4xl md:text-5xl text-emerald-400 uppercase tracking-widest">
           Archives de recherche IA

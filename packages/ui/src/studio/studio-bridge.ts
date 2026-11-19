@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 // Studio bridge: typed calls to the Studio commands that shenron-desktop registers
-// (crates/shenron-studio/src/studio.rs, logic owned by shenron-cli::shenron_cmd) and the
+// (logic owned by shenron-cli::shenron_cmd) and the
 // `studio://train` event. The Koharu editor speaks @aphrody/shenron-koharu/protocol instead.
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";

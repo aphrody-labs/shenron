@@ -20,3 +20,22 @@ export function canonicalCharacterSitemapRows<T extends CharacterIdentity>(
     return true;
   });
 }
+
+/**
+ * Sitemap tuples for slug-addressed detail pages. Rows with an empty or
+ * non-string slug are dropped and each slug is emitted once, in input order.
+ */
+export function slugSitemapPaths(
+  prefix: string,
+  rows: readonly { slug: unknown }[],
+): Array<[string, number, undefined]> {
+  const base = prefix.replace(/\/+$/, "");
+  const seen = new Set<string>();
+  const out: Array<[string, number, undefined]> = [];
+  for (const { slug } of rows) {
+    if (typeof slug !== "string" || slug.trim() === "" || seen.has(slug)) continue;
+    seen.add(slug);
+    out.push([`${base}/${slug}`, 0.5, undefined]);
+  }
+  return out;
+}

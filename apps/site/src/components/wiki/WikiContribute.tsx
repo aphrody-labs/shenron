@@ -257,7 +257,7 @@ export function WikiContribute({
           if (e.target === e.currentTarget && phase !== "sending") setOpen(false);
         }}
       >
-        <div className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl border border-white/10 bg-[#0d0d12] shadow-2xl sm:rounded-2xl">
+        <div className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-2xl border border-white/10 bg-dbz-bg shadow-2xl sm:rounded-2xl">
           <header className="flex items-start justify-between gap-3 border-b border-white/8 px-5 py-4">
             <div className="min-w-0">
               <h2 className="text-sm font-bold text-white">

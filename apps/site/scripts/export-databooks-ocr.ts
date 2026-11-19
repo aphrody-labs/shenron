@@ -29,7 +29,7 @@ import { existsSync } from "node:fs";
 import { join, basename } from "node:path";
 import postgres from "postgres";
 import sharp from "sharp";
-import { urlBase } from "./_databooks-base";
+import { repertoireOcrDatabooks, urlBase } from "./_databooks-base";
 import { SITE_URL } from "../src/lib/config";
 import {
   parseReferencedDatabookScan,
@@ -43,7 +43,7 @@ const opt = (nom: string, defaut?: string) => {
 };
 const flag = (nom: string) => args.includes(`--${nom}`);
 
-const SORTIE = opt("sortie", join(process.env.HOME ?? ".", "databooks-ocr"))!;
+const SORTIE = opt("sortie", repertoireOcrDatabooks())!;
 const TAILLE_LOT = Number(opt("taille", "400"));
 const LOT_CIBLE = opt("lot") ? Number(opt("lot")) : null;
 const LARGEUR = Number(opt("largeur", "1600"));

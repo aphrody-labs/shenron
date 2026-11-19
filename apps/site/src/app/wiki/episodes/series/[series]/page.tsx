@@ -17,6 +17,9 @@ import { collectEpisodeSourceLinks, summarizeEpisodeSources } from "@/lib/episod
 import { VideoSourceLinks } from "@/components/episodes/VideoSourceLinks";
 import { OfficialEpisodeSourceLinks } from "@/components/episodes/OfficialEpisodeSourceLinks";
 import { getDictionary } from "@/lib/i18n";
+import { JsonLd } from "@/components/JsonLd";
+import { SITE_URL } from "@/lib/config";
+import { seriesJsonLd } from "@/lib/series-jsonld";
 import {
   DBS_BEERUS_EPISODE_HREF,
   DBS_BEERUS_SERIES_CODE,
@@ -103,6 +106,18 @@ export default async function EpisodeSeriePage({
 
   return (
     <>
+      <JsonLd
+        data={seriesJsonLd({
+          code: series,
+          label: SERIES_LABELS[series] ?? series,
+          total,
+          years: SERIES_YEARS[series],
+          siteUrl: SITE_URL,
+          firstEpisodeId: opener.id,
+          firstEpisodeNumber: opener.number_in_series,
+          image: resolvedBackdrop || undefined,
+        })}
+      />
       <Billboard
         backdrop={resolvedBackdrop}
         eyebrow={SERIES_YEARS[series] ? `Anime · ${SERIES_YEARS[series]}` : "Anime"}
@@ -129,7 +144,10 @@ export default async function EpisodeSeriePage({
           { label: SERIES_LABELS[series] ?? series },
         ]}
       >
-        <nav className="mb-6 flex flex-wrap gap-2">
+        <nav
+          aria-label={getDictionary().mediaPlayback.episodeNavigation}
+          className="mb-6 flex flex-wrap gap-2"
+        >
           <Link
             href="/wiki/episodes"
             className="inline-flex min-h-9 items-center rounded-full bg-white/[0.06] px-3.5 py-1.5 font-display text-[12px] font-semibold uppercase tracking-[0.08em] text-white/80 transition-colors hover:bg-white/[0.12] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-dbz-orange"

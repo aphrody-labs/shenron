@@ -55,7 +55,7 @@ export function WikiEditor({
             name="title"
             required
             defaultValue={initial?.title}
-            className="w-full border-2 border-dbz-border bg-dbz-bg p-3 font-bold text-white outline-none focus:border-dbz-orange"
+            className="w-full border-2 border-dbz-border bg-dbz-bg p-3 font-bold text-white outline-none focus:border-dbz-orange focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
             placeholder="Ex: Goku Saiyan"
           />
         </div>
@@ -72,7 +72,7 @@ export function WikiEditor({
               name="categoryId"
               required
               defaultValue={initial?.categoryId ?? defaultCategoryId ?? ""}
-              className="w-full border-2 border-dbz-border bg-dbz-bg p-3 text-white outline-none focus:border-dbz-orange"
+              className="w-full border-2 border-dbz-border bg-dbz-bg p-3 text-white outline-none focus:border-dbz-orange focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
             >
               <option value="">— Sélectionner —</option>
               {categories.map((c) => (
@@ -94,7 +94,7 @@ export function WikiEditor({
               type="number"
               name="order"
               defaultValue={initial?.order ?? 0}
-              className="w-full border-2 border-dbz-border bg-dbz-bg p-3 text-white outline-none focus:border-dbz-orange"
+              className="w-full border-2 border-dbz-border bg-dbz-bg p-3 text-white outline-none focus:border-dbz-orange focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
             />
           </div>
         </div>

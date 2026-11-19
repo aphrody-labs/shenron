@@ -43,6 +43,22 @@ test("moderation accepts only a bounded identified decision", () => {
   }
 });
 
+test("a rejection needs a non-empty reason while an acceptance does not", () => {
+  for (const body of [
+    { id: "1", action: "reject" },
+    { id: "1", action: "reject", note: "" },
+    { id: "1", action: "reject", note: " \n\t " },
+  ]) {
+    expect(reviewContributionSchema.safeParse(body).success, JSON.stringify(body)).toBe(false);
+  }
+  expect(reviewContributionSchema.parse({ id: "1", action: "reject", note: " off topic " })).toEqual(
+    { id: "1", action: "reject", note: "off topic" },
+  );
+  expect(reviewContributionSchema.safeParse({ id: "1", action: "accept", note: " " }).success).toBe(
+    true,
+  );
+});
+
 test("AI generation is an explicit action with a bounded typed request", () => {
   expect(wikiAiRequestSchema.parse({ query: "  Namek  " })).toEqual({
     query: "Namek",

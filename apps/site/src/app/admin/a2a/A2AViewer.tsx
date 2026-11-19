@@ -363,13 +363,13 @@ export function A2AViewer() {
               return (
                 <div
                   key={`${env.id}:${index}`}
-                  className={`p-3.5 rounded-lg border border-border bg-[#0d1117] text-[#e6edf3] ${kindBorder} space-y-2`}
+                  className={`p-3.5 rounded-lg border border-border bg-dbz-bg text-os ${kindBorder} space-y-2`}
                 >
                   <div className="flex items-center justify-between flex-wrap gap-2 text-xs">
                     <div className="flex items-center gap-2">
-                      <span className="font-bold text-[#79c0ff]">{env.from}</span>
+                      <span className="font-bold text-dbz-ki">{env.from}</span>
                       <span className="text-muted-foreground">→</span>
-                      <span className="font-bold text-[#79c0ff]/80">{env.to}</span>
+                      <span className="font-bold text-dbz-ki/80">{env.to}</span>
                       <span
                         className={`px-2 py-0.5 rounded-full border text-[10px] font-bold uppercase tracking-wider ${badgeStyle}`}
                       >
@@ -382,12 +382,10 @@ export function A2AViewer() {
                     </span>
                   </div>
 
-                  {env.topic && (
-                    <div className="font-semibold text-sm text-[#e6edf3]">{env.topic}</div>
-                  )}
+                  {env.topic && <div className="font-semibold text-sm text-os">{env.topic}</div>}
 
                   {env.body && (
-                    <div className="text-xs text-[#8b949e] whitespace-pre-wrap break-words bg-[#161b22] p-2.5 rounded border border-[#21262d] max-h-48 overflow-y-auto">
+                    <div className="text-xs text-dbz-blue-light whitespace-pre-wrap break-words bg-dbz-card p-2.5 rounded border border-dbz-border max-h-48 overflow-y-auto">
                       {env.body}
                     </div>
                   )}

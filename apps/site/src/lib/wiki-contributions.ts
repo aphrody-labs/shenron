@@ -25,13 +25,18 @@
  * Server-only : Drizzle/Postgres + réutilise le CRUD de `wiki-admin.ts`.
  */
 import "server-only";
-import { and, count, desc, eq, sql as raw } from "drizzle-orm";
+import { and, count, desc, eq, notLike, sql as raw } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { wikiContributions, type ContributionStatus, type WikiContribution } from "@/db/schema";
 import { getWikiRow, updateWiki } from "@/lib/wiki-admin";
 import { recordRevisionStrict, type RevisionActor } from "@/lib/wiki-revisions";
 import { revalidateWikiEntity, revalidateSectionParent } from "@/lib/wiki-revalidate";
-import { isContributableColumn, CONTRIBUTION_MAX } from "@/lib/contributions-shared";
+import {
+  AGENT_AUTHOR_PREFIX,
+  isAgentAuthor,
+  isContributableColumn,
+  CONTRIBUTION_MAX,
+} from "@/lib/contributions-shared";
 import {
   ecrireTranscription,
   estCiblePlanche,
@@ -434,26 +439,18 @@ export interface ContributorStat {
   lastAt: string;
 }
 
-/**
- * Palmarès public des contributeurs — comptes d'après les propositions
- * **acceptées** uniquement : déposer beaucoup ne vaut pas contribuer.
- */
-export async function topContributors(limit = 50): Promise<ContributorStat[]> {
-  const rows = await db
-    .select({
-      authorId: wikiContributions.authorId,
-      authorName: wikiContributions.authorName,
-      accepted: raw<number>`count(*) filter (where ${wikiContributions.status} = 'accepted')`,
-      pending: raw<number>`count(*) filter (where ${wikiContributions.status} = 'pending')`,
-      lastAt: raw<Date>`max(${wikiContributions.createdAt})`,
-    })
-    .from(wikiContributions)
-    .groupBy(wikiContributions.authorId, wikiContributions.authorName)
-    .orderBy(raw`count(*) filter (where ${wikiContributions.status} = 'accepted') desc`)
-    .limit(limit);
+export interface ContributorRow {
+  authorId: string | null;
+  authorName: string | null;
+  accepted: number | string;
+  pending: number | string;
+  lastAt: Date | string;
+}
 
+/** Une ligne par `authorId` en entrée : on écarte les agents et les membres sans proposition acceptée. */
+export function toContributorStats(rows: ContributorRow[]): ContributorStat[] {
   return rows
-    .filter((r) => r.authorId && Number(r.accepted) > 0)
+    .filter((r) => r.authorId && !isAgentAuthor(r.authorId) && Number(r.accepted) > 0)
     .map((r) => ({
       authorId: r.authorId!,
       authorName: r.authorName ?? "Anonyme",
@@ -461,4 +458,28 @@ export async function topContributors(limit = 50): Promise<ContributorStat[]> {
       pending: Number(r.pending),
       lastAt: new Date(r.lastAt).toISOString(),
     }));
+}
+
+/**
+ * Palmarès public des contributeurs — comptes d'après les propositions
+ * **acceptées** uniquement : déposer beaucoup ne vaut pas contribuer. Les
+ * agents (`agent:<keyId>`) sont exclus, et un membre renommé reste une seule
+ * ligne : on groupe par `authorId`, le nom affiché est le plus grand des noms.
+ */
+export async function topContributors(limit = 50): Promise<ContributorStat[]> {
+  const rows = await db
+    .select({
+      authorId: wikiContributions.authorId,
+      authorName: raw<string | null>`max(${wikiContributions.authorName})`,
+      accepted: raw<number>`count(*) filter (where ${wikiContributions.status} = 'accepted')`,
+      pending: raw<number>`count(*) filter (where ${wikiContributions.status} = 'pending')`,
+      lastAt: raw<Date>`max(${wikiContributions.createdAt})`,
+    })
+    .from(wikiContributions)
+    .where(notLike(wikiContributions.authorId, `${AGENT_AUTHOR_PREFIX}%`))
+    .groupBy(wikiContributions.authorId)
+    .orderBy(raw`count(*) filter (where ${wikiContributions.status} = 'accepted') desc`)
+    .limit(limit);
+
+  return toContributorStats(rows);
 }

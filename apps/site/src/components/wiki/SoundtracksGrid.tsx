@@ -155,6 +155,7 @@ export function SoundtracksGrid({
                     <div className="h-24 overflow-hidden rounded-lg border border-white/10 bg-black/20">
                       <img
                         src={assetUrl(fallbackImage)}
+                        decoding="async"
                         alt={ui("categoryAlt")}
                         loading="lazy"
                         className="h-full w-full object-cover opacity-60"

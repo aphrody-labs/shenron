@@ -4,7 +4,7 @@
  * Every query carries `visible = true`; `visible` (and the category's other
  * omitted columns) is never selected. Runtime class: `pure`.
  */
-import { and, asc, count, eq, getTableColumns, ilike, or, type SQL } from "drizzle-orm";
+import { and, asc, count, eq, getTableColumns, or, type SQL, sql } from "drizzle-orm";
 import type { PgColumn } from "drizzle-orm/pg-core";
 import { WIKI_CATEGORIES, type WikiCategoryName } from "../constants";
 import type { ShenronPgDatabase } from "../types";
@@ -60,11 +60,25 @@ function visibleFilter(s: WikiCategorySpec): SQL {
   return eq(column(s, "visible"), true);
 }
 
+/** Columns excluded from typo tolerance: identifiers and free text turn noisy under trigram similarity. */
+const FUZZY_EXCLUDED = new Set(["slug", "description", "wishText"]);
+
+/** Minimum `pg_trgm` similarity, same threshold as the site search. */
+const FUZZY_THRESHOLD = 0.3;
+
 function searchFilter(s: WikiCategorySpec, q: string | undefined): SQL | undefined {
   const term = q?.trim();
   if (!term) return undefined;
   const pattern = `%${escapeLike(term)}%`;
-  return or(...s.searchColumns.map((key) => ilike(column(s, key), pattern)));
+  return or(
+    ...s.searchColumns.flatMap((key) => {
+      const col = column(s, key);
+      const folded = sql`unaccent(lower(${col}))`;
+      const match = sql`${folded} like unaccent(lower(${pattern}))`;
+      if (FUZZY_EXCLUDED.has(key)) return [match];
+      return [match, sql`similarity(${folded}, unaccent(lower(${term}))) > ${FUZZY_THRESHOLD}`];
+    }),
+  );
 }
 
 function clampLimit(limit: number): number {

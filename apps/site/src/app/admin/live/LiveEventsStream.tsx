@@ -69,7 +69,7 @@ export function LiveEventsStream() {
           <span
             className={`w-2 h-2 rounded-full inline-block ${
               status === "open"
-                ? "bg-green-400 shadow-[0_0_6px_#4ade80]"
+                ? "bg-green-400 shadow-[0_0_6px_var(--color-dbz-green)]"
                 : status === "connecting"
                   ? "bg-yellow-400 animate-pulse"
                   : "bg-red-500"

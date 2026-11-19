@@ -144,6 +144,9 @@ export default async function ArcPage({ params }: { params: Promise<{ slug: stri
                   <div className="w-20 aspect-video overflow-hidden rounded bg-dbz-bg shrink-0">
                     <img
                       src={assetUrl(ep.image)}
+                      width={80}
+                      height={45}
+                      decoding="async"
                       alt=""
                       className="w-full h-full object-cover opacity-70 group-hover:opacity-100 transition-opacity"
                       loading="lazy"

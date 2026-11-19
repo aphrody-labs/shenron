@@ -167,7 +167,10 @@ export function WikiSectionsReader({
 
   function scrollToContent() {
     requestAnimationFrame(() =>
-      contentRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }),
+      contentRef.current?.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        block: "start",
+      }),
     );
   }
 

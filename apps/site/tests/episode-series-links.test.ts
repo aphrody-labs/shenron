@@ -10,6 +10,7 @@ test("soundtrack labels point to canonical catalogue codes", () => {
     expect(episodeSeriesHref(label)).toBe(`/wiki/episodes/series/${code}`);
     expect(episodeSeriesHref(code.toLowerCase())).toBe(`/wiki/episodes/series/${code}`);
   }
+  expect(EPISODE_SERIES_LABELS.SDBH).toBe("Super Dragon Ball Heroes");
   expect(episodeSeriesHref("Dragon Ball Kai")).toBe("/wiki/episodes/series/DBZ_KAI");
   expect(episodeSeriesHref("SDBH")).toBe("/wiki/episodes/series/SDBH");
   expect(episodeSeriesHref("Super Dragon Ball Heroes")).toBe("/wiki/episodes/series/SDBH");

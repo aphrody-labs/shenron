@@ -55,12 +55,8 @@
  * dispersion en une seule source — même standard que la table dakuten, qui
  * accepte `イヒルデガーン→ヒルデガーン` (12×, 1 ouvrage).
  */
+import { echapperRegExp } from "../text/regexp";
 import { KATAKANA } from "./normalisation";
-
-/** Échappe une chaîne pour un usage littéral dans un `RegExp`. */
-function echapperRegExp(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
 
 export interface VarianteGraphie {
   /** Graphie fautive telle qu'elle apparaît dans le corpus. */

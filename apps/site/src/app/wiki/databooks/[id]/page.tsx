@@ -281,6 +281,9 @@ export default async function DatabookDetailPage({ params }: { params: Promise<{
               <ViewTransition name={`databook-img-${book.id}`} share="morph">
                 <img
                   src={cover}
+                  width={400}
+                  height={600}
+                  decoding="async"
                   alt={book.title}
                   className="relative z-10 mx-auto h-auto max-h-[48vh] w-full object-contain drop-shadow-[0_0_15px_rgba(255,178,0,0.3)] lg:max-h-none"
                 />

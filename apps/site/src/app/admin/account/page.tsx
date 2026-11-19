@@ -173,7 +173,7 @@ export default function AccountPage() {
   const accentBg =
     u.accent_color != null
       ? `#${u.accent_color.toString(16).padStart(6, "0")}`
-      : "linear-gradient(to right, #18181b, #27272a)";
+      : "linear-gradient(to right, var(--color-dbz-bg), var(--color-dbz-card))";
   const avatar = avatarUrl(u);
 
   return (

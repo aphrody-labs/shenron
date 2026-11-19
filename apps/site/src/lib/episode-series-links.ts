@@ -10,6 +10,7 @@ export const EPISODE_SERIES_LABELS: Record<string, string> = {
   DBS: "Dragon Ball Super",
   DBS_BEERUS: "Dragon Ball Super: Beerus",
   DB_DAIMA: "Dragon Ball Daima",
+  SDBH: "Super Dragon Ball Heroes",
 };
 
 function normalizedSeries(value: string): string {
@@ -23,12 +24,6 @@ export function episodeSeriesHref(series: string): string | null {
     ([code, label]) =>
       normalizedSeries(code) === normalized || normalizedSeries(label) === normalized,
   );
-  const code =
-    entry?.[0] ??
-    (normalized === "dragon ball kai"
-      ? "DBZ_KAI"
-      : normalized === "sdbh" || normalized === "super dragon ball heroes"
-        ? "SDBH"
-        : null);
+  const code = entry?.[0] ?? (normalized === "dragon ball kai" ? "DBZ_KAI" : null);
   return code ? `/wiki/episodes/series/${code}` : null;
 }

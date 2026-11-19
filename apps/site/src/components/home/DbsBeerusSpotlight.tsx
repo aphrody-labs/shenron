@@ -20,7 +20,7 @@ export function DbsBeerusSpotlight({
   return (
     <aside
       aria-label={t("title")}
-      className={`min-w-0 overflow-hidden border-b border-white/10 bg-[#121224]/95 backdrop-blur-sm ${
+      className={`min-w-0 overflow-hidden border-b border-white/10 bg-dbz-card/95 backdrop-blur-sm ${
         compact
           ? "grid sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]"
           : "page-shell grid items-center gap-4 py-3.5 sm:grid-cols-[200px_minmax(0,1fr)] md:grid-cols-[240px_minmax(0,1fr)]"

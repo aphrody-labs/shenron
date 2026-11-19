@@ -60,8 +60,8 @@ async function WhisScouterPanel({
     ).values(),
   );
   return (
-    <aside className={styles.note}>
-      <h2>
+    <aside aria-labelledby="wiki-search-assistant" className={styles.note}>
+      <h2 id="wiki-search-assistant">
         <WikiResearchText name="assistant" />
       </h2>
       <p>{answer.answer}</p>

@@ -17,6 +17,9 @@ import { EpisodeScenes } from "../../../[id]/EpisodeScenes";
 import { ShareButton } from "@/components/ShareButton";
 import { ogMeta } from "@/lib/og";
 import { getDictionary } from "@/lib/i18n";
+import { episodeJsonLd } from "@/lib/episode-jsonld";
+import { EPISODE_SERIES_LABELS } from "@/lib/episode-series-links";
+import { SITE_URL } from "@/lib/config";
 import { DBS_BEERUS_EPISODE_HREF, DBS_BEERUS_SERIES_CODE } from "@/lib/episode-series-catalogue";
 
 export const revalidate = 3600;
@@ -70,17 +73,12 @@ export default async function OfficialBeerusEpisodePage({
     synopsis: text.episodeSynopsis,
   });
   return (
-    <main className="relative isolate min-w-0">
+    <div className="relative isolate min-w-0">
       <JsonLd
-        data={{
-          "@context": "https://schema.org",
-          "@type": "TVEpisode",
-          episodeNumber: "1",
-          name: text.episodeTitle,
-          description: text.episodeSynopsis,
-          datePublished: "2026-10-11",
-          partOfSeries: { "@type": "TVSeries", name: text.title },
-        }}
+        data={episodeJsonLd(episode, {
+          seriesLabel: EPISODE_SERIES_LABELS[series] ?? series,
+          siteUrl: SITE_URL,
+        })}
       />
       <div className="absolute inset-x-0 top-0 -z-10 h-[36rem] overflow-hidden" aria-hidden>
         <BackgroundImage src={artwork} priority className="absolute inset-0 opacity-35" />
@@ -176,8 +174,8 @@ export default async function OfficialBeerusEpisodePage({
             title={text.episodeTitle}
             episodeNumber={1}
           />
-          <aside className="dbz-panel space-y-4 p-6">
-            <h2 className="font-display text-xl font-bold text-white">
+          <aside aria-labelledby="dbs-beerus-details" className="dbz-panel space-y-4 p-6">
+            <h2 id="dbs-beerus-details" className="font-display text-xl font-bold text-white">
               <T k="dbsBeerus.details" />
             </h2>
             <p className="text-sm leading-relaxed text-white/75">
@@ -205,6 +203,6 @@ export default async function OfficialBeerusEpisodePage({
           </footer>
         </div>
       </PageShell>
-    </main>
+    </div>
   );
 }

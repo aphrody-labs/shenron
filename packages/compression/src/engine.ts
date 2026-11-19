@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
+import * as zlib from "node:zlib";
 import type { CompressedAssetMeta, CompressionFormat, CompressionOptions } from "./types";
 
 export const MAGIC_GZIP = new Uint8Array([0x1f, 0x8b]);
@@ -37,6 +38,10 @@ export function detectCompressionFormat(buffer: Uint8Array): CompressionFormat {
   return "raw";
 }
 
+/** Level for stored (publish-time) variants, not for on-the-fly edge compression. */
+export const DEFAULT_ZSTD_LEVEL = 19;
+export const DEFAULT_BROTLI_QUALITY = 11;
+
 export function compressSync(
   data: Uint8Array,
   format: CompressionFormat = "gzip",
@@ -56,17 +61,12 @@ export function compressSync(
       out.set(compressed, 2);
       return out;
     }
-    case "zstd": {
-      // High-performance Zstandard frame encapsulation:
-      // Prepends RFC 8878 Zstandard magic 0xFD2FB528 and Deflate raw payload for universal cross-platform decoding
-      const compressed = Bun.deflateSync(input, { level: level as any });
-      const out = new Uint8Array(MAGIC_ZSTD.length + 4 + compressed.length);
-      out.set(MAGIC_ZSTD, 0);
-      const view = new DataView(out.buffer);
-      view.setUint32(4, data.length, true); // uncompressed size
-      out.set(compressed, 8);
-      return out;
-    }
+    case "zstd":
+      // RFC 8878 frame from the runtime's zstd; publish-time level 19 unless the caller sets one.
+      return zlib.zstdCompressSync(input, {
+        params: { [zlib.constants.ZSTD_c_compressionLevel]: options.level ?? DEFAULT_ZSTD_LEVEL },
+        pledgedSrcSize: data.length,
+      });
     case "lz4": {
       // LZ4 Frame Header
       const compressed = Bun.deflateSync(input, { level: 1 });
@@ -78,6 +78,12 @@ export function compressSync(
       return out;
     }
     case "brotli":
+      return zlib.brotliCompressSync(input, {
+        params: {
+          [zlib.constants.BROTLI_PARAM_QUALITY]: options.level ?? DEFAULT_BROTLI_QUALITY,
+          [zlib.constants.BROTLI_PARAM_SIZE_HINT]: data.length,
+        },
+      });
     case "raw":
     default:
       return data;
@@ -103,17 +109,25 @@ export function decompressSync(data: Uint8Array, format?: CompressionFormat): Ui
       return Bun.inflateSync(input);
     }
     case "zstd": {
-      if (
-        data.length >= 8 &&
-        data[0] === MAGIC_ZSTD[0] &&
-        data[1] === MAGIC_ZSTD[1] &&
-        data[2] === MAGIC_ZSTD[2] &&
-        data[3] === MAGIC_ZSTD[3]
-      ) {
-        return Bun.inflateSync(data.subarray(8) as unknown as Uint8Array<ArrayBuffer>);
+      // Frames written before this encoder was fixed carry the magic, a 4-byte size and a raw
+      // deflate payload; anything else is a real zstd frame.
+      try {
+        return zlib.zstdDecompressSync(input);
+      } catch (error) {
+        if (
+          data.length >= 8 &&
+          data[0] === MAGIC_ZSTD[0] &&
+          data[1] === MAGIC_ZSTD[1] &&
+          data[2] === MAGIC_ZSTD[2] &&
+          data[3] === MAGIC_ZSTD[3]
+        ) {
+          return Bun.inflateSync(data.subarray(8) as unknown as Uint8Array<ArrayBuffer>);
+        }
+        throw error;
       }
-      return Bun.inflateSync(input);
     }
+    case "brotli":
+      return zlib.brotliDecompressSync(input);
     case "lz4": {
       if (
         data.length >= 8 &&

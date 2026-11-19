@@ -134,7 +134,12 @@ export function CanonSourcesTrigger() {
         const panel = document.getElementById("canon-evidence");
         if (panel instanceof HTMLDetailsElement) {
           panel.open = true;
-          panel.scrollIntoView({ behavior: "smooth", block: "start" });
+          panel.scrollIntoView({
+            behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+              ? "auto"
+              : "smooth",
+            block: "start",
+          });
           panel.querySelector("summary")?.focus();
         }
       }}

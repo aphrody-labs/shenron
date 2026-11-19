@@ -54,8 +54,8 @@ export interface ShenronChatResponse {
 }
 
 /**
- * Ask the public, grounded Shenron chat through the desktop host: `shenron_chat`
- * (crates/shenron-studio/src/shenron.rs), 1 to 600 characters, answered by dragonballfr.com.
+ * Ask the public, grounded Shenron chat through the desktop host: `shenron_chat`,
+ * 1 to 600 characters, answered by dragonballfr.com.
  */
 export async function askShenron(query: string): Promise<ShenronChatResponse> {
   const result = await tauriInvoke<ShenronChatResponse>("shenron_chat", { query });

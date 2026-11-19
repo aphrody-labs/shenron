@@ -59,6 +59,7 @@ export function HomeHeroFrames({ frames }: { frames: readonly string[] }) {
             height={810}
             loading={position === 0 ? "eager" : "lazy"}
             fetchPriority={position === 0 ? "high" : "low"}
+            decoding={position === 0 ? "sync" : "async"}
             className={styles.frame}
             data-active={position === index}
           />

@@ -54,11 +54,7 @@
  */
 import { KATAKANA } from "./ja/normalisation";
 import { nettoyerOcr } from "./databooks-format";
-
-/** Échappe une chaîne pour un usage littéral dans un `RegExp`. */
-function echapperRegExp(s: string): string {
-  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-}
+import { echapperRegExp } from "./text/regexp";
 
 // ---------------------------------------------------------------------------
 // 1. Titres markdown coincés en milieu de ligne

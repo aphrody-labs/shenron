@@ -40,6 +40,8 @@
  *     **close** de phrases exactes, jamais un mot-clé, cf. `PHRASES_META`.
  */
 
+import { echapperRegExp } from "../text/regexp";
+
 /** Même forme que le `RapportRegle` du pipeline frère, codes propres à ce module. */
 export interface RapportRegle {
   code: CodeArtefact;
@@ -160,27 +162,6 @@ export const PHRASES_META: { phrase: string; note: string }[] = [
     note: "description d'image — 1 occ. (#129 p.15)",
   },
 ];
-
-const SPECIAUX_REGEXP = new Set([
-  ".",
-  "*",
-  "+",
-  "?",
-  "^",
-  "$",
-  "{",
-  "}",
-  "(",
-  ")",
-  "|",
-  "[",
-  "]",
-  BS,
-]);
-
-function echapperRegExp(s: string): string {
-  return [...s].map((c) => (SPECIAUX_REGEXP.has(c) ? BS + c : c)).join("");
-}
 
 const RE_PHRASES_META = new RegExp(
   PHRASES_META.map((p) => echapperRegExp(p.phrase)).join("|"),

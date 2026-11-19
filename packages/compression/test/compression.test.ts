@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, it } from "bun:test";
+import * as zlib from "node:zlib";
 import {
   compressSync,
   decompressSync,
@@ -41,6 +42,37 @@ describe("@aphrody/shenron-compression engine", () => {
 
     const decompressed = decompressSync(compressed, "zstd");
     expect(new TextDecoder().decode(decompressed)).toBe(new TextDecoder().decode(raw));
+  });
+
+  it("zstd output is a real frame that node:zlib decodes, at level 19 by default", () => {
+    const raw = new TextEncoder().encode(JSON.stringify({ k: "Shenron ".repeat(4000) }));
+    const compressed = compressSync(raw, "zstd");
+    expect(Buffer.compare(zlib.zstdDecompressSync(compressed), raw)).toBe(0);
+    const level1 = compressSync(raw, "zstd", { level: 1 });
+    expect(compressed.length).toBeLessThanOrEqual(level1.length);
+    const level19 = zlib.zstdCompressSync(raw, {
+      params: { [zlib.constants.ZSTD_c_compressionLevel]: 19 },
+      pledgedSrcSize: raw.length,
+    });
+    expect(Buffer.compare(compressed, level19)).toBe(0);
+  });
+
+  it("decodes zstd frames written by the former deflate-wrapped encoder", () => {
+    const raw = new TextEncoder().encode("Dragon Radar ".repeat(100));
+    const body = Bun.deflateSync(raw as unknown as Uint8Array<ArrayBuffer>);
+    const legacy = new Uint8Array(8 + body.length);
+    legacy.set([0x28, 0xb5, 0x2f, 0xfd], 0);
+    new DataView(legacy.buffer).setUint32(4, raw.length, true);
+    legacy.set(body, 8);
+    expect(Buffer.compare(decompressSync(legacy, "zstd"), raw)).toBe(0);
+  });
+
+  it("brotli output is a real stream at quality 11 by default", () => {
+    const raw = new TextEncoder().encode(JSON.stringify({ k: "Kamehameha ".repeat(4000) }));
+    const compressed = compressSync(raw, "brotli");
+    expect(compressed.length).toBeLessThan(raw.length / 10);
+    expect(Buffer.compare(zlib.brotliDecompressSync(compressed), raw)).toBe(0);
+    expect(Buffer.compare(decompressSync(compressed, "brotli"), raw)).toBe(0);
   });
 
   it("computes accurate compression metadata and ratios", () => {

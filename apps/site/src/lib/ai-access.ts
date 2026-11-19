@@ -38,6 +38,8 @@ export const PUBLIC_API_PREFIXES = [
   "/api/timeline",
   "/api/episodes",
   "/api/movies",
+  // OpenAPI document of the public API, advertised by llms.txt and the api-catalog.
+  "/api/public/openapi.json",
   // Former French path, still served (rewrite to /api/timeline, lib/legacy-routes.ts).
   "/api/chronologie",
 ] as const;

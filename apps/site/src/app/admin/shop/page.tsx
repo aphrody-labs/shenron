@@ -568,8 +568,8 @@ export default function ShopPage() {
                       className="relative flex h-20 items-center justify-between overflow-hidden p-3"
                       style={{
                         background: cardAccent
-                          ? `linear-gradient(135deg, ${cardAccent}33, #0a0a0c)`
-                          : "#121215",
+                          ? `linear-gradient(135deg, color-mix(in srgb, ${cardAccent} 20%, transparent), var(--color-dbz-bg))`
+                          : "var(--color-dbz-card)",
                         borderLeft: cardAccent ? `4px solid ${cardAccent}` : undefined,
                       }}
                     >
@@ -820,7 +820,7 @@ function ShopItemEditor({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm">
       <form
         onSubmit={submit}
-        className="card w-full max-w-2xl space-y-3.5 max-h-[90vh] overflow-y-auto border border-zinc-700 bg-[#12110e]"
+        className="card w-full max-w-2xl space-y-3.5 max-h-[90vh] overflow-y-auto border border-zinc-700 bg-dbz-card"
       >
         <div className="flex items-center gap-2 border-b border-zinc-800 pb-3">
           <div className="flex items-center gap-2">

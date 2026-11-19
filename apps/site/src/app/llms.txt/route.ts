@@ -119,6 +119,7 @@ export async function GET(): Promise<Response> {
     "  human decision, not a sort.",
     `- [${SITE_URL}/api/episodes](${SITE_URL}/api/episodes): animated series episodes with streaming player links (\`?series=\`, \`?q=\`, \`?limit=\`, \`?offset=\`).`,
     `- [${SITE_URL}/api/movies](${SITE_URL}/api/movies): animated films, TV specials and OVAs catalog with player links (\`?series=\`, \`?q=\`).`,
+    `- [${SITE_URL}/api/public/openapi.json](${SITE_URL}/api/public/openapi.json): OpenAPI 3.1 description of the public API; API catalog (RFC 9727): \`${SITE_URL}/.well-known/api-catalog\`.`,
     `- [${SITE_URL}/news/rss.xml](${SITE_URL}/news/rss.xml): RSS feed of the articles.`,
     `- [${SITE_URL}/.well-known/agent-card.json](${SITE_URL}/.well-known/agent-card.json): A2A agent card.`,
     "",

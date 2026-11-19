@@ -246,6 +246,7 @@ function Gallery({
             <img
               key={current.key}
               src={mediaSource(current)}
+              decoding="async"
               alt={current.caption || t("imageTitle", { title })}
               // `animate-[fadeIn]` : sans fondu, le passage automatique d'une
               // image à l'autre est un à-coup sec au milieu de la lecture.
@@ -282,6 +283,7 @@ function Gallery({
                   {item.thumb && !failedMedia.has(item.key) ? (
                     <img
                       src={item.kind === "image" ? mediaSource(item) : item.thumb}
+                      decoding="async"
                       alt=""
                       className="h-full w-full object-cover"
                       loading="lazy"

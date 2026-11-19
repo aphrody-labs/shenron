@@ -200,7 +200,9 @@ export function ShopGrid({ items, economy }: { items: ShopItem[]; economy: ShopE
     [filter, items, query],
   );
   const selected = visibleItems.find((it) => it.key === selectedKey) ?? visibleItems[0] ?? items[0];
-  const selectedColor = selected?.roleColor ?? (selected?.type === "color" ? "#7c3aed" : "#f5b52e");
+  const selectedColor =
+    selected?.roleColor ??
+    (selected?.type === "color" ? "var(--color-dbz-purple)" : "var(--color-dbz-amber)");
   const grouped = visibleItems.reduce<Partial<Record<ShopItem["type"], ShopItem[]>>>((acc, it) => {
     (acc[it.type] ??= []).push(it);
     return acc;
@@ -409,13 +411,15 @@ export function ShopGrid({ items, economy }: { items: ShopItem[]; economy: ShopE
                   {selected.preview ? (
                     <img src={selected.preview} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <div className="h-full w-full bg-gradient-to-r from-[#201505] to-[#0a0a0c]" />
+                    <div className="h-full w-full bg-gradient-to-r from-dbz-card to-dbz-bg" />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
                   <div className="absolute inset-y-0 left-4 flex items-center gap-4">
                     <div
                       className="h-14 w-14 sm:h-16 sm:w-16 rounded-full border-2 bg-black/60 flex items-center justify-center font-saiyan text-2xl text-white"
-                      style={{ borderColor: (selected.meta?.accent as string) || "#f59e0b" }}
+                      style={{
+                        borderColor: (selected.meta?.accent as string) || "var(--color-dbz-orange)",
+                      }}
                     >
                       悟
                     </div>
@@ -427,8 +431,8 @@ export function ShopGrid({ items, economy }: { items: ShopItem[]; economy: ShopE
                       <span
                         className="mt-1 inline-block rounded px-2 py-0.5 text-[10px] font-bold uppercase"
                         style={{
-                          background: `${(selected.meta?.accent as string) || "#f59e0b"}33`,
-                          color: (selected.meta?.accent as string) || "#f59e0b",
+                          background: `color-mix(in srgb, ${(selected.meta?.accent as string) || "var(--color-dbz-orange)"} 20%, transparent)`,
+                          color: (selected.meta?.accent as string) || "var(--color-dbz-orange)",
                         }}
                       >
                         {selected.name}
@@ -452,7 +456,7 @@ export function ShopGrid({ items, economy }: { items: ShopItem[]; economy: ShopE
             )}
 
             {selected.type === "badge" && (
-              <div className="mt-6 rounded-xl border border-fuchsia-500/30 bg-[#0d0c0b] p-6 flex flex-col items-center justify-center text-center">
+              <div className="mt-6 rounded-xl border border-fuchsia-500/30 bg-dbz-bg p-6 flex flex-col items-center justify-center text-center">
                 {selected.preview ? (
                   <img
                     src={selected.preview}
@@ -470,7 +474,7 @@ export function ShopGrid({ items, economy }: { items: ShopItem[]; economy: ShopE
             )}
 
             {selected.type === "title" && (
-              <div className="mt-6 rounded-xl border border-purple-500/30 bg-[#0d0c0b] p-6 text-center">
+              <div className="mt-6 rounded-xl border border-purple-500/30 bg-dbz-bg p-6 text-center">
                 <p className="text-[10px] uppercase tracking-widest text-purple-400 font-mono">
                   Titre honorifique équipé sur ta carte
                 </p>
@@ -485,8 +489,8 @@ export function ShopGrid({ items, economy }: { items: ShopItem[]; economy: ShopE
 
             {selected.type === "color" && (
               <div
-                className="mt-6 rounded-xl border bg-[#0d0c0b] p-4"
-                style={{ borderColor: `${selectedColor}55` }}
+                className="mt-6 rounded-xl border bg-dbz-bg p-4"
+                style={{ borderColor: `color-mix(in srgb, ${selectedColor} 33%, transparent)` }}
               >
                 <div className="flex items-center gap-3">
                   <div className="h-10 w-10 rounded-full border border-white/20 bg-gradient-to-br from-dbz-orange to-dbz-yellow" />
@@ -735,7 +739,7 @@ function ItemPreview({ item }: { item: ShopItem }) {
 
   // 2. Thème de carte de profil : aperçu de fond + pastille thème
   if (item.type === "card") {
-    const accent = (item.meta?.accent as string) || "#F3E603";
+    const accent = (item.meta?.accent as string) || "var(--color-dbz-yellow)";
     return (
       <div className="relative aspect-[16/9] overflow-hidden border-b border-white/10 bg-black">
         {item.preview ? (
@@ -748,7 +752,9 @@ function ItemPreview({ item }: { item: ShopItem }) {
         ) : (
           <div
             className="h-full w-full"
-            style={{ background: `linear-gradient(135deg, ${accent}44, #0d0d10)` }}
+            style={{
+              background: `linear-gradient(135deg, color-mix(in srgb, ${accent} 27%, transparent), var(--color-dbz-bg))`,
+            }}
           />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
@@ -777,7 +783,7 @@ function ItemPreview({ item }: { item: ShopItem }) {
   // 3. Titre honorifique : plaque de titre stylisée
   if (item.type === "title") {
     return (
-      <div className="relative flex aspect-[16/9] flex-col items-center justify-center border-b border-white/10 bg-gradient-to-br from-[#1a140f] via-black to-[#0e0c0a] p-4 text-center">
+      <div className="relative flex aspect-[16/9] flex-col items-center justify-center border-b border-white/10 bg-gradient-to-br from-dbz-card via-black to-dbz-bg p-4 text-center">
         <span className="text-[9px] uppercase tracking-[.25em] text-purple-400 font-mono">
           Titre de Guerrier
         </span>
@@ -821,7 +827,7 @@ function ItemPreview({ item }: { item: ShopItem }) {
     return (
       <div
         className="flex aspect-[16/9] items-center justify-center border-b border-white/10"
-        style={{ background: item.roleColor ?? "#7c3aed" }}
+        style={{ background: item.roleColor ?? "var(--color-dbz-purple)" }}
       >
         <span className="rounded bg-black/40 px-2 py-1 text-xs font-bold uppercase tracking-widest text-white">
           {item.roleColor ?? "Couleur de pseudo"}
@@ -835,13 +841,16 @@ function ItemPreview({ item }: { item: ShopItem }) {
       <span
         aria-hidden
         className="font-saiyan text-2xl"
-        style={{ color: item.roleColor ?? "#f5b52e" }}
+        style={{ color: item.roleColor ?? "var(--color-dbz-amber)" }}
       >
         {TYPE_KANJI[item.type]}
       </span>
       <span
         className="rounded-xl border px-3 py-1 text-sm font-bold"
-        style={{ borderColor: item.roleColor ?? "#f5b52e", color: item.roleColor ?? "#f5b52e" }}
+        style={{
+          borderColor: item.roleColor ?? "var(--color-dbz-amber)",
+          color: item.roleColor ?? "var(--color-dbz-amber)",
+        }}
       >
         {item.name}
       </span>

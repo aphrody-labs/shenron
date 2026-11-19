@@ -314,6 +314,7 @@ export function WikiScenePortal({
               <img
                 key={asset.id}
                 src={asset.src}
+                decoding="async"
                 alt=""
                 width={asset.width}
                 height={asset.height}
@@ -420,7 +421,7 @@ export function WikiScenePortal({
               {history.length > 0 && (
                 <section>
                   <div className={styles.journalHeading}>
-                    <h2>{t("resumeReading")}</h2>
+                    <h2 id={`${unique}-resume`}>{t("resumeReading")}</h2>
                     <button
                       type="button"
                       onClick={() => {
@@ -431,7 +432,7 @@ export function WikiScenePortal({
                       {t("clearHistory")}
                     </button>
                   </div>
-                  <nav>
+                  <nav aria-labelledby={`${unique}-resume`}>
                     {history.map((entry) => (
                       <Link key={entry.href} href={entry.href} prefetch={false}>
                         {entry.titre}
@@ -442,12 +443,19 @@ export function WikiScenePortal({
               )}
               {publications.length > 0 && (
                 <section>
-                  <h2>{t("recent")}</h2>
-                  <nav>
+                  <h2 id={`${unique}-recent`}>{t("recent")}</h2>
+                  <nav aria-labelledby={`${unique}-recent`}>
                     {publications.map((entry) => (
                       <Link key={entry.id} href={entry.href} prefetch={false}>
                         {entry.image && (
-                          <img src={entry.image} width={40} height={52} alt="" loading="lazy" />
+                          <img
+                            src={entry.image}
+                            width={40}
+                            height={52}
+                            alt=""
+                            loading="lazy"
+                            decoding="async"
+                          />
                         )}
                         <span>
                           {entry.title}
@@ -466,8 +474,8 @@ export function WikiScenePortal({
               )}
               {archiveStills.length > 0 && (
                 <section>
-                  <h2>{t("fromAnime")}</h2>
-                  <nav>
+                  <h2 id={`${unique}-anime`}>{t("fromAnime")}</h2>
+                  <nav aria-labelledby={`${unique}-anime`}>
                     {archiveStills.map((entry) => (
                       <Link
                         key={entry.id}
@@ -491,8 +499,8 @@ export function WikiScenePortal({
                   (corpus.canonReferences !== null &&
                     categories.some((entry) => entry.id === "canon"))) && (
                   <section>
-                    <h2>{t("corpus")}</h2>
-                    <nav>
+                    <h2 id={`${unique}-corpus`}>{t("corpus")}</h2>
+                    <nav aria-labelledby={`${unique}-corpus`}>
                       {corpus.canonReferences !== null &&
                         categories.some((entry) => entry.id === "canon") && (
                           <Link href="/wiki/canon">

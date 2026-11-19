@@ -173,7 +173,7 @@ export default function MemberProfilesPage() {
         </section>
 
         <section
-          className="rounded-2xl border border-white/10 bg-[#161411] p-5 md:p-7"
+          className="rounded-2xl border border-white/10 bg-dbz-card p-5 md:p-7"
           aria-live="polite"
         >
           {!selectedMember ? (

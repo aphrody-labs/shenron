@@ -78,25 +78,41 @@ async function visitorOf(request: NextRequest): Promise<Visitor> {
 }
 
 /**
- * Cache partagé (CDN) du HTML wiki public. Posé ICI et non dans `next.config.ts`
+ * Cache partagé (CDN) du HTML public. Posé ICI et non dans `next.config.ts`
  * parce que la décision dépend du visiteur : une rubrique en mode « public » est
  * identique pour tous, mais le même chemin est rendu différemment pour le staff
  * (rubriques fermées) et redirige un anonyme vers /coming-soon. Un en-tête
  * statique par chemin laisserait un CDN servir la vue d'un camp à l'autre. On ne
  * pose donc `s-maxage` que pour une requête GET/HEAD anonyme (aucun cookie de
- * session, ni jeton, ni poste d'administration) sur une rubrique publique ;
- * toute autre requête garde l'en-tête de `next.config.ts`.
+ * session, ni jeton, ni poste d'administration) sur le wiki public ou sur une
+ * page statique de la liste {@link STATIC_PUBLIC_PATHS} ; toute autre requête
+ * garde l'en-tête de `next.config.ts`.
  */
 const WIKI_NO_SHARED_CACHE =
   /^\/wiki\/(?:random|search|contribute|corrections|manga\/review)(?:\/|$)/;
 
-function publicWikiResponse(request: NextRequest, pathname: string): NextResponse {
+/** Pages de balisage statique, identiques pour tout visiteur anonyme. */
+const STATIC_PUBLIC_PATHS: ReadonlySet<string> = new Set([
+  "/about",
+  "/commands",
+  "/license",
+  "/privacy",
+  "/credits",
+]);
+
+function isSharedCacheablePath(pathname: string): boolean {
+  if (STATIC_PUBLIC_PATHS.has(pathname)) return true;
+  return (
+    (pathname === "/wiki" || pathname.startsWith("/wiki/")) && !WIKI_NO_SHARED_CACHE.test(pathname)
+  );
+}
+
+function publicSharedCacheResponse(request: NextRequest, pathname: string): NextResponse {
   const response = NextResponse.next();
   const method = request.method;
   if (
-    (pathname === "/wiki" || pathname.startsWith("/wiki/")) &&
     (method === "GET" || method === "HEAD") &&
-    !WIKI_NO_SHARED_CACHE.test(pathname) &&
+    isSharedCacheablePath(pathname) &&
     !hasAuthCredentials(request) &&
     !isAdminIp(request.headers)
   ) {
@@ -247,7 +263,7 @@ export async function proxy(request: NextRequest) {
   // règle « hors registre sous /wiki ⇒ fermé » : la page d'accueil du wiki
   // renvoyait tout le monde sur le teaser « En préparation », alors qu'elle ne
   // fait que lister des rubriques dont chacune est déjà gardée par la sienne.
-  if (pathname === "/wiki") return publicWikiResponse(request, pathname);
+  if (pathname === "/wiki") return publicSharedCacheResponse(request, pathname);
   // Un FICHIER sous /wiki/ n'est pas une rubrique : c'est un asset de
   // `public/wiki/` (poster de scène, vignette de personnage, planche de
   // databook). La règle « hors registre sous /wiki ⇒ fermé » l'attrapait, et
@@ -270,12 +286,12 @@ export async function proxy(request: NextRequest) {
   if (!entry && isWiki) return NextResponse.next();
   // Hors registre, partout ailleurs la page est publique (accueil, à propos,
   // crédits…).
-  if (!entry && !isWiki) return NextResponse.next();
+  if (!entry && !isWiki) return publicSharedCacheResponse(request, pathname);
 
   const cfg = await getLaunchConfig();
   const rule = entry ? resolveAccess(entry.key, cfg) : ({ mode: "admin", roleIds: [] } as const);
 
-  if (rule.mode === "public") return publicWikiResponse(request, pathname);
+  if (rule.mode === "public") return publicSharedCacheResponse(request, pathname);
 
   const visitor = await visitorOf(request);
   let allowed = visitor.isAdmin;

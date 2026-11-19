@@ -516,7 +516,7 @@ function TrendChart({
         <polyline
           points={line}
           fill="none"
-          stroke="var(--color-dbz-blue-light, #5aa9ff)"
+          stroke="var(--color-dbz-ki)"
           strokeWidth={1.5}
           strokeDasharray="4 3"
           vectorEffect="non-scaling-stroke"
@@ -539,12 +539,7 @@ function TrendChart({
               r={3.5}
               fill="var(--color-dbz-orange)"
             />
-            <circle
-              cx={x(hover)}
-              cy={y(points[hover].visitors)}
-              r={3}
-              fill="var(--color-dbz-blue-light, #5aa9ff)"
-            />
+            <circle cx={x(hover)} cy={y(points[hover].visitors)} r={3} fill="var(--color-dbz-ki)" />
           </>
         )}
 

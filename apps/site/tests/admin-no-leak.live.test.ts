@@ -14,7 +14,7 @@
  * 200**. Il tient sur le statut plutôt que sur l'absence de tel ou tel mot —
  * un 200 sur /admin est déjà la panne, quel que soit son contenu.
  *
- * Tier `live` (tape la prod, comme `no-404`) : `bun run test:live`.
+ * Tier `live` (tape la prod, comme `no-404`) : `just test-live`.
  */
 import { describe, expect, test } from "bun:test";
 import { Glob } from "bun";

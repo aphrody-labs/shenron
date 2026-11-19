@@ -15,6 +15,8 @@ import {
   botTechniques,
   botDatabooks,
   botTransformations,
+  botLocations,
+  botItems,
 } from "@/db/bot-schema";
 import { and, eq, sql } from "drizzle-orm";
 import { publicPostFilter } from "@/lib/posts";
@@ -23,7 +25,8 @@ import { isPathPublic, type AccessSnapshot } from "@aphrody/shenron-config/wiki-
 import { sitemapDestinations } from "@/lib/site-map";
 import { isDatabookIndexable } from "@/lib/databooks-rules";
 import { formatCharacterSlug, formatTransformationSlug } from "@/lib/wiki-slugs";
-import { canonicalCharacterSitemapRows } from "@/lib/wiki-sitemap";
+import { canonicalCharacterSitemapRows, slugSitemapPaths } from "@/lib/wiki-sitemap";
+import { contentDate, contentDateFromSeconds, isIndexablePath } from "@/lib/sitemap-entries";
 import { getPublishedCardCount } from "@/lib/card-catalog";
 
 export const revalidate = 86400; // Cache le sitemap pendant 24 heures
@@ -55,9 +58,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     path: string,
     priority: number,
     changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"] = "weekly",
-    lastModified: Date = new Date(),
+    lastModified?: Date,
   ) => {
-    if (!isPublic(path)) return;
+    if (!isIndexablePath(path) || !isPublic(path)) return;
     entries.push({ url: `${SITE_URL}${path}`, lastModified, changeFrequency, priority });
   };
 
@@ -95,21 +98,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Chaque bloc est indépendant : une table en échec ne doit pas vider tout le
   // sitemap. `visible` est filtré ici comme dans les pages publiques — un
   // contenu masqué en base ne doit jamais être annoncé à Google.
-  const sec = (v: number | null) => (v ? new Date(Number(v) * 1000) : new Date());
-
   await Promise.all([
     block(entries, isPublic, async () => {
       const rows = await db
         .select({ id: botEpisodes.id, series: botEpisodes.series, airDate: botEpisodes.airDate })
         .from(botEpisodes)
         .where(eq(botEpisodes.visible, true));
-      const out: Array<[string, number, Date]> = [];
+      const out: Array<[string, number, Date | undefined]> = [];
       const series = new Set<string>();
       for (const r of rows) {
-        out.push([`/wiki/episodes/${r.id}`, 0.6, sec(r.airDate)]);
+        out.push([`/wiki/episodes/${r.id}`, 0.6, contentDateFromSeconds(r.airDate)]);
         if (r.series) series.add(r.series);
       }
-      for (const s of series) out.push([`/wiki/episodes/series/${s}`, 0.7, new Date()]);
+      for (const s of series) out.push([`/wiki/episodes/series/${s}`, 0.7, undefined]);
       return out;
     }),
     block(entries, isPublic, async () => {
@@ -117,42 +118,48 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .select({ slug: botMovies.slug, releaseDate: botMovies.releaseDate })
         .from(botMovies)
         .where(eq(botMovies.visible, true));
-      return rows.map((m) => [`/wiki/movies/${m.slug}`, 0.7, sec(m.releaseDate)] as const);
+      return rows.map(
+        (m) => [`/wiki/movies/${m.slug}`, 0.7, contentDateFromSeconds(m.releaseDate)] as const,
+      );
     }),
     block(entries, isPublic, async () => {
       const vols = await db
         .select({ id: botMangaVolumes.id, publishedAt: botMangaVolumes.publishedAt })
         .from(botMangaVolumes)
         .where(eq(botMangaVolumes.visible, true));
-      return vols.map((v) => [`/wiki/manga/volume/${v.id}`, 0.6, sec(v.publishedAt)] as const);
+      return vols.map(
+        (v) => [`/wiki/manga/volume/${v.id}`, 0.6, contentDateFromSeconds(v.publishedAt)] as const,
+      );
     }),
     block(entries, isPublic, async () => {
       const chaps = await db
         .select({ id: botMangaChapters.id, publishedAt: botMangaChapters.publishedAt })
         .from(botMangaChapters)
         .where(eq(botMangaChapters.visible, true));
-      return chaps.map((c) => [`/wiki/manga/${c.id}`, 0.6, sec(c.publishedAt)] as const);
+      return chaps.map(
+        (c) => [`/wiki/manga/${c.id}`, 0.6, contentDateFromSeconds(c.publishedAt)] as const,
+      );
     }),
     block(entries, isPublic, async () => {
       const rows = await db
         .select({ slug: botSagas.slug })
         .from(botSagas)
         .where(eq(botSagas.visible, true));
-      return rows.map((r) => [`/wiki/sagas/${r.slug}`, 0.7, new Date()] as const);
+      return rows.map((r) => [`/wiki/sagas/${r.slug}`, 0.7, undefined] as const);
     }),
     block(entries, isPublic, async () => {
       const rows = await db
         .select({ slug: botArcs.slug })
         .from(botArcs)
         .where(eq(botArcs.visible, true));
-      return rows.map((r) => [`/wiki/arcs/${r.slug}`, 0.6, new Date()] as const);
+      return rows.map((r) => [`/wiki/arcs/${r.slug}`, 0.6, undefined] as const);
     }),
     block(entries, isPublic, async () => {
       const rows = await db
         .select({ slug: botGames.slug })
         .from(botGames)
         .where(eq(botGames.visible, true));
-      return rows.map((r) => [`/wiki/games/${r.slug}`, 0.6, new Date()] as const);
+      return rows.map((r) => [`/wiki/games/${r.slug}`, 0.6, undefined] as const);
     }),
     block(entries, isPublic, async () => {
       const rows = await db
@@ -165,7 +172,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .from(botCharacters)
         .where(eq(botCharacters.visible, true));
       return canonicalCharacterSitemapRows(rows).map(
-        (r) => [`/wiki/characters/${formatCharacterSlug(r)}`, 0.6, new Date()] as const,
+        (r) => [`/wiki/characters/${formatCharacterSlug(r)}`, 0.6, undefined] as const,
       );
     }),
     block(entries, isPublic, async () => {
@@ -173,14 +180,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .select({ slug: botRaces.slug })
         .from(botRaces)
         .where(eq(botRaces.visible, true));
-      return rows.map((r) => [`/wiki/races/${r.slug}`, 0.5, new Date()] as const);
+      return rows.map((r) => [`/wiki/races/${r.slug}`, 0.5, undefined] as const);
     }),
     block(entries, isPublic, async () => {
       const rows = await db
         .select({ slug: botTechniques.slug })
         .from(botTechniques)
         .where(eq(botTechniques.visible, true));
-      return rows.map((r) => [`/wiki/techniques/${r.slug}`, 0.5, new Date()] as const);
+      return rows.map((r) => [`/wiki/techniques/${r.slug}`, 0.5, undefined] as const);
+    }),
+    block(entries, isPublic, async () => {
+      const rows = await db
+        .select({ slug: botLocations.slug })
+        .from(botLocations)
+        .where(eq(botLocations.visible, true));
+      return slugSitemapPaths("/wiki/locations", rows);
+    }),
+    block(entries, isPublic, async () => {
+      const rows = await db
+        .select({ slug: botItems.slug })
+        .from(botItems)
+        .where(eq(botItems.visible, true));
+      return slugSitemapPaths("/wiki/items", rows);
     }),
     block(entries, isPublic, async () => {
       // Seules les transformations qui ont un ARTICLE ont une page : c'est le
@@ -197,7 +218,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           ),
         );
       return rows.map(
-        (r) => [`/wiki/transformations/${formatTransformationSlug(r)}`, 0.5, new Date()] as const,
+        (r) => [`/wiki/transformations/${formatTransformationSlug(r)}`, 0.5, undefined] as const,
       );
     }),
     block(entries, isPublic, async () => {
@@ -216,7 +237,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .where(eq(botDatabooks.visible, true));
       return rows
         .filter((r) => isDatabookIndexable(r as never))
-        .map((r) => [`/wiki/databooks/${r.id}`, 0.5, new Date()] as const);
+        .map((r) => [`/wiki/databooks/${r.id}`, 0.5, undefined] as const);
     }),
     // Journal : `publicPostFilter()` et non `published = true` — un article
     // programmé est « publié » avec une date future, le lister l'exposerait
@@ -226,14 +247,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .select({ slug: posts.slug, updatedAt: posts.updatedAt, tags: posts.tags })
         .from(posts)
         .where(publicPostFilter());
-      const out: Array<readonly [string, number, Date]> = rows.map(
-        (p) => [`/news/${p.slug}`, 0.8, p.updatedAt ? new Date(p.updatedAt) : new Date()] as const,
+      const out: Array<readonly [string, number, Date | undefined]> = rows.map(
+        (p) => [`/news/${p.slug}`, 0.8, contentDate(p.updatedAt)] as const,
       );
       // Une page de thème n'est référencée que si elle a du contenu.
       const tags = new Set<string>();
       for (const p of rows) for (const t of p.tags ?? []) tags.add(t.toLowerCase());
       for (const tag of tags) {
-        out.push([`/news/theme/${encodeURIComponent(tag)}`, 0.5, new Date()] as const);
+        out.push([`/news/theme/${encodeURIComponent(tag)}`, 0.5, undefined] as const);
       }
       return out;
     }),
@@ -266,10 +287,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         .where(eq(wikiPages.visible, true));
       return rows
         .filter((page) => visibleCategoryIds.has(page.categoryId))
-        .map(
-          (p) =>
-            [`/wiki/${p.slug}`, 0.7, p.updatedAt ? new Date(p.updatedAt) : new Date()] as const,
-        );
+        .map((p) => [`/wiki/${p.slug}`, 0.7, contentDate(p.updatedAt)] as const);
     }),
   ]);
 
@@ -283,11 +301,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 async function block(
   entries: MetadataRoute.Sitemap,
   isPublic: (path: string) => boolean,
-  fn: () => Promise<ReadonlyArray<readonly [string, number, Date]>>,
+  fn: () => Promise<ReadonlyArray<readonly [string, number, Date | undefined]>>,
 ): Promise<void> {
   try {
     for (const [path, priority, lastModified] of await fn()) {
-      if (!isPublic(path)) continue;
+      if (!isIndexablePath(path) || !isPublic(path)) continue;
       entries.push({
         url: `${SITE_URL}${path}`,
         lastModified,

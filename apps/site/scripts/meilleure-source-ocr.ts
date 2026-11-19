@@ -27,6 +27,7 @@ import { readdir } from "node:fs/promises";
 import { basename, join } from "node:path";
 import postgres from "postgres";
 import { classerDefaut, noteQualite } from "@aphrody/shenron-config/databooks-defauts";
+import { repertoireOcrDatabooks } from "./_databooks-base";
 
 const args = process.argv.slice(2);
 const opt = (nom: string, defaut?: string) => {
@@ -35,7 +36,7 @@ const opt = (nom: string, defaut?: string) => {
 };
 const flag = (nom: string) => args.includes(`--${nom}`);
 
-const LOTS = opt("lots", join(process.env.HOME ?? ".", "databooks-ocr"))!;
+const LOTS = opt("lots", repertoireOcrDatabooks())!;
 const SORTIE = opt("sortie");
 const APPLIQUER = flag("appliquer");
 const ECHANTILLONS = Number(opt("echantillons", "5"));

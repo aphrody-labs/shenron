@@ -41,6 +41,7 @@ export function ZoomableImage({
       <img
         {...rest}
         src={src}
+        decoding="async"
         alt={alt ?? ""}
         loading="lazy"
         role="button"
@@ -78,7 +79,7 @@ export function ZoomableImage({
               ×
             </button>
             {/* biome-ignore lint/a11y/useAltText: décoratif, déjà annoncé par le dialog */}
-            <img src={src} alt={alt ?? ""} className="wiki-lightbox__img" />
+            <img src={src} alt={alt ?? ""} decoding="async" className="wiki-lightbox__img" />
             {typeof alt === "string" && alt ? (
               <span className="wiki-lightbox__cap">{alt}</span>
             ) : null}

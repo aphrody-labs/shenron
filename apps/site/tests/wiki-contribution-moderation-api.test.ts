@@ -73,10 +73,15 @@ test("malformed moderation cannot reach a writer and automation identity is pres
     null,
     { id: {}, action: "accept" },
     { id: "1", action: "accept", note: {} },
+    { id: "1", action: "reject" },
+    { id: "1", action: "reject", note: "   " },
   ]) {
     expect((await POST(request(body))).status).toBe(400);
   }
   expect(decisions).toBe(0);
+  expect((await POST(request({ id: "1", action: "reject", note: "off topic" }))).status).toBe(200);
+  expect(decisions).toBe(1);
+  decisions = 0;
   const response = await POST(request({ id: "1", action: "accept" }));
   expect(response.status).toBe(200);
   expect(actor).toEqual({ id: "owner", name: "API automation" });

@@ -94,9 +94,32 @@ describe("Beerus hero slides", () => {
     expect(html).toContain(fr.accueil.hero.carousel.pause);
     expect(html).toContain("--slide-ms:7000ms");
     expect(SLIDE_DURATION_MS).toBe(7000);
-    // First image is the LCP candidate; the logo stays single.
-    expect(html.match(/fetchPriority="high"/gi)?.length).toBeGreaterThanOrEqual(2);
+    // Only the first slide is the LCP candidate; the logo must not compete with it.
+    expect(html.match(/<img\b[^>]*fetchPriority="high"/gi)).toHaveLength(1);
+    // The neighbouring slide stays eager so the first auto-advance does not flash, but at low priority.
+    const heroImages = html.match(/<img\b[^>]*class="[^"]*mediaImage[^"]*"[^>]*>/g) ?? [];
+    expect(heroImages).toHaveLength(3);
+    expect(heroImages[0]).toContain('fetchPriority="high"');
+    expect(heroImages[1]).toContain('fetchPriority="low"');
+    expect(heroImages[1]).toContain('loading="eager"');
+    expect(heroImages[2]).toContain('fetchPriority="low"');
+    expect(html).not.toContain('fetchPriority="auto"');
     expect(html.split(`src="${LOGO_SRC}"`)).toHaveLength(2);
+  });
+
+  test("the page title h1 precedes the carousel h2 in document order", () => {
+    const aired = [875, 876].map((id) => episode(id));
+    const html = renderToStaticMarkup(
+      <NextIntlClientProvider locale="fr" messages={fr} timeZone="UTC">
+        <HomeHero
+          hero={DEFAULT_HOME_CONFIG.hero}
+          beerus={{ total: 2, latest: aired[1]!, episodes: aired }}
+        />
+      </NextIntlClientProvider>,
+    );
+    expect(html.match(/<h[1-6]\b/)?.[0]).toBe("<h1");
+    expect(html.indexOf("<h1")).toBeGreaterThanOrEqual(0);
+    expect(html.indexOf("<h2")).toBeGreaterThan(html.indexOf("<h1"));
   });
 
   test("dates are relative when recent and absolute otherwise, in every locale", () => {

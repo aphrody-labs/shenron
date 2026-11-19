@@ -64,6 +64,7 @@ export function WishesLedger({
                     {/* Un fallback de catégorie évite une carte vide sans le faire passer pour le dragon. */}
                     <img
                       src={assetUrl(d.image ?? fallbackImage)}
+                      decoding="async"
                       alt={d.image ? d.name : "Visuel de la catégorie dragons"}
                       loading="lazy"
                       className={

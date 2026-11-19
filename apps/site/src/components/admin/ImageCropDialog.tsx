@@ -202,7 +202,7 @@ export function ImageCropDialog({
         <div className="flex min-h-[220px] items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-black/60 p-3">
           <div
             ref={viewportRef}
-            className="relative w-full max-w-[420px] touch-none overflow-hidden rounded-lg bg-[#111] ring-1 ring-white/25"
+            className="relative w-full max-w-[420px] touch-none overflow-hidden rounded-lg bg-dbz-bg ring-1 ring-white/25"
             style={{ aspectRatio: String(aspect) }}
             onPointerDown={(event) => {
               event.currentTarget.setPointerCapture(event.pointerId);

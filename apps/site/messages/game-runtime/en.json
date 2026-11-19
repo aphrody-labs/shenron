@@ -4,5 +4,6 @@
   "description": "Dragon Ball Xenoverse 2 (Steam App ID 454650) runs natively via Steam or can be headlessly synchronized using SteamCMD for depot inspection and CPK archive extraction.",
   "wasm": "Local WebAssembly analysis",
   "wasmDescription": "The explorer below analyses your CPK archives and 3D models directly in the browser.",
-  "details": "Open the game and explorer"
+  "details": "Open the game and explorer",
+  "webgpuMissing": "This game needs WebGPU, which is not available in this browser or on this device. Use a recent version of Chrome, Edge or Safari on a compatible computer."
 }

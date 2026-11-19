@@ -273,7 +273,7 @@ export function ChronologyTimeline({ items }: { items: ResolvedTimelineItem[] })
               onChange={(e) => setQ(e.target.value)}
               aria-label="Rechercher un titre dans la chronologie"
               placeholder="Rechercher un titre…"
-              className="w-full h-9 pl-9 pr-3 rounded-lg bg-dbz-bg/70 border border-dbz-border focus:border-dbz-orange outline-none text-[13px] text-white placeholder:text-white/50"
+              className="w-full h-9 pl-9 pr-3 rounded-lg bg-dbz-bg/70 border border-dbz-border focus:border-dbz-orange outline-none focus-visible:ring-2 focus-visible:ring-dbz-orange/60 text-[13px] text-white placeholder:text-white/50"
             />
           </div>
 
@@ -282,7 +282,7 @@ export function ChronologyTimeline({ items }: { items: ResolvedTimelineItem[] })
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value as SortMode)}
-              className="h-9 rounded-lg bg-dbz-bg/70 border border-dbz-border px-2 text-[13px] text-white outline-none focus:border-dbz-orange"
+              className="h-9 rounded-lg bg-dbz-bg/70 border border-dbz-border px-2 text-[13px] text-white outline-none focus:border-dbz-orange focus-visible:ring-2 focus-visible:ring-dbz-orange/60"
             >
               {SORTS.map((s) => (
                 <option key={s} value={s} className="bg-dbz-card">

@@ -13,6 +13,8 @@ export function WikiMeasuredArtwork({ subject }: { subject: "sphere" | "senzu" }
       src={src}
       width={32}
       height={32}
+      loading="lazy"
+      decoding="async"
       alt=""
       aria-hidden="true"
       draggable={false}

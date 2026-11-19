@@ -23,6 +23,7 @@ import type { PgColumn, PgTable } from "drizzle-orm/pg-core";
 import { foldText } from "@aphrody/shenron-config/slug";
 import { escapeLike } from "@aphrody/shenron-db/repos/wiki";
 import { db } from "@/lib/db";
+import { fuzzyOrder } from "@/lib/wiki-fuzzy-sql";
 import { API_URL } from "@/lib/config";
 import { verifyWikimediaImages, withVerifiedImages } from "@/lib/wikimedia-images";
 import { chatShenronRag, searchShenronRag, usesShenronRag } from "@/lib/site-rag";
@@ -951,21 +952,6 @@ function fuzzyWhere(term: string, cols: PgColumn[]) {
       sql`similarity(unaccent(lower(${c})), unaccent(lower(${term}))) > ${FUZZY_THRESHOLD}`,
     ]),
   );
-}
-
-// ORDER BY pertinence : égalité exacte > préfixe > meilleure proximité
-// trigramme (toutes colonnes confondues).
-function fuzzyOrder(term: string, cols: PgColumn[]) {
-  const primary = cols[0];
-  const sim = sql`greatest(${sql.join(
-    cols.map((c) => sql`similarity(unaccent(lower(${c})), unaccent(lower(${term})))`),
-    sql`, `,
-  )})`;
-  return [
-    sql`(lower(${primary}) = lower(${term})) desc`,
-    sql`(unaccent(lower(${primary})) like unaccent(lower(${term})) || '%') desc`,
-    sql`${sim} desc nulls last`,
-  ];
 }
 
 export const dbUniverse = {
@@ -2328,7 +2314,12 @@ export const dbUniverse = {
           })
           .from(botMangaVolumes)
           .where(and(volWhere, eq(botMangaVolumes.visible, true)))
-          .orderBy(...fuzzyOrder(term, volCols), asc(botMangaVolumes.volumeNumber))
+          .orderBy(
+            ...fuzzyOrder(term, volCols, {
+              shortestFirst: false,
+              then: [asc(botMangaVolumes.volumeNumber)],
+            }),
+          )
           .limit(10),
         db
           .select({
@@ -2339,7 +2330,12 @@ export const dbUniverse = {
           })
           .from(botMangaChapters)
           .where(and(chapWhere, eq(botMangaChapters.visible, true)))
-          .orderBy(...fuzzyOrder(term, chapCols), asc(botMangaChapters.chapterNumber))
+          .orderBy(
+            ...fuzzyOrder(term, chapCols, {
+              shortestFirst: false,
+              then: [asc(botMangaChapters.chapterNumber)],
+            }),
+          )
           .limit(12),
         db
           .select({

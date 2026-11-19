@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 // Databooks & corpus: offline search of the Shenron corpus (shenron_rag::dragonball::LocalCorpus,
-// `studio_corpus_*` in crates/shenron-studio/src/studio.rs) and grounded answers from the
+// `studio_corpus_*`) and grounded answers from the
 // desktop's local chat model when one is ready, or from the public Shenron chat of
-// dragonballfr.com (`shenron_chat`, crates/shenron-studio/src/shenron.rs).
+// dragonballfr.com (`shenron_chat`).
 import { useEffect, useState } from "react";
 import { SectionHeading } from "../layout/SectionHeading";
 import { StudioHeader } from "./StudioHeader";

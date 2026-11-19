@@ -162,7 +162,7 @@ export default async function TransformationPage({
                     <li key={v.id}>
                       <GatedWrap
                         href={`/wiki/transformations/${v.slug}`}
-                        className="inline-flex rounded-md border-2 border-black bg-black/60 px-3 py-1.5 text-xs font-medium text-white/90 shadow-[2px_2px_0px_#000] transition-all hover:bg-dbz-orange hover:text-black"
+                        className="inline-flex rounded-md border-2 border-black bg-black/60 px-3 py-1.5 text-xs font-medium text-white/90 shadow-[2px_2px_0px_black] transition-all hover:bg-dbz-orange hover:text-black"
                       >
                         {v.name}
                       </GatedWrap>

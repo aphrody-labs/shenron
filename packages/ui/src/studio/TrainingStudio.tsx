@@ -1,7 +1,7 @@
 /* oxlint-disable react/exhaustive-effect-dependencies, react/set-state-in-effect, jsx-a11y/prefer-tag-over-role, react/no-array-index-key -- behavior-preserving legacy pattern, reviewed */
 // SPDX-License-Identifier: Apache-2.0
 // Read-only native training environment (`studio_shenron_training`) and the `studio://train`
-// events of crates/shenron-studio/src/studio.rs. `studio_shenron_train_start` still runs the
+// events of the desktop host. `studio_shenron_train_start` still runs the
 // Python training process, so this UI does not expose that launch path.
 import { useEffect, useState } from "react";
 import { StudioHeader } from "./StudioHeader";
