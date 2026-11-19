@@ -1,0 +1,11 @@
+{
+  "extends": "../../packages/config/tsconfig/bun.json",
+  "compilerOptions": { "allowImportingTsExtensions": true },
+  "include": [
+    "*.ts",
+    "../../scripts/ops/garage-config.ts",
+    "../../scripts/ops/r2-to-garage.ts",
+    "../../scripts/ops/cdn-parity.ts",
+    "../cloudflare/cdn-worker.ts"
+  ]
+}

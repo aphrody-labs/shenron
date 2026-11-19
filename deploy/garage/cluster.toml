@@ -1,0 +1,70 @@
+# SPDX-License-Identifier: Apache-2.0
+# Declarative Garage cluster (ADR 0009, step 4). Hosts and mesh addresses come from
+# deploy/environment.json (`triad.<key>.meshIp`); nothing here repeats an address.
+# Rendered per node by scripts/ops/garage-config.ts, installed by deploy/garage/install.sh.
+
+[garage]
+version = "v2.5.0"
+# Official release binary: https://garagehq.deuxfleurs.fr/_releases/<version>/x86_64-unknown-linux-musl/garage
+# No checksum file is published upstream; this digest was cross-checked against the binary inside
+# the registry image dxflrs/garage:v2.5.0 (content-addressed, byte-identical).
+url = "https://garagehq.deuxfleurs.fr/_releases/{version}/x86_64-unknown-linux-musl/garage"
+sha256 = "2ff667286217cd73ebcb1c03af993822365000441dfe31a80cb64c5189a9dea8"
+# Two copies of every object. With prd joined (3 zones) each node keeps about 2/3 of the data.
+replication_factor = 2
+consistency_mode = "consistent"
+db_engine = "lmdb"
+s3_region = "garage"
+
+[ports]
+rpc = 3901
+s3 = 3900
+admin = 3903
+
+[paths]
+config = "/etc/garage/garage.toml"
+secrets = "/etc/garage"
+metadata = "/var/lib/garage/meta"
+data = "/var/lib/garage/data"
+
+[bucket]
+name = "shenron-cdn"
+# Read-only key used by the serving path and the parity check; write key used by the mirror only.
+# The Garage website endpoint is not used: public paths resolve through manifests (see [serving]).
+read_key = "shenron-cdn-ro"
+write_key = "shenron-cdn-rw"
+
+# status: active (installed) | planned (config prepared, not installed).
+# capacity is the layout weight in GB; with replication_factor = 2 on two zones the usable
+# capacity is the smaller of the two, so it is set under each host's free space.
+[[nodes]]
+name = "fr1"
+triad = "vps"
+zone = "fr1"
+capacity_gb = 75
+status = "active"
+
+[[nodes]]
+name = "fr2"
+triad = "cdn"
+zone = "fr2"
+capacity_gb = 40
+status = "active"
+
+[[nodes]]
+name = "prd"
+triad = "prod"
+zone = "prd"
+capacity_gb = 150
+status = "planned"
+
+# Serving path (docs/runbooks/cdn-garage-cutover.md). `public_origin` is what the parity check
+# compares against; `manifest_prefix` is the pinned publication of the Worker (wrangler.jsonc).
+# The Garage-backed origin listens on the mesh address of `origin_node`.
+[serving]
+public_origin = "https://cdn.dragonballfr.com"
+manifest_prefix = "_migration/manifests/publication-060903ac2850564646dfa3e9/"
+# Dynamic fallback for /_next/static paths absent from the manifests (cdn-worker DYNAMIC_ORIGIN).
+dynamic_origin = "https://dragonballfr.com"
+origin_node = "fr2"
+origin_port = 9077

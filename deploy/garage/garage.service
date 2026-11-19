@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: Apache-2.0
+[Unit]
+Description=Garage S3 object storage (shenron-cdn)
+Documentation=https://garagehq.deuxfleurs.fr/documentation/
+After=network-online.target wg-quick@wg1.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=garage
+Group=garage
+Environment=RUST_LOG=garage=info
+ExecStart=/usr/local/bin/garage -c /etc/garage/garage.toml server
+Restart=on-failure
+RestartSec=3
+LimitNOFILE=65536
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/garage
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryMax=2G
+
+[Install]
+WantedBy=multi-user.target

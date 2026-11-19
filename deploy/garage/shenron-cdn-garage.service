@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: Apache-2.0
+[Unit]
+Description=Shenron CDN origin backed by Garage (reference serving path until shenron-edge)
+After=network-online.target garage.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+EnvironmentFile=/etc/garage/cdn-ro.env
+WorkingDirectory=/opt/shenron/cdn-garage
+ExecStart=/usr/local/bin/bun deploy/garage/cdn-origin.ts
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+MemoryMax=768M
+
+[Install]
+WantedBy=multi-user.target
