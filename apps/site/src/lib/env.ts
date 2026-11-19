@@ -20,6 +20,10 @@ export const env = createEnv({
     SHENRON_CANON_YOLO_PER_DAY: z.coerce.number().int().min(1).max(1440).default(120),
     SHENRON_CANON_YOLO_MIN_SPACING_MS: z.coerce.number().int().min(1000).max(3600000).default(1000),
     TYPESAFE_API_KEY: z.string().trim().min(1).optional(),
+    // CPU-first local decision model: base URL of a llama.cpp llama-server (docs/research/canon-decision-model-2026-11-19.md).
+    SHENRON_LLAMA_URL: z.string().trim().url().optional(),
+    SHENRON_LLAMA_MODEL: z.string().trim().min(1).optional(),
+    SHENRON_LLAMA_API_KEY: z.string().trim().min(1).optional(),
     // `.trim()` partout : les variables d'environnement sont régulièrement polluées par un
     // `\n` final (posées via echo au lieu de printf). Un client_secret Discord
     // avec newline → Discord renvoie invalid_client à l'échange de code → aucun

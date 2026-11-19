@@ -100,6 +100,13 @@ export async function configuredProvider(
   env: Readonly<Record<string, string | undefined>>,
 ): Promise<Provider | null> {
   if (env.SHENRON_JEV === "off") return null;
+  // CPU-first local model (llama.cpp llama-server): preferred when configured, no key and no network egress.
+  const llamaUrl = env.SHENRON_LLAMA_URL?.trim();
+  if (llamaUrl) {
+    const { llamaServer } = await import("@aphrody/shenron-decision");
+    const apiKey = env.SHENRON_LLAMA_API_KEY?.trim();
+    return llamaServer({ url: llamaUrl, model: env.SHENRON_LLAMA_MODEL?.trim() || "local", ...(apiKey ? { apiKey } : {}) });
+  }
   const key =
     env.TYPESAFE_API_KEY?.trim() ||
     (await Bun.secrets.get({ service: "shenron.typesafe", name: "api-key" }).catch(() => null));

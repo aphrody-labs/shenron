@@ -527,6 +527,13 @@
         "@types/react": "catalog:",
       },
     },
+    "packages/stores": {
+      "name": "@aphrody/shenron-stores",
+      "version": "1.4.7",
+      "devDependencies": {
+        "@types/bun": "catalog:",
+      },
+    },
     "packages/test-dom": {
       "name": "@aphrody/shenron-test-dom",
       "version": "1.0.0",
@@ -812,6 +819,8 @@
     "@aphrody/shenron-server": ["@aphrody/shenron-server@workspace:apps/server"],
 
     "@aphrody/shenron-site": ["@aphrody/shenron-site@workspace:apps/site"],
+
+    "@aphrody/shenron-stores": ["@aphrody/shenron-stores@workspace:packages/stores"],
 
     "@aphrody/shenron-test-dom": ["@aphrody/shenron-test-dom@workspace:packages/test-dom"],
 

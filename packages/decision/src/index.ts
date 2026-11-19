@@ -23,6 +23,7 @@ import type {
 } from "./types";
 
 export type * from "./types";
+export { llamaServer, letterProbabilities, type LlamaServerOptions } from "./llama-server";
 
 const DEFAULT_TIMEOUT = 10_000;
 

@@ -58,6 +58,7 @@ const PACKAGES: Readonly<Record<string, string>> = {
   "@aphrody/shenron-lexicon": "packages/lexicon",
   "@aphrody/shenron-media": "packages/media",
   "@aphrody/shenron-native": "packages/native",
+  "@aphrody/shenron-stores": "packages/stores",
   "@aphrody/shenron-pipeline": "packages/pipeline",
 };
 
@@ -116,6 +117,8 @@ const ALLOWED_EDGES: Readonly<
   "@aphrody/shenron-koharu": { runtime: [], dev: [] },
   // The one ja/fr/en lexicon (data embedded, no I/O): a leaf every layer may read.
   "@aphrody/shenron-lexicon": { runtime: [], dev: [] },
+  // Store catalogue connectors (Steam, App Store, F-Droid, Microsoft Store): a leaf that only reads public endpoints.
+  "@aphrody/shenron-stores": { runtime: [], dev: [] },
   // Video engines (hyperframes, remotion) and the kit HTTP transport.
   "@aphrody/shenron-media": {
     runtime: [

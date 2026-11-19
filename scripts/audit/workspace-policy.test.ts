@@ -57,9 +57,9 @@ test("approved public libraries retain exact reviewed allowlists while applicati
   ).toBeGreaterThan(0);
 });
 
-test("all thirteen current public manifests and their source payloads match reviewed notices and exports", async () => {
+test("all fourteen current public manifests and their source payloads match reviewed notices and exports", async () => {
   const root = resolve(import.meta.dir, "../..");
-  expect(Object.keys(PUBLIC_LIBRARY_FILES)).toHaveLength(13);
+  expect(Object.keys(PUBLIC_LIBRARY_FILES)).toHaveLength(14);
   for (const [name, files] of Object.entries(PUBLIC_LIBRARY_FILES)) {
     const relative = `packages/${name.slice("@aphrody/shenron-".length)}`;
     const manifest = await Bun.file(join(root, relative, "package.json")).json();

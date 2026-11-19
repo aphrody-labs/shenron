@@ -418,13 +418,3 @@ news-redis-rebuild *args:
 [group('tools')]
 re-telemetry-sync:
     bun scripts/ops/sync-re-telemetry.ts
-
-# UI migration ledger: shadcn-style wrappers, Base UI primitive, GPUI target and parity state (migration/ui.json)
-[group('rust')]
-ui-ledger:
-    bun scripts/migration/ui-ledger.ts
-
-# Fail when migration/ui.json is stale
-[group('rust')]
-ui-ledger-check:
-    bun scripts/migration/ui-ledger.ts --check

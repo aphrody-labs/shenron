@@ -31,7 +31,12 @@ export async function judgeCanonPlates(
     ];
   });
   if (evidence.length === 0) return emptyCanonJudgment("no_public_evidence");
-  const port = await configuredCanonJudgment({ TYPESAFE_API_KEY: env.TYPESAFE_API_KEY });
+  const port = await configuredCanonJudgment({
+    TYPESAFE_API_KEY: env.TYPESAFE_API_KEY,
+    SHENRON_LLAMA_URL: env.SHENRON_LLAMA_URL,
+    SHENRON_LLAMA_MODEL: env.SHENRON_LLAMA_MODEL,
+    SHENRON_LLAMA_API_KEY: env.SHENRON_LLAMA_API_KEY,
+  });
   if (!port) return emptyCanonJudgment("unavailable");
   return port.judge({ question, evidence, ...(continuity ? { continuity } : {}) });
 }

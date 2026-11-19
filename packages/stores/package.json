@@ -1,0 +1,42 @@
+{
+  "name": "@aphrody/shenron-stores",
+  "version": "1.4.7",
+  "private": false,
+  "description": "Typed connectors to public store catalogues (Steam, Apple App Store, F-Droid, Microsoft Store) for the Dragon Ball ecosystem: polite fetch, strict parsing, one StoreListing shape.",
+  "homepage": "https://dragonballfr.com",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/stores"
+  },
+  "files": [
+    "src",
+    "LICENSE"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "lint": "bun lint -c ../../.oxlintrc.json",
+    "test": "bun test",
+    "typecheck": "bun check --project tsconfig.json"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "engines": {
+    "bun": ">=1.4.5"
+  },
+  "shenron": {
+    "runtime": {
+      ".": "server"
+    }
+  }
+}
