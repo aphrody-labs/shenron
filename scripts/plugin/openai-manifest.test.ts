@@ -30,7 +30,7 @@ describe("portable OpenAI plugin package", () => {
       "plugin/.claude-plugin/plugin.json",
     );
     expect(plugin.version).toBe(canonicalPlugin.version);
-    expect(plugin.extensions["com.openai"].onboardingSkill).toBe("./skills/dragon-ball/SKILL.md");
+    expect(plugin.extensions["com.openai"].onboardingSkill).toBe("./skills/dragon-ball-openai/SKILL.md");
     expect(plugin.extensions["com.openai"].review).toBeDefined();
     expect(mcp.mcpServers.shenron).toEqual({
       type: "streamable-http",
@@ -69,14 +69,14 @@ describe("portable OpenAI plugin package", () => {
       expect(registered.has(name)).toBe(true);
     }
 
-    const skills = ["dragon-ball", "dragon-ball-canon", "dragon-ball-japonais"];
+    const skills = ["dragon-ball-openai", "dragon-ball-canon-openai", "dragon-ball-japonais-openai"];
     for (const skill of skills) {
       const text = await readFile(new URL(`plugin/openai/skills/${skill}/SKILL.md`, root), "utf8");
       expect(text.startsWith(`---\nname: ${skill}\ndescription: `)).toBe(true);
       expect(text.length).toBeGreaterThan(100);
     }
     const researchSkill = await readFile(
-      new URL("plugin/openai/skills/dragon-ball/SKILL.md", root),
+      new URL("plugin/openai/skills/dragon-ball-openai/SKILL.md", root),
       "utf8",
     );
     expect(researchSkill).toContain("Do not use Fandom as an authority.");

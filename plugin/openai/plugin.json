@@ -36,7 +36,7 @@
         "composerIcon": "./assets/icon.png",
         "logo": "./assets/icon.png"
       },
-      "onboardingSkill": "./skills/dragon-ball/SKILL.md",
+      "onboardingSkill": "./skills/dragon-ball-openai/SKILL.md",
       "review": {
         "test_cases": {
           "positive": [

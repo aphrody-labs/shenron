@@ -1,5 +1,5 @@
 ---
-name: dragon-ball
+name: dragon-ball-openai
 description: Research Dragon Ball claims with sourced manga, databook, wiki, and timeline references; cite evidence and distinguish continuity.
 ---
 

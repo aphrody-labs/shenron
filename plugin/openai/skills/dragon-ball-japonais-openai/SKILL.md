@@ -1,5 +1,5 @@
 ---
-name: dragon-ball-japonais
+name: dragon-ball-japonais-openai
 description: Look up Japanese spellings, readings, and established Dragon Ball terminology in Shenron's lexicon.
 ---
 

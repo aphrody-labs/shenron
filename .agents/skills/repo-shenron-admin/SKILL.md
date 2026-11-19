@@ -1,5 +1,5 @@
 ---
-name: shenron-admin
+name: repo-shenron-admin
 description: Prepare or perform Shenron editorial administration through its authorized API, with independent read-back verification and freeze checks.
 metadata:
   short-description: Shenron editorial administration

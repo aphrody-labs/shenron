@@ -1,5 +1,5 @@
 ---
-name: databooks-ocr
+name: repo-databooks-ocr
 description: Transcribe Dragon Ball databook scans to Japanese JSONL while respecting the editorial freeze and Shenron's scan-only OCR contract.
 metadata:
   short-description: Databook scan transcription

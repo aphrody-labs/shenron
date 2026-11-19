@@ -1,5 +1,5 @@
 ---
-name: toriyama-svg
+name: repo-toriyama-svg
 description: Create measured Dragon Ball SVG assets from inspected manga or animation references and qualify their rendered sizes.
 metadata:
   short-description: Measured Dragon Ball SVG

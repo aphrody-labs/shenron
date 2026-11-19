@@ -1,5 +1,5 @@
 ---
-name: dragon-ball-canon
+name: dragon-ball-canon-openai
 description: Check whether a Dragon Ball work, character, event, or claim belongs to a stated continuity, using sourced Shenron canon references.
 ---
 
