@@ -514,6 +514,27 @@ describe("CDN manifest and import", () => {
     expect(conditional.body).toBeNull();
   });
 
+  test("content-addressed paths are immutable, scans and non-hash names keep the entry value", () => {
+    const entryValue = "public, max-age=86400, stale-while-revalidate=604800";
+    const immutable = "public, max-age=31536000, immutable";
+    const digest = "a".repeat(32) + "0123456789abcdef".repeat(2);
+    expect(digest).toHaveLength(64);
+    expect(resolveCacheControl(`/dragonball-super/${digest}.png`, entryValue)).toBe(immutable);
+    expect(resolveCacheControl(`/publications/x/objects/${digest}.png`, entryValue)).toBe(
+      immutable,
+    );
+    expect(resolveCacheControl(`/assets/app-${digest.slice(0, 12)}.js`, entryValue)).toBe(
+      immutable,
+    );
+    // 63 hex digits and an 8-digit page number are not content addresses.
+    expect(resolveCacheControl(`/dragonball-super/${digest.slice(1)}.png`, entryValue)).toBe(
+      entryValue,
+    );
+    expect(resolveCacheControl("/assets/manga/DBFC/ch1/12345678.jpg", entryValue)).toBe(entryValue);
+    expect(resolveCacheControl("/assets/manga/DBFC/ch1/023.jpg", entryValue)).toBe(entryValue);
+    expect(resolveCacheControl(`/dragonball-super/${digest}.png`, "no-store")).toBe("no-store");
+  });
+
   test("maximal immutable cache control, Zero-Trust headers, isolate shard caching and Garage S3 fallback", async () => {
     clearManifestShardCache();
     expect(resolveCacheControl("/_next/static/chunks/app.js", "public, max-age=86400")).toBe(

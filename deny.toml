@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# cargo-deny policy of the Shenron workspace: `bun run deny:rust` (= `cargo deny check`), also run
+# cargo-deny policy of the Shenron workspace: `just rust-deny` (= `cargo deny check`), also run
 # by .github/workflows/rust.yml. Install: `cargo install --locked cargo-deny`.
 # Reference: https://embarkstudios.github.io/cargo-deny/checks/cfg.html
 

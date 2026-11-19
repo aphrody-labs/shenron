@@ -23,6 +23,9 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup-bun
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just
       # scripts/design rebuilds the font faces with fontTools through uv (same pin as ci.yml).
       - name: Setup uv
         uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
@@ -47,10 +50,10 @@ jobs:
           bun packages/pipeline/scripts/ai/check-contracts.ts
           bun scripts/plugin/sync.ts --check
           bun check
-          bun run lint
-          bun run format:check
-          bun run test
-          bun run test:scripts
+          just bun-lint
+          just bun-format-check
+          just bun-test
+          just test-scripts
 
       - name: Diff
         id: diff

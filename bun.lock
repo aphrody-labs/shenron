@@ -9,7 +9,6 @@
         "@aphrody/shenron-compression": "workspace:*",
         "@aphrody/shenron-config": "workspace:*",
         "@aphrody/shenron-db": "workspace:*",
-        "@aphrody/shenron-filmcraft": "workspace:*",
         "@aphrody/shenron-hyperframes": "workspace:*",
         "@aphrody/shenron-kit": "workspace:*",
         "@aphrody/shenron-next-host": "workspace:*",
@@ -107,14 +106,11 @@
       "dependencies": {
         "@aphrody/shenron-api": "workspace:*",
         "@aphrody/shenron-auth": "workspace:*",
-        "@aphrody/shenron-compression": "workspace:*",
         "@aphrody/shenron-config": "workspace:*",
         "@aphrody/shenron-db": "workspace:*",
         "@aphrody/shenron-decision": "workspace:*",
         "@aphrody/shenron-discord-kit": "workspace:*",
         "@aphrody/shenron-engine": "workspace:*",
-        "@aphrody/shenron-filmcraft": "workspace:*",
-        "@aphrody/shenron-hyperframes": "workspace:*",
         "@aphrody/shenron-images": "workspace:*",
         "@aphrody/shenron-kit": "workspace:*",
         "@aphrody/shenron-koharu": "workspace:*",
@@ -132,7 +128,6 @@
         "@codemirror/view": "catalog:",
         "@next/env": "catalog:",
         "@next/third-parties": "catalog:",
-        "@remotion/player": "^4.0.541",
         "@sglkc/kuromoji": "catalog:",
         "@t3-oss/env-nextjs": "catalog:",
         "@tanstack/react-query": "catalog:",
@@ -227,7 +222,6 @@
         "@aphrody/shenron-pipeline": "workspace:*",
         "@better-auth/cimd": "catalog:",
         "@better-auth/mcp": "catalog:",
-        "@better-auth/oauth-provider": "catalog:",
         "@better-auth/passkey": "catalog:",
         "better-auth": "catalog:",
         "drizzle-orm": "catalog:",
@@ -319,7 +313,7 @@
       "name": "@aphrody/shenron-decision",
       "version": "1.0.0",
       "dependencies": {
-        "@typesafe-ai/sdk": "0.6.0",
+        "@typesafe-ai/sdk": "catalog:",
       },
       "devDependencies": {
         "@types/bun": "catalog:",
@@ -330,7 +324,6 @@
       "version": "1.0.0",
       "dependencies": {
         "@discordjs/rest": "^2.6.3",
-        "discord-api-types": "^0.38.56",
       },
       "devDependencies": {
         "@types/bun": "catalog:",
@@ -345,16 +338,6 @@
       "version": "1.4.7",
       "dependencies": {
         "@aphrody/shenron-compression": "workspace:*",
-      },
-      "devDependencies": {
-        "@types/bun": "catalog:",
-      },
-    },
-    "packages/filmcraft": {
-      "name": "@aphrody/shenron-filmcraft",
-      "version": "1.4.7",
-      "bin": {
-        "filmcraft-cli": "./src/cli.ts",
       },
       "devDependencies": {
         "@types/bun": "catalog:",
@@ -407,11 +390,11 @@
       "dependencies": {
         "@aphrody/shenron-m3-motion": "workspace:*",
         "@aphrody/shenron-m3-primitives": "workspace:*",
-        "clsx": "^2.1.1",
-        "motion": "^13.4.4",
-        "react-markdown": "^10.1.0",
-        "rehype-raw": "^7.0.0",
-        "remark-gfm": "^4.0.1",
+        "clsx": "catalog:",
+        "motion": "catalog:",
+        "react-markdown": "catalog:",
+        "rehype-raw": "catalog:",
+        "remark-gfm": "catalog:",
       },
       "peerDependencies": {
         "react": ">=18.0.0",
@@ -423,10 +406,7 @@
       "name": "@aphrody/shenron-m3-motion",
       "version": "1.0.0",
       "dependencies": {
-        "motion": "^13.4.4",
-      },
-      "devDependencies": {
-        "react-dom": "^19.3.0",
+        "motion": "catalog:",
       },
       "peerDependencies": {
         "motion": ">=12.0.0",
@@ -439,13 +419,13 @@
       "dependencies": {
         "@aphrody/shenron-m3-motion": "workspace:*",
         "@base-ui/react": "catalog:",
-        "class-variance-authority": "^0.7.1",
-        "clsx": "^2.1.1",
-        "motion": "^13.4.4",
+        "class-variance-authority": "catalog:",
+        "clsx": "catalog:",
+        "motion": "catalog:",
         "react-hook-form": "^7.89.0",
         "react-resizable-layout": "^0.7.3",
         "sonner": "^2.0.8",
-        "zod": "^4.6.5",
+        "zod": "catalog:",
       },
       "peerDependencies": {
         "react": ">=18.0.0",
@@ -457,9 +437,9 @@
       "name": "@aphrody/shenron-m3-reader",
       "version": "1.0.0",
       "dependencies": {
-        "@tanstack/react-virtual": "3.14.13",
-        "lucide-react": "1.49.0",
-        "swiper": "14.3.0",
+        "@tanstack/react-virtual": "catalog:",
+        "lucide-react": "catalog:",
+        "swiper": "catalog:",
       },
       "peerDependencies": {
         "react": ">=18.0.0",
@@ -472,9 +452,6 @@
       "version": "1.0.0",
       "dependencies": {
         "@aphrody/shenron-m3-tokens": "workspace:*",
-      },
-      "devDependencies": {
-        "@material/material-color-utilities": "^0.4.0",
       },
       "peerDependencies": {
         "react": ">=18.0.0",
@@ -491,7 +468,6 @@
       "name": "@aphrody/shenron-media",
       "version": "1.4.7",
       "dependencies": {
-        "@aphrody/shenron-filmcraft": "workspace:*",
         "@aphrody/shenron-hyperframes": "workspace:*",
         "@aphrody/shenron-kit": "workspace:*",
         "@aphrody/shenron-remotion": "workspace:*",
@@ -535,7 +511,7 @@
         "@aphrody/shenron-lexicon": "workspace:*",
         "@aphrody/shenron-media": "workspace:*",
         "@aphrody/shenron-native": "workspace:*",
-        "@typesafe-ai/sdk": "0.6.0",
+        "@typesafe-ai/sdk": "catalog:",
         "ai": "catalog:",
         "postgres": "catalog:",
         "sharp": "catalog:",
@@ -700,6 +676,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@types/three": "0.187.0",
+    "@typesafe-ai/sdk": "0.6.0",
     "@uiw/react-codemirror": "^4.25.12",
     "@uiw/react-color": "^2.10.3",
     "@webgpu/types": "^0.1.74",
@@ -799,8 +776,6 @@
     "@aphrody/shenron-discord-kit": ["@aphrody/shenron-discord-kit@workspace:packages/discord-kit"],
 
     "@aphrody/shenron-engine": ["@aphrody/shenron-engine@workspace:packages/engine"],
-
-    "@aphrody/shenron-filmcraft": ["@aphrody/shenron-filmcraft@workspace:packages/filmcraft"],
 
     "@aphrody/shenron-hyperframes": ["@aphrody/shenron-hyperframes@workspace:packages/hyperframes"],
 
@@ -1448,8 +1423,6 @@
 
     "@radix-ui/react-use-layout-effect": ["@radix-ui/react-use-layout-effect@1.1.4", "", { "peerDependencies": { "@types/react": "*", "react": "^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc" }, "optionalPeers": ["@types/react"] }, "sha512-K20DkRkUwDnxEYMBPcg3Y6voLkEy5p5QQmszZgLngKKiC7dzBR/aEuK3w1qlx2JWDUNH6FluahYdgR3BP+QbYw=="],
 
-    "@remotion/player": ["@remotion/player@4.0.541", "", { "dependencies": { "remotion": "4.0.541" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" } }, "sha512-HApJVi9KBuS0NLT3UoAujzOOKWtf/pS19E5HOoS/v3TxXg/0a3GVoERkDI1hQWKsuZWl4+RGKWRhOpAP8yYJVw=="],
-
     "@repeaterjs/repeater": ["@repeaterjs/repeater@3.1.0", "", {}, "sha512-TaoVksZRSx2KWYYpyLQtMQXXeS98VsgZImzW65xmiVgbYhXLk+aEsmzPLirqVuE4/XuUapH2iMtxUzaBNDzdSQ=="],
 
     "@sapphire/async-queue": ["@sapphire/async-queue@1.5.5", "", {}, "sha512-cvGzxbba6sav2zZkH8GPf2oGk9yYoD5qrNWdu9fRehifgnFZJMV+nuy2nON2roRO4yQQ+v7MK/Pktl/HgfsUXg=="],
@@ -1544,9 +1517,9 @@
 
     "@tanstack/react-query": ["@tanstack/react-query@5.107.1", "", { "dependencies": { "@tanstack/query-core": "5.107.1" }, "peerDependencies": { "@types/react": "^18 || ^19", "react": "^18 || ^19" }, "optionalPeers": ["@types/react"] }, "sha512-udCOOLp3ZAheUrIHLCe+ZZge6nr2ZUrGMSWcCuXsjY1Bf2JeeE09oxst97PILiCY6N8xo/7bIo3Hvz13zh06FA=="],
 
-    "@tanstack/react-virtual": ["@tanstack/react-virtual@3.14.13", "", { "dependencies": { "@tanstack/virtual-core": "3.17.11" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-JbDTAwtzZ99aOeCrAfW5EsE5KSq5RWh6Af2dtFwyLIIk48Ja7vm6n4axu/43T3vfjFnEGJalxJ1wyYjSQD6bSg=="],
+    "@tanstack/react-virtual": ["@tanstack/react-virtual@3.14.26", "", { "dependencies": { "@tanstack/virtual-core": "3.19.11" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-HUDlfsrYH6ko5xH56L62Mcl/uzT+AGVNMHFuDNqDJMdZWc1AQa2oeVKNUvZ/RWBZQ4TYtyQerFrNvLnp39h65A=="],
 
-    "@tanstack/virtual-core": ["@tanstack/virtual-core@3.17.11", "", {}, "sha512-+ILjvtHup6Y2hzQ6YzwMgX1Q+oQpxEGOXCEsCNaPoIP0VxMbizIBTmYTDtkerkIQS8/CbP1BRuyt8V/8BCsy1g=="],
+    "@tanstack/virtual-core": ["@tanstack/virtual-core@3.19.11", "", {}, "sha512-/5iHb0RHBvj8Di59FDs4ESNm45jls33aZAi4zccVXZjc/6ZvwQP6nzEYeT6weXjTf9E6/vrp2JhYWRyO+ZP13A=="],
 
     "@tauri-apps/api": ["@tauri-apps/api@3.0.0-alpha.3", "", {}, "sha512-lkMIhoFGZP7t23ykG12iNvYklhkf407Zibq0MsAWQAAADVLQbhUdp/vIXvHfodqO8NdovkKPoG493wg/Crn9qg=="],
 
@@ -2308,7 +2281,7 @@
 
     "lru-cache": ["lru-cache@10.4.3", "", {}, "sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ=="],
 
-    "lucide-react": ["lucide-react@1.49.0", "", { "peerDependencies": { "@types/react": "*", "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" }, "optionalPeers": ["@types/react"] }, "sha512-ApfaNM4/7jBrVopqLJ84Jz8TMQ1Q1JeZ1PmKh25aeS3E1FTVcMkSh1bEQB7dfzdIrwXRP8p3z4AJjTIHHb5IIA=="],
+    "lucide-react": ["lucide-react@1.72.0", "", { "peerDependencies": { "@types/react": "*", "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" }, "optionalPeers": ["@types/react"] }, "sha512-fbF5i1GU8GODETa3Q7rXqrJrcx3iPYrQtxthom103zGx+Z0BGwKYAW9s+9435ohYJ7hQm0av0PoZcqI1CRwNrg=="],
 
     "lz-string": ["lz-string@1.5.0", "", { "bin": { "lz-string": "bin/bin.js" } }, "sha512-h5bgJWpxJNswbU7qCrV0tIKQCaS3blPDrqKWx+QxzuzL1zGUzij9XCWLrSLsJPu5t+eWA/ycetzYAO5IOMcWAQ=="],
 
@@ -2890,12 +2863,6 @@
 
     "zwitch": ["zwitch@2.0.4", "", {}, "sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A=="],
 
-    "@aphrody/shenron-site/lucide-react": ["lucide-react@1.72.0", "", { "peerDependencies": { "@types/react": "*", "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" }, "optionalPeers": ["@types/react"] }, "sha512-fbF5i1GU8GODETa3Q7rXqrJrcx3iPYrQtxthom103zGx+Z0BGwKYAW9s+9435ohYJ7hQm0av0PoZcqI1CRwNrg=="],
-
-    "@aphrody/shenron-ui/@tanstack/react-virtual": ["@tanstack/react-virtual@3.14.26", "", { "dependencies": { "@tanstack/virtual-core": "3.19.11" }, "peerDependencies": { "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react-dom": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-HUDlfsrYH6ko5xH56L62Mcl/uzT+AGVNMHFuDNqDJMdZWc1AQa2oeVKNUvZ/RWBZQ4TYtyQerFrNvLnp39h65A=="],
-
-    "@aphrody/shenron-ui/lucide-react": ["lucide-react@1.72.0", "", { "peerDependencies": { "@types/react": "*", "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" }, "optionalPeers": ["@types/react"] }, "sha512-fbF5i1GU8GODETa3Q7rXqrJrcx3iPYrQtxthom103zGx+Z0BGwKYAW9s+9435ohYJ7hQm0av0PoZcqI1CRwNrg=="],
-
     "@babel/core/semver": ["semver@6.3.2", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-GYrCADwpu6yV5OAvchkQ27Z5wwMxWAEMg5NNWjyHh/5DboFFqbdbvYNIvZouQpxXyeMPoTOh0vdPYKlf0ZswdQ=="],
 
     "@babel/helper-compilation-targets/lru-cache": ["lru-cache@5.1.1", "", { "dependencies": { "yallist": "^3.0.2" } }, "sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w=="],
@@ -2993,8 +2960,6 @@
     "type-is/content-type": ["content-type@2.1.0", "", {}, "sha512-mj7UPXE0jaqaOsukNZRUEfEi2AcL7C/vwmwcHV0O97eO1E1pxBZuyjlZrx5seTaNBg1U6+o35wpa35Qfcc+7ag=="],
 
     "wsl-utils/is-wsl": ["is-wsl@3.1.1", "", { "dependencies": { "is-inside-container": "^1.0.0" } }, "sha512-e6rvdUCiQCAuumZslxRJWR/Doq4VpPR82kqclvcS0efgt430SlGIk05vdCN58+VrzgtIcfNODjozVielycD4Sw=="],
-
-    "@aphrody/shenron-ui/@tanstack/react-virtual/@tanstack/virtual-core": ["@tanstack/virtual-core@3.19.11", "", {}, "sha512-/5iHb0RHBvj8Di59FDs4ESNm45jls33aZAi4zccVXZjc/6ZvwQP6nzEYeT6weXjTf9E6/vrp2JhYWRyO+ZP13A=="],
 
     "@dotenvx/dotenvx/execa/get-stream": ["get-stream@6.0.1", "", {}, "sha512-ts6Wi+2j3jQjqi70w5AlN8DFnkSwC+MqmxEzdEALB2qXZYV3X/b1CTfgPLGJNMeAWxdPfU8FO1ms3NUfaHCPYg=="],
 

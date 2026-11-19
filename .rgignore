@@ -1,6 +1,5 @@
 # Default search surface for agents and people: first-party code only.
 # Vendored trees, lockfiles and generated output stay reachable with `rg --no-ignore` or `fd --no-ignore`.
-third_party/
 node_modules/
 target/
 .next/

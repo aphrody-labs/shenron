@@ -30,6 +30,8 @@
   "toolchain": {
     "rust": "1.100.0",
     "bun": "1.4.5",
+    "bunChannel": "stable",
+    "bunRevision": "a7733435c",
     "bunLinuxSha256": "94559b3b528995a49452f9f2404cec74f2efd7d06e0a000a8cd214b02c3666eb",
     "bunWindowsSha256": "815ab45ec7f549abf87e6869584b506eab088e24225683957b7e150b47d6de30",
     "sccache": "0.18.0",
@@ -243,7 +245,6 @@
       ".gitattributes",
       ".github",
       ".gitignore",
-      ".gitmodules",
       ".graphifyignore",
       ".oxfmtrc.json",
       ".oxlintrc.json",
@@ -284,7 +285,6 @@
       "scripts",
       "src",
       "themes",
-      "third_party",
       "turbo.json"
     ],
     "ignoreInKeys": [

@@ -11,8 +11,7 @@
     "./messaging": "./src/messaging.ts"
   },
   "dependencies": {
-    "@discordjs/rest": "^2.6.3",
-    "discord-api-types": "^0.38.56"
+    "@discordjs/rest": "^2.6.3"
   },
   "devDependencies": {
     "@types/bun": "catalog:"

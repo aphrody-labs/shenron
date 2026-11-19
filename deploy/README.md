@@ -10,7 +10,7 @@
 
 ## Variables d'hôte
 
-Garde-fou: `bun run check:paths` (scanner `tools/paths.ts` du dépôt ay, exemptions dans `paths.allow` ou par `paths:ok`).
+Garde-fou: `just check-paths` (scanner `tools/paths.ts` du dépôt ay, exemptions dans `paths.allow` ou par `paths:ok`).
 
 Aucun chemin d'hôte n'est écrit en dur: chaque fichier compose, unité systemd et script lit une variable.
 
@@ -25,7 +25,7 @@ Aucun chemin d'hôte n'est écrit en dur: chaque fichier compose, unité systemd
 | `SHENRON_REMOTE_RELEASES` | dossier des releases publiques côté hôte distant pour `scripts/release/ship-downloads.ts`; défaut `shenron/shared/releases` sous le home SSH |
 | `SHENRON_CRAWL_OUTPUT_ROOT` | racine des sorties de crawl du worker; défaut `<SHENRON_HOME ou ~/.shenron>/workspaces/dbfr/crawl/campaigns` |
 | `SHENRON_R2_MIRROR_ROOT` | miroir R2 du workflow Beerus; défaut `$SHENRON_ROOT/r2-mirror` |
-| `DBFZ_GAME_ROOT` | installation de DRAGON BALL FighterZ (scripts `scripts/ops/dbfz-*`, `sync-dbfz-to-r2.ts`); défaut: bibliothèque Steam sous `ProgramFiles(x86)` |
+| `DBFZ_GAME_ROOT` | installation de DRAGON BALL FighterZ (scripts `scripts/ops/dbfz-*`); défaut: bibliothèque Steam sous `ProgramFiles(x86)` |
 | `GAMES_STEAM_DIR`, `STEAM_LIBRARIES` | dossier d'installation SteamCMD et bibliothèques Steam (`;`) du moteur de jeux |
 | `SHENRON_WINDOWS_BUN_EXE` | `bun.exe` de la tâche planifiée Windows enregistrée par `cloudflare/cli/register-infra.ts`; défaut `bun.exe` (dans le `PATH`) |
 

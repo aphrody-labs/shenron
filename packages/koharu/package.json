@@ -2,7 +2,7 @@
   "name": "@aphrody/shenron-koharu",
   "version": "1.4.7",
   "private": false,
-  "description": "Koharu manga translation engine client for Shenron: typed IPC protocol generated from koharu-app (Tauri Specta), the koharu-sdk JSON Lines transport and the wasm canvas.",
+  "description": "Koharu manga translation engine client for Shenron: typed IPC protocol, the koharu-sdk JSON Lines transport and the wasm canvas.",
   "homepage": "https://dragonballfr.com",
   "license": "MIT OR Apache-2.0",
   "repository": {
@@ -30,8 +30,7 @@
     "typecheck": "bun check --project tsconfig.json",
     "test": "bun test",
     "lint": "bun lint -c ../../.oxlintrc.json src --ignore-pattern src/protocol.ts --ignore-pattern src/wasm",
-    "build:wasm": "bun scripts/build-wasm.ts",
-    "protocol": "cargo run -p koharu-app --example protocol"
+    "build:wasm": "bun scripts/build-wasm.ts"
   },
   "dependencies": {
     "@tauri-apps/api": "catalog:"

@@ -1,20 +1,11 @@
 {
+  "extends": "../../packages/config/tsconfig/bun.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
-    "moduleDetection": "force",
     "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "verbatimModuleSyntax": false,
     "lib": ["ESNext"],
-    "types": ["bun"],
     "paths": {
       "~/*": ["./src/*"]
     }

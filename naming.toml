@@ -11,5 +11,5 @@ env_prefix = "SHENRON_"
 [legacy]
 # koharu-* (Shenron Studio) and dragon-pixel (published as dragon-pixel-engine) are on crates.io under these names, which stay.
 crates = ["koharu-", "dragon-pixel"]
-# Variables of the upstream yolo-web tool, read only as an alias of their SHENRON_YOLO_WEB_* name.
-env = ["YOLO_WEB_"]
+# Variables of the upstream yolo-web tool. YOLO_WEB_ is read only as an alias of its SHENRON_YOLO_WEB_* name; YOLO_CDP_ (ENDPOINT, PORT, TOKEN) is read by the spawned yolo-web server itself, so the name cannot change.
+env = ["YOLO_WEB_", "YOLO_CDP_"]

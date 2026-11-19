@@ -87,7 +87,7 @@
     "@aphrody/shenron-lexicon": "workspace:*",
     "@aphrody/shenron-media": "workspace:*",
     "@aphrody/shenron-native": "workspace:*",
-    "@typesafe-ai/sdk": "0.6.0",
+    "@typesafe-ai/sdk": "catalog:",
     "ai": "catalog:",
     "postgres": "catalog:",
     "sharp": "catalog:",

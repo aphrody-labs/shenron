@@ -27,11 +27,11 @@
   "dependencies": {
     "@aphrody/shenron-m3-motion": "workspace:*",
     "@aphrody/shenron-m3-primitives": "workspace:*",
-    "clsx": "^2.1.1",
-    "motion": "^13.4.4",
-    "react-markdown": "^10.1.0",
-    "rehype-raw": "^7.0.0",
-    "remark-gfm": "^4.0.1"
+    "clsx": "catalog:",
+    "motion": "catalog:",
+    "react-markdown": "catalog:",
+    "rehype-raw": "catalog:",
+    "remark-gfm": "catalog:"
   },
   "peerDependencies": {
     "react": ">=18.0.0",

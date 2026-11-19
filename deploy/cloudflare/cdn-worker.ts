@@ -84,7 +84,10 @@ function applyZeroTrustHeaders(headers: Headers): Headers {
   return headers;
 }
 
-/** Hashed or static assets receive maximal immutable caching; mutable index.json stays no-store. */
+/**
+ * Hashed or static assets receive maximal immutable caching; mutable index.json stays no-store.
+ * A bare 64-hex file name (`/dragonball-super/<sha256>.png`) is a content address like `/objects/<sha256>.ext`.
+ */
 export function resolveCacheControl(path: string, entryCacheControl: string): string {
   if (
     path.endsWith("/index.json") ||
@@ -97,7 +100,7 @@ export function resolveCacheControl(path: string, entryCacheControl: string): st
     entryCacheControl.includes("immutable") ||
     path.startsWith("/_next/static/") ||
     path.startsWith("/fonts/") ||
-    /\/objects\/[a-f0-9]{64}\.[a-z0-9]+$/i.test(path) ||
+    /\/[a-f0-9]{64}\.[a-z0-9]+$/i.test(path) ||
     /[.-][a-f0-9]{8,64}\.[a-z0-9]+$/i.test(path)
   ) {
     return IMMUTABLE_CACHE_CONTROL;

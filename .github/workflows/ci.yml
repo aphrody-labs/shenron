@@ -47,6 +47,9 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-bun
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: just
       - name: Cache ~/.bun
         uses: actions/cache@v6
         with:
@@ -96,14 +99,14 @@ jobs:
         run: bun check
 
       - name: Native lint
-        run: bun run lint
+        run: just bun-lint
 
       - name: Native format check
-        run: bun run format:check
+        run: just bun-format-check
 
-      # Les suites *.live.test.ts (services réels) restent hors CI : `bun run test:live`.
+      # Les suites *.live.test.ts (services réels) restent hors CI : `just test-live`.
       - name: Tests
-        run: bun run test
+        run: just bun-test
 
       # scripts/design rebuilds the font faces with fontTools through uv (official Bun has no `bun uv`).
       - name: Setup uv
@@ -113,4 +116,4 @@ jobs:
           enable-cache: false
 
       - name: Tests des scripts racine
-        run: bun run test:scripts
+        run: just test-scripts

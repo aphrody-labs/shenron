@@ -42,9 +42,6 @@
   "dependencies": {
     "@aphrody/shenron-m3-tokens": "workspace:*"
   },
-  "devDependencies": {
-    "@material/material-color-utilities": "^0.4.0"
-  },
   "peerDependencies": {
     "react": ">=18.0.0"
   },

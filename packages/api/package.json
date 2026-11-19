@@ -49,7 +49,6 @@
     "@aphrody/shenron-pipeline": "workspace:*",
     "@better-auth/cimd": "catalog:",
     "@better-auth/mcp": "catalog:",
-    "@better-auth/oauth-provider": "catalog:",
     "@better-auth/passkey": "catalog:",
     "better-auth": "catalog:",
     "drizzle-orm": "catalog:",

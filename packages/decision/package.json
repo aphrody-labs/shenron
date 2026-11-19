@@ -12,7 +12,7 @@
     "test": "bun test"
   },
   "dependencies": {
-    "@typesafe-ai/sdk": "0.6.0"
+    "@typesafe-ai/sdk": "catalog:"
   },
   "devDependencies": {
     "@types/bun": "catalog:"

@@ -60,7 +60,7 @@ name = "ui"
 ts = ["packages/ui"]
 rust = "crates/shenron-ui"
 state = "ts"
-ts_lines = 48057
+ts_lines = 47837
 note = "React kit -> Leptos components on packages/design tokens"
 
 [[unit]]
@@ -170,11 +170,11 @@ note = "image proxy and transforms"
 
 [[unit]]
 name = "filmcraft"
-ts = ["packages/filmcraft"]
+ts = []
 rust = "crates/shenron-video"
-state = "ts"
-ts_lines = 805
-note = "film composition helpers"
+state = "rust"
+ts_lines = 0
+note = "film composition: upstream filmcraft crates (crates.io) behind crates/shenron-video, filmcraft-cli from aphrody-labs/filmcraft"
 
 [[unit]]
 name = "compression"
@@ -226,10 +226,10 @@ note = "image helpers"
 
 [[unit]]
 name = "gds"
-ts = ["src/gds"]
+ts = ["packages/ui/src/gds"]
 rust = "crates/shenron-ui"
 state = "ts"
-ts_lines = 162
+ts_lines = 220
 note = "design system sources"
 
 [[unit]]

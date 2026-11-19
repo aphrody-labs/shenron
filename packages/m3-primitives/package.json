@@ -27,13 +27,13 @@
   "dependencies": {
     "@aphrody/shenron-m3-motion": "workspace:*",
     "@base-ui/react": "catalog:",
-    "class-variance-authority": "^0.7.1",
-    "clsx": "^2.1.1",
-    "motion": "^13.4.4",
+    "class-variance-authority": "catalog:",
+    "clsx": "catalog:",
+    "motion": "catalog:",
     "react-hook-form": "^7.89.0",
     "react-resizable-layout": "^0.7.3",
     "sonner": "^2.0.8",
-    "zod": "^4.6.5"
+    "zod": "catalog:"
   },
   "peerDependencies": {
     "react": ">=18.0.0",

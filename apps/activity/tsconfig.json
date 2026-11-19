@@ -1,9 +1,7 @@
 {
-  "extends": "../../packages/config/tsconfig/bun.json",
+  "extends": "../../packages/config/tsconfig/react.json",
   "compilerOptions": {
     "noUncheckedIndexedAccess": true,
-    "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "jsx": "react-jsx",
     "allowImportingTsExtensions": true
   },
   "include": [

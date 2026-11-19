@@ -16,10 +16,7 @@
     }
   },
   "dependencies": {
-    "motion": "^13.4.4"
-  },
-  "devDependencies": {
-    "react-dom": "^19.3.0"
+    "motion": "catalog:"
   },
   "peerDependencies": {
     "motion": ">=12.0.0",

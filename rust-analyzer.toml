@@ -7,7 +7,7 @@
 # default features leave out.
 features = ["shenron-manga/koharu", "shenron-cli/koharu", "shenron-mcp/koharu"]
 # Own target directory (target/rust-analyzer): the editor never holds the build lock that
-# `cargo`, `just` and `bun run *:rust` wait for.
+# `cargo` and `just rust-*` wait for.
 targetDir = true
 
 [check]

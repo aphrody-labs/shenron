@@ -47,9 +47,6 @@
       "path": "packages/engine/tsconfig.json"
     },
     {
-      "path": "packages/filmcraft/tsconfig.json"
-    },
-    {
       "path": "packages/hyperframes/tsconfig.json"
     },
     {

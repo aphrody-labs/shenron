@@ -130,7 +130,10 @@ COPY --chown=10001:10001 data/lexicon /work/data/lexicon
 
 # ---------------------------------------------------------------- Rust, Linux (what the factory builds + the CLI)
 FROM rust-src AS rust-linux-x64
-# production: fat LTO, one codegen unit, stripped. --build-arg CARGO_PROFILE=release is the fast lane.
+# production: fat LTO, one codegen unit, stripped, panic=unwind: shenron, shenron-mcp and koharu-sdk
+# run multi-threaded tokio runtimes that isolate task panics, and shenron-ffi catches panics at the
+# FFI boundary, so none of them can use production-abort. --build-arg CARGO_PROFILE=release is the
+# fast lane.
 ARG CARGO_PROFILE=production
 RUN --mount=type=secret,id=gitconfig,target=/run/secrets/gitconfig,uid=10001 \
     --mount=type=cache,target=/home/builder/.cargo/registry,uid=10001,id=shenron-cargo-registry \
@@ -142,7 +145,8 @@ RUN --mount=type=secret,id=gitconfig,target=/run/secrets/gitconfig,uid=10001 \
       -p shenron-ffi --lib; \
     cargo build --profile "$CARGO_PROFILE" --locked -p koharu-library --bin koharu-sdk; \
     mkdir -p /out; \
-    d=target/"$CARGO_PROFILE"; install -m0755 $d/shenron $d/shenron-mcp $d/libshenron_ffi.so $d/koharu-sdk /out/;     sccache --show-stats || true
+    d=target/"$CARGO_PROFILE"; install -m0755 $d/shenron $d/shenron-mcp $d/libshenron_ffi.so $d/koharu-sdk /out/; \
+    sccache --show-stats || true
 
 # ---------------------------------------------------------------- Rust, Windows (MSVC through cargo-xwin)
 FROM rust-src AS rust-windows-x64
@@ -186,7 +190,7 @@ FROM vfs-empty AS vfs
 FROM src AS server-linux-x64
 ARG FLAVOR=desktop
 ARG ALLOW_NO_VFS=
-COPY --from=rust-linux-x64 --chown=10001:10001 /out/libshenron_ffi.so /work/target/x86_64-unknown-linux-gnu/release/libshenron_ffi.so
+COPY --from=rust-linux-x64 --chown=10001:10001 /out/libshenron_ffi.so /work/target/x86_64-unknown-linux-gnu/production/libshenron_ffi.so
 COPY --from=vfs --chown=10001:10001 / /work/dist/vfs/
 # Turbopack persists under <distDir>/cache (scripts/build/server.ts keeps it when
 # SHENRON_NEXT_BUILD_CACHE=1), so that exact directory is the cache mount.
@@ -199,7 +203,7 @@ RUN --mount=type=cache,target=/work/apps/site/.next-standalone/cache,uid=10001,i
  && ( [ ! -f dist/vfs/shenron-vfs.public.sqlite ] || echo "vfs: included" > /out/VFS )
 FROM src AS server-windows-x64
 ARG FLAVOR=desktop
-COPY --from=rust-windows-x64 --chown=10001:10001 /out/shenron_ffi.dll /work/target/x86_64-pc-windows-msvc/release/shenron_ffi.dll
+COPY --from=rust-windows-x64 --chown=10001:10001 /out/shenron_ffi.dll /work/target/x86_64-pc-windows-msvc/production/shenron_ffi.dll
 COPY --from=vfs --chown=10001:10001 / /work/dist/vfs/
 RUN set -eux; \
     vfs=--no-vfs; [ -f dist/vfs/shenron-vfs.public.sqlite ] && vfs=; \
