@@ -19,7 +19,7 @@ const USAGE: &str = "usage: shenron-mcp [--http [ADDR]] [--public] [--version]";
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let _ = rustls::crypto::ring::default_provider().install_default();
+    rustls::crypto::ring::default_provider().install_default().ok();
     let args: Vec<String> = std::env::args().skip(1).collect();
     if args.iter().any(|arg| arg == "--version" || arg == "-V") {
         println!("shenron-mcp {}", env!("CARGO_PKG_VERSION"));

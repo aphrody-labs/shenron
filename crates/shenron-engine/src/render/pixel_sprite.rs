@@ -212,7 +212,7 @@ pub fn render_sprite_rgba(
 
     let (sender, receiver) = std::sync::mpsc::channel();
     readback.slice(..).map_async(wgpu::MapMode::Read, move |result| {
-        let _ = sender.send(result);
+        sender.send(result).ok();
     });
     device
         .poll(wgpu::PollType::Wait { submission_index: Some(submission), timeout: None })

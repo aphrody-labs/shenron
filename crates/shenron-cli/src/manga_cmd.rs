@@ -214,7 +214,7 @@ fn preflight_candidate(
         validate_page_id(page_id)?;
     }
     if let Some(digest) = source_sha256 {
-        let _ = validate_sha256(digest.clone())?;
+        validate_sha256(digest.clone())?;
     }
     Ok(())
 }
@@ -243,7 +243,7 @@ fn preflight_databook_candidate(
         ));
     }
     if let Some(digest) = source_sha256 {
-        let _ = validate_sha256(digest.clone())?;
+        validate_sha256(digest.clone())?;
     }
     if entity_id == Some(0) || plate_number == Some(0) {
         return Err(miette::miette!("databook ID and plate number must be positive"));
@@ -522,7 +522,7 @@ pub(crate) async fn run(action: MangaAction) -> Result<()> {
                 Some(page),
             )?;
             if let Some(digest) = &image_sha256 {
-                let _ = validate_sha256(digest.clone())?;
+                validate_sha256(digest.clone())?;
             }
             let client = MangaCdnClient::new();
             let options = MangaPipelineOptions::new(to.clone(), device == MangaDevice::Cpu);
@@ -565,7 +565,7 @@ pub(crate) async fn run(action: MangaAction) -> Result<()> {
             require_extension(&output, "psd")?;
             preflight_candidate(json, &page_id, &source_sha256)?;
             if let Some(digest) = &image_sha256 {
-                let _ = validate_sha256(digest.clone())?;
+                validate_sha256(digest.clone())?;
             }
             let client = MangaCdnClient::new();
             let options = MangaPipelineOptions::new(to.clone(), device == MangaDevice::Cpu);

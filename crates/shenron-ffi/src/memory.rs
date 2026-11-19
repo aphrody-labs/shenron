@@ -98,7 +98,7 @@ pub fn provider(path: &str) -> Result<Arc<SqliteLocalProvider>, String> {
 #[cfg(unix)]
 fn restrict(path: &Path) {
     use std::os::unix::fs::PermissionsExt;
-    let _ = std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600));
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o600)).ok();
 }
 
 #[cfg(not(unix))]

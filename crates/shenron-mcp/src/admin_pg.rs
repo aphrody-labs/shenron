@@ -178,7 +178,7 @@ SELECT to_jsonb(r) FROM (
         .await
         .map_err(|error| failure(&error))?;
     let relations = as_values(&rows)?;
-    let _ = tx.rollback().await;
+    tx.rollback().await.ok();
     let found = relations.len();
     let (kept, mut truncated) = fit_rows(relations, limit, config.max_bytes);
     truncated |= found > limit;
@@ -209,7 +209,7 @@ pub async fn query(runtime: &Runtime, input: QueryInput) -> Result<Value, String
     );
     let rows = tx.query(wrapped.as_str(), &[]).await.map_err(|error| failure(&error))?;
     let values = as_values(&rows)?;
-    let _ = tx.rollback().await;
+    tx.rollback().await.ok();
     let found = values.len();
     let (kept, mut truncated) = fit_rows(values, limit, config.max_bytes);
     truncated |= found > limit;
@@ -276,7 +276,7 @@ pub async fn explain(runtime: &Runtime, input: ExplainInput) -> Result<Value, St
         .await
         .map_err(|error| failure(&error))?;
     let plan = as_values(&rows)?.into_iter().next().unwrap_or(Value::Null);
-    let _ = tx.rollback().await;
+    tx.rollback().await.ok();
     Ok(json!({ "plan": plan, "analyzed": input.analyze == Some(true) }))
 }
 
@@ -305,7 +305,7 @@ pub async fn table_resource(runtime: &Runtime, name: &str) -> Result<Value, Stri
         .await
         .map_err(|error| failure(&error))?;
     let values = as_values(&rows)?;
-    let _ = tx.rollback().await;
+    tx.rollback().await.ok();
     let (kept, truncated) = fit_rows(values, sample, config.max_bytes);
     Ok(json!({ "table": name, "sample": kept, "sample_truncated": truncated }))
 }

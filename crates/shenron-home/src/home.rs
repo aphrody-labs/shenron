@@ -171,7 +171,9 @@ impl AgentHome {
         if let Ok(mut state) = WorkspaceState::load(guard.root()) {
             state.cache = cache.export_records();
             // best-effort: a read-only workspace may reject the write.
-            let _ = state.save(guard.root());
+            if let Err(error) = state.save(guard.root()) {
+                tracing::debug!(%error, "workspace state not persisted");
+            }
         }
 
         Ok(Self {

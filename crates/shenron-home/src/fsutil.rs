@@ -49,7 +49,7 @@ pub fn write_atomic(path: &Path, bytes: &[u8]) -> Result<(), HomeError> {
     }
     let tmp = temp_sibling(path);
     if let Err(e) = write_then_rename(&tmp, path, bytes) {
-        let _ = std::fs::remove_file(&tmp);
+        std::fs::remove_file(&tmp).ok();
         return Err(HomeError::io(path, e));
     }
     Ok(())

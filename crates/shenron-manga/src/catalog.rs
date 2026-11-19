@@ -91,7 +91,7 @@ impl MangaCdnClient {
 
         #[cfg(not(target_arch = "wasm32"))]
         {
-            let _ = rustls::crypto::ring::default_provider().install_default();
+            rustls::crypto::ring::default_provider().install_default().ok();
         }
 
         #[cfg(not(target_arch = "wasm32"))]

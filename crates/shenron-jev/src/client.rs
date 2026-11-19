@@ -250,7 +250,7 @@ impl JevRouter {
         policy: RoutingPolicy,
     ) -> Result<Self, JevError> {
         #[cfg(not(target_arch = "wasm32"))]
-        let _ = rustls::crypto::ring::default_provider().install_default();
+        rustls::crypto::ring::default_provider().install_default().ok();
         let http = reqwest::Client::builder()
             .user_agent(concat!("shenron_jev/", env!("CARGO_PKG_VERSION")))
             .build()

@@ -129,7 +129,7 @@ async fn job_inner(cfg: &Config, db: &Db, id: &str, url: &str, title: Option<Str
     let p = probe(cfg, &src).await?;
     let heights = transcode(cfg, &src, &out, &p).await?;
     db.set_ready(id, p.duration, &heights);
-    let _ = tokio::fs::remove_dir_all(&work).await;
+    tokio::fs::remove_dir_all(&work).await.ok();
     Ok(())
 }
 

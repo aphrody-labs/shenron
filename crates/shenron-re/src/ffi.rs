@@ -57,7 +57,7 @@ pub extern "C" fn shenron_re_version() -> *const c_char {
 pub unsafe extern "C" fn shenron_re_free_string(ptr: *mut c_char) {
     if !ptr.is_null() {
         unsafe {
-            let _ = CString::from_raw(ptr);
+            drop(CString::from_raw(ptr));
         }
     }
 }

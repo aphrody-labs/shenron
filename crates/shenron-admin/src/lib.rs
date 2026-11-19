@@ -64,7 +64,7 @@ pub struct AppState {
 pub type Shared = Arc<AppState>;
 
 pub fn build_state(config: Config) -> anyhow::Result<Shared> {
-    let _ = rustls::crypto::ring::default_provider().install_default();
+    rustls::crypto::ring::default_provider().install_default().ok();
     let mut panels = panels::builtin_panels();
     if let Some(dir) = &config.panels_dir {
         let taken: HashSet<String> = panels.iter().map(|p| p.id.clone()).collect();

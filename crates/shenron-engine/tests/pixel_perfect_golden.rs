@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-
 //! Pixel golden tests. Every texture is synthetic and generated here: no game data, no fixture.
 //! The expected bytes come from a per-pixel formula independent of the code under test.
 

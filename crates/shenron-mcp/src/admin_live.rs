@@ -178,7 +178,7 @@ impl Hub {
             Target::Events(channel) => channel,
         };
         if locked(&self.channels).insert(channel.to_owned()) {
-            let _ = self.commands.send(channel.to_owned());
+            self.commands.send(channel.to_owned()).ok();
         }
     }
 

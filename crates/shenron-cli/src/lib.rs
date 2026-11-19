@@ -87,7 +87,7 @@ where
         Err(error) => {
             let code = error.exit_code();
             // `--help` and `--version` are successful parses printed on stdout.
-            let _ = error.print();
+            error.print().ok();
             return code;
         },
     };
@@ -114,5 +114,5 @@ where
 
 /// Install the process-wide TLS provider used by every HTTP client of the command.
 pub fn install_tls_provider() {
-    let _ = rustls::crypto::ring::default_provider().install_default();
+    rustls::crypto::ring::default_provider().install_default().ok();
 }

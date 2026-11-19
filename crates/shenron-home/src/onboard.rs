@@ -222,7 +222,7 @@ pub fn complete_bootstrap(workspace: &Path) -> Result<bool, HomeError> {
     if state.is_setup_completed() {
         // Already complete; ensure the ritual file is gone but do not error.
         let bootstrap_path = workspace.join(BOOTSTRAP_FILENAME);
-        let _ = std::fs::remove_file(bootstrap_path);
+        std::fs::remove_file(bootstrap_path).ok();
         return Ok(false);
     }
     state.setup_completed_at = Some(now_iso8601());

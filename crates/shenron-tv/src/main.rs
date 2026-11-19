@@ -150,7 +150,7 @@ async fn main() -> anyhow::Result<()> {
     let bind = env("SHENRON_TV_BIND", "127.0.0.1:8793");
     let listener = tokio::net::TcpListener::bind(&bind).await?;
     tracing::info!(%bind, "shenron-tv listening");
-    axum::serve(listener, router(App { cfg, db })).with_graceful_shutdown(async { let _ = tokio::signal::ctrl_c().await; }).await?;
+    axum::serve(listener, router(App { cfg, db })).with_graceful_shutdown(async { tokio::signal::ctrl_c().await.ok(); }).await?;
     Ok(())
 }
 

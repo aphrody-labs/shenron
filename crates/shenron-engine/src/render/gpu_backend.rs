@@ -343,7 +343,7 @@ pub fn run_wgsl_compute(
 
     let (sender, receiver) = std::sync::mpsc::channel();
     readback_buffer.slice(..).map_async(wgpu::MapMode::Read, move |result| {
-        let _ = sender.send(result);
+        sender.send(result).ok();
     });
 
     device

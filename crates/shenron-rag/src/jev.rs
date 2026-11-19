@@ -36,7 +36,7 @@ pub fn configured_router() -> Result<std::sync::Arc<JevRouter>, JevError> {
         return Ok(router.clone());
     }
     let router = std::sync::Arc::new(JevRouter::from_env()?);
-    let _ = ROUTER.set(router.clone());
+    ROUTER.set(router.clone()).ok();
     Ok(ROUTER.get().cloned().unwrap_or(router))
 }
 

@@ -347,7 +347,7 @@ async fn provision_one(
         if let Some(expected) = &source.sha256 {
             let actual = sha256_file(&target).await?;
             if !actual.eq_ignore_ascii_case(expected) {
-                let _ = std::fs::remove_file(&target);
+                std::fs::remove_file(&target).ok();
                 return Err(format!("{}: digest {actual} differs from {expected}", source.file));
             }
         }
@@ -467,7 +467,7 @@ impl Shared {
             if current.id == id && current.child.try_wait().ok().flatten().is_none() {
                 return Ok(current.port);
             }
-            let _ = current.child.kill().await;
+            current.child.kill().await.ok();
             *running = None;
         }
         if let Some(reason) = self.reason(model) {
@@ -521,7 +521,7 @@ impl Shared {
             }
             tokio::time::sleep(Duration::from_millis(500)).await;
         }
-        let _ = current.child.kill().await;
+        current.child.kill().await.ok();
         Err("llama-server did not become ready in 10 minutes".to_owned())
     }
 }
@@ -622,10 +622,10 @@ fn serving() -> &'static tokio::sync::Mutex<Option<Serving>> {
 /// Stop the router of this process and the llama model it started; `true` if one ran.
 pub async fn stop() -> bool {
     let Some(previous) = serving().lock().await.take() else { return false };
-    let _ = previous.stop.send(());
-    let _ = tokio::time::timeout(Duration::from_secs(5), previous.server).await;
+    previous.stop.send(()).ok();
+    tokio::time::timeout(Duration::from_secs(5), previous.server).await.ok();
     if let Some(mut running) = previous.shared.running.lock().await.take() {
-        let _ = running.child.kill().await;
+        running.child.kill().await.ok();
     }
     true
 }
@@ -664,7 +664,7 @@ pub async fn start(request: RouterRequest) -> Result<LlamaRouterInfo, String> {
     let server = tokio::spawn(
         axum::serve(listener, app)
             .with_graceful_shutdown(async move {
-                let _ = stop_rx.await;
+                stop_rx.await.ok();
             })
             .into_future(),
     );

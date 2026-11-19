@@ -190,7 +190,7 @@ impl RenderTarget {
         let slice = self.readback.slice(..);
         let (sender, receiver) = std::sync::mpsc::sync_channel(1);
         slice.map_async(wgpu::MapMode::Read, move |result| {
-            let _ = sender.send(result);
+            sender.send(result).ok();
         });
         context.wait_for(submission, timeout)?;
         receiver

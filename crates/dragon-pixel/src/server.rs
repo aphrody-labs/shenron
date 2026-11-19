@@ -155,7 +155,7 @@ impl RoomHub {
         snapshot.sort_by(|left, right| left.id.cmp(&right.id));
         drop(players);
         drop(rooms);
-        let _ = room.events.send(ServerMessage::Players { players: snapshot.clone() });
+        room.events.send(ServerMessage::Players { players: snapshot.clone() }).ok();
         Ok((room, snapshot))
     }
 
@@ -170,7 +170,7 @@ impl RoomHub {
             player.avatar = input.avatar;
         }
         drop(players);
-        let _ = room.events.send(ServerMessage::Players { players: room.snapshot().await });
+        room.events.send(ServerMessage::Players { players: room.snapshot().await }).ok();
     }
 
     async fn leave(&self, room_name: &str, room: &Arc<Room>, player_id: &str) {
@@ -188,7 +188,7 @@ impl RoomHub {
             rooms.remove(room_name);
         } else {
             drop(players);
-            let _ = current.events.send(ServerMessage::Players { players: snapshot });
+            current.events.send(ServerMessage::Players { players: snapshot }).ok();
         }
     }
 }
@@ -309,7 +309,7 @@ async fn handle_socket(
                                 game.step(input, dt.min(0.05));
                                 let snapshot = game.clone();
                                 drop(game);
-                                let _ = room.events.send(ServerMessage::Game { game: snapshot });
+                                room.events.send(ServerMessage::Game { game: snapshot }).ok();
                             }
                             ClientMessage::Input { .. } => {}
                             ClientMessage::Frame { player, input, dt }
@@ -352,7 +352,7 @@ async fn advance_game(room: &Room, input: Input, dt: f32) {
     game.step(input, dt.min(0.05));
     let snapshot = game.clone();
     drop(game);
-    let _ = room.events.send(ServerMessage::Game { game: snapshot });
+    room.events.send(ServerMessage::Game { game: snapshot }).ok();
 }
 
 #[cfg(test)]

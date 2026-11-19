@@ -235,7 +235,7 @@ pub(crate) async fn run(args: ChatArgs) -> miette::Result<()> {
                 if let Some(id) = &stream.stream_id {
                     let route = format!("/api/v1/chat/streams/{id}/cancel");
                     let cancel = args.connection.request(reqwest::Method::POST, &route)?;
-                    let _ = tokio::time::timeout(Duration::from_secs(5), send(cancel)).await;
+                    tokio::time::timeout(Duration::from_secs(5), send(cancel)).await.ok();
                 }
                 return Err(miette::miette!("Shenron generation interrupted by user"));
             },

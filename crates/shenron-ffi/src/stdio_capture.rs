@@ -43,8 +43,8 @@ mod native {
     pub fn with_captured_stdio<F: FnOnce() -> i32>(f: F) -> (i32, String, String) {
         // Flush buffered output before redirecting so earlier output does not
         // leak into the captured files.
-        let _ = std::io::stdout().flush();
-        let _ = std::io::stderr().flush();
+        std::io::stdout().flush().ok();
+        std::io::stderr().flush().ok();
 
         let out_file = tempfile::tempfile().ok();
         let err_file = tempfile::tempfile().ok();
@@ -55,8 +55,8 @@ mod native {
         let code = f();
 
         // Flush the command's final output to the temp files before restoring.
-        let _ = std::io::stdout().flush();
-        let _ = std::io::stderr().flush();
+        std::io::stdout().flush().ok();
+        std::io::stderr().flush().ok();
 
         // Restore the original handles (via Drop) before reading back.
         drop(out_redirect);
@@ -109,12 +109,13 @@ mod native {
 
         impl Drop for Redirect {
             fn drop(&mut self) {
-                let _ = match self.stream {
+                // Teardown errors cannot be returned from Drop. Preserve the
+                // best-effort behavior of the former raw-descriptor backend.
+                let restored = match self.stream {
                     Stream::Stdout => rustix::stdio::dup2_stdout(&self.saved),
                     Stream::Stderr => rustix::stdio::dup2_stderr(&self.saved),
                 };
-                // Teardown errors cannot be returned from Drop. Preserve the
-                // best-effort behavior of the former raw-descriptor backend.
+                restored.ok();
             }
         }
     }

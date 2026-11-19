@@ -21,6 +21,12 @@ pub struct Db(Mutex<Connection>);
 
 const COLS: &str = "id,title,status,error,source_url,duration_secs,renditions,created_at";
 
+fn log_update_failure(id: &str, updated: rusqlite::Result<usize>) {
+    if let Err(error) = updated {
+        tracing::warn!(%error, id, "video row update failed");
+    }
+}
+
 fn row(r: &rusqlite::Row) -> rusqlite::Result<Video> {
     let id: String = r.get(0)?;
     let status: String = r.get(2)?;
@@ -68,22 +74,28 @@ impl Db {
     }
 
     pub fn set_status(&self, id: &str, status: &str, error: Option<&str>) {
-        let _ = self.conn().execute("UPDATE videos SET status=?2, error=?3 WHERE id=?1", params![id, status, error]);
+        let updated = self.conn().execute(
+            "UPDATE videos SET status=?2, error=?3 WHERE id=?1",
+            params![id, status, error],
+        );
+        log_update_failure(id, updated);
     }
 
     pub fn set_info(&self, id: &str, title: Option<&str>, info_json: &str) {
-        let _ = self.conn().execute(
+        let updated = self.conn().execute(
             "UPDATE videos SET title=COALESCE(?2,title), info_json=?3 WHERE id=?1",
             params![id, title, info_json],
         );
+        log_update_failure(id, updated);
     }
 
     pub fn set_ready(&self, id: &str, duration: f64, renditions: &[u32]) {
         let r = renditions.iter().map(u32::to_string).collect::<Vec<_>>().join(",");
-        let _ = self.conn().execute(
+        let updated = self.conn().execute(
             "UPDATE videos SET status='ready', error=NULL, duration_secs=?2, renditions=?3 WHERE id=?1",
             params![id, duration, r],
         );
+        log_update_failure(id, updated);
     }
 
     pub fn get(&self, id: &str) -> Option<Video> {
@@ -92,7 +104,9 @@ impl Db {
 
     pub fn list(&self) -> Vec<Video> {
         let c = self.conn();
-        let Ok(mut s) = c.prepare(&format!("SELECT {COLS} FROM videos ORDER BY created_at DESC LIMIT 500")) else {
+        let Ok(mut s) =
+            c.prepare(&format!("SELECT {COLS} FROM videos ORDER BY created_at DESC LIMIT 500"))
+        else {
             return vec![];
         };
         s.query_map([], row).map(|it| it.flatten().collect()).unwrap_or_default()

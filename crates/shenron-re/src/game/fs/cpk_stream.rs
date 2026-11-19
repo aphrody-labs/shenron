@@ -285,7 +285,7 @@ fn read_utf_cell(data: &[u8], off: usize, kind: UtfColType, string_pool: usize) 
             UtfCell::Str(utf_cstr(data, string_pool, pool_off)?)
         },
         UtfColType::F32 | UtfColType::F64 | UtfColType::Bytes | UtfColType::Guid => {
-            let _ = checked_slice(data, off, kind.wire_size())?;
+            checked_slice(data, off, kind.wire_size())?;
             UtfCell::Other
         },
     })

@@ -167,8 +167,8 @@ async fn terminate_owned_child(child: &mut tokio::process::Child, grace: Duratio
     }
     #[cfg(not(unix))]
     let _ = grace;
-    let _ = child.kill().await;
-    let _ = child.wait().await;
+    child.kill().await.ok();
+    child.wait().await.ok();
 }
 
 pub async fn execute(request: VideoRequest, render: bool) -> Result<Value, String> {

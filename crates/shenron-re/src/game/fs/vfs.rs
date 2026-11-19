@@ -273,7 +273,7 @@ impl XenoverseVfs {
 
         // Mount each discovered CPK
         for cpk_path in cpk_candidates {
-            let _ = self.mount_cpk_file(&cpk_path);
+            self.mount_cpk_file(&cpk_path).ok();
         }
 
         Ok(self.index.len())

@@ -47,13 +47,13 @@ impl LocalServer {
         }
         let mut child = self.child.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
         if let Some(mut child) = child.take() {
-            let _ = child.kill();
-            let _ = child.wait();
+            child.kill().ok();
+            child.wait().ok();
         }
         if let Some(path) =
             self.run_file.lock().unwrap_or_else(std::sync::PoisonError::into_inner).take()
         {
-            let _ = std::fs::remove_file(path);
+            std::fs::remove_file(path).ok();
         }
     }
 }
@@ -68,7 +68,7 @@ fn run_file(data: &Path) -> PathBuf {
 fn stop_previous(data: &Path) {
     let path = run_file(data);
     let Ok(text) = std::fs::read_to_string(&path) else { return };
-    let _ = std::fs::remove_file(&path);
+    std::fs::remove_file(&path).ok();
     let Some(pid) = serde_json::from_str::<serde_json::Value>(&text)
         .ok()
         .and_then(|value| value.get("pid").and_then(serde_json::Value::as_u64))
@@ -93,14 +93,14 @@ fn kill_pid(pid: u32) {
         .stdout(Stdio::null())
         .stderr(Stdio::null());
     std::os::windows::process::CommandExt::creation_flags(&mut command, 0x0800_0000);
-    let _ = command.status();
+    command.status().ok();
 }
 
 #[cfg(not(windows))]
 fn kill_pid(pid: u32) {
     let comm = std::fs::read_to_string(format!("/proc/{pid}/comm")).unwrap_or_default();
     if comm.trim().starts_with("shenron-server") {
-        let _ = Command::new("kill").arg(pid.to_string()).status();
+        Command::new("kill").arg(pid.to_string()).status().ok();
     }
 }
 

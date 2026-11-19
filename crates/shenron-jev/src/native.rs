@@ -106,7 +106,7 @@ impl NativeEngine {
         let with_slash = if base.ends_with('/') { base.to_owned() } else { format!("{base}/") };
         let base = Url::parse(&with_slash).map_err(|e| JevError::Config(format!("{base}: {e}")))?;
         #[cfg(not(target_arch = "wasm32"))]
-        let _ = rustls::crypto::ring::default_provider().install_default();
+        rustls::crypto::ring::default_provider().install_default().ok();
         let http = reqwest::Client::builder()
             .user_agent(concat!("shenron_jev/", env!("CARGO_PKG_VERSION")))
             .build()

@@ -1,11 +1,11 @@
 //! Unified Pure GPUI Kit desktop shell composing Koharu, Studio, and Admin.
 
+use gpui_kit::component::tab::{Tab, TabBar};
+use gpui_kit::component::{ActiveTheme, Root, ThemeMode, v_flex};
 use gpui_kit::{
     App, AppContext, Context, Entity, IntoElement, ParentElement, Render, Styled, Window,
     WindowOptions,
 };
-use gpui_kit::component::tab::{Tab, TabBar};
-use gpui_kit::component::{ActiveTheme, Root, ThemeMode, v_flex};
 use koharu_app::KoharuWorkspace;
 use shenron_admin_ui::view::AdminWorkspace;
 use shenron_studio::StudioWorkspace;
@@ -56,18 +56,16 @@ impl Render for DesktopShell {
 }
 
 fn main() {
-    gpui_kit::application()
-        .with_assets(gpui_kit::assets::Assets::default())
-        .run(|cx: &mut App| {
-            gpui_kit::init(cx);
-            shenron_theme::init(cx, ThemeMode::Dark);
-            let _ = gpui_kit::open_window(
-                WindowOptions::default(),
-                cx,
-                |window, cx| {
-                    let shell = cx.new(|cx| DesktopShell::new(window, cx));
-                    cx.new(|cx| Root::new(shell, window, cx))
-                },
-            );
+    gpui_kit::application().with_assets(gpui_kit::assets::Assets::default()).run(|cx: &mut App| {
+        gpui_kit::init(cx);
+        shenron_theme::init(cx, ThemeMode::Dark);
+        let opened = gpui_kit::open_window(WindowOptions::default(), cx, |window, cx| {
+            let shell = cx.new(|cx| DesktopShell::new(window, cx));
+            cx.new(|cx| Root::new(shell, window, cx))
         });
+        if let Err(error) = opened {
+            eprintln!("failed to open the window: {error:#}");
+            cx.quit();
+        }
+    });
 }

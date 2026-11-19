@@ -143,7 +143,7 @@ pub fn instantiate_template(opts: &TemplateOptions) -> Result<TemplateReport, Ho
     let (template_revision, copied, substituted, seeded) = match built {
         Ok(v) => v,
         Err(e) => {
-            let _ = std::fs::remove_dir_all(&staging);
+            std::fs::remove_dir_all(&staging).ok();
             return Err(e);
         },
     };
@@ -160,9 +160,9 @@ pub fn instantiate_template(opts: &TemplateOptions) -> Result<TemplateReport, Ho
     }
     if let Err(e) = std::fs::rename(&staging, dest) {
         if let Some(aside) = &replaced_backup {
-            let _ = std::fs::rename(aside, dest);
+            std::fs::rename(aside, dest).ok();
         }
-        let _ = std::fs::remove_dir_all(&staging);
+        std::fs::remove_dir_all(&staging).ok();
         return Err(HomeError::io(dest, e));
     }
     let profile = UserProfile::load(dest)?;

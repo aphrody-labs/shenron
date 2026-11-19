@@ -108,7 +108,7 @@ impl Job {
     async fn cancelled(&self) {
         let mut cancel = self.cancel.clone();
         // An error means the sender is gone: the job was released, which cancels it.
-        let _ = cancel.wait_for(|cancelled| *cancelled).await;
+        cancel.wait_for(|cancelled| *cancelled).await.ok();
     }
 
     /// Drive the future `make` returns on the shared runtime until it completes (`Some`) or
