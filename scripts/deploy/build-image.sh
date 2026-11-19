@@ -14,7 +14,7 @@
 #                         (default: dist/vfs/shenron-vfs.public.sqlite already in the worktree)
 #   SHENRON_CONTAINER     docker | podman (default: whichever is installed, docker first)
 #   SHENRON_IMAGE         image name (default: localhost/shenron)
-#   SHENRON_COMPILE_BUN   Bun used to compile the release binaries, must be >= 1.4.4 (default: bun on PATH)
+#   SHENRON_COMPILE_BUN   Bun used to compile the release binaries, must be >= the package.json packageManager pin (default: bun on PATH)
 #   SHENRON_WBG_DIR       directory of the wasm-bindgen CLI pinned by Cargo.lock (default: $HOME/build/tools/wbg-<version>/bin)
 #   SHENRON_CARGO_JOBS    Cargo jobs (default: all CPUs)
 #   SHENRON_SITE_BUILD_CPUS, SHENRON_SITE_BUILD_MIN_GIB, SHENRON_PAYLOAD_ZSTD_LEVEL,
@@ -37,9 +37,10 @@ export SHENRON_COMPILE_BUN
 case "$("$SHENRON_COMPILE_BUN" --version)" in
   *debug*) echo "Refusing a debug runtime for production compilation" >&2; exit 1 ;;
 esac
-# Official Bun >= 1.4.4 compiles a server that re-spawns itself with BUN_BE_BUN=1 and serves
-# the child; older Bun is refused.
-MIN_COMPILE_BUN=1.4.4
+# Official Bun at the pinned version (package.json#packageManager) compiles a server that
+# re-spawns itself with BUN_BE_BUN=1 and serves the child; older Bun is refused.
+MIN_COMPILE_BUN=$(sed -n 's/.*"packageManager": *"bun@\([^"]*\)".*/\1/p' "$SOURCE/package.json")
+[ -n "$MIN_COMPILE_BUN" ] || { echo "No bun@<version> packageManager in $SOURCE/package.json" >&2; exit 1; }
 COMPILE_BUN_VERSION=$("$SHENRON_COMPILE_BUN" --version)
 if [ "$(printf '%s
 %s

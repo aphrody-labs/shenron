@@ -21,6 +21,7 @@
         "@types/node": "catalog:",
         "@types/react": "catalog:",
         "@types/react-dom": "catalog:",
+        "next": "catalog:",
         "oxlint": "catalog:",
         "postgres": "catalog:",
         "react": "catalog:",

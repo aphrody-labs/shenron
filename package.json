@@ -196,9 +196,9 @@
     "undici": "^7.30.1"
   },
   "engines": {
-    "bun": ">=1.4.4"
+    "bun": ">=1.4.5"
   },
-  "packageManager": "bun@1.4.4",
+  "packageManager": "bun@1.4.5",
   "patchedDependencies": {
     "@discordjs/rest@2.6.3": "patches/@discordjs%2Frest@2.6.3.patch",
     "swiper@14.3.0": "patches/swiper@14.3.0.patch"

@@ -13,7 +13,7 @@ FROM ubuntu:26.10
 
 ARG SHENRON_REVISION=unknown
 # Bun runtime: official upstream release (oven-sh/bun), same version as package.json#packageManager.
-ARG BUN_VERSION=1.4.4
+ARG BUN_VERSION=1.4.5
 
 LABEL org.opencontainers.image.title="Shenron Complete" \
       org.opencontainers.image.description="All-in-one container for Dragon Ball FR (Site, Bot, Studio, DB, Redis, Nginx)" \

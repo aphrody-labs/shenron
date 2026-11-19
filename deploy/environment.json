@@ -29,8 +29,9 @@
   },
   "toolchain": {
     "rust": "1.100.0",
-    "bun": "1.4.4",
-    "bunLinuxSha256": "bf8ccbfb2b0b80159e0f9a6d15c55317add8077534dbc6130a3edb52fccb395c",
+    "bun": "1.4.5",
+    "bunLinuxSha256": "94559b3b528995a49452f9f2404cec74f2efd7d06e0a000a8cd214b02c3666eb",
+    "bunWindowsSha256": "815ab45ec7f549abf87e6869584b506eab088e24225683957b7e150b47d6de30",
     "sccache": "0.18.0",
     "baseImage": "ubuntu:26.10"
   },

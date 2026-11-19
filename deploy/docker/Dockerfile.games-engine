@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
 # Multi-stage Dockerfile for Dragon Ball Ultimate Games Manager & Engine
-# Runtime: Bun v1.4.4 + SteamCMD + Libretro
+# Runtime: Bun v1.4.5 + SteamCMD + Libretro
 
-FROM oven/bun:1.4.4-debian AS base
+FROM oven/bun:1.4.5-debian AS base
 
 # Install SteamCMD runtime prerequisites (i386 libc & libstdc++)
 RUN dpkg --add-architecture i386 && \

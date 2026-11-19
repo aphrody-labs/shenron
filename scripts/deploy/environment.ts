@@ -39,6 +39,7 @@ export type Definition = {
     rust: string;
     bun: string;
     bunLinuxSha256: string;
+    bunWindowsSha256: string;
     sccache: string;
     baseImage: string;
   };
@@ -162,6 +163,26 @@ export function driftProblems(root = ROOT, definition = loadDefinition(root)): s
     "Dockerfile.build BUN_LINUX_SHA256",
     arg(build, "BUN_LINUX_SHA256"),
     toolchain.bunLinuxSha256,
+  );
+  expect(
+    "Dockerfile.build BUN_WINDOWS_SHA256",
+    arg(build, "BUN_WINDOWS_SHA256"),
+    toolchain.bunWindowsSha256,
+  );
+  expect(
+    "deploy/docker/all-in-one/Dockerfile BUN_VERSION",
+    arg(read(root, "deploy/docker/all-in-one/Dockerfile"), "BUN_VERSION"),
+    toolchain.bun,
+  );
+  expect(
+    "deploy/docker/Dockerfile.games-engine bun image",
+    read(root, "deploy/docker/Dockerfile.games-engine").match(/^FROM oven\/bun:(\S+?)-debian\b/m)?.[1],
+    toolchain.bun,
+  );
+  expect(
+    "package.json#engines.bun",
+    JSON.parse(read(root, "package.json")).engines?.bun,
+    `>=${toolchain.bun}`,
   );
   expect("Dockerfile.build SCCACHE_VERSION", arg(build, "SCCACHE_VERSION"), toolchain.sccache);
   const factory = read(root, "deploy/docker/Dockerfile");
