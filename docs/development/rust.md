@@ -43,3 +43,15 @@ Essai sur trois éléments avant d'élargir. Quand la même erreur revient, on c
 - `just` 1.59.0 (dernière publication `casey/just`, 2026-10-15), version installée sur le poste.
 
 Règle du dépôt : `just` est la seule entrée humaine et agent ; une recette appelle soit `cargo xtask <tâche>` (logique de dépôt, déterministe, en Rust : `map`, `scripts`), soit un script Bun encore légitime. Un script sans recette, sans import et sans test est supprimé (`just scripts-orphans`). Suite prévue, dans l'ordre : générer `.github/workflows/*.yml` depuis `xtask` comme Zed, puis porter le contrôle de dérive des versions (`scripts/deploy/environment.ts`) et la publication de manifestes signés (`shenron-deployd publish`) derrière `cargo xtask`.
+
+## Chaîne de build du flux de déploiement (relevé du 2026-11-19)
+
+| Sujet | État lu | Source |
+| --- | --- | --- |
+| Scripts Rust (`cargo script`, RFC 3424) | instable : problème de suivi `rust-lang/cargo#12207` ouvert (dernière activité 2026-11-09) | `gh api` |
+| Tâches de dépôt en Rust | `cargo xtask` (`map`, `scripts`, `workflows`, `env-check`) | `crates/xtask` |
+| Profils Rust | `release` : LTO thin, 16 unités ; `production` : LTO fat, 1 unité, symboles retirés ; `production-abort` : `panic = "abort"` pour les exécutables autonomes, jamais pour `shenron-ffi` | `Cargo.toml` |
+| Bun stable 1.4.5 (`bun-v1.4.5`, révision `a7733435c`) | `--compile` avec `--bytecode`, `--bytecode-order`, `--compile-jit-policy` ; pas de `--aot` ni de `--trim` | `bun build --help` de la version publiée, sur fr1 |
+| Bun canary installé sur fr1 et prd (`1.4.5-canary.1+6db952080`) | ajoute `--aot`, `--trim`, `--trim-locales`, `--explain`, `--obfuscate` | `bun build --help` sur chaque hôte |
+
+Conséquence : `scripts/build/compile-mode.ts` choisit `--aot` seulement si le Bun qui compile l'annonce ; avec le Bun stable épinglé dans `deploy/environment.json` et `Dockerfile.build`, le mode effectif est `--bytecode`. Les hôtes compilent avec le canary, donc la version épinglée et la version réellement utilisée diffèrent : `cargo xtask env-check` compare la version, pas le canal.
