@@ -1,9 +1,5 @@
 {
   "mcpServers": {
-    "shenron": {
-      "type": "http",
-      "url": "https://dragonballfr.com/mcp",
-      "headers": { "Authorization": "Bearer ${SHENRON_MCP_TOKEN}" }
-    }
+    "shenron": { "type": "http", "url": "https://dragonballfr.com/mcp" }
   }
 }
