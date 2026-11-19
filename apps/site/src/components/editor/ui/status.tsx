@@ -31,7 +31,7 @@ export function StatusBar({
   right?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-white/10 bg-[#141416] px-3 py-2 text-[11px]">
+    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1 border-t border-white/10 bg-dbz-card px-3 py-2 text-[11px]">
       <span className="tabular-nums text-white/50">
         {words} mot{words > 1 ? "s" : ""} · {characters} signes ·{" "}
         {Math.max(1, Math.round(words / WORDS_PER_MINUTE))} min de lecture

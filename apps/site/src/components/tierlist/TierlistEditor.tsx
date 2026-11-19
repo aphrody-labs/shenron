@@ -284,7 +284,7 @@ export function TierlistEditor({
       title={it.label}
       className={`relative block h-14 w-14 shrink-0 cursor-grab overflow-hidden rounded-md border bg-white/5 transition-all active:cursor-grabbing sm:h-16 sm:w-16 ${
         selected === it.id
-          ? "border-[#ffd54f] ring-2 ring-[#ffd54f] scale-105"
+          ? "border-dbz-amber ring-2 ring-dbz-amber scale-105"
           : "border-white/10 hover:border-white/40"
       }`}
     >
@@ -312,7 +312,7 @@ export function TierlistEditor({
           maxLength={120}
           aria-label="Titre de ta tierlist"
           placeholder="Titre de ta tierlist"
-          className="rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm font-bold text-white outline-none focus:border-[#ffd54f]"
+          className="rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm font-bold text-white outline-none focus:border-dbz-amber"
         />
         <input
           value={description}
@@ -320,7 +320,7 @@ export function TierlistEditor({
           maxLength={200}
           aria-label="Description de la tierlist (optionnelle)"
           placeholder="Description (optionnelle)"
-          className="rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-white/80 outline-none focus:border-[#ffd54f]"
+          className="rounded-lg border border-white/15 bg-black/40 px-3 py-2 text-sm text-white/80 outline-none focus:border-dbz-amber"
         />
       </div>
 
@@ -339,7 +339,7 @@ export function TierlistEditor({
             onDragOver={(e) => e.preventDefault()}
             onDrop={(e) => onDrop(e, t.id)}
             className={`flex overflow-hidden rounded-lg border transition-colors ${
-              selected ? "cursor-pointer border-[#ffd54f]/40" : "border-white/10"
+              selected ? "cursor-pointer border-dbz-amber/40" : "border-white/10"
             }`}
           >
             <button
@@ -367,7 +367,7 @@ export function TierlistEditor({
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => onDrop(e, "pool")}
         className={`rounded-xl border bg-black/40 p-3 ${
-          selected ? "cursor-pointer border-[#ffd54f]/40" : "border-white/10"
+          selected ? "cursor-pointer border-dbz-amber/40" : "border-white/10"
         }`}
       >
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
@@ -389,7 +389,7 @@ export function TierlistEditor({
               e.stopPropagation();
               setAddOpen((v) => !v);
             }}
-            className="rounded-md border border-[#ffd54f]/40 px-2.5 py-1 text-[12px] font-bold text-[#ffd54f] hover:bg-[#ffd54f]/10"
+            className="rounded-md border border-dbz-amber/40 px-2.5 py-1 text-[12px] font-bold text-dbz-amber hover:bg-dbz-amber/10"
           >
             {addOpen ? "Fermer" : "+ Ajouter une image"}
           </button>
@@ -407,7 +407,7 @@ export function TierlistEditor({
               maxLength={60}
               aria-label="Nom de la nouvelle carte"
               placeholder="Nom de la carte (ex. Gogeta Blue)"
-              className="rounded-md border border-white/15 bg-black/50 px-2.5 py-1.5 text-sm text-white outline-none focus:border-[#ffd54f] sm:col-span-2"
+              className="rounded-md border border-white/15 bg-black/50 px-2.5 py-1.5 text-sm text-white outline-none focus:border-dbz-amber sm:col-span-2"
             />
             <div className="flex flex-wrap items-center gap-2">
               <input
@@ -419,7 +419,7 @@ export function TierlistEditor({
                   const f = e.target.files?.[0];
                   if (f) void onPickFile(f);
                 }}
-                className="max-w-[12rem] text-[12px] text-white/70 file:mr-2 file:rounded file:border-0 file:bg-[#ffd54f] file:px-2 file:py-1 file:text-[12px] file:font-bold file:text-black"
+                className="max-w-[12rem] text-[12px] text-white/70 file:mr-2 file:rounded file:border-0 file:bg-dbz-amber file:px-2 file:py-1 file:text-[12px] file:font-bold file:text-black"
               />
               {uploading && <span className="text-[12px] text-white/50">Upload…</span>}
             </div>
@@ -429,7 +429,7 @@ export function TierlistEditor({
                 onChange={(e) => setAddUrl(e.target.value)}
                 aria-label="URL de l'image de la carte"
                 placeholder="…ou colle une URL d'image"
-                className="min-w-0 flex-1 rounded-md border border-white/15 bg-black/50 px-2.5 py-1.5 text-sm text-white outline-none focus:border-[#ffd54f]"
+                className="min-w-0 flex-1 rounded-md border border-white/15 bg-black/50 px-2.5 py-1.5 text-sm text-white outline-none focus:border-dbz-amber"
               />
               <button
                 type="button"
@@ -462,7 +462,7 @@ export function TierlistEditor({
               onChange={(e) => setSearch(e.target.value)}
               aria-label="Rechercher une carte dans le vivier"
               placeholder="Rechercher une carte…"
-              className="w-full rounded-md border border-white/12 bg-black/50 px-2.5 py-1.5 text-sm text-white outline-none focus:border-[#ffd54f] sm:max-w-xs"
+              className="w-full rounded-md border border-white/12 bg-black/50 px-2.5 py-1.5 text-sm text-white outline-none focus:border-dbz-amber sm:max-w-xs"
             />
             {categories.length > 1 && (
               <div className="flex flex-wrap gap-1.5">
@@ -471,7 +471,7 @@ export function TierlistEditor({
                   onClick={() => setActiveCat(ALL)}
                   className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors ${
                     activeCat === ALL
-                      ? "border-[#ffd54f] bg-[#ffd54f]/15 text-[#ffd54f]"
+                      ? "border-dbz-amber bg-dbz-amber/15 text-dbz-amber"
                       : "border-white/12 text-white/55 hover:border-white/35"
                   }`}
                 >
@@ -484,7 +484,7 @@ export function TierlistEditor({
                     onClick={() => setActiveCat(c)}
                     className={`rounded-full border px-2.5 py-1 text-[11px] font-semibold transition-colors ${
                       activeCat === c
-                        ? "border-[#ffd54f] bg-[#ffd54f]/15 text-[#ffd54f]"
+                        ? "border-dbz-amber bg-dbz-amber/15 text-dbz-amber"
                         : "border-white/12 text-white/55 hover:border-white/35"
                     }`}
                   >
@@ -518,8 +518,8 @@ export function TierlistEditor({
 
       {/* Drapeaux de curation — admin uniquement. */}
       {isAdmin && (
-        <div className="flex flex-wrap items-center gap-4 rounded-lg border border-[#ffd54f]/25 bg-black/30 p-3">
-          <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-[#ffd54f]/80">
+        <div className="flex flex-wrap items-center gap-4 rounded-lg border border-dbz-amber/25 bg-black/30 p-3">
+          <span className="text-[11px] font-bold uppercase tracking-[0.14em] text-dbz-amber/80">
             Curation
           </span>
           <label className="flex cursor-pointer items-center gap-2 text-[13px] text-white/85">
@@ -527,7 +527,7 @@ export function TierlistEditor({
               type="checkbox"
               checked={official}
               onChange={(e) => setOfficial(e.target.checked)}
-              className="h-4 w-4 accent-[#ffd54f]"
+              className="h-4 w-4 accent-dbz-amber"
             />
             Officielle
           </label>
@@ -536,7 +536,7 @@ export function TierlistEditor({
               type="checkbox"
               checked={featured}
               onChange={(e) => setFeatured(e.target.checked)}
-              className="h-4 w-4 accent-[#ffd54f]"
+              className="h-4 w-4 accent-dbz-amber"
             />
             Mise en avant
           </label>
@@ -545,7 +545,7 @@ export function TierlistEditor({
               type="checkbox"
               checked={published}
               onChange={(e) => setPublished(e.target.checked)}
-              className="h-4 w-4 accent-[#ffd54f]"
+              className="h-4 w-4 accent-dbz-amber"
             />
             Publiée
           </label>
@@ -563,7 +563,7 @@ export function TierlistEditor({
           type="button"
           onClick={save}
           disabled={saving}
-          className="rounded-lg bg-[#ffd54f] px-5 py-2.5 text-sm font-bold text-black transition-opacity hover:opacity-90 disabled:opacity-50"
+          className="rounded-lg bg-dbz-amber px-5 py-2.5 text-sm font-bold text-black transition-opacity hover:opacity-90 disabled:opacity-50"
         >
           {saving
             ? "Enregistrement…"

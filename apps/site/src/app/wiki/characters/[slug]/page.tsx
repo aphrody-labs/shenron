@@ -2221,7 +2221,7 @@ export default async function CharacterPage({
                 </span>
               )}
               {character.originPlanet && (
-                <span className="toriyama-badge border-2 border-dbz-cyan bg-[#141416] px-3.5 py-1 text-xs font-black text-dbz-cyan">
+                <span className="toriyama-badge border-2 border-dbz-cyan bg-dbz-card px-3.5 py-1 text-xs font-black text-dbz-cyan">
                   <span>{character.originPlanet.name}</span>
                 </span>
               )}

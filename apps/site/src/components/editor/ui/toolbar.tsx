@@ -84,7 +84,7 @@ export function DesktopToolbar({
     ));
 
   return (
-    <div className="sticky top-0 z-20 hidden flex-wrap items-center gap-y-1 border-b border-white/10 bg-[#141416]/95 px-2 py-1.5 backdrop-blur md:flex">
+    <div className="sticky top-0 z-20 hidden flex-wrap items-center gap-y-1 border-b border-white/10 bg-dbz-card/95 px-2 py-1.5 backdrop-blur md:flex">
       <ToolGroup>{render(group(actions, "historique"))}</ToolGroup>
       <ToolGroup>{render(group(actions, "structure"))}</ToolGroup>
       <ToolGroup>{render(group(actions, "format"))}</ToolGroup>
@@ -143,7 +143,7 @@ export function MobileToolbar({
       // `fixed` + décalage clavier : la barre reste au contact du texte pendant
       // la frappe, là où le pouce l'attend.
       style={{ bottom: keyboardOffset }}
-      className="fixed inset-x-0 z-[110] flex items-center gap-1 border-t border-white/10 bg-[#141416]/98 px-2 py-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] backdrop-blur md:hidden"
+      className="fixed inset-x-0 z-[110] flex items-center gap-1 border-t border-white/10 bg-dbz-card/98 px-2 py-1.5 pb-[max(0.375rem,env(safe-area-inset-bottom))] backdrop-blur md:hidden"
     >
       <button
         type="button"
@@ -338,7 +338,7 @@ export function SelectionActions({
     .filter((a): a is EditorAction => Boolean(a));
 
   return (
-    <div className="flex items-center gap-0.5 rounded-xl border border-white/12 bg-[#141416]/98 p-1 shadow-2xl backdrop-blur">
+    <div className="flex items-center gap-0.5 rounded-xl border border-white/12 bg-dbz-card/98 p-1 shadow-2xl backdrop-blur">
       {list.map((a) => (
         <ToolButton
           key={a.id}

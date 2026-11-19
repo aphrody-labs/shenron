@@ -84,7 +84,7 @@ function canonEquivalent(zeni: number, prices: readonly CanonPrice[]) {
   return best ? { price: best, times: zeni / best.zeni } : null;
 }
 
-const surface = "rounded-xl border border-white/10 bg-[#151412]";
+const surface = "rounded-xl border border-white/10 bg-dbz-card";
 
 export function ShopGrid({ items, economy }: { items: ShopItem[]; economy: ShopEconomy | null }) {
   const [state, setState] = useState<Balance | null>(null);
@@ -557,7 +557,7 @@ export function ShopGrid({ items, economy }: { items: ShopItem[]; economy: ShopE
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Rechercher un article…"
-          className="h-10 rounded-xl border border-white/10 bg-[#151412] px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-dbz-yellow sm:w-64"
+          className="h-10 rounded-xl border border-white/10 bg-dbz-card px-4 text-sm text-white outline-none placeholder:text-white/30 focus:border-dbz-yellow sm:w-64"
         />
       </div>
       {visibleItems.length === 0 && <VieEmpty kind="shop" />}
@@ -584,7 +584,7 @@ export function ShopGrid({ items, economy }: { items: ShopItem[]; economy: ShopE
               return (
                 <article
                   key={it.key}
-                  className={`vie-glow group flex flex-col overflow-hidden rounded-xl border bg-[#151412] transition-colors hover:border-dbz-yellow ${
+                  className={`vie-glow group flex flex-col overflow-hidden rounded-xl border bg-dbz-card transition-colors hover:border-dbz-yellow ${
                     selected?.key === it.key ? "border-dbz-yellow/70" : "border-white/10"
                   }`}
                 >

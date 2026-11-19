@@ -62,7 +62,7 @@ export default async function AdminConcoursPage({
       )}
 
       {dossier && (
-        <section className="rounded-3xl border border-dbz-orange/30 bg-[#141311] p-5">
+        <section className="rounded-3xl border border-dbz-orange/30 bg-dbz-card p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-widest text-white/40">Dossier membre</p>

@@ -284,7 +284,11 @@ export default async function ToriyamaPage() {
               <img
                 src="/api/ext-image/upload/wikipedia/en/1/15/Akira_Toriyama_in_1982.jpg"
                 alt="Akira Toriyama (1982)"
+                width={176}
+                height={224}
                 loading="eager"
+                fetchPriority="high"
+                decoding="async"
                 className="h-56 w-44 rounded-lg object-cover sm:h-64 sm:w-52"
               />
               <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/60 to-transparent p-3 text-center">

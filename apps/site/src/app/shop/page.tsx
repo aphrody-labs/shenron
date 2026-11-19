@@ -24,7 +24,7 @@ export default async function ShopPage() {
   return (
     <div className="container mx-auto px-4 py-8 md:py-16">
       {items.length === 0 ? (
-        <div className="rounded-xl border border-white/10 bg-[#151412] p-12 text-center">
+        <div className="rounded-xl border border-white/10 bg-dbz-card p-12 text-center">
           <h1 className="font-saiyan text-4xl text-white">Boutique Shenron</h1>
           <p className="mt-3 font-saiyan text-2xl uppercase text-dbz-orange">
             La boutique est fermée pour maintenance.

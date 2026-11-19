@@ -435,7 +435,7 @@ export function ShenronEditor({
     >
       {/* ---- Onglets de vue ------------------------------------------- */}
       {availableModes.length > 1 && (
-        <div className="flex items-center gap-1 border-b border-white/10 bg-[#141416] px-2 py-1.5">
+        <div className="flex items-center gap-1 border-b border-white/10 bg-dbz-card px-2 py-1.5">
           {availableModes.map((m) => (
             <button
               key={m}

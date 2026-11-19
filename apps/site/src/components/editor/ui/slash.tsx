@@ -157,7 +157,7 @@ export function SlashMenu({
       role="listbox"
       aria-label="Insérer un bloc"
       style={style}
-      className="fixed z-[130] overflow-y-auto overscroll-contain rounded-xl border border-white/12 bg-[#141416]/98 p-1.5 shadow-2xl backdrop-blur"
+      className="fixed z-[130] overflow-y-auto overscroll-contain rounded-xl border border-white/12 bg-dbz-card/98 p-1.5 shadow-2xl backdrop-blur"
     >
       {state.items.map((item, i) => {
         const header = GROUP_LABEL[item.group] !== lastGroup ? GROUP_LABEL[item.group] : null;

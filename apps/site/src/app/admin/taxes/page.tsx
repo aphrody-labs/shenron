@@ -122,7 +122,7 @@ export default function AdminUrsafPage() {
       )}
 
       {/* ── Inflation ─────────────────────────────────────────────── */}
-      <section className="rounded-xl border border-white/10 bg-[#151412] p-5">
+      <section className="rounded-xl border border-white/10 bg-dbz-card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-saiyan text-xl text-white">Indice des prix</h2>
           <button
@@ -178,7 +178,7 @@ export default function AdminUrsafPage() {
       </section>
 
       {/* ── Rattrapage des signalements ───────────────────────────── */}
-      <section className="rounded-xl border border-white/10 bg-[#151412] p-5">
+      <section className="rounded-xl border border-white/10 bg-dbz-card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="font-saiyan text-xl text-white">Rattrapage des signalements</h2>
@@ -226,7 +226,7 @@ export default function AdminUrsafPage() {
       </section>
 
       {/* ── Simulation ────────────────────────────────────────────── */}
-      <section className="rounded-xl border border-white/10 bg-[#151412] p-5">
+      <section className="rounded-xl border border-white/10 bg-dbz-card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-saiyan text-xl text-white">Simulation des avis</h2>
           <div className="flex gap-2">
@@ -325,7 +325,7 @@ export default function AdminUrsafPage() {
       </section>
 
       {/* ── Avis émis ─────────────────────────────────────────────── */}
-      <section className="rounded-xl border border-white/10 bg-[#151412] p-5">
+      <section className="rounded-xl border border-white/10 bg-dbz-card p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-saiyan text-xl text-white">Avis d&apos;imposition</h2>
           <select

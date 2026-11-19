@@ -264,7 +264,7 @@ export default async function ProfilePage({
         {siteActivity && <SiteActivity activity={siteActivity} />}
         {ledger && <MemberLedger data={ledger} />}
         <div className="mt-6 grid gap-6 lg:grid-cols-[.8fr_1.2fr]">
-          <section className="rounded-2xl border border-white/10 bg-[#141311] p-5 md:p-7">
+          <section className="rounded-2xl border border-white/10 bg-dbz-card p-5 md:p-7">
             <h2 className="font-saiyan text-2xl text-dbz-orange">
               <T k="profile.gearTitle" />
             </h2>
@@ -288,7 +288,7 @@ export default async function ProfilePage({
             </dl>
           </section>
           <div className="space-y-6">
-            <section className="rounded-2xl border border-white/10 bg-[#141311] p-5 md:p-7">
+            <section className="rounded-2xl border border-white/10 bg-dbz-card p-5 md:p-7">
               <div className="flex items-end justify-between gap-4">
                 <div>
                   <h2 className="font-saiyan text-2xl text-dbz-orange">
@@ -324,7 +324,7 @@ export default async function ProfilePage({
                 </p>
               )}
             </section>
-            <section className="rounded-2xl border border-white/10 bg-[#141311] p-5 md:p-7">
+            <section className="rounded-2xl border border-white/10 bg-dbz-card p-5 md:p-7">
               <h2 className="font-saiyan text-2xl text-dbz-orange">
                 <T k="profile.achievementsTitle" />
               </h2>
@@ -422,7 +422,7 @@ function SiteActivity({ activity }: { activity: PublicActivity }) {
   return (
     <section
       aria-labelledby="site-activity-title"
-      className="mt-8 rounded-3xl border border-white/10 bg-[#141311] p-5 md:p-7"
+      className="mt-8 rounded-3xl border border-white/10 bg-dbz-card p-5 md:p-7"
     >
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
