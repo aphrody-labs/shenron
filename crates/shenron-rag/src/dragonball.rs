@@ -55,10 +55,6 @@ fn get(env: EnvLookup<'_>, name: &str) -> Option<String> {
     env(name).map(|v| v.trim().to_owned()).filter(|v| !v.is_empty())
 }
 
-// ---------------------------------------------------------------------------
-// Paths
-// ---------------------------------------------------------------------------
-
 /// Shenron home: `SHENRON_HOME`, else `~/.shenron`.
 #[must_use]
 pub fn shenron_home_with(env: EnvLookup<'_>) -> PathBuf {
@@ -106,10 +102,6 @@ pub fn corpus_path_with(env: EnvLookup<'_>) -> PathBuf {
     get(env, "SHENRON_DRAGONBALL_CORPUS")
         .map_or_else(|| dataset_dir_with(env).join("corpus"), PathBuf::from)
 }
-
-// ---------------------------------------------------------------------------
-// Local chat endpoint (SHENRON_AI_* contract)
-// ---------------------------------------------------------------------------
 
 /// A resolved OpenAI-compatible chat endpoint.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -183,10 +175,6 @@ pub fn resolve_chat_with(env: EnvLookup<'_>) -> Option<ChatEndpoint> {
         source: source.to_owned(),
     })
 }
-
-// ---------------------------------------------------------------------------
-// Persona (single bot)
-// ---------------------------------------------------------------------------
 
 /// The persona of the single Dragon Ball bot.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -301,10 +289,6 @@ pub fn set_user_persona_with(env: EnvLookup<'_>, name: &str) -> std::io::Result<
     std::fs::write(&path, body)?;
     Ok(persona)
 }
-
-// ---------------------------------------------------------------------------
-// Naive local index
-// ---------------------------------------------------------------------------
 
 /// Filters accepted by [`LocalCorpus::search`].
 #[derive(Debug, Clone, Default, Deserialize)]

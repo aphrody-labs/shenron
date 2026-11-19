@@ -83,10 +83,6 @@ const A2A_TARGETS: [&str; 9] = [
     "broadcast",
 ];
 
-// ---------------------------------------------------------------------------
-// Endpoints and HTTP
-// ---------------------------------------------------------------------------
-
 fn url_env(name: &str, fallback: &str) -> String {
     process_env(name).unwrap_or_else(|| fallback.to_owned()).trim_end_matches('/').to_owned()
 }
@@ -220,10 +216,6 @@ fn admin_token_with(
     )
 }
 
-// ---------------------------------------------------------------------------
-// Results
-// ---------------------------------------------------------------------------
-
 /// Prefix site-relative `url`/`href` string values with the site origin.
 pub(crate) fn absolutize(value: Value, site: &str) -> Value {
     match value {
@@ -278,10 +270,6 @@ pub(crate) fn done(result: Result<Value, String>) -> CallToolResult {
 fn s<T: ToString>(value: Option<T>) -> Option<String> {
     value.map(|v| v.to_string())
 }
-
-// ---------------------------------------------------------------------------
-// Local RAG
-// ---------------------------------------------------------------------------
 
 fn local_corpus() -> &'static LocalCorpus {
     static CORPUS: OnceLock<LocalCorpus> = OnceLock::new();
@@ -468,10 +456,6 @@ pub(crate) async fn data_coverage() -> CallToolResult {
     done(api_get("/api/public/data/coverage", vec![]).await)
 }
 
-// ---------------------------------------------------------------------------
-// Wiki
-// ---------------------------------------------------------------------------
-
 fn check_category(category: &str) -> Result<(), String> {
     if WIKI_CATEGORIES.contains(&category) {
         Ok(())
@@ -618,10 +602,6 @@ pub(crate) async fn wiki_get(r: WikiGetRequest) -> CallToolResult {
 pub(crate) async fn wiki_categories() -> CallToolResult {
     done(api_get("/api/public/wiki/categories", vec![]).await)
 }
-
-// ---------------------------------------------------------------------------
-// Manga
-// ---------------------------------------------------------------------------
 
 /// A manga volume: a bare number `13` becomes `vol13`; anything else passes.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
@@ -862,10 +842,6 @@ fn drop_french_timeline_names(response: &mut Value) {
     }
 }
 
-// ---------------------------------------------------------------------------
-// Bot
-// ---------------------------------------------------------------------------
-
 pub(crate) async fn bot_stats() -> CallToolResult {
     done(api_get("/api/public/stats", vec![]).await)
 }
@@ -928,10 +904,6 @@ pub(crate) async fn bot_commands() -> CallToolResult {
 pub(crate) async fn news(r: LimitRequest) -> CallToolResult {
     done(api_get("/api/public/news", vec![("limit", s(r.limit.map(|l| l.clamp(1, 50))))]).await)
 }
-
-// ---------------------------------------------------------------------------
-// Databooks
-// ---------------------------------------------------------------------------
 
 /// Input of `dragonball.databooks_search`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
@@ -1146,10 +1118,6 @@ pub(crate) async fn databooks_scanlate(r: DatabooksScanlateRequest) -> CallToolR
     }
 }
 
-// ---------------------------------------------------------------------------
-// Canon
-// ---------------------------------------------------------------------------
-
 /// Input of `dragonball.canon_check`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct CanonCheckRequest {
@@ -1189,10 +1157,6 @@ pub(crate) async fn canon_references(r: CanonReferencesRequest) -> CallToolResul
     ];
     done(site_get("/api/canon/references", query).await)
 }
-
-// ---------------------------------------------------------------------------
-// A2A (the task registry stays on the Shenron site, `/api/a2a`)
-// ---------------------------------------------------------------------------
 
 /// Bearer sent to the site's `/api/a2a`: `SHENRON_A2A_TOKEN`, else the site admin token.
 fn a2a_token() -> Option<String> {
@@ -1386,10 +1350,6 @@ pub(crate) fn agent_card() -> Value {
         ]
     })
 }
-
-// ---------------------------------------------------------------------------
-// Admin (explicit surface, never a generic method/path proxy)
-// ---------------------------------------------------------------------------
 
 /// One validated transcription for `dragonball.admin_databooks_deposit`.
 #[derive(Debug, Clone, Deserialize, serde::Serialize, JsonSchema)]

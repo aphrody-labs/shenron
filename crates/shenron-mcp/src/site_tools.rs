@@ -83,10 +83,6 @@ fn opt<T: ToString>(value: Option<T>) -> Option<String> {
     value.map(|v| v.to_string())
 }
 
-// ---------------------------------------------------------------------------
-// Public reads
-// ---------------------------------------------------------------------------
-
 /// Input of `dragonball.search`.
 #[derive(Debug, Clone, Deserialize, JsonSchema)]
 pub(crate) struct SearchRequest {
@@ -274,10 +270,6 @@ pub(crate) async fn manga_volume(r: IdRequest) -> CallToolResult {
     }
     done(site_get(&format!("/api/manga/volume/{}", r.id), vec![]).await)
 }
-
-// ---------------------------------------------------------------------------
-// Databooks: writes and review (site bearer token)
-// ---------------------------------------------------------------------------
 
 /// One plate of a databook record.
 #[derive(Debug, Clone, Deserialize, Serialize, JsonSchema)]
@@ -477,10 +469,6 @@ pub(crate) async fn databook_ocr_review(r: OcrReviewRequest) -> CallToolResult {
     .await
 }
 
-// ---------------------------------------------------------------------------
-// Site configuration and reports (site bearer token)
-// ---------------------------------------------------------------------------
-
 /// The editable site configuration documents.
 #[derive(Debug, Clone, Copy, Deserialize, JsonSchema)]
 pub(crate) enum ConfigName {
@@ -594,10 +582,6 @@ pub(crate) async fn reports_update(r: ReportsUpdateRequest) -> CallToolResult {
     }
     send(reqwest::Method::PATCH, "/api/admin/reports", vec![], Some(body), Auth::Site).await
 }
-
-// ---------------------------------------------------------------------------
-// Agent API (`/api/agent/v1/*`, agent key with scopes)
-// ---------------------------------------------------------------------------
 
 pub(crate) async fn agent_whoami() -> CallToolResult {
     send(reqwest::Method::GET, "/api/agent/v1/whoami", vec![], None, Auth::Agent).await

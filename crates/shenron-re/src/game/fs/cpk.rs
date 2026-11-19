@@ -311,10 +311,6 @@ impl CpkArchive {
     }
 }
 
-// -------------------------------------------------------------
-// Minimal CRIWARE @UTF Table Parser & Serializer
-// -------------------------------------------------------------
-
 #[derive(Debug, Clone)]
 struct UtfParsedTable {
     rows: Vec<HashMap<String, String>>,

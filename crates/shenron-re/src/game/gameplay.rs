@@ -286,8 +286,6 @@ fn endian_of(file: &mut File<'_>) -> &'static str {
     if little { "<" } else { ">" }
 }
 
-// ----------------------------------------------------------------------------------- EMM ----
-
 const EMM_HEADER: &[&str] = &["endianess_check", "u_06", "num_entries", "material_base_address"];
 const EMM_MATERIAL: &[&str] = &["name", "shader_name", "param_count", "u_42"];
 
@@ -326,8 +324,6 @@ fn emm(data: &[u8], filename: &str) -> Load<Loaded> {
         ("materials", Value::Array(materials)),
     ])))
 }
-
-// ----------------------------------------------------------------------------------- ESK ----
 
 const ESK_HEADER: &[&str] = &[
     "bone_count",
@@ -380,8 +376,6 @@ fn esk(data: &[u8]) -> Load<Loaded> {
     let (header, _) = esk_read(&mut file)?;
     Ok(Loaded::Json(header.json()))
 }
-
-// ----------------------------------------------------------------------------------- EAN ----
 
 const EAN_HEADER: &[&str] = &[
     "endianess_check",
@@ -453,8 +447,6 @@ fn ean(data: &[u8]) -> Load<Loaded> {
     }
     Ok(Loaded::Json(header.json()))
 }
-
-// ----------------------------------------------------------------------------------- BDM ----
 
 const BDM_HEADER: &[&str] = &["endianess_check", "u_06", "num_entries", "data_start"];
 const BDM_TYPE0: &str = "HHHHfHHHHHHHHHHHHHHffHHHHHHffffHHHHHHHHHHHHHHhHhhHHHHff";
@@ -627,8 +619,6 @@ fn bdm(data: &[u8], filename: &str) -> Load<Loaded> {
     ])))
 }
 
-// ----------------------------------------------------------------------------------- BCM ----
-
 const BCM_HEADER: &[&str] = &["endianess_check", "u_06", "num_entries", "data_start"];
 const BCM_ENTRY: &[&str] = &[
     "address",
@@ -692,8 +682,6 @@ fn bcm(data: &[u8], filename: &str) -> Load<Loaded> {
         ("filename", Value::from(filename)),
     ])))
 }
-
-// ----------------------------------------------------------------------------------- BSA ----
 
 const BSA_HEADER: &[&str] =
     &["endianess_check", "header_size", "i_08", "i_12", "i_16", "num_entries", "data_start"];
@@ -796,8 +784,6 @@ fn bsa(data: &[u8], filename: &str) -> Load<Loaded> {
         ("filename", Value::from(filename)),
     ])))
 }
-
-// ----------------------------------------------------------------------------------- BAC ----
 
 const BAC_HEADER: &[&str] = &[
     "endianess_check",
@@ -919,8 +905,6 @@ fn bac(data: &[u8], filename: &str) -> Load<Loaded> {
         ("filename", Value::from(filename)),
     ])))
 }
-
-// ----------------------------------------------------------------------------------- BCS ----
 
 const BCS_HEADER: &[&str] = &[
     "endianess_check",

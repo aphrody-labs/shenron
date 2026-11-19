@@ -256,10 +256,6 @@ pub(crate) enum ShenronAuthAction {
     },
 }
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
 /// Locate the sibling `shenron` checkout.
 pub(crate) fn locate_shenron() -> Option<PathBuf> {
     if let Ok(explicit) = std::env::var("SHENRON_ROOT") {
@@ -318,10 +314,6 @@ pub fn locate_home_shenron() -> PathBuf {
     }
     PathBuf::from("home/shenron")
 }
-
-// ---------------------------------------------------------------------------
-// Action Handlers
-// ---------------------------------------------------------------------------
 
 pub(crate) async fn run(action: ShenronAction) -> miette::Result<()> {
     match action {

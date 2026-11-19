@@ -247,10 +247,6 @@ fn parse_bluntness(s: &str) -> Bluntness {
     }
 }
 
-// ---------------------------------------------------------------------------
-// Anti-pattern lints (the "push past openclaw" guarantee from the plan §3).
-// ---------------------------------------------------------------------------
-
 /// Upper bound on the residual body (chars). A soul that needs more than this
 /// is almost certainly a life-story / policy dump, not a persona.
 const MAX_SOUL_BODY_CHARS: usize = 4_000;

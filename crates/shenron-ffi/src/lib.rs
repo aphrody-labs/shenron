@@ -278,8 +278,6 @@ mod native {
         string_to_c(json)
     }
 
-    // --- Operations: one implementation each, run blocking (ABI 1) or as a job (ABI 2). ---
-
     /// Mode reported by the local corpus search (`shenron_rag::LocalCorpus::search_json`).
     const LOCAL_MODE: &str = "shenron_local_naive";
 
@@ -415,8 +413,6 @@ mod native {
             rustc: env!("SHENRON_FFI_RUSTC").to_owned(),
         }
     }
-
-    // --- ABI 1 ---
 
     /// Returns the Shenron ABI revision.
     #[unsafe(no_mangle)]
@@ -660,8 +656,6 @@ mod native {
         })
     }
 
-    // --- ABI 2 ---
-
     /// Identity of the library: `BuildInfo` JSON (version, ABI, target, profile, features,
     /// compiler). Free with `shenron_string_free`.
     #[unsafe(no_mangle)]
@@ -865,8 +859,6 @@ mod native {
         }))
     }
 
-    // --- ABI 3: persistent chat memory ---
-
     /// Run one memory operation on the shared runtime: `JobOutcome<T>` JSON (an internal job,
     /// so the envelope, panic capture and status codes are those of the `*_job` exports).
     fn memory_call<T: Serialize, F: std::future::Future<Output = Result<T, String>>>(
@@ -965,8 +957,6 @@ mod native {
             Ok(async move { crate::memory::clear(&provider, &agent).await })
         })
     }
-
-    // --- ABI 4: local chat models ---
 
     /// Provision the chat model files of `request_json` (`{modelsDir, catalog?, model?, lora?,
     /// force?}`, each file `{spec, sha256?, scale?}`) as job `job`: `JobOutcome<LlamaProvisioned>`

@@ -184,9 +184,6 @@ fn make_game(
 /// Returns the comprehensive structured registry of Dragon Ball games.
 pub fn get_dragon_ball_catalog() -> Vec<DragonBallGame> {
     vec![
-        // ==========================================
-        // STEAM (PC) TITLES
-        // ==========================================
         make_game(
             "dbxv",
             "Dragon Ball Xenoverse",
@@ -439,9 +436,6 @@ pub fn get_dragon_ball_catalog() -> Vec<DragonBallGame> {
             Some("First 4v4 team-oriented MOBA title in the franchise, cross-platform PC and Mobile."),
         ),
 
-        // ==========================================
-        // ANDROID MOBILE TITLES
-        // ==========================================
         make_game(
             "dblegends",
             "Dragon Ball Legends",

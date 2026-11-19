@@ -218,8 +218,6 @@ pub fn call_vec(op: &str, params: &str, a: &[u8], b: &[u8]) -> Result<Vec<u8>, S
     (handler.2)(&params, a, b)
 }
 
-// ---------------------------------------------------------------- vector helpers
-
 fn usize_of(p: &Value, key: &str) -> Result<usize, String> {
     p.get(key)
         .and_then(Value::as_u64)
@@ -298,8 +296,6 @@ fn put_hits(hits: &[(usize, f32)]) -> Vec<u8> {
     out
 }
 
-// ---------------------------------------------------------------- json helpers
-
 fn parse<T: DeserializeOwned>(v: Value) -> Result<T, String> {
     serde_json::from_value(v).map_err(|e| format!("invalid input: {e}"))
 }
@@ -333,8 +329,6 @@ fn hex(bytes: &[u8]) -> String {
         s
     })
 }
-
-// ---------------------------------------------------------------- chunking and text
 
 #[derive(Deserialize, Default)]
 #[serde(deny_unknown_fields)]
@@ -478,8 +472,6 @@ const fn yes() -> bool {
 const fn rrf_k() -> f64 {
     60.0
 }
-
-// ---------------------------------------------------------------- fusion
 
 fn op_rrf(v: Value) -> Result<Value, String> {
     #[derive(Deserialize)]
@@ -654,8 +646,6 @@ fn op_merge_top_k(v: Value) -> Result<Value, String> {
         .collect();
     out(&merged)
 }
-
-// ---------------------------------------------------------------- eval
 
 fn op_eval_parse_gold(v: Value) -> Result<Value, String> {
     #[derive(Deserialize)]
