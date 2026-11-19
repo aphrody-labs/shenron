@@ -206,7 +206,7 @@ ts = ["scripts"]
 rust = "crates/shenron-cli"
 state = "ts"
 ts_lines = 75837
-note = "build, deploy, ops and data scripts -> shenron subcommands."
+note = "build, deploy, ops and data scripts -> shenron subcommands; scripts/deploy -> crates/shenron-deployd (ADR 0009 step 1)."
 
 [[unit]]
 name = "cloudflare"

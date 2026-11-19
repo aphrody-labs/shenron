@@ -313,6 +313,12 @@ deploy-check:
     bun scripts/ops/verify-player-deployment-gate.ts --episode 875
     bun scripts/ops/verify-player-deployment-gate.ts --episode 1
 
+# shenron-deployd gates (standalone crate, run on the builder fr1, never on the workstation)
+[group('deploy')]
+deployd-check:
+    cd crates/shenron-deployd && cargo clippy --all-targets -- -D warnings
+    cd crates/shenron-deployd && cargo test
+
 # Dragon Ball FighterZ: full dump, asset conversion, Zstd compression, and R2 CDN sync
 [group('games')]
 dbfz-pipeline *args="":
