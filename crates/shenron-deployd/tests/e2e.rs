@@ -401,3 +401,88 @@ async fn tar_gz_artifacts_are_unpacked() {
     assert_eq!(std::fs::read_to_string(env.root.join("current").join(SVC).join("sub").join("file.txt")).unwrap(), "hello");
     assert!(!env.root.join("current").join(SVC).join("bundle.tar.gz").exists());
 }
+
+/// A store that accepts PUT with a bearer token and serves GET: the `http` backend end to end.
+#[tokio::test]
+async fn http_store_publishes_with_a_bearer_token_and_the_agent_deploys_from_it() {
+    use axum::body::Bytes;
+    use axum::routing::put;
+
+    #[derive(Clone)]
+    struct Shared {
+        dir: Arc<PathBuf>,
+        token: &'static str,
+    }
+    async fn put_object(State(s): State<Shared>, uri: Uri, headers: HeaderMap, body: Bytes) -> StatusCode {
+        let ok = headers.get(header::AUTHORIZATION).and_then(|v| v.to_str().ok()) == Some(&format!("Bearer {}", s.token));
+        if !ok {
+            return StatusCode::UNAUTHORIZED;
+        }
+        let path = s.dir.join(uri.path().trim_start_matches('/'));
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+        std::fs::write(path, body).unwrap();
+        StatusCode::OK
+    }
+    async fn get_object(State(s): State<Shared>, uri: Uri) -> Response {
+        match std::fs::read(s.dir.join(uri.path().trim_start_matches('/'))) {
+            Ok(b) => b.into_response(),
+            Err(_) => StatusCode::NOT_FOUND.into_response(),
+        }
+    }
+
+    let env = Env::new().await;
+    let dir = Arc::new(env.work.join("http-store"));
+    let shared = Shared { dir: dir.clone(), token: "s3cret-token" };
+    let addr = serve(Router::new().fallback_service(put(put_object).get(get_object).with_state(shared))).await;
+    let url = format!("http://{addr}/deploy");
+    let cfg = |token: Option<&str>| StoreConfig {
+        kind: StoreKind::Http,
+        url: Some(url.clone()),
+        path: None,
+        public_url: None,
+        prefix: String::new(),
+        bucket: None,
+        region: None,
+        access_key: None,
+        secret_key: None,
+        token: token.map(str::to_owned),
+    };
+
+    let bin = env.work.join("bin").join(SVC);
+    std::fs::create_dir_all(bin.parent().unwrap()).unwrap();
+    std::fs::write(&bin, b"binary over http").unwrap();
+    let marker = env.work.join("bin").join("healthy");
+    std::fs::write(&marker, b"ok").unwrap();
+    let opts = |_: ()| PublishOptions {
+        service: SVC.into(),
+        channel: "stable".into(),
+        version: "v1".into(),
+        artifacts: vec![bin.clone(), marker.clone()],
+        health: Some(Health { url: env.health_url.clone(), expect_status: 200, retries: 2, interval_ms: 10, timeout_ms: 500 }),
+    };
+
+    let denied = publish(&Store::new(&cfg(None)).unwrap(), &env.key, opts(())).await.unwrap_err();
+    assert!(format!("{denied:#}").contains("401"), "{denied:#}");
+    publish(&Store::new(&cfg(Some("s3cret-token"))).unwrap(), &env.key, opts(())).await.unwrap();
+    assert!(dir.join("deploy").join(SVC).join("channels").join("stable").join("manifest.json.sig").is_file());
+
+    let agent_cfg = Config::parse(&format!(
+        r#"
+        root = "{root}"
+        [store]
+        kind = "http"
+        url = "{url}"
+        [trust]
+        public_keys = ["{pk}"]
+        [[service]]
+        name = "{SVC}"
+        restart = "none"
+        "#,
+        root = env.root.display(),
+        pk = manifest::encode_key(&env.key.verifying_key().to_bytes()),
+    ))
+    .unwrap();
+    let agent = Agent::new(agent_cfg).await.unwrap();
+    assert!(matches!(agent.check(SVC, false).await.unwrap(), Outcome::Deployed { .. }));
+    assert_eq!(std::fs::read_to_string(env.root.join("current").join(SVC).join(SVC)).unwrap(), "binary over http");
+}

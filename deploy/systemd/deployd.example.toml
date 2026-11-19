@@ -1,0 +1,27 @@
+# SPDX-License-Identifier: Apache-2.0
+# shenron-deployd agent configuration. Every value may use ${VAR} or ${VAR:-default} from the environment.
+# Secrets (S3 keys, store token, signing key) come from the environment or *_FILE variables, never from here.
+
+root = "${SHENRON_DEPLOYD_ROOT}"        # releases/<service>/<version>, current/<service>, state/
+poll_interval = "30s"                    # conditional GET (ETag) of each channel manifest
+
+[store]
+kind = "http"                            # http | s3 | dir
+url = "${SHENRON_DEPLOYD_STORE_URL}"     # base URL the manifests and artifacts are served from
+# s3: url = endpoint, bucket = "...", region = "..."; keys in SHENRON_DEPLOYD_S3_ACCESS_KEY / _SECRET_KEY
+# prefix = ""                            # key prefix inside the store
+
+[trust]
+# Pinned ed25519 public keys (base64). Two entries allow a key rotation without a flag day.
+public_key_files = ["${SHENRON_DEPLOYD_PUBLIC_KEY_FILE}"]
+
+# Optional mTLS API: status, check, rollback, deploy. Clients must present a certificate signed by client_ca.
+# [api]
+# listen = "${SHENRON_DEPLOYD_API_LISTEN}"
+# cert = "..."
+# key = "..."
+# client_ca = "..."
+
+# Derived defaults: unit = "<name>.service", channel = "stable", keep = 3, restart = "auto" (D-Bus, then systemctl).
+[[service]]
+name = "${SHENRON_DEPLOYD_SERVICE}"

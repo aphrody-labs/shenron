@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: Apache-2.0
+# shenron-deployd agent (ADR 0009, step 1). Template: replace the @...@ placeholders at install time
+# (docs/runbooks/deployd.md). DynamicUser stays off on purpose: the agent owns the release root.
+[Unit]
+Description=Shenron deployd agent (signed releases, no SSH)
+Documentation=https://github.com/aphrody-labs/shenron/blob/main/docs/runbooks/deployd.md
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=@USER@
+Group=@USER@
+Environment=SHENRON_DEPLOYD_CONFIG=@CONFIG@
+EnvironmentFile=-@ENVFILE@
+ExecStart=@BIN@ agent
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+# Writes only under the release root (releases, current links, state).
+ProtectSystem=strict
+ReadWritePaths=@ROOT@
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+NoNewPrivileges=yes
+ProtectProc=invisible
+ProcSubset=pid
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectControlGroups=yes
+ProtectClock=yes
+ProtectHostname=yes
+RestrictNamespaces=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+SystemCallArchitectures=native
+SystemCallFilter=@system-service
+SystemCallFilter=~@privileged @resources
+CapabilityBoundingSet=
+AmbientCapabilities=
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

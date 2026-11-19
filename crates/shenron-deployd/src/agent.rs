@@ -112,6 +112,9 @@ impl Agent {
             tasks.push(tokio::spawn(async move {
                 loop {
                     match agent.check(&rt.cfg.name, false).await {
+                        Ok(Outcome::NoChange { .. } | Outcome::Skipped { .. }) => {
+                            tracing::debug!(service = %rt.cfg.name, "check done: nothing to deploy");
+                        }
                         Ok(outcome) => tracing::info!(service = %rt.cfg.name, ?outcome, "check done"),
                         Err(e) => tracing::warn!(service = %rt.cfg.name, error = %format!("{e:#}"), "check failed"),
                     }
