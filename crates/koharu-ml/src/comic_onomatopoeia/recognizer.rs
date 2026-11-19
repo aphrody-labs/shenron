@@ -36,7 +36,7 @@ impl ComicOnomatopoeiaRecognizer {
     pub fn load_from_path(device: crate::Device, path: impl AsRef<Path>) -> Result<Self> {
         let device: Device = device.try_into_device()?;
         let config = Config::default();
-        let processor = Processor::new(include_str!("character_set.txt"), &config)?;
+        let processor = Processor::new(include_str!("recognizer/character_set.txt"), &config)?;
         let mut model = Model::new(&config, device);
         model
             .load(path.as_ref())
