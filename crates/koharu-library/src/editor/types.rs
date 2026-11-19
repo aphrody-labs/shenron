@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
 //! Values the editor publishes and accepts. Their Rust shapes are the frontend contract:
-//! `koharu-app` exports them through Specta into `packages/koharu/src/protocol.ts`.
+//! `packages/koharu/src/protocol.ts` mirrors them for the frontend.
 
 use std::fmt;
 

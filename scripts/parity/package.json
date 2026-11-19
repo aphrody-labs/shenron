@@ -1,0 +1,20 @@
+{
+  "name": "@aphrody/shenron-parity",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pixel-parity and frame-time harness: web gallery of packages/ui against the GPUI gallery.",
+  "type": "module",
+  "scripts": {
+    "gallery": "bun web/serve.ts",
+    "capture": "bun web/capture.ts",
+    "diff": "bun diff.ts",
+    "fps": "bun fps.ts"
+  },
+  "dependencies": {
+    "pixelmatch": "8.0.0",
+    "pngjs": "7.0.0"
+  },
+  "devDependencies": {
+    "@types/pngjs": "6.0.5"
+  }
+}

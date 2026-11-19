@@ -109,6 +109,9 @@ pub struct Projectile {
     pub color: [f32; 4],
     pub source_is_player: bool,
     pub duration: f32,
+    /// A beam crosses its target for several ticks and must hurt it once.
+    #[serde(default)]
+    pub has_hit: bool,
 }
 
 /// Particule d'impact ou éclat d'énergie.
@@ -474,6 +477,7 @@ impl DragonPixelEngineCore {
                     color: [0.0, 0.75, 1.0, 1.0],
                     source_is_player: true,
                     duration: 2.0,
+                    has_hit: false,
                 });
             } else if current_move == MoveKind::BeamSpecial
                 && p.frame_in_move == mdata.startup_frames
@@ -491,6 +495,7 @@ impl DragonPixelEngineCore {
                     color: p.get_current_aura(&self.player_def).1,
                     source_is_player: true,
                     duration: 0.8,
+                    has_hit: false,
                 });
                 self.trauma = (self.trauma + 0.5).min(1.0);
             }
@@ -618,6 +623,7 @@ impl DragonPixelEngineCore {
                     color: [0.95, 0.15, 0.25, 1.0],
                     source_is_player: false,
                     duration: 0.8,
+                    has_hit: false,
                 });
             }
 
@@ -700,7 +706,7 @@ impl DragonPixelEngineCore {
 
         // Résolution des tirs normaux contre les combattants
         let mut surviving = Vec::new();
-        for proj in self.projectiles.drain(..) {
+        for mut proj in self.projectiles.drain(..) {
             if proj.duration <= 0.0 || proj.x < 0.0 || proj.x > 960.0 {
                 continue;
             }
@@ -717,7 +723,8 @@ impl DragonPixelEngineCore {
                     proj.height,
                 );
 
-                if p_rect.intersects(&w_hurt) {
+                if !proj.has_hit && p_rect.intersects(&w_hurt) {
+                    proj.has_hit = proj.is_beam;
                     let is_blocking = self.enemy.is_guarding;
                     let dmg = if is_blocking { proj.chip_damage } else { proj.damage };
                     self.enemy.hp = (self.enemy.hp - dmg).max(0.0);
@@ -743,7 +750,8 @@ impl DragonPixelEngineCore {
                     proj.height,
                 );
 
-                if p_rect.intersects(&w_hurt) {
+                if !proj.has_hit && p_rect.intersects(&w_hurt) {
+                    proj.has_hit = proj.is_beam;
                     let is_blocking = self.player.is_guarding;
                     let dmg = if is_blocking { proj.chip_damage } else { proj.damage };
                     self.player.hp = (self.player.hp - dmg).max(0.0);

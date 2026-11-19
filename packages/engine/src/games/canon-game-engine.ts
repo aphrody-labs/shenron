@@ -5,15 +5,12 @@
  * Sovereign Dragon Ball 2.5D Full Canon Game Engine.
  *
  * Connects:
- * 1. ArcSys WGSL cel-shading pipeline (ILM maps, inverted hull outlines, normal steering).
- * 2. Deterministic 60 FPS simulation loop with fixed delta physics.
- * 3. FighterZ high-DPI HUD (15° italic health bars, 7 Dragon Radar balls, Shenron summon).
- * 4. Manga Toriyama panel balloons, Japanese Katakana onomatopoeia, and anime speedlines.
- * 5. Web Audio API authentic sound synthesis (Ki beams, aura hum, heavy hitsparks).
- * 6. Axum 0.8 and Bevy ECS frame synchronization.
+ * 1. Deterministic 60 FPS simulation loop with fixed delta physics.
+ * 2. FighterZ high-DPI HUD (15° italic health bars, 7 Dragon Radar balls, Shenron summon).
+ * 3. Manga Toriyama panel balloons, Japanese Katakana onomatopoeia, and anime speedlines.
+ * 4. Web Audio API authentic sound synthesis (Ki beams, aura hum, heavy hitsparks).
  */
 
-import { ARCSYS_WGSL_SHADER } from "./fighterz-bevy-runtime";
 import { type CanonChapter } from "./canon-scenario";
 
 export type RenderMode = "2.5d_webgpu" | "2d_pixel";
@@ -692,36 +689,5 @@ export class CanonGameEngine {
     } catch {
       // Audio node failure fallback
     }
-  }
-
-  /**
-   * Export frame state for Bevy ECS and Axum frame sync.
-   */
-  public toBevyFramePacket(): {
-    frame: number;
-    p1: { x: number; y: number; hp: number; ki: number; state: string };
-    p2: { x: number; y: number; hp: number; ki: number; state: string };
-    beamClash: boolean;
-    dragonBalls: number;
-  } {
-    return {
-      frame: this.frameCount,
-      p1: {
-        x: this.player.x,
-        y: this.player.y,
-        hp: this.player.hp,
-        ki: this.player.ki,
-        state: this.player.state,
-      },
-      p2: {
-        x: this.enemy.x,
-        y: this.enemy.y,
-        hp: this.enemy.hp,
-        ki: this.enemy.ki,
-        state: this.enemy.state,
-      },
-      beamClash: this.beamClash.active,
-      dragonBalls: this.dragonBallsCollected,
-    };
   }
 }

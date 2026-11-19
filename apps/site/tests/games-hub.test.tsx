@@ -21,6 +21,7 @@ function articleFor(html: string, href: string) {
 test("each browser game has its own named destination and discloses account access", () => {
   const html = renderHub();
   const destinations = [
+    ["/games/dragon-pixel/arena", fr.arena.name, false],
     ["/games/2048", fr.merge.name, false],
     ["/games/tic-tac-toe", fr.morpion.name, true],
     ["/games/rock-paper-scissors", fr.pfc.name, true],

@@ -10,11 +10,8 @@ repository = "https://github.com/koharu-rs/koharu"
 publish = false
 
 [dependencies]
-anyhow = { workspace = true }
 gpui-kit = { workspace = true }
-koharu-library = { path = "../koharu-library" }
-serde = { workspace = true }
-shenron-theme = { workspace = true }
+koharu-library = { workspace = true }
 
 [dev-dependencies]
 gpui-kit = { workspace = true, features = ["test-support"] }

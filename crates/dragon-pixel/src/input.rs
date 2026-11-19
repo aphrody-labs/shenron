@@ -23,6 +23,28 @@ pub struct EngineInput {
 }
 
 impl EngineInput {
+    /// Both inputs at once: a control is held when either source holds it.
+    #[must_use]
+    pub fn merged(self, other: Self) -> Self {
+        Self {
+            left: self.left || other.left,
+            right: self.right || other.right,
+            up: self.up || other.up,
+            down: self.down || other.down,
+            jump: self.jump || other.jump,
+            punch: self.punch || other.punch,
+            heavy: self.heavy || other.heavy,
+            blast: self.blast || other.blast,
+            charge: self.charge || other.charge,
+            transform: self.transform || other.transform,
+            guard: self.guard || other.guard,
+            vanish: self.vanish || other.vanish,
+            special: self.special || other.special,
+            ultimate: self.ultimate || other.ultimate,
+            mash: self.mash || other.mash,
+        }
+    }
+
     pub fn is_moving_forward(&self, facing: f32) -> bool {
         if facing > 0.0 { self.right } else { self.left }
     }
@@ -130,5 +152,29 @@ pub fn parse_standard_gamepad(
         vanish: btn_l3 || btn_r3,
         transform: btn_lb && btn_rb,
         mash: btn_a || btn_b || btn_x || btn_y || btn_rb || btn_rt,
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn merged_inputs_hold_a_control_when_either_source_does() {
+        let keyboard = EngineInput { left: true, punch: true, ..EngineInput::default() };
+        let pad = EngineInput { right: true, punch: true, ..EngineInput::default() };
+        let both = keyboard.merged(pad);
+        assert!(both.left && both.right && both.punch);
+        assert!(!both.jump && !both.guard);
+    }
+
+    #[test]
+    fn standard_gamepad_maps_face_buttons_and_dpad() {
+        let mut buttons = [false; 16];
+        buttons[2] = true;
+        buttons[15] = true;
+        let input = parse_standard_gamepad(&[0.0, 0.0], &buttons, 0.15, GamepadType::Generic);
+        assert!(input.punch && input.right && input.mash);
+        assert!(!input.left && !input.blast);
     }
 }

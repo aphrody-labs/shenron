@@ -95,15 +95,4 @@ describe("CanonGameEngine : Deterministic 2.5D Combat & UI", () => {
     expect(engine.player.hp).toBe(100.0); // Full recovery!
     expect(engine.onomatopoeias.some((o) => o.text.includes("神龍召喚"))).toBe(true);
   });
-
-  it("serializes packet for Axum 0.8 / Bevy ECS synchronizer", () => {
-    const chapter = getCanonChapter(7)!;
-    const engine = new CanonGameEngine({ chapter });
-    const packet = engine.toBevyFramePacket();
-
-    expect(packet.frame).toBe(0);
-    expect(packet.p1.hp).toBe(100.0);
-    expect(packet.p2.hp).toBe(200.0);
-    expect(packet.beamClash).toBe(false);
-  });
 });

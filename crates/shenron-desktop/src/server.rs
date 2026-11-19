@@ -2,7 +2,7 @@
 //! The local Shenron server behind the desktop window.
 //!
 //! Resolution order:
-//! 1. `SHENRON_DESKTOP_URL`: an already running server (for example `bun run dev`).
+//! 1. `SHENRON_DESKTOP_URL`: an already running server (for example `just dev-site`).
 //! 2. The `shenron-server` binary installed beside this executable (bundled sidecar),
 //!    or `SHENRON_SERVER_BIN`, started on a free loopback port.
 //!

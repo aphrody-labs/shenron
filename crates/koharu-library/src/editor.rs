@@ -2,11 +2,11 @@
 //! The Koharu editor engine: one open project, its canvas presentation, processing jobs, the
 //! agent and the settings. It is the only owner of this state; every host is a thin binding:
 //!
-//! - `koharu-app`: Tauri commands (Specta), in the desktop process;
+//! - `koharu-app`: the GPUI Kit workspace, in the desktop process;
 //! - `koharu-sdk`: JSON Lines on stdio ([`dispatch`]), for `shenron-server` and Bun;
 //! - [`crate::Service`]: the headless method set of `@aphrody/shenron-koharu/native`.
 //!
-//! Hosts receive live values through [`Sink`]s (Tauri channels, JSON Lines events).
+//! Hosts receive live values through [`Sink`]s (JSON Lines events).
 
 mod agent;
 mod canvas;

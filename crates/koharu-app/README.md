@@ -1,6 +1,6 @@
 # koharu-app
 
-Couche de commandes Tauri (Specta) du moteur d'édition Koharu.
+Espace de travail GPUI Kit du moteur d'édition Koharu (`KoharuWorkspace`), sans couche IPC Tauri.
 
 ## Commandes
 

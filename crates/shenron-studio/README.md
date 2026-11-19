@@ -1,6 +1,6 @@
 # shenron-studio
 
-Commandes Tauri de Shenron Studio: santé, RAG, entraînement, corpus et modèles locaux, chat public.
+Vue GPUI `StudioWorkspace` de Shenron Studio: santé, RAG hybride, corpus local, chat ancré.
 
 ## Commandes
 

@@ -43,7 +43,7 @@ Variables : `SHENRON_LLAMA_URL` (par exemple `http://127.0.0.1:8081`), `SHENRON_
 llama-server -m Qwen3.5-4B-Q4_K_M.gguf --host 127.0.0.1 --port 8081 -c 4096 -t <fils> --parallel 1 --cache-prompt --no-webui
 ```
 
-Contraintes : prd ne fait tourner que la production, le serveur de décision vit donc sur `fr1` ou `fr2` et n'est joignable depuis prd que par le tunnel WireGuard (coupé le 2026-11-19, voir `AGENTS.md`) ou par un port ouvert à l'adresse de prd ; il écoute en local par défaut. fr2 n'avait que 4,9 Go de disque libre après le téléchargement du 4B : le modèle y est supprimé après essai si l'espace manque.
+Contraintes : prd ne fait tourner que la production, le serveur de décision vit donc sur `fr1` ou `fr2` et n'est joignable depuis prd que par le tunnel WireGuard (coupé le 2026-11-19, voir `AGENTS.md`) ou par un port ouvert à l'adresse de prd ; il écoute en local par défaut. fr2 est à 94 % de disque (6,1 Go libres après essai) : le fichier du 2B y a été supprimé, celui du 4B (`~/llama/qwen3.5-4b-q4km.gguf`, 2,74 Go) est conservé, et l'unité `llama-decision` y est désactivée.
 
 ## À faire
 

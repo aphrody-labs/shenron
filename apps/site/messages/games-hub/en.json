@@ -5,7 +5,7 @@
   "choose": "Choose a game",
   "navigation": "Browse games",
   "browserTitle": "In your browser",
-  "browserIntro": "Four challenges. No installation.",
+  "browserIntro": "Five games. No installation.",
   "explorersTitle": "Explore Dragon Ball",
   "explorersIntro": "Worlds, collections and game tools.",
   "discordTitle": "On Discord",
@@ -20,6 +20,11 @@
   "rewards": "Zeni and stakes",
   "rewardsDescription": "Gains and losses depend on the game, difficulty and chosen stake. Check the rules before staking.",
   "rewardDefaults": "Default economy game rewards: win +100 Ƶ · loss −50 Ƶ.",
+  "arena": {
+    "name": "Dragon Pixel: arena",
+    "category": "Fighting · Bevy 3D on WebGPU",
+    "description": "Fight Vegeta or follow the story mode with a keyboard or a gamepad. 3D rendering by Bevy on WebGPU, with a 2D canvas fallback."
+  },
   "merge": {
     "name": "2048: Ki Merge",
     "category": "Puzzle",
@@ -43,7 +48,7 @@
   "pixel": {
     "name": "Dragon Pixel",
     "category": "Exploration",
-    "description": "Discover Dragon Pixel, its environments and Dragon Ball collections.",
+    "description": "Walk through environments from the Xenoverse 2 archives and browse the Dragon Ball collections.",
     "action": "Explore Dragon Pixel"
   },
   "xenoverse": {
@@ -63,8 +68,8 @@
   },
   "canon": {
     "name": "Dragon Ball 2.5D Canon",
-    "category": "Fighting · 42 Tomes Story",
-    "description": "Relive Akira Toriyama's 42 canonical tomes at 60 FPS with the 2.5D WebGPU engine and Daizenshuu lore.",
+    "category": "Fighting · Canonical story",
+    "description": "Follow the canonical story chapter by chapter, with a lore panel for each saga.",
     "action": "Play Canonical Story"
   }
 }

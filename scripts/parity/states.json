@@ -1,0 +1,41 @@
+{
+  "viewport": { "width": 1920, "height": 1080, "scale": 1 },
+  "origin": { "x": 64, "y": 64 },
+  "themes": ["dark", "light"],
+  "font": {
+    "family": "Inter",
+    "files": {
+      "500": "apps/site/public/fonts/Inter-Medium.ttf",
+      "600": "apps/site/public/fonts/Inter-SemiBold.ttf",
+      "700": "apps/site/public/fonts/Inter-Bold.ttf",
+      "800": "apps/site/public/fonts/Inter-ExtraBold.ttf"
+    }
+  },
+  "states": [
+    { "id": "button/default", "interaction": "none" },
+    { "id": "button/hover", "interaction": "hover:button" },
+    { "id": "button/focus-visible", "interaction": "focus-visible:button" },
+    { "id": "button/disabled", "interaction": "none" },
+    { "id": "checkbox/unchecked", "interaction": "none" },
+    { "id": "checkbox/checked", "interaction": "none" },
+    { "id": "checkbox/hover", "interaction": "hover:checkbox" },
+    { "id": "checkbox/focus-visible", "interaction": "focus-visible:checkbox" },
+    { "id": "checkbox/disabled", "interaction": "none" },
+    { "id": "switch/off", "interaction": "none" },
+    { "id": "switch/on", "interaction": "none" },
+    { "id": "switch/hover", "interaction": "hover:switch" },
+    { "id": "switch/focus-visible", "interaction": "focus-visible:switch" },
+    { "id": "switch/disabled", "interaction": "none" },
+    { "id": "tabs/default", "interaction": "none" },
+    { "id": "tabs/second-active", "interaction": "none" },
+    { "id": "tabs/hover", "interaction": "hover:tab-2" },
+    { "id": "tabs/focus-visible", "interaction": "focus-visible:tab-1" },
+    { "id": "dialog/open", "interaction": "none" },
+    { "id": "dialog/close-focus-visible", "interaction": "focus-visible:dialog-close" },
+    { "id": "select/closed", "interaction": "none" },
+    { "id": "select/hover", "interaction": "hover:select-trigger" },
+    { "id": "select/focus-visible", "interaction": "focus-visible:select-trigger" },
+    { "id": "select/disabled", "interaction": "none" },
+    { "id": "select/open", "interaction": "click:select-trigger" }
+  ]
+}

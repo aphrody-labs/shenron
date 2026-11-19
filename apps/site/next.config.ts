@@ -1,6 +1,7 @@
 import { withBun } from "@aphrody/shenron-next-host";
 import type { NextConfig } from "next";
 import { PHASE_DEVELOPMENT_SERVER } from "next/constants";
+import { resolveSiteSurface } from "@aphrody/shenron-config/game";
 import {
   DEFAULT_PUBLIC_ORIGINS,
   ownImageRemotePatterns,
@@ -8,6 +9,7 @@ import {
   resolveSiteUrl,
 } from "@aphrody/shenron-config/public-urls";
 import { sitePublicRedirects } from "@aphrody/shenron-images/resolve";
+import { cspRouteSources } from "./src/lib/csp-wasm-routes";
 import {
   AUTH_ROUTE_ALIASES,
   PUBLIC_ROUTE_RENAMES,
@@ -27,11 +29,14 @@ const cspCdnOrigin = (() => {
     return "";
   }
 })();
-const CSP_SCRIPT_SRC = [
-  "'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:",
-  ...(cspCdnOrigin ? [cspCdnOrigin] : []),
-  "https://static.cloudflareinsights.com https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.gstatic.com https://*.adtrafficquality.google https://*.google.com",
-].join(" ");
+const cspSources = cspRouteSources(resolveSiteSurface(process.env));
+// `'wasm-unsafe-eval'` only on the routes that instantiate Wasm (`src/lib/csp-wasm-routes.ts`).
+const cspScriptSrc = (wasm: boolean) =>
+  [
+    `'self' 'unsafe-inline' ${wasm ? "'wasm-unsafe-eval' " : ""}blob:`,
+    ...(cspCdnOrigin ? [cspCdnOrigin] : []),
+    "https://static.cloudflareinsights.com https://www.googletagmanager.com https://*.google-analytics.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.gstatic.com https://*.adtrafficquality.google https://*.google.com",
+  ].join(" ");
 
 // Telemetry is disabled globally across all Next.js phases (`next dev`, `next build`, `next start`).
 process.env.NEXT_TELEMETRY_DISABLED = "1";
@@ -97,12 +102,11 @@ const nextConfig: NextConfig = {
   // désactivable avec `NEXT_OUTPUT=default` pour un build classique (`next start`).
   ...(process.env.NEXT_OUTPUT !== "default" ? { output: "standalone" as const } : {}),
   // Dynamic fs access in shared packages must never drag the repository (sources, tests,
-  // databases, third_party submodules, corpora) into the standalone server.
+  // databases, corpora) into the standalone server.
   outputFileTracingExcludes: {
     "*": [
       "../../crates/**",
       "../../target/**",
-      "../../third_party/**",
       "../../data/**",
       "../../var/**",
       "../../docs/**",
@@ -444,9 +448,13 @@ const nextConfig: NextConfig = {
         source: "/wasm/:path*",
         headers: [
           { key: "Cache-Control", value: "public, max-age=31536000, immutable" },
-          { key: "Content-Type", value: "application/wasm" },
           { key: "Access-Control-Allow-Origin", value: "*" },
         ],
+      },
+      {
+        // Only the module itself: the wasm-bindgen glue next to it is a script and keeps its own type.
+        source: "/wasm/:path*.wasm",
+        headers: [{ key: "Content-Type", value: "application/wasm" }],
       },
       {
         source: "/_next/image(.*)",
@@ -545,15 +553,7 @@ const nextConfig: NextConfig = {
             key: "Content-Security-Policy",
             value: "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'",
           },
-          // `script-src` en Report-Only UNIQUEMENT : mesure ce qu'une politique stricte
-          // casserait (GTM, AdSense, lecteurs vidéo tiers) sans rien bloquer. Les
-          // violations partent vers `/api/csp-report` (Chrome les
-          // écrit aussi dans la console). À promouvoir en `Content-Security-Policy` seulement
-          // après un relevé propre.
-          {
-            key: "Content-Security-Policy-Report-Only",
-            value: `script-src ${CSP_SCRIPT_SRC}; report-uri /api/csp-report`,
-          },
+          // `script-src` en Report-Only : voir les deux règles qui suivent ce bloc.
           // Aucune de ces API n'est utilisée par le site : les refuser évite
           // qu'un script tiers (régie pub) puisse les demander en notre nom.
           {
@@ -567,6 +567,29 @@ const nextConfig: NextConfig = {
           { key: "X-DNS-Prefetch-Control", value: "on" },
         ],
       },
+      // `script-src` en Report-Only UNIQUEMENT : mesure ce qu'une politique stricte
+      // casserait (GTM, AdSense, lecteurs vidéo tiers) sans rien bloquer. Les
+      // violations partent vers `/api/csp-report` (Chrome les
+      // écrit aussi dans la console). À promouvoir en `Content-Security-Policy` seulement
+      // après un relevé propre. Exactement une des deux règles s'applique à chaque chemin.
+      {
+        source: cspSources.nonWasm,
+        headers: [
+          {
+            key: "Content-Security-Policy-Report-Only",
+            value: `script-src ${cspScriptSrc(false)}; report-uri /api/csp-report`,
+          },
+        ],
+      },
+      ...cspSources.wasm.map((source) => ({
+        source,
+        headers: [
+          {
+            key: "Content-Security-Policy-Report-Only",
+            value: `script-src ${cspScriptSrc(true)}; report-uri /api/csp-report`,
+          },
+        ],
+      })),
       {
         // Le manifeste PWA est servi cross-origin par certains navigateurs
         // (installation) et change rarement.

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-//! Browser bridge for the shared combat core and the Bevy WebGPU renderer.
+//! Browser bridge for the arcade simulation; the Bevy game has its own entry points in `bevy_view`.
 use crate::arcade::{Game, Input};
 use wasm_bindgen::prelude::*;
 
@@ -22,27 +22,6 @@ impl Session {
         self.game.step(input, dt);
         serde_json::to_string(&self.game).map_err(|error| JsValue::from_str(&error.to_string()))
     }
-}
-
-/// Start the Bevy 3D renderer in the page's `#arena-bevy` canvas.
-#[cfg(all(feature = "bevy", target_arch = "wasm32"))]
-#[wasm_bindgen]
-pub fn start_bevy_renderer() -> Result<(), JsValue> {
-    crate::bevy_view::start()
-}
-
-/// Send the latest combat state and avatar to Bevy as JSON.
-#[cfg(all(feature = "bevy", target_arch = "wasm32"))]
-#[wasm_bindgen]
-pub fn update_bevy_renderer(state_json: &str) -> Result<(), JsValue> {
-    crate::bevy_view::update(state_json)
-}
-
-/// Report whether Bevy has reached its first scene update.
-#[cfg(all(feature = "bevy", target_arch = "wasm32"))]
-#[wasm_bindgen]
-pub fn bevy_renderer_ready() -> bool {
-    crate::bevy_view::is_ready()
 }
 
 #[cfg(test)]

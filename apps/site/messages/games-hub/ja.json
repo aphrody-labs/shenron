@@ -5,7 +5,7 @@
   "choose": "ゲームを選ぶ",
   "navigation": "ゲームを探す",
   "browserTitle": "ブラウザーで遊ぶ",
-  "browserIntro": "インストール不要の4つのチャレンジ。",
+  "browserIntro": "インストール不要の5つのゲーム。",
   "explorersTitle": "ドラゴンボールを探索",
   "explorersIntro": "ゲームの世界、コレクション、分析ツール。",
   "discordTitle": "Discordで遊ぶ",
@@ -20,6 +20,11 @@
   "rewards": "ゼニーと賭け金",
   "rewardsDescription": "獲得・損失額はゲーム、難易度、賭け金によって変わります。賭ける前にルールを確認してください。",
   "rewardDefaults": "ゼニーを使うゲームの標準設定：勝利 +100 Ƶ・敗北 −50 Ƶ。",
+  "arena": {
+    "name": "Dragon Pixel：アリーナ",
+    "category": "格闘 · WebGPUのBevy 3D",
+    "description": "ベジータと戦うか、ストーリーモードを、キーボードまたはゲームパッドで。WebGPUでBevyが3D描画し、非対応時は2D Canvasで表示します。"
+  },
   "merge": {
     "name": "2048：気マージ",
     "category": "パズル",
@@ -43,7 +48,7 @@
   "pixel": {
     "name": "Dragon Pixel",
     "category": "探索",
-    "description": "Dragon Pixelの空間や風景、ドラゴンボールのコレクションを見てみよう。",
+    "description": "Xenoverse 2のアーカイブにある環境を歩き回り、ドラゴンボールのコレクションを閲覧できます。",
     "action": "Dragon Pixelを探索"
   },
   "xenoverse": {
@@ -63,8 +68,8 @@
   },
   "canon": {
     "name": "ドラゴンボール 2.5D 正史",
-    "category": "格闘 · 全42巻ストーリー",
-    "description": "鳥山明の正史42巻をWebGPU 60FPSエンジンと大全集データで追体験。",
+    "category": "格闘 · 正史ストーリー",
+    "description": "正史のストーリーを章ごとにたどり、サーガごとの解説パネルを読めます。",
     "action": "正史ストーリーを開始"
   }
 }

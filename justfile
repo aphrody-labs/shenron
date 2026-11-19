@@ -41,7 +41,7 @@ format-check: bun-format-check rust-fmt-check
 # Format everything: native bun fmt, then rustfmt
 [group('all')]
 fmt:
-    bun fmt apps packages scripts
+    bun scripts/testing/native-quality.ts fmt
     cargo fmt --all
 
 # Generated files are up to date (OpenAPI, UI tokens, AI contracts)
@@ -75,32 +75,32 @@ install:
 # bun check on the 13 packages, then scripts/
 [group('bun')]
 typecheck:
-    bun run typecheck
+    bun scripts/testing/native-quality.ts check
 
 # bun lint on apps, packages and scripts
 [group('bun')]
 bun-lint:
-    bun run lint
+    oxlint -c .oxlintrc.json apps packages scripts
 
 # bun test of every package (live suites excluded)
 [group('bun')]
 bun-test:
-    bun run test
+    bun scripts/testing/workspace-gates.ts test
 
 # Tests of the root scripts (scripts/)
 [group('bun')]
 test-scripts:
-    bun run test:scripts
+    bun test --path-ignore-patterns='**/*.live.test.ts' ./scripts
 
 # Live suites against real services (SHENRON_LIVE=1)
 [group('bun')]
 test-live:
-    bun run test:live
+    bun --filter @aphrody/shenron-pipeline rag:test
 
 # bun fmt --check on apps, packages and scripts
 [group('bun')]
 bun-format-check:
-    bun run format:check
+    bun fmt --check --ignore-pattern "**/examples/**" --ignore-pattern "**/*.min.js" --ignore-pattern "**/packages/koharu/src/wasm/**" --ignore-pattern "**/packages/engine/src/wasm/**" --ignore-pattern "**/packages/pipeline/src/wasm/**" --ignore-pattern "**/packages/koharu/src/protocol.ts" --ignore-pattern "**/packages/native/src/generated/**" --ignore-pattern "**/plugin/references/**" --ignore-pattern "**/packages/ui/src/tokens.ts" --ignore-pattern "**/packages/lexicon/src/terms.generated.ts" --ignore-pattern "**/packages/api/openapi/public.json" --ignore-pattern "**/apps/site/src/app/fonts.css" --ignore-pattern "**/apps/site/scripts/fonts.lock.json" apps packages scripts
 
 # Dragon Ball Ultimate Games Package Manager (SteamDB, Libretro, R2, SteamCMD)
 [group('games')]
@@ -140,11 +140,6 @@ build-bot *args:
 [group('bun')]
 entries:
     bun --filter @aphrody/shenron-bot gen:entries
-
-# Regenerate packages/koharu/src/protocol.ts from koharu-app (Specta)
-[group('rust')]
-protocol:
-    bun --filter @aphrody/shenron-koharu protocol
 
 # cargo check of every crate and target (`cargo ck`)
 [group('rust')]
@@ -191,6 +186,16 @@ wasm:
 [group('rust')]
 wasm-build:
     bun --filter @aphrody/shenron-koharu build:wasm
+
+# Build the Bevy game of dragon-pixel for the browser and stage it for the site (fr1 or CI only)
+[group('rust')]
+dragon-pixel-wasm:
+    bun scripts/ops/build-dragon-pixel-wasm.ts
+
+# Gate: the site loader references only wasm files and exports that the build produces
+[group('rust')]
+dragon-pixel-wasm-check:
+    DRAGON_PIXEL_WASM_STRICT=1 bun test apps/site/tests/dragon-pixel-wasm.test.ts
 
 # Rustdoc of the workspace crates (`cargo docs`)
 [group('rust')]
@@ -329,11 +334,6 @@ dbfz-pipeline *args="":
 compression-bench:
     bun scripts/ops/compression-benchmark.ts
 
-# Run Turborepo cached task across workspace
-[group('turbo')]
-turbo *args="build":
-    bun x turbo run {{ args }}
-
 # Write MAP.tsv: areas, tracked files and bytes, tier and gate of the commit (agents read it first)
 [group('all')]
 map:
@@ -418,3 +418,267 @@ news-redis-rebuild *args:
 [group('tools')]
 re-telemetry-sync:
     bun scripts/ops/sync-re-telemetry.ts
+
+# Type-check scripts/ only
+[group('bun')]
+typecheck-scripts:
+    bun check -p scripts
+
+# Live AI layer suite (Gemini)
+[group('bun')]
+test-live-ai:
+    cd apps/site && SHENRON_LIVE=1 bun test --isolate tests/ai-layer-gemini.live.test.ts
+
+# Cross-package integration suite
+[group('bun')]
+test-integration:
+    bun scripts/testing/integration/run.ts
+
+# Production server of the site
+[group('bun')]
+start-site:
+    bun --filter @aphrody/shenron-site start
+
+# Build the server and the bot binaries
+[group('bun')]
+build: build-server build-bot
+
+# Next build of the site
+[group('bun')]
+build-site:
+    bun --filter @aphrody/shenron-site build
+
+# Release: build, publish and deploy through scripts/deploy/release.sh
+[group('deploy')]
+ship *args:
+    bash scripts/deploy/release.sh {{ args }}
+
+# Every i18n catalogue is complete
+[group('bun')]
+i18n-contract:
+    bun scripts/i18n/complete-contract.ts
+
+# Path guards
+[group('bun')]
+check-paths:
+    bun scripts/audit/check-paths.ts
+
+# Duplicate assets audit
+[group('tools')]
+audit-assets:
+    bun scripts/audit/assets-dedup.ts
+
+# UI and UX audit of the crawled site
+[group('tools')]
+audit-uiux *args:
+    bun scripts/audit/uiux-audit.ts {{ args }}
+
+# Crawl the site
+[group('tools')]
+crawl-site *args:
+    bun scripts/ops/crawl-site.ts {{ args }}
+
+# Capture one page
+[group('tools')]
+capture-page *args:
+    bun scripts/ops/capture-page.ts {{ args }}
+
+# Write .github/workflows/*.yml from crates/xtask/src/workflows.rs (fr1 or CI)
+[group('all')]
+workflows:
+    cargo xtask workflows
+
+# Fail when a workflow file differs from its definition or has none
+[group('all')]
+workflows-check:
+    cargo xtask workflows --check
+
+# Drift gate of deploy/environment.json in Rust (same rules and messages as scripts/deploy/environment.ts --check)
+[group('deploy')]
+env-check:
+    cargo xtask env-check
+
+# Read-only production source readiness audit
+[group('tools')]
+source-readiness *args:
+    bun scripts/audit/source-readiness.ts {{ args }}
+
+# Build the private DBXV2 SQLite on the build host: build, embed or plan
+[group('tools')]
+dbxv2-db *args="plan":
+    bun scripts/data/build-dbxv2-db.ts {{ args }}
+
+# Recurring Beerus official-site capture (--out must be outside the repository)
+[group('tools')]
+beerus-site-sync *args:
+    bun scripts/data/sync-beerus-site.ts {{ args }}
+
+# Regenerate the Shenron text font (fontTools through uv)
+[group('tools')]
+font-build *args:
+    bun scripts/design/build-shenron-font.ts {{ args }}
+
+# Regenerate the Shenron lettering font
+[group('tools')]
+lettering-build *args:
+    bun scripts/design/build-shenron-lettering.ts {{ args }}
+
+# Toriyama catalogue freshness gate
+[group('tools')]
+toriyama-catalog-check:
+    bun scripts/design/build-toriyama-catalog.ts --check
+
+# Extract the home palette from the key visual (--write persists it)
+[group('tools')]
+home-palette image *args:
+    bun scripts/design/extract-home-palette.ts {{ image }} {{ args }}
+
+# Placeholder and key parity of edited site message files against a git ref
+[group('tools')]
+i18n-parity base="origin/main":
+    bun scripts/dev/i18n-parity-check.ts {{ base }}
+
+# Read-only inventory of reviewed databook scans
+[group('tools')]
+databook-sources-audit *args:
+    bun scripts/editorial/audit-variant-databook-sources.ts {{ args }}
+
+# Export verified episode frames for wiki scenes
+[group('tools')]
+wiki-scene-episode *args:
+    bun scripts/media/wiki-scene-assets/prepare-episode.ts {{ args }}
+
+# Write the private agent-home knowledge map (dry run unless --apply)
+[group('tools')]
+agent-home-knowledge-map *args:
+    bun scripts/ops/agent-home-knowledge-map.ts {{ args }}
+
+# Archive divergent bot SQLite rows into PostgreSQL (dry run unless --apply)
+[group('tools')]
+archive-bot-sqlite *args:
+    bun scripts/ops/archive-bot-sqlite-variants.ts {{ args }}
+
+# Public CDN HEAD verification of previously missing routes
+[group('tools')]
+audit-cdn-gaps *args:
+    bun scripts/ops/audit-cdn-gaps.ts {{ args }}
+
+# Reader audit of the public site
+[group('tools')]
+audit-readers *args:
+    bun scripts/ops/audit-readers.ts {{ args }}
+
+# Capture a Shueisha public preview: <job> <source-url> <total-pages> <title>
+[group('tools')]
+capture-shueisha-preview *args:
+    bun scripts/ops/capture-shueisha-public-preview.ts {{ args }}
+
+# Official Dragon Ball site crawl: --status, --dry-run or --apply
+[group('tools')]
+crawl-official *args="--status":
+    bun scripts/ops/crawl-dragon-ball-official.ts {{ args }}
+
+# Import the owner's Crunchyroll HAR and cookie export (metadata only)
+[group('tools')]
+crunchyroll-import *args:
+    bun scripts/ops/crunchyroll-har-import.ts {{ args }}
+
+# Editorial collections inventory (output under var/reports)
+[group('tools')]
+editorial-inventory *args:
+    bun scripts/ops/editorial-collection-catalog.ts {{ args }}
+
+# Internet Archive metadata enrichment
+[group('tools')]
+enrich-internet-archive *args:
+    bun scripts/ops/enrich-internet-archive.ts {{ args }}
+
+# Lint, typecheck and format fix loop (report only by default)
+[group('tools')]
+fix-loop *args="--report-only":
+    bun scripts/ops/fix-loop.ts {{ args }}
+
+# Hand the reviewed reader bundle to the outbox
+[group('tools')]
+manga-reader-handoff *args:
+    bun scripts/ops/manga-reader-handoff.ts {{ args }}
+
+# Manga source pool worker queue
+[group('tools')]
+manga-source-pool *args:
+    bun scripts/ops/manga-source-pool.ts {{ args }}
+
+# Find and stage missing databook and manga plates (missing, discover, stage, plan, all)
+[group('tools')]
+planches-complete *args:
+    bun scripts/ops/planches-complete.ts {{ args }}
+
+# Crawl, plan and publish an external source (dry run unless --apply)
+[group('tools')]
+publish-source *args:
+    bun scripts/ops/publish-source.ts {{ args }}
+
+# Wiki proposals: plan or apply MANIFEST SHA256 PLAN [BACKUP_RECEIPT]
+[group('tools')]
+publish-wiki-proposals *args:
+    bun scripts/ops/publish-wiki-proposals.ts {{ args }}
+
+# Off-host copy of the latest verified container snapshot
+[group('tools')]
+offsite-backup *args:
+    bun scripts/ops/shenron-offsite-backup.ts {{ args }}
+
+# Sync the bot private SQLite stores into PostgreSQL (--sqlite PATH --source-id ID)
+[group('tools')]
+bot-sqlite-to-postgres *args:
+    bun scripts/ops/sync-bot-private-sqlite-to-postgres.ts {{ args }}
+
+# Train the Shenron chat model in guarded cycles
+[group('tools')]
+train-chat *args:
+    bun scripts/ops/train-shenron-chat-loop.ts {{ args }}
+
+# Six-hour private wiki proposal supervision: once or smoke --job <absolute path>
+[group('tools')]
+wiki-fill-supervisor *args:
+    bun scripts/ops/wiki-fill-supervisor.ts {{ args }}
+
+# Portable plugin pack in var/plugin-pack (--drive <rclone remote> syncs it)
+[group('tools')]
+plugin-pack *args:
+    bun scripts/plugin/pack.ts {{ args }}
+
+# Pack and audit the public npm packages (--publish uploads absent versions)
+[group('release')]
+package-publication *args:
+    bun scripts/release/publication.ts {{ args }}
+
+# Check the wiki object store
+[group('tools')]
+wiki-objects-check:
+    bun scripts/build/wiki-objects.ts --check
+
+# Qualify a wiki scene video against its manifest
+[group('tools')]
+wiki-scene-qualify-video manifest output:
+    bun scripts/media/wiki-scene-assets/qualify-video.ts {{ manifest }} {{ output }}
+
+# Databooks corpus translation (status by default)
+[group('tools')]
+databooks-translate *args="--statut":
+    bun scripts/ops/translate-databooks-corpus.ts {{ args }}
+
+# This host's rustc and Bun (version, channel, revision) against deploy/environment.json
+[group('deploy')]
+env-verify-host:
+    cargo xtask env-verify-host
+
+# UI migration ledger: shadcn-style wrappers, Base UI primitive, GPUI target and parity state (migration/ui.json)
+[group('rust')]
+ui-ledger:
+    bun scripts/migration/ui-ledger.ts
+
+# Fail when migration/ui.json is stale
+[group('rust')]
+ui-ledger-check:
+    bun scripts/migration/ui-ledger.ts --check

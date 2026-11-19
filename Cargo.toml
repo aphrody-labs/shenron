@@ -134,6 +134,7 @@ reqwest = { version = "0.13.5", features = [
   "socks",
   "multipart",
 ], default-features = false }
+regex = "1.13.2"
 redis = { version = "1.8.2", default-features = false, features = ["tokio-comp", "connection-manager"] }
 rmcp = { version = "3.10.0", features = [
   "server",
@@ -310,9 +311,9 @@ lto = "fat"
 codegen-units = 1
 strip = "symbols"
 
-# Standalone executables (shenron, shenron-mcp, shenron-video, koharu-sdk, service binaries):
-# nothing catches panics there, so abort drops the unwinding tables. Never use it for
-# shenron-ffi or other cdylibs loaded into a host process.
+# Single-purpose executables with no threads and no panic catcher (shenron-video): abort drops the
+# unwinding tables. Never use it for shenron-ffi or other cdylibs loaded into a host process, nor for
+# tokio-based binaries (shenron, shenron-mcp, koharu-sdk) whose runtimes isolate task panics.
 [profile.production-abort]
 inherits = "production"
 panic = "abort"

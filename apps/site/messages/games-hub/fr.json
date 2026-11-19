@@ -5,7 +5,7 @@
   "choose": "Choisir un jeu",
   "navigation": "Parcourir les jeux",
   "browserTitle": "Dans ton navigateur",
-  "browserIntro": "Quatre défis, sans installation.",
+  "browserIntro": "Cinq jeux, sans installation.",
   "explorersTitle": "Explorer Dragon Ball",
   "explorersIntro": "Décors, collections et outils autour des jeux.",
   "discordTitle": "Sur Discord",
@@ -20,6 +20,11 @@
   "rewards": "Zénis et mises",
   "rewardsDescription": "Les gains et les pertes dépendent du jeu, de sa difficulté et de la mise choisie. Consulte les règles avant de miser.",
   "rewardDefaults": "Barème par défaut des jeux à économie : victoire +100 Ƶ · défaite −50 Ƶ.",
+  "arena": {
+    "name": "Dragon Pixel : arène",
+    "category": "Combat · Bevy 3D sur WebGPU",
+    "description": "Affronte Vegeta ou suis le mode Histoire, au clavier ou à la manette. Rendu 3D par Bevy sur WebGPU, avec un repli canvas 2D."
+  },
   "merge": {
     "name": "2048 : Ki Merge",
     "category": "Réflexion",
@@ -43,7 +48,7 @@
   "pixel": {
     "name": "Dragon Pixel",
     "category": "Exploration",
-    "description": "Découvre l’espace Dragon Pixel, ses décors et ses collections Dragon Ball.",
+    "description": "Parcours des décors tirés des archives de Xenoverse 2 et explore les collections Dragon Ball.",
     "action": "Explorer Dragon Pixel"
   },
   "xenoverse": {
@@ -63,8 +68,8 @@
   },
   "canon": {
     "name": "Dragon Ball 2.5D Canon",
-    "category": "Combat · Scénario 42 Tomes",
-    "description": "Revivez les 42 tomes canoniques d'Akira Toriyama en 60 FPS avec le moteur 2.5D WebGPU et les notices Daizenshuu.",
+    "category": "Combat · Scénario canonique",
+    "description": "Suis le scénario canonique chapitre par chapitre, avec un panneau de contexte pour chaque saga.",
     "action": "Lancer l'Histoire Canonique"
   }
 }

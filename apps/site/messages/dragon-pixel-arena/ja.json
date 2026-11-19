@@ -1,0 +1,84 @@
+{
+  "title": "ドラゴンピクセル：アリーナ",
+  "intro": "ドラゴンピクセルのRust製対戦エンジンを、BevyがWebGPUで3D描画します。キーボードまたはゲームパッドで遊べます。",
+  "arenaLabel": "ドラゴンピクセルの対戦アリーナ",
+  "canvasLabel": "ゲーム画面。クリックするとキーボード操作が有効になります",
+  "launch": "対戦を開始",
+  "loadingLabel": "エンジンのダウンロード",
+  "restart": "やり直す",
+  "apply": "選択を反映",
+  "pause": "一時停止",
+  "resume": "再開",
+  "retry": "もう一度試す",
+  "fighter": "キャラクター",
+  "mode": "モード",
+  "arena": "ステージ",
+  "chapter": "章",
+  "modes": {
+    "arcade": "ベジータとのフリーバトル",
+    "story": "ストーリー"
+  },
+  "fighters": {
+    "goku": "孫悟空",
+    "vegeta": "ベジータ",
+    "gohan": "孫悟飯",
+    "piccolo": "ピッコロ",
+    "trunks": "トランクス",
+    "frieza": "フリーザ",
+    "cell": "セル",
+    "buu": "魔人ブウ",
+    "yamcha": "ヤムチャ",
+    "krilin": "クリリン",
+    "jackie_chun": "ジャッキー・チュン"
+  },
+  "arenas": {
+    "paozu": "パオズ山",
+    "budokai": "天下一武道会",
+    "wasteland": "荒野",
+    "namek": "ナメック星",
+    "cell_games": "セルゲーム",
+    "kaiohshin": "界王神界"
+  },
+  "status": {
+    "idle": "準備完了。エンジンは約{size}MBで、開始時にダウンロードされます。",
+    "checking": "WebGPUを確認しています",
+    "loading": "エンジンをダウンロード中：{percent}%（{total}MB中{loaded}MB）",
+    "starting": "エンジンを起動しています",
+    "running": "WebGPUでBevy 3D描画中",
+    "fallback": "Canvas 2D描画：WebGPUは利用できません",
+    "paused": "一時停止中",
+    "won": "勝利。EnterキーまたはStartでやり直せます。",
+    "lost": "敗北。EnterキーまたはStartでやり直せます。",
+    "error": "エンジンを起動できませんでした：{reason}"
+  },
+  "noWebgpu": "このブラウザではWebGPUを利用できません（{reason}）。同じRustエンジンで対戦し、Bevyの3D描画ではなく2D Canvasで描画します。",
+  "noAdapter": "グラフィックアダプターがありません",
+  "noApi": "navigator.gpuがありません",
+  "controlsTitle": "操作",
+  "controls": [
+    "移動：矢印キーまたはWASD（AZERTY配列ではZQSD）",
+    "ジャンプ：W、上矢印、またはスペース",
+    "パンチ：J。強攻撃：K。気弾：L",
+    "必殺技：U。超必殺技：I",
+    "気をためる：Hを押し続ける。変身：T",
+    "ガード：Shift。瞬間移動：V",
+    "ゲームパッド：スティックまたは十字キー、Xでパンチ、Yで強攻撃、Bで気弾、RTで必殺技、LTで超必殺技、RBで気ため、LBでガード、LBとRBで変身、スティック押し込みで瞬間移動"
+  ],
+  "hud": {
+    "player": "プレイヤー",
+    "enemy": "対戦相手",
+    "hp": "体力",
+    "ki": "気",
+    "combo": "コンボ",
+    "score": "スコア",
+    "time": "時間",
+    "power": "戦闘力",
+    "frames": "描画フレーム数",
+    "engine": "エンジン"
+  },
+  "engines": {
+    "bevy": "Bevy 3D / WebGPU",
+    "canvas": "Canvas 2D"
+  },
+  "chapterOption": "第{number}章"
+}

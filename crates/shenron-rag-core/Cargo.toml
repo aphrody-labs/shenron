@@ -17,11 +17,8 @@ workspace = true
 blake3 = { workspace = true }
 ndarray = "0.17.2"
 proc-macro2 = { version = "1.0.107", features = ["span-locations"] }
-regex = "1.11"
+regex = { workspace = true }
 serde = { workspace = true }
 serde_json = { workspace = true }
 syn = { version = "3.0.5", features = ["full", "extra-traits"] }
 thiserror = { workspace = true }
-
-[dev-dependencies]
-pretty_assertions = "1"

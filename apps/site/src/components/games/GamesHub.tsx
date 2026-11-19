@@ -15,19 +15,20 @@ import {
   Swords,
   Trophy,
   UserRound,
+  Zap,
 } from "lucide-react";
 import { DEFAULT_DISCORD_INVITE } from "@aphrody/shenron-config/public-urls";
 import { PageShell } from "@aphrody/shenron-ui/layout/PageShell";
 import { ClientGatedWrap } from "@/components/GatedClientLink";
 import type { AccessSnapshot } from "@aphrody/shenron-config/wiki-launch";
 import { useLangue } from "@/lib/i18n/client";
-import { DragonArcadeEngine } from "./DragonArcadeEngine";
 import fr from "../../../messages/games-hub/fr.json";
 import en from "../../../messages/games-hub/en.json";
 import ja from "../../../messages/games-hub/ja.json";
 import styles from "./games-hub.module.css";
 const dictionaries = { fr, en, ja };
 const games = [
+  { id: "arena", href: "/games/dragon-pixel/arena", icon: Zap, account: false },
   { id: "merge", href: "/games/2048", icon: Grid2X2, account: false },
   { id: "morpion", href: "/games/tic-tac-toe", icon: Swords, account: true },
   { id: "pfc", href: "/games/rock-paper-scissors", icon: Hand, account: true },
@@ -45,120 +46,6 @@ export function GamesHub({ access = null }: { access?: AccessSnapshot | null } =
   const t = dictionaries[locale];
   return (
     <PageShell rhythm="tight" className={styles.hub}>
-      {/* Gamescope / Steam Deck Gaming HUD */}
-      <section
-        aria-label="Statut Gamescope et performances"
-        className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-[#0e141b]/90 px-4 py-2 text-xs font-mono text-white/80 backdrop-blur-md shadow-lg"
-      >
-        <div className="flex items-center gap-3">
-          <span className="flex items-center gap-1.5 font-bold text-emerald-400">
-            <span className="inline-block h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            GAMESCOPE VERIFIED
-          </span>
-          <span className="text-white/20">|</span>
-          <span className="text-white/70">60 FPS • 16.6ms</span>
-          <span className="text-white/20">|</span>
-          <span className="text-sky-400">Vulkan / WebGPU</span>
-        </div>
-        <div className="hidden sm:flex items-center gap-4 text-[11px] text-white/50">
-          <span>
-            <kbd className="rounded bg-white/10 px-1 py-0.5 text-white/90">A</kbd> Lancer
-          </span>
-          <span>
-            <kbd className="rounded bg-white/10 px-1 py-0.5 text-white/90">X</kbd> Détails
-          </span>
-          <span>
-            <kbd className="rounded bg-white/10 px-1 py-0.5 text-white/90">Y</kbd> Plein écran
-          </span>
-        </div>
-      </section>
-
-      {/* Featured Epic Canon 2.5D Game Showcase Banner */}
-      <div className="relative mb-6 overflow-hidden rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-950/40 via-zinc-950 to-slate-950 p-6 md:p-8 shadow-2xl">
-        <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-amber-500/20 blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="space-y-3 max-w-2xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-amber-400 border border-amber-500/30 flex items-center gap-1">
-                <Sparkles className="size-3" />
-                Moteur Dédié • WebGPU 60 FPS
-              </span>
-              <span className="rounded-full bg-sky-500/20 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-sky-400 border border-sky-500/30">
-                2.5D ArcSys & Pixel Perfect
-              </span>
-              <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-emerald-400 border border-emerald-500/30">
-                Toriyama 42 Tomes
-              </span>
-            </div>
-            <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">
-              Dragon Ball 2.5D Canon : Le Jeu Épique
-            </h2>
-            <p className="text-sm text-zinc-300 leading-relaxed">
-              Combattez à travers les sagas canoniques d'Akira Toriyama (du 21e Tenkaichi Budōkai au
-              Chō Genki Dama contre Kid Buu), avec scénarios générés via le Wiki, Manga, Anime et
-              notices du Daizenshuu 7.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 w-full md:w-auto">
-            <Link
-              href="/games/canon"
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-amber-400 hover:bg-amber-300 px-6 py-3 font-display text-sm font-bold text-black transition-all hover:scale-[1.02] shadow-[0_0_24px_rgba(251,191,36,0.35)] focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none"
-            >
-              <Swords className="h-4 w-4" />
-              Lancer l'Histoire Canonique
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Featured Epic / Steam Showcase Banner */}
-      <div className="relative mb-6 overflow-hidden rounded-2xl border border-white/15 bg-gradient-to-r from-zinc-950 via-[#161a23] to-zinc-950 p-6 md:p-8 shadow-2xl">
-        <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
-        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="space-y-3 max-w-2xl">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full bg-amber-500/20 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-amber-400 border border-amber-500/30">
-                À la une • Émulation WASM
-              </span>
-              <span className="rounded-full bg-sky-500/20 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-sky-400 border border-sky-500/30">
-                Wii / PS2
-              </span>
-              <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[11px] font-bold uppercase tracking-wider text-emerald-400 border border-emerald-500/30">
-                1080p 60 FPS
-              </span>
-            </div>
-            <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">
-              Dragon Ball Z : Budokai Tenkaichi 3
-            </h2>
-            <p className="text-sm text-zinc-300 leading-relaxed">
-              Le jeu de combat légendaire directement exécutable dans le navigateur sans
-              installation via le moteur WebAssembly 60 FPS avec accélération WebGPU et support des
-              manettes.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0 w-full md:w-auto">
-            <Link
-              href="/games/budokai-tenkaichi-3"
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl bg-amber-500 hover:bg-amber-400 px-6 py-3 font-display text-sm font-bold text-black transition-all hover:scale-[1.02] shadow-lg focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:outline-none"
-            >
-              <Gamepad2 className="h-4 w-4" />
-              Lancer l’arène Tenkaichi
-            </Link>
-            <Link
-              href="/games/dragon-pixel"
-              className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-xl border border-white/20 bg-white/5 hover:bg-white/10 px-5 py-3 font-display text-xs font-semibold text-white transition-colors focus-visible:ring-2 focus-visible:ring-white focus-visible:outline-none"
-            >
-              Dragon Pixel 2D
-            </Link>
-          </div>
-        </div>
-      </div>
-
-      {/* Live Dragon Ball Arcade Mini-Game (Bevy 2D Canvas + Manga Trame + Episode Anime Frames) */}
-      <section id="arcade-dojo" className="mb-10">
-        <DragonArcadeEngine />
-      </section>
-
       <header className={`${styles.hero} vie-speed`}>
         <div>
           <p className={styles.eyebrow}>

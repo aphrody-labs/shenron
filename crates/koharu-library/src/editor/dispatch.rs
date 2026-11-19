@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT OR Apache-2.0
-//! The editor's commands by name, for hosts without Tauri (`koharu-sdk`, then the
+//! The editor's commands by name, for its hosts (`koharu-sdk`, then the
 //! `/api/local/koharu` bridge of `shenron-server`).
 //!
-//! Names, argument keys (camelCase, as the generated `@aphrody/shenron-koharu/protocol` sends them)
-//! and results are those of the `koharu-app` Tauri commands; a test there keeps both lists
-//! equal. Channel arguments are IPC tokens (`__CHANNEL__:<id>`) the [`Bridge`] turns into
-//! [`Sink`]s; byte results (canvas packets, thumbnails, font samples) are [`Reply::Bytes`].
+//! Names, argument keys (camelCase, as `@aphrody/shenron-koharu/protocol` sends them) and results
+//! are the editor's command contract. Channel arguments are IPC tokens (`__CHANNEL__:<id>`) the
+//! [`Bridge`] turns into [`Sink`]s; byte results (canvas packets, thumbnails, font samples) are
+//! [`Reply::Bytes`].
 
 use std::{path::PathBuf, sync::Arc};
 
@@ -24,7 +24,7 @@ use super::{
 };
 use crate::project::{GeometryUpdate, Point, TypographyUpdate};
 
-/// Every command [`dispatch`] answers, in the order of `koharu_app::COMMAND_NAMES`.
+/// Every command [`dispatch`] answers.
 pub const COMMANDS: &[&str] = &[
     "get_agent_status",
     "login_agent",
@@ -79,14 +79,14 @@ pub const COMMANDS: &[&str] = &[
     "commit_inpaint",
 ];
 
-/// A command result: JSON, or raw bytes (an `ArrayBuffer` on the client, as over Tauri).
+/// A command result: JSON, or raw bytes (an `ArrayBuffer` on the client).
 #[derive(Debug)]
 pub enum Reply {
     Json(Value),
     Bytes(Vec<u8>),
 }
 
-/// What a non-Tauri host provides to the commands: the client's channels and native file
+/// What a host provides to the commands: the client's channels and native file
 /// pickers (none: `import` and `export` report that they are unavailable).
 #[async_trait]
 pub trait Bridge: Send + Sync {
@@ -324,7 +324,7 @@ struct Run {
     run: koharu_agent::RunId,
 }
 
-/// Run one editor command by its Tauri name with its JSON arguments.
+/// Run one editor command by its name with its JSON arguments.
 pub async fn dispatch(
     editor: &Editor,
     bridge: &dyn Bridge,

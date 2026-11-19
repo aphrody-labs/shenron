@@ -9,12 +9,7 @@ homepage.workspace = true
 repository.workspace = true
 
 [dependencies]
-anyhow = { workspace = true }
 gpui-kit = { workspace = true }
-serde = { workspace = true }
-shenron-cli = { path = "../shenron-cli" }
-shenron-rag = { path = "../shenron-rag" }
-shenron-theme = { workspace = true }
 
 [dev-dependencies]
 gpui-kit = { workspace = true, features = ["test-support"] }

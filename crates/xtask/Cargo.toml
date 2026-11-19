@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 [package]
 name = "xtask"
-description = "Repository tasks of Shenron in Rust, run as `cargo xtask <task>` and through `just`: repository map, script inventory."
+description = "Repository tasks of Shenron in Rust, run as `cargo xtask <task>` and through `just`: repository map, script inventory, environment drift gate."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true
@@ -21,3 +21,5 @@ workspace = true
 [dependencies]
 anyhow = { workspace = true }
 clap = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }

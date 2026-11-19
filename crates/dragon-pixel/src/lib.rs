@@ -9,6 +9,7 @@ pub mod haptics;
 pub mod input;
 pub mod render_packet;
 pub mod roster;
+pub mod scene_layout;
 #[cfg(feature = "server")]
 pub mod server;
 pub mod session;
@@ -17,7 +18,7 @@ pub mod types;
 pub mod wasm;
 
 #[cfg(all(feature = "bevy", target_arch = "wasm32"))]
-mod bevy_view;
+pub mod bevy_view;
 
 pub use beam_clash::{BeamClashResult, BeamClashState};
 pub use canon_story::*;
@@ -133,5 +134,16 @@ mod tests {
         assert!(render_json.contains("\"camera\""));
         assert!(render_json.contains("\"arena\""));
         assert!(render_json.contains("\"player\""));
+    }
+
+    #[test]
+    fn a_beam_hurts_its_target_once_while_crossing_it() {
+        let mut engine =
+            DragonPixelEngineCore::new(FighterId::Goku, GameMode::Arcade, 1, ArenaId::Budokai);
+        for _ in 0..90 {
+            engine.step(EngineInput::default(), 1.0 / 60.0);
+        }
+        assert_eq!(engine.status, "playing");
+        assert_eq!(engine.player.hp, 100.0 - 42.0);
     }
 }

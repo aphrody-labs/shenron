@@ -1,0 +1,84 @@
+{
+  "title": "Dragon Pixel : arène",
+  "intro": "Le moteur de combat Rust de Dragon Pixel, rendu en 3D par Bevy sur WebGPU. Le combat se joue au clavier ou à la manette.",
+  "arenaLabel": "Arène de combat Dragon Pixel",
+  "canvasLabel": "Zone de jeu, cliquer pour donner le focus au clavier",
+  "launch": "Lancer le combat",
+  "loadingLabel": "Téléchargement du moteur",
+  "restart": "Recommencer",
+  "apply": "Appliquer la sélection",
+  "pause": "Pause",
+  "resume": "Reprendre",
+  "retry": "Réessayer",
+  "fighter": "Combattant",
+  "mode": "Mode",
+  "arena": "Arène",
+  "chapter": "Chapitre",
+  "modes": {
+    "arcade": "Combat libre contre Vegeta",
+    "story": "Histoire"
+  },
+  "fighters": {
+    "goku": "Son Goku",
+    "vegeta": "Vegeta",
+    "gohan": "Son Gohan",
+    "piccolo": "Piccolo",
+    "trunks": "Trunks",
+    "frieza": "Freezer",
+    "cell": "Cell",
+    "buu": "Majin Buu",
+    "yamcha": "Yamcha",
+    "krilin": "Krilin",
+    "jackie_chun": "Jackie Chun"
+  },
+  "arenas": {
+    "paozu": "Mont Paozu",
+    "budokai": "Tenkaichi Budokai",
+    "wasteland": "Terres désolées",
+    "namek": "Namek",
+    "cell_games": "Cell Games",
+    "kaiohshin": "Monde des Kaioshin"
+  },
+  "status": {
+    "idle": "Prêt. Le moteur pèse environ {size} Mo et se télécharge au lancement.",
+    "checking": "Vérification de WebGPU",
+    "loading": "Téléchargement du moteur : {percent} % ({loaded} sur {total} Mo)",
+    "starting": "Démarrage du moteur",
+    "running": "Rendu Bevy 3D sur WebGPU",
+    "fallback": "Rendu canvas 2D : WebGPU indisponible",
+    "paused": "En pause",
+    "won": "Victoire. Entrée ou Start pour recommencer.",
+    "lost": "Défaite. Entrée ou Start pour recommencer.",
+    "error": "Le moteur n'a pas pu démarrer : {reason}"
+  },
+  "noWebgpu": "WebGPU n'est pas disponible dans ce navigateur ({reason}). Le combat tourne avec le même moteur Rust, dessiné en canvas 2D, sans le rendu Bevy 3D.",
+  "noAdapter": "aucun adaptateur graphique",
+  "noApi": "navigator.gpu absent",
+  "controlsTitle": "Commandes",
+  "controls": [
+    "Déplacement : flèches ou WASD (ZQSD sur un clavier AZERTY)",
+    "Saut : W, flèche haut ou Espace",
+    "Coup : J. Coup lourd : K. Boule de ki : L",
+    "Technique spéciale : U. Ultime : I",
+    "Charger le ki : H, maintenu. Transformation : T",
+    "Garde : Maj. Disparition : V",
+    "Manette : stick ou croix directionnelle, X coup, Y coup lourd, B boule de ki, RT spécial, LT ultime, RB charge, LB garde, LB et RB transformation, clic de stick disparition"
+  ],
+  "hud": {
+    "player": "Joueur",
+    "enemy": "Adversaire",
+    "hp": "Points de vie",
+    "ki": "Ki",
+    "combo": "Enchaînement",
+    "score": "Score",
+    "time": "Temps",
+    "power": "Puissance",
+    "frames": "Images rendues",
+    "engine": "Moteur"
+  },
+  "engines": {
+    "bevy": "Bevy 3D / WebGPU",
+    "canvas": "Canvas 2D"
+  },
+  "chapterOption": "Chapitre {number}"
+}

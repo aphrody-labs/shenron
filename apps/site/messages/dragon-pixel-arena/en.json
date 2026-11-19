@@ -1,0 +1,84 @@
+{
+  "title": "Dragon Pixel: arena",
+  "intro": "The Dragon Pixel Rust combat engine, rendered in 3D by Bevy on WebGPU. Play with a keyboard or a gamepad.",
+  "arenaLabel": "Dragon Pixel combat arena",
+  "canvasLabel": "Game area, click to give it keyboard focus",
+  "launch": "Start the fight",
+  "loadingLabel": "Engine download",
+  "restart": "Restart",
+  "apply": "Apply the selection",
+  "pause": "Pause",
+  "resume": "Resume",
+  "retry": "Try again",
+  "fighter": "Fighter",
+  "mode": "Mode",
+  "arena": "Arena",
+  "chapter": "Chapter",
+  "modes": {
+    "arcade": "Free fight against Vegeta",
+    "story": "Story"
+  },
+  "fighters": {
+    "goku": "Son Goku",
+    "vegeta": "Vegeta",
+    "gohan": "Son Gohan",
+    "piccolo": "Piccolo",
+    "trunks": "Trunks",
+    "frieza": "Frieza",
+    "cell": "Cell",
+    "buu": "Majin Buu",
+    "yamcha": "Yamcha",
+    "krilin": "Krillin",
+    "jackie_chun": "Jackie Chun"
+  },
+  "arenas": {
+    "paozu": "Mount Paozu",
+    "budokai": "Tenkaichi Budokai",
+    "wasteland": "Wasteland",
+    "namek": "Namek",
+    "cell_games": "Cell Games",
+    "kaiohshin": "Kaioshin Realm"
+  },
+  "status": {
+    "idle": "Ready. The engine is about {size} MB and downloads when you start.",
+    "checking": "Checking WebGPU",
+    "loading": "Downloading the engine: {percent}% ({loaded} of {total} MB)",
+    "starting": "Starting the engine",
+    "running": "Bevy 3D rendering on WebGPU",
+    "fallback": "Canvas 2D rendering: WebGPU unavailable",
+    "paused": "Paused",
+    "won": "Victory. Press Enter or Start to restart.",
+    "lost": "Defeat. Press Enter or Start to restart.",
+    "error": "The engine could not start: {reason}"
+  },
+  "noWebgpu": "WebGPU is not available in this browser ({reason}). The fight runs on the same Rust engine, drawn on a 2D canvas, without the Bevy 3D rendering.",
+  "noAdapter": "no graphics adapter",
+  "noApi": "navigator.gpu is missing",
+  "controlsTitle": "Controls",
+  "controls": [
+    "Move: arrow keys or WASD (ZQSD on an AZERTY keyboard)",
+    "Jump: W, up arrow or Space",
+    "Punch: J. Heavy hit: K. Ki blast: L",
+    "Special technique: U. Ultimate: I",
+    "Charge ki: H, held. Transformation: T",
+    "Guard: Shift. Vanish: V",
+    "Gamepad: stick or d-pad, X punch, Y heavy hit, B ki blast, RT special, LT ultimate, RB charge, LB guard, LB and RB transformation, stick click vanish"
+  ],
+  "hud": {
+    "player": "Player",
+    "enemy": "Opponent",
+    "hp": "Health",
+    "ki": "Ki",
+    "combo": "Combo",
+    "score": "Score",
+    "time": "Time",
+    "power": "Power level",
+    "frames": "Frames rendered",
+    "engine": "Engine"
+  },
+  "engines": {
+    "bevy": "Bevy 3D / WebGPU",
+    "canvas": "Canvas 2D"
+  },
+  "chapterOption": "Chapter {number}"
+}

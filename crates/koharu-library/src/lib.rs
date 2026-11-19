@@ -1,7 +1,7 @@
 //! The Koharu engine of Shenron: projects, models, agent, rendering and page export.
 //!
 //! [`editor::Editor`] is the single owner of the editor state (open project, canvas
-//! presentation, processing jobs, agent, settings); `koharu-app` (Tauri), `koharu-sdk`
+//! presentation, processing jobs, agent, settings); `koharu-app` (GPUI Kit), `koharu-sdk`
 //! (JSON Lines) and [`Service`] are thin bindings over it. [`Library`] and [`Document`]
 //! run the pipeline on in-memory or stored documents without an editor (batch scanlation).
 //! Storage lives under Shenron's home ([`home`]). The public modules expose the individual

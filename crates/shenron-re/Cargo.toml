@@ -20,7 +20,7 @@ workspace = true
 
 [features]
 default = []
-wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen", "dep:js-sys"]
+wasm = ["dep:wasm-bindgen", "dep:serde-wasm-bindgen"]
 
 [dependencies]
 serde = { workspace = true }
@@ -33,18 +33,15 @@ md5 = { package = "md-5", version = "0.11.0" }
 memmap2 = { workspace = true }
 wasm-bindgen = { workspace = true, optional = true }
 serde-wasm-bindgen = { workspace = true, optional = true }
-js-sys = { workspace = true, optional = true }
 
 [dev-dependencies]
 tempfile = { workspace = true }
 wasm-bindgen = { workspace = true }
 serde-wasm-bindgen = { workspace = true }
-js-sys = { workspace = true }
 
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 wasm-bindgen = { workspace = true }
 serde-wasm-bindgen = { workspace = true }
-js-sys = { workspace = true }
 
 [[bin]]
 name = "shenron-re"

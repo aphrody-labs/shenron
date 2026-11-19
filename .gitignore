@@ -6,8 +6,9 @@
 # Tauri generated schemas
 /crates/*/gen/
 node_modules/
-/target/
+**/target/
 **/*.rs.bk
+rustc-ice-*.txt
 dist/
 pkg/
 /apps/server/.build/
@@ -22,11 +23,14 @@ packages/crunchyroll/bin/
 .next-*-review/
 .next-compact-home/
 out/
-coverage/
+/coverage/
+/apps/*/coverage/
 .turbo/
 .turbo-cache/
 .vercel/
-build/
+.wrangler/
+**/wrangler-dry-*/
+/build/
 *.tsbuildinfo
 next-env.d.ts
 .cache/
@@ -77,10 +81,18 @@ test-results/
 # Editor, OS and tool state
 .DS_Store
 Thumbs.db
+[Dd]esktop.ini
 *.swp
 *~
 .idea/
 .vs/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+!*.code-workspace
 .serena/
 .claude/settings.local.json
 .claude/worktrees/

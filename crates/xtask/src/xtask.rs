@@ -9,6 +9,9 @@ use std::process::{Command, ExitCode};
 use anyhow::{Context, Result, bail};
 use clap::{Parser, Subcommand};
 
+mod environment;
+mod workflows;
+
 #[derive(Parser)]
 #[command(name = "xtask", about = "Shenron repository tasks")]
 struct Cli {
@@ -29,6 +32,18 @@ enum Task {
         #[arg(long)]
         orphans: bool,
     },
+    /// Write .github/workflows/*.yml from crates/xtask/src/workflows.rs; with --check, fail when a
+    /// file differs from its definition or has none.
+    Workflows {
+        #[arg(long)]
+        check: bool,
+    },
+    /// Fail when a consumer of a pin (rust-toolchain.toml, package.json, Dockerfile.build,
+    /// deploy/docker) disagrees with deploy/environment.json.
+    EnvCheck,
+    /// Fail when this host's rustc or Bun (version, channel, revision) differs from
+    /// deploy/environment.json.
+    EnvVerifyHost,
 }
 
 fn main() -> ExitCode {
@@ -46,6 +61,9 @@ fn run(cli: Cli) -> Result<ExitCode> {
     match cli.task {
         Task::Map { check } => map(&root, check),
         Task::Scripts { orphans } => scripts(&root, orphans),
+        Task::Workflows { check } => workflows::run(&root, check),
+        Task::EnvCheck => environment::check(&root),
+        Task::EnvVerifyHost => environment::verify_host(&root),
     }
 }
 
@@ -100,7 +118,6 @@ fn tier(area: &str) -> &'static str {
     let top = area.split('/').next().unwrap_or(area);
     match top {
         "(root)" => "config",
-        "third_party" => "vendored",
         "data" | "themes" | "templates" => "content",
         "docs" | "research_notes" | "reports" | "replica" => "docs",
         "deploy" | "scripts" | ".github" | "migration" => "ops",
@@ -117,7 +134,6 @@ fn gate(area: &str) -> String {
         },
         (Some("apps" | "packages"), Some(_)) => format!("bun test {area}"),
         (Some("scripts"), None) => "bun test scripts".to_string(),
-        (Some("third_party"), None) => "-".to_string(),
         (Some("docs"), None) => "link check".to_string(),
         _ => "just check".to_string(),
     }
@@ -193,7 +209,7 @@ fn scripts(root: &Path, orphans_only: bool) -> Result<ExitCode> {
         let candidate = path == "justfile"
             || path.contains("Dockerfile")
             || extension(path).is_some_and(|extension| CORPUS_EXTENSIONS.contains(&extension));
-        if !candidate || path.starts_with("third_party/") {
+        if !candidate {
             continue;
         }
         let text = git(root, &["show", &format!("HEAD:{path}")])?;

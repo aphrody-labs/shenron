@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use crate::combat::DragonPixelEngineCore;
-use crate::input::EngineInput;
+use crate::input::{EngineInput, GamepadType, parse_standard_gamepad};
 use crate::types::{ArenaId, FighterId, GameMode};
 
 #[cfg(target_arch = "wasm32")]
@@ -77,5 +77,29 @@ impl DragonPixelEngineWasm {
     /// Renvoie le statut actuel du jeu ("playing", "won", "lost").
     pub fn get_status(&self) -> String {
         self.core.status.clone()
+    }
+}
+
+/// Maps a Standard Gamepad snapshot (stick axes and pressed flags in W3C order) to the JSON of an
+/// engine input, so the canvas view uses the same mapper as the Bevy view.
+#[cfg_attr(target_arch = "wasm32", wasm_bindgen)]
+pub fn map_standard_gamepad(axes: &[f32], pressed: &[u8], deadzone: f32) -> String {
+    let buttons: Vec<bool> = pressed.iter().map(|state| *state != 0).collect();
+    let input = parse_standard_gamepad(axes, &buttons, deadzone, GamepadType::Generic);
+    serde_json::to_string(&input).unwrap_or_else(|_| "{}".into())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn gamepad_snapshot_maps_to_engine_input_json() {
+        let mut pressed = [0_u8; 16];
+        pressed[2] = 1;
+        let json = map_standard_gamepad(&[-0.9, 0.0], &pressed, 0.15);
+        let input: EngineInput = serde_json::from_str(&json).unwrap_or_default();
+        assert!(input.left && input.punch);
+        assert!(!input.right);
     }
 }

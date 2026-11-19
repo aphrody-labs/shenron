@@ -1,0 +1,8 @@
+{
+  "projectId": "7fa74e1c-ff50-4748-92f4-f914cc08c5a0",
+  "shape": "package",
+  "pkg": "@aphrody/shenron-ui-ds",
+  "globalName": "ShenronUI",
+  "srcDir": "packages/ui/ds",
+  "buildCmd": "bun packages/ui/scripts/build-ds-dist.ts"
+}
