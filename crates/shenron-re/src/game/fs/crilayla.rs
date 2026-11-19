@@ -8,6 +8,15 @@ use crate::game::error::{ReError, Result};
 
 pub const CRILAYLA_MAGIC: &[u8; 8] = b"CRILAYLA";
 
+fn le_u32(input: &[u8], offset: usize) -> Result<u32> {
+    let end = offset + 4;
+    input
+        .get(offset..end)
+        .and_then(|bytes| <[u8; 4]>::try_from(bytes).ok())
+        .map(u32::from_le_bytes)
+        .ok_or(ReError::BufferTooSmall { required: end, available: input.len() })
+}
+
 /// Decompresses a CRILAYLA-compressed buffer with standard 16-byte header into raw uncompressed bytes.
 pub fn decompress_crilayla(input: &[u8]) -> Result<Vec<u8>> {
     if input.len() < 16 {
@@ -21,8 +30,8 @@ pub fn decompress_crilayla(input: &[u8]) -> Result<Vec<u8>> {
         });
     }
 
-    let uncompressed_size = u32::from_le_bytes(input[8..12].try_into().unwrap()) as usize;
-    let uncompressed_header_offset = u32::from_le_bytes(input[12..16].try_into().unwrap()) as usize;
+    let uncompressed_size = le_u32(input, 8)? as usize;
+    let uncompressed_header_offset = le_u32(input, 12)? as usize;
 
     let total_uncompressed_size = uncompressed_size + 0x100;
     let mut output = vec![0u8; total_uncompressed_size];

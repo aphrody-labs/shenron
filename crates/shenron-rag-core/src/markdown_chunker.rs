@@ -18,8 +18,10 @@ use crate::{
 
 pub struct MarkdownChunker;
 
-static ATX: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^(#{1,6})\s+(.+?)\s*#*$").unwrap());
-static SETEXT: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^(=+|-+)\s*$").unwrap());
+static ATX: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^(#{1,6})\s+(.+?)\s*#*$").expect("static regex is valid"));
+static SETEXT: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^(=+|-+)\s*$").expect("static regex is valid"));
 
 struct Section {
     trail: String,

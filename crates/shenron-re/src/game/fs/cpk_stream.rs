@@ -243,12 +243,12 @@ fn checked_slice(data: &[u8], offset: usize, size: usize) -> Result<&[u8]> {
     data.get(offset..end).ok_or(ReError::BufferTooSmall { required: end, available: data.len() })
 }
 
-fn be_u16(data: &[u8], off: usize) -> Result<u16> {
+pub(super) fn be_u16(data: &[u8], off: usize) -> Result<u16> {
     let s = checked_slice(data, off, 2)?;
     Ok(u16::from_be_bytes([s[0], s[1]]))
 }
 
-fn be_u32(data: &[u8], off: usize) -> Result<u32> {
+pub(super) fn be_u32(data: &[u8], off: usize) -> Result<u32> {
     let s = checked_slice(data, off, 4)?;
     Ok(u32::from_be_bytes([s[0], s[1], s[2], s[3]]))
 }

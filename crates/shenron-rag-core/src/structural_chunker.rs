@@ -27,27 +27,34 @@ impl StructuralChunker {
     }
 }
 
-static PY_DECL: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^(?:def|class)\s+([A-Za-z_]\w*)").unwrap());
+static PY_DECL: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^(?:def|class)\s+([A-Za-z_]\w*)").expect("static regex is valid")
+});
 static YAML_KEY: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^([A-Za-z0-9_.\-]+)\s*:").unwrap());
-static TOML_TABLE: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"^\[\[?([^\]]+)\]\]?").unwrap());
+    LazyLock::new(|| Regex::new(r"^([A-Za-z0-9_.\-]+)\s*:").expect("static regex is valid"));
+static TOML_TABLE: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r"^\[\[?([^\]]+)\]\]?").expect("static regex is valid"));
 static GO_DECL: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"^func\s+(?:\([^)]*\)\s*)?([A-Za-z_]\w*)|^type\s+([A-Za-z_]\w*)").unwrap()
+    Regex::new(r"^func\s+(?:\([^)]*\)\s*)?([A-Za-z_]\w*)|^type\s+([A-Za-z_]\w*)")
+        .expect("static regex is valid")
 });
 static JVM_DECL: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"\b(?:class|interface|enum|record|object|struct)\s+([A-Za-z_]\w*)").unwrap()
+    Regex::new(r"\b(?:class|interface|enum|record|object|struct)\s+([A-Za-z_]\w*)")
+        .expect("static regex is valid")
 });
 static C_DECL: LazyLock<Regex> = LazyLock::new(|| {
     Regex::new(r"\b(?:struct|class|enum|union)\s+([A-Za-z_]\w*)|^[A-Za-z_][\w:<>,\*&\s]*\s([A-Za-z_]\w*)\s*\([^;{]*\)\s*\{?\s*$")
-        .unwrap()
+        .expect("static regex is valid")
 });
 static SWIFT_DECL: LazyLock<Regex> = LazyLock::new(|| {
-    Regex::new(r"\b(?:func|class|struct|enum|protocol|extension)\s+([A-Za-z_]\w*)").unwrap()
+    Regex::new(r"\b(?:func|class|struct|enum|protocol|extension)\s+([A-Za-z_]\w*)")
+        .expect("static regex is valid")
 });
-static SHELL_FN: LazyLock<Regex> =
-    LazyLock::new(|| Regex::new(r"^(?:function\s+)?([A-Za-z_]\w*)\s*\(\)\s*\{?").unwrap());
-static JSON_KEY: LazyLock<Regex> = LazyLock::new(|| Regex::new(r#"^\s*"([^"]+)"\s*:"#).unwrap());
+static SHELL_FN: LazyLock<Regex> = LazyLock::new(|| {
+    Regex::new(r"^(?:function\s+)?([A-Za-z_]\w*)\s*\(\)\s*\{?").expect("static regex is valid")
+});
+static JSON_KEY: LazyLock<Regex> =
+    LazyLock::new(|| Regex::new(r#"^\s*"([^"]+)"\s*:"#).expect("static regex is valid"));
 
 fn first_capture(re: &Regex, line: &str) -> Option<Option<String>> {
     re.captures(line).map(|c| c.iter().skip(1).flatten().next().map(|m| m.as_str().to_string()))

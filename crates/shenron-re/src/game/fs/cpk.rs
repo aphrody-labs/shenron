@@ -5,6 +5,7 @@
 //! directory hierarchies, and file extraction with transparent CRILAYLA decompression.
 
 use crate::game::error::{ReError, Result};
+use crate::game::fs::cpk_stream::{be_u16, be_u32};
 use crate::game::fs::crilayla::decompress_crilayla;
 use std::collections::HashMap;
 
@@ -334,12 +335,12 @@ fn parse_utf_table(data: &[u8]) -> Result<UtfParsedTable> {
         });
     }
 
-    let rows_offset = u32::from_be_bytes(data[8..12].try_into().unwrap()) as usize + 8;
-    let strings_offset = u32::from_be_bytes(data[12..16].try_into().unwrap()) as usize + 8;
-    let _data_offset = u32::from_be_bytes(data[16..20].try_into().unwrap()) as usize + 8;
-    let num_columns = u16::from_be_bytes(data[24..26].try_into().unwrap()) as usize;
-    let row_length = u16::from_be_bytes(data[26..28].try_into().unwrap()) as usize;
-    let num_rows = u32::from_be_bytes(data[28..32].try_into().unwrap()) as usize;
+    let rows_offset = be_u32(data, 8)? as usize + 8;
+    let strings_offset = be_u32(data, 12)? as usize + 8;
+    let _data_offset = be_u32(data, 16)? as usize + 8;
+    let num_columns = be_u16(data, 24)? as usize;
+    let row_length = be_u16(data, 26)? as usize;
+    let num_rows = be_u32(data, 28)? as usize;
 
     let strings_pool = if strings_offset < data.len() { &data[strings_offset..] } else { &[] };
 
@@ -352,8 +353,7 @@ fn parse_utf_table(data: &[u8]) -> Result<UtfParsedTable> {
         }
         let flag = data[cursor];
         cursor += 1;
-        let name_str_offset =
-            u32::from_be_bytes(data[cursor..cursor + 4].try_into().unwrap()) as usize;
+        let name_str_offset = be_u32(data, cursor)? as usize;
         cursor += 4;
         let col_name = read_null_terminated_string(strings_pool, name_str_offset);
 
@@ -417,35 +417,33 @@ fn read_utf_value(slice: &[u8], type_id: u8, strings_pool: &[u8]) -> (String, us
         1 => (slice.first().map(|&b| b as i8).unwrap_or(0).to_string(), 1), // i8
         2 => {
             // u16
-            if slice.len() >= 2 {
-                (u16::from_be_bytes(slice[0..2].try_into().unwrap()).to_string(), 2)
-            } else {
-                ("0".into(), slice.len())
+            match slice.first_chunk() {
+                Some(bytes) => (u16::from_be_bytes(*bytes).to_string(), 2),
+                None => ("0".into(), slice.len()),
             }
         },
         4 => {
             // u32
-            if slice.len() >= 4 {
-                (u32::from_be_bytes(slice[0..4].try_into().unwrap()).to_string(), 4)
-            } else {
-                ("0".into(), slice.len())
+            match slice.first_chunk() {
+                Some(bytes) => (u32::from_be_bytes(*bytes).to_string(), 4),
+                None => ("0".into(), slice.len()),
             }
         },
         6 => {
             // u64
-            if slice.len() >= 8 {
-                (u64::from_be_bytes(slice[0..8].try_into().unwrap()).to_string(), 8)
-            } else {
-                ("0".into(), slice.len())
+            match slice.first_chunk() {
+                Some(bytes) => (u64::from_be_bytes(*bytes).to_string(), 8),
+                None => ("0".into(), slice.len()),
             }
         },
         0x0A => {
             // String (u32 offset into string pool)
-            if slice.len() >= 4 {
-                let off = u32::from_be_bytes(slice[0..4].try_into().unwrap()) as usize;
-                (read_null_terminated_string(strings_pool, off), 4)
-            } else {
-                (String::new(), slice.len())
+            match slice.first_chunk() {
+                Some(bytes) => {
+                    let off = u32::from_be_bytes(*bytes) as usize;
+                    (read_null_terminated_string(strings_pool, off), 4)
+                },
+                None => (String::new(), slice.len()),
             }
         },
         0x0B => {

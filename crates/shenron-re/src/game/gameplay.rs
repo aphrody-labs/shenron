@@ -182,6 +182,10 @@ fn calcsize(format: &str) -> usize {
     size
 }
 
+fn head<const N: usize>(raw: [u8; 8]) -> [u8; N] {
+    std::array::from_fn(|index| raw[index])
+}
+
 fn unpack(format: &str, bytes: &[u8], big_endian: bool) -> Vec<Py> {
     let mut values = Vec::new();
     let mut cursor = 0;
@@ -222,26 +226,14 @@ fn unpack(format: &str, bytes: &[u8], big_endian: bool) -> Vec<Py> {
                 },
                 'b' => Py::Int(i128::from(take(&mut cursor, 1)[0] as i8)),
                 'B' | 'c' | '?' => Py::Int(i128::from(take(&mut cursor, 1)[0])),
-                'h' => Py::Int(i128::from(i16::from_le_bytes(
-                    take(&mut cursor, 2)[..2].try_into().unwrap(),
-                ))),
-                'H' => Py::Int(i128::from(u16::from_le_bytes(
-                    take(&mut cursor, 2)[..2].try_into().unwrap(),
-                ))),
-                'i' | 'l' => Py::Int(i128::from(i32::from_le_bytes(
-                    take(&mut cursor, 4)[..4].try_into().unwrap(),
-                ))),
-                'I' | 'L' => Py::Int(i128::from(u32::from_le_bytes(
-                    take(&mut cursor, 4)[..4].try_into().unwrap(),
-                ))),
+                'h' => Py::Int(i128::from(i16::from_le_bytes(head(take(&mut cursor, 2))))),
+                'H' => Py::Int(i128::from(u16::from_le_bytes(head(take(&mut cursor, 2))))),
+                'i' | 'l' => Py::Int(i128::from(i32::from_le_bytes(head(take(&mut cursor, 4))))),
+                'I' | 'L' => Py::Int(i128::from(u32::from_le_bytes(head(take(&mut cursor, 4))))),
                 'q' => Py::Int(i128::from(i64::from_le_bytes(take(&mut cursor, 8)))),
                 'Q' => Py::Int(i128::from(u64::from_le_bytes(take(&mut cursor, 8)))),
-                'e' => Py::Float(half_to_f64(u16::from_le_bytes(
-                    take(&mut cursor, 2)[..2].try_into().unwrap(),
-                ))),
-                'f' => Py::Float(f64::from(f32::from_le_bytes(
-                    take(&mut cursor, 4)[..4].try_into().unwrap(),
-                ))),
+                'e' => Py::Float(half_to_f64(u16::from_le_bytes(head(take(&mut cursor, 2))))),
+                'f' => Py::Float(f64::from(f32::from_le_bytes(head(take(&mut cursor, 4))))),
                 'd' => Py::Float(f64::from_le_bytes(take(&mut cursor, 8))),
                 other => panic!("unsupported struct code {other}"),
             };

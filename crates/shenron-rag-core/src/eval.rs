@@ -393,7 +393,7 @@ pub struct GateFailure {
 
 static GATE_RE: std::sync::LazyLock<Regex> = std::sync::LazyLock::new(|| {
     Regex::new(r"^(recall@(\d+)|mrr|ndcg(?:@(\d+))?)\s*(>=|<=|==|>|<)\s*([0-9]*\.?[0-9]+)$")
-        .unwrap()
+        .expect("static regex is valid")
 });
 
 impl Gate {

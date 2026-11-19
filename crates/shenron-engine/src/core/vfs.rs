@@ -265,10 +265,8 @@ impl VirtualFileSystem {
         archive_name: &str,
         buffer: Vec<u8>,
     ) -> Result<usize, std::io::Error> {
-        if self.xenoverse_vfs.is_none() {
-            self.xenoverse_vfs = Some(Arc::new(Mutex::new(XenoverseVfs::new())));
-        }
-        let xv_vfs = self.xenoverse_vfs.as_ref().unwrap();
+        let xv_vfs =
+            self.xenoverse_vfs.get_or_insert_with(|| Arc::new(Mutex::new(XenoverseVfs::new())));
         xv_vfs
             .lock()
             .mount_cpk_memory(archive_name, buffer)

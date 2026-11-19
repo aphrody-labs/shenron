@@ -224,9 +224,12 @@ impl World {
 
     /// Spawns an empty entity and returns its handle.
     pub fn spawn_empty(&mut self) -> Entity {
-        let (index, generation) = if let Some(idx) = self.free_entities.pop() {
-            let gen_val = self.entities[idx as usize].unwrap();
-            (idx, gen_val)
+        let recycled = self
+            .free_entities
+            .pop()
+            .and_then(|idx| self.entities[idx as usize].map(|generation| (idx, generation)));
+        let (index, generation) = if let Some(recycled) = recycled {
+            recycled
         } else {
             let idx = self.entities.len() as u32;
             let gen_val = 1;
@@ -304,14 +307,12 @@ impl World {
         new_sig.insert(comp_id);
         let new_arch_id = self.get_or_create_archetype(ArchetypeSignature(new_sig));
 
-        // Create column if it doesn't exist
         let new_arch = &mut self.archetypes[new_arch_id];
-        new_arch.columns.entry(comp_id).or_insert_with(Column::new::<T>);
 
         // Add entity and component to new archetype
         let new_row = new_arch.entities.len();
         new_arch.entities.push(entity);
-        new_arch.columns.get_mut(&comp_id).unwrap().push(component);
+        new_arch.columns.entry(comp_id).or_insert_with(Column::new::<T>).push(component);
 
         self.locations[idx] = Some(EntityLocation { archetype_id: new_arch_id, row: new_row });
     }

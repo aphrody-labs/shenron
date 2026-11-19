@@ -24,7 +24,7 @@ use std::collections::{HashMap, VecDeque};
 #[cfg(not(target_arch = "wasm32"))]
 use std::fs::File;
 use std::path::{Path, PathBuf};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc, Mutex, MutexGuard, PoisonError};
 
 /// Default cache budget for Xenoverse CPK archives (2 GiB).
 pub const DEFAULT_XENOVERSE_CACHE_BUDGET: usize = 2 * 1024 * 1024 * 1024;
@@ -199,6 +199,10 @@ impl XenoverseVfs {
         }
     }
 
+    fn cache(&self) -> MutexGuard<'_, CpkLruCache> {
+        self.cache.lock().unwrap_or_else(PoisonError::into_inner)
+    }
+
     /// Mounts a Dragon Ball Xenoverse 2 game directory.
     ///
     /// Automatically detects and mounts:
@@ -271,7 +275,7 @@ impl XenoverseVfs {
             cpk_candidates.extend(movie_cpks);
         }
 
-        // Mount each discovered CPK
+        // An unreadable archive must not stop the mount of the others.
         for cpk_path in cpk_candidates {
             self.mount_cpk_file(&cpk_path).ok();
         }
@@ -389,7 +393,7 @@ impl XenoverseVfs {
         }
 
         // Add to LRU cache
-        self.cache.lock().unwrap().insert(archive_name, loaded);
+        self.cache().insert(archive_name, loaded);
 
         Ok(added)
     }
@@ -428,7 +432,7 @@ impl XenoverseVfs {
             }
         }
 
-        self.cache.lock().unwrap().insert(name.to_string(), loaded);
+        self.cache().insert(name.to_string(), loaded);
         Ok(added)
     }
 
@@ -480,7 +484,7 @@ impl XenoverseVfs {
     /// Retrieves an archive from LRU cache or reloads it from disk if evicted.
     fn get_or_load_cpk(&self, archive_name: &str) -> Result<Arc<LoadedCpk>> {
         // Fast path: cache hit
-        if let Some(loaded) = self.cache.lock().unwrap().get(archive_name) {
+        if let Some(loaded) = self.cache().get(archive_name) {
             return Ok(loaded);
         }
 
@@ -508,7 +512,7 @@ impl XenoverseVfs {
 
             let loaded = Arc::new(LoadedCpk { name: archive_name.to_string(), archive, storage });
 
-            self.cache.lock().unwrap().insert(archive_name.to_string(), loaded.clone());
+            self.cache().insert(archive_name.to_string(), loaded.clone());
             return Ok(loaded);
         }
 
@@ -586,14 +590,14 @@ impl XenoverseVfs {
 
     /// Returns current CPK LRU cache statistics.
     pub fn cache_stats(&self) -> CacheCpkStats {
-        self.cache.lock().unwrap().stats()
+        self.cache().stats()
     }
 
     /// Clears cache and index.
     pub fn clear(&mut self) {
         self.index.clear();
         self.mounted_cpks.clear();
-        self.cache.lock().unwrap().clear();
+        self.cache().clear();
     }
 }
 

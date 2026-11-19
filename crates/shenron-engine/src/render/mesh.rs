@@ -613,7 +613,7 @@ pub fn pick_triangle(ray: &Ray3d, model: &Model) -> Option<(usize, f32)> {
             let v2 = Vec3::from_array(prim.positions[tri[2] as usize]);
 
             if let Some(t) = ray.intersect_triangle(v0, v1, v2) {
-                if closest_hit.is_none() || t < closest_hit.unwrap().1 {
+                if closest_hit.is_none_or(|(_, best)| t < best) {
                     closest_hit = Some((p_idx, t));
                 }
             }
