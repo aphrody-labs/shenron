@@ -1,6 +1,7 @@
 /* oxlint-disable jsx-a11y/prefer-tag-over-role, react/set-state-in-effect -- legacy UI kept as-is (behavior-preserving lint pass) */
 "use client";
 
+import { useFocusTrap } from "@aphrody/shenron-ui/use-focus-trap";
 import Image from "next/image";
 import { useCallback, useEffect, useRef, useState, type DragEvent } from "react";
 import { useRouter } from "next/navigation";
@@ -77,25 +78,23 @@ export function GalerieMedias({ medias, bucket }: { medias: Media[]; bucket: str
     [medias.length],
   );
 
+  // Focus gardé dans la visionneuse, Échap pour fermer, défilement du fond bloqué,
+  // focus rendu à la vignette d'origine.
+  const visionneuse = useRef<HTMLDivElement>(null);
+  useFocusTrap(visionneuse, ouvert !== null, () => setOuvert(null));
+
   useEffect(() => {
     if (ouvert === null) return;
     const touche = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOuvert(null);
-      else if (e.key === "ArrowRight") deplacer(1);
+      if (e.key === "ArrowRight") deplacer(1);
       else if (e.key === "ArrowLeft") deplacer(-1);
-      else if (e.key === " ") {
+      else if (e.key === " " && !(e.target instanceof HTMLButtonElement)) {
         e.preventDefault();
         setZoom((z) => !z);
       }
     };
     window.addEventListener("keydown", touche);
-    // Le fond ne doit pas défiler sous la visionneuse.
-    const avant = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      window.removeEventListener("keydown", touche);
-      document.body.style.overflow = avant;
-    };
+    return () => window.removeEventListener("keydown", touche);
   }, [ouvert, deplacer]);
 
   // ── Dépôt en lot ───────────────────────────────────────────────────────────
@@ -356,7 +355,9 @@ export function GalerieMedias({ medias, bucket }: { medias: Media[]; bucket: str
       {/* Visionneuse */}
       {media ? (
         <div
-          className="fixed inset-0 z-50 bg-black/95 flex flex-col"
+          ref={visionneuse}
+          tabIndex={-1}
+          className="fixed inset-0 z-50 bg-black/95 flex flex-col focus:outline-none"
           role="dialog"
           aria-modal="true"
           aria-label={`Média ${media.id}`}

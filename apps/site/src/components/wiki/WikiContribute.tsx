@@ -22,8 +22,9 @@
  * riche et ses CSS dans le paquet d'une page publique.
  */
 import { Chargement, CocheCercle, Crayon, Croix } from "@aphrody/shenron-ui/icones";
+import { useFocusTrap } from "@aphrody/shenron-ui/use-focus-trap";
 import { usePathname } from "next/navigation";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { SignInDiscord } from "@/components/SignInDiscord";
 import { PlainField } from "@/components/editor/PlainField";
 import { champPlanche, numeroDePlanche } from "@/lib/databook-pages-shared";
@@ -101,14 +102,11 @@ export function WikiContribute({
           }
         : CONTRIBUTABLE_COLUMNS[column];
 
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && phase !== "sending") setOpen(false);
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, [open, phase]);
+  // Focus gardé dans la modale, Échap pour fermer, focus rendu au bouton à la fermeture.
+  const panneau = useRef<HTMLDivElement>(null);
+  useFocusTrap(panneau, open, () => {
+    if (phase !== "sending") setOpen(false);
+  });
 
   // Droit de contribution du périmètre (wiki / databooks), réglé depuis
   // l'admin. Chargé à l'ouverture, jamais au rendu de la fiche : la réponse
@@ -249,7 +247,9 @@ export function WikiContribute({
     <>
       {bouton}
       <div
-        className="fixed inset-0 z-[120] flex items-end justify-center bg-black/75 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+        ref={panneau}
+        tabIndex={-1}
+        className="fixed inset-0 z-[120] flex items-end justify-center bg-black/75 p-0 backdrop-blur-sm focus:outline-none sm:items-center sm:p-4"
         role="dialog"
         aria-modal="true"
         aria-label={`Proposer une correction — ${champ.label}`}
