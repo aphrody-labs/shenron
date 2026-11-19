@@ -21,8 +21,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default function PageDragonPixel() {
   return (
-    <main className="min-h-screen bg-slate-950">
+    <div className="min-h-screen bg-slate-950">
       <DragonWorld standalone={env.SHENRON_SITE_SURFACE === "game"} />
-    </main>
+    </div>
   );
 }

@@ -33,9 +33,9 @@ export default async function TvHubPage({
   }
   if (!ep) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center p-8">
-        <p>Le catalogue TV est en cours de synchronisation.</p>
-      </main>
+      <div className="min-h-screen bg-black text-white flex items-center justify-center p-8">
+        <h1 className="text-base font-normal">Le catalogue TV est en cours de synchronisation.</h1>
+      </div>
     );
   }
 

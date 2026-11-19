@@ -16,8 +16,8 @@ export const metadata: Metadata = {
 
 export default function Bt3Page() {
   return (
-    <main className="fixed inset-0 z-50 flex h-screen w-screen flex-col items-center justify-center overflow-hidden bg-black select-none">
+    <div className="fixed inset-0 z-50 flex h-screen w-screen flex-col items-center justify-center overflow-hidden bg-black select-none">
       <Bt3Player />
-    </main>
+    </div>
   );
 }

@@ -28,7 +28,7 @@ export function GameSurfaceLayout({ children }: { children: ReactNode }) {
       >
         <LocaleProvider>
           <ChunkReloadGuard />
-          {children}
+          <main style={{ display: "contents" }}>{children}</main>
         </LocaleProvider>
       </body>
     </html>

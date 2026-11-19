@@ -24,8 +24,8 @@ export default async function CanonGamePage({ searchParams }: CanonPageProps) {
   const initialChapterId = params.chapter ? parseInt(params.chapter, 10) : 6;
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white p-4 md:p-8 flex flex-col items-center justify-center">
+    <div className="min-h-screen bg-slate-950 text-white p-4 md:p-8 flex flex-col items-center justify-center">
       <CanonGameView initialChapterId={isNaN(initialChapterId) ? 6 : initialChapterId} />
-    </main>
+    </div>
   );
 }

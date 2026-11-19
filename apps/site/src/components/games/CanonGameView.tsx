@@ -423,7 +423,7 @@ export function CanonGameView({ initialChapterId = 6 }: { initialChapterId?: num
                 </span>
               </div>
 
-              <h2 className="text-2xl font-black mb-4 tracking-tight">{currentChapter.title}</h2>
+              <h1 className="text-2xl font-black mb-4 tracking-tight">{currentChapter.title}</h1>
 
               <div className="space-y-4 mb-6">
                 {formatMangaDialogues(currentChapter.dialogue_intro, "bilingual").map(

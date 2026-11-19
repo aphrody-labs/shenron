@@ -144,7 +144,7 @@ export function TvWatchView({
       )}
 
       {/* Main Watch Layout (YouTube Responsive Grid) */}
-      <main className="max-w-[1780px] mx-auto p-4 lg:p-6">
+      <div className="max-w-[1780px] mx-auto p-4 lg:p-6">
         {isTheater ? (
           /* Theater Layout: Full Width Player on Top */
           <div className="flex flex-col gap-6">
@@ -218,7 +218,7 @@ export function TvWatchView({
             </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

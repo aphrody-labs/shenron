@@ -347,7 +347,7 @@ export function DesktopHome() {
   }
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10">
       <header className="flex flex-col gap-2">
         <h1 className="text-3xl font-bold">{t("title")}</h1>
         <p className="text-[var(--dbz-text-muted,#a39e93)]">
@@ -536,6 +536,6 @@ export function DesktopHome() {
           <span className="text-sm text-os/80">{t("tools.siteText")}</span>
         </button>
       </section>
-    </main>
+    </div>
   );
 }
