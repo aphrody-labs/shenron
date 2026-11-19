@@ -74,4 +74,5 @@ Les étapes 1 à 5 sont de l'infrastructure (quelques semaines). Les étapes 6 e
 
 - Positives : plus aucune panne due à un quota tiers ; un seul langage du bord jusqu'aux services ; déploiements reproductibles et signés ; plus d'accès shell nécessaire en production.
 - Négatives : il faut écrire et maintenir `shenron-edge` et `shenron-deployd` ; la protection DDoS dépend d'OVH à l'étape 8.
+- Versions de référence : [`docs/research/rust-stack-2026-11-19.md`](../research/rust-stack-2026-11-19.md) (relevé daté, à relancer avant de figer une dépendance). Avancement par étape : `.claude/goal.json` et `migration/rust.toml`.
 - Suivi : défaut restant côté client, l'erreur React #418 (hydratation) sur l'accueil, à corriger dans `apps/site` puis à vérifier dans `crates/shenron-site`.
