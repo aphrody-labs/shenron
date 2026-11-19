@@ -76,3 +76,12 @@ Les étapes 1 à 5 sont de l'infrastructure (quelques semaines). Les étapes 6 e
 - Négatives : il faut écrire et maintenir `shenron-edge` et `shenron-deployd` ; la protection DDoS dépend d'OVH à l'étape 8.
 - Versions de référence : [`docs/research/rust-stack-2026-11-19.md`](../research/rust-stack-2026-11-19.md) (relevé daté, à relancer avant de figer une dépendance). Avancement par étape : `.claude/goal.json` et `migration/rust.toml`.
 - Suivi : défaut restant côté client, l'erreur React #418 (hydratation) sur l'accueil, à corriger dans `apps/site` puis à vérifier dans `crates/shenron-site`.
+
+## État mesuré au 2026-11-19 (annexe datée)
+
+Relevé fait en fin de journée ; il ne remplace pas la décision, il dit où l'écrit et la réalité divergent.
+
+- **Garage** : le cluster compte deux zones actives (`fr1`, `fr2`, facteur de réplication 2). `prd` a rejoint puis a été arrêté après une coupure de ses tunnels WireGuard pendant la resynchronisation (`docs/runbooks/cdn-garage-cutover.md`). Le tableau ci-dessus écrit « trois nœuds » : c'est la cible, pas l'état.
+- **Site** : la ligne « Vercel » du tableau et l'étape 7 prévoient Leptos (ADR 0001), alors que l'ADR 0008 remplace Leptos et Dioxus par `gpui-kit`. Les deux textes se contredisent ; la décision est ouverte, voir `docs/plans/base-ui-vers-gpui.md`. Les pages publiques doivent rester rendues côté serveur en HTML (indexation, lecteurs d'écran), ce qu'un canevas GPUI ne fournit pas.
+- **Déploiement** : `shenron-deployd` (manifestes signés, bascule atomique, retour arrière) est prouvé sur `fr2` avec un service factice ; `.github/workflows/server-artifact.yml` reste inerte tant que `AUTO_DEPLOY_ENABLED` n'est pas `true`. La construction domine le délai : le build de l'image du 2026-11-19 a tourné plus de 39 minutes (12:25 à 13:04) avant d'être arrêté, sur un hôte chargé. Un déploiement en une minute après un push suppose des artefacts déjà construits et signés par CI ; la minute ne couvre que téléchargement, vérification et bascule.
+- **Dépendances Rust déjà retenues** (relevé `docs/research/rust-stack-2026-11-19.md`) : `pingora` 0.9.1, `rustls` 0.23.46, `instant-acme` 0.8.5, `ed25519-dalek` 3.0.0, `axum` 0.8.9, `tokio` 1.54.1. Aucune nouvelle brique n'est à écrire quand une crate publiée couvre le besoin.
