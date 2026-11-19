@@ -97,3 +97,11 @@ Le script [`scripts/ops/dbs-beerus-workflow.ts`](../../scripts/ops/dbs-beerus-wo
    - Calculer le SHA-256 du fichier `source.mp4`, copier l'objet vers `_objects/<sha256>` via `rclone`, et fusionner le shard correspondant via `buildManifestShards`.
 5. **Upsert PostgreSQL et verification** :
    - Mettre a jour la ligne de l'episode dans PostgreSQL (`players`, `subtitles`, `availability` Crunchyroll) en transaction et verifier la reponse HTTP `200`/`206` sur `https://cdn.dragonballfr.com/media/episodes/<id>/<sha256>/source.mp4`.
+
+## 5. Episodes 880 and later: metadata only (2026-11-19)
+
+From episode 6 (`880`, `GE00389318JAJP`, « La Bataille des dieux », published by Crunchyroll France on 2026-11-15 at 17:00 UTC), new episodes are added by `.github/workflows/beerus-sync.yml` (Sunday 17:30 UTC and on demand). It runs `scripts/ops/beerus-sync.ts --apply` on the fr1 runner, which writes `bot.db_episodes` on prd over ssh under the deploy lock: titles, air date, arc and official source link. The watch offer is the Crunchyroll page. Steps 2 to 4 of section 4 (download with account cookies, re-publication of `source.mp4` and subtitles on the CDN) are not part of this workflow: they copy a licensed stream and stay out of any automation.
+
+Caches after a new row: the episode API answers at once; the fr2 nginx cache keeps a 404 for 1 minute and a 200 for 10 minutes; the Next episode lists revalidate after 1 hour. Redis holds no episode cache.
+
+The table in 4.1 does not match production: the dates and French titles there differ from `bot.db_episodes` and from the Crunchyroll pages (episode 1 aired on 2026-10-11, title « Le dieu de la Destruction »). Production and `scripts/ops/dbs-beerus-workflow.ts` are the reference.

@@ -1,0 +1,43 @@
+name: Beerus episode sync
+
+# Adds each newly announced Dragon Ball Super: Beerus episode to production (bot.db_episodes) with its
+# metadata only: titles (Wikipedia episode table, official site, Crunchyroll France titles kept in
+# scripts/ops/beerus-sync.ts), air date, arc and the official source link. Existing values are never
+# overwritten. No video is downloaded or published: the legal watch offer is Crunchyroll.
+# Runs on the fr1 runner, which reaches prd Postgres over ssh under the deploy lock.
+
+on:
+  schedule:
+    # Crunchyroll France publishes a new episode on Sunday at 17:00 UTC.
+    - cron: "30 17 * * 0"
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: Write to production (false prints the SQL only)
+        required: false
+        type: boolean
+        default: true
+
+concurrency:
+  group: beerus-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  sync:
+    runs-on: [self-hosted, Linux, X64, shenron-factory]
+    timeout-minutes: 15
+    env:
+      SHENRON_SSH_HOST: prd
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup-bun
+      - name: Sync announced episodes
+        run: bun scripts/ops/beerus-sync.ts ${{ (github.event_name == 'schedule' || inputs.apply) && '--apply' || '' }}
+      - name: Check the newest episode on the public API
+        run: |
+          latest=$(ssh "$SHENRON_SSH_HOST" "sudo -n docker exec -i shenron-postgres psql -U postgres -d shenron_site -At -c \"select max(id) from bot.db_episodes where series = 'DBS_BEERUS'\"")
+          body=$(curl -fsS --max-time 20 "https://dragonballfr.com/api/episodes/${latest}")
+          echo "$body" | bun -e 'const r = await Bun.stdin.json(); if (!r.id || !r.title) process.exit(1); console.log(JSON.stringify({ id: r.id, n: r.numberInSeries, title: r.title, titleJa: r.titleJa }))'

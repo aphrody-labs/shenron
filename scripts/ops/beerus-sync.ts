@@ -42,7 +42,8 @@ const psql = (sql: string) =>
     [
       "ssh",
       SSH_HOST,
-      "sudo -n docker exec -i shenron-postgres psql -U postgres -d shenron_site -v ON_ERROR_STOP=1 -At",
+      // Every prd change takes the deploy lock (AGENTS.md); reads wait at most two minutes for a deploy.
+      "flock -w 120 /run/lock/shenron-deploy.lock sudo -n docker exec -i shenron-postgres psql -U postgres -d shenron_site -v ON_ERROR_STOP=1 -At",
     ],
     sql,
   );
@@ -61,6 +62,8 @@ export interface AnnouncedEpisode {
 const clean = (value: string | undefined) =>
   value
     ?.replace(/\{\{Ill\|([^|}]*)[^}]*\}\}/g, "$1")
+    // {{Ruby-ja|F|エフ}} keeps the base text: 復活の{{Ruby-ja|F|エフ}} is 復活のF, not 復活の.
+    .replace(/\{\{Ruby(?:-ja)?\|([^|}]*)[^}]*\}\}/g, "$1")
     .replace(/\{\{[^}]*\}\}|<ref[\s\S]*?(?:\/>|<\/ref>)|\[\[(?:[^|\]]*\|)?([^\]]*)\]\]/g, "$1")
     .replace(/''/g, "")
     .trim() || null;
@@ -95,6 +98,9 @@ const FRENCH_TITLES: Record<string, string> = {
     "Le dieu de la Destruction se rend sur la planète de Kaïo",
   "The God of Destruction Heads to Earth": "Le dieu de la Destruction se dirige vers la Terre",
   "The God of Saiyans": "Le dieu des Saiyans",
+  // Crunchyroll France titles, read from the watch pages on 2026-11-19.
+  "The God of Destruction and Son Goku": "Le dieu de la Destruction et Son Goku",
+  "Battle of Gods": "La Bataille des dieux",
 };
 
 if (import.meta.main) {
