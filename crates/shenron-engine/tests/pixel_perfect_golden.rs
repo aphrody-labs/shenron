@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //! Pixel golden tests. Every texture is synthetic and generated here: no game data, no fixture.
 //! The expected bytes come from a per-pixel formula independent of the code under test.
+#![allow(clippy::unwrap_used)]
 
 use shenron_engine::render::model_adapter::model_from_json_with_pngs;
 use shenron_engine::render::{

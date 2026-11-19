@@ -572,10 +572,7 @@ mod tests {
             SystemTime::UNIX_EPOCH + Duration::from_secs(2_000)
         );
         // The backup lives in excluded state and does not change the revision.
-        assert_eq!(
-            r.target_revision_after.clone().unwrap(),
-            home_revision(b.path()).unwrap().revision
-        );
+        assert_eq!(r.target_revision_after.unwrap(), home_revision(b.path()).unwrap().revision);
         // Restoring brings back the pre-merge bytes of every backed-up file.
         restore_backup(&backup.path, b.path()).unwrap();
         assert_eq!(read(b.path(), "SOUL.md"), "soul B old\n");

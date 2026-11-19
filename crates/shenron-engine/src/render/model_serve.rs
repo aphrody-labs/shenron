@@ -941,7 +941,7 @@ mod tests {
             GpuCharacterModel::validate_instances(&[vec![matrix.to_cols_array()]], 2, &limits)
                 .is_err()
         );
-        let mut small = limits.clone();
+        let mut small = limits;
         small.max_vertex_attributes = 9;
         assert!(GpuCharacterModel::validate_instances(&[], 1, &small).is_err());
         let mut bad = matrix.to_cols_array();

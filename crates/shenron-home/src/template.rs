@@ -340,7 +340,7 @@ mod tests {
         template(tpl.path());
         let err = instantiate_template(&TemplateOptions {
             template: tpl.path().to_path_buf(),
-            destination: dest.clone(),
+            destination: dest,
             avatar: Some("../../outside.png".into()),
             ..TemplateOptions::default()
         })

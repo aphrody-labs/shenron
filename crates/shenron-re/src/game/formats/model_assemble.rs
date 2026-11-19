@@ -495,7 +495,7 @@ mod tests {
         let mut cycle = esk.clone();
         cycle.bones[0].parent_index = Some(1);
         assert!(AssembledCharacterModel::assemble_nsk_primitives(&emd, &cycle, 0).is_err());
-        let mut invalid = esk.clone();
+        let mut invalid = esk;
         invalid.bones[0].scale[0] = f32::NAN;
         assert!(AssembledCharacterModel::assemble_nsk_primitives(&emd, &invalid, 0).is_err());
     }

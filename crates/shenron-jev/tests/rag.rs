@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //! Passage guardrails against a local server that judges passage content.
 // Deterministic portable fixtures do not depend on Bun's native string wrappers.
-#![allow(clippy::disallowed_methods)]
+#![allow(clippy::disallowed_methods, clippy::unwrap_used)]
 
 use axum::{Json, Router, routing::post};
 use serde_json::{Value, json};

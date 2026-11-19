@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //! Routing and failover against real local HTTP servers.
 // Portable HTTP fixtures do not depend on Bun's native string wrappers.
-#![allow(clippy::disallowed_methods)]
+#![allow(clippy::disallowed_methods, clippy::unwrap_used)]
 
 use std::{
     sync::{

@@ -181,7 +181,7 @@ pub fn encode_engine_data(spec: &TextEngineSpec) -> Vec<u8> {
                                 "StyleSheet".to_string(),
                                 EngineValue::Dict(vec![(
                                     "StyleSheetData".to_string(),
-                                    EngineValue::Dict(style_run_sheet.clone()),
+                                    EngineValue::Dict(style_run_sheet),
                                 )]),
                             )])]),
                         ),

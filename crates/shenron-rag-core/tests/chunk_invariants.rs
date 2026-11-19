@@ -2,6 +2,7 @@
 //! Cross-chunker invariants: line coverage, `start_line <= end_line`,
 //! max_chars respect (barring an unsplittable single line), determinism,
 //! hash correctness, and CRLF/LF parity.
+#![allow(clippy::unwrap_used)]
 
 use std::collections::HashSet;
 

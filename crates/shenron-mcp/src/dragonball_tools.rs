@@ -1579,7 +1579,7 @@ mod tests {
             "entries": [{ "rank": 2, "title": "Dragon Ball", "rang": 2, "titre": "Dragon Ball", "era": "DB", "ere": "DB" }],
             "entrees": [{ "rank": 2, "rang": 2 }]
         });
-        let mut current = site.clone();
+        let mut current = site;
         drop_french_timeline_names(&mut current);
         assert!(current.get("entrees").is_none() && current.get("totalFrise").is_none());
         assert_eq!(

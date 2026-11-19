@@ -1,3 +1,6 @@
+// A benchmark aborts on a failed setup, so unwrap is the right failure mode here.
+#![allow(clippy::unwrap_used)]
+
 use std::{collections::BTreeMap, hint::black_box, io::Cursor, sync::Arc};
 
 use criterion::{Criterion, criterion_group, criterion_main};

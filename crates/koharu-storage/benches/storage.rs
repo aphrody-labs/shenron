@@ -1,3 +1,6 @@
+// A benchmark aborts on a failed setup, so unwrap is the right failure mode here.
+#![allow(clippy::unwrap_used)]
+
 use std::hint::black_box;
 
 use bytes::Bytes;

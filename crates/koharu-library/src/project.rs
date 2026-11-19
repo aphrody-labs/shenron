@@ -987,7 +987,7 @@ impl Project {
         let source = Self::asset_id(snapshot, page, "source")?;
         let mut layers = Vec::new();
         Self::collect_layer_views(snapshot, page, &mut layers)?;
-        if let Some(image) = source.clone() {
+        if let Some(image) = source {
             layers.insert(
                 0,
                 Layer::Artwork {

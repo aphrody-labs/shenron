@@ -1238,10 +1238,10 @@ async fn scene_patch_exposes_stable_identity_and_base() {
     let patch = base.patch(|edit| edit.set(entity, &source("identity"))).unwrap();
     assert_eq!(patch.project_id(), base.project_id());
     assert_eq!(patch.base_revision(), base.revision());
-    assert_eq!(patch.fingerprint(), patch.clone().fingerprint());
+    assert_eq!(patch.fingerprint(), patch.fingerprint());
     assert_ne!(
         patch.fingerprint(),
-        patch.clone().with_label("different commit label").fingerprint()
+        patch.with_label("different commit label").fingerprint()
     );
 }
 

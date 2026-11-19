@@ -1058,6 +1058,7 @@ mod native {
 }
 
 #[cfg(all(test, not(target_arch = "wasm32")))]
+#[allow(clippy::unwrap_used)]
 mod tests {
     use std::ffi::{CStr, CString};
 
@@ -1284,7 +1285,7 @@ mod tests {
         assert!(value["results"].as_array().is_some_and(|hits| !hits.is_empty()), "{value}");
         // The typed answer is the corpus' own JSON envelope, except that a hit always carries
         // `entity` (`null` when absent, where the corpus omits the key).
-        let mut typed = value.clone();
+        let mut typed = value;
         for hit in typed["results"].as_array_mut().unwrap() {
             let hit = hit.as_object_mut().unwrap();
             assert!(hit.contains_key("entity"));

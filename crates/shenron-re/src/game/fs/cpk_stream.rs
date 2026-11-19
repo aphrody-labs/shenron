@@ -836,7 +836,7 @@ mod tests {
         // Encrypt the whole mock CPK with filename-derived CRI XOR key.
         let fname = "data2.cpk";
         let key = cri_key_from_filename(fname);
-        let mut encrypted = mock.clone();
+        let mut encrypted = mock;
         decrypt_cri_block(&mut encrypted, 0, key);
         assert_ne!(&encrypted[..4], b"CPK ");
 

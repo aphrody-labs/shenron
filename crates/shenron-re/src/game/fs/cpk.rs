@@ -115,7 +115,7 @@ impl CpkArchive {
                                         file_offset: abs_offset,
                                         is_compressed,
                                     };
-                                    file_map.insert(name.clone(), entries.len());
+                                    file_map.insert(name, entries.len());
                                     entries.push(entry);
                                 }
                             }

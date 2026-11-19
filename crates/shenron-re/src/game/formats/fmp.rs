@@ -401,7 +401,7 @@ mod tests {
             put(&mut bytes, at, value);
             assert!(FmpFile::parse(&bytes).is_err(), "field {at:x} accepted {value:x}");
         }
-        let mut bytes = original.clone();
+        let mut bytes = original;
         bytes[0] = b'?';
         assert!(FmpFile::parse(&bytes).is_err());
         put(&mut bytes, 0, u32::from_le_bytes(*b"#FMP"));

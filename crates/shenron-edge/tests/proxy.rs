@@ -2,6 +2,7 @@
 //! End-to-end: a real Pingora server in the test process in front of a scripted origin. Checks the
 //! observable contract that the nginx configuration had: cache status headers, bypass rules,
 //! stale on error, lock coalescing, failover, redirects and the forwarding headers.
+#![allow(clippy::unwrap_used)]
 
 use std::collections::HashMap;
 use std::io::{Read, Write};

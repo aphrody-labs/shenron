@@ -1,3 +1,5 @@
+#![allow(clippy::unwrap_used)]
+
 use std::{collections::BTreeMap, io::Cursor, sync::Arc};
 
 use koharu_rasterizer::{PREPARED_RASTER_TILE_DIMENSION, RasterOptions, Rasterizer};

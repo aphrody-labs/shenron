@@ -8,3 +8,7 @@ allow-expect-in-tests = true
 allow-panic-in-tests = true
 allow-print-in-tests = true
 allow-unwrap-in-tests = true
+
+disallowed-methods = [
+    { path = "serde_json::from_reader", reason = "Parsing from a reader is much slower than reading into a buffer first, use `serde_json::from_slice`." },
+]

@@ -2,7 +2,7 @@
 //! Native engine and mode routing against a local OpenAI-compatible server
 //! that returns deterministic log probabilities.
 // Portable HTTP fixtures use std text helpers; they do not link Bun's native string wrappers.
-#![allow(clippy::disallowed_methods)]
+#![allow(clippy::disallowed_methods, clippy::unwrap_used)]
 
 use axum::{Json, Router, routing::post};
 use serde_json::{Value, json};
