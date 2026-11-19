@@ -1,10 +1,10 @@
 //! Pure GPUI Kit studio workspace & local Dragon Ball RAG service (zero Tauri).
 
-use gpui_kit::{Context, IntoElement, ParentElement, Render, Styled, Window, div};
 use gpui_kit::base::StyledExt;
 use gpui_kit::component::description_list::DescriptionList;
 use gpui_kit::component::tag::Tag;
 use gpui_kit::component::{ActiveTheme, h_flex, v_flex};
+use gpui_kit::{Context, IntoElement, ParentElement, Render, Styled, Window, div};
 
 /// GPUI Kit view for Shenron Studio (Health, Hybrid RAG, Local Corpus, Grounded Chat).
 pub struct StudioWorkspace {
@@ -13,9 +13,7 @@ pub struct StudioWorkspace {
 
 impl StudioWorkspace {
     pub fn new(_window: &mut Window, _cx: &mut Context<Self>) -> Self {
-        Self {
-            corpus_status: "ready".to_string(),
-        }
+        Self { corpus_status: "ready".to_string() }
     }
 }
 
@@ -35,11 +33,11 @@ impl Render for StudioWorkspace {
                     .child(div().text_lg().font_bold().child("Shenron Studio"))
                     .child(Tag::info().child(self.corpus_status.clone())),
             )
-            .child(
-                DescriptionList::new()
-                    .item("Runtime", "Pure GPUI Kit 0.10.0", 1)
-                    .item("Corpus", self.corpus_status.clone(), 1),
-            )
+            .child(DescriptionList::new().item("Runtime", "Pure GPUI Kit 0.10.0", 1).item(
+                "Corpus",
+                self.corpus_status.clone(),
+                1,
+            ))
     }
 }
 

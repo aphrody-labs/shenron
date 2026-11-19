@@ -1239,10 +1239,7 @@ async fn scene_patch_exposes_stable_identity_and_base() {
     assert_eq!(patch.project_id(), base.project_id());
     assert_eq!(patch.base_revision(), base.revision());
     assert_eq!(patch.fingerprint(), patch.fingerprint());
-    assert_ne!(
-        patch.fingerprint(),
-        patch.with_label("different commit label").fingerprint()
-    );
+    assert_ne!(patch.fingerprint(), patch.with_label("different commit label").fingerprint());
 }
 
 #[tokio::test]
