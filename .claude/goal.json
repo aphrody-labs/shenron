@@ -13,18 +13,23 @@
     {
       "id": "0b",
       "name": "Ship pending fixes to prd (23d70bf9 /.well-known, React #418) via fr1 build",
-      "status": "in_progress"
+      "status": "in_progress",
+      "evidence": "41266025 image never built (build stopped by user order 2026-11-19); prd still on 4d53e013; Cargo.lock fixed in 5383a2fe; prep on prd inert (bin/activate.sh, compose.pertag.yaml, deploy-backups/0b dump)",
+      "blocked": "resume: build-image.sh then ship-image.sh under the deploy lock; create shenron_* views and RAG_BACKEND=shenron first"
     },
     {
       "id": 1,
       "name": "shenron-deployd + signed manifest + fr1 runner; deploy shenron-tv without SSH, forced rollback",
-      "status": "in_progress"
+      "status": "in_progress",
+      "evidence": "crates/shenron-deployd 996055bf, 44d64e21: fr1 clippy -D warnings clean, tests 14+1+12 pass; fr2 cycle deploy, health-gated rollback, sha256 rejection, mTLS refusal proved; S3 via throw-away Garage proved",
+      "blocked": "exit proof needs shenron-tv deployed on prd through the agent with a forced rollback (signing key on fr1, polkit and unit install, deploy lock)"
     },
     {
       "id": "1b",
       "name": "shenron-mcp admin tier: Postgres (schema, read query, audited write), Redis (info/get/scan), real-time context via LISTEN/NOTIFY + MCP resource subscriptions, auto-learn into shenron-memory; Claude Code connects with a bearer from env",
       "status": "in_progress",
-      "evidence": " | not deployed: needs prd compute.env SHENRON_MCP_TOKENS/DATABASE_URL/REDIS_URL, audit migration applied, release via 0b path, live proof"
+      "evidence": "code bb557ba5 and audit SQL verified on fr2 (Postgres 18, Redis 8); prd prepared: audit and notify SQL, role shenron_mcp, three SHENRON_MCP_* lines in site.env",
+      "blocked": "live proof waits for the 0b release (prd binary predates the data plane)"
     },
     {
       "id": 2,
@@ -42,8 +47,8 @@
       "id": 4,
       "name": "Garage replaces R2 and the shenron-cdn Worker",
       "status": "in_progress",
-      "evidence": "Garage v2.5.0 on fr1+fr2 (RF 2); R2 mirror 181584 objects / 37794764985 bytes both sides, 0 missing, 0 mismatched; parity 1000 samples 0 diffs (public, Garage, fr2 origin); DNS and Worker route untouched; runbook docs/runbooks/cdn-garage-cutover.md",
-      "blocked": "Cutover waits for shenron-edge serving cdn. (step 3); fr2 has 5.6 GiB free until prd joins the Garage cluster"
+      "evidence": "Garage v2.5.0 on fr1+fr2, R2 mirror 181584 objects / 37794764985 bytes 0 mismatched, parity 1000 samples 0 diffs; prd installed as third zone (b6cbe338) then stopped after the rebalance (about 1.3 GB/min over wg) dropped prd inbound UDP and the site returned 504",
+      "blocked": "restart the rebalance only with wg stable and a hard cap; cutover waits for shenron-edge serving cdn.; fr2 root 91% used"
     },
     {
       "id": 5,
