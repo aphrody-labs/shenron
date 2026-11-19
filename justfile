@@ -348,3 +348,73 @@ map-check:
 [group('all')]
 scripts-orphans:
     cargo xtask scripts --orphans
+
+# Fail when a workspace manifest pins a version the root catalog already defines
+[group('tools')]
+check-catalog:
+    bun scripts/audit/check-workspace-catalog.ts
+
+# Click through the public catalogues (episodes, movies, manga, databooks); report in var/reports/click-through
+[group('tools')]
+audit-click-through:
+    bun scripts/audit/click-through.ts
+
+# Crawl /api/episodes and probe the player embeds for reachability
+[group('tools')]
+audit-players:
+    bun scripts/ops/crawl-and-audit-players.ts
+
+# Create an article draft from a file
+[group('tools')]
+article-draft file *args:
+    bun scripts/ops/create-article-draft.ts {{ file }} {{ args }}
+
+# Record the owner's short-lived Crunchyroll bearer (needs CRUNCHYROLL_COOKIES_FILE and CRUNCHYROLL_TOKEN_FILE)
+[group('tools')]
+crunchyroll-session *args:
+    bun scripts/ops/crunchyroll-session.ts {{ args }}
+
+# Install the pinned visual skills of .agents/visual-skills.lock.json (--check verifies only)
+[group('tools')]
+visual-skills *args:
+    bun scripts/ops/install-visual-skills.ts {{ args }}
+
+# Ingest OCR results into bot.db_databooks (simulated unless --appliquer; honours the databooks freeze)
+[group('tools')]
+nourrir-shenron *args:
+    bun scripts/ops/nourrir-shenron.ts {{ args }}
+
+# Copy RAG chunks from a SQLite database into the private Shenron corpus (--apply or --pg-csv <out>)
+[group('tools')]
+rag-offload *args:
+    bun scripts/ops/offload-rag-to-shenron.ts {{ args }}
+
+# Plan or run the DBXV2 structured-layer build (needs DBXV2_SERVER_URL, DBXV2_TOKEN, SHENRON_DBXV2_SRC)
+[group('tools')]
+dbxv2-structured *args:
+    bun scripts/data/build-dbxv2-structured.ts {{ args }}
+
+# Export the public catalogues (JSON, CSV, manifest) to var/reports/catalogues
+[group('tools')]
+export-catalogues *args:
+    bun scripts/data/export-catalogues.ts {{ args }}
+
+# Build the Dragon Ball wordmark
+[group('tools')]
+wordmark *args:
+    bun scripts/design/build-dragon-wordmark.ts {{ args }}
+
+# Browser proof of the koharu, dbxv2 and player stacks
+[group('tools')]
+prove-browser *args:
+    bun scripts/ops/prove-browser.ts {{ args }}
+
+# Rebuild the Redis article mirror from PostgreSQL (dry run; --apply writes; needs DATABASE_URL)
+[group('tools')]
+news-redis-rebuild *args:
+    bun scripts/ops/rebuild-news-redis.ts {{ args }}
+
+# Ingest the DBFZ reverse-engineering audit into var/re-telemetry.sqlite
+[group('tools')]
+re-telemetry-sync:
+    bun scripts/ops/sync-re-telemetry.ts
