@@ -35,6 +35,7 @@ read_key = "shenron-cdn-ro"
 write_key = "shenron-cdn-rw"
 
 # status: active (installed) | planned (config prepared, not installed).
+# Optional per-node `data` / `metadata` override [paths].
 # capacity is the layout weight in GB; with replication_factor = 2 on two zones the usable
 # capacity is the smaller of the two, so it is set under each host's free space.
 [[nodes]]
@@ -56,7 +57,10 @@ name = "prd"
 triad = "prod"
 zone = "prd"
 capacity_gb = 150
-status = "planned"
+status = "active"
+# prd keeps its Garage state under /srv (btrfs root, 223 GiB free); other nodes use [paths].
+data = "/srv/garage/data"
+metadata = "/srv/garage/meta"
 
 # Serving path (docs/runbooks/cdn-garage-cutover.md). `public_origin` is what the parity check
 # compares against; `manifest_prefix` is the pinned publication of the Worker (wrangler.jsonc).
