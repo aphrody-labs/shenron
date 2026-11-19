@@ -144,13 +144,9 @@ impl Model {
         let sin = build_angles(&visual_sin, padding_sin, &self.text_rope_sin);
 
         let mut caches: Vec<LayerCache> = Vec::with_capacity(self.decoder.layers.len());
-        for index in 0..self.decoder.layers.len() {
-            let (next_hidden_states, present) = self.decoder.layers[index].forward(
-                &hidden,
-                Some(&prefill_mask),
-                (&cos, &sin),
-                caches.get(index),
-            );
+        for (index, layer) in self.decoder.layers.iter().enumerate() {
+            let (next_hidden_states, present) =
+                layer.forward(&hidden, Some(&prefill_mask), (&cos, &sin), caches.get(index));
             hidden = next_hidden_states;
             caches.push(present);
         }

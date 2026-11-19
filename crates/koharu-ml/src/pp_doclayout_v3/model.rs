@@ -246,9 +246,14 @@ impl PPDocLayoutV3Model {
                 self.decoder_input_proj[base_len]
                     .forward(encoder_outputs.last_hidden_state.last().expect("encoder output")),
             );
-            for idx in base_len + 1..self.config.num_feature_levels {
+            for projection in self
+                .decoder_input_proj
+                .iter()
+                .take(self.config.num_feature_levels)
+                .skip(base_len + 1)
+            {
                 sources
-                    .push(self.decoder_input_proj[idx].forward(
+                    .push(projection.forward(
                         encoder_outputs.last_hidden_state.last().expect("encoder output"),
                     ));
             }

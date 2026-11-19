@@ -259,8 +259,10 @@ impl RTDetrV2Model {
         if self.config.num_feature_levels > sources.len() {
             let base_len = sources.len();
             let last_encoder_output = encoder_outputs.last().expect("encoder output");
-            for level in base_len..self.config.num_feature_levels {
-                sources.push(self.decoder_input_proj[level].forward_t(last_encoder_output, false));
+            for projection in
+                self.decoder_input_proj.iter().take(self.config.num_feature_levels).skip(base_len)
+            {
+                sources.push(projection.forward_t(last_encoder_output, false));
             }
         }
 

@@ -325,10 +325,7 @@ impl Desktop {
             return Ok(false);
         };
         let rendered = rendered?;
-        if !self.replace_frame_if_current(request, Some(rendered)) {
-            return Ok(false);
-        }
-        Ok(true)
+        Ok(self.replace_frame_if_current(request, Some(rendered)))
     }
 
     #[tracing::instrument(skip_all)]
@@ -378,10 +375,7 @@ impl Desktop {
             return Ok(false);
         };
         let frame = frame?;
-        if !self.replace_frame_if_current(request, Some(frame)) {
-            return Ok(false);
-        }
-        Ok(true)
+        Ok(self.replace_frame_if_current(request, Some(frame)))
     }
 
     fn request_preparation(&self) -> u64 {

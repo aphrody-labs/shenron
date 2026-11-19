@@ -56,7 +56,7 @@ impl Render for DesktopShell {
 }
 
 fn main() {
-    gpui_kit::application().with_assets(gpui_kit::assets::Assets::default()).run(|cx: &mut App| {
+    gpui_kit::application().with_assets(gpui_kit::assets::Assets::new("")).run(|cx: &mut App| {
         gpui_kit::init(cx);
         shenron_theme::init(cx, ThemeMode::Dark);
         let opened = gpui_kit::open_window(WindowOptions::default(), cx, |window, cx| {

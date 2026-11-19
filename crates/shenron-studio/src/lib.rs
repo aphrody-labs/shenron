@@ -45,8 +45,6 @@ impl Render for StudioWorkspace {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[gpui_kit::test]
     fn studio_workspace_initializes(cx: &mut gpui_kit::TestAppContext) {
         let _ = cx;
