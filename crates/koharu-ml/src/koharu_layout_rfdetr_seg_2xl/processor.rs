@@ -194,7 +194,7 @@ impl KoharuLayoutRFDetrImageProcessor {
                     .cloned()
                     .unwrap_or_else(|| "__background__".to_owned()),
                 score: floats[index * 5],
-                bbox: floats[index * 5 + 1..index * 5 + 5].try_into().unwrap(),
+                bbox: std::array::from_fn(|offset| floats[index * 5 + 1 + offset]),
                 area,
                 mask: KoharuLayoutMask { x, y, width, height, pixels },
             });

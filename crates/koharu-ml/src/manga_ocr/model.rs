@@ -211,14 +211,14 @@ impl BeamHypotheses {
         let score = sum_logprobs / (tokens.len() as f64).powf(self.length_penalty);
         if self.beams.len() < self.num_beams || score > self.worst_score {
             self.beams.push((score, tokens));
-            if self.beams.len() > self.num_beams {
-                let worst = self
+            if self.beams.len() > self.num_beams
+                && let Some(worst) = self
                     .beams
                     .iter()
                     .enumerate()
                     .min_by(|(_, left), (_, right)| left.0.total_cmp(&right.0))
                     .map(|(index, _)| index)
-                    .unwrap();
+            {
                 self.beams.swap_remove(worst);
             }
             self.worst_score =

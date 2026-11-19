@@ -278,11 +278,14 @@ fn simplify_closed_indices(polygon: &[(f32, f32)], tolerance: f32) -> Vec<usize>
 }
 
 fn simplify_chain_indices(polygon: &[(f32, f32)], chain: &[usize], tolerance: f32) -> Vec<usize> {
+    let [first_index, .., last_index] = chain else {
+        return chain.to_vec();
+    };
     if chain.len() <= 2 {
         return chain.to_vec();
     }
-    let start = polygon[chain[0]];
-    let end = polygon[*chain.last().unwrap()];
+    let start = polygon[*first_index];
+    let end = polygon[*last_index];
     let mut farthest = None;
     for (position, &index) in chain.iter().enumerate().skip(1).take(chain.len() - 2) {
         let distance = point_segment_distance(polygon[index], start, end);
@@ -291,10 +294,10 @@ fn simplify_chain_indices(polygon: &[(f32, f32)], chain: &[usize], tolerance: f3
         }
     }
     let Some((position, distance)) = farthest else {
-        return vec![chain[0], *chain.last().unwrap()];
+        return vec![*first_index, *last_index];
     };
     if distance <= tolerance {
-        return vec![chain[0], *chain.last().unwrap()];
+        return vec![*first_index, *last_index];
     }
     let mut first = simplify_chain_indices(polygon, &chain[..=position], tolerance);
     let second = simplify_chain_indices(polygon, &chain[position..], tolerance);

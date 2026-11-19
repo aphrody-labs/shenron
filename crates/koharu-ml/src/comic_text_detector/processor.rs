@@ -696,7 +696,8 @@ fn try_merge_text_line(
         / (first_count + other_count) as f32;
     let cosine = dot(block.vector, other.vector) / (block.norm * other.norm).max(f32::EPSILON);
     let vector_sum = [block.vector[0] + other.vector[0], block.vector[1] + other.vector[1]];
-    let first_bbox = quad_bbox(block.lines.last().expect("block contains a line"));
+    let last_line = block.lines.last().expect("block contains a line");
+    let first_bbox = quad_bbox(last_line);
     let other_bbox = quad_bbox(&other.lines[0]);
     let distance_x = first_bbox[0].max(other_bbox[0]) - first_bbox[2].min(other_bbox[2]);
     let distance_y = first_bbox[1].max(other_bbox[1]) - first_bbox[3].min(other_bbox[3]);
@@ -705,7 +706,7 @@ fn try_merge_text_line(
     let first_height = first_bbox[3] - first_bbox[1];
     let other_height = other_bbox[3] - other_bbox[1];
 
-    if !quads_intersect(block.lines.last().unwrap(), &other.lines[0]) {
+    if !quads_intersect(last_line, &other.lines[0]) {
         if block.vertical {
             if distance_y > 0.0
                 || distance_x > average_font_size * 0.8
@@ -928,11 +929,13 @@ fn top_color_masks(image: &RgbImage, predicted: &GrayImage) -> Vec<MaskCandidate
             candidate_pixels.push(gray_pixel[0]);
         }
     }
-    if candidate_pixels.is_empty() {
+    let (Some(&lowest), Some(&highest)) =
+        (candidate_pixels.iter().min(), candidate_pixels.iter().max())
+    else {
         return Vec::new();
-    }
-    let mut minimum = *candidate_pixels.iter().min().unwrap() as f32;
-    let mut maximum = *candidate_pixels.iter().max().unwrap() as f32;
+    };
+    let mut minimum = lowest as f32;
+    let mut maximum = highest as f32;
     if minimum == maximum {
         minimum -= 0.5;
         maximum += 0.5;

@@ -669,11 +669,13 @@ fn infer_text_paint(
         return (normalize_text_color(clusters[nonempty[0]].color), None, None);
     }
 
-    let background_index = nonempty
+    let Some(background_index) = nonempty
         .iter()
         .copied()
         .min_by_key(|index| color_distance_squared(clusters[*index].color, background_seed))
-        .unwrap();
+    else {
+        return (normalize_text_color(background_seed), None, None);
+    };
     let fill = nonempty
         .iter()
         .copied()
@@ -909,8 +911,7 @@ fn color_clusters(
                 .iter()
                 .enumerate()
                 .min_by_key(|(_, center)| color_distance_squared(color, **center))
-                .map(|(index, _)| index)
-                .unwrap();
+                .map_or(0, |(index, _)| index);
             accumulators[index].add(entry);
         }
         for (center, accumulator) in centers.iter_mut().zip(accumulators) {
@@ -925,8 +926,7 @@ fn color_clusters(
             .iter()
             .enumerate()
             .min_by_key(|(_, center)| color_distance_squared(pixel.color, **center))
-            .map(|(index, _)| index)
-            .unwrap();
+            .map_or(0, |(index, _)| index);
         groups[index].push(*pixel);
     }
     std::array::from_fn(|index| ColorCluster {

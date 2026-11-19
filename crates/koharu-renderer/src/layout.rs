@@ -379,7 +379,7 @@ impl<'a> TextLayout<'a> {
             if self.hyphenation_policy == HyphenationPolicy::LastResort {
                 let mut unhyphenated = self.clone();
                 unhyphenated.hyphenation_policy = HyphenationPolicy::Disabled;
-                let clean = largest_fitting_font_size(
+                let mut clean = largest_fitting_font_size(
                     minimum,
                     maximum,
                     |size| unhyphenated.run_with_size(text, size),
@@ -388,8 +388,8 @@ impl<'a> TextLayout<'a> {
                 // Avoiding a word break is no longer useful once it pins the text to
                 // the configured readability floor. Compare raster-size buckets so
                 // hyphenation must recover a visible pixel, not a tuned percentage.
-                if clean.as_ref().is_some_and(|best| best.font_size.floor() > minimum.floor()) {
-                    return Ok(clean.unwrap());
+                if let Some(best) = clean.take_if(|best| best.font_size.floor() > minimum.floor()) {
+                    return Ok(best);
                 }
                 let hyphenated = largest_fitting_font_size(
                     minimum,
@@ -1911,11 +1911,9 @@ fn normalize_cjk_emphasis_punctuation(text: &str) -> Option<(String, Vec<u32>)> 
 
 fn reorder_visual(levels: &[unicode_bidi::Level]) -> Vec<usize> {
     let mut indices: Vec<usize> = (0..levels.len()).collect();
-    if levels.is_empty() {
+    let Some(max_level) = levels.iter().map(|l| l.number()).max() else {
         return indices;
-    }
-
-    let max_level = levels.iter().map(|l| l.number()).max().unwrap();
+    };
     let min_odd_level =
         levels.iter().map(|l| l.number()).filter(|&n| n % 2 != 0).min().unwrap_or(u8::MAX);
 

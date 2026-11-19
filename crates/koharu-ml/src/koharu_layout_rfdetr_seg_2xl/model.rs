@@ -422,8 +422,10 @@ impl C2f {
         let split =
             self.cv1.forward(xs).split_with_sizes([self.hidden_channels, self.hidden_channels], 1);
         let mut values = vec![split[0].shallow_clone(), split[1].shallow_clone()];
+        let mut latest = split[1].shallow_clone();
         for bottleneck in &self.bottlenecks {
-            values.push(bottleneck.forward(values.last().unwrap()));
+            latest = bottleneck.forward(&latest);
+            values.push(latest.shallow_clone());
         }
         self.cv2.forward(&Tensor::cat(&values, 1))
     }

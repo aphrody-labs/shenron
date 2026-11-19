@@ -702,7 +702,8 @@ impl PaddleOCRAttention {
         sin: &Tensor,
         cache: &mut Option<(Tensor, Tensor)>,
     ) -> Tensor {
-        let [batch, sequence_length, _] = <[i64; 3]>::try_from(hidden_states.size()).unwrap();
+        let [batch, sequence_length, _] = <[i64; 3]>::try_from(hidden_states.size())
+            .expect("hidden states are [batch, sequence, features]");
         let query = self
             .q_proj
             .forward(hidden_states)
@@ -810,7 +811,7 @@ fn rotary_inv_freq(dim: i64, theta: f64, device: Device) -> Tensor {
 }
 
 fn rotate_half(tensor: &Tensor) -> Tensor {
-    let half = tensor.size().last().copied().unwrap() / 2;
+    let half = tensor.size().last().copied().expect("rotated tensor has a feature dimension") / 2;
     Tensor::cat(&[-tensor.narrow(-1, half, half), tensor.narrow(-1, 0, half)], -1)
 }
 
