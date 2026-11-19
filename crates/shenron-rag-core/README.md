@@ -15,5 +15,5 @@ cargo test -p shenron-rag-core
 
 Rust builds run on the build host or in CI, not on a workstation.
 
-Part of Shenron: [shenron-labs/shenron](../../README.md), [Catalog](../../docs/reference/catalog/crate.md).
+Part of Shenron: [aphrody-labs/shenron](../../README.md).
 <!-- catalog:end -->

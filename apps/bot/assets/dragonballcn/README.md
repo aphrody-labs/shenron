@@ -4,7 +4,7 @@ Miroir de ce que **comic.dragonballcn.com** (鳥山明漫画資料館, « musée
 dessinée d'Akira Toriyama ») sert publiquement : sa **bibliographie** et les
 **couvertures** qui identifient chaque édition.
 
-Régénéré par [`packages/shenron/pipeline/scripts/assets-dragonballcn.ts`](../../../../packages/shenron/pipeline/scripts/assets-dragonballcn.ts).
+Régénéré par [`packages/pipeline/scripts/assets-dragonballcn.ts`](../../../../packages/pipeline/scripts/assets-dragonballcn.ts).
 
 ## Rangement
 
@@ -82,14 +82,14 @@ les URL DragonballCN sont conservées et exposables par la politique média publ
 
 ## Le rapatriement des planches
 
-[`telecharge-planches-dragonballcn.ts`](../../../../packages/shenron/pipeline/scripts/telecharge-planches-dragonballcn.ts)
+[`telecharge-planches-dragonballcn.ts`](../../../../packages/pipeline/scripts/telecharge-planches-dragonballcn.ts)
 est écrit et prêt. Il ne part qu'avec `--oui`, saisi à la main : par défaut il
 simule et ne demande rien au site.
 
 **À relancer avant toute campagne :**
 
 ```bash
-bun packages/shenron/pipeline/scripts/telecharge-planches-dragonballcn.ts --verifier-acces
+bun packages/pipeline/scripts/telecharge-planches-dragonballcn.ts --verifier-acces
 ```
 
 La commande vérifie quatre URL publiques avant une campagne — dossier distant
