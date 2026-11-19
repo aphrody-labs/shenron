@@ -310,8 +310,8 @@ pub fn reveal_gif(
     let dim = |image: &RgbaImage| -> RgbaImage {
         let mut out = image.clone();
         for px in out.pixels_mut() {
-            for c in 0..3 {
-                px.0[c] = (u16::from(px.0[c]) * 35 / 100) as u8;
+            for channel in px.0.iter_mut().take(3) {
+                *channel = (u16::from(*channel) * 35 / 100) as u8;
             }
         }
         out
