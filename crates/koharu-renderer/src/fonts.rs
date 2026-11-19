@@ -817,17 +817,19 @@ impl Fonts {
         let data = tokio::fs::read(&path)
             .await
             .with_context(|| format!("failed to read {}", path.display()))?;
-        let face_for_worker = face.clone();
-        let font = tokio_rayon::spawn(move || {
-            font_from_blob(
-                Blob::from(data),
-                &face_for_worker,
-                Attributes {
-                    weight: fontique::FontWeight::new(f32::from(face_for_worker.weight)),
-                    style: face_for_worker.style.into(),
-                    ..Attributes::default()
-                },
-            )
+        let font = tokio_rayon::spawn({
+            let face = face.clone();
+            move || {
+                font_from_blob(
+                    Blob::from(data),
+                    &face,
+                    Attributes {
+                        weight: fontique::FontWeight::new(f32::from(face.weight)),
+                        style: face.style.into(),
+                        ..Attributes::default()
+                    },
+                )
+            }
         })
         .await?;
         self.cache.lock().insert(face.post_script_name.clone(), font.clone());

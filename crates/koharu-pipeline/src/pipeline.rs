@@ -39,24 +39,21 @@ impl Pipeline {
             StageRunner::new(&value, translator.clone(), &device, resources.clone())?
         };
         let current = Arc::new(ArcSwap::from_pointee(runner));
-        let watched = current.clone();
-        let watched_resources = resources.clone();
         let _watcher = tokio::runtime::Handle::try_current()
             .context("pipeline requires a Tokio runtime")?
-            .spawn(async move {
-                let mut changes = config.subscribe();
-                while changes.changed().await.is_ok() {
-                    let runner = config.read().and_then(|value| {
-                        StageRunner::new(
-                            &value,
-                            translator.clone(),
-                            &device,
-                            watched_resources.clone(),
-                        )
-                    });
-                    match runner {
-                        Ok(runner) => watched.store(Arc::new(runner)),
-                        Err(error) => tracing::error!(%error, "failed to reload pipeline"),
+            .spawn({
+                let current = current.clone();
+                let resources = resources.clone();
+                async move {
+                    let mut changes = config.subscribe();
+                    while changes.changed().await.is_ok() {
+                        let runner = config.read().and_then(|value| {
+                            StageRunner::new(&value, translator.clone(), &device, resources.clone())
+                        });
+                        match runner {
+                            Ok(runner) => current.store(Arc::new(runner)),
+                            Err(error) => tracing::error!(%error, "failed to reload pipeline"),
+                        }
                     }
                 }
             });
