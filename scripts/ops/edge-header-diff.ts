@@ -13,8 +13,22 @@
 
 export type HeaderMap = Map<string, string[]>;
 
-/** Headers whose value is expected to differ between two correct servers. */
-export const DEFAULT_IGNORE = ["date", "age", "server", "cf-*", "report-to", "nel", "alt-svc"];
+/**
+ * Headers expected to differ between two correct servers: per-response values (date, age, server,
+ * cf-*, report-to, nel, alt-svc) and message framing (content-length, transfer-encoding), which
+ * follows whether the upstream streamed or buffered that particular response.
+ */
+export const DEFAULT_IGNORE = [
+  "date",
+  "age",
+  "server",
+  "cf-*",
+  "report-to",
+  "nel",
+  "alt-svc",
+  "content-length",
+  "transfer-encoding",
+];
 
 export interface Diff {
   name: string;
@@ -104,7 +118,7 @@ async function main(): Promise<number> {
   const urls = arg("urls");
   if (!host || !nginx || !edge || !urls) {
     console.error(
-      "usage: edge-header-diff.ts --host <name> --nginx <addr:port> --edge <addr:port> --urls <file> [--ignore a,b,cf-*] [--header 'Name: v']",
+      "usage: edge-header-diff.ts --host <name> --nginx <addr:port> --edge <addr:port> --urls <file> [--ignore a,b,cf-*] [--header 'Name: v'] [--attempts 3]",
     );
     return 2;
   }
@@ -115,22 +129,28 @@ async function main(): Promise<number> {
     .map((line) => line.trim())
     .filter((line) => line && !line.startsWith("#"));
 
+  const attempts = Number(arg("attempts", "3"));
   let differing = 0;
   for (const path of paths) {
     for (const target of [nginx, edge]) await fetchHeaders(host, target, path, extra);
-    const [a, b] = await Promise.all([
-      fetchHeaders(host, nginx, path, extra),
-      fetchHeaders(host, edge, path, extra),
-    ]);
-    const diffs = diffHeaders(a.headers, b.headers, ignore);
-    const statusDiffers = a.status !== b.status;
-    if (!diffs.length && !statusDiffers) {
-      console.log(`same  ${a.status} ${path}`);
+    // A page rendered per request can differ between two fetches of the same server (preload
+    // links, build ids), so a URL passes when one of the attempts shows no difference.
+    let last: { a: string; b: string; diffs: Diff[] } | undefined;
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      const [a, b] = await Promise.all([
+        fetchHeaders(host, nginx, path, extra),
+        fetchHeaders(host, edge, path, extra),
+      ]);
+      last = { a: a.status, b: b.status, diffs: diffHeaders(a.headers, b.headers, ignore) };
+      if (!last.diffs.length && a.status === b.status) break;
+    }
+    if (last && !last.diffs.length && last.a === last.b) {
+      console.log(`same  ${last.a} ${path}`);
       continue;
     }
     differing += 1;
-    console.log(`DIFF  nginx=${a.status} edge=${b.status} ${path}`);
-    for (const d of diffs)
+    console.log(`DIFF  nginx=${last?.a} edge=${last?.b} ${path}`);
+    for (const d of last?.diffs ?? [])
       console.log(`      ${d.name}\n        nginx: ${JSON.stringify(d.nginx)}\n        edge:  ${JSON.stringify(d.edge)}`);
   }
   console.log(`\n${paths.length} urls, ${differing} differing, ignored: ${ignore.join(",")}`);

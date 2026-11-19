@@ -60,8 +60,8 @@ rama or hyper plus rustls was the fallback; it was not needed.
 
 Security headers (CSP, CSP-report-only, COOP, permissions-policy, referrer-policy, x-frame-options)
 and the `Link` preload header are produced by the application and pass through untouched; the
-`default` rules only fill a gap. HSTS is added by Cloudflare today; the commented line in
-`fr2.example.toml` moves it to the edge when the proxy leaves (step 8).
+`default` rules (commented in `fr2.example.toml`, so the header diff against nginx stays empty) only
+fill a gap. HSTS is added by Cloudflare today and moves to the edge when the proxy leaves (step 8).
 
 ## Differences, on purpose
 

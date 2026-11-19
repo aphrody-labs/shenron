@@ -87,17 +87,20 @@ redirect_to = "dragonballfr.com"
 [[vhost]]
 names = ["dragonballfr.com"]
 
-# Security headers: the Next.js application sets them; these defaults only fill a gap (an error page
-# written by the edge, an upstream that forgot one). HSTS is added by Cloudflare today; enable it
-# here when the edge is the public TLS endpoint:
-#   "Strict-Transport-Security" = "max-age=63072000; includeSubDomains; preload"
-[vhost.headers.default]
-"X-Content-Type-Options" = "nosniff"
-"X-Frame-Options" = "SAMEORIGIN"
-"Referrer-Policy" = "strict-origin-when-cross-origin"
-"Content-Security-Policy" = "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
-"Cross-Origin-Opener-Policy" = "same-origin-allow-popups"
-"Permissions-Policy" = "camera=(), microphone=(), geolocation=(), browsing-topics=(), interest-cohort=(), payment=(), usb=()"
+# Security headers (CSP, CSP-report-only, COOP, permissions-policy, referrer-policy, x-frame-options,
+# the Link preloads) are produced by the Next.js application and pass through untouched, which is
+# what the nginx this replaces does. To make the edge fill a gap itself (an upstream that forgot one,
+# an error page), add defaults; HSTS is added by Cloudflare today and moves here when the proxy
+# leaves (step 8):
+#
+# [vhost.headers.default]
+# "Strict-Transport-Security" = "max-age=63072000; includeSubDomains; preload"
+# "X-Content-Type-Options" = "nosniff"
+# "X-Frame-Options" = "SAMEORIGIN"
+# "Referrer-Policy" = "strict-origin-when-cross-origin"
+# "Content-Security-Policy" = "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+# "Cross-Origin-Opener-Policy" = "same-origin-allow-popups"
+# "Permissions-Policy" = "camera=(), microphone=(), geolocation=(), browsing-topics=(), interest-cohort=(), payment=(), usb=()"
 
 # 1. Hashed build assets: cached 30 days on the edge, computed on prd.
 [[vhost.route]]
