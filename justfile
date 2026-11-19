@@ -337,9 +337,14 @@ turbo *args="build":
 # Write MAP.tsv: areas, tracked files and bytes, tier and gate of the commit (agents read it first)
 [group('all')]
 map:
-    bun scripts/repo-map.ts
+    cargo xtask map
 
 # Fail when MAP.tsv no longer matches the commit
 [group('all')]
 map-check:
-    bun scripts/repo-map.ts --check
+    cargo xtask map --check
+
+# List scripts under scripts/ that nothing references (exit 1 when any); full inventory: cargo xtask scripts
+[group('all')]
+scripts-orphans:
+    cargo xtask scripts --orphans

@@ -21,6 +21,8 @@ koharu-test = "nextest run -p shenron-manga -p shenron-cli -p shenron-mcp --feat
 wasm = "check -p koharu-canvas --lib --target wasm32-unknown-unknown"
 # Rustdoc of the workspace crates, without their dependencies.
 docs = "doc --workspace --no-deps"
+# Repository tasks in Rust (crates/xtask): `cargo xtask map`, `cargo xtask scripts`.
+xtask = "run --quiet -p xtask --"
 
 [env]
 # Repository root for tests and build scripts reading fixtures shared with the Bun packages
