@@ -15,6 +15,7 @@ Shenron is the platform behind dragonballfr.com: web portal, Discord bot, API, e
 - `apps/site` (web portal), `apps/bot` (Discord bot), `apps/server` (single Bun server), `apps/activity` (Discord Activity).
 - `packages/*` (`@aphrody/shenron-*` workspace packages), `crates/*` (`shenron-*`, `koharu-*`, `dragon-pixel`).
 - `deploy/` (compose, nginx, units, SQL migrations), `scripts/`, `docs/` (ADRs and runbooks), `.agents/skills` (skills).
+- Map: `MAP.tsv` lists every area with its tracked file count, bytes, tier and gate (`just map`, `just map-check`); default searches skip vendored trees, lockfiles and generated output (`.rgignore`, `.fdignore`). Rust contract and agent loop: `docs/development/rust.md`.
 
 ## Hosts
 

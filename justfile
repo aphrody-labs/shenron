@@ -333,3 +333,13 @@ compression-bench:
 [group('turbo')]
 turbo *args="build":
     bun x turbo run {{ args }}
+
+# Write MAP.tsv: areas, tracked files and bytes, tier and gate of the commit (agents read it first)
+[group('all')]
+map:
+    bun scripts/repo-map.ts
+
+# Fail when MAP.tsv no longer matches the commit
+[group('all')]
+map-check:
+    bun scripts/repo-map.ts --check
