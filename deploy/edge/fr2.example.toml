@@ -1,0 +1,168 @@
+# SPDX-License-Identifier: Apache-2.0
+# shenron-edge on fr2: the dragonballfr.com load balancer, one-to-one with the nginx
+# conf.d/shenron-lb.conf it replaces (ADR 0009, step 3). Install as /etc/shenron-edge/edge.toml;
+# `kill -HUP $(pidof shenron-edge)` reloads it. Validate with `shenron-edge --check --config <file>`.
+
+[server]
+http_listen = ["0.0.0.0:80", "[::]:80"]
+https_listen = ["0.0.0.0:443", "[::]:443"]
+server_header = "shenron-edge"
+# nginx `proxy_add_x_forwarded_for`: keep the incoming list and add the client address.
+forwarded_for = "append"
+# Cloudflare ranges (https://api.cloudflare.com/client/v4/ips) while the proxy fronts the host:
+# for those peers the client address is CF-Connecting-IP.
+# trusted_proxies = ["173.245.48.0/20", "103.21.244.0/22"]
+
+# Static certificate (certbot). Switch to `acme = true` and an [acme] section to let the edge renew it.
+[[certificate]]
+name = "dragonballfr.com"
+domains = ["dragonballfr.com", "*.dragonballfr.com"]
+cert_file = "/etc/letsencrypt/live/dragonballfr.com/fullchain.pem"
+key_file = "/etc/letsencrypt/live/dragonballfr.com/privkey.pem"
+
+# [acme]
+# directory_url = "https://acme-v02.api.letsencrypt.org/directory"
+# contact = ["mailto:ops@example.invalid"]
+# storage_dir = "/var/lib/shenron-edge/acme"
+
+# proxy_cache_path zones.
+[[cache]]
+name = "ssr"
+dir = "/var/cache/shenron-edge/ssr"
+max_size = "2GiB"
+inactive = "60m"
+
+[[cache]]
+name = "img"
+dir = "/var/cache/shenron-edge/img"
+max_size = "4GiB"
+inactive = "30d"
+
+[[cache]]
+name = "static"
+dir = "/var/cache/shenron-edge/static"
+max_size = "2GiB"
+inactive = "30d"
+
+# `app` is the nginx upstream shenron_app_pool, `offload` shenron_vps_offload. Both end on prd over
+# WireGuard; `label` is what X-Shenron-Upstream reports (the nginx bridge port it used to show).
+[[pool]]
+name = "app"
+connect_timeout = "5s"
+read_timeout = "60s"
+[[pool.server]]
+addr = "10.200.77.5:443"
+tls = true
+sni = "dragonballfr.com"
+verify = false
+max_fails = 3
+fail_timeout = "10s"
+label = "127.0.0.1:18082"
+
+[[pool]]
+name = "offload"
+connect_timeout = "5s"
+read_timeout = "60s"
+[[pool.server]]
+addr = "10.200.77.5:443"
+tls = true
+sni = "dragonballfr.com"
+verify = false
+max_fails = 3
+fail_timeout = "10s"
+label = "127.0.0.1:18082"
+
+[[pool]]
+name = "cdn"
+connect_timeout = "5s"
+read_timeout = "60s"
+[[pool.server]]
+addr = "cdn.dragonballfr.com:443"
+tls = true
+
+[[vhost]]
+names = ["www.dragonballfr.com"]
+redirect_to = "dragonballfr.com"
+
+[[vhost]]
+names = ["dragonballfr.com"]
+
+# Security headers: the Next.js application sets them; these defaults only fill a gap (an error page
+# written by the edge, an upstream that forgot one). HSTS is added by Cloudflare today; enable it
+# here when the edge is the public TLS endpoint:
+#   "Strict-Transport-Security" = "max-age=63072000; includeSubDomains; preload"
+[vhost.headers.default]
+"X-Content-Type-Options" = "nosniff"
+"X-Frame-Options" = "SAMEORIGIN"
+"Referrer-Policy" = "strict-origin-when-cross-origin"
+"Content-Security-Policy" = "object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'self'"
+"Cross-Origin-Opener-Policy" = "same-origin-allow-popups"
+"Permissions-Policy" = "camera=(), microphone=(), geolocation=(), browsing-topics=(), interest-cohort=(), payment=(), usb=()"
+
+# 1. Hashed build assets: cached 30 days on the edge, computed on prd.
+[[vhost.route]]
+prefix = "/_next/static/"
+pool = "offload"
+[vhost.route.cache]
+zone = "static"
+valid = [{ status = [200], ttl = "30d" }, { status = [404], ttl = "1m" }]
+
+# 2. CDN-served media, cached 7 days, stale on any upstream trouble.
+[[vhost.route]]
+regex = "^/(assets|db|media|banners|og|fonts)/"
+pool = "cdn"
+upstream_host = "cdn.dragonballfr.com"
+[vhost.route.headers.add]
+"X-Shenron-LB-Cache" = "$cache_status"
+[vhost.route.cache]
+zone = "static"
+valid = [{ status = [200], ttl = "7d" }]
+use_stale = ["error", "timeout", "updating", "http_500", "http_502", "http_503", "http_504"]
+
+# 3. Image optimizer: key varies on the negotiated format, one upstream fetch per key.
+[[vhost.route]]
+exact = "/_next/image"
+pool = "offload"
+upstream_host = "dragonballfr.com"
+[vhost.route.headers.add]
+"X-Shenron-Img-Cache" = "$cache_status"
+[vhost.route.cache]
+zone = "img"
+valid = [{ status = [200], ttl = "30d" }]
+lock = true
+use_stale = ["error", "timeout", "updating", "http_500", "http_502", "http_503", "http_504"]
+[[vhost.route.cache.variance]]
+header = "accept"
+default = "orig"
+map = [{ contains = "image/avif", value = "avif" }, { contains = "image/webp", value = "webp" }]
+
+# 4. Heavy, stateful and bulk endpoints go to prd and are never cached.
+[[vhost.route]]
+regex = "^/(api/public/dbxv2/|api/media/|api/studio/|api/admin/|api/wiki-admin/|workshop/|admin/)"
+pool = "offload"
+upstream_host = "dragonballfr.com"
+
+# 5. Authenticated and dynamic API: no cache.
+[[vhost.route]]
+regex = "^/api/"
+pool = "app"
+upstream_host = "dragonballfr.com"
+[vhost.route.headers.add]
+"X-Shenron-Upstream" = "$upstream_addr"
+
+# 6. Public SSR pages: micro cache that absorbs crawlers; a session cookie or ?nocache=1 bypasses it.
+[[vhost.route]]
+prefix = "/"
+pool = "app"
+upstream_host = "dragonballfr.com"
+[vhost.route.headers.add]
+"X-Shenron-LB-Cache" = "$cache_status"
+"X-Shenron-Upstream" = "$upstream_addr"
+[vhost.route.cache]
+zone = "ssr"
+valid = [{ status = [200], ttl = "10m" }, { status = [404], ttl = "1m" }]
+lock = true
+use_stale = ["error", "timeout", "updating", "http_500", "http_502", "http_503", "http_504"]
+[vhost.route.cache.bypass]
+cookies = ["better-auth", "shenron_session"]
+args = ["nocache"]

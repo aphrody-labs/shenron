@@ -1,0 +1,60 @@
+# SPDX-License-Identifier: Apache-2.0
+# shenron-edge on prd: the loopback vhosts of deploy/nginx/{admin,tv,zz-koharu}.conf, same
+# headers, limits and timeouts. Install as /etc/shenron-edge/edge.toml.
+
+[server]
+http_listen = ["0.0.0.0:80", "[::]:80"]
+https_listen = ["0.0.0.0:443", "[::]:443"]
+forwarded_for = "append"
+
+[acme]
+directory_url = "https://acme-v02.api.letsencrypt.org/directory"
+contact = ["mailto:ops@example.invalid"]
+storage_dir = "/var/lib/shenron-edge/acme"
+
+# HTTP-01 per name: a wildcard needs DNS-01, so each public host is listed.
+[[certificate]]
+name = "dragonballfr-hosts"
+domains = ["admin.dragonballfr.com", "tv.dragonballfr.com", "koharu.dragonballfr.com"]
+acme = true
+
+[[pool]]
+name = "admin"
+[[pool.server]]
+addr = "127.0.0.1:5020"
+
+[[pool]]
+name = "tv"
+[[pool.server]]
+addr = "127.0.0.1:8793"
+
+[[pool]]
+name = "koharu"
+connect_timeout = "5s"
+read_timeout = "600s"
+[[pool.server]]
+addr = "127.0.0.1:8890"
+
+[[vhost]]
+names = ["admin.dragonballfr.com"]
+[vhost.headers.add]
+"X-Content-Type-Options" = "nosniff"
+"Referrer-Policy" = "no-referrer"
+"X-Frame-Options" = "DENY"
+[[vhost.route]]
+pool = "admin"
+
+[[vhost]]
+names = ["tv.dragonballfr.com"]
+[vhost.headers.add]
+"X-Content-Type-Options" = "nosniff"
+"Referrer-Policy" = "strict-origin-when-cross-origin"
+[[vhost.route]]
+pool = "tv"
+max_body = "1MiB"
+
+[[vhost]]
+names = ["koharu.dragonballfr.com"]
+[[vhost.route]]
+pool = "koharu"
+max_body = "40MiB"
