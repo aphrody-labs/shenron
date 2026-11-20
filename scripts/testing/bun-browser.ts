@@ -697,8 +697,12 @@ export class BunBrowser {
           const lines = readFileSync(portFile, "utf-8").trim().split(/\r?\n/);
           if (lines.length >= 2 && lines[0] && lines[1]) {
             const port = lines[0].trim();
-            const browserGuid = lines[1].trim();
-            wsUrl = `ws://127.0.0.1:${port}/devtools/browser/${browserGuid}`;
+            // The second line is the browser path (`/devtools/browser/<guid>`) in current Chrome,
+            // the bare guid in older builds.
+            const browserPath = lines[1].trim();
+            wsUrl = `ws://127.0.0.1:${port}${
+              browserPath.startsWith("/") ? browserPath : `/devtools/browser/${browserPath}`
+            }`;
             break;
           }
         } catch {
@@ -706,7 +710,9 @@ export class BunBrowser {
         }
       }
 
-      if (proc.exitCode !== null) {
+      // Chrome on Windows re-launches itself: the process we spawned exits with 0 within
+      // milliseconds while the browser goes on, so only a failing exit code is premature.
+      if (proc.exitCode !== null && proc.exitCode !== 0) {
         try {
           rmSync(tempDir, { recursive: true, force: true });
         } catch {
@@ -802,6 +808,8 @@ export class BunBrowser {
   }
 
   async close(): Promise<void> {
+    // The spawned process may be a launcher that already exited: ask the browser itself to quit.
+    await Promise.race([this.send("Browser.close").catch(() => undefined), Bun.sleep(2000)]);
     try {
       this.ws.close();
     } catch {
@@ -816,10 +824,14 @@ export class BunBrowser {
       }
     }
     if (this.tempDir) {
-      try {
-        rmSync(this.tempDir, { recursive: true, force: true });
-      } catch {
-        // ignore
+      // The browser may still be writing its profile for a moment after `Browser.close`.
+      for (let attempt = 0; attempt < 50; attempt++) {
+        try {
+          rmSync(this.tempDir, { recursive: true, force: true });
+          break;
+        } catch {
+          await Bun.sleep(100);
+        }
       }
     }
   }

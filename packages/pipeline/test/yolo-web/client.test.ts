@@ -51,7 +51,13 @@ describe("YOLO WEB stdio client (fixture server with the web-cli mcp framing)", 
           title: "Fixture",
           content: "<html>https://gemini.google.com/b</html>",
         });
-        await expect(mcp.tool("nope")).rejects.toThrow("unknown tool nope");
+        // Not `.rejects`: with bun 1.4.5 the matcher stops serving the child's stdout pipe once a
+        // previous round trip completed, so a rejection that depends on the server hangs.
+        const error = await mcp.tool("nope").then(
+          () => new Error("the unknown tool was accepted"),
+          (reason: Error) => reason,
+        );
+        expect(error.message).toContain("unknown tool nope");
       },
       { cli: FIXTURE },
     );
