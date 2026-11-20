@@ -4,11 +4,13 @@
  * Article = corps markdown riche (sections, listes, tableaux, HTML mis en page)
  * rendu via <WikiMarkdown/> (sanitize owner-trust). Le bloc « Sources » liste les
  * références citées dans l'article (`articleSources`) en pied façon encyclopédie,
- * avec lien externe quand l'URL est connue. RSC pur (aucun "use client").
- *
- * Drop-in sur toute page détail wiki (personnage, planète, saga, arc, technique).
+ * avec lien interne vers la ressource correspondante sur `dragonballfr.com`.
+ * RSC pur (aucun "use client").
  */
+import type { ReactNode } from "react";
+import Link from "next/link";
 import type { WikiSource } from "@/lib/shenron";
+import { normalizeInternalWikiSources } from "@/lib/wiki-internal-sources";
 import {
   normalizeSectionAccent,
   sectionAccentStyle,
@@ -26,6 +28,7 @@ function kindLabel(kind: string): string {
     case "technique":
     case "transformation":
     case "planet":
+    case "location":
     case "saga":
     case "arc":
     case "race":
@@ -40,7 +43,7 @@ function kindLabel(kind: string): string {
     case "databooks":
       return "Databook";
     default:
-      return "Source";
+      return "Source DBFR";
   }
 }
 
@@ -49,15 +52,18 @@ export function WikiArticle({
   sources,
   heading = "Article",
   accent = "orange",
+  children,
 }: {
   article: string;
   sources?: WikiSource[] | null;
   heading?: string;
   /** Couleur d'accent du bandeau (orange par défaut, varie par type d'entité). */
   accent?: SectionAccent;
+  /** Contenu structuré rattaché à la section (ex. affrontements majeurs dans Présentation). */
+  children?: ReactNode;
 }) {
   const style = sectionAccentStyle(normalizeSectionAccent(accent));
-  const cited = (sources ?? []).filter((s) => s && s.label);
+  const cited = normalizeInternalWikiSources(sources, { requireInternalUrl: false });
 
   return (
     <section className="reveal-up" style={{ animationDelay: "0.45s" }}>
@@ -78,6 +84,8 @@ export function WikiArticle({
           <WikiMarkdown body={article} />
         </div>
 
+        {children}
+
         {cited.length > 0 && (
           <footer className="mt-10 pt-6 border-t-2 border-black/80">
             <h3 className="text-xs font-black text-dbz-orange uppercase tracking-widest mb-4 font-mono">
@@ -91,25 +99,29 @@ export function WikiArticle({
   );
 }
 
-/** Liste `<ol>` des références citées (partagée footer / bloc autonome). */
-function SourceList({ cited, accentClass }: { cited: WikiSource[]; accentClass: string }) {
+/** Liste `<ol>` des références citées (partagée footer / bloc autonome, 100 % interne DBFR). */
+function SourceList({
+  cited,
+  accentClass,
+}: {
+  cited: Array<Omit<WikiSource, "url"> & { url: string | null }>;
+  accentClass: string;
+}) {
   return (
     <ol className="space-y-1.5 text-sm">
       {cited.map((s) => (
-        <li key={s.n} id={`ref-${s.n}`} className="flex gap-3 text-white/60">
+        <li key={`${s.n}-${s.label}`} id={`ref-${s.n}`} className="flex gap-3 text-white/60">
           <span className={`shrink-0 font-mono text-xs ${accentClass}`}>[{s.n}]</span>
           {s.url ? (
-            <a
+            <Link
               href={s.url}
-              target="_blank"
-              rel="noopener noreferrer nofollow"
               className="hover:text-white transition-colors link-underline break-words"
             >
               {s.label}
-              <span className="ml-2 text-[10px] uppercase tracking-widest text-white/50">
+              <span className="ml-2 text-[10px] uppercase tracking-widest text-dbz-blue-light/80">
                 {kindLabel(s.kind)}
               </span>
-            </a>
+            </Link>
           ) : (
             <span className="break-words">
               {s.label}
@@ -126,9 +138,8 @@ function SourceList({ cited, accentClass }: { cited: WikiSource[]; accentClass: 
 
 /**
  * Bloc « Sources & références » autonome (panneau propre), à rendre **une seule
- * fois** sous le sélecteur de catégories quand l'article a été éclaté en
- * plusieurs panneaux (les [n] cités restent répartis dans les sections, mais la
- * bibliographie s'affiche en pied de fiche). Se masque si aucune source.
+ * fois** en pied de fiche. Seules les sources pointant vers une ressource interne
+ * de `dragonballfr.com` (ou repères internes) sont conservées.
  */
 export function WikiSources({
   sources,
@@ -137,17 +148,11 @@ export function WikiSources({
   sources?: WikiSource[] | null;
   accent?: SectionAccent;
 }) {
-  const cited = (sources ?? []).filter((s) => s && s.label);
+  const cited = normalizeInternalWikiSources(sources, { requireInternalUrl: false });
   if (cited.length === 0) return null;
   const style = sectionAccentStyle(normalizeSectionAccent(accent));
   return (
     <section className="dbz-panel p-6 sm:p-8">
-      {/* `h2` et non `h3` : ce panneau est autonome, posé en pied de fiche à
-			    côté des rubriques (Transformations, Personnages affiliés…) qui
-			    titrent toutes en `h2`. En `h3`, il se donnait pour une sous-partie
-			    de la dernière rubrique affichée, avec laquelle il n'a rien à voir.
-			    Le `h3` de `WikiArticle` reste juste, lui : il vit dans le `<footer>`
-			    d'une section qui porte déjà son `h2`. */}
       <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-[10px] font-bold text-white/50 uppercase tracking-[0.3em]">
           Sources & références

@@ -1,14 +1,17 @@
 import { capParams, hasEditorialDatabase } from "@/lib/prerender";
+import {
+  WikiCanonicalFooter,
+  type CanonicalFactEntry,
+} from "@/components/wiki/WikiCanonicalFooter";
 import { WikiDetailPage, WikiEntityHeader } from "@/components/wiki/WikiDetailPage";
+import { WikiEmbeddedBattles } from "@/components/wiki/WikiEmbeddedBattles";
 import { WikiFicheVide } from "@/components/wiki/WikiFicheVide";
 import { WikiSectionsReader } from "@/components/wiki/WikiSectionsReader";
-import { WikiSources } from "@/components/wiki/WikiArticle";
 import { buildWikiContentPanels } from "@/lib/wiki-panels";
 import { getShenronTechnique, getShenronTechniques } from "@/lib/shenron";
 import { assetUrl } from "@/lib/db-universe";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { GatedWrap } from "@/components/GatedLink";
 import { T } from "@/components/T";
 import type { Metadata } from "next";
 import {
@@ -45,10 +48,10 @@ export async function generateMetadata({
   const description = tech.description ?? `Fiche détaillée de la technique ${tech.name}.`;
   const bestImage = resolveTechniqueArtwork(tech)?.image;
   return {
-    title: `${tech.name} — Technique Dragon Ball`,
+    title: `${tech.name} · Technique Dragon Ball`,
     description,
     ...ogMeta({
-      title: `${tech.name} — DBFR`,
+      title: `${tech.name} · DBFR`,
       description,
       image: bestImage ? assetUrl(bestImage) : undefined,
       canonical: `/wiki/techniques/${slug}`,
@@ -65,89 +68,29 @@ export default async function TechniqueDetailPage({
   const tech = await getShenronTechnique(slug);
   if (!tech) notFound();
   const artwork = resolveTechniqueArtwork(tech);
+
+  const embeddedBattles =
+    tech.battles && tech.battles.length > 0 ? (
+      <WikiEmbeddedBattles battles={tech.battles} subjectName={tech.name} mode="entity" />
+    ) : null;
+
   const contentPanels = await buildWikiContentPanels({
     entityType: "technique",
     entityId: tech.id,
     article: tech.article,
     description: tech.description,
     fallbackHeading: "Présentation",
+    firstPanelExtra: embeddedBattles,
   });
 
-  const decisiveBattlesBlock =
-    tech.battles && tech.battles.length > 0 ? (
-      <section className="wiki-content-card space-y-4">
-        <div className="absolute top-0 left-0 w-1.5 h-full bg-dbz-orange" />
-        <div className="flex items-center gap-4">
-          <h3 className="text-dbz-orange font-sans font-extrabold text-xl sm:text-2xl uppercase tracking-wider">
-            <T
-              k="wiki.techniqueDetail.decisiveBattlesHeading"
-              values={{ count: tech.battles.length }}
-            />
-          </h3>
-          <div className="h-0.5 flex-1 bg-gradient-to-r from-dbz-orange/50 to-transparent" />
-        </div>
-        <p className="text-sm text-white/70">
-          <T k="wiki.techniqueDetail.decisiveBattlesLead" values={{ name: tech.name }} />
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {tech.battles.map((b) => (
-            <GatedWrap
-              key={b.slug}
-              href="/wiki/events"
-              className="block rounded-2xl border border-white/10 bg-white/[0.03] p-4 transition-all hover:border-orange-500/40 hover:bg-orange-500/[0.04] space-y-2"
-            >
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-bold text-orange-400">{b.series}</span>
-                {b.winnerName && (
-                  <span className="text-emerald-400 font-medium">🏆 {b.winnerName}</span>
-                )}
-              </div>
-              <h4 className="font-bold text-white text-sm">{b.title}</h4>
-              {b.climaxSummary && (
-                <p className="text-xs text-white/60 line-clamp-2">{b.climaxSummary}</p>
-              )}
-            </GatedWrap>
-          ))}
-        </div>
-      </section>
-    ) : null;
-
-  if (decisiveBattlesBlock) {
-    if (contentPanels.length > 0) {
-      const firstPanel = contentPanels[0]!;
-      contentPanels[0] = {
-        ...firstPanel,
-        node: (
-          <div className="space-y-6">
-            {firstPanel.node}
-            {decisiveBattlesBlock}
-          </div>
-        ),
-      };
-    } else {
-      contentPanels.push({
-        key: "presentation",
-        label: "Présentation",
-        accent: "orange",
-        origine: "db",
-        node: decisiveBattlesBlock,
-      });
-    }
-  }
-
-  // Fallback only when a fiche has neither article, description, nor battles:
-  // canonical facts otherwise live permanently in the right-hand infobox.
-  if (contentPanels.length === 0) {
-    const reperesCanoniques = techniqueCanonicalFactsFallback(tech);
-    if (reperesCanoniques) {
-      contentPanels.push({
-        key: "presentation",
-        label: "Présentation",
-        accent: "blue",
-        origine: "db",
-        node: <div className="wiki-content-card">{reperesCanoniques}</div>,
-      });
-    }
+  if (contentPanels.length === 0 && embeddedBattles) {
+    contentPanels.push({
+      key: "presentation",
+      label: "Présentation",
+      accent: "orange",
+      origine: "db",
+      node: <div className="wiki-content-card">{embeddedBattles}</div>,
+    });
   }
 
   const otherPractitioners = (tech.practitioners ?? []).filter((p) => p.id !== tech.creatorId);
@@ -156,6 +99,56 @@ export default async function TechniqueDetailPage({
     0,
     otherPractitioners.length - visiblePractitioners.length,
   );
+
+  // `Repères canoniques` & `Sources` consolidés en pied de page (100 % internes à DBFR).
+  const canonicalFacts: CanonicalFactEntry[] = [];
+  if (tech.nameJa || tech.nameRomaji) {
+    canonicalFacts.push({
+      key: "name-ja",
+      label: <T k="wiki.techniqueDetail.fieldJapaneseName" />,
+      value: <span lang="ja">{tech.nameJa ?? tech.nameRomaji}</span>,
+      subvalue: tech.nameJa && tech.nameRomaji ? tech.nameRomaji : undefined,
+    });
+  }
+  if (tech.debutChapter) {
+    canonicalFacts.push({
+      key: "debut-chapter",
+      label: <T k="wiki.techniqueDetail.fieldFirstAppearance" />,
+      value: (
+        <T
+          k="wiki.techniqueDetail.chapterNumber"
+          values={{ number: tech.debutChapter.chapterNumber ?? tech.debutChapter.id }}
+        />
+      ),
+      subvalue: tech.debutChapter.title ?? undefined,
+      href: `/wiki/manga/${tech.debutChapter.id}`,
+    });
+  } else if (tech.debutEpisode) {
+    canonicalFacts.push({
+      key: "debut-episode",
+      label: <T k="wiki.techniqueDetail.fieldFirstAppearance" />,
+      value: (
+        <T
+          k="wiki.techniqueDetail.episodeNumber"
+          values={{ number: tech.debutEpisode.numberInSeries ?? tech.debutEpisode.id }}
+        />
+      ),
+      subvalue: tech.debutEpisode.title ?? undefined,
+      href: `/wiki/episodes/${tech.debutEpisode.id}`,
+    });
+  }
+  if (tech.creatorName) {
+    canonicalFacts.push({
+      key: "creator",
+      label: <T k="wiki.techniqueDetail.fieldCreator" />,
+      value: tech.creatorName,
+      href: tech.creatorSlug
+        ? `/wiki/characters/${tech.creatorSlug}`
+        : tech.creatorId
+          ? `/wiki/characters/${tech.creatorId}`
+          : null,
+    });
+  }
 
   const jsonLdData: WithContext<DefinedTerm> = {
     "@context": "https://schema.org",
@@ -235,23 +228,6 @@ export default async function TechniqueDetailPage({
                   </th>
                   <td className="wiki-infobox-value font-semibold text-white">{tech.name}</td>
                 </tr>
-                {(tech.nameJa || tech.nameRomaji) && (
-                  <tr className="wiki-infobox-row">
-                    <th className="wiki-infobox-label">
-                      <T k="wiki.techniqueDetail.fieldJapaneseName" />
-                    </th>
-                    <td className="wiki-infobox-value">
-                      {tech.nameJa && (
-                        <span className="block font-semibold text-white" lang="ja">
-                          {tech.nameJa}
-                        </span>
-                      )}
-                      {tech.nameRomaji && (
-                        <span className="block text-xs text-white/60">{tech.nameRomaji}</span>
-                      )}
-                    </td>
-                  </tr>
-                )}
                 <tr className="wiki-infobox-row">
                   <th className="wiki-infobox-label">
                     <T k="wiki.techniqueDetail.fieldType" />
@@ -304,49 +280,24 @@ export default async function TechniqueDetailPage({
                     </td>
                   </tr>
                 )}
-                {(tech.debutChapter || tech.debutEpisode) && (
-                  <tr className="wiki-infobox-row">
-                    <th className="wiki-infobox-label">
-                      <T k="wiki.techniqueDetail.fieldFirstAppearance" />
-                    </th>
-                    <td className="wiki-infobox-value">
-                      {tech.debutChapter ? (
-                        <Link
-                          href={`/wiki/manga/${tech.debutChapter.id}`}
-                          className="group block text-dbz-blue-light hover:underline font-medium"
-                        >
-                          <span>
-                            <T
-                              k="wiki.techniqueDetail.chapterNumber"
-                              values={{
-                                number: tech.debutChapter.chapterNumber ?? tech.debutChapter.id,
-                              }}
-                            />
-                          </span>
-                          {tech.debutChapter.title && (
-                            <span className="block text-xs font-normal text-white/55 group-hover:text-white/75">
-                              {tech.debutChapter.title}
-                            </span>
-                          )}
-                        </Link>
-                      ) : tech.debutEpisode ? (
-                        <span className="block text-white/85">
-                          <T
-                            k="wiki.techniqueDetail.episodeNumber"
-                            values={{
-                              number: tech.debutEpisode.numberInSeries ?? tech.debutEpisode.id,
-                            }}
-                          />
-                        </span>
-                      ) : null}
-                    </td>
-                  </tr>
-                )}
                 <tr className="wiki-infobox-row">
                   <th className="wiki-infobox-label">
                     <T k="wiki.techniqueDetail.fieldIdentifier" />
                   </th>
                   <td className="wiki-infobox-value font-scouter text-white/70">#{tech.id}</td>
+                </tr>
+                <tr className="wiki-infobox-row">
+                  <th className="wiki-infobox-label">
+                    <T k="wiki.locationDetail.fieldSourcesJump" />
+                  </th>
+                  <td className="wiki-infobox-value">
+                    <a
+                      href="#sources-canoniques"
+                      className="font-mono text-xs text-dbz-blue-light hover:text-dbz-orange hover:underline transition-colors"
+                    >
+                      <T k="wiki.locationDetail.jumpToBottomSources" /> ↓
+                    </a>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -363,66 +314,28 @@ export default async function TechniqueDetailPage({
         </>
       }
     >
-      {contentPanels.length > 1 ? (
-        <div className="space-y-8">
+      <div className="space-y-8">
+        {contentPanels.length > 1 ? (
           <WikiSectionsReader panels={contentPanels} />
-          <WikiSources sources={tech.articleSources} />
-        </div>
-      ) : contentPanels.length === 1 ? (
-        <div className="space-y-8">
-          {contentPanels[0]!.node}
-          <WikiSources sources={tech.articleSources} />
-        </div>
-      ) : (
-        <div className="wiki-content-card">
-          <WikiFicheVide
-            table="db_techniques"
-            rowId={tech.id}
-            label={tech.name}
-            quoi="qui l'emploie, comment elle fonctionne et dans quelle planche elle apparaît"
-          />
-        </div>
-      )}
-    </WikiDetailPage>
-  );
-}
-
-function techniqueCanonicalFactsFallback(tech: Awaited<ReturnType<typeof getShenronTechnique>>) {
-  if (!tech) return null;
-  const hasFacts = tech.nameJa || tech.nameRomaji || tech.debutChapter;
-  if (!hasFacts) return null;
-  return (
-    <div className="grid gap-3 sm:grid-cols-2">
-      {(tech.nameJa || tech.nameRomaji) && (
-        <div className="rounded-xl border border-dbz-blue/25 bg-dbz-blue/[0.06] p-4">
-          <p className="font-scouter text-[10px] uppercase tracking-[0.16em] text-dbz-blue-light">
-            <T k="wiki.techniqueDetail.fieldJapaneseName" />
-          </p>
-          <p className="mt-1 text-base font-semibold text-white" lang="ja">
-            {tech.nameJa ?? "—"}
-          </p>
-          {tech.nameRomaji && <p className="mt-1 text-sm text-white/60">{tech.nameRomaji}</p>}
-        </div>
-      )}
-      {tech.debutChapter && (
-        <Link
-          href={`/wiki/manga/${tech.debutChapter.id}`}
-          className="group rounded-xl border border-dbz-blue/25 bg-dbz-blue/[0.06] p-4 transition-colors hover:border-dbz-blue/60 hover:bg-dbz-blue/[0.12]"
-        >
-          <p className="font-scouter text-[10px] uppercase tracking-[0.16em] text-dbz-blue-light">
-            <T k="wiki.techniqueDetail.fieldFirstAppearance" />
-          </p>
-          <p className="mt-1 text-base font-semibold text-white group-hover:text-dbz-blue-light">
-            <T
-              k="wiki.techniqueDetail.chapterNumber"
-              values={{ number: tech.debutChapter.chapterNumber ?? tech.debutChapter.id }}
+        ) : contentPanels.length === 1 ? (
+          contentPanels[0]!.node
+        ) : (
+          <div className="wiki-content-card">
+            <WikiFicheVide
+              table="db_techniques"
+              rowId={tech.id}
+              label={tech.name}
+              quoi="qui l'emploie, comment elle fonctionne et dans quelle planche elle apparaît"
             />
-          </p>
-          {tech.debutChapter.title && (
-            <p className="mt-1 text-sm text-white/60">{tech.debutChapter.title}</p>
-          )}
-        </Link>
-      )}
-    </div>
+          </div>
+        )}
+
+        <WikiCanonicalFooter
+          facts={canonicalFacts}
+          sources={tech.articleSources}
+          article={tech.article}
+        />
+      </div>
+    </WikiDetailPage>
   );
 }

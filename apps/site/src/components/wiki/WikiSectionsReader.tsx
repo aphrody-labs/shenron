@@ -16,6 +16,7 @@
  */
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { SectionAccent } from "@/lib/wiki-section-accents";
+import { isSuppressedTocSectionLabel } from "@/lib/wiki-internal-sources";
 import { normalizeWikiSectionGroups } from "@/lib/wiki-section-groups";
 import { useT } from "@/components/T";
 import { useWikiReaderText } from "@/components/wiki/WikiPublicText";
@@ -113,8 +114,9 @@ export function WikiSectionsReader({
   // puis rend les clés uniques : deux rubriques « Histoire » ne doivent pas
   // partager une ancre.
   const items = useMemo(() => {
+    const filtered = panels.filter((p) => !isSuppressedTocSectionLabel(p.label));
     const normalized = normalizeWikiSectionGroups(
-      panels.map((p) => ({ ...p, label: p.label.trim(), group: p.group?.trim() || null })),
+      filtered.map((p) => ({ ...p, label: p.label.trim(), group: p.group?.trim() || null })),
     );
     const seen = new Set<string>();
     return normalized.map((p) => {
@@ -140,7 +142,11 @@ export function WikiSectionsReader({
         return;
       }
       const normalizedHash = hash === "combats" ? "history" : hash;
-      const matched = items.find((p) => p.key === normalizedHash);
+      const matched =
+        items.find((p) => p.key === normalizedHash) ??
+        (normalizedHash.startsWith("variantes")
+          ? items.find((p) => p.key.startsWith("variantes"))
+          : undefined);
       if (!matched) return;
       if (matched.group) {
         setActive(`g:${matched.group}`);

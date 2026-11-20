@@ -16,8 +16,13 @@
  * réordonner / supprimer / éditer au studio se répercute fidèlement (l'article
  * n'est plus consulté). Rendu 100 % côté serveur (SEO/ISR préservés).
  */
+import type { ReactNode } from "react";
 import type { WikiSectionLink } from "@/db/bot-schema";
 import { getWikiSections } from "@/lib/shenron";
+import {
+  isSuppressedTocSectionLabel,
+  stripEmbeddedWikiMetadata,
+} from "@/lib/wiki-internal-sources";
 import {
   sectionAccent,
   sectionSlug,
@@ -112,6 +117,7 @@ export async function buildWikiContentPanels({
   preferArticle = false,
   articleTarget,
   fallbackHeading = "Histoire",
+  firstPanelExtra,
 }: {
   entityType: string;
   entityId: number;
@@ -120,6 +126,8 @@ export async function buildWikiContentPanels({
   preferArticle?: boolean;
   articleTarget?: { table: string; rowId: number };
   fallbackHeading?: string;
+  /** Structured content (e.g. decisive battles / key events) embedded inside the first panel card (`Présentation`). */
+  firstPanelExtra?: ReactNode;
 }): Promise<ContentPanel[]> {
   // Source de vérité : sections DB si présentes (éditables/masquables/ordonnées
   // au studio), sinon l'article éclaté, sinon la description.
@@ -139,8 +147,9 @@ export async function buildWikiContentPanels({
       })),
     );
   } else if (article?.trim()) {
+    const cleanArticle = stripEmbeddedWikiMetadata(article);
     raw = normalizeWikiSectionGroups(
-      splitArticleSections(article, fallbackHeading).map((s) => ({
+      splitArticleSections(cleanArticle, fallbackHeading).map((s) => ({
         key: s.key,
         label: s.label,
         body: s.body,
@@ -163,6 +172,11 @@ export async function buildWikiContentPanels({
     raw = [];
   }
 
+  // `Repères canoniques`, `Combats Décisifs` et `Sources` ne deviennent jamais
+  // des boutons isolés dans la barre `SOMMAIRE` : les combats sont intégrés à
+  // la `Présentation` et les repères/sources sont placés en pied de page.
+  raw = raw.filter((section) => !isSuppressedTocSectionLabel(section.label));
+
   // Les fiches personnage suivent le modèle éditorial commun. N'injecte pas
   // des sous-rubriques PWS vides : leurs informations éventuelles sont
   // regroupées avec « Pouvoirs et formes » par la page personnage.
@@ -181,7 +195,7 @@ export async function buildWikiContentPanels({
 
   // Clés uniques (garde-fou : deux sections de même slug ne cassent pas React).
   const seen = new Set<string>();
-  return raw.map((s) => {
+  return raw.map((s, panelIndex) => {
     let key = s.key;
     let n = 2;
     while (seen.has(key)) key = `${s.key}-${n++}`;
@@ -189,6 +203,7 @@ export async function buildWikiContentPanels({
     const links = s.links ?? [];
     const isPws = s.group === PWS_GROUP_NAME;
     const origine = s.origine ?? "article";
+    const extraInsideCard = panelIndex === 0 ? firstPanelExtra : null;
     // Où déposer une correction de CETTE rubrique. Une section en base
     // s'édite ligne à ligne ; une rubrique issue de l'article s'édite dans
     // l'article, qui est le texte réellement rendu.
@@ -219,7 +234,9 @@ export async function buildWikiContentPanels({
               article={s.body}
               heading={/source|référence|reference/.test(`${s.key} ${s.label}`) ? "" : s.label}
               accent={s.accent}
-            />
+            >
+              {extraInsideCard}
+            </WikiArticle>
           ) : (
             <SectionAEcrire label={s.label} cible={cible} />
           )}

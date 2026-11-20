@@ -2,15 +2,20 @@ import { hasEditorialDatabase } from "@/lib/prerender";
 import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { notFound, permanentRedirect } from "next/navigation";
 import type { Metadata } from "next";
+import {
+  WikiCanonicalFooter,
+  type CanonicalFactEntry,
+} from "@/components/wiki/WikiCanonicalFooter";
 import { WikiDetailPage, WikiEntityHeader } from "@/components/wiki/WikiDetailPage";
+import { WikiSectionsReader } from "@/components/wiki/WikiSectionsReader";
 import { GatedWrap } from "@/components/GatedLink";
+import { T } from "@/components/T";
 import { TrackView } from "@/components/TrackView";
-import { WikiArticle, WikiSources } from "@/components/wiki/WikiArticle";
 import { assetUrl } from "@/lib/db-universe";
 import { getShenronTransformation, getTransformationsAvecArticle } from "@/lib/shenron";
 import { ogMeta } from "@/lib/og";
+import { buildWikiContentPanels } from "@/lib/wiki-panels";
 import { resolveTransformationParam } from "@/lib/wiki-slugs";
-
 import { WikiImg } from "@/components/wiki/WikiImg";
 
 export const revalidate = 3600;
@@ -34,10 +39,10 @@ export async function generateMetadata({
   const qui = t.character ? ` de ${t.character.name}` : "";
   const description = `La transformation ${t.name}${qui} : origine, apparence et effets, d'après le manga et les databooks.`;
   return {
-    title: `${t.name} — Transformation Dragon Ball`,
+    title: `${t.name} · Transformation Dragon Ball`,
     description,
     ...ogMeta({
-      title: `${t.name} — DBFR`,
+      title: `${t.name} · DBFR`,
       description,
       image: t.image ? assetUrl(t.image) : undefined,
       canonical: `/wiki/transformations/${t.slug}`,
@@ -55,9 +60,33 @@ export default async function TransformationPage({
   const t = await getShenronTransformation(resolved.id ?? resolved.canonicalSlug ?? slug);
   if (!t) notFound();
 
-  // Redirection 301 pour les anciens ID numériques ou les alias
   if (resolved.isLegacyNumericId || resolved.isAlias || slug !== t.slug) {
     permanentRedirect(`/wiki/transformations/${t.slug}`);
+  }
+
+  const contentPanels = await buildWikiContentPanels({
+    entityType: "transformation",
+    entityId: t.id,
+    article: t.article,
+    articleTarget: { table: "db_transformations", rowId: t.id },
+    fallbackHeading: "Présentation",
+  });
+
+  const canonicalFacts: CanonicalFactEntry[] = [];
+  if (t.character) {
+    canonicalFacts.push({
+      key: "character",
+      label: <T k="wiki.techniqueDetail.fieldCreator" />,
+      value: t.character.name,
+      href: `/wiki/characters/${t.character.slug}`,
+    });
+  }
+  if (t.ki) {
+    canonicalFacts.push({
+      key: "ki",
+      label: "Ki",
+      value: t.ki,
+    });
   }
 
   return (
@@ -106,7 +135,9 @@ export default async function TransformationPage({
       aside={
         <>
           <div className="wiki-infobox">
-            <div className="wiki-infobox-header">FICHE TECHNIQUE</div>
+            <div className="wiki-infobox-header">
+              <T k="wiki.techniqueDetail.infoboxHeader" />
+            </div>
             {t.image && (
               <div className="relative aspect-[3/4] w-full overflow-hidden border-b-2 border-black bg-black">
                 <WikiImg
@@ -121,7 +152,9 @@ export default async function TransformationPage({
             <table className="w-full text-left text-xs sm:text-sm">
               <tbody>
                 <tr className="wiki-infobox-row">
-                  <th className="wiki-infobox-label">Nom</th>
+                  <th className="wiki-infobox-label">
+                    <T k="wiki.techniqueDetail.fieldName" />
+                  </th>
                   <td className="wiki-infobox-value font-semibold text-white">{t.name}</td>
                 </tr>
                 {t.character && (
@@ -149,7 +182,6 @@ export default async function TransformationPage({
             </table>
           </div>
 
-          {/* Autres formes du personnage */}
           {t.voisines.length > 0 && (
             <div className="wiki-content-card space-y-4">
               <h3 className="font-saiyan text-sm uppercase tracking-wider text-dbz-orange flex items-center gap-2">
@@ -183,24 +215,31 @@ export default async function TransformationPage({
         </>
       }
     >
-      {t.article && t.article.trim() ? (
-        <div className="wiki-content-card">
-          <WikiArticle article={t.article} heading="Description" accent="orange" />
-        </div>
-      ) : (
-        <div className="wiki-content-card text-center py-12 text-sm italic text-white/50">
-          Cette transformation n&apos;a pas encore d&apos;article encyclopédique rédigé.
-        </div>
-      )}
+      <div className="space-y-8">
+        {contentPanels.length > 1 ? (
+          <WikiSectionsReader panels={contentPanels} />
+        ) : contentPanels.length === 1 ? (
+          contentPanels[0]!.node
+        ) : (
+          <div className="wiki-content-card text-center py-12 text-sm italic text-white/50">
+            Cette transformation n&apos;a pas encore d&apos;article encyclopédique rédigé.
+          </div>
+        )}
 
-      <WikiSources sources={t.articleSources as never} />
-      <EntityParticipation
-        kind="wiki"
-        table="db_transformations"
-        id={t.id}
-        path={`/wiki/transformations/${slug}`}
-        label={t.name}
-      />
+        <WikiCanonicalFooter
+          facts={canonicalFacts}
+          sources={t.articleSources as never}
+          article={t.article}
+        />
+
+        <EntityParticipation
+          kind="wiki"
+          table="db_transformations"
+          id={t.id}
+          path={`/wiki/transformations/${slug}`}
+          label={t.name}
+        />
+      </div>
     </WikiDetailPage>
   );
 }
