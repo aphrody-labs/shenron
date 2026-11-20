@@ -152,6 +152,20 @@ const COSMIC_STRATA: readonly StratumSpec[] = [
 
 const COSMIC_LAWS = [
   {
+    key: "infinity",
+    titleKey: "wiki.locationsHub.laws.infinityTitle",
+    bodyKey: "wiki.locationsHub.laws.infinityBody",
+    sourceHref: "/wiki/databooks/4?page=42",
+    sourceLabel: "Daizenshuu 7, p. 42 · DBZ #269",
+  },
+  {
+    key: "dimensions",
+    titleKey: "wiki.locationsHub.laws.dimensionsTitle",
+    bodyKey: "wiki.locationsHub.laws.dimensionsBody",
+    sourceHref: "/wiki/databooks/3?page=17",
+    sourceLabel: "Daizenshuu 4, p. 17 · SEG, p. 59",
+  },
+  {
     key: "time",
     titleKey: "wiki.locationsHub.laws.timeTitle",
     bodyKey: "wiki.locationsHub.laws.timeBody",
@@ -304,7 +318,7 @@ export function CosmologyAtlas({ locations }: { locations: readonly Location[] }
             </h3>
             <div className="h-px flex-1 bg-gradient-to-r from-dbz-orange/35 to-transparent" />
           </div>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {COSMIC_LAWS.map((law) => (
               <div
                 key={law.key}
