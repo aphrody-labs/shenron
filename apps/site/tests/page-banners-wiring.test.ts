@@ -47,8 +47,9 @@ describe("bannières configurées dans l'administration", () => {
       }
       if (["races", "objets", "lieux", "dragons", "transformations"].includes(key)) {
         // These catalogues now illustrate their own records rather than a generic frame.
-        expect(source).toContain("image={artwork?.image ?? undefined}");
-        expect(source).toContain("imageAlt={artwork?.name}");
+        const record = /image=\{(\w+)\?\.image \?\? undefined\}/.exec(source)?.[1];
+        expect(record).toBeDefined();
+        expect(source).toContain(`imageAlt={${record}?.name}`);
         continue;
       }
       expect(source).toContain('from "@/lib/banner-config"');

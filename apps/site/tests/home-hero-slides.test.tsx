@@ -97,7 +97,8 @@ describe("Beerus hero slides", () => {
     // Only the first slide is the LCP candidate; the logo must not compete with it.
     expect(html.match(/<img\b[^>]*fetchPriority="high"/gi)).toHaveLength(1);
     // The neighbouring slide stays eager so the first auto-advance does not flash, but at low priority.
-    const heroImages = html.match(/<img\b[^>]*class="[^"]*mediaImage[^"]*"[^>]*>/g) ?? [];
+    // CSS-module class names do not exist under bun test: the slide stills are the full-width images.
+    const heroImages = html.match(/<img\b[^>]*sizes="100vw"[^>]*>/g) ?? [];
     expect(heroImages).toHaveLength(3);
     expect(heroImages[0]).toContain('fetchPriority="high"');
     expect(heroImages[1]).toContain('fetchPriority="low"');

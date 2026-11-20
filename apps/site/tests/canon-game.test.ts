@@ -12,9 +12,10 @@ describe("Canon Game Monorepo Integration", () => {
     expect(manifest.chapters.length).toBe(10);
 
     for (const chapter of manifest.chapters) {
-      expect(chapter.canon_refs.manga_url).toMatch(/^\/wiki\/manga\/volume\/\d+\?chapter=\d+/);
+      // The Super arc has no volume in the manga library: it falls back to the library root.
+      expect(chapter.canon_refs.manga_url).toMatch(/^\/wiki\/manga(\/volume\/\d+\?chapter=\d+|$)/);
       expect(chapter.canon_refs.episode_url).toMatch(/^\/wiki\/episodes\/\d+/);
-      expect(chapter.canon_refs.wiki_arc_url).toMatch(/^\/wiki\/arcs\//);
+      expect(chapter.canon_refs.wiki_arc_url).toMatch(/^\/wiki\/(arcs|sagas)\//);
       expect(chapter.canon_refs.daizenshuu).toBeTruthy();
       expect(chapter.player.power_level).toBeGreaterThan(0);
       expect(chapter.enemy.power_level).toBeGreaterThan(0);
