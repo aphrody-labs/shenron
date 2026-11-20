@@ -78,7 +78,7 @@ test-live:
 # bun fmt --check on apps, packages and scripts
 [group('bun')]
 bun-format-check:
-    bun fmt --check --ignore-pattern "**/examples/**" --ignore-pattern "**/*.min.js" --ignore-pattern "**/packages/koharu/src/wasm/**" --ignore-pattern "**/packages/engine/src/wasm/**" --ignore-pattern "**/packages/pipeline/src/wasm/**" --ignore-pattern "**/packages/koharu/src/protocol.ts" --ignore-pattern "**/packages/native/src/generated/**" --ignore-pattern "**/plugin/references/**" --ignore-pattern "**/packages/ui/src/tokens.ts" --ignore-pattern "**/packages/lexicon/src/terms.generated.ts" --ignore-pattern "**/packages/api/openapi/public.json" --ignore-pattern "**/apps/site/src/app/fonts.css" --ignore-pattern "**/apps/site/scripts/fonts.lock.json" apps packages scripts
+    bun fmt --check --ignore-pattern "**/examples/**" --ignore-pattern "**/*.min.js" --ignore-pattern "**/packages/koharu/src/wasm/**" --ignore-pattern "**/packages/engine/src/wasm/**" --ignore-pattern "**/packages/pipeline/src/wasm/**" --ignore-pattern "**/packages/koharu/src/protocol.ts" --ignore-pattern "**/packages/native/src/generated/**" --ignore-pattern "**/plugin/references/**" --ignore-pattern "**/packages/ui/src/tokens.ts" --ignore-pattern "**/packages/lexicon/src/terms.generated.ts" --ignore-pattern "**/packages/m3-tokens/src/compose-m3.generated.ts" --ignore-pattern "**/apps/site/public/wasm/**" --ignore-pattern "**/packages/api/openapi/public.json" --ignore-pattern "**/apps/site/src/app/fonts.css" --ignore-pattern "**/apps/site/scripts/fonts.lock.json" apps packages scripts
 
 # Dragon Ball Ultimate Games Package Manager (SteamDB, Libretro, R2, SteamCMD)
 [group('games')]

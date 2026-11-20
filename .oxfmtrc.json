@@ -16,6 +16,8 @@
     "plugin/references/**",
     "packages/ui/src/tokens.ts",
     "packages/lexicon/src/terms.generated.ts",
+    "packages/m3-tokens/src/compose-m3.generated.ts",
+    "apps/site/public/wasm/**",
     "packages/api/openapi/public.json",
     "apps/site/src/app/fonts.css",
     "apps/site/scripts/fonts.lock.json"
