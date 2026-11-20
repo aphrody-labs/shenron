@@ -82,7 +82,9 @@ for (const theme of themes) {
     readFileSync(join(values.web ?? "", theme, "bounds.json"), "utf8"),
   );
   const gpuiBoundsPath = join(values.gpui ?? "", theme, "bounds.json");
-  const gpuiBounds: Record<string, { parts: Record<string, Rect> }> | undefined = existsSync(gpuiBoundsPath)
+  const gpuiBounds: Record<string, { parts: Record<string, Rect> }> | undefined = existsSync(
+    gpuiBoundsPath,
+  )
     ? JSON.parse(readFileSync(gpuiBoundsPath, "utf8"))
     : undefined;
   const outDir = join(values.out ?? "", theme);
@@ -94,14 +96,28 @@ for (const theme of themes) {
     const webPath = join(values.web ?? "", theme, name);
     const gpuiPath = join(values.gpui ?? "", theme, name);
     if (!existsSync(webPath) || !existsSync(gpuiPath)) {
-      rows.push({ id, theme, status: "missing", web: existsSync(webPath), gpui: existsSync(gpuiPath), pass: false });
+      rows.push({
+        id,
+        theme,
+        status: "missing",
+        web: existsSync(webPath),
+        gpui: existsSync(gpuiPath),
+        pass: false,
+      });
       failed = true;
       continue;
     }
     const web = read(webPath);
     const gpui = read(gpuiPath);
     if (web.width !== gpui.width || web.height !== gpui.height) {
-      rows.push({ id, theme, status: "size-mismatch", web: [web.width, web.height], gpui: [gpui.width, gpui.height], pass: false });
+      rows.push({
+        id,
+        theme,
+        status: "size-mismatch",
+        web: [web.width, web.height],
+        gpui: [gpui.width, gpui.height],
+        pass: false,
+      });
       failed = true;
       continue;
     }
@@ -126,13 +142,21 @@ for (const theme of themes) {
     const geometryOut = new PNG({ width, height });
     const textOut = new PNG({ width, height });
     const options = { threshold: PIXELMATCH_THRESHOLD, includeAA: false };
-    const geometryDiff = pixelmatch(webGeometry.data, gpuiGeometry.data, geometryOut.data, width, height, options);
+    const geometryDiff = pixelmatch(
+      webGeometry.data,
+      gpuiGeometry.data,
+      geometryOut.data,
+      width,
+      height,
+      options,
+    );
     const textDiff = pixelmatch(webText.data, gpuiText.data, textOut.data, width, height, options);
     // Combined image: geometry differences in red, text differences in blue, shared pixels dimmed.
     const combined = new PNG({ width, height });
     for (let index = 0; index < width * height; index += 1) {
       const offset = index * 4;
-      const geometryRed = geometryOut.data[offset] === 255 && geometryOut.data[offset + 1] === 0 && !mask[index];
+      const geometryRed =
+        geometryOut.data[offset] === 255 && geometryOut.data[offset + 1] === 0 && !mask[index];
       const textRed = textOut.data[offset] === 255 && textOut.data[offset + 1] === 0 && mask[index];
       combined.data[offset] = geometryRed ? 255 : textRed ? 40 : web.data[offset] >> 2;
       combined.data[offset + 1] = geometryRed ? 0 : textRed ? 120 : web.data[offset + 1] >> 2;
@@ -153,14 +177,25 @@ for (const theme of themes) {
     const boundsDelta: Record<string, { dx: number; dy: number; dw: number; dh: number }> = {};
     for (const [part, rect] of Object.entries(bounds[id]?.parts ?? {})) {
       const other = gpuiBounds?.[id]?.parts?.[part];
-      if (other) boundsDelta[part] = { dx: round(other.x - rect.x), dy: round(other.y - rect.y), dw: round(other.w - rect.w), dh: round(other.h - rect.h) };
+      if (other)
+        boundsDelta[part] = {
+          dx: round(other.x - rect.x),
+          dy: round(other.y - rect.y),
+          dw: round(other.w - rect.w),
+          dh: round(other.h - rect.h),
+        };
     }
     rows.push({
       id,
       theme,
       pixels_diff: geometryDiff + textDiff,
       ratio: round((geometryDiff + textDiff) / (width * height)),
-      geometry: { pixels_diff: geometryDiff, ratio: round(geometryRatio), area: geometryArea, limit: geometryLimit },
+      geometry: {
+        pixels_diff: geometryDiff,
+        ratio: round(geometryRatio),
+        area: geometryArea,
+        limit: geometryLimit,
+      },
       text: { pixels_diff: textDiff, ratio: round(textRatio), area: textArea, limit: textLimit },
       bounds_delta: gpuiBounds ? boundsDelta : null,
       pass,

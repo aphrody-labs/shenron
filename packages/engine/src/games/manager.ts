@@ -141,7 +141,11 @@ export class DragonBallGamesManager {
         // Healthz
         if (url.pathname === "/healthz") {
           return Response.json(
-            { status: "ok", gamesCount: DRAGON_BALL_GAMES_CATALOG.length, engine: `Bun v${Bun.version}` },
+            {
+              status: "ok",
+              gamesCount: DRAGON_BALL_GAMES_CATALOG.length,
+              engine: `Bun v${Bun.version}`,
+            },
             { headers },
           );
         }

@@ -232,7 +232,18 @@ describe("cdn-optimize", () => {
     await Bun.write(join(resumeSrc, "b.json"), JSON.stringify({ k: "w".repeat(2000) }));
     const run = async (): Promise<Report> => {
       const p = Bun.spawn(
-        ["bun", script, "--src", resumeSrc, "--out", resumeOut, "--state", resumeState, "--jobs", "2"],
+        [
+          "bun",
+          script,
+          "--src",
+          resumeSrc,
+          "--out",
+          resumeOut,
+          "--state",
+          resumeState,
+          "--jobs",
+          "2",
+        ],
         { windowsHide: true, stdout: "pipe", stderr: "pipe" },
       );
       const [text, err, code] = await Promise.all([

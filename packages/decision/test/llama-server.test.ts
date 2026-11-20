@@ -19,7 +19,14 @@ function server(tops: { token: string; logprob: number }[][]) {
 
 describe("letterProbabilities", () => {
   test("renormalises over the valid letters and ignores other tokens", () => {
-    const p = letterProbabilities([{ token: "A", logprob: Math.log(0.6) }, { token: "B", logprob: Math.log(0.2) }, { token: "The", logprob: Math.log(0.2) }], 2);
+    const p = letterProbabilities(
+      [
+        { token: "A", logprob: Math.log(0.6) },
+        { token: "B", logprob: Math.log(0.2) },
+        { token: "The", logprob: Math.log(0.2) },
+      ],
+      2,
+    );
     expect(p[0]).toBeCloseTo(0.75, 5);
     expect(p[1]).toBeCloseTo(0.25, 5);
   });
@@ -34,12 +41,27 @@ describe("letterProbabilities", () => {
 });
 
 describe("llamaServer provider", () => {
-  const criteria = { supports: "The excerpt supports the claim", contradicts: "The excerpt contradicts the claim", unrelated: "The excerpt is unrelated" };
+  const criteria = {
+    supports: "The excerpt supports the claim",
+    contradicts: "The excerpt contradicts the claim",
+    unrelated: "The excerpt is unrelated",
+  };
 
   test("choice answer carries the real probabilities and abstains below the threshold", async () => {
-    const mock = server([[{ token: "A", logprob: Math.log(0.55) }, { token: "B", logprob: Math.log(0.3) }, { token: "C", logprob: Math.log(0.15) }]]);
-    const request = { state: { claim: "x" }, questions: { relation: choice("How does the excerpt relate to the claim?", criteria) } };
-    const result = await inspect(request, { provider: llamaServer({ url: "http://127.0.0.1:1", model: "qwen3.5-2b", fetch: mock.fetch }) });
+    const mock = server([
+      [
+        { token: "A", logprob: Math.log(0.55) },
+        { token: "B", logprob: Math.log(0.3) },
+        { token: "C", logprob: Math.log(0.15) },
+      ],
+    ]);
+    const request = {
+      state: { claim: "x" },
+      questions: { relation: choice("How does the excerpt relate to the claim?", criteria) },
+    };
+    const result = await inspect(request, {
+      provider: llamaServer({ url: "http://127.0.0.1:1", model: "qwen3.5-2b", fetch: mock.fetch }),
+    });
     const answer = result.answers.relation;
     expect(answer.choice).toBe("supports");
     expect(answer.confidence).toBeCloseTo(0.55, 5);
@@ -50,13 +72,26 @@ describe("llamaServer provider", () => {
   });
 
   test("noul reads the probability of yes", async () => {
-    const mock = server([[{ token: "A", logprob: Math.log(0.2) }, { token: "B", logprob: Math.log(0.8) }]]);
-    const result = await inspect({ state: {}, questions: { flag: noul("Is it canon?") } }, { provider: llamaServer({ url: "http://x", model: "m", fetch: mock.fetch }) });
+    const mock = server([
+      [
+        { token: "A", logprob: Math.log(0.2) },
+        { token: "B", logprob: Math.log(0.8) },
+      ],
+    ]);
+    const result = await inspect(
+      { state: {}, questions: { flag: noul("Is it canon?") } },
+      { provider: llamaServer({ url: "http://x", model: "m", fetch: mock.fetch }) },
+    );
     expect(result.answers.flag.noul).toBeCloseTo(0.8, 5);
   });
 
   test("a server error is an error, never a silent answer", async () => {
     const failing = (async () => new Response("boom", { status: 503 })) as unknown as typeof fetch;
-    await expect(inspect({ state: {}, questions: { q: choice("?", { a: "a", b: "b" }) } }, { provider: llamaServer({ url: "http://x", model: "m", fetch: failing }) })).rejects.toThrow("llama-server 503");
+    await expect(
+      inspect(
+        { state: {}, questions: { q: choice("?", { a: "a", b: "b" }) } },
+        { provider: llamaServer({ url: "http://x", model: "m", fetch: failing }) },
+      ),
+    ).rejects.toThrow("llama-server 503");
   });
 });

@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import { apcaLc, contrastRatio, hexToOklch, oklchToHex, tonalScale } from "../src/design-system/colorimetry";
+import {
+  apcaLc,
+  contrastRatio,
+  hexToOklch,
+  oklchToHex,
+  tonalScale,
+} from "../src/design-system/colorimetry";
 
 describe("colorimetry", () => {
   test("sRGB red in OKLCH matches the published value", () => {
@@ -40,7 +46,8 @@ describe("colorimetry", () => {
   test("a tonal scale keeps the hue and orders lightness", () => {
     const scale = tonalScale("#E78220");
     const lightness = Object.values(scale).map((hex) => hexToOklch(hex).l);
-    for (let index = 1; index < lightness.length; index++) expect(lightness[index]!).toBeLessThan(lightness[index - 1]!);
+    for (let index = 1; index < lightness.length; index++)
+      expect(lightness[index]!).toBeLessThan(lightness[index - 1]!);
     expect(Math.abs(hexToOklch(scale[500]).h - hexToOklch("#E78220").h)).toBeLessThan(8);
   });
 });

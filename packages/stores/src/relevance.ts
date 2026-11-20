@@ -2,7 +2,8 @@
 import type { StoreListing } from "./types";
 
 /** Dragon Ball title in French, English or Japanese; the franchise's own game names are covered by the first two forms. */
-const TITLE = /dragon\s*ball|ドラゴンボール|ゲキシン|gekishin\s*squadra|sparking!?\s*zero|xenoverse|kakarot|fighterz/i;
+const TITLE =
+  /dragon\s*ball|ドラゴンボール|ゲキシン|gekishin\s*squadra|sparking!?\s*zero|xenoverse|kakarot|fighterz/i;
 const PUBLISHER = /bandai\s*namco|toei|shueisha|shonen\s*jump/i;
 
 /**

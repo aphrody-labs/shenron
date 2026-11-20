@@ -58,7 +58,13 @@ const server = Bun.spawn(["bun", join(import.meta.dir, "serve.ts")], {
   stderr: "inherit",
 });
 for (let attempt = 0; attempt < 150; attempt += 1) {
-  if (await fetch(url).then((response) => response.ok, () => false)) break;
+  if (
+    await fetch(url).then(
+      (response) => response.ok,
+      () => false,
+    )
+  )
+    break;
   await Bun.sleep(200);
 }
 const browser = new Browser(values.session ?? "parity-web");

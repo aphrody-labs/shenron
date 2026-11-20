@@ -128,7 +128,8 @@ export function DragonPixelArena() {
       setPhase({ kind: "loading", loaded: 0 });
       const bindings = await loadDragonPixel((loaded) => setPhase({ kind: "loading", loaded }));
       // A module built before `story_chapters_json` existed keeps the numbered picker.
-      if (typeof bindings.story_chapters_json === "function") setChapters(parseStoryChapters(bindings.story_chapters_json()));
+      if (typeof bindings.story_chapters_json === "function")
+        setChapters(parseStoryChapters(bindings.story_chapters_json()));
       setPhase({ kind: "starting" });
       if (status.available) {
         const canvas = document.createElement("canvas");
@@ -244,9 +245,7 @@ export function DragonPixelArena() {
           {fallbackNote}
         </p>
       ) : null}
-      {renderer ? (
-        <output className="block text-sm text-white/80">{message}</output>
-      ) : null}
+      {renderer ? <output className="block text-sm text-white/80">{message}</output> : null}
 
       {hud && renderer ? <Hud hud={hud} text={text} renderer={renderer} /> : null}
 
@@ -276,7 +275,10 @@ export function DragonPixelArena() {
             onChange={(value) => update("chapter", Number(value))}
             options={Array.from({ length: STORY_CHAPTER_COUNT }, (_, index) => {
               const known = chapters.find((chapter) => chapter.id === index + 1);
-              return [String(index + 1), known ? known.title : format(text.chapterOption, { number: index + 1 })];
+              return [
+                String(index + 1),
+                known ? known.title : format(text.chapterOption, { number: index + 1 }),
+              ];
             })}
           />
         ) : (
@@ -303,7 +305,12 @@ export function DragonPixelArena() {
         >
           {userPaused ? text.resume : text.pause}
         </button>
-        {selection.mode === "story" ? <ChapterSources chapter={chapters.find((chapter) => chapter.id === selection.chapter)} text={text} /> : null}
+        {selection.mode === "story" ? (
+          <ChapterSources
+            chapter={chapters.find((chapter) => chapter.id === selection.chapter)}
+            text={text}
+          />
+        ) : null}
       </form>
 
       <details className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
@@ -476,7 +483,13 @@ function rumbleFromBevy(bindings: DragonPixelBindings): void {
   });
 }
 
-function ChapterSources({ chapter, text }: { chapter: StoryChapterSummary | undefined; text: { chapterEpisode: string; chapterManga: string } }) {
+function ChapterSources({
+  chapter,
+  text,
+}: {
+  chapter: StoryChapterSummary | undefined;
+  text: { chapterEpisode: string; chapterManga: string };
+}) {
   if (!chapter || (chapter.episode_id === null && chapter.manga_volume_id === null)) return null;
   return (
     <p className="basis-full text-sm text-white/70">
@@ -484,7 +497,10 @@ function ChapterSources({ chapter, text }: { chapter: StoryChapterSummary | unde
       {chapter.manga_volume_id !== null ? (
         <>
           {" · "}
-          <a className="underline underline-offset-2" href={`/wiki/manga/volume/${chapter.manga_volume_id}`}>
+          <a
+            className="underline underline-offset-2"
+            href={`/wiki/manga/volume/${chapter.manga_volume_id}`}
+          >
             {text.chapterManga}
           </a>
         </>

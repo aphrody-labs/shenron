@@ -23,7 +23,9 @@ export default function GlobalError({
   return (
     <div className="container mx-auto px-4 py-24 max-w-2xl text-center">
       <div className="dbz-panel p-12 border-l-4 border-fuchsia-500">
-        <h1 className="title-jagged text-3xl md:text-5xl leading-tight mb-6">{t("common.error")}</h1>
+        <h1 className="title-jagged text-3xl md:text-5xl leading-tight mb-6">
+          {t("common.error")}
+        </h1>
         <p className="text-white/70 mb-2">{t("error.lead")}</p>
         {error.digest && (
           <p className="text-xs text-white/50 font-mono mb-6">

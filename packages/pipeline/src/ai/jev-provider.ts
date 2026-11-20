@@ -105,7 +105,11 @@ export async function configuredProvider(
   if (llamaUrl) {
     const { llamaServer } = await import("@aphrody/shenron-decision");
     const apiKey = env.SHENRON_LLAMA_API_KEY?.trim();
-    return llamaServer({ url: llamaUrl, model: env.SHENRON_LLAMA_MODEL?.trim() || "local", ...(apiKey ? { apiKey } : {}) });
+    return llamaServer({
+      url: llamaUrl,
+      model: env.SHENRON_LLAMA_MODEL?.trim() || "local",
+      ...(apiKey ? { apiKey } : {}),
+    });
   }
   const key =
     env.TYPESAFE_API_KEY?.trim() ||

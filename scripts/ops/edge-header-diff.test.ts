@@ -18,7 +18,14 @@ describe("edge-header-diff", () => {
 
   test("ignores Date, Age, Server and CF-* and reports real differences", () => {
     const nginx = parseHeaders(
-      dump(["HTTP/2 200", "Date: a", "Server: nginx", "CF-Ray: 1", "X-Shenron-LB-Cache: HIT", "Link: </a>"]),
+      dump([
+        "HTTP/2 200",
+        "Date: a",
+        "Server: nginx",
+        "CF-Ray: 1",
+        "X-Shenron-LB-Cache: HIT",
+        "Link: </a>",
+      ]),
     );
     const edge = parseHeaders(
       dump(["HTTP/2 200", "Date: b", "Server: shenron-edge", "Age: 3", "X-Shenron-LB-Cache: MISS"]),

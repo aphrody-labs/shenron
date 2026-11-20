@@ -70,9 +70,7 @@ const KEYS: Record<string, string[]> = {
 };
 
 /** Codes whose browser default (scrolling, focus change) must not fire while playing. */
-export const GAME_KEY_CODES = new Set(
-  [...Object.values(KEYS).flat(), "Enter"],
-);
+export const GAME_KEY_CODES = new Set([...Object.values(KEYS).flat(), "Enter"]);
 
 export interface CanvasView {
   configure(selection: ArenaSelection): void;
@@ -138,9 +136,14 @@ export function startCanvasView(
         pressed[index] = button.pressed ? 1 : 0;
       });
       const mapped = JSON.parse(
-        bindings.map_standard_gamepad(new Float32Array(pad.axes.slice(0, 2)), pressed, STICK_DEADZONE),
+        bindings.map_standard_gamepad(
+          new Float32Array(pad.axes.slice(0, 2)),
+          pressed,
+          STICK_DEADZONE,
+        ),
       ) as EngineInput;
-      for (const [name, value] of Object.entries(mapped)) input[name] = Boolean(input[name]) || value;
+      for (const [name, value] of Object.entries(mapped))
+        input[name] = Boolean(input[name]) || value;
       if (pressed[START_BUTTON]) restartRequested = true;
     }
     return input;

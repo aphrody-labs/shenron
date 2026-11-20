@@ -25,7 +25,10 @@ export function hexToRgb(hex: string): [number, number, number] {
 }
 
 export function rgbToHex(red: number, green: number, blue: number): string {
-  const part = (channel: number) => Math.round(clamp01(channel / 255) * 255).toString(16).padStart(2, "0");
+  const part = (channel: number) =>
+    Math.round(clamp01(channel / 255) * 255)
+      .toString(16)
+      .padStart(2, "0");
   return `#${part(red)}${part(green)}${part(blue)}`.toUpperCase();
 }
 
@@ -65,7 +68,8 @@ export function oklchToHex({ l, c, h }: Oklch): string {
       -0.0041960863 * lp - 0.7034186147 * mp + 1.707614701 * sp,
     ] as const;
   };
-  const inGamut = (rgb: readonly number[]) => rgb.every((value) => value >= -1e-4 && value <= 1 + 1e-4);
+  const inGamut = (rgb: readonly number[]) =>
+    rgb.every((value) => value >= -1e-4 && value <= 1 + 1e-4);
   let rgb = convert(c);
   if (!inGamut(rgb)) {
     let low = 0;
@@ -121,7 +125,11 @@ export function tonalScale(hex: string): Record<(typeof SCALE_STEPS)[number], st
   SCALE_STEPS.forEach((step, index) => {
     const lightness = STEP_LIGHTNESS[index]!;
     const bell = 1 - ((lightness - base.l) / 0.75) ** 2;
-    scale[step] = oklchToHex({ l: lightness, c: Math.max(0.01, base.c * clamp01(bell)), h: base.h });
+    scale[step] = oklchToHex({
+      l: lightness,
+      c: Math.max(0.01, base.c * clamp01(bell)),
+      h: base.h,
+    });
   });
   return scale;
 }

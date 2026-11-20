@@ -123,7 +123,9 @@ async function main(): Promise<number> {
     return 2;
   }
   const ignore = [...DEFAULT_IGNORE, ...(arg("ignore")?.split(",") ?? [])];
-  const extra = Bun.argv.flatMap((value, i) => (value === "--header" ? [Bun.argv[i + 1] ?? ""] : []));
+  const extra = Bun.argv.flatMap((value, i) =>
+    value === "--header" ? [Bun.argv[i + 1] ?? ""] : [],
+  );
   const paths = (await Bun.file(urls).text())
     .split("\n")
     .map((line) => line.trim())
@@ -151,7 +153,9 @@ async function main(): Promise<number> {
     differing += 1;
     console.log(`DIFF  nginx=${last?.a} edge=${last?.b} ${path}`);
     for (const d of last?.diffs ?? [])
-      console.log(`      ${d.name}\n        nginx: ${JSON.stringify(d.nginx)}\n        edge:  ${JSON.stringify(d.edge)}`);
+      console.log(
+        `      ${d.name}\n        nginx: ${JSON.stringify(d.nginx)}\n        edge:  ${JSON.stringify(d.edge)}`,
+      );
   }
   console.log(`\n${paths.length} urls, ${differing} differing, ignored: ${ignore.join(",")}`);
   return differing ? 1 : 0;

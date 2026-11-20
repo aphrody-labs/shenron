@@ -8,8 +8,13 @@ export const appstore: StoreConnector = {
   id: "appstore",
   async search(term, { region }: SearchOptions) {
     const url = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&entity=software&country=${region}&limit=200`;
-    const results = asArray(asObject(await getJson(url), "appstore.search").results, "appstore.search.results");
-    return results.map((result, index) => parseResult(result, `appstore.search.results[${index}]`, region));
+    const results = asArray(
+      asObject(await getJson(url), "appstore.search").results,
+      "appstore.search.results",
+    );
+    return results.map((result, index) =>
+      parseResult(result, `appstore.search.results[${index}]`, region),
+    );
   },
 };
 
@@ -28,7 +33,12 @@ export function parseResult(result: unknown, path: string, region: string): Stor
     developer: optString(object.artistName),
     releaseDate: isoDate(object.releaseDate),
     platforms: ["iOS"],
-    price: { amount: price, currency: optString(object.currency), formatted: optString(object.formattedPrice), free: price === 0 },
+    price: {
+      amount: price,
+      currency: optString(object.currency),
+      formatted: optString(object.formattedPrice),
+      free: price === 0,
+    },
     rating: optNumber(object.averageUserRating),
     ratingCount: optNumber(object.userRatingCount),
     addon: false,

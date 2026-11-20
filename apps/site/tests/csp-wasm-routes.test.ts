@@ -85,7 +85,8 @@ describe("isolated game surface", () => {
   test("the main site surface keeps the root without Wasm", () => {
     const site = cspRouteSources("site");
     expect(site.wasm).not.toContain("/");
-    expect(getPathMatch(site.nonWasm, { removeUnnamedParams: true, strict: true })("/")).toBeTruthy();
+    expect(
+      getPathMatch(site.nonWasm, { removeUnnamedParams: true, strict: true })("/"),
+    ).toBeTruthy();
   });
 });
-

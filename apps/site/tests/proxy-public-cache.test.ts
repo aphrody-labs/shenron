@@ -21,7 +21,10 @@ beforeAll(async () => {
   ({ proxy } = await import("../src/proxy"));
 });
 
-function request(path: string, init: ConstructorParameters<typeof NextRequest>[1] = {}): NextRequest {
+function request(
+  path: string,
+  init: ConstructorParameters<typeof NextRequest>[1] = {},
+): NextRequest {
   return new NextRequest(`http://localhost${path}`, init);
 }
 

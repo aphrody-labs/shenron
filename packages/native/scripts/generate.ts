@@ -35,7 +35,9 @@ try {
       if (fresh.replaceAll("\r\n", "\n") !== committed.replaceAll("\r\n", "\n")) stale.push(file);
     }
     if (stale.length) {
-      console.error(`packages/native/src/generated is stale (${stale.join(", ")}): run bun packages/native/scripts/generate.ts`);
+      console.error(
+        `packages/native/src/generated is stale (${stale.join(", ")}): run bun packages/native/scripts/generate.ts`,
+      );
       process.exit(1);
     }
     console.error("generated TypeScript is current");

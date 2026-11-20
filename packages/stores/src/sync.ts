@@ -32,7 +32,8 @@ export async function collectListings(options: SyncOptions = {}): Promise<StoreL
         terms.map(async (term) => {
           try {
             for (const listing of await CONNECTORS[store].search(term, { region })) {
-              if (isDragonBall(listing)) seen.set(`${listing.store}:${listing.storeId}:${listing.region}`, listing);
+              if (isDragonBall(listing))
+                seen.set(`${listing.store}:${listing.storeId}:${listing.region}`, listing);
             }
           } catch (error) {
             options.onError?.(store, region, error);
@@ -41,5 +42,10 @@ export async function collectListings(options: SyncOptions = {}): Promise<StoreL
       ),
     ),
   );
-  return [...seen.values()].sort((a, b) => a.store.localeCompare(b.store) || a.title.localeCompare(b.title) || a.region.localeCompare(b.region));
+  return [...seen.values()].sort(
+    (a, b) =>
+      a.store.localeCompare(b.store) ||
+      a.title.localeCompare(b.title) ||
+      a.region.localeCompare(b.region),
+  );
 }

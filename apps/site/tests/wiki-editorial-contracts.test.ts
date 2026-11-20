@@ -51,9 +51,9 @@ test("a rejection needs a non-empty reason while an acceptance does not", () => 
   ]) {
     expect(reviewContributionSchema.safeParse(body).success, JSON.stringify(body)).toBe(false);
   }
-  expect(reviewContributionSchema.parse({ id: "1", action: "reject", note: " off topic " })).toEqual(
-    { id: "1", action: "reject", note: "off topic" },
-  );
+  expect(
+    reviewContributionSchema.parse({ id: "1", action: "reject", note: " off topic " }),
+  ).toEqual({ id: "1", action: "reject", note: "off topic" });
   expect(reviewContributionSchema.safeParse({ id: "1", action: "accept", note: " " }).success).toBe(
     true,
   );

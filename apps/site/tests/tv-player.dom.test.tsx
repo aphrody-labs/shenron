@@ -135,7 +135,9 @@ test("TvPlayer renders no captions track without a subtitle source", () => {
     seriesTitle: "Dragon Ball",
     episodeNumber: 1,
     sources: testSources,
-    subtitles: [{ label: "Francais", srcLang: "fr", src: "https://tv.dragonballfr.com/vtt/1.fr.vtt" }],
+    subtitles: [
+      { label: "Francais", srcLang: "fr", src: "https://tv.dragonballfr.com/vtt/1.fr.vtt" },
+    ],
   });
   expect(withTrack).toContain('src="https://tv.dragonballfr.com/vtt/1.fr.vtt"');
   expect(withTrack).not.toContain('kind="captions"');
@@ -183,7 +185,9 @@ test("isPlayerShortcut rejects browser chords", () => {
   expect(isPlayerShortcut(keyEvent("f", { tagName: "BODY" }, { ctrlKey: true }))).toBe(false);
   expect(isPlayerShortcut(keyEvent("l", { tagName: "BODY" }, { ctrlKey: true }))).toBe(false);
   expect(isPlayerShortcut(keyEvent("k", { tagName: "BODY" }, { metaKey: true }))).toBe(false);
-  expect(isPlayerShortcut(keyEvent("ArrowLeft", { tagName: "BODY" }, { altKey: true }))).toBe(false);
+  expect(isPlayerShortcut(keyEvent("ArrowLeft", { tagName: "BODY" }, { altKey: true }))).toBe(
+    false,
+  );
 });
 
 test("isPlayerShortcut leaves activation keys to focused controls", () => {

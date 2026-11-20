@@ -37,7 +37,9 @@ export type TypeStyleName = (typeof STYLE_NAMES)[number];
 
 /** Display, headline and title-large use the brand typeface; the rest the plain one (M3 type scale). */
 const fontOf = (name: TypeStyleName): TypeBase["font"] =>
-  name.startsWith("display") || name.startsWith("headline") || name === "title-large" ? "brand" : "plain";
+  name.startsWith("display") || name.startsWith("headline") || name === "title-large"
+    ? "brand"
+    : "plain";
 
 /** sp to rem at the 16 px root, without rounding a quarter or an eighth of a pixel away. */
 export const rem = (sp: number): string => `${Number((sp / 16).toFixed(6))}rem`;
@@ -48,13 +50,18 @@ const scale = COMPOSE_M3.typeScaleSp as Record<string, Metric>;
 function metric(key: string, font: TypeBase["font"]): TypeBase {
   const m = scale[key];
   if (!m) throw new Error(`Compose Material 3 has no ${key} type style`);
-  return { font, weight: m.weight, size: rem(m.size), lineHeight: rem(m.lineHeight), tracking: rem(m.tracking) };
+  return {
+    font,
+    weight: m.weight,
+    size: rem(m.size),
+    lineHeight: rem(m.lineHeight),
+    tracking: rem(m.tracking),
+  };
 }
 
-export const TYPE_BASE = Object.fromEntries(STYLE_NAMES.map((name) => [name, metric(name, fontOf(name))])) as Record<
-  TypeStyleName,
-  TypeBase
->;
+export const TYPE_BASE = Object.fromEntries(
+  STYLE_NAMES.map((name) => [name, metric(name, fontOf(name))]),
+) as Record<TypeStyleName, TypeBase>;
 
 export interface EmphasizedStyle extends TypeBase {
   name: TypeStyleName;

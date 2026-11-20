@@ -47,7 +47,10 @@ export function parseStoryChapters(json: string): StoryChapterSummary[] {
   try {
     const value: unknown = JSON.parse(json);
     return Array.isArray(value)
-      ? value.filter((entry): entry is StoryChapterSummary => typeof entry?.id === "number" && typeof entry?.title === "string")
+      ? value.filter(
+          (entry): entry is StoryChapterSummary =>
+            typeof entry?.id === "number" && typeof entry?.title === "string",
+        )
       : [];
   } catch {
     return [];

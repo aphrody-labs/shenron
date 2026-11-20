@@ -22,10 +22,22 @@ const TABLE = "bot.db_game_store_listings";
 export function upsertSql(listings: readonly StoreListing[]): string {
   const statements = listings.map((l) => {
     const values = [
-      lit(l.store), lit(l.storeId), lit(l.region), lit(l.title), lit(l.url), lit(l.publisher), lit(l.developer),
-      l.releaseDate ? `${lit(l.releaseDate)}::date` : "NULL", textArray(l.platforms),
-      lit(l.price?.amount ?? null), lit(l.price?.currency ?? null), lit(l.price?.formatted ?? null), lit(l.price?.free ?? null),
-      lit(l.rating), lit(l.ratingCount), lit(l.addon),
+      lit(l.store),
+      lit(l.storeId),
+      lit(l.region),
+      lit(l.title),
+      lit(l.url),
+      lit(l.publisher),
+      lit(l.developer),
+      l.releaseDate ? `${lit(l.releaseDate)}::date` : "NULL",
+      textArray(l.platforms),
+      lit(l.price?.amount ?? null),
+      lit(l.price?.currency ?? null),
+      lit(l.price?.formatted ?? null),
+      lit(l.price?.free ?? null),
+      lit(l.rating),
+      lit(l.ratingCount),
+      lit(l.addon),
     ].join(", ");
     return `INSERT INTO ${TABLE} (store, store_id, region, title, url, publisher, developer, release_date, platforms, price_amount, price_currency, price_formatted, free, rating, rating_count, addon)
 VALUES (${values})

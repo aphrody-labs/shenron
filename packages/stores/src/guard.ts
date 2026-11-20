@@ -11,7 +11,8 @@ export class ShapeError extends Error {
 }
 
 export function asObject(value: unknown, path: string): Record<string, unknown> {
-  if (typeof value !== "object" || value === null || Array.isArray(value)) throw new ShapeError(path, "object", value);
+  if (typeof value !== "object" || value === null || Array.isArray(value))
+    throw new ShapeError(path, "object", value);
   return value as Record<string, unknown>;
 }
 
@@ -34,7 +35,9 @@ export function optNumber(value: unknown): number | null {
 }
 
 export function optStringArray(value: unknown): string[] {
-  return Array.isArray(value) ? value.filter((item): item is string => typeof item === "string") : [];
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : [];
 }
 
 /** `2025-09-10T07:00:00Z` or `2025-09-10` to `2025-09-10`; anything else is null. */

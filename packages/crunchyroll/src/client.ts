@@ -104,7 +104,7 @@ const CANONICAL_BEERUS_EPISODES: ReadonlyArray<
     title: "La Bataille des dieux",
     slugTitle: "battle-of-gods",
     durationMs: 1397773,
-    description: "Dans la \"Bataille des dieux\", Goku perd ses pouvoirs divins face à Beerus.",
+    description: 'Dans la "Bataille des dieux", Goku perd ses pouvoirs divins face à Beerus.',
     airDate: "2026-11-15T17:00:00Z",
     isPremiumOnly: false,
     watchUrl: "https://www.crunchyroll.com/fr/watch/GE00389318JAJP/battle-of-gods",

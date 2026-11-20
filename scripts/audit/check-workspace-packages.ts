@@ -121,11 +121,7 @@ const ALLOWED_EDGES: Readonly<
   "@aphrody/shenron-stores": { runtime: [], dev: [] },
   // Video engines (hyperframes, remotion) and the kit HTTP transport.
   "@aphrody/shenron-media": {
-    runtime: [
-      "@aphrody/shenron-hyperframes",
-      "@aphrody/shenron-kit",
-      "@aphrody/shenron-remotion",
-    ],
+    runtime: ["@aphrody/shenron-hyperframes", "@aphrody/shenron-kit", "@aphrody/shenron-remotion"],
     dev: [],
   },
   "@aphrody/shenron-native": { runtime: [], dev: [] },

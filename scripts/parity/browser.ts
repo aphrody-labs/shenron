@@ -3,7 +3,11 @@
 export class Browser {
   constructor(readonly session: string) {}
 
-  run(...args: string[]): { ok: boolean; text: string; json?: { data?: { result?: unknown }; error?: unknown } } {
+  run(...args: string[]): {
+    ok: boolean;
+    text: string;
+    json?: { data?: { result?: unknown }; error?: unknown };
+  } {
     const proc = Bun.spawnSync(["agent-browser", "--session", this.session, ...args], {
       stdout: "pipe",
       stderr: "pipe",

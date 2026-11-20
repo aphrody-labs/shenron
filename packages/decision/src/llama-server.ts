@@ -11,7 +11,14 @@
  *
  * Probabilities are the model's, not calibrated: pick the abstention threshold on labelled data.
  */
-import type { ChoiceQuestion, NoulQuestion, Provider, ProviderOptions, Question, Request } from "./types";
+import type {
+  ChoiceQuestion,
+  NoulQuestion,
+  Provider,
+  ProviderOptions,
+  Question,
+  Request,
+} from "./types";
 
 export interface LlamaServerOptions {
   /** Base URL of the server, for example `http://127.0.0.1:8080`. */
@@ -39,13 +46,19 @@ function labelsOf(question: Question): string[] {
 
 function describeOutcomes(question: ChoiceQuestion): string {
   return Object.entries(question.criteria)
-    .map(([label, description], index) => `${LETTERS[index]}. ${label}: ${typeof description === "string" ? description : JSON.stringify(description)}`)
+    .map(
+      ([label, description], index) =>
+        `${LETTERS[index]}. ${label}: ${typeof description === "string" ? description : JSON.stringify(description)}`,
+    )
     .join("\n");
 }
 
 function promptFor(request: Request, name: string, question: Question): string {
   const state = JSON.stringify(request.state);
-  const instructions = typeof question.instructions === "string" ? question.instructions : JSON.stringify(question.instructions ?? "");
+  const instructions =
+    typeof question.instructions === "string"
+      ? question.instructions
+      : JSON.stringify(question.instructions ?? "");
   if (question.type === "noul") {
     return `State:\n${state}\n\nQuestion (${name}): ${instructions}\nAnswer with one letter: A for no, B for yes.`;
   }
@@ -58,7 +71,8 @@ export function letterProbabilities(top: readonly TopLogprob[], count: number): 
   const mass = Array.from({ length: count }, () => 0);
   for (const { token, logprob } of top) {
     const index = LETTERS.indexOf(token.trim().toUpperCase());
-    if (token.trim().length === 1 && index >= 0 && index < count) mass[index] = Math.max(mass[index]!, Math.exp(logprob));
+    if (token.trim().length === 1 && index >= 0 && index < count)
+      mass[index] = Math.max(mass[index]!, Math.exp(logprob));
   }
   const total = mass.reduce((sum, value) => sum + value, 0);
   if (total <= 0) throw new Error("model gave no probability to any valid outcome letter");
@@ -69,10 +83,17 @@ export function llamaServer(options: LlamaServerOptions): Provider {
   const request_ = options.fetch ?? fetch;
   const endpoint = `${options.url.replace(/\/+$/, "")}/v1/chat/completions`;
 
-  async function topLogprobs(prompt: string, count: number, signal: AbortSignal | undefined): Promise<TopLogprob[]> {
+  async function topLogprobs(
+    prompt: string,
+    count: number,
+    signal: AbortSignal | undefined,
+  ): Promise<TopLogprob[]> {
     const response = await request_(endpoint, {
       method: "POST",
-      headers: { "content-type": "application/json", ...(options.apiKey ? { authorization: `Bearer ${options.apiKey}` } : {}) },
+      headers: {
+        "content-type": "application/json",
+        ...(options.apiKey ? { authorization: `Bearer ${options.apiKey}` } : {}),
+      },
       body: JSON.stringify({
         model: options.model,
         messages: [{ role: "user", content: prompt }],
@@ -87,9 +108,12 @@ export function llamaServer(options: LlamaServerOptions): Provider {
       ...(signal ? { signal } : {}),
     });
     if (!response.ok) throw new Error(`llama-server ${response.status}`);
-    const body = (await response.json()) as { choices?: { logprobs?: { content?: { top_logprobs?: TopLogprob[] }[] } }[] };
+    const body = (await response.json()) as {
+      choices?: { logprobs?: { content?: { top_logprobs?: TopLogprob[] }[] } }[];
+    };
     const top = body.choices?.[0]?.logprobs?.content?.[0]?.top_logprobs;
-    if (!Array.isArray(top) || top.length === 0) throw new Error("llama-server returned no log-probabilities");
+    if (!Array.isArray(top) || top.length === 0)
+      throw new Error("llama-server returned no log-probabilities");
     return top;
   }
 
@@ -100,13 +124,23 @@ export function llamaServer(options: LlamaServerOptions): Provider {
       // The server is CPU-bound: questions run one after another, sharing the cached prompt prefix.
       for (const [name, question] of entries) {
         const labels = labelsOf(question);
-        const probabilities = letterProbabilities(await topLogprobs(promptFor(request, name, question), labels.length, provider?.signal), labels.length);
+        const probabilities = letterProbabilities(
+          await topLogprobs(promptFor(request, name, question), labels.length, provider?.signal),
+          labels.length,
+        );
         const best = probabilities.indexOf(Math.max(...probabilities));
-        const byLabel = Object.fromEntries(labels.map((label, index) => [label, probabilities[index]!]));
+        const byLabel = Object.fromEntries(
+          labels.map((label, index) => [label, probabilities[index]!]),
+        );
         answers[name] =
           question.type === "noul"
             ? ({ type: "noul", noul: probabilities[1]! } satisfies { type: "noul"; noul: number })
-            : { type: "choice", choice: labels[best]!, confidence: probabilities[best]!, probabilities: byLabel };
+            : {
+                type: "choice",
+                choice: labels[best]!,
+                confidence: probabilities[best]!,
+                probabilities: byLabel,
+              };
       }
       return { model: options.model, usage: null, answers };
     },

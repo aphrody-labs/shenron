@@ -100,7 +100,9 @@ const SCRIPT: string[][] = [
 function hardware(): Record<string, unknown> {
   if (process.platform !== "win32") return { platform: process.platform };
   const ps = (command: string) =>
-    Bun.spawnSync(["powershell", "-NoProfile", "-Command", command], { stdout: "pipe" }).stdout.toString().trim();
+    Bun.spawnSync(["powershell", "-NoProfile", "-Command", command], { stdout: "pipe" })
+      .stdout.toString()
+      .trim();
   const parse = (text: string) => {
     try {
       return JSON.parse(text);
@@ -108,19 +110,35 @@ function hardware(): Record<string, unknown> {
       return text;
     }
   };
-  const display = Bun.spawnSync(["agent-desktop", "list-displays"], { stdout: "pipe" }).stdout.toString();
+  const display = Bun.spawnSync(["agent-desktop", "list-displays"], {
+    stdout: "pipe",
+  }).stdout.toString();
   return {
-    cpu: parse(ps("Get-CimInstance Win32_Processor | Select Name,NumberOfCores,NumberOfLogicalProcessors | ConvertTo-Json -Compress")),
-    gpu: parse(ps("Get-CimInstance Win32_VideoController | Select Name,DriverVersion,CurrentRefreshRate,CurrentHorizontalResolution,CurrentVerticalResolution | ConvertTo-Json -Compress")),
+    cpu: parse(
+      ps(
+        "Get-CimInstance Win32_Processor | Select Name,NumberOfCores,NumberOfLogicalProcessors | ConvertTo-Json -Compress",
+      ),
+    ),
+    gpu: parse(
+      ps(
+        "Get-CimInstance Win32_VideoController | Select Name,DriverVersion,CurrentRefreshRate,CurrentHorizontalResolution,CurrentVerticalResolution | ConvertTo-Json -Compress",
+      ),
+    ),
     memory_bytes: Number(ps("(Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory")),
-    os: ps("(Get-CimInstance Win32_OperatingSystem).Caption + ' ' + (Get-CimInstance Win32_OperatingSystem).BuildNumber"),
+    os: ps(
+      "(Get-CimInstance Win32_OperatingSystem).Caption + ' ' + (Get-CimInstance Win32_OperatingSystem).BuildNumber",
+    ),
     displays: parse(display),
   };
 }
 
 /** Real Chrome window with its own throw-away profile (agent-browser cannot launch headed next to a running Chrome). */
 function launchHeadedChrome(): { port: number; stop: () => void } {
-  const candidates = [process.env.ProgramFiles, process.env["ProgramFiles(x86)"], process.env.LOCALAPPDATA]
+  const candidates = [
+    process.env.ProgramFiles,
+    process.env["ProgramFiles(x86)"],
+    process.env.LOCALAPPDATA,
+  ]
     .filter((root): root is string => Boolean(root))
     .map((root) => join(root, "Google/Chrome/Application/chrome.exe"));
   const chrome = candidates.find((path) => existsSync(path));
@@ -128,14 +146,28 @@ function launchHeadedChrome(): { port: number; stop: () => void } {
   const port = 9300 + Math.floor(Math.random() * 500);
   const profile = resolve(outDir, `chrome-profile-${port}`);
   const child = Bun.spawn(
-    [chrome, `--remote-debugging-port=${port}`, `--user-data-dir=${profile}`, "--no-first-run", "--no-default-browser-check", "--window-size=1920,1080", "about:blank"],
+    [
+      chrome,
+      `--remote-debugging-port=${port}`,
+      `--user-data-dir=${profile}`,
+      "--no-first-run",
+      "--no-default-browser-check",
+      "--window-size=1920,1080",
+      "about:blank",
+    ],
     { stdout: "ignore", stderr: "ignore" },
   );
   return {
     port,
     stop: () => {
-      Bun.spawnSync(["taskkill", "/PID", String(child.pid), "/T", "/F"], { stdout: "ignore", stderr: "ignore" });
-      Bun.spawnSync(["cmd", "/c", "rmdir", "/s", "/q", profile], { stdout: "ignore", stderr: "ignore" });
+      Bun.spawnSync(["taskkill", "/PID", String(child.pid), "/T", "/F"], {
+        stdout: "ignore",
+        stderr: "ignore",
+      });
+      Bun.spawnSync(["cmd", "/c", "rmdir", "/s", "/q", profile], {
+        stdout: "ignore",
+        stderr: "ignore",
+      });
     },
   };
 }
@@ -155,7 +187,10 @@ async function webBench(mode: string, url: string) {
         for (let poll = 0; poll < 50; poll += 1) {
           const ready = await fetch(`http://127.0.0.1:${headed.port}/json/list`)
             .then((r) => r.json() as Promise<{ type: string }[]>)
-            .then((targets) => targets.some((target) => target.type === "page"), () => false);
+            .then(
+              (targets) => targets.some((target) => target.type === "page"),
+              () => false,
+            );
           if (ready) break;
           await Bun.sleep(200);
         }
@@ -166,13 +201,17 @@ async function webBench(mode: string, url: string) {
       }
       browser.must("set", "viewport", String(width), String(height), String(scale));
       browser.must("open", `${url}/?id=bench&theme=dark&anim=1`);
-      await browser.waitFor("document.documentElement.dataset.parityReady === '1' && document.fonts.status === 'loaded'");
+      await browser.waitFor(
+        "document.documentElement.dataset.parityReady === '1' && document.fonts.status === 'loaded'",
+      );
       break;
     } catch (error) {
       headed?.stop();
       browser.run("close");
       if (attempt >= 3) throw error;
-      console.error(`[${mode}] setup attempt ${attempt} failed (${String(error).slice(0, 120)}), retrying`);
+      console.error(
+        `[${mode}] setup attempt ${attempt} failed (${String(error).slice(0, 120)}), retrying`,
+      );
     }
   }
   const env = browser.eval<Record<string, unknown>>(`(() => {
@@ -188,7 +227,9 @@ async function webBench(mode: string, url: string) {
   const idle = browser.eval<number[]>("window.__fps.frames.slice()");
   const idleMedian = [...idle].sort((a, b) => a - b)[Math.floor(idle.length / 2)] ?? Number.NaN;
   const refreshHz = Math.round((1000 / idleMedian) * 10) / 10;
-  browser.eval("(() => { const s = window.__fps; s.frames.length = 0; s.work.length = 0; s.loaf.length = 0; s.events.length = 0; s.last = 0; })()");
+  browser.eval(
+    "(() => { const s = window.__fps; s.frames.length = 0; s.work.length = 0; s.loaf.length = 0; s.events.length = 0; s.last = 0; })()",
+  );
 
   console.error(`[${mode}] refresh ${refreshHz} Hz, interaction start`);
   const started = Date.now();
@@ -215,7 +256,9 @@ async function webBench(mode: string, url: string) {
     work: number[];
     loaf: { duration: number; blocking: number }[];
     events: { name: string; duration: number }[];
-  }>("(() => { const s = window.__fps; s.running = false; return { frames: s.frames, work: s.work, loaf: s.loaf, events: s.events }; })()");
+  }>(
+    "(() => { const s = window.__fps; s.running = false; return { frames: s.frames, work: s.work, loaf: s.loaf, events: s.events }; })()",
+  );
   browser.run("close");
   headed?.stop();
 
@@ -229,15 +272,28 @@ async function webBench(mode: string, url: string) {
     environment: env,
     refresh_hz: refreshHz,
     refresh_from: "median requestAnimationFrame interval over 1.5 s idle",
-    interaction: { elapsed_ms: elapsedMs, cycles, commands_per_cycle: SCRIPT.length, command_errors: commandErrors, error_samples: [...errorSamples] },
+    interaction: {
+      elapsed_ms: elapsedMs,
+      cycles,
+      commands_per_cycle: SCRIPT.length,
+      command_errors: commandErrors,
+      error_samples: [...errorSamples],
+    },
     frame_interval_ms: frame,
-    work_ms: { ...work, definition: "rAF callback start to the next MessageChannel task: main-thread script, style, layout and paint recording; excludes raster and GPU" },
+    work_ms: {
+      ...work,
+      definition:
+        "rAF callback start to the next MessageChannel task: main-thread script, style, layout and paint recording; excludes raster and GPU",
+    },
     long_animation_frames: {
       count: raw.loaf.length,
       max_duration_ms: Math.max(0, ...raw.loaf.map((entry) => entry.duration)),
       max_blocking_ms: Math.max(0, ...raw.loaf.map((entry) => entry.blocking)),
     },
-    slow_events: { count: raw.events.length, max_duration_ms: Math.max(0, ...raw.events.map((entry) => entry.duration)) },
+    slow_events: {
+      count: raw.events.length,
+      max_duration_ms: Math.max(0, ...raw.events.map((entry) => entry.duration)),
+    },
     gate: {
       budget_p99_ms: Math.round(BUDGET_P99_MS * 100) / 100,
       budget_max_ms: BUDGET_MAX_MS,
@@ -277,7 +333,13 @@ const server = Bun.spawn(["bun", join(here, "web/serve.ts")], {
   stderr: "inherit",
 });
 for (let attempt = 0; attempt < 150; attempt += 1) {
-  if (await fetch(url).then((response) => response.ok, () => false)) break;
+  if (
+    await fetch(url).then(
+      (response) => response.ok,
+      () => false,
+    )
+  )
+    break;
   await Bun.sleep(200);
 }
 
@@ -292,7 +354,10 @@ try {
     const warm = new Browser("parity-hf-warm");
     warm.must("open", page);
     const startup: Record<string, unknown> = {
-      web_navigation_warm: hyperfine("web-navigation-warm", `agent-browser --session parity-hf-warm open "${page}"`),
+      web_navigation_warm: hyperfine(
+        "web-navigation-warm",
+        `agent-browser --session parity-hf-warm open "${page}"`,
+      ),
     };
     warm.run("close");
     startup.web_launch_cold = hyperfine(
@@ -311,14 +376,21 @@ const native = join(here, "out/native/shenron-gallery.exe");
 if (values["no-native"] || !existsSync(native)) {
   report.native = `blocked: ${existsSync(native) ? "disabled by flag" : "no native binary at scripts/parity/out/native/shenron-gallery.exe (Rust builds run on fr1 only; Windows build by cargo-xwin pending)"}`;
 } else {
-  const run = Bun.spawnSync([native, "window", "--id", "bench", "--duration-ms", String(durationMs), "--json"], {
-    stdout: "pipe",
-    stderr: "pipe",
-  });
+  const run = Bun.spawnSync(
+    [native, "window", "--id", "bench", "--duration-ms", String(durationMs), "--json"],
+    {
+      stdout: "pipe",
+      stderr: "pipe",
+    },
+  );
   if (run.exitCode !== 0) {
     report.native = `blocked: native run failed: ${run.stderr.toString().slice(0, 400)}`;
   } else {
-    const parsed = JSON.parse(run.stdout.toString()) as { frames_ms: number[]; refresh_hz?: number; adapter?: string };
+    const parsed = JSON.parse(run.stdout.toString()) as {
+      frames_ms: number[];
+      refresh_hz?: number;
+      adapter?: string;
+    };
     const frame = stats(parsed.frames_ms);
     report.native = {
       refresh_hz: parsed.refresh_hz ?? null,

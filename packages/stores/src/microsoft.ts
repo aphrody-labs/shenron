@@ -15,9 +15,14 @@ export const microsoft: StoreConnector = {
     const body = await getJson(url);
     // The endpoint answers with an array whose second element carries the payload.
     const root = Array.isArray(body) ? (body[1] ?? body[0]) : body;
-    const payload = asObject(asObject(root, "microsoft.search").Payload, "microsoft.search.Payload");
+    const payload = asObject(
+      asObject(root, "microsoft.search").Payload,
+      "microsoft.search.Payload",
+    );
     const results = asArray(payload.SearchResults, "microsoft.search.Payload.SearchResults");
-    return results.map((result, index) => parseResult(result, `microsoft.search.Payload.SearchResults[${index}]`, region));
+    return results.map((result, index) =>
+      parseResult(result, `microsoft.search.Payload.SearchResults[${index}]`, region),
+    );
   },
 };
 
@@ -36,9 +41,16 @@ export function parseResult(result: unknown, path: string, region: string): Stor
     developer: null,
     releaseDate: null,
     platforms: /\(xbox\)/i.test(title) ? ["Xbox"] : ["Windows"],
-    price: { amount: price, currency: null, formatted: optString(object.DisplayPrice), free: price === 0 },
+    price: {
+      amount: price,
+      currency: null,
+      formatted: optString(object.DisplayPrice),
+      free: price === 0,
+    },
     rating: optNumber(object.AverageRating),
     ratingCount: optNumber(object.RatingsCount),
-    addon: optString(object.ProductKind) === "Durable" || /\b(pack|dlc|bundle|season pass)\b/i.test(title),
+    addon:
+      optString(object.ProductKind) === "Durable" ||
+      /\b(pack|dlc|bundle|season pass)\b/i.test(title),
   };
 }

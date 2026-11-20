@@ -73,7 +73,10 @@ describe("llms.txt & AI discoverability", () => {
     const [entry] = body.linkset;
     expect(entry?.anchor).toBe("https://dragonballfr.com/api");
     expect(entry?.["service-desc"]).toEqual([
-      { href: "https://dragonballfr.com/api/public/openapi.json", type: "application/openapi+json" },
+      {
+        href: "https://dragonballfr.com/api/public/openapi.json",
+        type: "application/openapi+json",
+      },
     ]);
     expect(entry?.["service-doc"]?.[0]?.href).toBe("https://dragonballfr.com/llms.txt");
   });

@@ -62,7 +62,10 @@ async function request(url: string, host: string, options: HttpOptions): Promise
     const timeout = AbortSignal.timeout(options.timeoutMs ?? 20_000);
     const signal = options.signal ? AbortSignal.any([options.signal, timeout]) : timeout;
     const response = await fetch(url, {
-      headers: { "user-agent": options.userAgent ?? DEFAULT_USER_AGENT, accept: "application/json" },
+      headers: {
+        "user-agent": options.userAgent ?? DEFAULT_USER_AGENT,
+        accept: "application/json",
+      },
       signal,
       ...(proxy ? { proxy } : {}),
     });
