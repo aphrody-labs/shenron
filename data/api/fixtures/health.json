@@ -1,0 +1,29 @@
+{
+  "$comment": "Golden cases of /health (packages/api/scripts/api-fixtures.ts records, crates/shenron-api/tests/parity.rs replays).",
+  "cases": [
+    {
+      "name": "liveness",
+      "operation": "/health",
+      "path": "/health",
+      "status": 200,
+      "body": {
+        "status": "ok"
+      },
+      "responseHeaders": {
+        "cache-control": "public, max-age=5, s-maxage=10, stale-while-revalidate=20"
+      }
+    },
+    {
+      "name": "api liveness",
+      "operation": "/api/health",
+      "path": "/api/health",
+      "status": 200,
+      "body": {
+        "status": "ok"
+      },
+      "responseHeaders": {
+        "cache-control": "no-store"
+      }
+    }
+  ]
+}

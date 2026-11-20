@@ -1,0 +1,26 @@
+{
+  "section": "support-us",
+  "scope": "Public Kanzenshuu WordPress pages in this route section; metadata only, private source bodies referenced by rawPath.",
+  "records": [
+    {
+      "id": 70873,
+      "type": "pages",
+      "slug": "support-us",
+      "title": "Support Us",
+      "date": "2022-03-03T16:28:45",
+      "modified": "2026-10-06T13:56:37",
+      "url": "https://www.kanzenshuu.com/support-us/",
+      "excerpt": "",
+      "categories": [],
+      "tags": [],
+      "parent": 0,
+      "section": "support-us",
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2022.json",
+      "categoryTerms": [],
+      "tagTerms": []
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "section": "edit-log",
+  "scope": "Public Kanzenshuu WordPress pages in this route section; metadata only, private source bodies referenced by rawPath.",
+  "records": [
+    {
+      "id": 28064,
+      "type": "pages",
+      "slug": "edit-log",
+      "title": "Recently Edited Page Log",
+      "date": "2013-11-03T18:34:55",
+      "modified": "2020-07-16T17:11:56",
+      "url": "https://www.kanzenshuu.com/edit-log/",
+      "excerpt": "",
+      "categories": [],
+      "tags": [],
+      "parent": 0,
+      "section": "edit-log",
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2013.json",
+      "categoryTerms": [],
+      "tagTerms": []
+    }
+  ]
+}

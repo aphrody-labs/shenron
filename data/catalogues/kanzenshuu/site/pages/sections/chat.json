@@ -1,0 +1,26 @@
+{
+  "section": "chat",
+  "scope": "Public Kanzenshuu WordPress pages in this route section; metadata only, private source bodies referenced by rawPath.",
+  "records": [
+    {
+      "id": 6651,
+      "type": "pages",
+      "slug": "chat",
+      "title": "Chat",
+      "date": "2012-03-11T11:47:45",
+      "modified": "2025-08-25T16:37:31",
+      "url": "https://www.kanzenshuu.com/chat/",
+      "excerpt": "",
+      "categories": [],
+      "tags": [],
+      "parent": 0,
+      "section": "chat",
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "categoryTerms": [],
+      "tagTerms": []
+    }
+  ]
+}

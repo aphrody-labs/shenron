@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des contenus Kanzenshuu hors interviews ordinaires, par année de publication (2005); forums et messages de forum exclus.",
+  "records": [
+    {
+      "id": "dragon-book-gt-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball GT DVD Box: Dragon Box GT — Dragon Book (p. 1)",
+      "summary": "Toriyama remercie les acheteurs du coffret GT et explique que, épuisé par la fin du manga, il a laissé l’équipe d’animation poursuivre l’histoire. Il précise que sa contribution à GT s’est limitée au titre, aux dessins initiaux des principaux personnages et de certaines machines, ainsi qu’à quelques illustrations, tout en louant le travail de l’équipe.",
+      "keyInformation": [
+        "Toriyama indique que GT est une suite conçue par l’équipe de l’anime après son retrait de la série",
+        "Il explique l’idée du titre Grand Touring et limite son propre apport au concept initial et à des designs"
+      ],
+      "source": {
+        "publication": "Akira Toriyama’s Introduction Dragon Ball GT DVD Box: Dragon Box GT — Dragon Book (p. 1)",
+        "pages": "1",
+        "date": "2005-06-15",
+        "url": "https://www.kanzenshuu.com/translations/dragon-book-gt-toriyama-intro/"
+      },
+      "dragonBallRelevance": "Directe : témoignage sur la conception et la production de Dragon Ball GT.",
+      "formatNote": "Message de livret, non entretien; précise le périmètre de la contribution de Toriyama.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "akira-toriyama-comments-super-dragon-ball-z",
+      "title": "Akira Toriyama’s Comment on \"Super Dragon Ball Z\" Official \"Super Dragon Ball Z\" Website",
+      "summary": "La page Kanzenshuu ne présente actuellement pas le corps du commentaire annoncé dans son titre : le document HTML accessible expose le titre et une description indiquant un commentaire de Toriyama lors du lancement japonais du jeu d’arcade en décembre 2005, mais aucun texte éditorial exploitable. La fiche consigne donc uniquement ce qui est vérifiable et signale l’absence du contenu source.",
+      "keyInformation": [
+        "La page annonce un commentaire de Toriyama lié au lancement japonais de Super Dragon Ball Z en décembre 2005",
+        "Le corps de texte n’est pas présent dans la page actuellement récupérable; aucune teneur du commentaire ne peut être confirmée"
+      ],
+      "source": {
+        "publication": "Akira Toriyama’s Comment on \"Super Dragon Ball Z\" Official \"Super Dragon Ball Z\" Website",
+        "pages": null,
+        "date": "2005-12-21",
+        "url": "https://www.kanzenshuu.com/translations/akira-toriyama-comments-super-dragon-ball-z/"
+      },
+      "dragonBallRelevance": "Directe selon le titre et la description de la source, mais contenu original indisponible à vérifier.",
+      "formatNote": "Corps de page vide; fiche limitée aux métadonnées vérifiables, à revoir si le texte est restauré.",
+      "forum": false,
+      "forumContent": false
+    }
+  ]
+}

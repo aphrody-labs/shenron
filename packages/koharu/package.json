@@ -1,0 +1,53 @@
+{
+  "name": "@aphrody/shenron-koharu",
+  "version": "1.4.7",
+  "private": false,
+  "description": "Koharu manga translation engine client for Shenron: typed IPC protocol, the koharu-sdk JSON Lines transport and the wasm canvas.",
+  "homepage": "https://dragonballfr.com",
+  "license": "MIT OR Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aphrody-labs/shenron.git",
+    "directory": "packages/koharu"
+  },
+  "files": [
+    "src",
+    "LICENSE"
+  ],
+  "type": "module",
+  "exports": {
+    "./web-server": "./src/web-server.ts",
+    "./transport": "./src/transport.ts",
+    "./native": "./src/native.ts",
+    "./canvas": "./src/canvas.ts",
+    "./protocol": "./src/protocol.ts"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "typecheck": "bun check --project tsconfig.json",
+    "test": "bun test",
+    "lint": "bun lint -c ../../.oxlintrc.json src --ignore-pattern src/protocol.ts --ignore-pattern src/wasm",
+    "build:wasm": "bun scripts/build-wasm.ts"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "catalog:"
+  },
+  "devDependencies": {
+    "@types/bun": "catalog:"
+  },
+  "engines": {
+    "bun": ">=1.4.3"
+  },
+  "shenron": {
+    "runtime": {
+      "./web-server": "bun",
+      "./transport": "pure",
+      "./native": "bun",
+      "./canvas": "react",
+      "./protocol": "pure"
+    }
+  }
+}

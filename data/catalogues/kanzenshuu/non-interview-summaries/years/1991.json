@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des contenus Kanzenshuu hors interviews ordinaires, par année de publication (1991); forums et messages de forum exclus.",
+  "records": [
+    {
+      "id": "dragon-ball-z-anime-special-2-cartoon-classroom",
+      "title": "The Cartoon Classroom Jump Gold Selection 5: Dragon Ball Z Anime Special Vol. II",
+      "summary": "Toriyama donne des conseils illustrés pour dessiner les personnages de Dragon Ball, du niveau débutant aux exercices plus avancés. Il explique comment quelques éléments bien choisis — silhouette, coiffure, yeux ou accessoires — suffisent à rendre un personnage reconnaissable, puis accompagne les leçons de dialogues comiques avec Freeza.",
+      "keyInformation": [
+        "Les leçons commencent par les formes simples et recommandent de construire un visage à partir d’un ovale et de repères",
+        "Toriyama souligne les signes distinctifs de Goku et Piccolo et propose une progression d’exercices avec matériel élémentaire"
+      ],
+      "source": {
+        "publication": "The Cartoon Classroom Jump Gold Selection 5: Dragon Ball Z Anime Special Vol. II",
+        "pages": null,
+        "date": "1991-06-06",
+        "url": "https://www.kanzenshuu.com/translations/dragon-ball-z-anime-special-2-cartoon-classroom/"
+      },
+      "dragonBallRelevance": "Directe : méthode de dessin et caractérisation visuelle des personnages par leur créateur.",
+      "formatNote": "Tutoriel illustré en niveaux avec dialogues humoristiques, pas une entrevue.",
+      "forum": false,
+      "forumContent": false
+    }
+  ]
+}

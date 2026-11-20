@@ -1,0 +1,3 @@
+# Sortie de scripts/build-wasm.ts (crates/koharu-canvas), suivie par Git et contrôlée par rust.yml.
+/src/wasm/** linguist-generated=true
+/src/wasm/*.wasm binary

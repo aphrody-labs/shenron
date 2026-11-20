@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Page d’accueil publique du wiki Kanzenshuu, révision capturée le 4 avril 2026.",
+  "reviewNote": "Synthèse fondée uniquement sur le wikitext local de la révision indiquée et l’index des 15 pages publiques. Les commentaires HTML contenant d’anciennes annonces ou listes ne sont pas présentés comme le contenu public actuel; aucune page restreinte ou page de discussion n’a été consultée.",
+  "records": [
+    {
+      "id": "main-page",
+      "title": "Main Page",
+      "summary": "La page d’accueil présente Kanzenshuu comme un wiki de référence consacré à Dragon Ball et à des sujets voisins, construit par une petite équipe de bénévoles. Sa vocation est documentaire et archivistique : couvrir non seulement les éléments célèbres de la franchise, mais aussi des détails de production et des sujets rarement traités, en s’appuyant sur des livres, disques et autres sources physiques. Le projet s’étend aux travaux plus larges d’Akira Toriyama, notamment Dr. Slump, ses commentaires et ses récits courts. La page prévient qu’un tel wiki n’est jamais véritablement achevé : certains articles peuvent rester incomplets ou n’être que des ébauches. Elle revendique une expérience sans publicité, avec une mesure d’audience légère, et explique que la lecture est publique tandis que l’édition demeure réservée au groupe existant; aucune inscription ouverte n’est alors annoncée.",
+      "keyInformation": [
+        {
+          "topic": "Méthode et équipe",
+          "detail": "Petit collectif bénévole; l’équipe rédige les articles et consulte des ouvrages et supports physiques. La page rejette explicitement le recours à l’IA dans cette démarche."
+        },
+        {
+          "topic": "Étendue éditoriale",
+          "detail": "Dragon Ball au sens large, archives et détails peu documentés, ainsi que des œuvres connexes de Toriyama comme Dr. Slump, des commentaires et des histoires indépendantes."
+        },
+        {
+          "topic": "Limites",
+          "detail": "Le contenu n’est pas exhaustif ni uniformément terminé; des pages provisoires ou incomplètes sont attendues dans un projet vivant."
+        },
+        {
+          "topic": "Accès et participation",
+          "detail": "Consultation publique; rédaction réservée à la petite équipe en place, sans inscription publique prévue au moment de cette révision."
+        },
+        {
+          "topic": "Expérience du site",
+          "detail": "La page annonce l’absence de publicité et un suivi d’audience limité; le site se présente comme indépendant."
+        }
+      ],
+      "dragonBallRelevance": "Directe : expose le périmètre, les principes de documentation et les limites de la ressource publique consacrée à Dragon Ball.",
+      "internalReferences": [
+        "Franchise",
+        "Manga",
+        "Animation",
+        "Characters",
+        "Items",
+        "Techniques",
+        "World",
+        "Timeline",
+        "Games",
+        "Books/Guides",
+        "Music",
+        "Broadcast",
+        "Home Video",
+        "Cast & Staff",
+        "Culture",
+        "Community",
+        "Misc."
+      ],
+      "uncertainties": [
+        "La page ne donne pas de date d’achèvement et précise que le wiki restera nécessairement en évolution.",
+        "Une ancienne liste de pages de prévisualisation et un ancien avis d’accès apparaissent dans des commentaires HTML; ils ne décrivent pas la section actuellement visible. La sélection des 14 autres pages de ce lot provient de l’index public capturé, pas de ces commentaires."
+      ],
+      "status": "public-main-page",
+      "source": {
+        "url": "https://www.kanzenshuu.com/wiki/Main_Page",
+        "revisedAt": "2026-04-04T16:51:02Z",
+        "rawPath": "data/source-acquisition/kanzenshuu/wiki-public/main-page.json",
+        "pageId": 1
+      },
+      "pageId": 1,
+      "publicPreviewListed": true,
+      "forumContent": false
+    }
+  ]
+}

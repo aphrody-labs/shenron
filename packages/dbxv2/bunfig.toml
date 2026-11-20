@@ -1,0 +1,3 @@
+# Registers the `dbxv2:` import plugin for this package's own tests (explicit failure when disabled).
+[test]
+preload = ["./src/preload.ts"]

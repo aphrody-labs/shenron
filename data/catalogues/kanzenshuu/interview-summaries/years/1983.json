@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des entretiens publiés en 1983; contenus de forum exclus.",
+  "reviewNote": "Chaque fiche conserve son identifiant Kanzenshuu, sa référence de publication, les intervenants et les informations attribuées à chacun. Les formats non-Q/R et écarts de transcription sont signalés dans source.formatNote.",
+  "records": [
+    {
+      "id": "tetsukos-room-1983-akira-toriyama-interview",
+      "title": "Akira Toriyama Interview — Tetsuko’s Room",
+      "summary": "Entretien télévisé principalement consacré au succès de Dr. Slump et à la vie de son auteur au moment de sa popularité soudaine. Toriyama raconte avoir produit des centaines de pages rejetées avant que Torishima l'encourage à retravailler une histoire de savant fou autour de sa jeune androïde; cette proposition conduit à Dr. Slump et au rôle central d'Aralé. Il décrit un apprentissage par l'accumulation de dessins et une motivation nourrie par son refus d'abandonner après les critiques. L'archive contient une transcription suivie de notes du traducteur; les notes explicatives ne sont pas traitées ici comme des paroles de Toriyama.",
+      "keyInformation": [
+        "Toriyama estime que le grand volume de pages refusées lui a permis de progresser rapidement en dessin.",
+        "Torishima critiquait directement les histoires qu'il jugeait peu intéressantes; Toriyama dit que son esprit de compétition le poussait à en proposer de nouvelles.",
+        "La proposition de faire de la jeune androïde le personnage principal a contribué à la naissance de Dr. Slump.",
+        "La transcription explique le jeu de mots des noms Senbei Norimaki et Aralé à partir d'aliments japonais; cette explication vient de l'échange télévisé, tandis que les développements historiques en bas de page sont des notes du traducteur."
+      ],
+      "source": {
+        "publication": "Émission télévisée Tetsuko’s Room, première diffusion le 4 mai 1983",
+        "pages": null,
+        "date": "1983-05-04",
+        "archivedTranslation": "https://www.kanzenshuu.com/translations/tetsukos-room-1983-akira-toriyama-interview/",
+        "questionAnswerCount": null,
+        "formatNote": "Transcription continue; le balisage de la page n'emploie pas les blocs Q/R habituels.",
+        "forumContent": false,
+        "rawPath": "data/source-acquisition/kanzenshuu/interviews/tetsukos-room-1983-akira-toriyama-interview.html"
+      },
+      "dragonBallRelevance": "Contexte de création de Dr. Slump et du travail éditorial de Torishima avant Dragon Ball.",
+      "status": "summary-written-print-source-not-collated",
+      "forumContent": false
+    }
+  ]
+}

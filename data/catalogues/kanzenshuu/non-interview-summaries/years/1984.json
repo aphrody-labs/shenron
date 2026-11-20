@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des contenus Kanzenshuu hors interviews ordinaires, par année de publication (1984); forums et messages de forum exclus.",
+  "records": [
+    {
+      "id": "bird-land-press-making-of-dragon-ball",
+      "title": "The Making of Dragon Ball Bird Land Press 15 (pp. 4-8) Newsletter Content Section 01 November 1984 Akira Toriyama Dragon Ball (Manga), Production",
+      "summary": "Cette chronologie illustrée retrace la préparation de Dragon Ball depuis les influences chinoises de Toriyama jusqu’au lancement de la série en novembre 1984. Elle suit le passage de Dr. Slump à des projets comme Dragon Boy, puis les échanges avec l’éditeur, le voyage de recherche en Chine et les étapes successives du concept, des esquisses et des brouillons.",
+      "keyInformation": [
+        "Toriyama s’intéresse au kung-fu après Dr. Slump; Dragon Boy sert de précurseur avant la nouvelle série",
+        "Le projet commence sous une forme inspirée du Voyage en Occident, puis évolue vers une histoire d’arts martiaux; la sérialisation débute en novembre 1984"
+      ],
+      "source": {
+        "publication": "The Making of Dragon Ball Bird Land Press 15 (pp. 4-8) Newsletter Content Section 01 November 1984 Akira Toriyama Dragon Ball (Manga), Production",
+        "pages": "4-8",
+        "date": "1984-11-01",
+        "url": "https://www.kanzenshuu.com/translations/bird-land-press-making-of-dragon-ball/"
+      },
+      "dragonBallRelevance": "Directe : documents sur la conception et la production du manga Dragon Ball.",
+      "formatNote": "Dossier illustré en rubriques et chronologie; il mêle commentaires, dessins et repères de production.",
+      "forum": false,
+      "forumContent": false
+    }
+  ]
+}

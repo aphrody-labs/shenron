@@ -1,0 +1,26 @@
+{
+  "section": "contest",
+  "scope": "Public Kanzenshuu WordPress pages in this route section; metadata only, private source bodies referenced by rawPath.",
+  "records": [
+    {
+      "id": 7854,
+      "type": "pages",
+      "slug": "contest",
+      "title": "Contest",
+      "date": "2012-03-28T10:32:24",
+      "modified": "2023-04-01T13:39:25",
+      "url": "https://www.kanzenshuu.com/contest/",
+      "excerpt": "",
+      "categories": [],
+      "tags": [],
+      "parent": 0,
+      "section": "contest",
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "categoryTerms": [],
+      "tagTerms": []
+    }
+  ]
+}

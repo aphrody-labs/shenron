@@ -1,0 +1,114 @@
+import os from "node:os";
+// SPDX-License-Identifier: Apache-2.0
+
+export interface CommandOutput {
+  code: number;
+  stdout: string;
+  stderr: string;
+}
+
+export interface PipelineExecution extends CommandOutput {
+  command: string[];
+  status: "executed" | "planned";
+}
+
+export interface CommandControls {
+  signal?: AbortSignal;
+  timeoutMs?: number;
+  /** The native owner refuses overflow; capture never silently truncates a pipeline result. */
+  maxOutputBytes?: number;
+}
+
+export type CommandRunner = (
+  command: string[],
+  cwd: string,
+  controls?: CommandControls,
+) => Promise<CommandOutput>;
+
+async function defaultRunner(
+  command: string[],
+  cwd: string,
+  controls: CommandControls = {},
+): Promise<CommandOutput> {
+  const program = command[0];
+  if (!program) throw new Error("A pipeline command requires a program");
+  if (/(?:^|[/\\])shenron(?:\.exe)?$/.test(program)) {
+    const { runShenronCommand } = await import("./shenron/native-commands");
+    const result = await runShenronCommand(command.slice(1), {
+      timeoutMs: controls.timeoutMs ?? 1_800_000,
+      signal: controls.signal,
+    });
+    if (result.kind === "not_found") throw new Error(result.message);
+    if (result.kind === "timeout") throw new Error(`Native pipeline deadline: ${result.stderr}`);
+    return { code: result.code, stdout: result.stdout, stderr: result.stderr };
+  }
+  controls.signal?.throwIfAborted();
+  if (
+    controls.timeoutMs !== undefined &&
+    (!Number.isFinite(controls.timeoutMs) || controls.timeoutMs <= 0)
+  )
+    throw new RangeError("timeoutMs must be a positive finite number");
+  const timeoutSignal =
+    controls.timeoutMs === undefined ? undefined : AbortSignal.timeout(controls.timeoutMs);
+  const signal =
+    controls.signal && timeoutSignal
+      ? AbortSignal.any([controls.signal, timeoutSignal])
+      : (controls.signal ?? timeoutSignal);
+  const limit = controls.maxOutputBytes ?? Number.MAX_SAFE_INTEGER;
+  const child = Bun.spawn([program, ...command.slice(1)], {
+    cwd,
+    env: process.env,
+    stdin: "ignore",
+    stdout: "pipe",
+    stderr: "pipe",
+    ...(signal ? { signal } : {}),
+  });
+  const read = async (stream: ReadableStream<Uint8Array>) => {
+    const chunks: Uint8Array[] = [];
+    let size = 0;
+    for await (const chunk of stream) {
+      size += chunk.byteLength;
+      if (size > limit) {
+        child.kill();
+        throw new RangeError(`Command output exceeds ${limit} bytes`);
+      }
+      chunks.push(chunk);
+    }
+    return new TextDecoder().decode(Buffer.concat(chunks));
+  };
+  const [stdout, stderr, exitCode] = await Promise.all([
+    read(child.stdout),
+    read(child.stderr),
+    child.exited,
+  ]);
+  signal?.throwIfAborted();
+  return {
+    code: child.signalCode
+      ? 128 + ((os.constants.signals as Record<string, number>)[child.signalCode] ?? 0)
+      : exitCode,
+    stdout,
+    stderr,
+  };
+}
+
+export async function executeCommand(
+  command: string[],
+  options: {
+    cwd: string;
+    dryRun?: boolean;
+    runner?: CommandRunner;
+  } & CommandControls,
+): Promise<PipelineExecution> {
+  if (options.dryRun) return { command, code: 0, stdout: "", stderr: "", status: "planned" };
+  options.signal?.throwIfAborted();
+  const controls: CommandControls = {};
+  if (options.signal !== undefined) controls.signal = options.signal;
+  if (options.timeoutMs !== undefined) controls.timeoutMs = options.timeoutMs;
+  if (options.maxOutputBytes !== undefined) controls.maxOutputBytes = options.maxOutputBytes;
+  const output = await (options.runner ?? defaultRunner)(command, options.cwd, controls);
+  if (output.code !== 0) {
+    const detail = output.stderr.trim() || output.stdout.trim() || "aucun diagnostic";
+    throw new Error(`Commande échouée (${output.code}): ${command.join(" ")}\n${detail}`);
+  }
+  return { ...output, command, status: "executed" };
+}

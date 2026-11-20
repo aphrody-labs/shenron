@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des contenus Kanzenshuu hors interviews ordinaires, par année de publication (1995); forums et messages de forum exclus.",
+  "records": [
+    {
+      "id": "momoko-sakura-akira-toriyama-correspondence-exchange",
+      "title": "Correspondence Exchange: Momoko Sakura & Akira Toriyama Momoko Sakura’s Technicolor World (pp. 74-75)",
+      "summary": "Momoko Sakura adresse à Toriyama une lettre admirative évoquant l’influence de Dr. Slump et Dragon Ball sur son parcours. L’échange rappelle leur rencontre à travers un crossover télévisé et exprime la reconnaissance d’une dessinatrice envers l’auteur dont l’humour, l’optimisme et la créativité l’ont encouragée.",
+      "keyInformation": [
+        "Sakura dit avoir été inspirée par Toriyama depuis l’adolescence et cite plusieurs de ses œuvres",
+        "Elle se souvient avec émotion de la rencontre entre leurs personnages dans un programme télévisé"
+      ],
+      "source": {
+        "publication": "Correspondence Exchange: Momoko Sakura & Akira Toriyama Momoko Sakura’s Technicolor World (pp. 74-75)",
+        "pages": "74-75",
+        "date": "1995-04-19",
+        "url": "https://www.kanzenshuu.com/translations/momoko-sakura-akira-toriyama-correspondence-exchange/",
+        "rawPath": "data/source-acquisition/kanzenshuu/non-interviews/momoko-sakura-akira-toriyama-correspondence-exchange.html",
+        "bodyAvailable": true,
+        "bodyEmpty": false,
+        "questionBlockCount": 2,
+        "answerBlockCount": 2,
+        "sourceDescription": "English translation of the correspondence between Momoko Sakura and Akira Toriyama from the April 1995 book &#039;Momoko Sakura&#039;s Technicolor World&#039;"
+      },
+      "dragonBallRelevance": "Indirecte : témoignage d’une collègue mangaka sur l’influence culturelle de Toriyama.",
+      "formatNote": "Échange épistolaire entre deux mangaka, pas une interview.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "daizenshuu-1-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 1: Complete Illustrations (p. 13)",
+      "summary": "Toriyama introduit le premier volume de ses œuvres complètes, consacré aux illustrations. Il s’étonne du nombre de dessins produits au cours de plus de dix ans de travail et plaisante sur son regard critique envers certaines images anciennes, tout en invitant les lecteurs à les apprécier avec indulgence.",
+      "keyInformation": [
+        "Le volume rassemble des illustrations et images couleur tirées de sa carrière sur Dragon Ball",
+        "Toriyama présente l’ouvrage comme une rétrospective de plus d’une décennie de dessins"
+      ],
+      "source": {
+        "publication": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 1: Complete Illustrations (p. 13)",
+        "pages": "13",
+        "date": "1995-06-20",
+        "url": "https://www.kanzenshuu.com/translations/daizenshuu-1-toriyama-intro/"
+      },
+      "dragonBallRelevance": "Directe : commentaire d’auteur sur ses illustrations et son travail sur Dragon Ball.",
+      "formatNote": "Introduction de guide, très courte.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "weekly-jump-1995-28-anime-j-wing-act-15",
+      "title": "Anime J Wing Act.15: The Invincible Combo!! Weekly Shōnen Jump, 1995 #28",
+      "summary": "Cette page de magazine présente Vegetto au moment de son apparition dans l’anime, en expliquant la fusion de Goku et Vegeta par les Potara. Elle décrit ses capacités, ses techniques et les traits de caractère hérités des deux combattants, notamment son choix d’affronter Boo après s’être volontairement laissé absorber pour sauver ses proches.",
+      "keyInformation": [
+        "La fusion de Goku et Vegeta produit Vegetto, présenté comme supérieur à Boo et capable d’utiliser la téléportation et le Big Bang Attack",
+        "L’article explique le plan de Vegetto pour libérer Gohan et les autres absorbés par Boo"
+      ],
+      "source": {
+        "publication": "Anime J Wing Act.15: The Invincible Combo!! Weekly Shōnen Jump, 1995 #28",
+        "pages": null,
+        "date": "1995-06-26",
+        "url": "https://www.kanzenshuu.com/translations/weekly-jump-1995-28-anime-j-wing-act-15/"
+      },
+      "dragonBallRelevance": "Directe : synthèse promotionnelle d’un événement narratif du manga et de l’anime.",
+      "formatNote": "Rubrique éditoriale de magazine avec résumé, analyse et encadrés de programmation.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "daizenshuu-2-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 2: Story Guide (p. 13)",
+      "summary": "Toriyama présente le deuxième volume des œuvres complètes, consacré à l’histoire de Dragon Ball. Il avoue trouver embarrassant qu’on qualifie de récit une intrigue qu’il a souvent improvisée, et juge sa seconde moitié particulièrement difficile à construire malgré la satisfaction d’avoir mené la série à terme.",
+      "keyInformation": [
+        "Le volume se concentre sur le récit de Dragon Ball",
+        "Toriyama décrit son écriture comme largement improvisée et reconnaît les difficultés de la seconde moitié"
+      ],
+      "source": {
+        "publication": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 2: Story Guide (p. 13)",
+        "pages": "13",
+        "date": "1995-08-04",
+        "url": "https://www.kanzenshuu.com/translations/daizenshuu-2-toriyama-intro/"
+      },
+      "dragonBallRelevance": "Directe : commentaire d’auteur sur la structure et la création du manga.",
+      "formatNote": "Introduction éditoriale brève.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "daizenshuu-3-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 3: TV Animation Part 1 (p. 13)",
+      "summary": "Toriyama présente le volume consacré à la première partie de l’anime. Il confie qu’au début il trouvait l’adaptation trop douce et trop proche de l’ambiance de Dr. Slump, mais reconnaît que de nombreux spectateurs appréciaient précisément son charme et remercie l’équipe qui l’a réalisée.",
+      "keyInformation": [
+        "Le volume couvre la première période de l’anime Dragon Ball",
+        "Toriyama partage son impression initiale mitigée puis remercie le personnel d’animation"
+      ],
+      "source": {
+        "publication": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 3: TV Animation Part 1 (p. 13)",
+        "pages": "13",
+        "date": "1995-09-04",
+        "url": "https://www.kanzenshuu.com/translations/daizenshuu-3-toriyama-intro/"
+      },
+      "dragonBallRelevance": "Directe : appréciation de l’auteur sur l’adaptation animée.",
+      "formatNote": "Introduction courte de guide.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "daizenshuu-4-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 4: World Guide (p. 13)",
+      "summary": "Toriyama remercie les responsables du guide consacré au monde de Dragon Ball, en particulier pour les plans et les cartes. Il reconnaît que nombre de détails n’étaient pas précisément établis lorsqu’il dessinait et s’excuse avec humour des incohérences qu’ils ont dû résoudre.",
+      "keyInformation": [
+        "Le guide rassemble des informations spatiales et des plans de l’univers de Dragon Ball",
+        "Toriyama reconnaît avoir improvisé certains détails du monde au fil de la série"
+      ],
+      "source": {
+        "publication": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 4: World Guide (p. 13)",
+        "pages": "13",
+        "date": "1995-10-04",
+        "url": "https://www.kanzenshuu.com/translations/daizenshuu-4-toriyama-intro/"
+      },
+      "dragonBallRelevance": "Directe : source sur l’univers et la méthode d’écriture de l’auteur.",
+      "formatNote": "Introduction de guide, courte.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "daizenshuu-5-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 5: TV Animation Part 2 (p. 13)",
+      "summary": "Toriyama présente le volume consacré à la seconde partie de l’anime et révèle que la série télévisée continuera avec une histoire absente du manga original. Ayant aperçu les grandes lignes dans les scripts, il dit attendre cette suite comme un spectateur et remercie l’équipe de production.",
+      "keyInformation": [
+        "Le volume couvre la seconde partie de l’anime; Toriyama mentionne la poursuite prévue au-delà du manga sous une histoire originale",
+        "Il dit avoir consulté de grandes lignes de scripts et se réjouit de découvrir les épisodes diffusés"
+      ],
+      "source": {
+        "publication": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 5: TV Animation Part 2 (p. 13)",
+        "pages": "13",
+        "date": "1995-11-04",
+        "url": "https://www.kanzenshuu.com/translations/daizenshuu-5-toriyama-intro/"
+      },
+      "dragonBallRelevance": "Directe : source sur la transition entre Dragon Ball Z et la suite animée originale.",
+      "formatNote": "Introduction de guide qui témoigne d’une annonce de production.",
+      "forum": false,
+      "forumContent": false
+    },
+    {
+      "id": "daizenshuu-6-toriyama-intro",
+      "title": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 6: Movies & TV Specials (p. 13)",
+      "summary": "Toriyama introduit le volume consacré aux films d’animation. Il raconte qu’il évitait de les voir au cinéma par gêne de regarder l’adaptation de sa propre œuvre en public et les regardait chez lui; il évoque aussi les réactions contrastées de ses enfants à Dragon Ball.",
+      "keyInformation": [
+        "Toriyama dit regarder les films chez lui plutôt qu’en salle par embarras",
+        "Il remarque que son fils commence à s’intéresser à la série alors que sa fille ne souhaite pas la regarder"
+      ],
+      "source": {
+        "publication": "Akira Toriyama’s Introduction Dragon Ball Daizenshuu 6: Movies & TV Specials (p. 13)",
+        "pages": "13",
+        "date": "1995-12-04",
+        "url": "https://www.kanzenshuu.com/translations/daizenshuu-6-toriyama-intro/"
+      },
+      "dragonBallRelevance": "Directe : commentaire sur les films d’animation Dragon Ball et leur réception familiale.",
+      "formatNote": "Introduction autobiographique de guide.",
+      "forum": false,
+      "forumContent": false
+    }
+  ]
+}

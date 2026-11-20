@@ -1,0 +1,20 @@
+{
+  "title": "Broly: The Ultimate Deep Dive into Legendary Power",
+  "author": "Daniel",
+  "publishedAt": "2025-07-19",
+  "updatedAt": "2026-09-13",
+  "url": "https://capsulecommentary.com/2025/07/19/broly/",
+  "sourceStatus": 200,
+  "summaryFr": "L’article distingue le Broly des films Z du Broly de Dragon Ball Super. Il retrace son origine, décrit ses formes comme une évolution Saiyan divergente, puis examine la cosmologie de Dragon Ball et conteste la lecture littérale de l’ouverture où la Galaxie du Sud semble entièrement détruite. L’auteur relève les contradictions avec le déroulement du film, les planètes encore visitées, les propos attribués à Koyama et les sources promotionnelles; il conclut que la scène représente plutôt un ravage ambigu que l’annihilation complète d’une galaxie ou d’un quadrant. Pour le film 8, il situe l’histoire autour du chapitre 390, identifie les formes des combattants, rejette comme hyperbolique le « mille fois » associé au courage et conclut que Broly se situe entre Goku Super Saiyan Grade 4 et Cell Parfait. Pour le film 10, il retient une chronologie autour des chapitres 429–430, soutient que Gohan est en Super Saiyan 1 et non 2, et place Broly entre Gohan SS2 des Cell Games et Cell Parfait revenu. Bio-Broly est traité comme un clone distinct, initialement au moins comparable au Broly du film 10, dont la hausse de puissance due au fluide reste indéterminée; sa faiblesse à l’eau et le combat collectif empêchent une mesure ferme. Enfin, l’auteur conteste l’idée que les films doivent être isolés du manga pour l’échelle de puissance : leur production en parallèle permet de les replacer dans la chronologie contemporaine du manga. La conclusion oppose le Broly tragique et menaçant du premier film à ses retours ultérieurs plus comiques, tout en affirmant une hausse de puissance d’un film à l’autre.",
+  "editorialStatus": "author-argument-summary; not independently validated",
+  "imageAcquisition": {
+    "manifest": "data/source-acquisition/capsule-commentary/broly/images.json",
+    "directory": "data/source-acquisition/capsule-commentary/broly/images/",
+    "occurrences": 1208,
+    "distinctOriginals": 1153,
+    "downloaded": 1153,
+    "failed": 0,
+    "manifestIsLocalIgnoredData": true
+  },
+  "scopeNote": "Résumé paraphrasé en français des arguments attribués à l’auteur, limité au corps éditorial; commentaires et forums exclus."
+}

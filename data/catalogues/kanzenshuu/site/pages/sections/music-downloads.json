@@ -1,0 +1,26 @@
+{
+  "section": "music-downloads",
+  "scope": "Public Kanzenshuu WordPress pages in this route section; metadata only, private source bodies referenced by rawPath.",
+  "records": [
+    {
+      "id": 6607,
+      "type": "pages",
+      "slug": "music-downloads",
+      "title": "Music Downloads",
+      "date": "2012-03-10T22:00:17",
+      "modified": "2015-06-03T11:08:56",
+      "url": "https://www.kanzenshuu.com/music-downloads/",
+      "excerpt": "",
+      "categories": [],
+      "tags": [],
+      "parent": 0,
+      "section": "music-downloads",
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2012.json",
+      "categoryTerms": [],
+      "tagTerms": []
+    }
+  ]
+}

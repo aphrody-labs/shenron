@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "include": ["scripts/**/*.ts"],
+  "exclude": [
+    "scripts/_shenron-remote-ocr.test.ts",
+    "scripts/_rag-shenron-sync.live.test.ts",
+    "scripts/crawl-guides.ts",
+    "scripts/ingest-databooks-rag.ts",
+    "scripts/rag-harvest.ts",
+    "scripts/rag-recon.ts",
+    "scripts/selfhost-manga-pages.ts"
+  ]
+}

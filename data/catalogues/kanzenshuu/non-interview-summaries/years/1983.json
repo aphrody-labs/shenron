@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "language": "fr",
+  "scope": "Synthèses des contenus Kanzenshuu hors interviews ordinaires, par année de publication (1983); forums et messages de forum exclus.",
+  "records": [
+    {
+      "id": "toriyama-me-back-when-i-drew-this-5",
+      "title": "\"Me Back When I Drew This\" #5 Akira Toriyama’s _____piece Theatre, Vol. 1 (p. 189)",
+      "summary": "Dans cette courte bande dessinée autobiographique, Toriyama revient sur la création de Chobit et de Chobit 2 pour le concours mensuel des lecteurs de Jump. Le récit montre comment il a développé ces histoires de science-fiction comiques pendant la période où il cherchait à faire publier ses premiers travaux.",
+      "keyInformation": [
+        "Le comic raconte la genèse des deux épisodes de Chobit dans le concours des lecteurs de Jump",
+        "La page provient d’un recueil d’histoires courtes de Toriyama et donne un aperçu de ses premiers travaux publiés"
+      ],
+      "source": {
+        "publication": "\"Me Back When I Drew This\" #5 Akira Toriyama’s _____piece Theatre, Vol. 1 (p. 189)",
+        "pages": "189",
+        "date": "1983-07-15",
+        "url": "https://www.kanzenshuu.com/translations/toriyama-me-back-when-i-drew-this-5/"
+      },
+      "dragonBallRelevance": "Indirecte : contexte des débuts de carrière de l’auteur, sans lien narratif direct avec Dragon Ball.",
+      "formatNote": "Bande dessinée autobiographique d’une page, avec notes éditoriales.",
+      "forum": false,
+      "forumContent": false
+    }
+  ]
+}

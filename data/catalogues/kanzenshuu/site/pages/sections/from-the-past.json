@@ -1,0 +1,26 @@
+{
+  "section": "from-the-past",
+  "scope": "Public Kanzenshuu WordPress pages in this route section; metadata only, private source bodies referenced by rawPath.",
+  "records": [
+    {
+      "id": 80310,
+      "type": "pages",
+      "slug": "from-the-past",
+      "title": "From the Past",
+      "date": "2026-08-19T11:20:21",
+      "modified": "2026-10-05T16:26:11",
+      "url": "https://www.kanzenshuu.com/from-the-past/",
+      "excerpt": "",
+      "categories": [],
+      "tags": [],
+      "parent": 0,
+      "section": "from-the-past",
+      "contentProtected": false,
+      "bodyAvailable": true,
+      "forumContent": false,
+      "rawPath": "data/source-acquisition/kanzenshuu/site/pages/2026.json",
+      "categoryTerms": [],
+      "tagTerms": []
+    }
+  ]
+}
