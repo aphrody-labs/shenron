@@ -81,8 +81,8 @@ interface CanvasHandle {
 }
 
 /**
- * Surface de la glue `wasm-bindgen --target web` de `crates/koharu-canvas` utilisée ici
- * (`src/wasm/koharu_canvas.js`, générée par `scripts/build-wasm.ts`). Le test
+ * Surface de la glue `wasm-bindgen --target web` de `koharu-canvas` (aphrody-labs/wiki) utilisée ici
+ * (`src/wasm/koharu_canvas.js`, construite dans aphrody-labs/wiki et copiée par `scripts/sync-wasm.ts`). Le test
  * `test/canvas-wasm.test.ts` vérifie sur la sortie construite que les exports et les méthodes de
  * `WebCanvas` correspondent à ce contrat.
  */
@@ -300,8 +300,8 @@ function loadCanvasModule(): Promise<CanvasGlue> {
 function importCanvasGlue(): Promise<CanvasGlue> {
   // Quand la sortie existe, tsc vérifie ici que la glue générée est assignable à `CanvasGlue`.
   const glue: Promise<CanvasGlue> =
-    // @ts-ignore -- src/wasm/ est la sortie de `bun run build:wasm` (scripts/build-wasm.ts),
-    // ignorée par Git : absente d'un dépôt propre, construite avant tout build du site. Le
+    // @ts-ignore -- src/wasm/ est la sortie de `bun run sync:wasm` (scripts/sync-wasm.ts),
+    // suivie par Git (construite dans aphrody-labs/wiki). Le
     // spécifier reste littéral pour que le bundler inclue la glue dans son graphe.
     import("./wasm/koharu_canvas.js");
   return glue;
