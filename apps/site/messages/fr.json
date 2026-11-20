@@ -925,6 +925,23 @@
       "autoBoth": "Relevé automatique : le nom est cité dans ces planches et résumés ; cela ne suffit pas à établir son rôle dans la saga. Forme, puissance et faits marquants restent à documenter."
     },
     "breadcrumb": "Wiki",
+    "techniqueDetail": {
+      "crumbTechniques": "Techniques",
+      "creatorOrUser": "Créateur / référent :",
+      "infoboxHeader": "FICHE TECHNIQUE",
+      "fieldName": "Nom",
+      "fieldJapaneseName": "Nom japonais",
+      "fieldType": "Type",
+      "fieldCreator": "Créateur / référent",
+      "fieldPractitioners": "Utilisateurs",
+      "fieldFirstAppearance": "Première apparition",
+      "chapterNumber": "Chapitre {number}",
+      "episodeNumber": "Épisode {number}",
+      "fieldIdentifier": "Identifiant",
+      "gameCanonNoteHeading": "Note canon / jeu vidéo",
+      "decisiveBattlesHeading": "Combats décisifs ({count})",
+      "decisiveBattlesLead": "Affrontements majeurs où {name} a été employé comme technique décisive :"
+    },
     "index": {
       "exploreSanctuary": "Explorer le sanctuaire",
       "properties": "Fiche & Propriétés"

@@ -925,6 +925,23 @@
       "autoBoth": "Automatically detected: the name appears on these manga pages and in these episode synopses; that alone does not establish the character’s role in the saga. Form, power, and highlights still need editorial documentation."
     },
     "breadcrumb": "Wiki",
+    "techniqueDetail": {
+      "crumbTechniques": "Techniques",
+      "creatorOrUser": "Creator / primary user:",
+      "infoboxHeader": "TECHNIQUE PROFILE",
+      "fieldName": "Name",
+      "fieldJapaneseName": "Japanese name",
+      "fieldType": "Category",
+      "fieldCreator": "Creator / primary user",
+      "fieldPractitioners": "Practitioners",
+      "fieldFirstAppearance": "First appearance",
+      "chapterNumber": "Chapter {number}",
+      "episodeNumber": "Episode {number}",
+      "fieldIdentifier": "Identifier",
+      "gameCanonNoteHeading": "Canon / video game note",
+      "decisiveBattlesHeading": "Decisive battles ({count})",
+      "decisiveBattlesLead": "Major battles in which {name} was used as a decisive technique:"
+    },
     "index": {
       "exploreSanctuary": "Explore location",
       "properties": "Profile & Properties"

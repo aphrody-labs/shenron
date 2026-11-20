@@ -925,6 +925,23 @@
       "autoBoth": "自動検出：漫画ページとエピソードのあらすじに名前が登場しますが、それだけではサーガ内での役割を示しません。形態、戦闘力、主な出来事は編集者による記録が必要です。"
     },
     "breadcrumb": "ウィキ",
+    "techniqueDetail": {
+      "crumbTechniques": "技・必殺技",
+      "creatorOrUser": "創始者・代表使用者：",
+      "infoboxHeader": "技プロフィール",
+      "fieldName": "名称",
+      "fieldJapaneseName": "日本語表記",
+      "fieldType": "分類",
+      "fieldCreator": "創始者・代表使用者",
+      "fieldPractitioners": "主な使用者",
+      "fieldFirstAppearance": "初登場",
+      "chapterNumber": "第{number}話",
+      "episodeNumber": "第{number}話（アニメ）",
+      "fieldIdentifier": "識別番号",
+      "gameCanonNoteHeading": "正史・ゲーム表記に関する注記",
+      "decisiveBattlesHeading": "主な決戦（{count}）",
+      "decisiveBattlesLead": "{name}が決定打として用いられた主な戦闘："
+    },
     "index": {
       "exploreSanctuary": "場所を見る",
       "properties": "プロフィールと詳細"
