@@ -59,8 +59,8 @@ zone = "prd"
 capacity_gb = 150
 status = "active"
 # prd keeps its Garage state under /srv (btrfs root, 223 GiB free); other nodes use [paths].
-data = "/srv/garage/data"
-metadata = "/srv/garage/meta"
+data = "/srv/garage/data"  # paths:ok prd host storage
+metadata = "/srv/garage/meta"  # paths:ok prd host storage
 
 # Serving path (docs/runbooks/cdn-garage-cutover.md). `public_origin` is what the parity check
 # compares against; `manifest_prefix` is the pinned publication of the Worker (wrangler.jsonc).

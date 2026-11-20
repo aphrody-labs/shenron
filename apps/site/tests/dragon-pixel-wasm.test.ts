@@ -15,7 +15,7 @@ import {
   isHashedName,
   sha256,
 } from "../../../scripts/ops/dragon-pixel-wasm-files";
-import { WIKI_DIR } from "../../../scripts/build/wiki-artifacts";
+import { wikiRoot } from "@aphrody/shenron-config/wiki-artifacts";
 import { DRAGON_PIXEL_WASM } from "../src/lib/dragon-pixel-wasm.generated";
 
 const REPO = join(import.meta.dir, "..", "..", "..");
@@ -63,7 +63,7 @@ describe("manifest", () => {
 
 describe("rust exports", () => {
   const rustFiles = ["bevy_view.rs", "wasm.rs"].map((name) =>
-    join(WIKI_DIR, "crates/dragon-pixel/src", name),
+    join(wikiRoot(), "crates/dragon-pixel/src", name),
   );
   test.skipIf(!rustFiles.every((file) => existsSync(file)))(
     "every binding the loader declares is exported by crates/dragon-pixel (aphrody-labs/wiki)",

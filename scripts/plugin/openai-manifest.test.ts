@@ -2,7 +2,7 @@ import { describe, expect, test } from "bun:test";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { WIKI_DIR } from "../build/wiki-artifacts";
+import { wikiRoot } from "@aphrody/shenron-config/wiki-artifacts";
 
 const root = new URL("../../", import.meta.url);
 const readJson = async <T>(path: string): Promise<T> =>
@@ -63,7 +63,7 @@ describe("portable OpenAI plugin package", () => {
     }>("plugin/openai/plugin.json");
     // The MCP server is Rust, built in aphrody-labs/wiki: its tool registry is only read when that
     // checkout sits next to this repository (SHENRON_WIKI_DIR, default ../wiki).
-    const mcpSource = join(WIKI_DIR, "crates/shenron-mcp/src/lib.rs");
+    const mcpSource = join(wikiRoot(), "crates/shenron-mcp/src/lib.rs");
     const registered = existsSync(mcpSource)
       ? new Set(
           [...(await readFile(mcpSource, "utf8")).matchAll(/name = "(dragonball\.[^"]+)"/g)].map(

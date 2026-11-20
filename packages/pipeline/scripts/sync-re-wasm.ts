@@ -14,7 +14,7 @@
 import { createHash } from "node:crypto";
 import { copyFile, mkdir, rm, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { wikiDir } from "../../../scripts/build/wiki-artifacts.ts";
+import { wikiDir } from "@aphrody/shenron-config/wiki-artifacts";
 
 const ROOT = join(import.meta.dir, "..", "..", "..");
 const OUT_DIR = join(ROOT, "packages", "pipeline", "src", "wasm");

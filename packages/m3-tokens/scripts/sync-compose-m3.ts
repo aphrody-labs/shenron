@@ -13,14 +13,14 @@
  */
 import { inflateRawSync } from "node:zlib";
 import { join } from "node:path";
-import { themeDir } from "../../../scripts/build/wiki-artifacts";
+import { themeDir } from "@aphrody/shenron-config/wiki-artifacts";
 
 export const COMPOSE_MATERIAL3_VERSION = "1.5.0";
 const JAR = `https://dl.google.com/android/maven2/androidx/compose/material3/material3/${COMPOSE_MATERIAL3_VERSION}/material3-${COMPOSE_MATERIAL3_VERSION}-sources.jar`;
 const OUT = join(import.meta.dir, "..", "src", "compose-m3.generated.ts");
 /**
  * The springs for the native GPUI theme (`crates/shenron-theme` in aphrody-labs/wiki), from the same
- * snapshot: `$SHENRON_THEME_DIR` or the sibling wiki checkout (scripts/build/wiki-artifacts.ts); skipped without one.
+ * snapshot: `$SHENRON_THEME_DIR` or the sibling wiki checkout (packages/config/src/wiki-artifacts.ts); skipped without one.
  */
 const THEME_DIR = themeDir();
 const SPRINGS_OUT = THEME_DIR && join(THEME_DIR, "compose-m3-springs.json");

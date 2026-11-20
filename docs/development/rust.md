@@ -8,7 +8,7 @@ Shenron est un dépôt Bun et TypeScript. L'espace de travail Rust (moteur, crat
 
 ## Comment les scripts Bun consomment la sortie de wiki
 
-Rien n'est compilé ici. `scripts/build/wiki-artifacts.ts` résout les sorties du dépôt wiki, échoue avec la marche à suivre quand elles manquent, et ne lance jamais cargo.
+Rien n'est compilé ici. `packages/config/src/wiki-artifacts.ts` résout les sorties du dépôt wiki, échoue avec la marche à suivre quand elles manquent, et ne lance jamais cargo.
 
 | Variable | Contenu | Défaut |
 | --- | --- | --- |

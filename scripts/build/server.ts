@@ -56,7 +56,7 @@ import { stageVideoPublic } from "./video-assets";
 
 import { pack, publicVfsProblems } from "../../apps/server/src/payload";
 import { requireProductionVfs } from "./server-vfs-policy";
-import { nativeArtifact } from "./wiki-artifacts.ts";
+import { nativeArtifact } from "@aphrody/shenron-config/wiki-artifacts";
 import { findDbxv2Leaks } from "../../packages/dbxv2/src/guard.ts";
 import { privateFiles, stagePublicData } from "./server-data.ts";
 import { templateProblems } from "@aphrody/shenron-db/agent-homes/template";
@@ -244,7 +244,7 @@ const stageSite = async () => {
 };
 
 const stageNative = async (): Promise<string | undefined> => {
-  // Built in aphrody-labs/wiki (SHENRON_NATIVE_DIR or SHENRON_WIKI_DIR, scripts/build/wiki-artifacts.ts).
+  // Built in aphrody-labs/wiki (SHENRON_NATIVE_DIR or SHENRON_WIKI_DIR, packages/config/src/wiki-artifacts.ts).
   const libCandidate = nativeArtifact(spec.rust, spec.lib);
   if (libCandidate && !embed) {
     mkdirSync(nativeOut, { recursive: true });

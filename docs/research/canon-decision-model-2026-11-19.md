@@ -12,7 +12,7 @@ Contexte : le verdict de canon de `/api/canon` classe les preuves avec des règl
 | Fichiers GGUF Q4_K_M | 1,28 Go (2B), 2,74 Go (4B) | `unsloth/Qwen3.5-{2B,4B}-GGUF` (licence Apache-2.0) |
 | Écarté | `nvidia/NVIDIA-Nemotron-3.5-Bolt-E4B-4GB` : licence « other » | même API |
 | Moteur | llama.cpp, build `b12543` du 2026-11-19 (`ggml-org/llama.cpp`) ; la balise `v1.0.0` « latest » ne porte aucun binaire (un seul fichier `nightly-tag.txt`) | `gh api repos/ggml-org/llama.cpp/releases` |
-| Documentation fw | `C:\src\fw\docs\GGML_COMPATIBILITY.md` : `ggml-org` compte 26 dépôts ; `crates/fw-ggml` implémente tenseurs 4D, graphe de calcul, format GGUF v3 et protocole `ggml-rpc` pour la parité de format, pas pour l'inférence de production | fichier lu le 2026-11-19 |
+| Documentation fw | `docs/GGML_COMPATIBILITY.md` du dépôt fw : `ggml-org` compte 26 dépôts ; `crates/fw-ggml` implémente tenseurs 4D, graphe de calcul, format GGUF v3 et protocole `ggml-rpc` pour la parité de format, pas pour l'inférence de production | fichier lu le 2026-11-19 |
 
 ## Méthode
 

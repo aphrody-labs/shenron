@@ -17,7 +17,7 @@
  */
 import { mkdir, readdir, rm } from "node:fs/promises";
 import { join, resolve } from "node:path";
-import { WIKI_DIR, wikiDir } from "../build/wiki-artifacts";
+import { wikiRoot, wikiDir } from "@aphrody/shenron-config/wiki-artifacts";
 import {
   type DragonPixelManifest,
   MANIFEST_PATH,
@@ -70,7 +70,10 @@ await mkdir(outDir, { recursive: true });
 await Bun.write(join(outDir, wasmName), wasm);
 await Bun.write(join(outDir, jsName), patched);
 
-const gitRevision = await Bun.$`git -C ${WIKI_DIR} rev-parse --short HEAD`.nothrow().quiet().text();
+const gitRevision = await Bun.$`git -C ${wikiRoot()} rev-parse --short HEAD`
+  .nothrow()
+  .quiet()
+  .text();
 const manifest: DragonPixelManifest = {
   js: `dragon-pixel/${jsName}`,
   wasm: `dragon-pixel/${wasmName}`,

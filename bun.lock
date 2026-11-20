@@ -340,6 +340,7 @@
         "@aphrody/shenron-compression": "workspace:*",
       },
       "devDependencies": {
+        "@aphrody/shenron-config": "workspace:*",
         "@types/bun": "catalog:",
       },
     },
@@ -374,6 +375,7 @@
         "@tauri-apps/api": "catalog:",
       },
       "devDependencies": {
+        "@aphrody/shenron-config": "workspace:*",
         "@types/bun": "catalog:",
       },
     },
@@ -463,6 +465,9 @@
       "dependencies": {
         "@material/material-color-utilities": "^0.4.0",
       },
+      "devDependencies": {
+        "@aphrody/shenron-config": "workspace:*",
+      },
     },
     "packages/media": {
       "name": "@aphrody/shenron-media",
@@ -484,6 +489,7 @@
         "@modelcontextprotocol/sdk": "catalog:",
       },
       "devDependencies": {
+        "@aphrody/shenron-config": "workspace:*",
         "@types/bun": "catalog:",
       },
     },

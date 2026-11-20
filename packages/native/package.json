@@ -37,6 +37,7 @@
     "@modelcontextprotocol/sdk": "catalog:"
   },
   "devDependencies": {
+    "@aphrody/shenron-config": "workspace:*",
     "@types/bun": "catalog:"
   },
   "engines": {

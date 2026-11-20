@@ -113,8 +113,9 @@ const ALLOWED_EDGES: Readonly<
   // Discord activity rules and protocol: pure, reads only the lexicon.
   "@aphrody/shenron-activity": { runtime: ["@aphrody/shenron-lexicon"], dev: [] },
   "@aphrody/shenron-images": { runtime: [], dev: [] },
-  // Leaves: the Koharu client, the media helpers and the shenron-ffi binding.
-  "@aphrody/shenron-koharu": { runtime: [], dev: [] },
+  // The Koharu client and the shenron-ffi binding read only config (their wasm/generate scripts use
+  // `@aphrody/shenron-config/wiki-artifacts`); the media helpers are a leaf.
+  "@aphrody/shenron-koharu": { runtime: ["@aphrody/shenron-config"], dev: [] },
   // The one ja/fr/en lexicon (data embedded, no I/O): a leaf every layer may read.
   "@aphrody/shenron-lexicon": { runtime: [], dev: [] },
   // Store catalogue connectors (Steam, App Store, F-Droid, Microsoft Store): a leaf that only reads public endpoints.
@@ -124,7 +125,7 @@ const ALLOWED_EDGES: Readonly<
     runtime: ["@aphrody/shenron-hyperframes", "@aphrody/shenron-kit", "@aphrody/shenron-remotion"],
     dev: [],
   },
-  "@aphrody/shenron-native": { runtime: [], dev: [] },
+  "@aphrody/shenron-native": { runtime: ["@aphrody/shenron-config"], dev: [] },
   // Compute clients and the editorial pipeline; never @aphrody/shenron-api, @aphrody/shenron-auth or @aphrody/shenron-ui.
   "@aphrody/shenron-pipeline": {
     runtime: [

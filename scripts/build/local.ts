@@ -30,7 +30,7 @@ import {
 } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { artifactProblems, ignoreFileProblems, IGNORE_FILE } from "./local-guard.ts";
-import { nativeArtifact } from "./wiki-artifacts.ts";
+import { nativeArtifact } from "@aphrody/shenron-config/wiki-artifacts";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const DIST = join(ROOT, "dist/local");

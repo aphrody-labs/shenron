@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Rust artifacts are built in the sibling repository aphrody-labs/wiki, never here. This module
- * resolves where a Bun script finds them:
+ * resolves where a Bun script finds them. Runtime class: `server` (reads the environment and the file system at call time).
  *
  * - `SHENRON_WIKI_DIR`: the wiki checkout (default `../wiki`, next to this repository).
  * - `SHENRON_NATIVE_DIR`: a directory holding the native outputs (`shenron-mcp`, `libshenron_ffi.so`,
@@ -10,26 +10,29 @@
  */
 import { existsSync } from "node:fs";
 import { join, resolve } from "node:path";
+import { envString } from "./env";
 
-const ROOT = resolve(import.meta.dir, "../..");
-
-/** Sibling checkout of aphrody-labs/wiki (the Rust workspace). */
-export const WIKI_DIR = resolve(process.env.SHENRON_WIKI_DIR ?? join(ROOT, "..", "wiki"));
+const ROOT = resolve(import.meta.dir, "../../..");
 
 /** Cargo profiles a native artifact may come from, shipped first. */
 const PROFILES = ["production", "release"] as const;
+
+/** Sibling checkout of aphrody-labs/wiki (the Rust workspace). */
+export function wikiRoot(): string {
+  return resolve(envString(process.env, "SHENRON_WIKI_DIR") ?? join(ROOT, "..", "wiki"));
+}
 
 /**
  * A directory produced by the wiki build: `$<envName>` when set, else the first of
  * `<wiki>/<defaults…>` that exists. Fails with the way to produce it, never builds it.
  */
 export function wikiDir(envName: string, ...defaults: string[]): string {
-  const override = process.env[envName];
+  const override = envString(process.env, envName);
   if (override) {
     if (!existsSync(override)) throw new Error(`${envName}=${override} does not exist`);
     return resolve(override);
   }
-  const candidates = defaults.map((path) => join(WIKI_DIR, path));
+  const candidates = defaults.map((path) => join(wikiRoot(), path));
   const found = candidates.find((path) => existsSync(path));
   if (found) return found;
   throw new Error(
@@ -41,7 +44,7 @@ export function wikiDir(envName: string, ...defaults: string[]): string {
 
 /** Path of one native artifact of a Rust target triple, or undefined when it is not built. */
 export function nativeArtifact(triple: string, file: string): string | undefined {
-  const roots = [process.env.SHENRON_NATIVE_DIR, join(WIKI_DIR, "target")].filter(
+  const roots = [envString(process.env, "SHENRON_NATIVE_DIR"), join(wikiRoot(), "target")].filter(
     (root): root is string => Boolean(root),
   );
   for (const root of roots) {
@@ -64,8 +67,8 @@ export function nativeArtifact(triple: string, file: string): string | undefined
  * exists. Undefined when there is no wiki checkout: the generators then skip those outputs.
  */
 export function themeDir(): string | undefined {
-  const override = process.env.SHENRON_THEME_DIR;
+  const override = envString(process.env, "SHENRON_THEME_DIR");
   if (override) return resolve(override);
-  const crate = join(WIKI_DIR, "crates", "shenron-theme");
+  const crate = join(wikiRoot(), "crates", "shenron-theme");
   return existsSync(crate) ? join(crate, "themes") : undefined;
 }

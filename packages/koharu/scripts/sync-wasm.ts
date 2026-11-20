@@ -11,7 +11,7 @@
  */
 import { copyFile, mkdir, rm } from "node:fs/promises";
 import { join } from "node:path";
-import { wikiDir } from "../../../scripts/build/wiki-artifacts.ts";
+import { wikiDir } from "@aphrody/shenron-config/wiki-artifacts";
 
 export const OUT_DIR = join(import.meta.dir, "..", "src", "wasm");
 export const OUT_NAME = "koharu_canvas";

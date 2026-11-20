@@ -13,7 +13,7 @@
  */
 import { copyFile, mkdir } from "node:fs/promises";
 import { join } from "node:path";
-import { wikiDir } from "../../../scripts/build/wiki-artifacts.ts";
+import { wikiDir } from "@aphrody/shenron-config/wiki-artifacts";
 
 const outDir = join(import.meta.dir, "..", "src", "generated");
 const FILES = ["symbols.ts", "types.ts"] as const;

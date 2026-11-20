@@ -32,7 +32,7 @@ just test
 
 ## Self-hosting
 
-Production moves to a Rust stack on our own hosts, without a PaaS, Docker, SSH or nginx: [ADR 0009](docs/decisions/0009-auto-hebergement-rust-integral.md). Status per step lives in `.claude/goal.json`; dated dependency versions in [`docs/research/rust-stack-2026-11-19.md`](docs/research/rust-stack-2026-11-19.md). The Rust pieces are built in [aphrody-labs/wiki](https://github.com/aphrody-labs/wiki); this repository consumes their output through `scripts/build/wiki-artifacts.ts` ([`docs/development/rust.md`](docs/development/rust.md)).
+Production moves to a Rust stack on our own hosts, without a PaaS, Docker, SSH or nginx: [ADR 0009](docs/decisions/0009-auto-hebergement-rust-integral.md). Status per step lives in `.claude/goal.json`; dated dependency versions in [`docs/research/rust-stack-2026-11-19.md`](docs/research/rust-stack-2026-11-19.md). The Rust pieces are built in [aphrody-labs/wiki](https://github.com/aphrody-labs/wiki); this repository consumes their output through `packages/config/src/wiki-artifacts.ts` ([`docs/development/rust.md`](docs/development/rust.md)).
 
 | Piece | Location | Replaces |
 |---|---|---|

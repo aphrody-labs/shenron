@@ -3,7 +3,7 @@
 /**
  * The Rust binaries of the runtime image (`shenron-mcp`, `libshenron_ffi.so`, `koharu-sdk`) are
  * built in aphrody-labs/wiki, never in this repository. This script locates them
- * (scripts/build/wiki-artifacts.ts: `SHENRON_NATIVE_DIR`, else `<SHENRON_WIKI_DIR>/target`, default
+ * (packages/config/src/wiki-artifacts.ts: `SHENRON_NATIVE_DIR`, else `<SHENRON_WIKI_DIR>/target`, default
  * `../wiki/target`) and hands them to the image build.
  *
  *   bun scripts/deploy/native-artifacts.ts digest   SHA-256 of the three artifacts (the `native` key of the server lane)
@@ -13,7 +13,7 @@
  */
 import { copyFileSync, mkdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { nativeArtifact } from "../build/wiki-artifacts.ts";
+import { nativeArtifact } from "@aphrody/shenron-config/wiki-artifacts";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const TRIPLE = "x86_64-unknown-linux-gnu";

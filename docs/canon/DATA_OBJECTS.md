@@ -748,5 +748,5 @@ Types, énumérations et structures lus dans les mêmes fichiers que [BUSINESS_R
 
 | Champ | Type | Note |
 | --- | --- | --- |
-| note | n/a | The directory legacy/shenron-canon is absent from C:\src\shenron (no legacy/ dir). All objects above were catalogued from the live canon code under apps/site, apps/bot, packages/{pipeline,engine,config,db}. Not read in depth, so no objects extracted: translation audit grading, deposit judge/transcription gate, Toriyama interview detection, character power readings, wiki lexicon, seed-canon.ts. No instruction-shaped text aimed at the analyst was found in the files read. |
+| note | n/a | The directory legacy/shenron-canon is absent from this repository (no legacy/ dir). All objects above were catalogued from the live canon code under apps/site, apps/bot, packages/{pipeline,engine,config,db}. Not read in depth, so no objects extracted: translation audit grading, deposit judge/transcription gate, Toriyama interview detection, character power readings, wiki lexicon, seed-canon.ts. No instruction-shaped text aimed at the analyst was found in the files read. |
 
