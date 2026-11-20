@@ -3,18 +3,11 @@
 # of deploy/docker/Dockerfile stays in .dockerignore. Checked by `bun scripts/build/local-guard.ts`.
 **
 
-# Workspace manifests and toolchain pins
+# Workspace manifests
 !/package.json
 !/bun.lock
 !/bunfig.toml
 !/tsconfig.json
-!/Cargo.toml
-!/Cargo.lock
-!/rust-toolchain.toml
-!/rustfmt.toml
-!/clippy.toml
-!/deny.toml
-!/.cargo/
 !/.config/
 !/.oxlintrc.json
 !/.oxfmtrc.json
@@ -22,7 +15,6 @@
 # Sources
 !/apps/
 !/packages/
-!/crates/
 !/scripts/
 !/templates/
 !/patches/
@@ -30,8 +22,7 @@
 !/plugin/
 !/docs/
 
-# Public data only: the canonical lexicon the server payload ships, and the lexicon the Rust crates
-# embed with include_str! (crates/shenron-lexicon); without it the Rust stages cannot compile.
+# Public data only: the canonical lexicon the server payload ships.
 !/data/
 /data/**
 !/data/lexique-db-canonique.json
@@ -76,8 +67,4 @@
 **/dbxv2-data
 **/.dbxv2*
 **/dbxv2.d.ts
-/crates/*/binaries
-/crates/*/gen
-**/tauri.bundle.json
-**/desktop.local.ts
 **/AGENTS.md.local

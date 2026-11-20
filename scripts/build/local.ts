@@ -3,14 +3,17 @@
 /**
  * Local Docker build of the Shenron deliverables (Linux and Windows) into dist/local/.
  *
- *   bun scripts/build/local.ts <site|bot|server|cli|mcp|desktop|wasm|image|all>
+ *   bun scripts/build/local.ts <site|bot|server|image|all>
  *       [--target linux-x64|windows-x64|all] [--flavor desktop|production] [--vfs <public.sqlite>]
- *       [--allow-no-vfs] [--desktop-args "<args>"] [--force] [--no-guard] [--dry-run]
+ *       [--allow-no-vfs] [--force] [--no-guard] [--dry-run]
  *
  * Runs `docker buildx bake` (docker-bake.hcl, Dockerfile.build), then for each artifact: guard
  * (no private/DBXV2 file), SHA-256, binary format check (PE/ELF), `--version` smoke where a runtime
  * exists, and writes dist/local/manifest.json + dist/local/SHA256SUMS. Without `--target`, the
- * component is built for linux-x64 and windows-x64 (desktop: windows-x64 only; image: linux-x64).
+ * component is built for linux-x64 and windows-x64 (image: linux-x64). Rust is never built here: the
+ * native binaries (shenron-mcp, libshenron_ffi.so / shenron_ffi.dll, koharu-sdk) come from
+ * aphrody-labs/wiki (SHENRON_NATIVE_DIR, else <SHENRON_WIKI_DIR>/target) and enter the build as the
+ * `native` context; the image needs them.
  * Runbook: docs/operations/build-local.md.
  */
 import {
@@ -27,21 +30,11 @@ import {
 } from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { artifactProblems, ignoreFileProblems, IGNORE_FILE } from "./local-guard.ts";
+import { nativeArtifact } from "./wiki-artifacts.ts";
 
 const ROOT = resolve(import.meta.dir, "../..");
 const DIST = join(ROOT, "dist/local");
-const COMPONENTS = [
-  "site",
-  "bot",
-  "server",
-  "cli",
-  "mcp",
-  "desktop",
-  "wasm",
-  "image",
-  "all",
-  "refresh",
-] as const;
+const COMPONENTS = ["site", "bot", "server", "image", "all", "refresh"] as const;
 type Component = (typeof COMPONENTS)[number];
 type Target = "linux-x64" | "windows-x64";
 
@@ -67,17 +60,12 @@ function bakeTargets(): {
 } {
   const bake: string[] = [];
   const collect: Array<{ component: string; target: Target; from: string; files: string[] }> = [];
-  const exe = (t: Target, n: string) => (t === "windows-x64" ? `${n}.exe` : n);
   const add = (c: string, t: Target, bakeTarget: string, files: string[]) => {
     if (!bake.includes(bakeTarget)) bake.push(bakeTarget);
     collect.push({ component: c, target: t, from: bakeTarget, files });
   };
   const all = component === "all";
   for (const t of wanted) {
-    if (all || component === "cli") add("cli", t, `rust-${t}`, [exe(t, "shenron")]);
-    if (all || component === "mcp") add("mcp", t, `rust-${t}`, [exe(t, "shenron-mcp")]);
-    if (all)
-      add("ffi", t, `rust-${t}`, [t === "windows-x64" ? "shenron_ffi.dll" : "libshenron_ffi.so"]);
     if (all || component === "bot") add("bot", t, `bot-${t}`, ["*"]);
     if (all || component === "server" || component === "site")
       add(
@@ -88,14 +76,6 @@ function bakeTargets(): {
       );
     if (all) add("cdn", t, `server-${t}`, ["cdn/**"]);
   }
-  if (all || component === "desktop") {
-    if (wanted.includes("windows-x64")) add("desktop", "windows-x64", "desktop-windows-x64", ["*"]);
-    else if (component === "desktop")
-      throw new Error(
-        "desktop is built for windows-x64 only in Docker (the Linux bundle needs webkit2gtk, use --target windows-x64)",
-      );
-  }
-  if (all || component === "wasm") add("wasm", "linux-x64", "wasm", ["*"]);
   if ((all || component === "image") && wanted.includes("linux-x64")) bake.push("release-linux");
   return { bake, collect };
 }
@@ -152,15 +132,11 @@ function freeGiB(path: string): number {
 
 const MIN_FREE_GIB: Record<Component, number> = {
   refresh: 0,
-  cli: 12,
-  mcp: 12,
-  wasm: 8,
   bot: 8,
   server: 14,
   site: 14,
   image: 22,
-  desktop: 30,
-  all: 40,
+  all: 30,
 };
 
 async function ensureDocker(): Promise<void> {
@@ -181,30 +157,35 @@ async function ensureDocker(): Promise<void> {
   throw new Error("docker daemon still unreachable after 5 minutes");
 }
 
-/** Git token for the private aphrody-labs repositories, written to a 0600 file mounted as a BuildKit secret. */
-function writeGitSecret(): string {
-  const token =
-    process.env.SHENRON_GIT_TOKEN ||
-    process.env.GH_TOKEN ||
-    process.env.GITHUB_TOKEN ||
-    text(run(["gh", "auth", "token"]));
-  if (!token || /\s/.test(token))
-    throw new Error("no GitHub token (SHENRON_GIT_TOKEN, GH_TOKEN, or `gh auth login`)");
-  const dir = join(DIST, ".secrets");
+/**
+ * The Rust binaries built in aphrody-labs/wiki, copied flat into dist/local/.native (the `native`
+ * build context). The Linux set is required by the image; the Windows library is optional.
+ */
+function stageNative(needLinux: boolean): string {
+  const dir = join(DIST, ".native");
+  rmSync(dir, { recursive: true, force: true });
   mkdirSync(dir, { recursive: true });
-  const file = join(dir, "gitconfig");
-  writeFileSync(
-    file,
-    `[url "https://x-access-token:${token}@github.com/"]\n\tinsteadOf = https://github.com/\n`,
-    { mode: 0o600 },
-  );
-  return file;
+  const sets = [
+    ["x86_64-unknown-linux-gnu", ["shenron-mcp", "libshenron_ffi.so", "koharu-sdk"], needLinux],
+    ["x86_64-pc-windows-msvc", ["shenron_ffi.dll"], false],
+  ] as const;
+  const missing: string[] = [];
+  for (const [triple, files, required] of sets)
+    for (const file of files) {
+      const found = nativeArtifact(triple, file);
+      if (found) copyFileSync(found, join(dir, file));
+      else if (required) missing.push(file);
+    }
+  if (missing.length)
+    throw new Error(
+      `native artifacts missing: ${missing.join(", ")}. Build them in aphrody-labs/wiki and set ` +
+        "SHENRON_NATIVE_DIR (or SHENRON_WIKI_DIR) to the output",
+    );
+  return dir;
 }
 
 // ---------------------------------------------------------------------------------------- verification
 const SMOKE: Record<string, string[]> = {
-  shenron: ["--version"],
-  "shenron-mcp": ["--version"],
   "shenron-server": ["version"],
   "shenron-bot": ["--smoke"],
 };
@@ -328,7 +309,7 @@ async function main() {
     }
   }
   const flavor = opt("--flavor") ?? "desktop";
-  const secret = writeGitSecret();
+  const nativeDir = stageNative(bake.includes("release-linux"));
   const logDir = join(DIST, "logs");
   mkdirSync(logDir, { recursive: true });
   const log = join(logDir, `${new Date().toISOString().replace(/[:.]/g, "-")}-${component}.log`);
@@ -337,14 +318,10 @@ async function main() {
       OUT_DIR: relative(ROOT, raw).replaceAll("\\", "/"),
       SHENRON_REVISION: sha,
       FLAVOR: flavor,
-      GITCONFIG_FILE: relative(ROOT, secret).replaceAll("\\", "/"),
+      NATIVE_DIR: relative(ROOT, nativeDir).replaceAll("\\", "/"),
       VFS_DIR: relative(ROOT, vfsDir).replaceAll("\\", "/"),
       ALLOW_NO_VFS: flag("--allow-no-vfs") || !vfs ? "1" : "",
-      DESKTOP_ARGS: opt("--desktop-args") ?? "--skip-chat-model",
       BUILDKIT_PROGRESS: "plain",
-      ...(process.env.TAURI_SIGNING_PRIVATE_KEY_FILE
-        ? { TAURI_KEY_FILE: process.env.TAURI_SIGNING_PRIVATE_KEY_FILE }
-        : {}),
     };
     if (!flag("--no-guard")) {
       const g = run([process.execPath, join(import.meta.dir, "local-guard.ts"), "--context"]);
@@ -369,7 +346,7 @@ async function main() {
     );
     if (code !== 0) throw new Error(`docker buildx bake failed (exit ${code}); see ${log}`);
   } finally {
-    rmSync(join(DIST, ".secrets"), { recursive: true, force: true });
+    rmSync(join(DIST, ".native"), { recursive: true, force: true });
   }
 
   // Collect, guard, hash, verify.

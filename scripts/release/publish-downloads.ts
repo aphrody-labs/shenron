@@ -109,9 +109,8 @@ if (import.meta.main) {
   const root = resolve(import.meta.dir, "../..");
   const version =
     take("--version") ??
-    (await readFile(join(root, "Cargo.toml"), "utf8")).match(
-      /\[workspace\.package\][\s\S]*?^version\s*=\s*"([^"]+)"/m,
-    )?.[1];
+    (JSON.parse(await readFile(join(root, "package.json"), "utf8")) as { version?: string })
+      .version;
   if (!out || !version || args.length === 0)
     throw new Error(
       "Usage: bun scripts/release/publish-downloads.ts --out <dir> [--version X.Y.Z] <file|dir>...",

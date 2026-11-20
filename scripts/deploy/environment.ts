@@ -4,13 +4,13 @@
  * Drift gate and emitters of the single environment definition (deploy/environment.json).
  *
  *   bun scripts/deploy/environment.ts --check            every consumer agrees with the definition
- *   bun scripts/deploy/environment.ts --verify-host      this host's toolchain matches it (factory)
+ *   bun scripts/deploy/environment.ts --verify-host      this host's Bun matches it (factory)
  *   bun scripts/deploy/environment.ts --emit shell       cache and toolchain exports for a build
  *   bun scripts/deploy/environment.ts --emit runtime-env runtime ENV as KEY=value lines
  *   bun scripts/deploy/environment.ts --emit activation  services, health URLs and order read by
  *                                                       deploy/activation/activate.sh
  *
- * The native and the Docker path read the same pins: --check compares rust-toolchain.toml,
+ * The native and the Docker path read the same pins: --check compares
  * package.json#packageManager, Dockerfile.build and deploy/docker/Dockerfile to the definition, so
  * a pin changed in one place only fails here instead of building a different environment.
  */
@@ -39,13 +39,11 @@ export type Definition = {
     prod: TriadNode;
   };
   toolchain: {
-    rust: string;
     bun: string;
     bunChannel: BunChannel;
     bunRevision: string;
     bunLinuxSha256: string;
     bunWindowsSha256: string;
-    sccache: string;
     baseImage: string;
   };
   caches: Record<string, string | number>;
@@ -151,18 +149,12 @@ export function driftProblems(root = ROOT, definition = loadDefinition(root)): s
     }
   }
   expect(
-    "rust-toolchain.toml channel",
-    read(root, "rust-toolchain.toml").match(/^channel = "(.+)"$/m)?.[1],
-    toolchain.rust,
-  );
-  expect(
     "package.json#packageManager",
     JSON.parse(read(root, "package.json")).packageManager,
     `bun@${toolchain.bun}`,
   );
   const build = read(root, "Dockerfile.build");
   expect("Dockerfile.build BASE_IMAGE", arg(build, "BASE_IMAGE"), toolchain.baseImage);
-  expect("Dockerfile.build RUST_VERSION", arg(build, "RUST_VERSION"), toolchain.rust);
   expect("Dockerfile.build BUN_VERSION", arg(build, "BUN_VERSION"), toolchain.bun);
   expect("Dockerfile.build bun channel", "stable", toolchain.bunChannel);
   if (!/^[0-9a-f]{7,40}$/.test(toolchain.bunRevision ?? ""))
@@ -196,7 +188,6 @@ export function driftProblems(root = ROOT, definition = loadDefinition(root)): s
     JSON.parse(read(root, "package.json")).engines?.bun,
     `>=${toolchain.bun}`,
   );
-  expect("Dockerfile.build SCCACHE_VERSION", arg(build, "SCCACHE_VERSION"), toolchain.sccache);
   const factory = read(root, "deploy/docker/Dockerfile");
   expect("deploy/docker/Dockerfile base", factory.match(/^FROM (\S+)/m)?.[1], toolchain.baseImage);
   const images = [
@@ -225,14 +216,12 @@ export function bunBuildOf(revision: string): { channel: string; commit: string 
 const sameCommit = (found: string, wanted: string) =>
   found !== "" && wanted !== "" && (found.startsWith(wanted) || wanted.startsWith(found));
 
-export type HostToolchain = { rustc: string; bun: string; revision: string };
+export type HostToolchain = { bun: string; revision: string };
 
 /** What this host runs against what the definition pins; the channel is not visible in `bun --version`. */
 export function hostProblems(definition: Definition, host: HostToolchain): string[] {
-  const { rust, bun, bunChannel, bunRevision } = definition.toolchain;
+  const { bun, bunChannel, bunRevision } = definition.toolchain;
   const problems: string[] = [];
-  if (!host.rustc.startsWith(`rustc ${rust} `))
-    problems.push(`rustc: found "${host.rustc}", wanted ${rust}`);
   if (host.bun !== bun) problems.push(`bun: found "${host.bun}", wanted ${bun}`);
   const build = bunBuildOf(host.revision);
   if (build.channel !== bunChannel)
@@ -249,7 +238,6 @@ function versionProblems(definition: Definition): string[] {
   };
   const compile = process.env.SHENRON_COMPILE_BUN ?? "bun";
   return hostProblems(definition, {
-    rustc: output(["rustc", "-V"]),
     bun: output([compile, "--version"]),
     revision: output([compile, "--revision"]),
   });
@@ -260,11 +248,8 @@ export function shellExports(definition: Definition): string {
   const { caches } = definition;
   return [
     `export BUN_INSTALL_CACHE_DIR="\${BUN_INSTALL_CACHE_DIR:-${caches.bun}}"`,
-    `export SCCACHE_DIR="\${SCCACHE_DIR:-${caches.sccache}}"`,
-    `export SCCACHE_CACHE_SIZE="\${SCCACHE_CACHE_SIZE:-${caches.sccacheSize}}"`,
     `export SHENRON_ARTIFACT_STORE="\${SHENRON_ARTIFACT_STORE:-${caches.artifacts}}"`,
     `export SHENRON_ARTIFACT_KEEP="\${SHENRON_ARTIFACT_KEEP:-${caches.artifactsKeepPerLane}}"`,
-    "export CARGO_INCREMENTAL=0",
     "",
   ].join("\n");
 }

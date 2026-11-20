@@ -9,17 +9,34 @@
  * anime frames: see plugin/skills/toriyama-svg/references/mesures). Output: `palette.generated.css`
  * (tonal scales as hex custom properties plus their OKLCH twins) and `docs/design/contrast-report.md`
  * (WCAG 2.x ratio and APCA Lc of every token as text on the page and card backgrounds), and
- * `crates/shenron-theme/themes/shenron.json`, the same palette as a gpui-kit theme set (dark
+ * `shenron.json` in `crates/shenron-theme/themes` of aphrody-labs/wiki (`$SHENRON_THEME_DIR`, else the
+ * sibling wiki checkout; skipped without one), the same palette as a gpui-kit theme set (dark
  * "Shenron Nuit", light "Shenron Jour") for the native GPUI and NSH surfaces.
  */
-import { join } from "node:path";
+import { existsSync } from "node:fs";
+import { join, resolve } from "node:path";
 import { tokens } from "../src/tokens";
-import { SCALE_STEPS, apcaLc, contrastRatio, hexToOklch, tonalScale } from "../src/design-system/colorimetry";
+import {
+  SCALE_STEPS,
+  apcaLc,
+  contrastRatio,
+  hexToOklch,
+  tonalScale,
+} from "../src/design-system/colorimetry";
 
 const PACKAGE = join(import.meta.dir, "..");
 export const PALETTE_PATH = join(PACKAGE, "src", "design-system", "palette.generated.css");
 export const REPORT_PATH = join(PACKAGE, "..", "..", "docs", "design", "contrast-report.md");
-export const GPUI_THEME_PATH = join(PACKAGE, "..", "..", "crates", "shenron-theme", "themes", "shenron.json");
+/** `$SHENRON_THEME_DIR`, else the sibling wiki checkout (`$SHENRON_WIKI_DIR`, default `../wiki`); none: no GPUI output. */
+function themeDir(): string | undefined {
+  if (process.env.SHENRON_THEME_DIR) return resolve(process.env.SHENRON_THEME_DIR);
+  const wiki = resolve(process.env.SHENRON_WIKI_DIR ?? join(PACKAGE, "..", "..", "..", "wiki"));
+  return existsSync(join(wiki, "crates", "shenron-theme"))
+    ? join(wiki, "crates", "shenron-theme", "themes")
+    : undefined;
+}
+const THEME_DIR = themeDir();
+export const GPUI_THEME_PATH = THEME_DIR && join(THEME_DIR, "shenron.json");
 
 /** Measured hues that get a full tonal scale: the identity colours of the series. */
 const SCALED = ["orange", "blue", "gold", "green", "red", "cyan", "purple"] as const;
@@ -43,7 +60,9 @@ function paletteCss(): string {
       const hex = scale[step];
       const { l, c, h } = hexToOklch(hex);
       lines.push(`  --dbz-${name}-${step}: ${hex.toLowerCase()};`);
-      lines.push(`  --dbz-${name}-${step}-oklch: oklch(${l.toFixed(3)} ${c.toFixed(3)} ${h.toFixed(1)});`);
+      lines.push(
+        `  --dbz-${name}-${step}-oklch: oklch(${l.toFixed(3)} ${c.toFixed(3)} ${h.toFixed(1)});`,
+      );
     }
   }
   lines.push("}", "");
@@ -54,7 +73,8 @@ function reportMarkdown(): string {
   const rows: string[] = [];
   let failing = 0;
   for (const [name, hex] of Object.entries(colors).sort(([a], [b]) => a.localeCompare(b))) {
-    if (!/^#[0-9a-f]{6}$/i.test(hex) || BACKGROUNDS.includes(name as (typeof BACKGROUNDS)[number])) continue;
+    if (!/^#[0-9a-f]{6}$/i.test(hex) || BACKGROUNDS.includes(name as (typeof BACKGROUNDS)[number]))
+      continue;
     const cells = BACKGROUNDS.map((background) => {
       const ratio = contrastRatio(hex, colors[background]!);
       const lc = Math.abs(apcaLc(hex, colors[background]!));
@@ -88,18 +108,27 @@ function reportMarkdown(): string {
 type Scale = Record<(typeof SCALE_STEPS)[number], string>;
 
 /** First step of `steps` whose text reaches the WCAG AA body ratio on `background`. */
-function readable(scale: Scale, background: string, steps: readonly (typeof SCALE_STEPS)[number][]): string {
-  for (const step of steps) if (contrastRatio(scale[step], background) >= AA_RATIO) return scale[step].toLowerCase();
+function readable(
+  scale: Scale,
+  background: string,
+  steps: readonly (typeof SCALE_STEPS)[number][],
+): string {
+  for (const step of steps)
+    if (contrastRatio(scale[step], background) >= AA_RATIO) return scale[step].toLowerCase();
   throw new Error(`no step of the scale is readable on ${background}`);
 }
 
 /** The ink (page or bone colour) that contrasts most with a filled surface. */
 function inkOn(fill: string, inks: readonly string[]): string {
-  return [...inks].sort((a, b) => contrastRatio(b, fill) - contrastRatio(a, fill))[0]!.toLowerCase();
+  return [...inks]
+    .sort((a, b) => contrastRatio(b, fill) - contrastRatio(a, fill))[0]!
+    .toLowerCase();
 }
 
 function gpuiTheme(): string {
-  const scales = Object.fromEntries(SCALED.map((name) => [name, tonalScale(colors[name]!)])) as Record<(typeof SCALED)[number], Scale>;
+  const scales = Object.fromEntries(
+    SCALED.map((name) => [name, tonalScale(colors[name]!)]),
+  ) as Record<(typeof SCALED)[number], Scale>;
   const paper = tonalScale(colors.os!);
   const hex = (value: string) => value.toLowerCase();
   const alpha = (value: string, byte: string) => `${hex(value)}${byte}`;
@@ -114,7 +143,8 @@ function gpuiTheme(): string {
     const muted = dark ? colors.border! : paper[200];
     const steps = dark ? lightSteps : darkSteps;
     const inks = [colors.bg!, colors.os!, colors.encre!];
-    const fill = (name: (typeof SCALED)[number], step: (typeof SCALE_STEPS)[number]) => hex(scales[name][step]);
+    const fill = (name: (typeof SCALED)[number], step: (typeof SCALE_STEPS)[number]) =>
+      hex(scales[name][step]);
     const tone = (name: (typeof SCALED)[number]) => readable(scales[name], page, steps);
     const primary = hex(colors.orange!);
     const secondary = hex(colors.blue!);
@@ -170,7 +200,7 @@ function gpuiTheme(): string {
         "link.hover.foreground": fill("orange", dark ? 200 : 800),
         "link.active.foreground": fill("orange", dark ? 400 : 600),
         "selection.background": alpha(colors.ki!, "55"),
-        "drag_border": hex(colors.ki!),
+        drag_border: hex(colors.ki!),
         "drop_target.background": alpha(colors.ki!, "26"),
         "progress_bar.background": primary,
         "skeleton.background": hex(muted),
@@ -228,7 +258,8 @@ function gpuiTheme(): string {
     name: "Shenron",
     author: "dragonballfr.com",
     url: "https://dragonballfr.com",
-    _generated: "bun packages/ui/scripts/generate-palette.ts from packages/ui/src/tokens.ts; do not edit",
+    _generated:
+      "bun packages/ui/scripts/generate-palette.ts from packages/ui/src/tokens.ts; do not edit",
     themes: [mode(true), mode(false)],
   };
   return `${JSON.stringify(set, null, 2)}\n`;
@@ -238,12 +269,14 @@ if (import.meta.main) {
   const outputs: [string, string][] = [
     [PALETTE_PATH, paletteCss()],
     [REPORT_PATH, reportMarkdown()],
-    [GPUI_THEME_PATH, gpuiTheme()],
+    ...(GPUI_THEME_PATH ? ([[GPUI_THEME_PATH, gpuiTheme()]] as [string, string][]) : []),
   ];
   if (process.argv.includes("--check")) {
     let stale = false;
     for (const [path, content] of outputs) {
-      const current = await Bun.file(path).text().catch(() => "");
+      const current = await Bun.file(path)
+        .text()
+        .catch(() => "");
       if (current !== content) {
         console.error(`${path} is stale: run bun packages/ui/scripts/generate-palette.ts`);
         stale = true;

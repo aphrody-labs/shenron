@@ -7,7 +7,7 @@
 //   bun packages/api/scripts/api-fixtures.ts --check   # exit 1 when the TypeScript host drifts
 //
 // A case names its contract operation and a request; the recorded answer is what the Rust router
-// (crates/shenron-api, tests/parity.rs) must return. Add a case with any status/body, then record.
+// (crates/shenron-api, tests/parity.rs, in aphrody-labs/wiki) must return. Add a case with any status/body, then record.
 // `"match": "envelope"` keeps only `error` and `code` (the zod message is not part of the contract).
 
 import { readFileSync, writeFileSync } from "node:fs";

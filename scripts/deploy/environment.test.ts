@@ -42,17 +42,18 @@ test("canonical triad nodes and legacy aliases resolve accurately", () => {
 
 test("a pin changed in the definition alone is reported", () => {
   const definition = loadDefinition();
-  const drifted = { ...definition, toolchain: { ...definition.toolchain, rust: "0.0.0" } };
+  const drifted = { ...definition, toolchain: { ...definition.toolchain, bun: "0.0.0" } };
   const problems = driftProblems(undefined, drifted);
-  expect(problems.some((problem) => problem.startsWith("rust-toolchain.toml channel"))).toBe(true);
-  expect(problems.some((problem) => problem.startsWith("Dockerfile.build RUST_VERSION"))).toBe(
-    true,
-  );
+  expect(problems.some((problem) => problem.startsWith("package.json#packageManager"))).toBe(true);
+  expect(problems.some((problem) => problem.startsWith("Dockerfile.build BUN_VERSION"))).toBe(true);
 });
 
 test("shell exports leave $HOME to the shell and keep explicit overrides", () => {
   const text = shellExports(loadDefinition());
-  expect(text).toContain('export SCCACHE_DIR="${SCCACHE_DIR:-$HOME/.cache/shenron/sccache}"');
+  expect(text).toContain(
+    'export SHENRON_ARTIFACT_STORE="${SHENRON_ARTIFACT_STORE:-$HOME/.cache/shenron/artifacts}"',
+  );
+  expect(text).not.toMatch(/SCCACHE|CARGO/);
   expect(text).toContain(
     'export BUN_INSTALL_CACHE_DIR="${BUN_INSTALL_CACHE_DIR:-$HOME/.bun/install/cache}"',
   );
@@ -80,16 +81,14 @@ test("the definition pins the Bun channel and the exact revision", () => {
 
 test("a host on the pinned channel and revision reports nothing", () => {
   const definition = loadDefinition();
-  const rustc = `rustc ${definition.toolchain.rust} (abcdef012 2026-01-01)`;
-  const host = { rustc, bun: definition.toolchain.bun, revision: STABLE };
+  const host = { bun: definition.toolchain.bun, revision: STABLE };
   expect(hostProblems(definition, host)).toEqual([]);
   expect(hostProblems(definition, { ...host, revision: "1.4.5+a7733435cf40429e3b" })).toEqual([]);
 });
 
 test("a canary host against the stable pin reports the channel and the revision", () => {
   const definition = loadDefinition();
-  const rustc = `rustc ${definition.toolchain.rust} (abcdef012 2026-01-01)`;
-  const host = { rustc, bun: definition.toolchain.bun, revision: CANARY };
+  const host = { bun: definition.toolchain.bun, revision: CANARY };
   expect(hostProblems(definition, host)).toEqual([
     'bun channel: found "canary", wanted stable',
     'bun revision: found "6db952080", wanted a7733435c',
@@ -98,8 +97,7 @@ test("a canary host against the stable pin reports the channel and the revision"
 
 test("a stable host on another revision reports the revision alone", () => {
   const definition = loadDefinition();
-  const rustc = `rustc ${definition.toolchain.rust} (abcdef012 2026-01-01)`;
-  const host = { rustc, bun: definition.toolchain.bun, revision: "1.4.5+0123456ab" };
+  const host = { bun: definition.toolchain.bun, revision: "1.4.5+0123456ab" };
   expect(hostProblems(definition, host)).toEqual([
     'bun revision: found "0123456ab", wanted a7733435c',
   ]);
@@ -107,7 +105,7 @@ test("a stable host on another revision reports the revision alone", () => {
 
 test("a missing Bun is reported with an empty channel and revision", () => {
   const definition = loadDefinition();
-  const problems = hostProblems(definition, { rustc: "", bun: "", revision: "" });
+  const problems = hostProblems(definition, { bun: "", revision: "" });
   expect(problems).toContain('bun channel: found "", wanted stable');
   expect(problems).toContain('bun revision: found "", wanted a7733435c');
 });

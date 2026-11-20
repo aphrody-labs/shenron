@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Gate of the Dragon Pixel wasm: the loader may only reference files and exports that the build
- * produces. The Rust-side checks always run; the staged-file checks run when the build output exists
+ * produces. The Rust-side checks run when the wiki checkout (SHENRON_WIKI_DIR, default ../wiki) is
+ * next to this repository; the staged-file checks run when the build output exists
  * and become mandatory with DRAGON_PIXEL_WASM_STRICT=1 (`just dragon-pixel-wasm-check`).
  */
 import { describe, expect, test } from "bun:test";
@@ -14,6 +15,7 @@ import {
   isHashedName,
   sha256,
 } from "../../../scripts/ops/dragon-pixel-wasm-files";
+import { WIKI_DIR } from "../../../scripts/build/wiki-artifacts";
 import { DRAGON_PIXEL_WASM } from "../src/lib/dragon-pixel-wasm.generated";
 
 const REPO = join(import.meta.dir, "..", "..", "..");
@@ -60,16 +62,19 @@ describe("manifest", () => {
 });
 
 describe("rust exports", () => {
-  test("every binding the loader declares is exported by crates/dragon-pixel", () => {
-    const rust = [
-      read(join(REPO, "crates/dragon-pixel/src/bevy_view.rs")),
-      read(join(REPO, "crates/dragon-pixel/src/wasm.rs")),
-    ].join("\n");
-    const { functions, classes } = expectedExports();
-    expect(functions.length).toBeGreaterThan(4);
-    for (const name of functions) expect(rust).toMatch(new RegExp(`pub fn ${name}\\(`));
-    for (const name of classes) expect(rust).toMatch(new RegExp(`pub struct ${name}\\b`));
-  });
+  const rustFiles = ["bevy_view.rs", "wasm.rs"].map((name) =>
+    join(WIKI_DIR, "crates/dragon-pixel/src", name),
+  );
+  test.skipIf(!rustFiles.every((file) => existsSync(file)))(
+    "every binding the loader declares is exported by crates/dragon-pixel (aphrody-labs/wiki)",
+    () => {
+      const rust = rustFiles.map(read).join("\n");
+      const { functions, classes } = expectedExports();
+      expect(functions.length).toBeGreaterThan(4);
+      for (const name of functions) expect(rust).toMatch(new RegExp(`pub fn ${name}\\(`));
+      for (const name of classes) expect(rust).toMatch(new RegExp(`pub struct ${name}\\b`));
+    },
+  );
 });
 
 describe("staged build", () => {
@@ -89,11 +94,14 @@ describe("staged build", () => {
     expect(sha256(bytes)).toBe(DRAGON_PIXEL_WASM.wasmSha256);
   });
 
-  test.skipIf(!staged)("the staged glue loads the hashed wasm and exports what the loader uses", () => {
-    const glue = read(jsFile);
-    expect(glue).toContain(basename(DRAGON_PIXEL_WASM.wasm));
-    const { functions, classes } = expectedExports();
-    for (const name of functions) expect(glue).toMatch(new RegExp(`export function ${name}\\(`));
-    for (const name of classes) expect(glue).toMatch(new RegExp(`export class ${name}\\b`));
-  });
+  test.skipIf(!staged)(
+    "the staged glue loads the hashed wasm and exports what the loader uses",
+    () => {
+      const glue = read(jsFile);
+      expect(glue).toContain(basename(DRAGON_PIXEL_WASM.wasm));
+      const { functions, classes } = expectedExports();
+      for (const name of functions) expect(glue).toMatch(new RegExp(`export function ${name}\\(`));
+      for (const name of classes) expect(glue).toMatch(new RegExp(`export class ${name}\\b`));
+    },
+  );
 });

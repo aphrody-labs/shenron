@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
+import { existsSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import {
@@ -9,21 +8,16 @@ import {
   addedLines,
   changedSince,
   restoreSnapshot,
-  withCargoFailure,
   worktreeSnapshot,
   agentPrompt,
   auditEdit,
   countByTool,
   dedupe,
   diffFindings,
-  parseClippyJson,
   parseOxfmtList,
   parseOxlintJson,
-  parseRustfmt,
   parseTsc,
   planRound,
-  rustMembers,
-  rustfmtCommand,
   sh,
   type Finding,
 } from "./fix-loop";
@@ -79,59 +73,6 @@ describe("parsers", () => {
       "apps/x/y.tsx",
     ]);
   });
-
-  test("rustfmt diff, relative to root", () => {
-    const text =
-      "Diff in /repo/crates/a/src/lib.rs:12:\n fn x() {}\nDiff in /repo/crates/a/src/lib.rs:40:\n-a\n+b\nDiff in src/old.rs at line 3:";
-    const out = parseRustfmt(text, "/repo");
-    expect(out.map((x) => [x.file, x.line])).toEqual([
-      ["crates/a/src/lib.rs", 12],
-      ["crates/a/src/lib.rs", 40],
-      ["src/old.rs", 3],
-    ]);
-  });
-
-  test("clippy json keeps primary spans and drops summaries", () => {
-    const lines = [
-      JSON.stringify({ reason: "compiler-artifact" }),
-      JSON.stringify({
-        reason: "compiler-message",
-        message: {
-          level: "error",
-          message: "needless borrow",
-          code: { code: "clippy::needless_borrow" },
-          spans: [
-            {
-              file_name: "/repo/crates/a/src/lib.rs",
-              line_start: 9,
-              column_start: 5,
-              is_primary: true,
-            },
-          ],
-          children: [{ level: "help", message: "remove &" }],
-        },
-      }),
-      JSON.stringify({
-        reason: "compiler-message",
-        message: {
-          level: "error",
-          message: "aborting due to 1 previous error",
-          code: null,
-          spans: [],
-        },
-      }),
-      "not json",
-    ].join("\n");
-    const out = parseClippyJson(lines, "/repo");
-    expect(out).toHaveLength(1);
-    expect(out[0]).toMatchObject({
-      tool: "clippy",
-      file: "crates/a/src/lib.rs",
-      line: 9,
-      code: "clippy::needless_borrow",
-      help: "remove &",
-    });
-  });
 });
 
 describe("planner", () => {
@@ -141,16 +82,13 @@ describe("planner", () => {
     f({ file: "a.ts", code: "r2" }),
     f({ file: "b.ts", code: "r3" }),
     f({ tool: "tsc", file: "c.ts", code: "TS1" }),
-    f({ tool: "rustfmt", file: "d.rs", code: "fmt" }),
-    f({ tool: "clippy", file: "e.rs", code: "clippy::x" }),
   ];
 
   test("formatters stay mechanical, agent batches ordered by size", () => {
     const p = planRound(findings, { unresolved: new Set(), budget: 10 });
     expect(p.mechanical.oxfmt).toEqual(["fmt.ts"]);
-    expect(p.mechanical.rustfmt).toEqual(["d.rs"]);
-    expect(p.mechanical.clippyFix).toBe(true);
-    expect(p.agent.map((b) => b.file)).toEqual(["a.ts", "b.ts", "c.ts", "e.rs"]);
+    expect(p.mechanical.oxlintFix).toEqual(["a.ts", "b.ts"]);
+    expect(p.agent.map((b) => b.file)).toEqual(["a.ts", "b.ts", "c.ts"]);
     expect(p.agent[0]!.findings).toHaveLength(2);
   });
 
@@ -160,7 +98,7 @@ describe("planner", () => {
       budget: 2,
       skip: (x) => x === "c.ts",
     });
-    expect(p.agent.map((b) => b.file)).toEqual(["b.ts", "e.rs"]);
+    expect(p.agent.map((b) => b.file)).toEqual(["b.ts"]);
     expect(planRound(findings, { unresolved: new Set(), budget: 0 }).agent).toEqual([]);
   });
 
@@ -248,49 +186,4 @@ describe("snapshot and added lines", () => {
     expect(readFileSync(join(dir, "b.ts"), "utf8")).toBe("let b = 1;\n");
     expect(existsSync(join(dir, "new.ts"))).toBe(false);
   }, 60_000);
-});
-
-describe("rust members", () => {
-  test("discovers crates from tracked manifests and assigns files to the nearest one", async () => {
-    const dir = mkdtempSync(join(tmpdir(), "fix-loop-rs-"));
-    const w = (p: string, c: string) => {
-      mkdirSync(dirname(join(dir, p)), { recursive: true });
-      writeFileSync(join(dir, p), c);
-    };
-    w("Cargo.toml", '[workspace]\nmembers = ["crates/*"]\n[workspace.package]\nedition = "2024"\n');
-    w("crates/a/Cargo.toml", '[package]\nname = "a"\nedition.workspace = true\n');
-    w("crates/a/src/lib.rs", "fn a(){}\n");
-    w("apps/s/Cargo.toml", '[package]\nname = "s"\nedition = "2021"\n[workspace]\n');
-    w("apps/s/src/main.rs", "fn main(){}\n");
-    await sh("git init -q && git add -A && git -c user.email=t@t -c user.name=t commit -qm i", dir);
-    const members = await rustMembers(dir);
-    expect(members.map((m) => [m.name, m.edition, m.files]).toSorted()).toEqual([
-      ["a", "2024", ["crates/a/src/lib.rs"]],
-      ["s", "2021", ["apps/s/src/main.rs"]],
-    ]);
-    expect(rustfmtCommand(dir, members[0]!, true)).toContain("--check --edition");
-  }, 60_000);
-});
-
-describe("cargo failure", () => {
-  test("a failed cargo run without diagnostics is a finding, not a green result", () => {
-    const out = withCargoFailure([], {
-      code: 101,
-      err: "error: failed to load manifest\ncaused by: path dep missing",
-    });
-    expect(out).toHaveLength(1);
-    expect(out[0]).toMatchObject({ tool: "clippy", code: "cargo-failed" });
-    expect(out[0]!.message).toContain("path dep missing");
-    expect(withCargoFailure([], { code: 0, err: "" })).toEqual([]);
-  });
-});
-
-describe("pseudo findings", () => {
-  test("cargo-failed never becomes an agent batch", () => {
-    const p = planRound([f({ tool: "clippy", file: "<cargo>", code: "cargo-failed" })], {
-      unresolved: new Set(),
-      budget: 5,
-    });
-    expect(p.agent).toEqual([]);
-  });
 });

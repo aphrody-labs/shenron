@@ -7,6 +7,5 @@ target/
 apps/site/public/wasm/
 *.lock
 bun.lock
-Cargo.lock
 *.generated.ts
 *.generated.css

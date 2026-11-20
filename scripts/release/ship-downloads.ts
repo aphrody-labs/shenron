@@ -35,9 +35,8 @@ const take = (flag: string) => {
 const host = take("--host") ?? "dbfr";
 const version =
   take("--version") ??
-  (await Bun.file(resolve(import.meta.dir, "../../Cargo.toml")).text()).match(
-    /\[workspace\.package\][\s\S]*?^version\s*=\s*"([^"]+)"/m,
-  )?.[1];
+  ((await Bun.file(resolve(import.meta.dir, "../../package.json")).json()) as { version?: string })
+    .version;
 if (!version || args.length === 0)
   throw new Error(
     "Usage: bun scripts/release/ship-downloads.ts [--host h] [--version v] <file|dir>...",

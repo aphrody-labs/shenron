@@ -15,8 +15,9 @@
  *   mstile-150.png             tuile Windows, opaque
  *   + apps/bot/assets/logo.webp  1024, logo du dashboard bot
  *
- * Usage : bun scripts/genere-icones.ts
+ * Usage : bun scripts/genere-icones.ts (icônes de bureau : SHENRON_DESKTOP_DIR, cf. plus bas)
  */
+import { join } from "node:path";
 import sharp from "sharp";
 import {
   KINTO_UN_COULEURS,
@@ -151,8 +152,16 @@ for (const dossier of [marque]) {
  * claire comme sombre. L’ICO Windows porte 16 → 256 px (explorateur, raccourcis,
  * installeur NSIS) ; les PNG servent Linux et l’icône de fenêtre.
  */
-const bureau = new URL("../../../crates/shenron-desktop/icons/", import.meta.url).pathname;
-const splash = new URL("../../../crates/shenron-desktop/splash/", import.meta.url).pathname;
+// L'app de bureau (Rust, Tauri) vit dans aphrody-labs/wiki : SHENRON_DESKTOP_DIR désigne son dossier
+// `crates/shenron-desktop` (défaut : dépôt wiki voisin, SHENRON_WIKI_DIR, `../wiki`).
+const desktopDir =
+  process.env.SHENRON_DESKTOP_DIR ??
+  join(
+    process.env.SHENRON_WIKI_DIR ?? join(import.meta.dir, "../../../../wiki"),
+    "crates/shenron-desktop",
+  );
+const bureau = join(desktopDir, "icons") + "/";
+const splash = join(desktopDir, "splash") + "/";
 const appIcone = Buffer.from(svgIcone({ coins: 0.22 }));
 const appPetite = Buffer.from(svgIcone({ coins: 0.22, volutes: false }));
 const pngApp = (cote: number) => png(cote < 64 ? appPetite : appIcone, cote);

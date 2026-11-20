@@ -24,8 +24,6 @@ const scan = roots.length
       "apps/bot/public",
       "packages/ui/assets",
       "packages/images",
-      "crates/shenron-desktop/icons",
-      "crates/shenron-desktop/splash",
     ];
 
 const files = (await $`git -C ${ROOT} ls-files -- ${scan}`.text()).split("\n").filter(Boolean);

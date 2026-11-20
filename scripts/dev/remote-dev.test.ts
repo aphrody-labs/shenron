@@ -117,10 +117,10 @@ describe("vitalTarArgs", () => {
 });
 
 describe("remoteScript", () => {
-  test("runs inside the checkout with the toolchains and plain Cargo", () => {
+  test("runs inside the checkout with Bun on PATH and no Rust toolchain", () => {
     const script = remoteScript(DEFAULT_CONFIG, "bun run lint && echo 'ok'");
     expect(script).toContain(`cd "$HOME/${DEFAULT_CONFIG.workspace}"`);
-    expect(script).not.toContain("SHENRON_CARGO_SERIAL");
+    expect(script).not.toContain(".cargo");
     expect(script).toContain(`nice -n 10 bash -c 'bun run lint && echo '\\''ok'\\'''`);
   });
 

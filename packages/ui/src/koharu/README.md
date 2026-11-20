@@ -9,8 +9,8 @@ lettrage, export PSD) vit ici, dans la couche UI unique de Shenron. Le site le m
 - Les commandes et leurs types viennent de `@aphrody/shenron-koharu/protocol`, reflet des types
   de `koharu-library` (`editor::types`) et des noms de `editor::dispatch::COMMANDS`.
   `koharu-sdk` (JSON Lines) et `shenron-server` exécutent le moteur `koharu-library`.
-- Le canevas passe par `@aphrody/shenron-koharu/canvas` (WASM WebGPU de `crates/koharu-canvas`,
-  construit par `bun --filter @aphrody/shenron-koharu build:wasm` avant tout build du site et émis par
+- Le canevas passe par `@aphrody/shenron-koharu/canvas` (WASM WebGPU de `koharu-canvas`,
+  construit dans aphrody-labs/wiki, copié par `bun --filter @aphrody/shenron-koharu sync:wasm` (suivi par Git) et émis par
   Next sous `_next/static/media/`). Le module se compile en streaming ;
   `preloadCanvasModule()` en lance le téléchargement avant l'ouverture de l'éditeur. Sans
   WebGPU, `createCanvas` rejette une `CanvasUnavailableError` (« WebGPU indisponible : … »)

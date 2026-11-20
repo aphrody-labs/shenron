@@ -15,7 +15,7 @@
  * 1. Next 16 standalone build of apps/site without the editorial database
  *    (`--experimental-build-mode=compile`: every route renders on demand).
  * 2. Release tree dist/server/<target>/site: standalone server, public assets, static chunks.
- * 3. Native library (shenron-ffi) of the target, when built (local RAG API).
+ * 3. Native library (shenron-ffi) of the target, when built in aphrody-labs/wiki (local RAG API).
  * 3b. Public VFS (default dist/vfs/shenron-vfs.public.sqlite, built by
  *    `bun scripts/data/build-vfs.ts --profile public`): wiki, RAG and VFS routes offline. It must
  *    pass the public guard (profile public, no private node or passage, no conversation, no
@@ -56,7 +56,7 @@ import { stageVideoPublic } from "./video-assets";
 
 import { pack, publicVfsProblems } from "../../apps/server/src/payload";
 import { requireProductionVfs } from "./server-vfs-policy";
-import { ensureKoharuWasm } from "./koharu-wasm.ts";
+import { nativeArtifact } from "./wiki-artifacts.ts";
 import { findDbxv2Leaks } from "../../packages/dbxv2/src/guard.ts";
 import { privateFiles, stagePublicData } from "./server-data.ts";
 import { templateProblems } from "@aphrody/shenron-db/agent-homes/template";
@@ -154,6 +154,15 @@ async function measured(
   if ((await child.exited) !== 0) throw new Error(`${label} failed`);
 }
 
+/** The koharu-canvas WebGPU module is tracked in Git (synced from the wiki build); Next emits it. */
+const requireKoharuWasm = (): void => {
+  const wasm = join(ROOT, "packages/koharu/src/wasm/koharu_canvas_bg.wasm");
+  if (!existsSync(wasm))
+    throw new Error(
+      `${wasm} is missing: bun packages/koharu/scripts/sync-wasm.ts (built in aphrody-labs/wiki)`,
+    );
+};
+
 // 1. Front app, without the editorial database and without a platform image optimizer.
 const keepNextCache = process.env.SHENRON_NEXT_BUILD_CACHE !== "0";
 if (flag("--skip-site")) {
@@ -161,7 +170,7 @@ if (flag("--skip-site")) {
 } else {
   await Promise.all([
     syncUiAssets(join(SITE, "public")),
-    Promise.resolve().then(() => ensureKoharuWasm()),
+    Promise.resolve().then(requireKoharuWasm),
     Promise.resolve().then(() => resetDistDir(join(SITE, DIST_DIR), keepNextCache)),
   ]);
   // next-bun: Next and its Turbopack workers on this Bun (`node` on PATH is Bun).
@@ -235,12 +244,8 @@ const stageSite = async () => {
 };
 
 const stageNative = async (): Promise<string | undefined> => {
-  const libCandidate = [
-    join(ROOT, "target", spec.rust, "production", spec.lib),
-    join(ROOT, "target", spec.rust, "release", spec.lib),
-    join(ROOT, "target/production", spec.lib),
-    join(ROOT, "target/release", spec.lib),
-  ].find((path) => existsSync(path) && (target === "linux-x64" || path.includes(spec.rust)));
+  // Built in aphrody-labs/wiki (SHENRON_NATIVE_DIR or SHENRON_WIKI_DIR, scripts/build/wiki-artifacts.ts).
+  const libCandidate = nativeArtifact(spec.rust, spec.lib);
   if (libCandidate && !embed) {
     mkdirSync(nativeOut, { recursive: true });
     cpSync(libCandidate, join(nativeOut, spec.lib));

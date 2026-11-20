@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /**
- * Loads the wasm build of `shenron-engine` (`src/wasm/`, built by `scripts/build-wasm.ts`) once
+ * Loads the wasm build of `shenron-engine` (`src/wasm/`, built in aphrody-labs/wiki, synced by `scripts/sync-wasm.ts`) once
  * per page. The `.wasm` is an asset of the bundler (`new URL(…, import.meta.url)`); it is
  * compiled in streaming when the server announces `application/wasm`.
  */
@@ -223,7 +223,7 @@ export function assertWebGpu(): void {
 export function loadEngine(): Promise<EngineGlue> {
   ready ??= (async () => {
     const [glue, module] = await Promise.all([
-      // @ts-ignore -- src/wasm/ is the output of scripts/build-wasm.ts; the literal specifier
+      // @ts-ignore -- src/wasm/ is the output of scripts/sync-wasm.ts; the literal specifier
       // keeps the glue in the bundler graph.
       import("./wasm/shenron_engine.js") as Promise<EngineGlue>,
       compileModule(),

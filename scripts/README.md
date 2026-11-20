@@ -34,9 +34,10 @@ Conformément à la doctrine du dépôt, tous les scripts s'exécutent avec **Bu
 Toutes les tâches standard doivent être invoquées via `just` ou `bun run` :
 
 ```sh
-just check          # bun check sur packages et scripts + cargo check
-just lint           # bun lint + cargo clippy
-just test           # bun tests, tests de scripts, cargo nextest
+just check          # bun check sur packages et scripts
+just lint           # oxlint
+just test           # tests des paquets Bun et tests de scripts
 just deploy-check   # validation de l'environnement de déploiement
 just ship           # compilation sur VPS et déploiement zstd vers prod
+just wasm-sync      # copie les wasm construits dans aphrody-labs/wiki (voir docs/development/rust.md)
 ```

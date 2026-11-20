@@ -15,11 +15,11 @@ import {
 } from "./lanes.ts";
 
 const environment: Environment = {
-  toolchain: { rust: "1.0.0", bun: "1.0.0" },
+  toolchain: { bun: "1.0.0" },
   lanes: {
-    rust: {
-      toolchain: "rust",
-      inputs: ["Cargo.toml", "crates", "crates/inner"],
+    tools: {
+      toolchain: "bun",
+      inputs: ["tools.json", "tools", "tools/inner"],
       outputs: [],
       services: ["site", "bot"],
     },
@@ -39,7 +39,7 @@ const environment: Environment = {
     },
     image: {
       toolchain: "none",
-      after: ["rust", "site", "bot"],
+      after: ["tools", "site", "bot"],
       inputs: ["Dockerfile"],
       outputs: [],
       services: ["site", "bot"],
@@ -92,9 +92,9 @@ beforeAll(() => {
   repo = mkdtempSync(join(tmpdir(), "lanes-"));
   git("init", "-q");
   write("package.json", "{}");
-  write("Cargo.toml", "[workspace]");
-  write("crates/a/lib.rs", "a");
-  write("crates/inner/lib.rs", "i");
+  write("tools.json", "{}");
+  write("tools/a/lib.ts", "a");
+  write("tools/inner/lib.ts", "i");
   write("Dockerfile", "FROM x");
   write("README.md", "r");
   write(
@@ -122,11 +122,11 @@ describe("globToRegExp", () => {
 });
 
 describe("plan", () => {
-  test("a crate change rebuilds Rust even when a nested crate is also an input", () => {
-    write("crates/a/lib.rs", "a2");
+  test("a change rebuilds its lane even when a nested directory is also an input", () => {
+    write("tools/a/lib.ts", "a2");
     const head = commit("crate");
     const result = plan(repo, `${head}^`, head, {}, environment);
-    expect(result.rebuild).toEqual(["rust", "image"]);
+    expect(result.rebuild).toEqual(["tools", "image"]);
     expect(result.services).toEqual(["bot", "site"]);
   });
 
@@ -198,7 +198,7 @@ describe("plan", () => {
 describe("repository", () => {
   test("an input ending in ? is optional", () => {
     expect(bare("vendor?")).toBe("vendor");
-    expect(bare("crates")).toBe("crates");
+    expect(bare("tools")).toBe("tools");
   });
 
   test("every tracked top-level path of this repository is classified", () => {

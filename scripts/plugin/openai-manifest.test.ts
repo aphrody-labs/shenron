@@ -1,5 +1,8 @@
 import { describe, expect, test } from "bun:test";
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { WIKI_DIR } from "../build/wiki-artifacts";
 
 const root = new URL("../../", import.meta.url);
 const readJson = async <T>(path: string): Promise<T> =>
@@ -30,7 +33,9 @@ describe("portable OpenAI plugin package", () => {
       "plugin/.claude-plugin/plugin.json",
     );
     expect(plugin.version).toBe(canonicalPlugin.version);
-    expect(plugin.extensions["com.openai"].onboardingSkill).toBe("./skills/dragon-ball-openai/SKILL.md");
+    expect(plugin.extensions["com.openai"].onboardingSkill).toBe(
+      "./skills/dragon-ball-openai/SKILL.md",
+    );
     expect(plugin.extensions["com.openai"].review).toBeDefined();
     expect(mcp.mcpServers.shenron).toEqual({
       type: "streamable-http",
@@ -56,20 +61,30 @@ describe("portable OpenAI plugin package", () => {
         };
       };
     }>("plugin/openai/plugin.json");
-    const source = await readFile(new URL("crates/shenron-mcp/src/lib.rs", root), "utf8");
-    const registered = new Set(
-      [...source.matchAll(/name = "(dragonball\.[^"]+)"/g)].map((match) => match[1]),
-    );
+    // The MCP server is Rust, built in aphrody-labs/wiki: its tool registry is only read when that
+    // checkout sits next to this repository (SHENRON_WIKI_DIR, default ../wiki).
+    const mcpSource = join(WIKI_DIR, "crates/shenron-mcp/src/lib.rs");
+    const registered = existsSync(mcpSource)
+      ? new Set(
+          [...(await readFile(mcpSource, "utf8")).matchAll(/name = "(dragonball\.[^"]+)"/g)].map(
+            (match) => match[1],
+          ),
+        )
+      : undefined;
     const review = plugin.extensions["com.openai"].review.test_cases;
     expect(review.positive).toHaveLength(5);
     expect(review.negative).toHaveLength(3);
     for (const name of review.positive.flatMap((testCase) =>
       (testCase.tools_triggered ?? "").split(/[,\s]+/).filter(Boolean),
     )) {
-      expect(registered.has(name)).toBe(true);
+      if (registered) expect(registered.has(name)).toBe(true);
     }
 
-    const skills = ["dragon-ball-openai", "dragon-ball-canon-openai", "dragon-ball-japonais-openai"];
+    const skills = [
+      "dragon-ball-openai",
+      "dragon-ball-canon-openai",
+      "dragon-ball-japonais-openai",
+    ];
     for (const skill of skills) {
       const text = await readFile(new URL(`plugin/openai/skills/${skill}/SKILL.md`, root), "utf8");
       expect(text.startsWith(`---\nname: ${skill}\ndescription: `)).toBe(true);

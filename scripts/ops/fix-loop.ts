@@ -4,11 +4,11 @@
  * Automated lint / typecheck / format fix loop.
  *
  *   bun scripts/ops/fix-loop.ts [--remote vps] [--report-only] [--agent auto|claude-agent-sdk|opencode|yolo-ai|none]
- *                               [--rounds 5] [--agent-budget 40] [--commit] [--push] [--only oxlint,oxfmt,tsc,rustfmt,clippy] [--install]
+ *                               [--rounds 5] [--agent-budget 40] [--commit] [--push] [--only oxlint,oxfmt,tsc] [--install]
  *
- * 1. Runs the repo checks (oxlint JSON, oxfmt file list, tsc per workspace, rustfmt per member,
- *    cargo clippy JSON) and parses them into structured findings.
- * 2. Mechanical fixes first (oxfmt write, oxlint --fix, rustfmt per member, cargo clippy --fix).
+ * 1. Runs the repo checks (oxlint JSON, oxfmt file list, tsc per workspace) and parses them into
+ *    structured findings.
+ * 2. Mechanical fixes first (oxfmt write, oxlint --fix).
  * 3. Remaining findings go to an agent backend, one batch per file, edit scope restricted to that
  *    file and verified with git. A fix is kept only when that file's findings dropped and nothing
  *    new appeared; otherwise the file is reverted and recorded as unresolved.
@@ -16,12 +16,12 @@
  *    --push) commits per logical group and pushes to main after a rebase.
  *
  * `--remote <ssh host>` re-runs this script inside the host checkout (default ~/shenron-fix, after
- * `git pull`), so checks, cargo and the agent SDK never run on the local machine.
+ * `git pull`), so checks and the agent SDK never run on the local machine.
  */
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { dirname, join, relative, resolve } from "node:path";
+import { join, relative, resolve } from "node:path";
 
-export type Tool = "oxlint" | "oxfmt" | "tsc" | "rustfmt" | "clippy";
+export type Tool = "oxlint" | "oxfmt" | "tsc";
 export type Finding = {
   tool: Tool;
   file: string;
@@ -105,66 +105,6 @@ export function parseOxfmtList(text: string): Finding[] {
   return out;
 }
 
-/** rustfmt `--check`: `Diff in /abs/path/file.rs:12:` (or the older `Diff in file.rs at line 12:`). */
-export function parseRustfmt(text: string, root = ""): Finding[] {
-  const out: Finding[] = [];
-  const re = /^Diff in (.+?)(?::(\d+):| at line (\d+):)\s*$/;
-  for (const raw of text.split(/\r?\n/)) {
-    const m = re.exec(raw);
-    if (!m) continue;
-    let file = toPosix(m[1]!);
-    const base = toPosix(root).replace(/\/$/, "");
-    if (base && file.startsWith(`${base}/`)) file = file.slice(base.length + 1);
-    out.push({
-      tool: "rustfmt",
-      file,
-      line: Number(m[2] ?? m[3]),
-      col: 0,
-      code: "fmt",
-      message: "rustfmt diff",
-      severity: "error",
-    });
-  }
-  return out;
-}
-
-/** `cargo clippy --message-format=json`: one JSON object per line, `compiler-message` carries the diagnostic. */
-export function parseClippyJson(text: string, root = ""): Finding[] {
-  const out: Finding[] = [];
-  const base = toPosix(root).replace(/\/$/, "");
-  for (const raw of text.split(/\r?\n/)) {
-    if (!raw.startsWith("{")) continue;
-    let obj: any;
-    try {
-      obj = JSON.parse(raw);
-    } catch {
-      continue;
-    }
-    if (obj.reason !== "compiler-message") continue;
-    const msg = obj.message;
-    if (!msg || (msg.level !== "warning" && msg.level !== "error")) continue;
-    const span = (msg.spans ?? []).find((s: any) => s.is_primary) ?? msg.spans?.[0];
-    if (!span) continue; // "N warnings emitted" / "aborting due to" summaries
-    let file = toPosix(String(span.file_name));
-    if (base && file.startsWith(`${base}/`)) file = file.slice(base.length + 1);
-    out.push({
-      tool: "clippy",
-      file,
-      line: Number(span.line_start),
-      col: Number(span.column_start),
-      code: String(msg.code?.code ?? msg.level),
-      message: String(msg.message),
-      severity: msg.level === "error" ? "error" : "warning",
-      help:
-        (msg.children ?? [])
-          .filter((c: any) => c.level === "help")
-          .map((c: any) => c.message)
-          .join("; ") || undefined,
-    });
-  }
-  return out;
-}
-
 // ---------------------------------------------------------------- planner
 
 const identity = (f: Finding) => `${f.tool}|${f.file}|${f.code}|${f.message}`;
@@ -214,7 +154,7 @@ export function acceptFix(beforeFile: Finding[], afterFile: Finding[]): boolean 
 
 export type AgentBatch = { file: string; findings: Finding[] };
 export type Plan = {
-  mechanical: { oxfmt: string[]; oxlintFix: string[]; rustfmt: string[]; clippyFix: boolean };
+  mechanical: { oxfmt: string[]; oxlintFix: string[] };
   agent: AgentBatch[];
 };
 
@@ -228,8 +168,7 @@ export function planRound(
   ];
   const byFile = new Map<string, Finding[]>();
   for (const f of findings) {
-    if (f.tool === "oxfmt" || f.tool === "rustfmt") continue; // purely mechanical
-    if (f.file.startsWith("<")) continue; // pseudo-file (cargo-failed): an environment problem, not a source edit
+    if (f.tool === "oxfmt") continue; // purely mechanical
     if (opts.unresolved.has(f.file) || opts.skip?.(f.file)) continue;
     byFile.set(f.file, [...(byFile.get(f.file) ?? []), f]);
   }
@@ -241,15 +180,12 @@ export function planRound(
     mechanical: {
       oxfmt: files("oxfmt"),
       oxlintFix: files("oxlint"),
-      rustfmt: files("rustfmt"),
-      clippyFix: findings.some((f) => f.tool === "clippy"),
     },
     agent,
   };
 }
 
-const SUPPRESSION =
-  /(oxlint-disable|eslint-disable|@ts-ignore|@ts-expect-error|@ts-nocheck|#!?\[(allow|expect)\(|rustfmt::skip)/;
+const SUPPRESSION = /(oxlint-disable|eslint-disable|@ts-ignore|@ts-expect-error|@ts-nocheck)/;
 
 /** Out-of-scope paths and added suppressions in an agent edit. `changed` = `git diff --name-only`, `diff` = unified diff. */
 export function auditEdit(
@@ -275,7 +211,7 @@ export function agentPrompt(batch: AgentBatch, source: string): string {
     .join("\n");
   return [
     `Fix every finding below in the single file ${batch.file}. You may only Read and Edit that file.`,
-    "Rules: make the smallest correct change; keep behavior; never add suppression comments (no eslint-disable, oxlint-disable, @ts-ignore, @ts-expect-error, #[allow]); do not touch config files or other files; do not reformat unrelated code.",
+    "Rules: make the smallest correct change; keep behavior; never add suppression comments (no eslint-disable, oxlint-disable, @ts-ignore, @ts-expect-error); do not touch config files or other files; do not reformat unrelated code.",
     "When done reply with one short line.",
     "",
     "Findings:",
@@ -290,11 +226,8 @@ export function agentPrompt(batch: AgentBatch, source: string): string {
 
 // ---------------------------------------------------------------- process helpers
 
-/** Optional prefix for heavy cargo runs, e.g. `flock -w 3000 ~/build/locks/heavy.lock` on the shared build host. */
-const CARGO_WRAP = process.env.FIX_LOOP_CARGO_WRAP ?? "";
-
 const PATH_PREFIX =
-  'export PATH="$HOME/.bun/bin:$HOME/.local/bin:$HOME/.cargo/bin:$PATH"; export NEXT_TELEMETRY_DISABLED=1;';
+  'export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"; export NEXT_TELEMETRY_DISABLED=1;';
 
 export type Run = { code: number; out: string; err: string };
 
@@ -308,7 +241,7 @@ export async function sh(command: string, cwd: string, timeoutMs = 1_200_000): P
     stdout: "pipe",
     stderr: "pipe",
     stdin: "ignore",
-    env: { ...process.env, CARGO_TERM_COLOR: "never", NO_COLOR: "1", NEXT_TELEMETRY_DISABLED: "1" },
+    env: { ...process.env, NO_COLOR: "1", NEXT_TELEMETRY_DISABLED: "1" },
   });
   const timer = setTimeout(() => child.kill(), timeoutMs);
   const [out, err, code] = await Promise.all([
@@ -377,116 +310,19 @@ export async function checkTsc(root: string, only?: string[]): Promise<Finding[]
   return dedupe(out);
 }
 
-export type Member = {
-  name: string;
-  dir: string;
-  manifest: string;
-  edition: string;
-  files: string[];
-};
-
-/** Crates found from tracked Cargo.toml files (works when path dependencies are missing, unlike `cargo metadata`). */
-export async function rustMembers(root: string): Promise<Member[]> {
-  const tracked = (await git(root, ["ls-files", "--", "*Cargo.toml", "*.rs"])).out
-    .split("\n")
-    .map((s) => s.trim().replaceAll("\\", "/"))
-    .filter(Boolean);
-  const manifests = tracked.filter((f) => f.endsWith("Cargo.toml"));
-  const rootToml = existsSync(join(root, "Cargo.toml"))
-    ? (Bun.TOML.parse(readFileSync(join(root, "Cargo.toml"), "utf8")) as any)
-    : {};
-  const wsEdition = rootToml.workspace?.package?.edition ?? "2024";
-  const members: Member[] = [];
-  for (const m of manifests) {
-    let toml: any;
-    try {
-      toml = Bun.TOML.parse(readFileSync(join(root, m), "utf8"));
-    } catch {
-      continue;
-    }
-    if (!toml.package?.name) continue;
-    const ed = toml.package.edition;
-    members.push({
-      name: String(toml.package.name),
-      manifest: toPosix(m),
-      dir: toPosix(dirname(m)) === "." ? "" : toPosix(dirname(m)),
-      edition: typeof ed === "string" ? ed : wsEdition,
-      files: [],
-    });
-  }
-  const bySpecificity = members.toSorted((x, y) => y.dir.length - x.dir.length);
-  for (const f of tracked.filter((x) => x.endsWith(".rs"))) {
-    const owner = bySpecificity.find((m) => m.dir === "" || f.startsWith(`${m.dir}/`));
-    if (owner) owner.files.push(toPosix(f));
-  }
-  return members.filter((m) => m.files.length);
-}
-
-export function rustfmtCommand(root: string, m: Member, check: boolean): string {
-  const cfg = existsSync(join(root, "rustfmt.toml")) ? `--config-path ${q(root)}` : "";
-  return `rustfmt ${check ? "--check" : ""} --edition ${m.edition} ${cfg} ${m.files.map(q).join(" ")}`;
-}
-
-export async function checkRustfmt(root: string, members: Member[], only?: string[]) {
-  const out: Finding[] = [];
-  for (const m of members) {
-    if (only && !only.some((f) => toPosix(f).startsWith(`${m.dir}/`) || m.dir === "")) continue;
-    const r = await sh(rustfmtCommand(root, m, true), root);
-    out.push(
-      ...parseRustfmt(
-        `${r.out}
-${r.err}`,
-        root,
-      ),
-    );
-  }
-  return out;
-}
-
-/** A failed cargo run that produced no diagnostics (resolution error, missing path dependency, lock) must not look green. */
-export function withCargoFailure(found: Finding[], r: { code: number; err: string }): Finding[] {
-  if (r.code === 0 || found.length) return found;
-  const tail = r.err.trim().split(String.fromCharCode(10)).slice(-4).join(" | ");
-  return [
-    {
-      tool: "clippy",
-      file: "<cargo>",
-      line: 0,
-      col: 0,
-      code: "cargo-failed",
-      message: `cargo exited ${r.code}: ${tail}`,
-      severity: "error",
-    },
-  ];
-}
-
-export async function checkClippy(root: string, pkg?: string): Promise<Finding[]> {
-  if (!existsSync(join(root, "Cargo.toml"))) return [];
-  const scope = pkg ? `-p ${q(pkg)}` : "--workspace";
-  const r = await sh(
-    `${CARGO_WRAP} cargo clippy ${scope} --all-targets --message-format=json -- -D warnings`,
-    root,
-    3_000_000,
-  );
-  return withCargoFailure(parseClippyJson(r.out, root), r);
-}
-
 export type CheckSet = Tool[];
 
-export async function runChecks(root: string, tools: CheckSet, members: Member[]) {
+export async function runChecks(root: string, tools: CheckSet) {
   const all: Finding[] = [];
   const jobs: Promise<Finding[]>[] = [];
   if (tools.includes("oxlint")) jobs.push(checkLint(root));
   if (tools.includes("oxfmt")) jobs.push(checkFormat(root));
   if (tools.includes("tsc")) jobs.push(checkTsc(root));
-  if (tools.includes("rustfmt")) jobs.push(checkRustfmt(root, members));
-  // clippy last: it saturates the cores, run it alone after the cheap checks
   for (const f of await Promise.all(jobs)) all.push(...f);
-  if (tools.includes("clippy")) all.push(...(await checkClippy(root)));
   return all;
 }
 
-async function recheck(root: string, tool: Tool, file: string, members: Member[]) {
+async function recheck(root: string, tool: Tool, file: string) {
   switch (tool) {
     case "oxlint":
       return checkLint(root, [file]);
@@ -494,12 +330,6 @@ async function recheck(root: string, tool: Tool, file: string, members: Member[]
       return checkFormat(root, [file]);
     case "tsc":
       return checkTsc(root, [file]);
-    case "rustfmt":
-      return checkRustfmt(root, members, [file]);
-    case "clippy": {
-      const m = members.find((x) => x.files.includes(file));
-      return checkClippy(root, m?.name);
-    }
   }
 }
 
@@ -728,7 +558,7 @@ export async function git(root: string, args: string[] | string): Promise<Run> {
     stdout: "pipe",
     stderr: "pipe",
     stdin: "ignore",
-    env: { ...process.env, CARGO_TERM_COLOR: "never", NO_COLOR: "1" },
+    env: { ...process.env, NO_COLOR: "1" },
   });
   const [out, err, code] = await Promise.all([
     new Response(child.stdout).text(),
@@ -788,8 +618,8 @@ const GENERATED = /(^|\/)(node_modules|vendor|target|dist|wasm|generated|example
 async function commitGroup(o: Options, label: string, message: string, log: string[]) {
   const status = await git(o.root, "status --porcelain");
   if (!status.out.trim()) return null;
-  // reports and lockfile churn from cargo resolution never belong in a fix commit
-  await git(o.root, "add -A -- . ':!var/reports' ':!Cargo.lock'");
+  // reports never belong in a fix commit
+  await git(o.root, "add -A -- . ':!var/reports'");
   const body = `${message}\n\nCo-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>`;
   const r = await sh(`git commit -q -m ${q(body)} && git rev-parse HEAD`, o.root);
   log.push(`commit ${label}: ${r.out.trim() || r.err.trim()}`);
@@ -824,7 +654,7 @@ export async function main(argv: string[]): Promise<number> {
 
   const root = resolve(arg("root", process.cwd())!);
   const home = process.env.HOME ?? "/tmp";
-  const all: Tool[] = ["oxlint", "oxfmt", "tsc", "rustfmt", "clippy"];
+  const all: Tool[] = ["oxlint", "oxfmt", "tsc"];
   const o: Options = {
     root,
     tools: (arg("only")?.split(",") as Tool[] | undefined) ?? all,
@@ -843,15 +673,12 @@ export async function main(argv: string[]): Promise<number> {
     log.push(s);
     console.log(s);
   };
-  const members = o.tools.some((t) => t === "rustfmt" || t === "clippy")
-    ? await rustMembers(root)
-    : [];
   const sha0 = (await git(root, "rev-parse HEAD")).out.trim();
 
   say(`fix-loop root=${root} HEAD=${sha0} tools=${o.tools.join(",")} reportOnly=${o.reportOnly}`);
   if (flag("install"))
     say(`install: exit ${(await sh("bun install --frozen-lockfile", root)).code}`);
-  const baseline = await runChecks(root, o.tools, members);
+  const baseline = await runChecks(root, o.tools);
   say(`baseline: ${JSON.stringify(countByTool(baseline))} total=${baseline.length}`);
 
   const mechanical: Record<string, { before: number; after: number }> = {};
@@ -872,7 +699,7 @@ export async function main(argv: string[]): Promise<number> {
       if (!before) return;
       const r = await sh(cmd, root);
       say(`mechanical ${label}: exit ${r.code}`);
-      const after = await runChecks(root, [tool], members);
+      const after = await runChecks(root, [tool]);
       mechanical[label] = { before, after: after.length };
       current = [...current.filter((f) => f.tool !== tool), ...after];
       const fresh = diffFindings(
@@ -905,25 +732,6 @@ export async function main(argv: string[]): Promise<number> {
         ? `bun lint --no-script --fix ${existsSync(join(root, ".oxlintrc.json")) ? "-c .oxlintrc.json" : ""} ${plan.mechanical.oxlintFix.map(q).join(" ")}`
         : null,
       "fix(lint): apply oxlint autofixes",
-    );
-    await step(
-      "cargo-fmt",
-      "rustfmt",
-      members.length && plan.mechanical.rustfmt.length
-        ? members
-            .filter((m) => plan.mechanical.rustfmt.some((f) => m.files.includes(f)))
-            .map((m) => rustfmtCommand(root, m, false))
-            .join(" ; ")
-        : null,
-      "style(rust): rustfmt per member",
-    );
-    await step(
-      "clippy-fix",
-      "clippy",
-      plan.mechanical.clippyFix
-        ? `${CARGO_WRAP} cargo clippy --fix --allow-dirty --allow-staged --workspace --all-targets`
-        : null,
-      "fix(rust): cargo clippy --fix machine-applicable suggestions",
     );
 
     // ---- agent
@@ -963,14 +771,9 @@ export async function main(argv: string[]): Promise<number> {
         const source = readFileSync(join(root, batch.file), "utf8");
         const snap = await worktreeSnapshot(root);
         const res = await backend.fix(root, batch, agentPrompt(batch, source));
-        // The agent edits in its own style: format only the target file so oxfmt/rustfmt stay green.
+        // The agent edits in its own style: format only the target file so oxfmt stays green.
         if (/\.(ts|tsx|js|jsx|json)$/.test(batch.file) && o.tools.includes("oxfmt"))
           await sh(`bun scripts/testing/native-quality.ts fmt ${q(batch.file)}`, root);
-        else if (batch.file.endsWith(".rs"))
-          await sh(
-            `rustfmt --edition ${members.find((x) => x.files.includes(batch.file))?.edition ?? "2024"} ${existsSync(join(root, "rustfmt.toml")) ? `--config-path ${q(root)}` : ""} ${q(batch.file)}`,
-            root,
-          );
         const changed = await changedSince(root, snap);
         const added = addedLines(
           snap.get(batch.file) ?? source,
@@ -986,7 +789,7 @@ export async function main(argv: string[]): Promise<number> {
         else if (audit.suppressions.length) verdict = `added suppression: ${audit.suppressions[0]}`;
         else if (!changed.includes(batch.file)) verdict = `agent made no change: ${res.reason}`;
         if (!verdict) {
-          const after = await recheck(root, tool, batch.file, members);
+          const after = await recheck(root, tool, batch.file);
           const beforeFile = current.filter((f) => f.tool === tool && f.file === batch.file);
           const afterFile = after.filter((f) => f.file === batch.file);
           if (
@@ -1018,13 +821,13 @@ export async function main(argv: string[]): Promise<number> {
         const sha = await commitGroup(
           o,
           `agent-r${round}`,
-          `fix: ${n} file(s) fixed by ${backendName} (lint/typecheck/clippy findings ${baseline.length} -> ${current.length})`,
+          `fix: ${n} file(s) fixed by ${backendName} (lint/typecheck findings ${baseline.length} -> ${current.length})`,
           log,
         );
         if (sha) commits.push(sha);
       }
     }
-    current = await runChecks(root, o.tools, members);
+    current = await runChecks(root, o.tools);
     if (o.push && o.commit && commits.length) {
       const bad = diffFindings(baseline, current).added;
       if (bad.length) say(`push skipped: ${bad.length} findings were introduced`);

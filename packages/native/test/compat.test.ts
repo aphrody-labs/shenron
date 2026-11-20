@@ -115,8 +115,11 @@ describe("Bun runtime", () => {
 describe("generated table", () => {
   test("is ABI 6 of the workspace version", async () => {
     expect(SHENRON_FFI_ABI).toBe(6);
-    const cargo = await Bun.file(join(import.meta.dir, "../../../Cargo.toml")).text();
-    expect(cargo).toContain(`version = "${SHENRON_FFI_VERSION}"`);
+    // One release version for the whole product: the Rust workspace (aphrody-labs/wiki) tracks it.
+    const root = (await Bun.file(join(import.meta.dir, "../../../package.json")).json()) as {
+      version: string;
+    };
+    expect(root.version).toBe(SHENRON_FFI_VERSION);
   });
 
   test("keeps every ABI 1 symbol with its ABI 1 signature", () => {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Typed loader of the Dragon Pixel WebAssembly module (crates/dragon-pixel, `bevy` feature), staged by
- * scripts/ops/build-dragon-pixel-wasm.ts. The file names come from the generated manifest only.
+ * scripts/ops/stage-dragon-pixel-wasm.ts. The file names come from the generated manifest only.
  */
 import { DRAGON_PIXEL_WASM } from "@/lib/dragon-pixel-wasm.generated";
 
@@ -100,7 +100,9 @@ async function fetchAndInit(
   report: LoadProgress,
   signal?: AbortSignal,
 ): Promise<DragonPixelBindings> {
-  const glue = (await import(/* webpackIgnore: true */ wasmUrl(DRAGON_PIXEL_WASM.js))) as GlueModule;
+  const glue = (await import(
+    /* webpackIgnore: true */ wasmUrl(DRAGON_PIXEL_WASM.js)
+  )) as GlueModule;
   const response = await fetch(wasmUrl(DRAGON_PIXEL_WASM.wasm), { signal });
   if (!response.ok) throw new Error(`wasm download failed with status ${response.status}`);
   await glue.default({ module_or_path: countedResponse(response, report) });

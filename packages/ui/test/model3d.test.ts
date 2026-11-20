@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { expect, test } from "bun:test";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import {
   DRAGON_BALL_PARAM_LEN,
   KINTO_UN_PARAM_LEN,
@@ -8,8 +10,10 @@ import {
 } from "../src/toriyama-svg/model3d";
 import { lobesIcone } from "../src/toriyama-svg/kinto-un";
 
-const rust = (path: string) =>
-  Bun.file(`${import.meta.dir}/../../../crates/shenron-engine/src/render/${path}`).text();
+// The Rust uniforms live in aphrody-labs/wiki (SHENRON_WIKI_DIR, default ../wiki, next to this repository).
+const wikiDir = process.env.SHENRON_WIKI_DIR ?? join(import.meta.dir, "../../../../wiki");
+const renderDir = join(wikiDir, "crates/shenron-engine/src/render");
+const rust = (path: string) => Bun.file(join(renderDir, path)).text();
 const constant = (source: string, name: string) => {
   const m = new RegExp(`pub const ${name}: usize = ([^;]+);`).exec(source);
   if (!m) throw new Error(`${name} not found`);
@@ -17,9 +21,12 @@ const constant = (source: string, name: string) => {
   return Function(...Object.keys(scope), `return ${m[1]};`)(...Object.values(scope)) as number;
 };
 
-test("flat parameter lengths match the Rust uniforms", async () => {
+test.skipIf(!existsSync(renderDir))("flat parameter lengths match the Rust uniforms", async () => {
   expect(DRAGON_BALL_PARAM_LEN).toBe(constant(await rust("dragon_ball.rs"), "PARAM_LEN"));
   expect(KINTO_UN_PARAM_LEN).toBe(constant(await rust("kinto_un.rs"), "PARAM_LEN"));
+});
+
+test("flat parameter lengths follow the stars and lobes", () => {
   for (const stars of [1, 2, 3, 4, 5, 6, 7] as const) {
     const p = dragonBallParams(stars);
     expect(p.length).toBe(DRAGON_BALL_PARAM_LEN);

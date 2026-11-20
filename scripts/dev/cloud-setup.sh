@@ -24,12 +24,12 @@ done
 root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/../.." && pwd)"
 log_dir="${XDG_STATE_HOME:-$HOME/.local/state}/shenron"
 log="$log_dir/cloud-setup.log"
-mkdir -p "$log_dir" "$HOME/.local/bin" "$HOME/.cargo/bin" "$HOME/.bun/bin"
-export PATH="$HOME/.cargo/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH"
+mkdir -p "$log_dir" "$HOME/.local/bin" "$HOME/.bun/bin"
+export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH"
 # Later Bash calls of the session find the tools without a shell profile.
 if [[ -n "${CLAUDE_ENV_FILE:-}" ]]; then
   grep -q 'shenron-cloud-path' "$CLAUDE_ENV_FILE" 2>/dev/null ||
-    echo 'export PATH="$HOME/.cargo/bin:$HOME/.bun/bin:$HOME/.local/bin:$PATH" # shenron-cloud-path' >>"$CLAUDE_ENV_FILE"
+    echo 'export PATH="$HOME/.bun/bin:$HOME/.local/bin:$PATH" # shenron-cloud-path' >>"$CLAUDE_ENV_FILE"
 fi
 
 if [[ $mode == background && $dry == 0 ]]; then
@@ -49,19 +49,9 @@ if (( dry == 0 )); then
 fi
 
 step "versions from the repository"
-channel="$(sed -nE 's/^channel[[:space:]]*=[[:space:]]*"([^"]+)"/\1/p' "$root/rust-toolchain.toml" 2>/dev/null | head -1)"
 # Bun: the official release pinned by package.json#packageManager (bun@<version>).
 bun_pin="$(sed -nE 's/.*"packageManager"[[:space:]]*:[[:space:]]*"bun@([^"]+)".*/\1/p' "$root/package.json" 2>/dev/null | head -1)"
-echo "  rust channel: ${channel:-stable}  bun: ${bun_pin:-latest}"
-
-step "rust"
-if ! have rustup; then
-  run bash -c "curl --proto '=https' --tlsv1.2 -fsSL https://sh.rustup.rs | sh -s -- -y --no-modify-path --default-toolchain none"
-fi
-if have rustup || (( dry == 1 )); then
-  run rustup toolchain install "${channel:-stable}" --profile minimal -c rustfmt -c clippy
-  run rustup default "${channel:-stable}"
-fi
+echo "  bun: ${bun_pin:-latest}"
 
 step "bun"
 if ! have bun; then
@@ -77,13 +67,13 @@ if have uv || (( dry == 1 )); then
   run graphify install
 fi
 
-step "build and search tools (cargo-binstall, prebuilt binaries only)"
+step "build and search tools (cargo-binstall, prebuilt binaries only; no Rust toolchain)"
 if ! have cargo-binstall; then
   run bash -c "curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash"
 fi
 if have cargo-binstall || (( dry == 1 )); then
-  for pair in just:just sccache:sccache cargo-nextest:cargo-nextest nu:nu fd:fd-find rg:ripgrep bat:bat; do
-    have "${pair%%:*}" || run cargo binstall -y --locked --disable-strategies compile "${pair##*:}"
+  for pair in just:just nu:nu fd:fd-find rg:ripgrep bat:bat; do
+    have "${pair%%:*}" || run cargo-binstall -y --locked --disable-strategies compile "${pair##*:}"
   done
 fi
 

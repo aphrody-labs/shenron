@@ -2,13 +2,13 @@
 <#
 .SYNOPSIS
   Native Windows steps of the local build. The Docker build (scripts/build/local.ts) cross-compiles
-  every Windows artifact on Linux; what needs a real Windows lives here, clearly apart.
+  every Windows artifact on Linux; what needs a real Windows lives here, clearly apart. Rust is built
+  in aphrody-labs/wiki, never here.
 
 .PARAMETER Action
-  doctor          toolchain and disk report (Docker, MSVC, signtool, NSIS, Rust, free space)
+  doctor          toolchain and disk report (Docker, Bun, Git, signtool, free space)
   smoke           run the Windows binaries of dist/local/windows-x64 natively (--version / version)
-  sign            Authenticode-sign the .exe/.dll/installer of dist/local/windows-x64 (optional)
-  desktop-native  build Shenron Studio on Windows itself (MSVC + Tauri NSIS), no Docker
+  sign            Authenticode-sign the .exe/.dll of dist/local/windows-x64 (optional)
 
 .NOTES
   Signing is optional and never part of the Docker build. Environment (never printed, never committed):
@@ -19,8 +19,7 @@
 #>
 [CmdletBinding()]
 param(
-  [ValidateSet('doctor', 'smoke', 'sign', 'desktop-native')][string]$Action = 'doctor',
-  [string[]]$DesktopArgs = @('--skip-chat-model')
+  [ValidateSet('doctor', 'smoke', 'sign')][string]$Action = 'doctor'
 )
 $ErrorActionPreference = 'Stop'
 $Root = (Resolve-Path (Join-Path $PSScriptRoot '..\..')).Path
@@ -45,16 +44,14 @@ switch ($Action) {
   'doctor' {
     $drive = (Get-Item $Root).PSDrive
     "free disk $($drive.Name): {0:N1} GiB" -f ($drive.Free / 1GB)
-    foreach ($t in 'docker', 'bun', 'cargo', 'git', 'gh') { "{0,-8} {1}" -f $t, (Or (Get-Command $t -ErrorAction SilentlyContinue).Source 'MISSING') }
+    foreach ($t in 'docker', 'bun', 'git', 'gh') { "{0,-8} {1}" -f $t, (Or (Get-Command $t -ErrorAction SilentlyContinue).Source 'MISSING') }
     "signtool $(Or (Find-Tool 'signtool' @("${env:ProgramFiles(x86)}\Windows Kits\10\bin\*\x64\signtool.exe")) 'MISSING (optional)')"
-    "NSIS     $(Or (Find-Tool 'makensis' @("$env:LOCALAPPDATA\tauri\NSIS\makensis.exe")) 'MISSING (Tauri downloads it on first desktop-native build)')"
-    "MSVC     $(Or (Find-Tool 'link-msvc-probe' @("$env:ProgramFiles\Microsoft Visual Studio\*\*\VC\Tools\MSVC\*\bin\Hostx64\x64\link.exe", "${env:ProgramFiles(x86)}\Microsoft Visual Studio\*\*\VC\Tools\MSVC\*\bin\Hostx64\x64\link.exe")) 'MISSING (needed by desktop-native only)')"
     $vhd = Join-Path $env:LOCALAPPDATA 'Docker\wsl\disk\docker_data.vhdx'
     if (Test-Path $vhd) { "docker disk image: {0:N1} GiB at $vhd" -f ((Get-Item $vhd).Length / 1GB) }
   }
   'smoke' {
     if (-not (Test-Path $Win)) { throw "no Windows artifacts in $Win (run: bun scripts/build/local.ts all --target windows-x64)" }
-    $checks = @{ 'shenron.exe' = '--version'; 'shenron-mcp.exe' = '--version'; 'shenron-server.exe' = 'version'; 'shenron-bot.exe' = '--smoke' }
+    $checks = @{ 'shenron-server.exe' = 'version'; 'shenron-bot.exe' = '--smoke' }
     foreach ($exe in Get-ChildItem $Win -Recurse -Filter *.exe) {
       if (-not $checks.ContainsKey($exe.Name)) { continue }
       $out = & $exe.FullName $checks[$exe.Name] 2>&1 | Select-Object -First 3
@@ -75,10 +72,5 @@ switch ($Action) {
     }
     Update-Manifest
     "signed $($files.Count) files; manifest refreshed"
-  }
-  'desktop-native' {
-    Push-Location $Root
-    try { & bun scripts/build/desktop.ts --target windows-x64 @DesktopArgs; if ($LASTEXITCODE -ne 0) { throw 'desktop.ts failed' } }
-    finally { Pop-Location }
   }
 }

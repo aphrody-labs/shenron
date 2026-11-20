@@ -2,7 +2,7 @@
   "$comment": "Single declarative definition of the Shenron build, deploy and production environment across the canonical triad (vps, cdn/bunos, prod). Read by scripts/deploy/environment.ts (drift gate and emitters), scripts/deploy/lanes.ts (change detection) and deploy/activation/activate.sh (through --emit activation). Runbook: docs/operations/AUTO-DEPLOY.md.",
   "schema": 1,
   "primary": "native",
-  "primaryReason": "The production host is also the build host: 8 CPU, 31 GiB, warm sccache, target/, Turbopack and Bun caches on local disk, one checkout and one node_modules. Nothing crosses the network, so shipping costs nothing. Dockerfile.build is the hermetic secondary path (other hosts, Windows cross builds, CI) and reads the same pins.",
+  "primaryReason": "The production host is also the build host: 8 CPU, 31 GiB, Turbopack and Bun caches on local disk, one checkout and one node_modules. Nothing crosses the network, so shipping costs nothing. Dockerfile.build is the hermetic secondary path (other hosts, Windows cross builds, CI) and reads the same pins.",
   "triad": {
     "vps": {
       "alias": "vps",
@@ -28,20 +28,16 @@
     }
   },
   "toolchain": {
-    "rust": "1.100.0",
     "bun": "1.4.5",
     "bunChannel": "stable",
     "bunRevision": "a7733435c",
     "bunLinuxSha256": "94559b3b528995a49452f9f2404cec74f2efd7d06e0a000a8cd214b02c3666eb",
     "bunWindowsSha256": "815ab45ec7f549abf87e6869584b506eab088e24225683957b7e150b47d6de30",
-    "sccache": "0.18.0",
     "baseImage": "ubuntu:26.10"
   },
   "caches": {
     "root": "$HOME/.cache/shenron",
     "bun": "$HOME/.bun/install/cache",
-    "sccache": "$HOME/.cache/shenron/sccache",
-    "sccacheSize": "20G",
     "artifacts": "$HOME/.cache/shenron/artifacts",
     "artifactsKeepPerLane": 8
   },
@@ -112,50 +108,6 @@
     "keepReleases": 6
   },
   "lanes": {
-    "rust": {
-      "toolchain": "rust",
-      "inputs": [
-        "Cargo.toml",
-        "Cargo.lock",
-        ".cargo",
-        "rust-toolchain.toml",
-        "crates",
-        "data/lexique-db-canonique.json",
-        "data/lexicon"
-      ],
-      "outputs": [
-        "target/production/shenron-mcp",
-        "target/production/libshenron_ffi.so",
-        "target/production/koharu-sdk"
-      ],
-      "services": ["site", "bot"],
-      "extras": ["rustc"]
-    },
-    "wasm": {
-      "toolchain": "rust",
-      "inputs": [
-        "Cargo.toml",
-        "Cargo.lock",
-        ".cargo",
-        "rust-toolchain.toml",
-        "crates/koharu-canvas",
-        "crates/koharu-rasterizer",
-        "crates/shenron-re",
-        "crates/shenron-engine",
-        "crates/shenron-panels",
-        "crates/dragon-pixel",
-        "packages/koharu/scripts/build-wasm.ts",
-        "packages/pipeline/scripts/build-re-wasm.ts",
-        "packages/engine/scripts/build-wasm.ts"
-      ],
-      "outputs": [
-        "packages/koharu/src/wasm",
-        "packages/pipeline/src/wasm",
-        "packages/engine/src/wasm"
-      ],
-      "services": ["site"],
-      "extras": ["rustc", "bun"]
-    },
     "site": {
       "toolchain": "bun",
       "workspace": "apps/site",
@@ -178,7 +130,6 @@
         "apps/site/public"
       ],
       "services": ["site"],
-      "after": ["wasm"],
       "extras": ["bun"]
     },
     "bot": {
@@ -204,8 +155,8 @@
     "server": {
       "toolchain": "bun",
       "workspace": "apps/server",
-      "after": ["site", "rust"],
-      "extras": ["bun", "vfs"],
+      "after": ["site"],
+      "extras": ["bun", "vfs", "native"],
       "inputs": [
         "package.json",
         "bun.lock",
@@ -225,7 +176,7 @@
     },
     "image": {
       "toolchain": "none",
-      "after": ["rust", "bot", "server"],
+      "after": ["bot", "server"],
       "inputs": ["deploy/docker/Dockerfile", ".dockerignore"],
       "outputs": [],
       "services": ["site", "bot"]
@@ -239,8 +190,8 @@
       ".claude-plugin",
       ".codex",
       ".mcp.json",
-      ".config",
       ".editorconfig",
+      ".env.example",
       ".fdignore",
       ".gitattributes",
       ".github",
@@ -262,9 +213,7 @@
       "README.md",
       "SECURITY.md",
       "TODO.md",
-      "clippy.toml",
       "config",
-      "deny.toml",
       "deploy",
       "design-system",
       "docker-bake.hcl",
@@ -273,17 +222,10 @@
       "install.ps1",
       "justfile",
       "llms.txt",
-      "migration",
       "naming.toml",
       "paths.allow",
-      "replica",
-      "reports",
-      "research_notes",
       "robots.txt",
-      "rust-analyzer.toml",
-      "rustfmt.toml",
       "scripts",
-      "src",
       "themes",
       "turbo.json"
     ],

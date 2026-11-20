@@ -1,20 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 
 # Dependencies and build outputs
-# Local Cargo overrides, included by .cargo/config.toml
-/.cargo/local.toml
-# Tauri generated schemas
-/crates/*/gen/
 node_modules/
-**/target/
-**/*.rs.bk
-rustc-ice-*.txt
 dist/
 pkg/
 /apps/server/.build/
-/crates/shenron-desktop/binaries/
-/crates/shenron-desktop/tauri.bundle.json
 packages/crunchyroll/bin/
+nohup.out
 .next/
 .next-build/
 .next-dev/

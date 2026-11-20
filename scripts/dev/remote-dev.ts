@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Remote development environment: WSL stays a thin editor host, every install, gate, Rust build
+ * Remote development environment: WSL stays a thin editor host, every install, gate
  * and dev server runs on the build VPS. The exact WSL worktree (HEAD plus uncommitted and
  * untracked files, `.gitignore` respected) is snapshotted into a commit, pushed over SSH to a
  * dedicated checkout on the VPS (seeded from GitHub `main`, so only the local delta travels) and checked out there.
@@ -9,11 +9,11 @@
  *   bun scripts/dev/remote-dev.ts doctor              host, tools, disk, workspace state
  *   bun scripts/dev/remote-dev.ts sync                snapshot the worktree onto the VPS checkout
  *   bun scripts/dev/remote-dev.ts install             sync + bun install --frozen-lockfile
- *   bun scripts/dev/remote-dev.ts gates [--rust]      sync + install + typecheck, lint, tests (and Rust)
+ *   bun scripts/dev/remote-dev.ts gates               sync + install + typecheck, lint, tests
  *   bun scripts/dev/remote-dev.ts dev                 sync + install + Next dev in remote tmux, forwarded to localhost
  *   bun scripts/dev/remote-dev.ts stop                stop the remote dev server and the local forward
  *   bun scripts/dev/remote-dev.ts run -- <command>    sync, then run any command in the VPS checkout
- *   bun scripts/dev/remote-dev.ts up [--rust]         gates then dev: the whole loop, end to end
+ *   bun scripts/dev/remote-dev.ts up                  gates then dev: the whole loop, end to end
  *   bun scripts/dev/remote-dev.ts clean-wsl [--apply] list (or delete) regenerable Shenron artefacts in WSL
  *   bun scripts/dev/remote-dev.ts backup [--apply]    archive the vital private state to /mnt/c/shenron/vital
  *
@@ -66,7 +66,6 @@ export const REGENERABLE = [
   "graphify-out",
   "apps/server/.build",
   "packages/native/native",
-  "crates/shenron-desktop/binaries",
   "coverage",
   ".turbo",
 ] as const;
@@ -109,11 +108,11 @@ export function shellQuote(value: string): string {
   return /^[\w@%+=:,./-]+$/.test(value) ? value : `'${value.replaceAll("'", `'\\''`)}'`;
 }
 
-/** The remote shell line that runs `command` inside the checkout with the toolchains on PATH, at low priority. */
+/** The remote shell line that runs `command` inside the checkout with Bun on PATH, at low priority. */
 export function remoteScript(config: RemoteDevConfig, command: string): string {
   return [
     "set -euo pipefail",
-    'export PATH="$HOME/.bun/bin:$HOME/.cargo/bin:$PATH"',
+    'export PATH="$HOME/.bun/bin:$PATH"',
     "export NEXT_TELEMETRY_DISABLED=1",
     `cd "$HOME/${config.workspace}"`,
     `nice -n 10 bash -c ${shellQuote(command)}`,
@@ -127,10 +126,6 @@ export const GATES = [
   "bun scripts/testing/workspace-gates.ts test",
   "bun test --path-ignore-patterns='**/*.live.test.ts' ./scripts",
   "bun packages/api/scripts/openapi.ts --check",
-];
-export const RUST_GATES = [
-  "bun scripts/build/rust/cargo.ts lint",
-  "bun scripts/build/rust/test.ts",
 ];
 
 function sshArgs(config: RemoteDevConfig): string[] {
@@ -229,9 +224,9 @@ async function install(config: RemoteDevConfig): Promise<void> {
     throw new Error("bun install failed on the host");
 }
 
-async function gates(config: RemoteDevConfig, rust: boolean): Promise<number> {
+async function gates(config: RemoteDevConfig): Promise<number> {
   const failed: string[] = [];
-  for (const gate of rust ? [...GATES, ...RUST_GATES] : GATES) {
+  for (const gate of GATES) {
     if ((await run(config, gate)) !== 0) failed.push(gate);
   }
   console.log(
@@ -282,9 +277,9 @@ async function doctor(config: RemoteDevConfig): Promise<number> {
   return await ssh(
     config,
     [
-      'export PATH="$HOME/.bun/bin:$HOME/.cargo/bin:$PATH"',
+      'export PATH="$HOME/.bun/bin:$PATH"',
       'echo "host: $(hostname) cores=$(nproc) load=$(cut -d" " -f1-3 /proc/loadavg)"',
-      'echo "bun: $(bun --version 2>/dev/null || echo absent)  cargo: $(cargo --version 2>/dev/null || echo absent)"',
+      'echo "bun: $(bun --version 2>/dev/null || echo absent)"',
       'df -h "$HOME" | tail -1',
       `cd "$HOME/${config.workspace}" 2>/dev/null && echo "workspace: $(git rev-parse --short HEAD 2>/dev/null || echo empty)" || echo "workspace: absent (run sync)"`,
       `tmux has-session -t ${config.devSession} 2>/dev/null && echo "dev server: running" || echo "dev server: stopped"`,
@@ -489,7 +484,7 @@ export async function pickHost(candidates: string[]): Promise<string> {
 }
 
 const USAGE =
-  "usage: remote-dev <doctor|sync|install|gates [--rust]|dev|stop|run -- <cmd>|up [--rust]|clean-wsl [--apply]|backup [--apply]> [--host <alias>|auto] [--workspace <name>]";
+  "usage: remote-dev <doctor|sync|install|gates|dev|stop|run -- <cmd>|up|clean-wsl [--apply]|backup [--apply]> [--host <alias>|auto] [--workspace <name>]";
 
 async function main(argv: string[]): Promise<number> {
   const dash = argv.indexOf("--");
@@ -518,7 +513,7 @@ async function main(argv: string[]): Promise<number> {
     case "gates":
       await sync(config);
       await install(config);
-      return await gates(config, flag("--rust"));
+      return await gates(config);
     case "dev":
       await sync(config);
       await install(config);
@@ -533,7 +528,7 @@ async function main(argv: string[]): Promise<number> {
     case "up": {
       await sync(config);
       await install(config);
-      const code = await gates(config, flag("--rust"));
+      const code = await gates(config);
       return code !== 0 ? code : await dev(config);
     }
     case "clean-wsl":

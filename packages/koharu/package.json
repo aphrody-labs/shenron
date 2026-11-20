@@ -30,7 +30,7 @@
     "typecheck": "bun check --project tsconfig.json",
     "test": "bun test",
     "lint": "bun lint -c ../../.oxlintrc.json src --ignore-pattern src/protocol.ts --ignore-pattern src/wasm",
-    "build:wasm": "bun scripts/build-wasm.ts"
+    "sync:wasm": "bun scripts/sync-wasm.ts"
   },
   "dependencies": {
     "@tauri-apps/api": "catalog:"

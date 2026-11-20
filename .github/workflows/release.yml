@@ -45,8 +45,8 @@ jobs:
       - name: Verify the one release version
         run: bun scripts/release/check-version.ts "$SHENRON_RELEASE_TAG"
 
-      # Le WASM de crates/koharu-canvas est suivi par Git (packages/koharu/src/wasm/, contrôlé
-      # par rust.yml) : aucun outillage Rust pour le site.
+      # Les modules WASM sont suivis par Git (packages/*/src/wasm/, produits par le dépôt wiki) :
+      # aucun outillage Rust ici.
       # Application frontale (Next standalone, sans base) + API locales, un seul fichier.
       - name: shenron-server
         run: bun scripts/build/server.ts --target ${{ matrix.target }} --flavor desktop
@@ -77,60 +77,9 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
-  desktop:
-    name: Shenron Studio (${{ matrix.target }})
-    runs-on: ${{ matrix.os }}
-    timeout-minutes: 120
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - { target: linux-x64, os: ubuntu-26.04 }
-          - { target: windows-x64, os: windows-latest }
-    steps:
-      - uses: actions/checkout@v7
-        with:
-          ref: ${{ github.event.inputs.tag || github.ref }}
-          persist-credentials: false
-      - name: Linux system dependencies
-        if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf libssl-dev build-essential file
-      - name: Rust toolchain
-        shell: bash
-        run: rustup toolchain install
-      - uses: Swatinem/rust-cache@v2
-        with:
-          key: release-desktop-${{ matrix.target }}
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: tauri-cli
-      - uses: ./.github/actions/setup-bun
-      - uses: actions/cache@v6
-        with:
-          path: ~/.bun/install/cache
-          key: release-desktop-bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-      - name: Install exact dependencies
-        run: bun ci
-      - name: Verify the one release version
-        run: bun scripts/release/check-version.ts "$SHENRON_RELEASE_TAG"
-      - name: Build Shenron Studio
-        shell: bash
-        env:
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-        run: |
-          [ -n "$TAURI_SIGNING_PRIVATE_KEY" ] || unset TAURI_SIGNING_PRIVATE_KEY TAURI_SIGNING_PRIVATE_KEY_PASSWORD
-          bun scripts/build/desktop.ts --target "${{ matrix.target }}" --skip-chat-model
-      - uses: actions/upload-artifact@v7
-        with:
-          name: shenron-studio-${{ matrix.target }}
-          path: dist/desktop/${{ matrix.target }}/
-          if-no-files-found: error
-          retention-days: 30
-
   release:
     name: Create GitHub Release (draft)
-    needs: [build, desktop]
+    needs: [build]
     runs-on: ubuntu-26.04
     steps:
       - uses: actions/checkout@v7
@@ -143,7 +92,7 @@ jobs:
           path: artifacts
           merge-multiple: true
 
-      # One checksum index covers every server, bot and Studio asset in this release.
+      # One checksum index covers every server and bot asset in this release.
       - name: Generate SHA256 sums
         run: |
           cd artifacts
@@ -187,11 +136,6 @@ jobs:
 
             `shenron-server doctor` affiche le profil et la présence des secrets ; `shenron-bot --smoke`
             vérifie le binaire sans Discord ni base. Intégrité : `SHA256SUMS`.
-
-            ## Shenron Studio
-
-            Installers and sidecars for Linux x64 and Windows x64 are built from this exact tag
-            and attached to this same release. `SHA256SUMS` covers the complete release.
 
             ## Depuis les sources
 

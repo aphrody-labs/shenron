@@ -105,7 +105,6 @@ const nextConfig: NextConfig = {
   // databases, corpora) into the standalone server.
   outputFileTracingExcludes: {
     "*": [
-      "../../crates/**",
       "../../target/**",
       "../../data/**",
       "../../var/**",

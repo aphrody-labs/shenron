@@ -28,7 +28,7 @@ export const ROOT = resolve(import.meta.dir, "../..");
 const SCHEMA = "shenron-lanes/v2";
 
 export type Lane = {
-  toolchain: "rust" | "bun" | "none";
+  toolchain: "bun" | "none";
   workspace?: string;
   inputs: string[];
   outputs: string[];
@@ -37,7 +37,7 @@ export type Lane = {
   extras?: string[];
 };
 export type Environment = {
-  toolchain: { rust: string; bun: string };
+  toolchain: { bun: string };
   lanes: Record<string, Lane>;
   classification: {
     noDeploy: string[];
@@ -78,8 +78,8 @@ export function git(root: string, args: string[], optional = false): string | nu
 
 /**
  * Git object ids of paths at a revision, in one process: tree, blob or submodule gitlink alike.
- * Each path is resolved on its own (`<rev>:<path>`): `git ls-tree` given both `crates` and
- * `crates/x` descends into `crates` and never reports `crates` itself, which silently dropped a
+ * Each path is resolved on its own (`<rev>:<path>`): `git ls-tree` given both `dir` and
+ * `dir/x` descends into `dir` and never reports `dir` itself, which silently dropped a
  * whole input from a key.
  */
 export function objectIds(root: string, rev: string, paths: string[]): Map<string, string> {

@@ -4,12 +4,12 @@
  * Build Shenron inside Shenron's VPS build image (`shenron-build:latest`, owned by Shenron:
  * tools/config/container/build/Dockerfile, built by scripts/build/container/shenron-build.ts image).
  *
- *   bun scripts/build/container.ts [--target-volume NAME] [--env NAME]… [--host-network] [--no-lock] -- CMD…
- *   bun scripts/build/container.ts --check     # image present, Rust and wasm-bindgen match this checkout
+ *   bun scripts/build/container.ts [--env NAME]… [--host-network] [--no-lock] -- CMD…
+ *   bun scripts/build/container.ts --check     # the build image is present
  *
  * Same contract as Shenron's `shenron-build.ts run`: the checkout is mounted at its own absolute path,
  * the caller's uid plus the shared build group (1500), named cache volumes
- * shenron-build-{cargo,sccache,bun,xwin,xdg}, bounded CPU/memory (SHENRON_BUILD_CPUS ≤ 6, default 6;
+ * shenron-build-{bun,xdg}, bounded CPU/memory (SHENRON_BUILD_CPUS ≤ 6, default 6;
  * SHENRON_BUILD_MEMORY, default 16g, no swap) so the llama-server services keep their memory, and the
  * optional build lock named by SHENRON_BUILD_LOCK. Secrets pass by environment NAME only, never as values.
  *
@@ -18,7 +18,7 @@
  * (SHENRON_GIT_TOKEN, GH_TOKEN, GITHUB_TOKEN, sinon `gh auth token`) et passé par son nom seulement.
  */
 import { existsSync } from "node:fs";
-import { join, resolve } from "node:path";
+import { resolve } from "node:path";
 
 export const IMAGE = "shenron-build";
 export const BUILD_GID = 1500;
@@ -29,7 +29,7 @@ export function buildLock(
   const lock = env.SHENRON_BUILD_LOCK?.trim();
   return lock && existsSync(lock) ? lock : undefined;
 }
-const CACHES = ["cargo", "sccache", "xwin", "xdg"] as const;
+const CACHES = ["xdg"] as const;
 const ROOT = resolve(import.meta.dir, "../..");
 
 export type ContainerOptions = {
@@ -37,7 +37,6 @@ export type ContainerOptions = {
   command: string[];
   uid: number;
   gid: number;
-  targetVolume?: string;
   env?: string[];
   hostNetwork?: boolean;
   lock?: boolean;
@@ -49,8 +48,6 @@ export type ContainerOptions = {
 export function containerArgs(o: ContainerOptions): string[] {
   if (!o.repo.startsWith("/")) throw new Error("checkout : chemin absolu requis");
   if (o.command.length === 0) throw new Error("commande manquante après --");
-  if (o.targetVolume && !/^[a-z0-9][a-z0-9_.-]*$/.test(o.targetVolume))
-    throw new Error("--target-volume : nom de volume invalide");
   const cpus = o.cpus || "6";
   const memory = o.memory || "16g";
   if (!/^\d+(\.\d+)?$/.test(cpus) || Number(cpus) > 6) throw new Error("SHENRON_BUILD_CPUS ≤ 6");
@@ -95,14 +92,6 @@ export function containerArgs(o: ContainerOptions): string[] {
     // Keep Shenron's install cache out of the legacy shared volume with stale UID ownership.
     "--volume",
     `${IMAGE}-bun-shenron:/cache/bun`,
-    ...(o.targetVolume
-      ? [
-          "--volume",
-          `${IMAGE}-target-${o.targetVolume}:/cache/target`,
-          "--env",
-          "CARGO_TARGET_DIR=/cache/target",
-        ]
-      : []),
     ...(o.env ?? []).flatMap((name) => ["--env", name]),
     `${IMAGE}:latest`,
     ...o.command,
@@ -125,28 +114,8 @@ function ghToken(): string | undefined {
   return p.exitCode === 0 ? p.stdout.toString().trim() : undefined;
 }
 
-/** Écarts entre l'image et le checkout (toolchain Rust, CLI wasm-bindgen) ; vide si conforme. */
-export function imageProblems(
-  labels: Record<string, string>,
-  toolchain: string,
-  cargoLock: string,
-): string[] {
-  const problems: string[] = [];
-  const channel = /^channel\s*=\s*"([^"]+)"/m.exec(toolchain)?.[1];
-  const bindgen = /\[\[package\]\]\r?\nname = "wasm-bindgen"\r?\nversion = "([^"]+)"/.exec(
-    cargoLock,
-  )?.[1];
-  if (channel && labels["dev.shenron.rust"] !== channel)
-    problems.push(`Rust ${labels["dev.shenron.rust"] ?? "?"} ≠ rust-toolchain.toml ${channel}`);
-  if (bindgen && labels["dev.shenron.wasm-bindgen"] !== bindgen)
-    problems.push(
-      `wasm-bindgen ${labels["dev.shenron.wasm-bindgen"] ?? "?"} ≠ Cargo.lock ${bindgen}`,
-    );
-  return problems;
-}
-
-/** Vérifie l'image locale contre ce checkout ; lève avec la marche à suivre sinon. */
-export async function checkImage(repo = ROOT): Promise<void> {
+/** Vérifie que l'image de build est présente ; lève avec la marche à suivre sinon. */
+export function checkImage(): void {
   const inspect = Bun.spawnSync(
     ["docker", "image", "inspect", "--format", "{{json .Config.Labels}}", `${IMAGE}:latest`],
     { stdout: "pipe", stderr: "pipe" },
@@ -155,35 +124,23 @@ export async function checkImage(repo = ROOT): Promise<void> {
     throw new Error(
       `${IMAGE}:latest absente : bun scripts/build/container/shenron-build.ts image (dépôt Shenron)`,
     );
-  const labels = JSON.parse(inspect.stdout.toString()) as Record<string, string>;
-  const problems = imageProblems(
-    labels,
-    await Bun.file(join(repo, "rust-toolchain.toml")).text(),
-    await Bun.file(join(repo, "Cargo.lock")).text(),
-  );
-  if (problems.length)
-    throw new Error(`${IMAGE}:latest à reconstruire (Shenron) : ${problems.join("; ")}`);
 }
 
 if (import.meta.main) {
   const argv = process.argv.slice(2);
   if (argv[0] === "--check") {
-    await checkImage();
-    console.log(`${IMAGE}:latest conforme`);
+    checkImage();
+    console.log(`${IMAGE}:latest présente`);
     process.exit(0);
   }
   const split = argv.indexOf("--");
   if (split < 0) {
     console.error(
-      "usage: container.ts [--target-volume NAME] [--env NAME]… [--host-network] [--no-lock] -- CMD… | --check",
+      "usage: container.ts [--env NAME]… [--host-network] [--no-lock] -- CMD… | --check",
     );
     process.exit(64);
   }
   const flags = argv.slice(0, split);
-  const value = (name: string) => {
-    const index = flags.indexOf(name);
-    return index >= 0 ? flags[index + 1] : undefined;
-  };
   const env = flags.flatMap((flag, index) => (flag === "--env" ? [flags[index + 1] ?? ""] : []));
   const token = gitToken(process.env, ghToken);
   if (token && !env.includes("SHENRON_GIT_TOKEN")) env.push("SHENRON_GIT_TOKEN");
@@ -192,7 +149,6 @@ if (import.meta.main) {
     command: argv.slice(split + 1),
     uid: process.getuid?.() ?? 1000,
     gid: process.getgid?.() ?? 1000,
-    targetVolume: value("--target-volume"),
     env,
     hostNetwork: flags.includes("--host-network"),
     lock: !flags.includes("--no-lock"),

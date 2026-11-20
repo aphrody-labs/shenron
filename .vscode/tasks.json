@@ -16,13 +16,6 @@
       "problemMatcher": []
     },
     {
-      "label": "shenron: gates + Rust (VPS)",
-      "type": "shell",
-      "command": "bun scripts/dev/remote-dev.ts gates --rust",
-      "group": "test",
-      "problemMatcher": []
-    },
-    {
       "label": "shenron: dev site (VPS, localhost:3000)",
       "type": "shell",
       "command": "bun scripts/dev/remote-dev.ts dev",

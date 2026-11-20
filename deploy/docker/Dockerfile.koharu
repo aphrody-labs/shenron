@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 # SPDX-License-Identifier: Apache-2.0
-# Runtime image of koharu-web (the Koharu manga page service). The binary is built on the
-# build host: cargo build --release -p koharu-web, then copied to dist/koharu-web/linux-x64/.
+# Runtime image of koharu-web (the Koharu manga page service). The binary is built in
+# aphrody-labs/wiki (Rust, `koharu-web`), then copied to dist/koharu-web/linux-x64/.
 # Build from the repository root: docker build -f deploy/docker/Dockerfile.koharu .
 FROM ubuntu:26.10
 

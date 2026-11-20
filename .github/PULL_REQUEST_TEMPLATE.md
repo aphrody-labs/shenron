@@ -17,7 +17,7 @@ Brief overview of the changes introduced in this PR.
 Describe how the changes were verified:
 
 - [ ] `just check` passes with zero errors
-- [ ] `just lint` passes (clippy & oxlint / bun lint)
+- [ ] `just lint` passes (oxlint)
 - [ ] `just format-check` passes
 - [ ] `just test` passes without test failures
 - [ ] Zero emoji compliance confirmed in code, commit message, and PR text

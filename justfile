@@ -1,48 +1,37 @@
 # SPDX-License-Identifier: Apache-2.0
-# One entry point for the common Bun and Rust tasks of Shenron: `just` lists them.
-# Recipes call the existing scripts (package.json, scripts/, the cargo aliases of
-# .cargo/config.toml) and never duplicate their logic. Names follow package.json
-# (`format:check` -> `format-check`); Rust-only tasks start with `rust-`, and `check`, `lint`,
-# `test` and `format-check` run the Bun side then the Rust side. See docs/development/rust.md.
+# One entry point for the Bun tasks of Shenron: `just` lists them. Recipes call the existing
+# scripts (package.json, scripts/) and never duplicate their logic. Names follow package.json
+# (`format:check` -> `format-check`). Rust is not built here: it lives in aphrody-labs/wiki
+# (see docs/development/rust.md).
 
 # Bun Shell runs every recipe line, on Linux, WSL and Windows alike.
 set shell := ["bun", "exec"]
 set windows-shell := ["bun", "exec"]
 
-# Cargo through the shared wrapper (scripts/build/rust/cargo.ts).
-cargo := "bun scripts/build/rust/cargo.ts"
-
-alias check-rust := rust-check
-alias clippy-rust := rust-lint
-alias test-rust := rust-test
-alias deny-rust := rust-deny
-alias fmt-rust := rust-fmt-check
-
 [private]
 default:
     @just --list --unsorted
 
-# Type-check everything: native bun check (packages and scripts), then cargo check (all crates and targets)
+# Type-check everything: native bun check (packages and scripts)
 [group('all')]
-check: typecheck rust-check
+check: typecheck
 
-# Lint everything: native bun lint, then clippy with warnings denied
+# Lint everything: oxlint on apps, packages and scripts
 [group('all')]
-lint: bun-lint rust-lint
+lint: bun-lint
 
-# Test everything: Bun packages, root scripts, then the Rust crates (nextest)
+# Test everything: Bun packages, then root scripts
 [group('all')]
-test: bun-test test-scripts rust-test
+test: bun-test test-scripts
 
-# Check formatting: native bun fmt, then rustfmt
+# Check formatting: native bun fmt
 [group('all')]
-format-check: bun-format-check rust-fmt-check
+format-check: bun-format-check
 
-# Format everything: native bun fmt, then rustfmt
+# Format everything: native bun fmt
 [group('all')]
 fmt:
     bun scripts/testing/native-quality.ts fmt
-    cargo fmt --all
 
 # Generated files are up to date (OpenAPI, UI tokens, AI contracts)
 [group('all')]
@@ -52,20 +41,9 @@ drift:
     bun packages/ui/scripts/generate-tokens.ts --check
     bun packages/pipeline/scripts/ai/check-contracts.ts
 
-# What the CI runs (ci.yml and rust.yml), in one go
+# What the CI runs (ci.yml), in one go
 [group('all')]
-ci: drift migrate-check typecheck bun-lint bun-test test-scripts rust-fmt-check rust-lint koharu wasm rust-deny
-    bun scripts/build/rust/test.ts --profile ci
-
-# TypeScript to Rust migration gate (migration/rust.toml): every TS file in a unit, ratchet, parity paths
-[group('rust')]
-migrate-check:
-    {{ cargo }} run -q -p shenron-migrate -- check
-
-# Lower the migration ratchet to the TypeScript left
-[group('rust')]
-migrate-ratchet:
-    {{ cargo }} run -q -p shenron-migrate -- ratchet
+ci: drift typecheck bun-lint bun-test test-scripts
 
 # Install the Bun dependencies from the lockfile
 [group('bun')]
@@ -112,7 +90,7 @@ db-games *args="help":
 dev-site:
     bun --filter @aphrody/shenron-site dev
 
-# Remote dev on the build VPS: up | gates [--rust] | dev | stop | sync | doctor | clean-wsl | backup
+# Remote dev on the build VPS: up | gates | dev | stop | sync | doctor | clean-wsl | backup
 [group('bun')]
 remote *args="up":
     bun scripts/dev/remote-dev.ts {{args}}
@@ -141,86 +119,10 @@ build-bot *args:
 entries:
     bun --filter @aphrody/shenron-bot gen:entries
 
-# cargo check of every crate and target (`cargo ck`)
-[group('rust')]
-rust-check:
-    {{ cargo }} ck
-
-# clippy of the workspace, warnings denied (`cargo lint`)
-[group('rust')]
-rust-lint:
-    {{ cargo }} lint
-
-# Tests of every workspace crate through nextest; arguments go to the runner (--profile ci, -E …)
-[group('rust')]
-rust-test *args:
-    bun scripts/build/rust/test.ts {{ args }}
-
-# rustfmt over the workspace
-[group('rust')]
-rust-fmt:
-    cargo fmt --all
-
-# rustfmt --check over the workspace
-[group('rust')]
-rust-fmt-check:
-    cargo fmt --all --check
-
-# cargo deny check: advisories, licences, bans, sources (deny.toml)
-[group('rust')]
-rust-deny:
-    cargo deny check
-
-# Clippy and tests of the `koharu` feature (Shenron adapters over the Koharu engine)
-[group('rust')]
-koharu:
-    {{ cargo }} koharu
-    {{ cargo }} koharu-test
-
-# cargo check of koharu-canvas on wasm32-unknown-unknown (`cargo wasm`)
-[group('rust')]
-wasm:
-    {{ cargo }} wasm
-
-# Build the koharu-canvas WASM into packages/koharu/src/wasm
-[group('rust')]
-wasm-build:
-    bun --filter @aphrody/shenron-koharu build:wasm
-
-# Build the Bevy game of dragon-pixel for the browser and stage it for the site (fr1 or CI only)
-[group('rust')]
-dragon-pixel-wasm:
-    bun scripts/ops/build-dragon-pixel-wasm.ts
-
 # Gate: the site loader references only wasm files and exports that the build produces
-[group('rust')]
+[group('wiki-artifacts')]
 dragon-pixel-wasm-check:
     DRAGON_PIXEL_WASM_STRICT=1 bun test apps/site/tests/dragon-pixel-wasm.test.ts
-
-# Rustdoc of the workspace crates (`cargo docs`)
-[group('rust')]
-rust-doc:
-    {{ cargo }} docs
-
-# Run the MCP server (stdio by default; --http, --public …)
-[group('rust')]
-mcp *args:
-    {{ cargo }} run -p shenron-mcp -- {{ args }}
-
-# Run the shenron command
-[group('rust')]
-cli *args:
-    {{ cargo }} run -p shenron-cli --bin shenron -- {{ args }}
-
-# Build the desktop installer (--target windows-x64|linux-x64, --skip-server, --skip-mcp)
-[group('rust')]
-desktop *args:
-    bun scripts/build/desktop.ts {{ args }}
-
-# Crate manifests inherit version, edition, rust-version and lints from the workspace
-[group('rust')]
-align-check:
-    bun scripts/build/rust/align-crates.ts --check
 
 # Container stack: prepare secrets and environment files (--prod|--dev)
 [group('container')]
@@ -273,28 +175,17 @@ connectors-status:
     bun scripts/ops/setup-agent-connectors.ts --status
 
 
-# Local Docker build into dist/local/ (site|bot|server|cli|mcp|desktop|wasm|image|all; --target linux-x64|windows-x64)
+# Local Docker build into dist/local/ (site|bot|server|image|all; --target linux-x64|windows-x64; image needs the wiki native binaries)
 [group('build-local')]
 build-local component="all" *args="":
     bun scripts/build/local.ts {{ component }} {{ args }}
-
-# Local build: CLI and MCP for linux-x64 and windows-x64
-[group('build-local')]
-build-local-cli *args="":
-    bun scripts/build/local.ts cli {{ args }}
-    bun scripts/build/local.ts mcp {{ args }}
-
-# Local build: Windows installer (Shenron Studio, NSIS) cross-built in Docker
-[group('build-local')]
-build-local-desktop *args="":
-    bun scripts/build/local.ts desktop --target windows-x64 {{ args }}
 
 # Private-data guard of the local build (--static --context --artifacts <dir>)
 [group('build-local')]
 build-local-guard *args="--static --context":
     bun scripts/build/local-guard.ts {{ args }}
 
-# Native Windows steps (signing, NSIS on the host): pwsh scripts/build/local-windows.ps1
+# Native Windows steps (doctor, smoke, signing on the host): pwsh scripts/build/local-windows.ps1
 [group('build-local')]
 build-local-windows *args="":
     pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/build/local-windows.ps1 {{ args }}
@@ -318,12 +209,6 @@ deploy-check:
     bun scripts/ops/verify-player-deployment-gate.ts --episode 875
     bun scripts/ops/verify-player-deployment-gate.ts --episode 1
 
-# shenron-deployd gates (standalone crate, run on the builder fr1, never on the workstation)
-[group('deploy')]
-deployd-check:
-    cd crates/shenron-deployd && cargo clippy --all-targets -- -D warnings
-    cd crates/shenron-deployd && cargo test
-
 # Dragon Ball FighterZ: full dump, asset conversion, Zstd compression, and R2 CDN sync
 [group('games')]
 dbfz-pipeline *args="":
@@ -333,21 +218,6 @@ dbfz-pipeline *args="":
 [group('games')]
 compression-bench:
     bun scripts/ops/compression-benchmark.ts
-
-# Write MAP.tsv: areas, tracked files and bytes, tier and gate of the commit (agents read it first)
-[group('all')]
-map:
-    cargo xtask map
-
-# Fail when MAP.tsv no longer matches the commit
-[group('all')]
-map-check:
-    cargo xtask map --check
-
-# List scripts under scripts/ that nothing references (exit 1 when any); full inventory: cargo xtask scripts
-[group('all')]
-scripts-orphans:
-    cargo xtask scripts --orphans
 
 # Fail when a workspace manifest pins a version the root catalog already defines
 [group('tools')]
@@ -482,21 +352,6 @@ crawl-site *args:
 [group('tools')]
 capture-page *args:
     bun scripts/ops/capture-page.ts {{ args }}
-
-# Write .github/workflows/*.yml from crates/xtask/src/workflows.rs (fr1 or CI)
-[group('all')]
-workflows:
-    cargo xtask workflows
-
-# Fail when a workflow file differs from its definition or has none
-[group('all')]
-workflows-check:
-    cargo xtask workflows --check
-
-# Drift gate of deploy/environment.json in Rust (same rules and messages as scripts/deploy/environment.ts --check)
-[group('deploy')]
-env-check:
-    cargo xtask env-check
 
 # Read-only production source readiness audit
 [group('tools')]
@@ -668,17 +523,19 @@ wiki-scene-qualify-video manifest output:
 databooks-translate *args="--statut":
     bun scripts/ops/translate-databooks-corpus.ts {{ args }}
 
-# This host's rustc and Bun (version, channel, revision) against deploy/environment.json
-[group('deploy')]
-env-verify-host:
-    cargo xtask env-verify-host
+# Stage the dragon-pixel wasm built in aphrody-labs/wiki (SHENRON_DRAGON_PIXEL_WASM_DIR or <wiki>/target/wasm/dragon-pixel)
+[group('wiki-artifacts')]
+dragon-pixel-stage *args:
+    bun scripts/ops/stage-dragon-pixel-wasm.ts {{ args }}
 
-# UI migration ledger: shadcn-style wrappers, Base UI primitive, GPUI target and parity state (migration/ui.json)
-[group('rust')]
-ui-ledger:
-    bun scripts/migration/ui-ledger.ts
+# Copy the wasm modules built in aphrody-labs/wiki into the tracked src/wasm trees (koharu, engine, shenron-re)
+[group('wiki-artifacts')]
+wasm-sync:
+    bun packages/koharu/scripts/sync-wasm.ts
+    bun packages/engine/scripts/sync-wasm.ts
+    bun packages/pipeline/scripts/sync-re-wasm.ts
 
-# Fail when migration/ui.json is stale
-[group('rust')]
-ui-ledger-check:
-    bun scripts/migration/ui-ledger.ts --check
+# Native FFI TypeScript tables generated by aphrody-labs/wiki (--check fails when stale)
+[group('wiki-artifacts')]
+native-generate *args:
+    bun packages/native/scripts/generate.ts {{ args }}

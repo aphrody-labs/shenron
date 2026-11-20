@@ -1,8 +1,8 @@
 # syntax=docker/dockerfile:1.7
 # SPDX-License-Identifier: Apache-2.0
-# admin. service: the shenron-admin binary and the Rust web bundle.
-# Build from the repository root after: cargo build --release -p shenron-admin and
-# crates/shenron-admin-ui/build-web.sh dist/admin-web
+# admin. service: the shenron-admin binary and its web bundle.
+# Both are built in aphrody-labs/wiki (Rust). Build from the repository root after copying
+# shenron-admin to target/release/ and the web bundle to dist/admin-web.
 FROM ubuntu:26.10
 RUN apt-get update \
  && apt-get install -y --no-install-recommends ca-certificates curl \
