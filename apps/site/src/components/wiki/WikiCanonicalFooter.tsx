@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import type { ReactNode } from "react";
-import Link from "next/link";
+import { GatedWrap } from "@/components/GatedLink";
 import { T } from "@/components/T";
 import type { WikiSource } from "@/lib/shenron";
 import { mergeArticleAndColumnSources } from "@/lib/wiki-internal-sources";
@@ -40,7 +40,7 @@ function sourceKindBadgeKey(kind: string): string {
  */
 const EMPTY_FACTS: readonly CanonicalFactEntry[] = [];
 
-export function WikiCanonicalFooter({
+export async function WikiCanonicalFooter({
   facts = EMPTY_FACTS,
   sources,
   article,
@@ -98,13 +98,13 @@ export function WikiCanonicalFooter({
             );
 
             return fact.href ? (
-              <Link
+              <GatedWrap
                 key={fact.key}
                 href={fact.href}
                 className="group block rounded-xl border border-dbz-blue/25 bg-dbz-blue/[0.05] p-4 transition-colors hover:border-dbz-orange/50 hover:bg-dbz-orange/[0.06]"
               >
                 {inner}
-              </Link>
+              </GatedWrap>
             ) : (
               <div key={fact.key} className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
                 {inner}
@@ -129,7 +129,7 @@ export function WikiCanonicalFooter({
               const refNum = s.n ?? idx + 1;
               return (
                 <li key={`${refNum}-${s.url}`} id={`ref-${refNum}`}>
-                  <Link
+                  <GatedWrap
                     href={s.url!}
                     className="group flex h-full items-start gap-3 rounded-xl border border-white/10 bg-white/[0.025] p-3.5 text-sm transition-all hover:border-dbz-orange/50 hover:bg-dbz-orange/[0.06]"
                   >
@@ -150,7 +150,7 @@ export function WikiCanonicalFooter({
                         </span>
                       </span>
                     </span>
-                  </Link>
+                  </GatedWrap>
                 </li>
               );
             })}

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import Link from "next/link";
+import { GatedLink } from "@/components/GatedLink";
 import { T } from "@/components/T";
 
 interface KiQuoteSpec {
@@ -259,20 +259,20 @@ export function KiEncyclopediaSection() {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link
+            <GatedLink
               href="/wiki/databooks/9?page=92"
               className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-dbz-orange/40 bg-dbz-orange/15 px-3.5 py-2 font-mono text-xs font-bold text-dbz-orange transition-colors hover:bg-dbz-orange hover:text-black"
             >
               <span>Super Exciting Guide (p. 92)</span>
               <span aria-hidden>-&gt;</span>
-            </Link>
-            <Link
+            </GatedLink>
+            <GatedLink
               href="/wiki/databooks/19?page=49"
               className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-white/15 bg-white/[0.04] px-3.5 py-2 font-mono text-xs text-white/80 transition-colors hover:border-dbz-blue/50 hover:text-white"
             >
               <span>Chōzenshū 4 (p. 49)</span>
               <span aria-hidden>-&gt;</span>
-            </Link>
+            </GatedLink>
           </div>
         </div>
 
@@ -298,7 +298,7 @@ export function KiEncyclopediaSection() {
                     <T k={q.translationKey} />
                   </p>
                 </div>
-                <Link
+                <GatedLink
                   href={q.sourceHref}
                   className="inline-flex items-center gap-1 font-mono text-[11px] text-dbz-blue-light transition-colors hover:text-dbz-orange hover:underline"
                 >
@@ -306,7 +306,7 @@ export function KiEncyclopediaSection() {
                     <T k={q.sourceLabelKey} />
                   </span>
                   <span aria-hidden>-&gt;</span>
-                </Link>
+                </GatedLink>
               </blockquote>
             ))}
           </div>
@@ -346,7 +346,7 @@ export function KiEncyclopediaSection() {
                 </div>
                 <div className="flex flex-wrap gap-2 pt-1">
                   {comp.links.map((lnk) => (
-                    <Link
+                    <GatedLink
                       key={lnk.href}
                       href={lnk.href}
                       className="inline-flex min-h-8 items-center gap-1 rounded-full border border-white/15 bg-black/50 px-3 py-1 font-mono text-[11px] text-white/85 transition-colors hover:border-dbz-orange hover:text-dbz-orange"
@@ -355,7 +355,7 @@ export function KiEncyclopediaSection() {
                         <T k={lnk.labelKey} />
                       </span>
                       <span aria-hidden>-&gt;</span>
-                    </Link>
+                    </GatedLink>
                   ))}
                 </div>
               </div>
@@ -385,7 +385,7 @@ export function KiEncyclopediaSection() {
                     <T k={law.bodyKey} />
                   </p>
                 </div>
-                <Link
+                <GatedLink
                   href={law.sourceHref}
                   className="inline-flex items-center gap-1 font-mono text-[11px] text-dbz-blue-light transition-colors hover:text-dbz-orange hover:underline"
                 >
@@ -393,7 +393,7 @@ export function KiEncyclopediaSection() {
                     <T k={law.sourceLabelKey} />
                   </span>
                   <span aria-hidden>-&gt;</span>
-                </Link>
+                </GatedLink>
               </div>
             ))}
           </div>
@@ -438,7 +438,7 @@ export function KiEncyclopediaSection() {
                   <T k={form.bodyKey} />
                 </p>
               </div>
-              <Link
+              <GatedLink
                 href={form.sourceHref}
                 className="inline-flex items-center gap-1 border-t border-white/10 pt-2.5 font-mono text-[11px] text-dbz-blue-light transition-colors hover:text-dbz-orange hover:underline"
               >
@@ -446,7 +446,7 @@ export function KiEncyclopediaSection() {
                   <T k={form.sourceLabelKey} />
                 </span>
                 <span aria-hidden>-&gt;</span>
-              </Link>
+              </GatedLink>
             </div>
           ))}
         </div>

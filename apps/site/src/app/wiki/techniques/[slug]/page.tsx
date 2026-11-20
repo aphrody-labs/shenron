@@ -12,6 +12,7 @@ import { getShenronTechnique, getShenronTechniques } from "@/lib/shenron";
 import { assetUrl } from "@/lib/db-universe";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { GatedLink } from "@/components/GatedLink";
 import { T } from "@/components/T";
 import type { Metadata } from "next";
 import {
@@ -266,12 +267,12 @@ export default async function TechniqueDetailPage({
                       {visiblePractitioners.map((p, idx) => (
                         <span key={p.id}>
                           {idx > 0 && <span className="text-white/35"> · </span>}
-                          <Link
+                          <GatedLink
                             href={`/wiki/characters/${p.slug}`}
                             className="text-white/85 hover:text-dbz-orange hover:underline transition-colors"
                           >
                             {p.name}
-                          </Link>
+                          </GatedLink>
                         </span>
                       ))}
                       {extraPractitionerCount > 0 && (

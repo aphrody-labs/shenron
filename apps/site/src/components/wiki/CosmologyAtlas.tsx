@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import Link from "next/link";
+import { GatedLink } from "@/components/GatedLink";
 import { T } from "@/components/T";
 import { WikiImg } from "@/components/wiki/WikiImg";
 import type { Location } from "@/lib/db-universe";
@@ -222,20 +222,20 @@ export function CosmologyAtlas({ locations }: { locations: readonly Location[] }
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link
+            <GatedLink
               href="/wiki/databooks/3?page=71"
               className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-dbz-orange/40 bg-dbz-orange/15 px-3.5 py-2 font-mono text-xs font-bold text-dbz-orange transition-colors hover:bg-dbz-orange hover:text-black"
             >
               <span>Daizenshuu 4 (p. 71–72)</span>
               <span aria-hidden>→</span>
-            </Link>
-            <Link
+            </GatedLink>
+            <GatedLink
               href="/wiki/databooks/3?page=10"
               className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-white/15 bg-white/[0.04] px-3.5 py-2 font-mono text-xs text-white/80 transition-colors hover:border-dbz-blue/50 hover:text-white"
             >
               <span>Croquis Toriyama (D4 p. 10)</span>
               <span aria-hidden>→</span>
-            </Link>
+            </GatedLink>
           </div>
         </div>
 
@@ -270,12 +270,12 @@ export function CosmologyAtlas({ locations }: { locations: readonly Location[] }
                       <T k={stratum.titleKey} />
                     </h3>
                   </div>
-                  <Link
+                  <GatedLink
                     href={stratum.guideHref}
                     className="shrink-0 rounded-md border border-white/12 bg-black/40 px-2.5 py-1 font-mono text-[11px] text-dbz-blue-light transition-colors hover:border-dbz-orange/50 hover:text-dbz-orange"
                   >
                     {stratum.guideLabel} →
-                  </Link>
+                  </GatedLink>
                 </div>
 
                 <p className="mt-2.5 text-xs leading-relaxed text-white/75 sm:text-sm">
@@ -285,7 +285,7 @@ export function CosmologyAtlas({ locations }: { locations: readonly Location[] }
                 <div className="mt-3.5 flex flex-wrap gap-2">
                   {linked.map(({ slug, loc, fallbackLabel }) =>
                     loc ? (
-                      <Link
+                      <GatedLink
                         key={slug}
                         href={`/wiki/locations/${loc.slug}`}
                         className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-white/15 bg-black/50 px-3.5 py-1.5 text-xs font-semibold text-white/90 transition-all hover:border-dbz-orange hover:bg-dbz-orange/15 hover:text-white"
@@ -294,7 +294,7 @@ export function CosmologyAtlas({ locations }: { locations: readonly Location[] }
                         <span className="text-dbz-orange" aria-hidden>
                           →
                         </span>
-                      </Link>
+                      </GatedLink>
                     ) : (
                       <span
                         key={slug}
@@ -332,13 +332,13 @@ export function CosmologyAtlas({ locations }: { locations: readonly Location[] }
                     <T k={law.bodyKey} />
                   </p>
                 </div>
-                <Link
+                <GatedLink
                   href={law.sourceHref}
                   className="inline-flex items-center gap-1 font-mono text-[11px] text-dbz-blue-light hover:text-dbz-orange hover:underline transition-colors"
                 >
                   <span>{law.sourceLabel}</span>
                   <span aria-hidden>→</span>
-                </Link>
+                </GatedLink>
               </div>
             ))}
           </div>
@@ -364,7 +364,7 @@ export function CosmologyAtlas({ locations }: { locations: readonly Location[] }
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {cosmologyCards.map((loc) => (
-              <Link
+              <GatedLink
                 key={loc.slug}
                 href={`/wiki/locations/${loc.slug}`}
                 className="group dbz-panel flex flex-col overflow-hidden transition-all duration-200 hover:border-dbz-orange/60"
@@ -409,7 +409,7 @@ export function CosmologyAtlas({ locations }: { locations: readonly Location[] }
                     </span>
                   </div>
                 </div>
-              </Link>
+              </GatedLink>
             ))}
           </div>
         </div>

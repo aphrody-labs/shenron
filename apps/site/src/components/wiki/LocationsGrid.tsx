@@ -5,6 +5,7 @@ import { useMemo, useState } from "react";
 import type { Location } from "@/lib/db-universe";
 import { useLangue } from "@/lib/i18n/client";
 import { useT } from "@/components/T";
+import { onTablistKeyDown } from "@/lib/tablist-keys";
 import { wikiCatalogueMessages } from "@/lib/wiki-catalogue-messages";
 import { mergeArticleAndColumnEvents } from "@/lib/wiki-internal-sources";
 import { isCosmologyLocation } from "./CosmologyAtlas";
@@ -111,6 +112,7 @@ export function LocationsGrid({ locations }: { locations: Location[] }) {
         <div
           role="tablist"
           aria-label={tr("wiki.locationsHub.catalogueHeading")}
+          onKeyDown={onTablistKeyDown}
           className="flex flex-wrap gap-2"
         >
           {scopeTabs.map((tab) => {
@@ -121,6 +123,7 @@ export function LocationsGrid({ locations }: { locations: Location[] }) {
                 type="button"
                 role="tab"
                 aria-selected={active}
+                tabIndex={active ? 0 : -1}
                 onClick={() => {
                   setScope(tab.key);
                   setSelectedRealm("ALL");

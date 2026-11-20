@@ -142,8 +142,11 @@ describe("liens vers les rubriques gatables", () => {
           // `href:` passé dans ses `items` est déjà neutralisé à la source.
           const parBrisure = /<Breadcrumbs\b/.test(src);
           // Table de liens (`href: "/wiki/x"`) : elle est forcément rendue plus
-          // loin dans le fichier, où la protection est visible.
-          const parEnveloppe = /<(?:Gated(?:Link|Wrap)|ClientGatedWrap)\b/.test(src);
+          // loin dans le fichier, où la protection est visible. `WikiCanonicalFooter`
+          // passe chacun de ses `href` par `GatedWrap` : ses repères sont protégés.
+          const parEnveloppe = /<(?:Gated(?:Link|Wrap)|ClientGatedWrap|WikiCanonicalFooter)\b/.test(
+            src,
+          );
           const nus = [...src.matchAll(re)].filter((m) => {
             const i = m.index ?? 0;
             if (estProtege(src, i)) return false;
@@ -158,6 +161,12 @@ describe("liens vers les rubriques gatables", () => {
     }
 
     expect(offenders).toEqual([]);
+  });
+
+  test("WikiCanonicalFooter n'émet aucun lien nu : repères et sources passent par GatedWrap", () => {
+    const src = readFileSync(join(COMPOSANTS, "wiki", "WikiCanonicalFooter.tsx"), "utf8");
+    expect(src).not.toMatch(/<Link\b/);
+    expect(src.match(/<GatedWrap\b/g)?.length).toBe(2);
   });
 
   test("les grilles propres à une rubrique ne sont importées que par elle", () => {

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-import Link from "next/link";
+import { GatedLink } from "@/components/GatedLink";
 import { T } from "@/components/T";
 import type { Item } from "@/lib/db-universe";
 
@@ -193,27 +193,27 @@ export function ItemsAtlas({ items }: { items: readonly Item[] }) {
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <Link
+            <GatedLink
               href="/wiki/databooks/4?page=169"
               className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-dbz-orange/40 bg-dbz-orange/15 px-3.5 py-2 font-mono text-xs font-bold text-dbz-orange transition-colors hover:bg-dbz-orange hover:text-black"
             >
               <span>Daizenshuu 7 (p. 169–216)</span>
               <span aria-hidden>→</span>
-            </Link>
-            <Link
+            </GatedLink>
+            <GatedLink
               href="/wiki/databooks/19?page=177"
               className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-white/15 bg-white/[0.04] px-3.5 py-2 font-mono text-xs text-white/80 transition-colors hover:border-dbz-blue/50 hover:text-white"
             >
               <span>Chōzenshū 4 (p. 177–232)</span>
               <span aria-hidden>→</span>
-            </Link>
-            <Link
+            </GatedLink>
+            <GatedLink
               href="/wiki/databooks/3?page=124"
               className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-white/15 bg-white/[0.04] px-3.5 py-2 font-mono text-xs text-white/80 transition-colors hover:border-dbz-blue/50 hover:text-white"
             >
               <span>Machines D4 (p. 124–158)</span>
               <span aria-hidden>→</span>
-            </Link>
+            </GatedLink>
           </div>
         </div>
 
@@ -247,12 +247,12 @@ export function ItemsAtlas({ items }: { items: readonly Item[] }) {
                       <T k={pillar.titleKey} />
                     </h3>
                   </div>
-                  <Link
+                  <GatedLink
                     href={pillar.guideHref}
                     className="shrink-0 rounded-md border border-white/12 bg-black/40 px-2.5 py-1 font-mono text-[11px] text-dbz-blue-light transition-colors hover:border-dbz-orange/50 hover:text-dbz-orange"
                   >
                     {pillar.guideLabel} →
-                  </Link>
+                  </GatedLink>
                 </div>
 
                 <p className="mt-2.5 text-xs leading-relaxed text-white/75 sm:text-sm">
@@ -262,7 +262,7 @@ export function ItemsAtlas({ items }: { items: readonly Item[] }) {
                 <div className="mt-3.5 flex flex-wrap gap-2">
                   {linked.map(({ slug, item, fallbackLabel }) =>
                     item ? (
-                      <Link
+                      <GatedLink
                         key={slug}
                         href={`/wiki/items/${item.slug}`}
                         className="inline-flex min-h-9 items-center gap-1.5 rounded-full border border-white/15 bg-black/50 px-3.5 py-1.5 text-xs font-semibold text-white/90 transition-all hover:border-dbz-orange hover:bg-dbz-orange/15 hover:text-white"
@@ -271,7 +271,7 @@ export function ItemsAtlas({ items }: { items: readonly Item[] }) {
                         <span className="text-dbz-orange" aria-hidden>
                           →
                         </span>
-                      </Link>
+                      </GatedLink>
                     ) : (
                       <span
                         key={slug}
@@ -308,13 +308,13 @@ export function ItemsAtlas({ items }: { items: readonly Item[] }) {
                     <T k={law.bodyKey} />
                   </p>
                 </div>
-                <Link
+                <GatedLink
                   href={law.sourceHref}
                   className="inline-flex items-center gap-1 font-mono text-[11px] text-dbz-blue-light transition-colors hover:text-dbz-orange hover:underline"
                 >
                   <span>{law.sourceLabel}</span>
                   <span aria-hidden>→</span>
-                </Link>
+                </GatedLink>
               </div>
             ))}
           </div>
