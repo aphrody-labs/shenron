@@ -8,7 +8,7 @@ import { useT } from "@/components/T";
 import { onTablistKeyDown } from "@/lib/tablist-keys";
 import { wikiCatalogueMessages } from "@/lib/wiki-catalogue-messages";
 import { mergeArticleAndColumnEvents } from "@/lib/wiki-internal-sources";
-import { isCosmologyLocation } from "./CosmologyAtlas";
+import { isCosmologyLocation } from "@/lib/cosmology-location";
 import { WikiCatalogueToolbar } from "./WikiCatalogueToolbar";
 import { WikiDiscoveryCard } from "./WikiDiscoveryCard";
 import styles from "./wiki-editorial.module.css";

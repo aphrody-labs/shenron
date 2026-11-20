@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 import { describe, expect, test } from "bun:test";
-import { isCosmologyLocation } from "../src/components/wiki/CosmologyAtlas";
+import { isCosmologyLocation } from "../src/lib/cosmology-location";
 import {
   isSuppressedTocSectionLabel,
   mergeArticleAndColumnEvents,
