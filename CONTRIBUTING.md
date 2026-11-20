@@ -4,7 +4,7 @@ Thank you for contributing to Shenron. Shenron is the sovereign technical platfo
 
 ## Architecture and Core Principles
 
-- **Runtime Pureness**: 100% Upstream Bun (version pinned by package.json#packageManager) and Rust 2024. Node.js, npm, yarn, and pnpm are strictly prohibited.
+- **Runtime Pureness**: 100% Upstream Bun (version pinned by package.json#packageManager) and TypeScript. Node.js, npm, yarn, and pnpm are strictly prohibited. Rust changes go to [aphrody-labs/wiki](https://github.com/aphrody-labs/wiki).
 - **Strict Zero-Emoji Policy**: No emojis in source code, documentation, pull requests, commit messages, or log outputs.
 - **No Human In The Loop (NHITL)**: Scripts and workflows must run non-interactively with deterministic exits and comprehensive error logs.
 - **Immutable References**: Factual data, IDs, and cryptographic hashes must originate from verified upstream references.
@@ -34,6 +34,6 @@ Thank you for contributing to Shenron. Shenron is the sovereign technical platfo
 
 ## Pull Request Lifecycle
 
-- Pull requests trigger continuous integration workflows on GitHub Actions checking formatting, type safety, clippy rules, and test suites.
+- Pull requests trigger continuous integration workflows on GitHub Actions checking drift, formatting, type safety, oxlint, and the Bun test suites (`just ci` runs the same set locally).
 - All checks must pass before merging.
 - Squash and merge is the preferred merge strategy to maintain a clean linear Git history.

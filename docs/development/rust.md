@@ -1,57 +1,38 @@
-# Rust : style, durées de vie et boucle de travail des agents
+# Rust : déplacé dans aphrody-labs/wiki
 
-Contrat Rust de l'espace de travail. Les niveaux de lint vivent dans `[workspace.lints]` de `Cargo.toml`, les réglages dans `clippy.toml` et `rustfmt.toml`, la chaîne dans `rust-toolchain.toml`. Ce texte ne répète pas ces fichiers : il dit comment écrire du code qui les passe et comment les agents le produisent. Carte du dépôt : `MAP.tsv` (`just map`).
+Shenron est un dépôt Bun et TypeScript. L'espace de travail Rust (moteur, crates `shenron-*` et `koharu-*`, `dragon-pixel`, CLI, serveur MCP, FFI, `shenron-deployd`, `shenron-edge`, studio Koharu, bureau Tauri, `xtask`, configuration cargo, clippy, rustfmt, nextest) vit dans `github.com/aphrody-labs/wiki`, extrait en `../wiki` (variable `SHENRON_WIKI_DIR`). Les règles de style, la chaîne et la porte des crates y sont définies ; ce dépôt n'a plus de `Cargo.toml`, de `crates/` ni de workflow Rust.
 
-## Style (règles Zed, lues dans `zed-industries/zed` AGENTS.md le 2026-11-19)
+## Données
 
-- Erreurs : pas de `unwrap()` hors tests (lint `unwrap_used` refusé), pas de `expect()` pour masquer une erreur récupérable ; propager avec `?`. Jamais `let _ =` sur un appel faillible : propager, `match`, ou journaliser l'erreur.
-- Indexation : préférer `get()` et les itérateurs à `slice[i]` quand l'indice vient de l'extérieur.
-- Modules : `src/nom.rs` à côté de `src/nom/`, jamais `mod.rs`. Ajouter au fichier existant plutôt que créer de petits fichiers.
-- Noms complets (`queue`, pas `q`), sauf notation mathématique établie dans les noyaux numériques.
-- Commentaires : seulement le pourquoi non évident. Un paragraphe pour justifier un contournement signale un code faux : corriger le code.
-- Asynchrone : cloner par masquage dans le bloc lancé (`let state = state.clone(); async move { .. }`).
+`data/` reste ici : c'est le contenu Dragon Ball canonique, disposition inchangée. Le dépôt wiki le lit par `../shenron/data` (variable `SHENRON_DATA_DIR`).
 
-## Propriété et durées de vie
+## Comment les scripts Bun consomment la sortie de wiki
 
-- Une donnée a un seul propriétaire ; le nettoyage passe par `Drop`, jamais par un appel manuel à chaque sortie.
-- Les ressources confiées à une bibliothèque C ou à un rappel asynchrone (fichier, socket, poignée libuv ou CEF) restent vivantes jusqu'au rappel de fermeture : `Box::leak` puis reprise dans le rappel, ou un compteur de références, jamais un `Box` qui tombe en fin de bloc.
-- Structures plates et tranches `&[u8]` aux frontières ; `#[repr(C)]` uniquement pour l'ABI C (`shenron-ffi`). Chaque `unsafe` tient sur un bloc court avec un commentaire `SAFETY:` qui dit quel invariant le rend sûr.
-- Pièges vus lors du portage de Bun en Rust (bun.com/blog/bun-in-rust) : jamais d'effet de bord dans `debug_assert!` (supprimé en release) ; `bytemuck::cast_slice` panique sur une longueur impaire (tronquer à `len & !1`) ; les vérifications de bornes restent en release, une constante provisoire devient un plafond réel.
+Rien n'est compilé ici. `scripts/build/wiki-artifacts.ts` résout les sorties du dépôt wiki, échoue avec la marche à suivre quand elles manquent, et ne lance jamais cargo.
 
-## Builds et portes
-
-- Builds Rust sur `fr1` seulement, jamais sur le poste : `nice -n 19 ionice -c3 cargo ... -j2`, une compilation à la fois par répertoire cible.
-- Porte d'une crate : la colonne `gate` de `MAP.tsv` (`cargo clippy -p <crate> --all-targets -- -D warnings`) ; porte complète : `just check`, `just lint`, `just test`.
-- Crates autonomes hors espace de travail, avec leur propre `Cargo.lock` : `shenron-deployd`, `shenron-tv`.
-
-## Boucle des agents
-
-Le travail large passe par des boucles, pas par des agents à mandat général (« remplacer tout X ») :
-
-1. une file de travail écrite (erreurs du compilateur groupées par crate, tests en échec, lignes d'audit), éléments petits et disjoints ;
-2. un implémenteur par élément, sans écriture git ni `cargo` concurrent ;
-3. deux relecteurs adverses, chacun dans son propre contexte, qui ne voient que le diff et doivent trouver pourquoi il est faux ; ils rejettent les bouchons écrits pour compiler, les tests sautés ou supprimés, et les contournements justifiés par un long commentaire ;
-4. un correcteur applique leurs constats ; la porte tourne une fois, puis le commit se fait par chemins explicites (`git commit -- <chemins>`).
-
-Essai sur trois éléments avant d'élargir. Quand la même erreur revient, on corrige la consigne de la boucle, pas la sortie.
-
-## `cargo xtask` et `just` (relevé du 2026-11-19)
-
-- Modèle : `matklad/cargo-xtask` (tête `1559f86ece`, 2025-10-28) : une crate binaire de l'espace de travail, appelée par l'alias `xtask = "run --package xtask --"`, sans outil à installer.
-- Zed (`zed-industries/zed`, tête `0cc1ffb6b3`, 2026-11-19) : `tooling/xtask` avec `src/tasks/` (`clippy.rs`, `licenses.rs`, `package_conformity.rs`, `workflow_checks.rs`) et `src/tasks/workflows/`, un fichier Rust par workflow GitHub Actions (`run_tests.rs`, `release.rs`, `deploy_docs.rs`...) : la CI est générée par `xtask`, pas écrite à la main.
-- rust-analyzer (`rust-lang/rust-analyzer`, tête `aa19822928`, 2026-11-19) : `xtask/src/` couvre `codegen`, `dist`, `release`, `publish`, `metrics`, `pgo`, `tidy`.
-- `just` 1.59.0 (dernière publication `casey/just`, 2026-10-15), version installée sur le poste.
-
-Règle du dépôt : `just` est la seule entrée humaine et agent ; une recette appelle soit `cargo xtask <tâche>` (logique de dépôt, déterministe, en Rust : `map`, `scripts`), soit un script Bun encore légitime. Un script sans recette, sans import et sans test est supprimé (`just scripts-orphans`). Suite prévue, dans l'ordre : générer `.github/workflows/*.yml` depuis `xtask` comme Zed, puis porter le contrôle de dérive des versions (`scripts/deploy/environment.ts`) et la publication de manifestes signés (`shenron-deployd publish`) derrière `cargo xtask`.
-
-## Chaîne de build du flux de déploiement (relevé du 2026-11-19)
-
-| Sujet | État lu | Source |
+| Variable | Contenu | Défaut |
 | --- | --- | --- |
-| Scripts Rust (`cargo script`, RFC 3424) | instable : problème de suivi `rust-lang/cargo#12207` ouvert (dernière activité 2026-11-09) | `gh api` |
-| Tâches de dépôt en Rust | `cargo xtask` (`map`, `scripts`, `workflows`, `env-check`) | `crates/xtask` |
-| Profils Rust | `release` : LTO thin, 16 unités ; `production` : LTO fat, 1 unité, symboles retirés ; `production-abort` : `panic = "abort"` pour les exécutables autonomes, jamais pour `shenron-ffi` | `Cargo.toml` |
-| Bun stable 1.4.5 (`bun-v1.4.5`, révision `a7733435c`) | `--compile` avec `--bytecode`, `--bytecode-order`, `--compile-jit-policy` ; pas de `--aot` ni de `--trim` | `bun build --help` de la version publiée, sur fr1 |
-| Bun canary installé sur fr1 et prd (`1.4.5-canary.1+6db952080`) | ajoute `--aot`, `--trim`, `--trim-locales`, `--explain`, `--obfuscate` | `bun build --help` sur chaque hôte |
+| `SHENRON_WIKI_DIR` | extraction de `aphrody-labs/wiki` | `../wiki` |
+| `SHENRON_NATIVE_DIR` | binaires natifs : `shenron-mcp`, `libshenron_ffi.so`, `koharu-sdk`, `shenron_ffi.dll` | `<wiki>/target` |
+| `SHENRON_KOHARU_WASM_DIR`, `SHENRON_ENGINE_WASM_DIR`, `SHENRON_RE_WASM_DIR` | modules wasm de Koharu, du moteur et de `shenron-re` | sous `<wiki>` |
+| `SHENRON_DRAGON_PIXEL_WASM_DIR` | build wasm de dragon-pixel | `<wiki>/target/wasm/dragon-pixel` |
+| `SHENRON_NATIVE_GENERATED_DIR` | TypeScript généré par specta | sous `<wiki>` |
+| `SHENRON_THEME_DIR` | thèmes GPUI natifs (`shenron.json`, `compose-m3-springs.json`) | `<wiki>/crates/shenron-theme/themes` |
+| `SHENRON_DESKTOP_DIR` | application bureau | sous `<wiki>` |
 
-Conséquence : `scripts/build/compile-mode.ts` choisit `--aot` seulement si le Bun qui compile l'annonce ; avec le Bun stable épinglé dans `deploy/environment.json` et `Dockerfile.build`, le mode effectif est `--bytecode`. Les hôtes compilent avec le canary, donc la version épinglée et la version réellement utilisée diffèrent : `deploy/environment.json` porte désormais le canal et la révision de Bun ; `cargo xtask env-verify-host` et `scripts/deploy/environment.ts --verify-host` signalent un hôte dont le canal ou la révision diffèrent.
+Recettes `just` du groupe `wiki-artifacts` :
+
+- `just wasm-sync` : `packages/koharu/scripts/sync-wasm.ts`, `packages/engine/scripts/sync-wasm.ts` et `packages/pipeline/scripts/sync-re-wasm.ts` copient les wasm dans les arbres `src/wasm` suivis ;
+- `just native-generate` : `packages/native/scripts/generate.ts` copie le TypeScript généré par specta (`--check` échoue s'il est périmé) ;
+- `just dragon-pixel-stage` : `scripts/ops/stage-dragon-pixel-wasm.ts` prépare le wasm de dragon-pixel (noms hachés, manifeste) ;
+- `just dragon-pixel-wasm-check` : le chargeur du site ne référence que des fichiers et exports produits par le build.
+
+Image et déploiement : `scripts/deploy/native-artifacts.ts digest|stage` fournit l'empreinte (clé `native` de la lane `server` dans `deploy/environment.json`) et la mise en place des trois binaires natifs ; le build Docker les reçoit par le contexte nommé `native` (`docker-bake.hcl`, `NATIVE_DIR`).
+
+## Portes de ce dépôt
+
+`just check`, `just lint`, `just test`, `just format-check` et `just ci` sont des recettes Bun seules. La version de release vient du `package.json` racine (`scripts/release/check-version.ts`).
+
+## Bun compilé
+
+`scripts/build/compile-mode.ts` choisit `--aot` seulement si le Bun qui compile l'annonce ; avec le Bun stable épinglé dans `deploy/environment.json` et `Dockerfile.build`, le mode effectif est `--bytecode`. `deploy/environment.json` porte le canal et la révision de Bun ; `bun scripts/deploy/environment.ts --verify-host` signale un hôte dont le canal ou la révision diffèrent.

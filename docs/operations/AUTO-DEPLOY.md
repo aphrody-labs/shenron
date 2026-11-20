@@ -23,20 +23,24 @@ bas ne sont pas installés.
 
 ## Environnement unique
 
-`deploy/environment.json` est la seule définition : versions (Rust, Bun, sccache, image de
+`deploy/environment.json` est la seule définition : versions (Bun, image de
 base), caches, paquets et `ENV` du runtime, services et sondes, lanes (entrées, sorties,
 services atteints), classification des chemins, holds. `bun scripts/deploy/environment.ts
---check` échoue si `rust-toolchain.toml`, `packageManager`, `Dockerfile.build` ou
+--check` échoue si `packageManager`, `Dockerfile.build` ou
 `deploy/docker/Dockerfile` divergent ; `lanes.ts --check` échoue si un chemin suivi n'est pas
 classé. Les deux tournent dans `ci.yml`.
 
 Chemin primaire : **natif sur l'hôte de production** (`"primary": "native"`). Raison : Prod
 construit déjà les releases (journaux `$SHENRON_ROOT/build/prod-build-*.log`), a 8 CPU et
-31 Gio, et garde sur disque le checkout unique, son `node_modules`, `target/`, le cache sccache,
+31 Gio, et garde sur disque le checkout unique, son `node_modules`,
 le cache Turbopack et le cache Bun global (`$HOME/.bun/install/cache`). Aucun octet ne traverse
 le réseau, la livraison coûte donc zéro. `Dockerfile.build` reste le chemin hermétique
 secondaire (autre hôte, CI, Windows), avec les mêmes versions et des cache mounts BuildKit
-(registre et git Cargo, sccache, `target/`, cache Bun, cache Turbopack). Cloudflare n'est pas un
+(cache Bun, cache Turbopack). Rust n'est pas compilé ici : les binaires natifs (`shenron-mcp`,
+`libshenron_ffi.so`, `koharu-sdk`) viennent de `aphrody-labs/wiki` (`SHENRON_NATIVE_DIR`, sinon
+`<SHENRON_WIKI_DIR>/target`), leur empreinte forme la clé `native` de la lane `server`
+(`scripts/deploy/native-artifacts.ts digest|stage`) et l'image les reçoit par le contexte nommé
+`native` (`docker-bake.hcl`, `NATIVE_DIR`). Cloudflare n'est pas un
 chemin d'exécution : il ne peut héberger ni le serveur Next standalone, ni la FFI Rust, ni le
 bot ; il reste le CDN (`deploy/cloudflare`).
 
@@ -57,7 +61,7 @@ journaux de Prod du 2026-11-02/03) :
 | Commit sans changement d'artefact | 90–134 s de build (paquet serveur 46–76 s, image et vérification 44–77 s) + 78–85 s de livraison (image entière de 1,94 Go, environ 55 s de transfert), soit 8,6–12,7 min par run |
 | Site seul, cache chaud            | 214 s de build + 64 s de livraison (run du 2026-11-01 22:47) ; sur Prod en local 41–183 s + 20–26 s                                                                               |
 | Site, cache Turbopack froid       | 1101 s ; 3235 s avec attente mémoire                                                                                                                                              |
-| Crate Rust                        | cargo 616–1093 s ; `build-image.sh` ne posait pas `RUSTC_WRAPPER`, sccache n'était donc utilisé que si l'hôte le configurait                                                      |
+| Crate Rust (avant son déplacement dans `aphrody-labs/wiki`) | cargo 616–1093 s ; sccache n'était utilisé que si l'hôte le configurait                                                  |
 | Activation                        | `up -d --wait --remove-orphans` de toute la pile, site et bot recréés à chaque release                                                                                            |
 | Depuis le 2026-11-03              | 15 runs mis en file puis annulés : runner hors ligne après la purge du VPS                                                                                                        |
 
@@ -68,8 +72,7 @@ Cibles :
 | Docs, tests, scripts hors build | plan en 4,3 s contre Prod, aucun build                                                                                           | mesuré                              |
 | 30 derniers commits             | 24 déploient, 6 non (docs et tests)                                                                                              | mesuré (`just deploy-history`)      |
 | Bot seul                        | lane bot 2–16 s, paquet serveur sauté, image en cache, bascule du bot seul (santé en environ 10 s) : environ 40–60 s             | estimé                              |
-| Site seul                       | wasm sauté sauf crates wasm, site 12–48 s, paquet 8–12 s, image environ 13 s, gateway puis site environ 15 s : environ 1–1,5 min | estimé à partir des phases mesurées |
-| Crate Rust                      | sccache posé par `build-image.sh` dès qu'il est installé (il l'est sur Prod) : 2–5 min avec cache chaud                          | estimé, non mesuré                  |
+| Site seul                       | wasm copiés depuis `aphrody-labs/wiki`, site 12–48 s, paquet 8–12 s, image environ 13 s, gateway puis site environ 15 s : environ 1–1,5 min | estimé à partir des phases mesurées |
 | Revert, branche reconstruite    | restauration depuis le store, quelques secondes                                                                                  | estimé                              |
 
 ## Ce que le propriétaire approuve pour activer

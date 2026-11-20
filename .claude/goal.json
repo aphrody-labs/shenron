@@ -14,14 +14,14 @@
       "id": "0b",
       "name": "Ship pending fixes to prd (23d70bf9 /.well-known, React #418) via fr1 build",
       "status": "in_progress",
-      "evidence": "41266025 image never built (build stopped by user order 2026-11-19); prd still on 4d53e013; Cargo.lock fixed in 5383a2fe; prep on prd inert (bin/activate.sh, compose.pertag.yaml, deploy-backups/0b dump)",
+      "evidence": "41266025 image never built (build stopped by user order 2026-11-19); prd still on 4d53e013; Cargo.lock fixed in 5383a2fe (Rust workspace moved to aphrody-labs/wiki); prep on prd inert (bin/activate.sh, compose.pertag.yaml, deploy-backups/0b dump)",
       "blocked": "resume: build-image.sh then ship-image.sh under the deploy lock; create shenron_* views and RAG_BACKEND=shenron first"
     },
     {
       "id": 1,
       "name": "shenron-deployd + signed manifest + fr1 runner; deploy shenron-tv without SSH, forced rollback",
       "status": "in_progress",
-      "evidence": "crates/shenron-deployd 996055bf, 44d64e21: fr1 clippy -D warnings clean, tests 14+1+12 pass; fr2 cycle deploy, health-gated rollback, sha256 rejection, mTLS refusal proved; S3 via throw-away Garage proved",
+      "evidence": "shenron-deployd (Rust, moved to aphrody-labs/wiki, formerly crates/ here) 996055bf, 44d64e21: fr1 clippy -D warnings clean, tests 14+1+12 pass; fr2 cycle deploy, health-gated rollback, sha256 rejection, mTLS refusal proved; S3 via throw-away Garage proved",
       "blocked": "exit proof needs shenron-tv deployed on prd through the agent with a forced rollback (signing key on fr1, polkit and unit install, deploy lock)"
     },
     {
@@ -40,8 +40,8 @@
       "id": 3,
       "name": "shenron-edge (Pingora + rustls + ACME) replaces nginx on fr2 then prd, header diff empty",
       "status": "in_progress",
-      "evidence": "crates/shenron-edge (Pingora 0.9.1, rustls ring, instant-acme HTTP-01, disk cache, pool failover) built and tested on fr1 at e70db843: clippy -D warnings clean, 25 unit + 1 integration test pass. Run on fr2 spare ports 18443 and 18444 beside nginx: scripts/ops/edge-header-diff.ts 17 URLs, 0 differing for both the 127.0.0.1:18082 bridge upstream and direct TLS to prd 10.200.77.5:443; cookie-bypass and Accept-avif runs 0 differing; SIGHUP reload logged.",
-      "remaining": "nginx cutover on fr2 (swap listeners 80/443), ACME issuance against a CA (code compiled, not exercised), prd vhosts (bot., cdn origin, dragonballfr.com behind the docker nginx), Cargo.lock regeneration, nginx uninstall"
+      "evidence": "shenron-edge (Rust, moved to aphrody-labs/wiki, formerly crates/ here) (Pingora 0.9.1, rustls ring, instant-acme HTTP-01, disk cache, pool failover) built and tested on fr1 at e70db843: clippy -D warnings clean, 25 unit + 1 integration test pass. Run on fr2 spare ports 18443 and 18444 beside nginx: scripts/ops/edge-header-diff.ts (Bun, stays here) 17 URLs, 0 differing for both the 127.0.0.1:18082 bridge upstream and direct TLS to prd 10.200.77.5:443; cookie-bypass and Accept-avif runs 0 differing; SIGHUP reload logged.",
+      "remaining": "nginx cutover on fr2 (swap listeners 80/443), ACME issuance against a CA (code compiled, not exercised), prd vhosts (bot., cdn origin, dragonballfr.com behind the docker nginx), Cargo.lock regeneration (in aphrody-labs/wiki), nginx uninstall"
     },
     {
       "id": 4,
@@ -57,12 +57,12 @@
     },
     {
       "id": 6,
-      "name": "Bot in Rust (twilight), unit bot = rust",
+      "name": "Bot in Rust (twilight); Rust work now tracked in aphrody-labs/wiki",
       "status": "todo"
     },
     {
       "id": 7,
-      "name": "Site in Rust (Leptos), route by route, unit site = rust",
+      "name": "Site in Rust (Leptos), route by route; Rust work now tracked in aphrody-labs/wiki",
       "status": "todo"
     },
     {

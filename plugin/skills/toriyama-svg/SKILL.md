@@ -50,10 +50,9 @@ périmètre autorisé, puis contrôlé par lecture du fichier servi et de son ty
 
 ## Dépôt Shenron (mainteneurs)
 
-- Carte et portes : `MAP.tsv` (`just map`, colonne `gate`) ; `just toriyama-catalog-check`,
+- Carte et portes : `MAP.tsv` (colonne `gate`) ; `just toriyama-catalog-check`,
   `just wordmark`, `just plugin-pack`, `just audit-assets` ; `bun test packages/ui` et
-  `bun test scripts/plugin` pour la géométrie et le plugin. Tâches de dépôt en Rust :
-  `cargo xtask` (`map`, `scripts`, `workflows`, `env-check`), compilé sur `fr1`, jamais sur le poste.
+  `bun test scripts/plugin` pour la géométrie et le plugin. Le code Rust vit dans `aphrody-labs/wiki`, pas ici.
 - CDN : `cdn.dragonballfr.com` répond encore par Cloudflare (en-tête `Server` lu le 2026-11-19) ;
   la cible est Garage derrière `shenron-edge` (ADR 0009, étape 4,
   `docs/runbooks/cdn-garage-cutover.md`). Cette skill lit le CDN en GET ou HEAD et ne publie
