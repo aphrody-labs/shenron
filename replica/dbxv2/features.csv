@@ -1,9 +1,0 @@
-feature,area,priority,original,clone,notes
-Fiche encyclopédique,S02,must,yes,yes,Fiche publique observée
-Analyse locale des fichiers,S01,must,yes,yes,Explorateur existant ; distinct de l'exécution du jeu
-Cible Steam conservée,S03,must,yes,prepared,appId 454650 ; authentification nécessaire
-Lancement explicite,S04,must,yes,prepared,POST authentifié ; acceptation distincte du démarrage
-Image distante et commandes,S05,must,yes,unverified,Émetteur X11 prêt ; négociation et images à qualifier
-Son du jeu,S05,must,yes,no,Mode X11 initial sans audio
-Jeu complet Xenoverse 2 en WASM,port,must,yes,skip,Dossier local limité aux lanceurs et dépendances Windows ; le port complet n’est pas démontré par les parseurs et moteurs WASM existants
-Copie des sessions Steam,storage,skip,no,no,Stores protégés conservés sur leur hôte
