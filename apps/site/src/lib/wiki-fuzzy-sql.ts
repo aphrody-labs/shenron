@@ -23,17 +23,17 @@ export interface FuzzyOrderOptions {
   /** Classe le nom le plus court d'abord (tier 4). Désactivé pour les listes numérotées. */
   shortestFirst?: boolean;
   /** Tris explicites placés après la proximité et avant l'`id` final. */
-  then?: SQL[];
+  tieBreak?: SQL[];
 }
 
 /**
  * ORDER BY de pertinence de la recherche wiki, du plus au moins prioritaire :
  * égalité exacte, mot entier dans la colonne principale, préfixe, nom le plus
  * court (`shortestFirst`), meilleure proximité trigramme (toutes colonnes),
- * tris explicites `then`, puis `id` croissant pour un ordre total stable.
+ * tris explicites `tieBreak`, puis `id` croissant pour un ordre total stable.
  */
 export function fuzzyOrder(term: string, cols: PgColumn[], options: FuzzyOrderOptions = {}): SQL[] {
-  const { shortestFirst = true, then = [] } = options;
+  const { shortestFirst = true, tieBreak = [] } = options;
   const primary = cols[0];
   const folded = sql`unaccent(lower(${primary}))`;
   const sim = sql`greatest(${sql.join(
@@ -46,7 +46,7 @@ export function fuzzyOrder(term: string, cols: PgColumn[], options: FuzzyOrderOp
     sql`(${folded} like unaccent(lower(${term})) || '%') desc`,
   ];
   if (shortestFirst) order.push(sql`length(${primary}) asc nulls last`);
-  order.push(sql`${sim} desc nulls last`, ...then);
+  order.push(sql`${sim} desc nulls last`, ...tieBreak);
   const id = getTableColumns(primary.table as PgTable).id;
   if (id) order.push(asc(id));
   return order;

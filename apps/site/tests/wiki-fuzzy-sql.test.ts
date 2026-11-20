@@ -77,8 +77,10 @@ describe("fuzzyOrder", () => {
       "botMediaPublications",
       "botContributors",
     ] as const;
+    // A plain object of the schema exports, indexed by name (computed access on the namespace itself cannot be checked).
+    const tables = { ...botSchema };
     for (const name of searched) {
-      expect(getTableColumns(botSchema[name]).id, name).toBeDefined();
+      expect(getTableColumns(tables[name]).id, name).toBeDefined();
     }
   });
 });
@@ -97,7 +99,7 @@ describe("fuzzyOrder options", () => {
   test("explicit tie-breaks run after similarity and before the id", () => {
     const sql = volumeOrder({
       shortestFirst: false,
-      then: [asc(botSchema.botMangaVolumes.volumeNumber)],
+      tieBreak: [asc(botSchema.botMangaVolumes.volumeNumber)],
     });
     const at = (needle: string) => sql.indexOf(needle);
     expect(sql).not.toContain("length(");

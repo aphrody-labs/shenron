@@ -85,6 +85,7 @@
     "packages/koharu/src/wasm/**",
     "packages/engine/src/wasm/**",
     "packages/pipeline/src/wasm/**",
+    "apps/site/public/wasm/**",
     "packages/koharu/src/protocol.ts",
     "plugin/references/**",
     "docs/**"

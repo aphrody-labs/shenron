@@ -2317,7 +2317,7 @@ export const dbUniverse = {
           .orderBy(
             ...fuzzyOrder(term, volCols, {
               shortestFirst: false,
-              then: [asc(botMangaVolumes.volumeNumber)],
+              tieBreak: [asc(botMangaVolumes.volumeNumber)],
             }),
           )
           .limit(10),
@@ -2333,7 +2333,7 @@ export const dbUniverse = {
           .orderBy(
             ...fuzzyOrder(term, chapCols, {
               shortestFirst: false,
-              then: [asc(botMangaChapters.chapterNumber)],
+              tieBreak: [asc(botMangaChapters.chapterNumber)],
             }),
           )
           .limit(12),

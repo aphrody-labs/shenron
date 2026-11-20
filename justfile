@@ -58,7 +58,7 @@ typecheck:
 # bun lint on apps, packages and scripts
 [group('bun')]
 bun-lint:
-    oxlint -c .oxlintrc.json apps packages scripts
+    bun x oxlint -c .oxlintrc.json apps packages scripts
 
 # bun test of every package (live suites excluded)
 [group('bun')]
