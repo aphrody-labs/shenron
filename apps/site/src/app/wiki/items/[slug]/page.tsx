@@ -1,20 +1,24 @@
-import { hasEditorialDatabase } from "@/lib/prerender";
-import { notFound } from "next/navigation";
+// SPDX-License-Identifier: Apache-2.0
 import Link from "next/link";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { GatedLink } from "@/components/GatedLink";
+import { EntityParticipation } from "@/components/social/EntityParticipation";
 import { T } from "@/components/T";
-import { GatedLink, GatedWrap } from "@/components/GatedLink";
 import {
   WikiCanonicalFooter,
   type CanonicalFactEntry,
 } from "@/components/wiki/WikiCanonicalFooter";
 import { WikiDetailPage, WikiEntityHeader } from "@/components/wiki/WikiDetailPage";
+import { WikiEmbeddedBattles } from "@/components/wiki/WikiEmbeddedBattles";
+import { WikiFicheVide } from "@/components/wiki/WikiFicheVide";
 import { WikiSectionsReader } from "@/components/wiki/WikiSectionsReader";
-import { dbUniverse } from "@/lib/db-universe";
+import { assetUrl, dbUniverse } from "@/lib/db-universe";
 import { ogMeta } from "@/lib/og";
-import { resolveMangaChapterHref } from "@/lib/wiki-internal-sources";
+import { capParams, hasEditorialDatabase } from "@/lib/prerender";
+import { mergeArticleAndColumnEvents, resolveMangaChapterHref } from "@/lib/wiki-internal-sources";
 import { buildWikiContentPanels } from "@/lib/wiki-panels";
 import { resolveCharacterSlugByName } from "@/lib/wiki-slugs";
-import type { Metadata } from "next";
 
 export const revalidate = 3600;
 
@@ -22,11 +26,27 @@ interface ItemDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
+const CATEGORY_KEY_MAP: Record<string, string> = {
+  relique_magique: "wiki.itemDetail.categories.relique_magique",
+  technologie: "wiki.itemDetail.categories.technologie",
+  vehicule: "wiki.itemDetail.categories.vehicule",
+  armement: "wiki.itemDetail.categories.armement",
+  medical: "wiki.itemDetail.categories.medical",
+};
+
+function renderCategoryLabel(category: string) {
+  const key = CATEGORY_KEY_MAP[category];
+  return key ? <T k={key} /> : category;
+}
+
 export async function generateStaticParams() {
   if (!hasEditorialDatabase()) return [];
   if (process.env.SHENRON_BUILD_LOW_MEMORY === "1") return [];
-  const items = await dbUniverse.items();
-  return (items ?? []).map((it) => ({ slug: it.slug }));
+  const items = (await dbUniverse.items()) ?? [];
+  return capParams(
+    items.map((it) => ({ slug: it.slug })),
+    200,
+  );
 }
 
 export async function generateMetadata({ params }: ItemDetailPageProps): Promise<Metadata> {
@@ -35,11 +55,12 @@ export async function generateMetadata({ params }: ItemDetailPageProps): Promise
   if (!item) return {};
 
   return {
-    title: `${item.name} · Objet Dragon Ball`,
+    title: `${item.name} · Objets & Véhicules Dragon Ball`,
     description: item.description,
     ...ogMeta({
-      title: `${item.name} · Fiche Objet`,
+      title: `${item.name} · Dragon Ball FR`,
       description: item.description,
+      image: item.image ? assetUrl(item.image) : undefined,
       canonical: `/wiki/items/${slug}`,
       type: "article",
     }),
@@ -51,17 +72,24 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
   const [item, allItems] = await Promise.all([dbUniverse.itemBySlug(slug), dbUniverse.items()]);
   if (!item) notFound();
 
-  const sameCategory = (allItems ?? [])
+  const peerItems = (allItems ?? [])
     .filter((it) => it.category === item.category && it.slug !== item.slug)
-    .slice(0, 4);
+    .slice(0, 6);
+
+  const resolvedEvents = mergeArticleAndColumnEvents(item.article, null);
+  const embeddedChronicles = (
+    <WikiEmbeddedBattles events={resolvedEvents} subjectName={item.name} mode="location" />
+  );
 
   const contentPanels = await buildWikiContentPanels({
     entityType: "item",
     entityId: item.id,
     article: item.article,
     description: item.description,
+    preferArticle: true,
     articleTarget: { table: "db_items", rowId: item.id },
     fallbackHeading: "Présentation",
+    firstPanelExtra: embeddedChronicles,
   });
 
   const creatorSlug = item.creator ? resolveCharacterSlugByName(item.creator) : null;
@@ -74,6 +102,20 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
       label: <T k="wiki.techniqueDetail.fieldJapaneseName" />,
       value: <span lang="ja">{item.name_ja ?? item.name_romaji}</span>,
       subvalue: item.name_ja && item.name_romaji ? item.name_romaji : undefined,
+    });
+  }
+  canonicalFacts.push({
+    key: "category",
+    label: <T k="wiki.techniqueDetail.fieldType" />,
+    value: renderCategoryLabel(item.category),
+    href: "/wiki/items#arsenal-et-technologies",
+  });
+  if (item.creator) {
+    canonicalFacts.push({
+      key: "creator",
+      label: <T k="wiki.techniqueDetail.fieldCreator" />,
+      value: item.creator,
+      href: creatorSlug ? `/wiki/characters/${creatorSlug}` : null,
     });
   }
   if (item.debut_chapter) {
@@ -91,14 +133,6 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
       value: item.debut_episode,
     });
   }
-  if (item.creator) {
-    canonicalFacts.push({
-      key: "creator",
-      label: <T k="wiki.techniqueDetail.fieldCreator" />,
-      value: item.creator,
-      href: creatorSlug ? `/wiki/characters/${creatorSlug}` : null,
-    });
-  }
 
   return (
     <WikiDetailPage
@@ -106,7 +140,14 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
       source="db_items"
       image={item.image}
       imageAlt={item.name}
-      crumbs={[{ label: "Objets & Technologies", href: "/wiki/items" }, { label: item.name }]}
+      crumbs={[
+        {
+          label: "Objets, Véhicules & Technologies",
+          display: <T k="wiki.itemsHub.crumb" />,
+          href: "/wiki/items",
+        },
+        { label: item.name },
+      ]}
       edit={{ table: "db_items", id: item.id, indexHref: "/wiki/items", label: item.name }}
       header={
         <WikiEntityHeader
@@ -114,12 +155,12 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
           nameJa={item.name_ja}
           nameRomaji={item.name_romaji}
           chips={
-            <span className="font-saiyan text-xs tracking-[0.2em] uppercase text-dbz-orange">
-              {`Objet · ${item.category}`}
+            <span className="font-saiyan text-xs uppercase tracking-[0.2em] text-dbz-orange">
+              {renderCategoryLabel(item.category)}
             </span>
           }
         >
-          {item.description && item.article && (
+          {item.description && (
             <p className="max-w-3xl text-sm leading-relaxed text-white/75 sm:text-base">
               {item.description}
             </p>
@@ -127,111 +168,116 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
         </WikiEntityHeader>
       }
       aside={
-        <div className="wiki-infobox">
-          <div className="wiki-infobox-header">
-            <T k="wiki.techniqueDetail.infoboxHeader" />
-          </div>
-          <table className="w-full text-left text-xs sm:text-sm">
-            <tbody>
-              <tr className="wiki-infobox-row">
-                <th className="wiki-infobox-label">
-                  <T k="wiki.techniqueDetail.fieldName" />
-                </th>
-                <td className="wiki-infobox-value font-semibold text-white">{item.name}</td>
-              </tr>
-              <tr className="wiki-infobox-row">
-                <th className="wiki-infobox-label">
-                  <T k="wiki.techniqueDetail.fieldType" />
-                </th>
-                <td className="wiki-infobox-value font-medium capitalize text-dbz-orange">
-                  {item.category}
-                </td>
-              </tr>
-              {item.creator && (
+        <>
+          <div className="wiki-infobox">
+            <div className="wiki-infobox-header">
+              <T k="wiki.techniqueDetail.infoboxHeader" />
+            </div>
+            <table className="w-full text-left text-xs sm:text-sm">
+              <tbody>
                 <tr className="wiki-infobox-row">
                   <th className="wiki-infobox-label">
-                    <T k="wiki.techniqueDetail.fieldCreator" />
+                    <T k="wiki.techniqueDetail.fieldName" />
                   </th>
-                  <td className="wiki-infobox-value">
-                    {creatorSlug ? (
-                      <GatedLink
-                        href={`/wiki/characters/${creatorSlug}`}
-                        className="font-medium text-dbz-orange hover:underline"
-                      >
-                        {item.creator}
-                      </GatedLink>
-                    ) : (
-                      <span className="text-white/85">{item.creator}</span>
-                    )}
+                  <td className="wiki-infobox-value font-semibold text-white">{item.name}</td>
+                </tr>
+                {(item.name_ja || item.name_romaji) && (
+                  <tr className="wiki-infobox-row">
+                    <th className="wiki-infobox-label">
+                      <T k="wiki.techniqueDetail.fieldJapaneseName" />
+                    </th>
+                    <td className="wiki-infobox-value">
+                      {item.name_ja && (
+                        <span lang="ja" className="block font-semibold text-white">
+                          {item.name_ja}
+                        </span>
+                      )}
+                      {item.name_romaji && (
+                        <span className="block text-xs text-white/60">{item.name_romaji}</span>
+                      )}
+                    </td>
+                  </tr>
+                )}
+                <tr className="wiki-infobox-row">
+                  <th className="wiki-infobox-label">
+                    <T k="wiki.techniqueDetail.fieldType" />
+                  </th>
+                  <td className="wiki-infobox-value font-semibold text-dbz-orange">
+                    {renderCategoryLabel(item.category)}
                   </td>
                 </tr>
-              )}
-              <tr className="wiki-infobox-row">
-                <th className="wiki-infobox-label">
-                  <T k="wiki.locationDetail.fieldSourcesJump" />
-                </th>
-                <td className="wiki-infobox-value">
-                  <a
-                    href="#sources-canoniques"
-                    className="font-mono text-xs text-dbz-blue-light hover:text-dbz-orange hover:underline transition-colors"
-                  >
-                    <T k="wiki.locationDetail.jumpToBottomSources" /> ↓
-                  </a>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+                {item.creator && (
+                  <tr className="wiki-infobox-row">
+                    <th className="wiki-infobox-label">
+                      <T k="wiki.techniqueDetail.fieldCreator" />
+                    </th>
+                    <td className="wiki-infobox-value">
+                      {creatorSlug ? (
+                        <GatedLink
+                          href={`/wiki/characters/${creatorSlug}`}
+                          className="font-medium text-dbz-orange hover:underline"
+                        >
+                          {item.creator}
+                        </GatedLink>
+                      ) : (
+                        <span className="text-white/85">{item.creator}</span>
+                      )}
+                    </td>
+                  </tr>
+                )}
+                <tr className="wiki-infobox-row">
+                  <th className="wiki-infobox-label">
+                    <T k="wiki.locationDetail.fieldSourcesJump" />
+                  </th>
+                  <td className="wiki-infobox-value">
+                    <a
+                      href="#sources-canoniques"
+                      className="font-mono text-xs text-dbz-blue-light transition-colors hover:text-dbz-orange hover:underline"
+                    >
+                      <T k="wiki.locationDetail.jumpToBottomSources" /> ↓
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {peerItems.length > 0 && (
+            <div className="wiki-content-card space-y-3">
+              <h3 className="font-mono text-[11px] font-bold uppercase tracking-[0.2em] text-dbz-orange">
+                <T k="wiki.itemDetail.sameCategoryHeading" />
+              </h3>
+              <ul className="space-y-1.5">
+                {peerItems.map((peer) => (
+                  <li key={peer.slug}>
+                    <Link
+                      href={`/wiki/items/${peer.slug}`}
+                      className="flex items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2 text-xs font-medium text-white/85 transition-colors hover:border-dbz-orange/50 hover:text-dbz-orange"
+                    >
+                      <span className="truncate">{peer.name}</span>
+                      <span aria-hidden>→</span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </>
       }
     >
       <div className="space-y-8">
-        {(item.slug.includes("dragon") || item.slug === "four-star-dragon-ball-memento") && (
-          <div className="rounded-xl border border-amber-500/30 bg-amber-950/20 p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="space-y-1">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">
-                🐉 Dragon Balls & Vœux Divins
-              </span>
-              <p className="text-sm text-white/90">
-                Cet artéfact est directement lié à la quête sacrée des Dragon Balls et à
-                l&apos;invocation des dragons divins.
-              </p>
-            </div>
-            <GatedWrap
-              href="/wiki/characters"
-              className="rounded-lg bg-amber-500/20 px-4 py-2 text-xs font-bold text-amber-300 hover:bg-amber-500/30 transition-colors shrink-0"
-            >
-              Consulter les Dragons →
-            </GatedWrap>
-          </div>
-        )}
-
         {contentPanels.length > 1 ? (
           <WikiSectionsReader panels={contentPanels} />
         ) : contentPanels.length === 1 ? (
           contentPanels[0]!.node
-        ) : null}
-
-        {sameCategory.length > 0 && (
-          <div className="space-y-4 pt-4 border-t border-white/10">
-            <h2 className="text-base font-bold uppercase tracking-wider text-orange-400">
-              Dans la même catégorie ({item.category})
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {sameCategory.map((peer) => (
-                <Link
-                  key={peer.slug}
-                  href={`/wiki/items/${peer.slug}`}
-                  className="group min-h-11 min-w-0 rounded-xl border border-white/10 bg-white/[0.03] p-4 transition-colors hover:border-orange-500/40 hover:bg-white/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-400"
-                >
-                  <div className="text-xs font-bold text-white group-hover:text-orange-400 transition-colors">
-                    {peer.name}
-                  </div>
-                  <div className="mt-1 line-clamp-2 text-xs leading-relaxed text-white/60">
-                    {peer.description}
-                  </div>
-                </Link>
-              ))}
-            </div>
+        ) : (
+          <div className="wiki-content-card">
+            <WikiFicheVide
+              table="db_items"
+              rowId={item.id}
+              label={item.name}
+              quoi="son fonctionnement, ses variantes et ses apparitions"
+            />
           </div>
         )}
 
@@ -239,6 +285,14 @@ export default async function ItemDetailPage({ params }: ItemDetailPageProps) {
           facts={canonicalFacts}
           sources={item.article_sources}
           article={item.article}
+        />
+
+        <EntityParticipation
+          kind="wiki"
+          table="db_items"
+          id={item.id}
+          path={`/wiki/items/${item.slug}`}
+          label={item.name}
         />
       </div>
     </WikiDetailPage>

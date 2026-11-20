@@ -1417,6 +1417,60 @@
         "doctrineTitle": "Shenron's Doctrine on Numerical Battle Powers:",
         "doctrineBody": "Only numbers explicitly stated in Akira Toriyama's manga or established in the official Daizenshuu 7 and Chōzenshū guides appear in the table below. Beyond the Namek saga (aside from Babidi's Kili readings), scaling rests on the mastery and nature of Ki detailed above, with zero fan-invented numbers."
       }
+    },
+    "itemsHub": {
+      "eyebrow": "Dragon World Encyclopedia & Engineering",
+      "title": "Items, Vehicles & Technologies",
+      "lead": "Complete encyclopedia of sacred relics, Hoi-Poi Capsules, radars, time machines, martial weapons, remedies, and spaceships attested in Daizenshuu 7, Chōzenshū 4, and Daizenshuu 4 — consolidated variants, decoded Japanese quotes, and unified VSBW scaling.",
+      "crumb": "Items, Vehicles & Technologies",
+      "atlasBadge": "Encyclopedic Atlas · Super-Science & Relics",
+      "atlasHeading": "Super-Science, Divine Artifacts & Fleets of the Dragon World",
+      "atlasLead": "The Dragon World is defined by the coexistence of Capsule Corporation's frontier terrestrial engineering, imperial starfaring technology, and mystical artifacts forged across celestial sanctuaries, Namek, the Kaiōshin Realm, and the Demon Realm.",
+      "pillars": {
+        "relicsKicker": "Sacred & Cosmic",
+        "relicsTitle": "Sacred Relics, Dragon Balls & Divine Artifacts",
+        "relicsSummary": "From Earth, Namekian, Black-Star Ultimate, Demon Realm, and Super Dragon Balls to Potara earrings, Time Rings, Angel Staff, Zeno's Button, Nyoi-Bō, Kintōun, Mafūba vessels, and the Evil Third Eye.",
+        "scienceKicker": "Super-Science",
+        "scienceTitle": "Hoi-Poi Capsules, Radars, Scouters & Time Machine",
+        "scienceSummary": "Dr. Brief's particle conversion, Bulma's Dragon Radar and Super Dragon Radar, Scouter generations, Dr. Gero's cybernetics, Blutz Wave generators, and the HOPE Time Machine crossing parallel timelines.",
+        "vehiclesKicker": "Mobility & Space",
+        "vehiclesTitle": "Spaceships, Capsule Aircraft, Air Cars & Mechas",
+        "vehiclesSummary": "Hundredfold-gravity spaceships, spherical Saiyan pods, Kami's Namekian vessel, Frieza's imperial fleet, numbered Capsule Corp planes and bikes, anti-gravity Air Cars, Red Ribbon submarines, and combining mechas.",
+        "weaponsKicker": "Weapons & Weights",
+        "weaponsTitle": "Legendary Blades, Saiyan Battle Armor & Martial Gear",
+        "weaponsSummary": "The Kaiōshinkai Z-Sword, Future Trunks's and Tapion's blades, stretchable special-rubber Battle Jackets, weighted shells and tunics, Yajirobé's katana, and military or ninja weaponry.",
+        "medicalKicker": "Healing & Biotech",
+        "medicalTitle": "Senzu Beans, Sacred Waters & Regeneration Tanks",
+        "medicalSummary": "Senzu beans and Demon Realm Medi-Bugs, the latent-power poison of the Ultra Divine Water, Frieza Force medical regeneration tanks, and the future heart-virus antidote."
+      },
+      "lawsHeading": "Six physical, technological, and mystical principles",
+      "laws": {
+        "capsulesTitle": "Hoi-Poi Particle Conversion",
+        "capsulesBody": "Invented by Dr. Brief, each capsule converts vehicles, houses, or appliances into particles stored inside a pocket cylinder before reconstructing their molecular structure on impact.",
+        "antigravityTitle": "Anti-Gravity & Hyper-Gravity Chambers",
+        "antigravityBody": "Anti-gravity drives power Air Cars, VTOL aircraft, and Frieza's cruisers; inverted by Dr. Brief, the same field subjects Goku and Vegeta to a hundredfold and three-hundredfold Earth gravity.",
+        "chronotechTitle": "Hypertemporal Travel & Divine Time Rings",
+        "chronotechBody": "While Kaiōshin Time Rings observe the future without branching history, Bulma's Time Machine crosses the hypertemporal axis between full parallel worlds encompassing every macrocosm.",
+        "detectionTitle": "Electromagnetic Waves vs Ki Scouters",
+        "detectionBody": "The Dragon Radar locks onto the faint electromagnetic pulse of the sacred spheres — shielded only inside a living body — whereas Scouters quantify Ki numerically and overload past their threshold.",
+        "sacredTitle": "White Magic, Potara Fusion & Sealing",
+        "sacredBody": "Namekian Dragon Balls draw on creative white magic, Potara earrings fuse Kaiōshin permanently yet mortals for a single hour, and any intact vessel bearing a sacred talisman seals the Mafūba.",
+        "biomedTitle": "Trauma Regeneration vs Virology",
+        "biomedBody": "A single Senzu instantly heals mortal wounds and sustains its user for ten days, yet remains powerless against viral illnesses such as Goku's acute myocarditis."
+      },
+      "factDictionariesLabel": "Reference Dictionaries",
+      "factMachinesLabel": "Blueprints & Notes",
+      "factScopeLabel": "Editorial Architecture"
+    },
+    "itemDetail": {
+      "sameCategoryHeading": "In the same category",
+      "categories": {
+        "relique_magique": "Sacred Relic & Artifact",
+        "technologie": "Super-Science & Technology",
+        "vehicule": "Vehicle, Mecha & Spaceship",
+        "armement": "Weaponry & Martial Gear",
+        "medical": "Remedy & Biotechnology"
+      }
     }
   },
   "kit": {

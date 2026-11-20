@@ -1417,6 +1417,60 @@
         "doctrineTitle": "Doctrine de Shenron sur les Battle Powers chiffrés :",
         "doctrineBody": "Seuls les chiffres explicitement énoncés dans le manga d'Akira Toriyama ou arrêtés dans les guides officiels Daizenshuu 7 et Chōzenshū figurent dans le tableau ci-dessous. Au-delà de la saga Namek (hormis la mesure en Kili chez Babidi), la hiérarchie repose sur la maîtrise et la nature du Ki exposées ci-dessus, sans aucune estimation inventée."
       }
+    },
+    "itemsHub": {
+      "eyebrow": "Encyclopédie & Ingénierie du Dragon World",
+      "title": "Objets, Véhicules & Technologies",
+      "lead": "Répertoire intégral des reliques sacrées, capsules Hoi-Poi, radars, machines temporelles, armes martiales, remèdes et vaisseaux spatiaux attestés dans le Daizenshuu 7, le Chōzenshū 4 et le Daizenshuu 4 — variantes regroupées, citations japonaises décryptées et échelle VSBW unifiée.",
+      "crumb": "Objets, Véhicules & Technologies",
+      "atlasBadge": "Atlas Encyclopédique · Super-Science & Reliques",
+      "atlasHeading": "Super-Science, Artefacts Divins & Flottes du Dragon World",
+      "atlasLead": "Le Dragon World se distingue par la coexistence d'une ingénierie terrestre d'avant-garde dominée par la Capsule Corporation, de technologies stellaires impériales et d'artefacts mystiques issus des sanctuaires célestes, des Nameks, des Kaiōshin et du Royaume des Démons.",
+      "pillars": {
+        "relicsKicker": "Sacré & Cosmique",
+        "relicsTitle": "Reliques Sacrées, Dragon Balls & Artefacts Divins",
+        "relicsSummary": "Des Dragon Balls terrestres, Nameks, Ultimes, démoniaques et Super Dragon Balls jusqu'aux Potalas, Anneaux du Temps, Bâton des Anges, Bouton du Roi Zeno, Nyoi-Bō, Kintōun, urnes du Mafūba et Troisième Œil Démoniaque.",
+        "scienceKicker": "Super-Science",
+        "scienceTitle": "Capsules Hoi-Poi, Radars, Scouters & Machine Temporelle",
+        "scienceSummary": "La conversion particulaire du Dr Brief, le Dragon Radar et le Super Dragon Radar de Bulma, les générations de Scouters, la cybernétique du Dr Gero, les générateurs d'ondes Blutz et la Machine Temporelle HOPE franchissant les lignes temporelles.",
+        "vehiclesKicker": "Mobilité & Espace",
+        "vehiclesTitle": "Vaisseaux Spatiaux, Aviation Capsule, Air Cars & Méchas",
+        "vehiclesSummary": "Vaisseaux à gravité centuple, pods sphériques Saiyans, astronef Namek de Dieu, flotte impériale de Freezer, avions et motos numérotés de Capsule Corp, Air Cars antigravitationnels, sous-marins du Ruban Rouge et robots combinables.",
+        "weaponsKicker": "Armement & Lest",
+        "weaponsTitle": "Épées Légendaires, Armures Saiyennes & Équipement Martial",
+        "weaponsSummary": "L'Épée Z du Kaiōshinkai, la lame du futur de Trunks et l'épée de Tapion, les vestes de combat extensibles en caoutchouc spécial, les carapaces et tuniques lestées, le katana de Yajirobé et l'arsenal militaire ou ninja.",
+        "medicalKicker": "Soin & Biotech",
+        "medicalTitle": "Haricots Senzu, Eaux Sacrées & Cuves de Régénération",
+        "medicalSummary": "Les haricots Senzu et insectes médicinaux du Dai Makai, le poison d'éveil latent de l'Eau Ultra Divine, les cuves médicales régénératrices de l'armée de Freezer et l'antidote viral apporté du futur."
+      },
+      "lawsHeading": "Six principes physiques, technologiques et mystiques",
+      "laws": {
+        "capsulesTitle": "Conversion particulaire Hoi-Poi",
+        "capsulesBody": "Inventée par le Dr Brief, la capsule convertit véhicules, maisons ou réfrigérateurs en particules stockées dans un étui de quelques centimètres avant d'en recomposer instantanément la structure moléculaire.",
+        "antigravityTitle": "Antigravité & Chambres d'hyper-gravité",
+        "antigravityBody": "Les moteurs antigravitationnels équipent Air Cars, avions sans piste et croiseurs de Freezer ; inversé par le Dr Brief, le même principe soumet Goku et Vegeta à cent puis trois cents fois la pesanteur terrestre.",
+        "chronotechTitle": "Voyage hypertemporel & Anneaux divins",
+        "chronotechBody": "Tandis que les Anneaux du Temps des Kaiōshin observent l'avenir sans ramifier l'histoire, la Machine Temporelle de Bulma franchit l'axe hypertemporel entre des mondes parallèles complets englobant tous les macrocosmes.",
+        "detectionTitle": "Ondes électromagnétiques contre lecture du Ki",
+        "detectionBody": "Le Dragon Radar capte la faible impulsion électromagnétique des sphères sacrées — masquée uniquement à l'intérieur d'un organisme vivant —, alors que les Scouters chiffrent le Ki mais explosent au-delà de leur seuil.",
+        "sacredTitle": "Magie blanche, Fusion Potala & Scellements",
+        "sacredBody": "Les Dragon Balls Nameks relèvent de la magie blanche créatrice, les Potalas unissent éternellement les Kaiōshin mais durant une heure seulement les mortels, et tout récipient muni d'un talisman intact scelle le Mafūba.",
+        "biomedTitle": "Régénération traumatique contre virologie",
+        "biomedBody": "Un seul Senzu guérit instantanément fractures et perforations mortelles tout en rassasiant son porteur pendant dix jours, mais demeure impuissant face aux infections virales comme la myocardite de Goku."
+      },
+      "factDictionariesLabel": "Dictionnaires de référence",
+      "factMachinesLabel": "Plans & Commentaires",
+      "factScopeLabel": "Architecture éditoriale"
+    },
+    "itemDetail": {
+      "sameCategoryHeading": "Dans la même catégorie",
+      "categories": {
+        "relique_magique": "Relique sacrée & Artefact",
+        "technologie": "Super-science & Technologie",
+        "vehicule": "Véhicule, Mécha & Vaisseau",
+        "armement": "Armement & Équipement martial",
+        "medical": "Remède & Biotechnologie"
+      }
     }
   },
   "kit": {
