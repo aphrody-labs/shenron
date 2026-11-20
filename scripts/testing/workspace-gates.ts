@@ -37,18 +37,24 @@ export function splitGateScript(script: string): string[][] {
 export function workspaceCommands(root: string, gate: Gate): GateCommand[] {
   const result: GateCommand[] = [];
   const manifest = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+  const directories: string[] = [];
   for (const pattern of manifest.workspaces.packages as string[]) {
-    if (!pattern.endsWith("/*")) throw new Error(`Unsupported workspace pattern: ${pattern}`);
+    if (!pattern.endsWith("/*")) {
+      directories.push(join(root, pattern));
+      continue;
+    }
     const base = join(root, pattern.slice(0, -2));
     for (const entry of readdirSync(base, { withFileTypes: true })
       .filter((candidate) => candidate.isDirectory())
       .toSorted((a, b) => a.name.localeCompare(b.name))) {
-      const cwd = join(base, entry.name);
-      const pkg = JSON.parse(readFileSync(join(cwd, "package.json"), "utf8"));
-      const script = pkg.scripts?.[gate];
-      if (!script) continue;
-      for (const args of splitGateScript(script)) result.push({ cwd, packageName: pkg.name, args });
+      directories.push(join(base, entry.name));
     }
+  }
+  for (const cwd of directories) {
+    const pkg = JSON.parse(readFileSync(join(cwd, "package.json"), "utf8"));
+    const script = pkg.scripts?.[gate];
+    if (!script) continue;
+    for (const args of splitGateScript(script)) result.push({ cwd, packageName: pkg.name, args });
   }
   if (gate === "typecheck")
     result.push({ cwd: root, packageName: "scripts", args: ["bun", "check", "-p", "scripts"] });
