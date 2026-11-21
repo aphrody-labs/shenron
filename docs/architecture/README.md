@@ -1,8 +1,8 @@
 # Architecture de Shenron
 
-## 1. Vue d'ensemble et Triade Souveraine
+## 1. Vue d'ensemble
 
-Shenron propulse **dragonballfr.com** au sein du monorepo YOLO (`$WORKSPACE_ROOT/shenron`) et s'appuie sur la triade d'infrastructure souveraine interconnectee via WireGuard (`10.200.77.0/24`) :
+Shenron sert **dragonballfr.com** (`$WORKSPACE_ROOT/shenron`) sur trois hotes relies par WireGuard (`10.200.77.0/24`, definis dans `deploy/environment.json`, cle `triad`) :
 
 - **`ssh vps` (`10.200.77.1` / `51.77.147.152`)** : Hub de maillage WireGuard et usine de compilation (12 coeurs, sccache, builds Rust/Bun, pipelines OCR et indexation RAG).
 - **`ssh cdn` (`10.200.77.3` / `51.255.162.6`, alias `bunos`)** : Simulateur Cloudflare Edge de bout en bout executant :
@@ -28,11 +28,12 @@ Shenron propulse **dragonballfr.com** au sein du monorepo YOLO (`$WORKSPACE_ROOT
 - **Bibliotheque Native** : `shenron-ffi` appelee en zero-copy depuis Bun via `packages/native`.
 - **CDN Media** : Worker Cloudflare (`deploy/cloudflare`) adosse au bucket R2 `shenron-cdn` et replique sur Garage S3 (`ssh cdn`).
 
-### Architecture Cible Full-Rust (`docs/decisions/0001-pile-du-site.md`)
+### Cible
 
-- **Site Web** : Leptos 0.8 SSR avec ilots sur Axum.
-- **Shenron Studio & Desktop** : GPUI / Dioxus 0.8, rendu WGPU 30, Vello, Parley, Taffy, AccessKit.
-- **Moteur & Pipelines Creatifs** : `crates/bun-engine-core`, `packages/bun-blender` (Blender 5.2.3 LTS), `packages/bun-video-project`, `packages/bun-gamestream`.
+- Auto-hebergement Rust sans PaaS : `docs/decisions/0009-auto-hebergement-rust-integral.md`.
+- Surfaces applicatives (admin, Studio, desktop, web) : GPUI (`gpui-kit`), ADR 0008, qui remplace Dioxus et Leptos.
+- Site public : l'ADR 0009 prevoit encore Leptos (ADR 0001, remplace par l'ADR 0008). Conflit ouvert, voir `docs/plans/base-ui-vers-gpui.md`.
+- `packages/bun-blender`, `packages/bun-video-project`, `packages/bun-gamestream` et `crates/bun-engine-core` ont ete supprimes le 2026-11-11 (commit `46f1f542`).
 
 ---
 
@@ -40,14 +41,14 @@ Shenron propulse **dragonballfr.com** au sein du monorepo YOLO (`$WORKSPACE_ROOT
 
 - **Donnees (`packages/db`)** : Schemas Drizzle ORM pour PostgreSQL (`public` et `bot`), migrations SQL versionnees dans `apps/site/src/db/migrations` et `apps/bot/src/db/migrations`.
 - **Contrats (`packages/api`, `packages/native`)** : Specification OpenAPI publique generee et bindings FFI C-ABI.
-- **Calcul & Editorial (`packages/pipeline`, `crates/shenron-rag`, `crates/shenron-lexicon`)** : OCR de databooks, crawling, RAG hybride et lexique trilingue unifie (FR/EN/JA).
-- **Studio Manga (`crates/koharu-*`, `packages/koharu`)** : Detection de bulles, OCR manga, inpainting et typographie assistee.
-- **Jeu & Moteur (`crates/dragon-pixel`, `crates/shenron-engine`, `crates/bun-engine-core`, `packages/engine`)** : Moteur 2D/3D et streaming d'assets.
+- **Calcul & Editorial (`packages/pipeline`, `shenron-rag` et `shenron-lexicon` dans `../wiki/crates`)** : OCR de databooks, crawling, RAG hybride et lexique trilingue unifie (FR/EN/JA).
+- **Studio Manga (`koharu-*` dans `../wiki/crates`, `packages/koharu`)** : Detection de bulles, OCR manga, inpainting et typographie assistee.
+- **Jeu & Moteur (`dragon-pixel` et `shenron-engine` dans `../wiki/crates`, `packages/engine`)** : Moteur 2D/3D et streaming d'assets.
 
 ---
 
 ## 4. Invariants et Regles de Coherence
 
-1. **Lexique Unique** : `crates/shenron-lexicon` et `packages/lexicon` constituent la seule source de verite terminologique pour le site, le bot, l'API et le pipeline.
-2. **Derive Zero (`just drift`)** : Les fichiers generes (`packages/api/openapi/public.json`, `packages/ui/src/tokens.ts`, `packages/native/src/generated/`, `packages/koharu/src/protocol.ts`) sont verifies automatiquement en CI.
-3. **Isolation des Lanes de Deploiement** : `scripts/deploy/lanes.ts` calcule exactement quels services (`site`, `bot`, `migrations`, `cdn`) sont impactes par un commit afin de minimiser le temps de build et d'eviter tout redemarrage inutile en production.
+1. **Lexique Unique** : `shenron-lexicon` (`../wiki/crates`) et `packages/lexicon` constituent la seule source de verite terminologique pour le site, le bot, l'API et le pipeline.
+2. **Derive zero (`just drift`)** : la CI verifie `packages/api/openapi/public.json`, les cas de `data/api/fixtures`, `packages/ui/src/tokens.ts` et les contrats IA de `packages/pipeline`. `packages/native/src/generated/` se verifie par `just native-generate --check`.
+3. **Isolation des Lanes de Deploiement** : `scripts/deploy/lanes.ts` calcule les lanes (`site`, `bot`, `server`, `image`) et les services (`site`, `bot`) qu'un commit atteint, pour ne reconstruire et ne redemarrer que ceux-la.

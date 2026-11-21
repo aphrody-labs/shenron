@@ -1,6 +1,6 @@
 # shenron-deployd : déployer sans SSH ni git
 
-ADR 0009, étape 1. Crate autonome `crates/shenron-deployd` (son propre `Cargo.lock`, hors espace de travail comme `shenron-tv`), binaire unique `shenron-deployd` : `keygen`, `publish`, `verify`, `agent`.
+ADR 0009, étape 1. Crate autonome `shenron-deployd` (`../wiki/crates/shenron-deployd`, son propre `Cargo.lock`, hors espace de travail comme `shenron-tv`), binaire unique `shenron-deployd` : `keygen`, `publish`, `verify`, `agent`.
 
 ## Principe
 
@@ -61,7 +61,7 @@ Ajouter la nouvelle clé publique à `trust.public_keys` sur tous les hôtes, si
 
 ## Vérification
 
-`just deployd-check` (`cargo clippy --all-targets -- -D warnings` puis `cargo test` dans `crates/shenron-deployd`) sur `fr1`, jamais sur le poste, puis un cycle réel publier, agent, retour arrière sur `fr2` avec un service factice.
+`cargo clippy --all-targets -- -D warnings` puis `cargo test` dans `../wiki/crates/shenron-deployd` (la recette `just deployd-check` n'existe plus dans ce dépôt ni dans `../wiki/justfile`) sur `fr1`, jamais sur le poste, puis un cycle réel publier, agent, retour arrière sur `fr2` avec un service factice.
 
 ## Preuve sur fr2 (2026-11-19)
 

@@ -6,7 +6,7 @@ Relevé fait le 2026-11-19 pour l'ADR 0009. Source des crates : `https://crates.
 
 | Élément | Version | Date | Note |
 | --- | --- | --- | --- |
-| Rust | 1.100.0 | 2026-11-12 | égal à `rust-toolchain.toml` du dépôt |
+| Rust | 1.100.0 | 2026-11-12 | égal à `rust-toolchain.toml` de `../wiki` |
 | Bun | 1.4.5 | 2026-11-19 | correctif de sécurité, aucun changement d'API ; épinglé par `package.json#packageManager` |
 | Valkey | 9.2.0 | 2026-11-19 | seulement pour comparer pendant l'étape 5 ; la cible est de retirer Redis |
 

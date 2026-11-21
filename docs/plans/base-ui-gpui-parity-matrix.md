@@ -11,7 +11,7 @@ Part A covers accordion to meter, part B navigation-menu to tooltip. Where this 
 Sources, all read in this session:
 - Base UI: `https://base-ui.com/react/components/<name>.md` (fetched live, 19 pages).
 - GPUI Kit: `github.com/longbridge/gpui-kit` head `390a485aba2e8ab92754a23b84eecedf4155b562` (shallow clone), crates `gpui-base` 0.10.0 (`crates/base/src`) and `gpui-component` 0.10.0 (`crates/component/src`). Paths below are relative to `crates/`.
-- GPUI itself: gpui-kit pins `gpui = { package = "gpui-pre", version = "=0.3.12" }` (workspace `Cargo.toml:69`), read from the local registry copy `gpui-pre-0.3.12`. The shenron workspace enables the `gpui-fast` feature (`Cargo.toml:168` of the shenron workspace), which swaps GPUI for `gpui-fast` 0.1.17; this report analyses the default-feature code, and `cfg(feature = "gpui-fast")` branches were not compared.
+- GPUI itself: gpui-kit pins `gpui = { package = "gpui-pre", version = "=0.3.12" }` (workspace `Cargo.toml:69`), read from the local registry copy `gpui-pre-0.3.12`. The shenron workspace enables the `gpui-fast` feature (`Cargo.toml:169` of the shenron workspace, now `../wiki/Cargo.toml`), which swaps GPUI for `gpui-fast` 0.1.17; this report analyses the default-feature code, and `cfg(feature = "gpui-fast")` branches were not compared.
 - Status scale: full = every behaviour-changing Base UI prop/part has an equivalent or is meaningless on a native canvas; partial = core works, gaps named; missing = no module in either crate (directory listings of `base/src` and `component/src` checked).
 - Effort: S under a day, M days, L a week or more.
 
@@ -247,7 +247,7 @@ Read: `skills/gpui/references/gpui-kit.md` of the aphrody Claude package, `gpui-
 
 Sources read this session:
 - Base UI: `https://base-ui.com/react/components/<name>.md` (live; `radio.md` returns an HTML page, Radio is documented inside `radio-group.md`).
-- GPUI Kit: `longbridge/gpui-kit` head `390a485aba` (committer date 2026-11-19T10:19:02Z), `crates/base/src/*.rs` (crate `gpui-base`) and `crates/component/src/*.rs` (crate `gpui-component`); `gpui-base` `Cargo.toml` version `0.10.0`. Repo pin: `Cargo.toml:168` `gpui-kit = { version = "0.10.0", features = ["gpui-fast"] }`.
+- GPUI Kit: `longbridge/gpui-kit` head `390a485aba` (committer date 2026-11-19T10:19:02Z), `crates/base/src/*.rs` (crate `gpui-base`) and `crates/component/src/*.rs` (crate `gpui-component`); `gpui-base` `Cargo.toml` version `0.10.0`. Repo pin: `../wiki/Cargo.toml:169` `gpui-kit = { version = "0.10.0", features = ["gpui-fast"] }`.
 - Local refs read: `skills/gpui/references/gpui-kit.md` of the aphrody Claude package, `gpui-brain.md`.
 - Source files were saved under `...\scratchpad\b\` (`base/`, `comp/`, `ui/`) and sliced with grep/sed; every API name below was copied from them.
 

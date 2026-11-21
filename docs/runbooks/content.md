@@ -20,7 +20,7 @@ Les chemins de dépôt sont relatifs à `$WORKSPACE_ROOT/shenron`.
 ## 0. Constats transverses (à lire avant tout lot massif)
 
 - Le gel databooks est levé. `$SHENRON_ROOT/data/server/config/databooks-freeze.json` contient `{"frozen":false}` : décision du propriétaire du 2026-10-11, restaurée le 2026-10-20. Le site le lit par `DATABOOKS_FREEZE_FILE`.
-  - Le chemin documenté dans `docs/reference/root/PLAN.md:343` (`$SHENRON_ROOT/shared/server/config/…`) est périmé.
+  - Le chemin documenté dans `docs/reference/root/PLAN.md:342` (`$SHENRON_ROOT/shared/server/config/…`) est périmé.
   - En production, un fichier absent signifie « gelé » (fail-closed).
 - Les « 59 995 chunks » ne sont pas un retard d'indexation. Ce sont exactement les documents `shenron_compute.shenron_rag_documents` sans vecteur. Tous sont `visible=false` et n'ont pas de `syncGeneration` : ce sont des générations retirées (tombstones).
   - Index réellement servi : 257 436 documents visibles, tous vectorisés avec `Xenova/multilingual-e5-small`.
@@ -79,7 +79,7 @@ Couverture. Voir aussi les lignes 6 et 7.
 
 Commandes.
 
-- Sonde en lecture seule : `shenron ocr dbfr survey --json --top 50`, ou le CLI natif `shenron dbfr survey --include-hidden --top 20` (`crates/shenron-cli/src/ocr_dbfr.rs:59`).
+- Sonde en lecture seule : `shenron ocr dbfr survey --json --top 50`, ou le CLI natif `shenron dbfr survey --include-hidden --top 20` (`../wiki/crates/shenron-cli/src/ocr_dbfr.rs:59`).
 - Export des lots databooks : `bun apps/site/scripts/export-databooks-ocr.ts --sortie <dir> --plan`. Avec `--plan`, rien n'est écrit.
 - Boucle OCR databooks : `bun scripts/ops/gpu-continuous-ocr.ts --limite-lots N`.
   - Moteur PP-OCR `ppocr-v5-mobile` sur le serveur Shenron AI, puis `shenron ocr audit`, puis `shenron ocr db ingest`, puis `shenron ocr dbfr push --apply`.
@@ -89,7 +89,7 @@ Commandes.
   1. `bun packages/pipeline/scripts/export-manga-ocr.ts --sortie data/manga-ocr --plan`
   2. `bun packages/pipeline/scripts/run-manga-ocr.ts --root data/manga-ocr --dry-run [--lot X --limit N]`
   3. `bun packages/pipeline/scripts/deposit-manga-transcriptions.ts` (simulation ; `--appliquer` écrit `db_manga_pages` et `wiki_revisions`)
-- Moteur Koharu (Studio) : OCR `paddleocr-vl-1.6`, détection `koharu-layout-rfdetr-seg-2xl` (`crates/koharu-pipeline/src/config.rs:33-34`). Les candidats vont en fichier local par `pipeline koharu-*-candidate`. `pipeline koharu-submit` POSTe vers `/api/manga/candidates`.
+- Moteur Koharu (Studio) : OCR `paddleocr-vl-1.6`, détection `koharu-layout-rfdetr-seg-2xl` (`../wiki/crates/koharu-pipeline/src/config.rs:33-34`). Les candidats vont en fichier local par `pipeline koharu-*-candidate`. `pipeline koharu-submit` POSTe vers `/api/manga/candidates`.
 - Second avis : `GET /api/databooks/:id/ocr-review?page=N` vers `shenron-relecture-ocr.service` (127.0.0.1:8791). Ce service est hors ligne en prod.
 
 Hôte et ressources.
@@ -497,7 +497,7 @@ Couverture.
 Commandes.
 
 - `cd apps/bot && bun scripts/build-frame-catalog.ts --check` (déterminisme). Options : `--source db|api`, `--nice`, `--offline`.
-- `bun scripts/ops/index-frames.ts --dry-run [--series S --limit 10 --fps 1]` : index ColorLayout. Il dépend de `/api/hls/<id>/download`, qui renvoie 502 ou 404 sur les flux expirés. Garde-fou : 4 Gio libres.
+- `bun scripts/ops/index-frames.ts --dry-run [--series S --limit 10 --fps 1]` (script supprimé le 2026-11-05, commit `402c4dd4`) : index ColorLayout. Il dépend de `/api/hls/<id>/download`, qui renvoie 502 ou 404 sur les flux expirés. Garde-fou : 4 Gio libres.
 
 Hôte. vps, qui télécharge puis supprime : 55 Go libres, donc un épisode à la fois.
 

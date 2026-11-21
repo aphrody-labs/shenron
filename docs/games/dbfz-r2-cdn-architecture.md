@@ -65,7 +65,7 @@ flowchart TD
         ILM["ILM Texture Multi-Channel Mask Decoding"]
     end
 
-    subgraph CDN_Delivery["Shenron Sovereign CDN (R2 / Garage S3)"]
+    subgraph CDN_Delivery["Shenron CDN (R2 / Garage S3)"]
         MANIFEST["dbfz-r2-manifest.json"]
         VFS_STREAM["Chunked Streaming VFS / Zero-Copy WASM Assets"]
     end
@@ -77,7 +77,7 @@ flowchart TD
     WGPU_CANVAS --> GAMESCOPE
 ```
 
-### 1. Bevy ECS Combat Core (`packages/engine/src/games/fighterz-bevy-runtime.ts`)
+### 1. Bevy ECS Combat Core (design; `packages/engine/src/games/fighterz-bevy-runtime.ts` was deleted in commit `11aedb2e`)
 
 - **Simulation Loop**: Deterministic 60 FPS tick model with frame data tables (Startup, Active, Recovery, Hit Stun, Block Stun).
 - **Combat State Machine**: States include `idle`, `walk_forward`, `walk_back`, `light_atk`, `medium_atk`, `heavy_atk`, `super_kamehameha`, and `hit_stun`.
@@ -131,10 +131,4 @@ wasm-opt = ["-O4", "--enable-simd", "--enable-bulk-memory"]
 ## 4. Verification & Status
 
 1. **Manifest Generated**: [`docs/games/dbfz-r2-manifest.json`](https://github.com/aphrody-labs/shenron/blob/main/docs/games/dbfz-r2-manifest.json) (63 files, 6,951,922,626 bytes).
-2. **Runtime Implemented**: [`packages/engine/src/games/fighterz-bevy-runtime.ts`](https://github.com/aphrody-labs/shenron/blob/main/packages/engine/src/games/fighterz-bevy-runtime.ts).
-3. **WebUI Component**: [`apps/site/src/components/games/FighterZBrowserRuntime.tsx`](https://github.com/aphrody-labs/shenron/blob/main/apps/site/src/components/games/FighterZBrowserRuntime.tsx).
-4. **Mounted on Route**: `/wiki/games/fighterz` in [`apps/site/src/app/wiki/games/[slug]/page.tsx`](https://github.com/aphrody-labs/shenron/blob/main/apps/site/src/app/wiki/games/[slug]/page.tsx).
-5. **Unit Tests Passing**:
-   - `packages/engine/test/fighterz-bevy-runtime.test.ts` (3/3 pass).
-   - `packages/engine/test/dbfz-r2-manifest.test.ts` (2/2 pass).
-   - `packages/engine/test` overall (38/38 pass).
+2. **Removed**: `FighterZBrowserRuntime.tsx`, `FighterZWasmPlayer.tsx` and `fighterz-bevy-runtime.ts` (with its test) no longer exist (commit `11aedb2e`); `packages/engine/test/dbfz-r2-manifest.test.ts` remains.

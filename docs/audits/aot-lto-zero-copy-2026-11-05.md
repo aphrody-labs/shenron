@@ -156,7 +156,7 @@ Root `Cargo.toml`:
   the tokio-based crates rely on unwinding for task panics.
 - `[profile.production-abort]` inherits `production` with `panic = "abort"`, for standalone
   executables with no threads and no panic catcher. Only `shenron-video` uses it
-  (`scripts/ops/build-shenron-video.sh`).
+  (`scripts/ops/build-shenron-video.sh`). [script supprimé le 2026-11-20, commit 4af5cdfd]
 - `release` stays the quick lane (thin LTO, 16 codegen units).
 
 Wiring: `scripts/deploy/build-image.sh` (`SHENRON_CARGO_PROFILE`, default `production`; lane stamp
@@ -168,14 +168,14 @@ only changes the output directory. History: `bench-old-pipeline.sh`, a benchmark
 pre-2026-10-30 sequencing that kept `--release` on purpose, was deleted once its caller `bench.sh`
 was purged.
 
-WASM: `packages/koharu/scripts/build-wasm.ts` already built with fat LTO, `opt-level=3`,
+WASM: `packages/koharu/scripts/build-wasm.ts` [supprimé le 2026-11-20, commit 024cd38e ; remplacé par `sync-wasm.ts`] already built with fat LTO, `opt-level=3`,
 `panic=abort` through `CARGO_PROFILE_RELEASE_*` and wasm-bindgen. It now also runs `wasm-opt -O3` on
 the bindgen output (part of the recipe, so the stamp changes); without `wasm-opt` it warns and skips
 (`SHENRON_WASM_OPT=off` disables it, `WASM_OPT` names the binary). `binaryen` is added to the
 `Dockerfile.build` apt list. The tracked module `packages/koharu/src/wasm/koharu_canvas_bg.wasm` and its stamp were regenerated
 on the hub (rustc 1.99.1, wasm-bindgen 0.2.129, binaryen 131): 2,050,907 B to 1,898,117 B (-7.4%,
 gzip 605.3 KiB to 603.8 KiB); `build-wasm.ts --check` passes and `packages/koharu` tests pass
-(23 pass, 2 skip). `packages/pipeline/scripts/build-re-wasm.ts` (shenron_re) still builds with
+(23 pass, 2 skip). `packages/pipeline/scripts/build-re-wasm.ts` [supprimé le 2026-11-20, commit 024cd38e ; remplacé par `sync-re-wasm.ts`] (shenron_re) still builds with
 `--release` and no `wasm-opt`; it was not touched.
 
 ### Build times and sizes (vps, cold `CARGO_TARGET_DIR`, no sccache)

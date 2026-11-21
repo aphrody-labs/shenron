@@ -1,6 +1,6 @@
 # shenron-mcp: niveau admin (PostgreSQL, Redis, mémoire, temps réel)
 
-Le serveur `crates/shenron-mcp` sert deux niveaux (`crates/shenron-mcp/src/access.rs`). Anonyme: outils de lecture publics. Jeton `Authorization: Bearer` accepté, ou IP de `SHENRON_MCP_ALLOWED_IPS`: tous les outils, dont le plan de données ci-dessous. Ces outils n'apparaissent pas dans `tools/list` d'un appelant anonyme et un appel direct est refusé.
+Le serveur `shenron-mcp` (`../wiki/crates/shenron-mcp`) sert deux niveaux (`src/access.rs`). Anonyme: outils de lecture publics. Jeton `Authorization: Bearer` accepté, ou IP de `SHENRON_MCP_ALLOWED_IPS`: tous les outils, dont le plan de données ci-dessous. Ces outils n'apparaissent pas dans `tools/list` d'un appelant anonyme et un appel direct est refusé.
 
 ## Outils
 
@@ -21,7 +21,7 @@ Ressources (niveau admin, abonnement `resources/subscribe` ou `subscriptions/lis
 - `shenron://events/<canal>`: charges utiles NOTIFY récentes d'un canal PostgreSQL.
 - `shenron://db/table/<table>` ou `<schéma.table>`: échantillon de lignes; une notification de mise à jour part quand la table change.
 
-Transport du temps réel: l'endpoint HTTP est sans session (voir `crates/shenron-mcp/src/http.rs`), donc la poussée passe par `subscriptions/listen` (protocole 2026-07-28, flux SSE tenu ouvert par le client avec `Mcp-Method: subscriptions/listen` et son jeton), ou par `resources/subscribe` en stdio. Un client qui ne sait faire ni l'un ni l'autre relit `shenron://events/<canal>` (200 derniers évènements, `seq` croissant). Un appelant anonyme n'a ni la méthode ni les ressources.
+Transport du temps réel: l'endpoint HTTP est sans session (voir `src/http.rs` du même crate), donc la poussée passe par `subscriptions/listen` (protocole 2026-07-28, flux SSE tenu ouvert par le client avec `Mcp-Method: subscriptions/listen` et son jeton), ou par `resources/subscribe` en stdio. Un client qui ne sait faire ni l'un ni l'autre relit `shenron://events/<canal>` (200 derniers évènements, `seq` croissant). Un appelant anonyme n'a ni la méthode ni les ressources.
 
 Le changement d'une table est annoncé par la fonction `bot.shenron_mcp_notify()` (migration opt-in, aucun déclencheur posé par défaut). Pour suivre une table:
 

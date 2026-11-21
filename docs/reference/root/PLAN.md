@@ -3,13 +3,13 @@
 ## Suivi opérationnel — 11 octobre 2026, 16:08 UTC
 
 Le code, les manifestes et les reçus datés déterminent la qualification. Les invariants
-éditoriaux ci-dessous restent inchangés. La demande courante et les11lots vivent dans
+éditoriaux ci-dessous restent inchangés. La demande courante et les 11 lots vivent dans
 [GOAL](../../../GOAL.md), les étapes bornées dans [TODO](../../../TODO.md), les preuves
-et incidents dans `REPRISE.md` (retiré de l'arbre). Une capture privée n'accorde pas droitsRAG,
+et incidents dans `REPRISE.md` (retiré de l'arbre). Une capture privée n'accorde pas droits RAG,
 entraînement ni réhébergement public ; les notices publiées sont des synthèses originales.
 Les catalogues passent par leurs writers transactionnels, avec backup, validation JSON,
 comparaison optimiste et relecture indépendante. Annonce et lecture restent distinctes.
-Le lecteur HLS de l’image3cd7e7f7 est actif et qualifié ; le delta R2 conserve les
+Le lecteur HLS de l’image 3cd7e7f7 est actif et qualifié ; le delta R2 conserve les
 anciens chunks. La génération vidéo et Omar sont une extension explicite du propriétaire,
 avec trois rendus originaux, capture/encodage vérifiés et entraînement soumis à ses portes.
 La délégation DNS et la preuve DS/TTL restent nécessaires avant la route CDN du domaine.
@@ -282,7 +282,7 @@ La cartographie native `shenron-graph` unifie les quatre couches de la plateform
 
 Absorption du plan technique de migration DBXV2 et des outils d'extraction d'assets Dragon Ball :
 
-1. **Architecture de `crates/shenron-re`** :
+1. **Architecture de `shenron-re`** (aujourd'hui le paquet `nie-dbxv2-re`, `../nie/plugins/exe/nie-dbxv2-re`, selon `../wiki/Cargo.toml`) :
    - `fs` : Décodage pur Rust des archives CRIWARE CPK et compression CRILAYLA (`zerocopy` + `binrw`).
    - `formats` : Décodage des formats Dimps :
      - `BAC` : Scripts d'animations, frappes et cinématiques de combat.
@@ -301,7 +301,7 @@ Absorption du plan technique de migration DBXV2 et des outils d'extraction d'ass
 
 - Dépôt source `aphrody-code/dbxv2` vérifié au sous-module `fabc19c0021e3e992786dc2a093a749c8a1c26f0`.
 - Licence propriétaire; aucune donnée/asset du jeu dans le dépôt. La parité des 21 commandes
-  reste incomplète; matrice et limites dans `docs/operations/dbxv2-rust-bun-parity-2026-10-07.md`.
+  reste incomplète; la matrice et les limites étaient dans `docs/operations/dbxv2-rust-bun-parity-2026-10-07.md` (supprimé le 2026-11-05, commit `172cebb7`).
 - CLI Rust `shenron-re inventory <game-root>` inventorie chemins/tailles et empreintes limitées,
   sans copier de fichiers. WASM, `shenron-re map|catalog` et ABI natif FFI 5 donnent accès au
   prototype cartographique.
@@ -334,7 +334,7 @@ Les cases historiques ci-dessus décrivent le relevé du 7 octobre ; elles ne pr
 - Agent home DBFR lu : `~/.shenron/workspaces/dbfr/SOUL.md`. Ce dossier contient également `training/triples.jsonl`, mais aucun autre document natif de l’agent home.
 - OpenAPI, tokens UI et contrats IA (12 fixtures) : contrôles réussis. Lint : code 0, avec avertissements. Typecheck global : échec lié aux dépendances locales absentes `@aphrody/shenron-bun` et `cmdk` ; aucune validation globale revendiquée.
 - Corpus local de chat : 1 091 lignes gold, zéro ligne dans `rollouts.jsonl`. Les 1 495 rollouts du relevé historique restent à retrouver ou à produire et vérifier. La boucle `train-shenron-chat-loop.ts` génère et évalue, mais ne lance pas encore `shenron-train` : le raccordement LoRA reste à implémenter et qualifier.
-- Accès SSH rétabli (WireGuard, `docs/operations/ssh-wireguard.md`). Tout build tourne sur `vps` ; `dbfr` ne reçoit que l'image Docker scellée. Release `docker-5c09af18` active le 8 octobre : conteneurs sains, pages, RAG, MCP anonyme (48 outils en lecture seule annotés) et CDN sondés. Signature et qualification NSIS restent à exécuter.
+- Accès SSH rétabli (WireGuard ; `docs/operations/ssh-wireguard.md` supprimé le 2026-11-05, commit `172cebb7`). Tout build tourne sur `vps` ; `dbfr` ne reçoit que l'image Docker scellée. Release `docker-5c09af18` active le 8 octobre : conteneurs sains, pages, RAG, MCP anonyme (48 outils en lecture seule annotés) et CDN sondés. Signature et qualification NSIS restent à exécuter.
 - Pile Docker locale (`compose.complete.yaml`) alignée sur la production (pgvector pg18) et restaurable depuis un `pg_dump` de prod ; sondes locales 200.
 - Restent ouverts : soft-404 du wiki (slug inconnu en 200 `noindex`, `app/loading.tsx` racine) et débit du LLM de prod (4,5 tok/s).
 - Le raccordement VFS/API des données de jeux et les consommateurs Studio restent ouverts comme indiqué dans `REPRISE.md` ; les claims non libérées sur `crates/shenron-re/**` et `REPRISE.md` ont été respectées.

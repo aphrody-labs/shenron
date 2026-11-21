@@ -1,6 +1,6 @@
 # Runbook Operationnel : Telechargement Video, Synchronisation R2 (`rclone` / `rsync`) et Ingestion `DBS_BEERUS`
 
-Ce runbook decrit l'architecture souveraine de telechargement video, d'extraction de medias par `Bun.Video`, de publication adressable par le contenu sur Cloudflare R2 et Garage S3, ainsi que le workflow reproductible d'ingestion des episodes `DBS_BEERUS` (episodes `875` a `879` et futurs episodes `880`+).
+Ce runbook decrit le telechargement video, l'extraction de medias par `Bun.Video`, la publication adressable par le contenu sur Cloudflare R2 et Garage S3, et l'ingestion des episodes `DBS_BEERUS` (`875` a `879` ; les episodes `880` et suivants : section 5).
 
 ---
 

@@ -52,7 +52,7 @@ Tree-Sitter parsed the launch configurations with zero errors, extracting key la
 
 ---
 
-## 5. WebAssembly (WASM) & WebGPU (WGSL) Sovereign Conversion Architecture
+## 5. WebAssembly (WASM) & WebGPU (WGSL) Conversion Architecture
 
 To enable browser-based WebGPU execution for Dragon Ball FighterZ assets and 3D anime rendering in Shenron (`apps/site` / `packages/engine`):
 

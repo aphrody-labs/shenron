@@ -19,3 +19,8 @@ Le monorepo accumulait cinq piles UI incompatibles (Next.js/React/Tailwind/BaseU
 - Un seul modele de rendu GPU (`gpui-fast` + `wgpu 30.0.1`) pour desktop et web.
 - Suppression immediate des 4 ignores RustSec et des pins git Tauri dans `Cargo.toml` et `deny.toml`.
 - `shenron-studio` et `koharu-app` exposent directement leurs services Rust et vues `gpui-kit` sans couche IPC Tauri.
+
+## Etat au 2026-11-21
+
+- Crates presents dans `../wiki/crates` : `shenron-theme`, `shenron-admin-ui`, `shenron-studio`, `koharu-app`, `shenron-desktop`, `shenron-admin`. Absents : `shenron-wiki`, `shenron-reader`, `shenron-watch`, `shenron-chat`, `shenron-arena`, `shenron-server` (cibles).
+- Conflit ouvert : l'ADR 0009 (site public, etape 7) nomme encore Leptos ; voir `docs/plans/base-ui-vers-gpui.md`.

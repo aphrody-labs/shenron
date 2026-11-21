@@ -1,9 +1,11 @@
 # ADR 0004 : Migration complète de TypeScript vers Rust
 
-- **Statut** : Accepté
+- **Statut** : Accepté ; mécanismes de suivi retirés de ce dépôt le 2026-11-20 (voir la note ci-dessous)
 - **Date** : 2026-11-15
 - **Décideurs** : aphrody-dev
 - **Pilier(s) concerné(s)** : tout le dépôt (apps, packages, scripts, deploy)
+
+> Note du 2026-11-20 : le code Rust a été extrait vers `aphrody-labs/wiki` (commits `4b708709` et `4af5cdfd`). Dans ce dépôt, `migration/rust.toml`, `.github/workflows/migrate.yml` et la recette `just migrate-ratchet` n'existent plus ; `crates/shenron-migrate` n'existe ni ici ni dans `../wiki/crates`, donc le cliquet n'est plus appliqué. `crates/shenron-api` et `crates/shenron-lexicon` (avec `tests/parity.rs` et `tests/fixtures.rs`) sont dans `../wiki/crates`. Les chemins `crates/` ci-dessous désignent `../wiki/crates` ; `docs/development/rust.md` décrit la séparation.
 
 ## Contexte
 

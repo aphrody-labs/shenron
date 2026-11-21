@@ -168,7 +168,7 @@ Characters are programmed using Arc System Works bytecode commands:
 
 ---
 
-## 6. Implementation Guidelines for Sovereign DB Tools (`shenron`)
+## 6. Implementation Guidelines for DB Tools (`shenron`)
 
 1. **Parser Compatibility**: Provide native Bun / Rust tools to inspect UE4/UE5 `.pak` archives without external Python or heavy GUI dependencies.
 2. **Protocol Emulation**: Support mock `TLGameServer` endpoints for offline tournament hosting and local network matches.

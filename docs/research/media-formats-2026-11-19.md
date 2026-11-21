@@ -171,7 +171,7 @@ Avec la porte, 3 fichiers retombent sur C et 2 gardent l'original.
 | Polices variables | sans objet | `caniuse` y 97,35 % | garder, mais réduire les axes | fixer ou limiter les axes inutilisés |
 | Sous-ensembles | harfbuzz 15.1.0 (2026-11-04) ; `subset-font` 2.9.0 (2026-09-20) ; crates `subsetter` 0.2.6, `fontcull` 2.0.1, `read-fonts` 0.47.0 | sans objet | limitation d'axes à la publication avec `subset-font` ou `hb-subset` | voir mesures |
 
-Mesures sur `apps/site/public/fonts/google-sans-flex/fa677db111b6e8c5.woff2` (472 392 o ; axes opsz 6-144, wdth 25-151, wght 1-1000, ROND 0-100) :
+Mesures sur `apps/site/public/fonts/google-sans-flex/fa677db111b6e8c5.woff2` (472 392 o ; axes opsz 6-144, wdth 25-151, wght 1-1000, ROND 0-100). Ce nom de fichier n'existe plus (supprimé par le commit `290a9f51`) ; le dossier contient `7e93aa08665b6bd5.woff2` et `ba44afad26587de4.woff2` :
 
 - `fonts.css` déclare `font-weight: 1 1000` et `font-stretch: 25% 151%`.
 - `rg` dans `apps/site/src` ne trouve ni `wdth`, ni `ROND`, ni `font-stretch` hors `fonts.css` (seulement `font-variation-settings: normal`).

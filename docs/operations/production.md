@@ -1,6 +1,6 @@
 # Production (`ssh prod`)
 
-Etat verifie et consolide le 2026-11-08 sur l'infrastructure souveraine YOLO.
+Etat releve le 2026-11-08.
 
 ## 1. Topologie de la Triade (`vps` / `cdn` / `prod`)
 

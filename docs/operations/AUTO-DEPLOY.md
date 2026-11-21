@@ -44,6 +44,8 @@ secondaire (autre hôte, CI, Windows), avec les mêmes versions et des cache mou
 chemin d'exécution : il ne peut héberger ni le serveur Next standalone, ni la FFI Rust, ni le
 bot ; il reste le CDN (`deploy/cloudflare`).
 
+Contradiction ouverte (relevé du 2026-11-21) : `AGENTS.md` réserve `prd` à la production et confie les builds à `fr1`, alors que `deploy/environment.json` porte encore `"primary": "native"` (build sur l'hôte de production).
+
 Compose de production : `deploy/prod/compose.yaml`, gabarit sans secret relu sur Prod le
 2026-11-05 ; seules différences voulues : un tag par service (`SHENRON_SITE_TAG`,
 `SHENRON_BOT_TAG`, repli sur `SHENRON_IMAGE_TAG`) et compute/chat facultatifs pour site et bot.

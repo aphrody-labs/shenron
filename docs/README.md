@@ -1,8 +1,8 @@
 # Documentation Shenron
 
-Documentation officielle et guides d'architecture de Shenron, la plateforme souveraine pour [dragonballfr.com](https://dragonballfr.com).
+Documentation de Shenron, la plateforme de [dragonballfr.com](https://dragonballfr.com).
 
-## Structure des Dossiers
+## Dossiers
 
 - [`architecture/`](./architecture/README.md) : Modèle architectural, runtimes Bun et Rust 2024, topologie réseau WireGuard.
 - [`decisions/`](./decisions/) : Architecture Decision Records (ADR) conformes au standard `yolo-stack`.
@@ -17,10 +17,10 @@ Documentation officielle et guides d'architecture de Shenron, la plateforme souv
 - [`coordination/`](./coordination/) : notes entre produits et agents (Rose Griffon, Garage).
 - [`plans/`](./plans/) : Feuilles de route d'ingénierie et plans de refonte.
 - [`licenses/`](./licenses/) : Licences des dépendances embarquées (Koharu, etc.).
-- [`reference/`](./reference/) : Doctrine éditoriale et spécifications de référence.
+- [`reference/`](./reference/) : [`root/PLAN.md`](./reference/root/PLAN.md).
 
-## Règles de Documentation
+## Règles
 
-1. Strictement **aucun emoji** dans toute la documentation et les fichiers de code.
-2. Tout fait daté ou chiffré dans ces pages provient directement du code source, de la configuration active ou d'un relevé d'infrastructure vérifié.
-3. Les spécifications techniques respectent la doctrine No Human In The Loop (NHITL), Bun natif et Rust 2024.
+- Pas d'emoji ni de mention d'IA (`AGENTS.md`, section Rules).
+- Tout fait daté ou chiffré provient du code, de la configuration active ou d'un relevé d'infrastructure vérifié.
+- Les chemins `crates/...` cités dans les ADR, plans et runbooks désignent `../wiki/crates` (`docs/development/rust.md`), pas ce dépôt.

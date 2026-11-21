@@ -10,7 +10,7 @@ Relevé du 2026-11-19. Il découle de l'ADR 0008 (une seule pile UI, `gpui-kit`)
 | Fichiers qui importent `@base-ui/react` | 52 | `rg -l` sur `apps` et `packages` |
 | Sous-chemins Base UI utilisés | 28 | `rg -o` des imports |
 | Emplacement de l'usage | `packages/ui/src/components/*` (une enveloppe par primitive), `packages/ui/src/koharu/internal/components/*`, `packages/ui/src/public/CommandPalette.tsx`, `packages/ui/src/navigation/ShellTabBar.tsx` | `rg -l` |
-| `gpui-kit` | 0.10.0, publié le 2026-11-16, épinglé dans `Cargo.toml` | crates.io, `Cargo.toml:168` |
+| `gpui-kit` | 0.10.0, publié le 2026-11-16, déclaré dans `../wiki/Cargo.toml` (`version = "0.10.0"`) | crates.io, `../wiki/Cargo.toml:169` |
 | Dépôt amont | `longbridge/gpui-kit`, tête `390a485aba` du 2026-11-19 | `gh api` |
 | GPUI utilisé par `gpui-kit` | `gpui-pre` =0.3.12, miroir crates.io du GPUI de Zed ; le crate `gpui` 0.2.2 n'est pas celui qui compile | `Cargo.toml` amont, ligne 69 |
 | Crates GPUI du dépôt | `shenron-theme` (`lib.rs` : 62 lignes), `shenron-admin-ui` (`view.rs` : 126 lignes), `shenron-studio` (4 fichiers, 438 lignes), `koharu-app`, `shenron-desktop` | `wc -l` |
@@ -83,7 +83,7 @@ Règles de passage : une surface ne bascule que si sa parité est listée et pro
 
 ## Automatisation et état de la communauté (relevé du 2026-11-19)
 
-**Registre de migration.** `migration/ui.json` (généré par `just ui-ledger`, vérifié par `just ui-ledger-check`) liste les 31 enveloppes de `packages/ui/src/components` : primitive Base UI lue dans l'import (19 sur 31), cible GPUI et statut de la matrice (4 complètes, 15 partielles, 12 sans ligne de matrice : enveloppes shadcn sans équivalent Base UI ou propres à Shenron), nombre de fichiers qui l'importent (ordre de migration : `button` 22, `input` 8, `popover` 8, `select` 8, `tooltip` 7), couverture par la galerie de parité (6 enveloppes) et état de parité (`unmeasured` partout : aucun rapport de différence n'existe encore dans `scripts/parity/out`).
+**Registre de migration** (retiré : `migration/ui.json` et les recettes `just ui-ledger` et `just ui-ledger-check` n'existent plus depuis le 2026-11-20, commits `4b708709` et `4af5cdfd`). Relevé du 2026-11-19 : le registre listait les 31 enveloppes de `packages/ui/src/components` : primitive Base UI lue dans l'import (19 sur 31), cible GPUI et statut de la matrice (4 complètes, 15 partielles, 12 sans ligne de matrice : enveloppes shadcn sans équivalent Base UI ou propres à Shenron), nombre de fichiers qui l'importent (ordre de migration : `button` 22, `input` 8, `popover` 8, `select` 8, `tooltip` 7), couverture par la galerie de parité (6 enveloppes) et état de parité (`unmeasured` partout : aucun rapport de différence n'existe encore dans `scripts/parity/out`).
 
 **Mesure de la galerie native.** La crate `shenron-gallery` (commit `971178d5`) rend 25 états sans fenêtre, deux exécutions donnent des fichiers identiques (sha256), mais les images web de référence n'étaient plus présentes quand l'agent a fini : aucun écart de pixels n'est mesuré. Sur la machine de travail (RTX 4070, écran 144 Hz) un bouton seul tient un temps de trame de 13,4 ms au 50e centile et 15,4 ms au 99e, soit une trame sur deux : la porte de 120 images par seconde échoue, cause probable non confirmée : le rythme de présentation de Windows dans GPUI.
 

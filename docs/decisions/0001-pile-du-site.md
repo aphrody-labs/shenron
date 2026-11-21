@@ -1,6 +1,6 @@
 # ADR 0001 : Pile du site et du natif
 
-- **Statut** : Remplacé par [ADR 0008](0008-architecture-pure-gpui-kit.md)
+- **Statut** : Remplacé par [ADR 0008](0008-architecture-pure-gpui-kit.md) (Dioxus et Leptos). L'[ADR 0009](0009-auto-hebergement-rust-integral.md) cite encore Leptos (ADR 0001) pour le site public : conflit ouvert, voir `docs/plans/base-ui-vers-gpui.md`.
 - **Date** : 2026-11-05
 - **Décideurs** : aphrody-dev, via ADR 0003 de yolo-stack
 - **Pilier(s) concerné(s)** : apps/site, packages/ui, crates/shenron-desktop
@@ -33,5 +33,4 @@ Nous retenons Leptos 0.8 (SSR et îlots) sur Axum pour le site public, Dioxus po
 
 ## Références
 
-- `docs/plans/refonte-rust-bun-yolo-stack.md`
 - `$WORKSPACE_ROOT/yolo-stack/docs/decisions/0003-verdict-leptos-dioxus-tanstack.md`

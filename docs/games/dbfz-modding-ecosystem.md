@@ -208,7 +208,7 @@ Files are located at `<GameRoot>\RED\Content\Paks\`:
 
 ## 5. WebGPU Anime Shader Mapping for Shenron
 
-Shenron's WebGPU engine (`packages/engine` & `apps/site/src/components/games/FighterZWasmPlayer.tsx`) maps ArcSys UE4 parameters directly into WebGPU / WGSL:
+Shenron's WebGPU engine (`packages/engine`; `FighterZWasmPlayer.tsx` was deleted in commit `11aedb2e`) maps ArcSys UE4 parameters directly into WebGPU / WGSL:
 
 ```wgsl
 struct VertexInput {

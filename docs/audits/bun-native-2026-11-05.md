@@ -35,7 +35,7 @@ Direct dependency counts (dependencies + devDependencies):
 
 ## Replaced
 
-- sharp -> Bun.Image in packages/pipeline: `src/cli.ts` (2x metadata), `scripts/assets-dragonballcn.ts`, `selfhost-manga-pages.ts`, `telecharge-couvertures-dragonballcn.ts`, `telecharge-planches-dragonballcn.ts`, `ingest-dragonball-volumes.ts` (resize+png only). Verified on vps: metadata, webp, resize with one dimension, path input.
+- sharp -> Bun.Image in packages/pipeline: `src/cli.ts` (2x metadata), `scripts/assets-dragonballcn.ts` [aujourd'hui `packages/pipeline/scripts/assets-dragonballcn.ts`], `selfhost-manga-pages.ts`, `telecharge-couvertures-dragonballcn.ts`, `telecharge-planches-dragonballcn.ts`, `ingest-dragonball-volumes.ts` (resize+png only). Verified on vps: metadata, webp, resize with one dimension, path input.
 
 ## Must stay
 
