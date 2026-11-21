@@ -65,6 +65,6 @@ Le site sert le plugin en archive (`https://dragonballfr.com/plugin.tar.gz`, dos
 mkdir -p ~/.shenron-plugin && curl -fsSL https://dragonballfr.com/plugin.tar.gz | tar -xz -C ~/.shenron-plugin && agy plugin install ~/.shenron-plugin/shenron
 ```
 
-Vérifier avant d'installer : `agy plugin validate ~/.shenron-plugin/shenron` (7 skills,
+Vérifier avant d'installer : `agy plugin validate ~/.shenron-plugin/shenron` (10 skills,
 3 agents, 1 serveur MCP). Claude Code garde son installation (`claude plugin install
 shenron@shenron`) et son MCP stdio `.mcp.json`.

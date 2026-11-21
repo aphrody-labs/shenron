@@ -1,43 +1,36 @@
-# Scripts d'Ingénierie & d'Exploitation Shenron
+# Scripts
 
-Ce répertoire contient l'ensemble des outils d'automatisation, de compilation, de déploiement et de vérification pour Shenron.
-
-Conformément à la doctrine du dépôt, tous les scripts s'exécutent avec **Bun v1.4.4+** ou des commandes shell POSIX strictes sans dépendance Node.js externe.
+Scripts Bun et shell du dépôt. La version de Bun est épinglée dans `package.json#packageManager`. Les tâches courantes passent par `just` (`justfile`), qui appelle ces scripts.
 
 ## Arborescence
 
-- [`audit/`](./audit/) : Outils d'audit statique, analyse de code mort, conformité licences et vérification de sécurité.
-- [`build/`](./build/) : Scripts de packaging et compilation :
-  - `build/server.ts` : Compilation du binaire unique Bun servant l'application web et les API.
-  - `build/assets.ts` : Optimisation des médias statiques et génération des bundles.
-- [`data/`](./data/) : Scripts de traitement des données brutes, catalogues et lexiques Dragon Ball.
-- [`deploy/`](./deploy/) : Orchestration des déploiements souverains multi-hôtes :
-  - `deploy/release.sh` : Pipeline de release construisant l'image Docker sur le VPS et la diffusant par streaming zstd à travers le tunnel WireGuard vers la production.
-  - `deploy/lanes.ts` : Gestion des corridors de déploiement sélectif (site, bot, proxy, services).
-  - `deploy/rollback.sh` : Procédure de retour arrière immédiat sans perte de données.
-- [`design/`](./design/) : Scripts de génération d'assets vectoriels, tokens de design et bannières.
-- [`dev/`](./dev/) : Utilitaires pour le développement local et simulateurs d'environnement.
-- [`editorial/`](./editorial/) : Outils d'aide à la publication éditoriale, synchronisation des tomes et chapitres.
-- [`i18n/`](./i18n/) : Gestion et synchronisation des catalogues de traduction (fr, en, ja).
-- [`media/`](./media/) : Outils de traitement multimédia, découpe vidéo, encodage MP4/HLS et pipeline R2.
-- [`ops/`](./ops/) : Exploitation courante, maintenance des bases de données et surveillance de la flotte souveraine :
-  - `ops/purge-edge-cache.ts` : Invalidation immédiate du cache de bordure Cloudflare.
-  - `ops/check-fleet-health.ts` : Vérification de la connectivité du maillage WireGuard (`vps`, `cdn`, `prod`).
-- [`plugin/`](./plugin/) : Compilation et tests des extensions Bun Engine et plugins d'émulation.
-- [`release/`](./release/) : Automatisation des publications de releases GitHub et versionnement sémantique.
-- [`testing/`](./testing/) : Suites de tests end-to-end (Playwright), tests de non-régression et qualification des rendus.
-- [`tools/`](./tools/) : CLI internes pour les tâches administratives et l'ingénierie de rétro-ingénierie.
-- [`video/`](./video/) : Pipeline d'acquisition Crunchyroll / VoirAnime et extraction automatisée.
+- `audit/` : gardes statiques (`check-paths.ts`, `check-workspace-*.ts`, `workspace-policy.ts`, `source-readiness.ts`) et audits UI/UX.
+- `build/` : compilation et empaquetage (`server.ts`, `bot.ts`, `container.ts`, `local.ts`, `video-assets.ts`, `wiki-objects.ts`).
+- `data/` : bases et catalogues dérivés (`build-vfs.ts`, `build-dbxv2-*.ts`, `export-catalogues.ts`, `lexicon.ts`, `crawl-beerus-site.ts`).
+- `deploy/` : build et livraison d'une révision.
+  - `release.sh` : enchaîne `build-image.sh` puis `ship-image.sh` (`--build-only`, `--ship-only`, `--auto`, `--plan`). Runbook : `docs/operations/AUTO-DEPLOY.md`.
+  - `lanes.ts` : détection des couloirs changés par une révision (`keys`, `plan`, `history`, `--check`).
+  - `environment.ts` : épingles de toolchain (`--check`), `active-release.ts`, `artifacts.ts`, `native-artifacts.ts`.
+- `design/` : polices, lettrage, wordmark, catalogue Toriyama, mascottes du wiki.
+- `dev/` : environnement de développement (`env-pull.ts`, `remote-dev.ts`, `session-start.ts`, `cloud-*.sh`).
+- `editorial/`, `i18n/` : audit des sources de databooks et contrat de complétude des catalogues `fr|en|ja` (`i18n/complete-contract.ts`).
+- `media/` : `wiki-scene-assets/` (scènes et vidéos du wiki).
+- `ops/` : exploitation, CDN, OCR, lecteurs manga, synchronisations de bases, preuves navigateur ; un script par tâche, usage en en-tête de chaque fichier.
+- `parity/` : parité de pixels entre la galerie web et la galerie GPUI.
+- `plugin/` : génération et empaquetage du plugin `plugin/` (`build-references.ts`, `agy-manifest.ts`, `pack.ts`, `sync.ts`).
+- `release/` : version et publication des téléchargements (`check-version.ts`, `publish-downloads.ts`, `ship-downloads.ts`).
+- `testing/` : tests d'intégration, navigateur et portes de qualité native.
+- `tools/unified-pipeline/` : orchestrateur de reconnaissance, rendu et audit.
+- `video/` : plan et rendu vidéo (`plan.ts`, `render.ts`).
+- Racine : `backup-shenron-pg.sh`, `backup-shenron-sqlite.sh`, `shenron-guild-sync.sh`, `workflow.ts`, `workflow-actions.ts`.
 
-## Utilisation Standard
-
-Toutes les tâches standard doivent être invoquées via `just` ou `bun run` :
+## Commandes
 
 ```sh
 just check          # bun check sur packages et scripts
 just lint           # oxlint
-just test           # tests des paquets Bun et tests de scripts
-just deploy-check   # validation de l'environnement de déploiement
-just ship           # compilation sur VPS et déploiement zstd vers prod
+just test           # tests des paquets Bun, puis des scripts
+just deploy-check   # portes de définition du déploiement
+just ship           # scripts/deploy/release.sh
 just wasm-sync      # copie les wasm construits dans aphrody-labs/wiki (voir docs/development/rust.md)
 ```

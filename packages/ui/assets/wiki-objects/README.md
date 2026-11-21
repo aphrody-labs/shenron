@@ -36,7 +36,7 @@ ne sont pas copiés dans les assets publics.
 
 La couverture du tome 1 (`82.jpg`, 1000 × 1500) a été ouverte, puis la sphère du
 titre comparée au rendu. Les proportions, le foyer lumineux et l’étoile unique
-reprennent le relevé de `docs/reference/couverture-analyse-visuelle.md` (instantané
+reprennent le relevé de `plugin/skills/toriyama-svg/references/mesures/couverture-analyse-visuelle.md` (instantané
 du skill `f4579c5`, 2026-10-05). Le cerne noir de 23 unités sur 512 est l’adaptation
 maintenue depuis le logo DBS ; il est absent de cette couverture. Le SVG n’est donc
 pas une reproduction exacte de la jaquette. Les dispositions à 2–7 étoiles restent

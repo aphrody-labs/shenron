@@ -1,6 +1,6 @@
 # Home SFX — `public/sfx/`
 
-Pack chargé par `lib/sfx.ts` (Howler).
+Pack chargé par `src/lib/sfx.ts` (Howler).
 
 ## Ingest autonome
 
@@ -22,7 +22,6 @@ L'équipe DBFR déclare les droits d'usage FR (Toei/Shueisha).
 | --------------------------------------------------------------------------- | ------------------------------------------------------------------- |
 | `kamehameha.mp3`                                                            | Double-clic deck — **clip long authentique** (~11 s, charge + onde) |
 | `kamehameha-wave.mp3`                                                       | Onde seule (~7.6 s) — variante                                      |
-| `kamehameha-short.mp3`                                                      | Ancien clip court (~4 s) — archive                                  |
 | `ki-charge.mp3`                                                             | Charge de ki (pré-kame + sagas)                                     |
 | `hit.mp3` / `punch.mp3`                                                     | Clic simple                                                         |
 | `select.mp3`                                                                | Choix UI                                                            |

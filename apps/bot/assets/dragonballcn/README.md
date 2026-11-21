@@ -16,7 +16,7 @@ assets/dragonballcn/
 ```
 
 Les 12 pages de catalogue dont tout ceci est tiré sont archivées telles quelles
-sous `apps/shenron/bot/data/catalogues/pages/` (données locales, hors Git).
+sous `data/catalogues/pages/` de la racine du script (`RACINE_BOT` dans `packages/pipeline/scripts/assets-dragonballcn.ts`, données locales, hors Git, absentes du dépôt).
 
 | Collection                  | Ouvrages | Couvertures |   Datés | Paginés | Planches recensées |
 | --------------------------- | -------: | ----------: | ------: | ------: | -----------------: |
@@ -61,7 +61,7 @@ Par ouvrage : `rang`, `did`, `url_fiche`, `titre`, `rubrique`, `premiere_edition
 
 `fil_forum` conserve le fil de bbs.dragonballcn.com que le site crédite pour la
 numérisation. `planches_recensees` vient de
-`apps/shenron/bot/data/catalogues/dragonballcn-inventaire.json` (données locales, hors Git),
+`data/catalogues/dragonballcn-inventaire.json` de la même racine (données locales, hors Git, absentes du dépôt),
 qui nomme et date chaque planche : c'est un **index**, pas un contenu.
 
 ## Ce qui n'est pas ici, et pourquoi

@@ -114,8 +114,6 @@ Le décodeur appartient au runtime : le petit adaptateur `video.ts` appelle dire
 `Bun.Video.frames({start,end,step,maxFrames:1})`, séquentiellement, à résolution source.
 Le service HTTP existant renvoie du WebP sans PTS ; il ne permet donc pas d'attester le
 temps décodé. Il reste inchangé. Aucun décodeur ou extracteur FFmpeg n'est ajouté.
-`packages/pipeline/src/shenron/frames.ts` possède
-l'indexation/recherche MPEG-7, et ne constitue pas un extracteur PNG.
 
 ```powershell
 $sceneSource = 'https://cdn.dragonballfr.com/media/episodes/875/db6b365d58a933a18176ffd848b23d79513acb899acf7b4a07bd35203949508e/source.mp4'

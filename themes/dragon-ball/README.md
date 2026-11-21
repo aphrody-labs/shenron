@@ -37,7 +37,7 @@ values.
 ## Wallpapers
 
 The four Toei stills are the live home hero frames, in its order
-(`apps/site/src/lib/home-hero-frames.ts`). The colour page is the one in `replica/recon.md`. Each
+(`apps/site/src/lib/home-hero-frames.ts`). The colour page is the one in `replica/recon.md` of aphrody-labs/wiki. Each
 file was downloaded once from cdn.dragonballfr.com into a temporary folder to compute its hash and
 seed, then deleted.
 

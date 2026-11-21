@@ -30,7 +30,7 @@ dérivées de l'éditeur, déclarations d'Akira Toriyama.
 sagas et arcs, races, transformations, fiches de personnages, texte des databooks,
 planches du manga. Ne pas les reconstituer de mémoire.
 
-Canon : [skill dédiée](../dragon-ball-canon/SKILL.md) (`scripts/canon.js`, hors ligne).
+Canon : [skill dédiée](../dragon-ball-canon/SKILL.md) (`../dragon-ball-canon/scripts/canon.js`, hors ligne).
 Japonais : [lexique et traduction](../dragon-ball-japonais/SKILL.md).
 
 ## 2. Sources vivantes (facultatives)

@@ -28,7 +28,7 @@ d'exposition se rapporte sans contournement.
 
 ## Requêtes
 
-| Effet                                           | Outil MCP                                                        | Requête HTTP                                                                                                                                                                       | Vérification                                                                                                                              |
+| Effet                                           | Outil MCP (préfixe `dragonball_`)                                | Requête HTTP                                                                                                                                                                       | Vérification                                                                                                                              |
 | ----------------------------------------------- | ---------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | Dépôt de transcription databook (fusion ciblée) | `admin_databooks_deposit` `{databookId, pages:[{number,text}]}`  | `POST https://dragonballfr.com/api/databooks/<id>/transcription`, `Authorization: Bearer $SHENRON_DATABOOKS_API_TOKEN`, corps `{"mode":"merge","pages":[{"number":7,"text":"…"}]}` | `GET https://dragonballfr.com/api/databooks/<id>` : le texte des planches citées, et une révision dans `/admin/wiki/history`              |
 | Catalogue des commandes Discord                 | `admin_bot_commands`                                             | `GET https://bot.dragonballfr.com/api/bot/commands/catalog`, `Authorization: Bearer $SHENRON_API_ADMIN_TOKEN`                                                                      | — (lecture)                                                                                                                               |
@@ -44,8 +44,8 @@ d'exposition se rapporte sans contournement.
 - **Jamais de valeur au jugé.** « Remettre un membre à son niveau » se fait en deux étapes.
   D'abord, calculer sa valeur légitime : sa dernière valeur sûre (sauvegarde ou journal),
   plus ses gains `XP_GAIN` journalisés depuis, chacun plafonné au taux légitime de sa source.
-  Ensuite, écrire cette valeur par l'API ci-dessus. La méthode et les requêtes de lecture
-  sont dans `docs/operations/bot-economie-incidents.md`. En mode proposition, livrer le
+  Ensuite, écrire cette valeur par l'API ci-dessus. Le journal (`XP_GAIN`, `XP_SET`) est
+  écrit par `apps/bot/src/services/LevelService.ts`. En mode proposition, livrer le
   calcul et la requête, sans rien écrire.
 - **Repérer une écriture hors journal.** Elle se voit à une rupture dans la suite des
   `XP_GAIN` d'un membre : le `before` d'un gain ne vaut pas l'`after` du précédent. Une

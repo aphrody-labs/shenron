@@ -1,6 +1,6 @@
 # Dossiers Capsule Commentary
 
-Catalogue de trois articles de Daniel sur Dragon Ball, capturés le 8 octobre 2026. Chaque dossier JSON conserve les métadonnées disponibles, un résumé français détaillé et l’inventaire des images. Les fichiers image et les manifestes exhaustifs sont dans `data/source-acquisition/`, espace local ignoré par Git.
+Catalogue de trois articles de Daniel sur Dragon Ball, capturés le 8 octobre 2026. Chaque dossier JSON conserve les métadonnées disponibles, un résumé français détaillé et l’inventaire des images. Les fichiers image et les manifestes exhaustifs sont dans `data/source-acquisition/`, espace local ignoré par Git. Les rapports de collecte sont sous `var/reports/`, également ignoré par Git.
 
 ## Périmètre
 

@@ -16,7 +16,7 @@ Cas à distinguer : l’entrée de crawl #3370 n’est qu’un teaser, mais sa c
 
 ## Périmètre vérifié
 
-`official-web.json` recense 22 pages officielles : 11 témoins HTML déjà présents dans `data/source-acquisition/official-web/documents-manifest.json`, trois textes japonais disponibles dans `aphrody-crawl-documents.json`, et 8 pages vérifiées auparavant sans copie locale. Les droits de republication restent à vérifier.
+`official-web.json` recense 22 pages officielles : 11 témoins HTML déjà présents dans `data/source-acquisition/official-web/documents-manifest.json` (espace local ignoré par Git, absent du dépôt), trois textes japonais disponibles dans `aphrody-crawl-documents.json`, et 8 pages vérifiées auparavant sans copie locale. Les droits de republication restent à vérifier.
 
 `audio-leads.json` documente un segment candidat avec Tōru Furuya (#0460) et deux rencontres avec Masako Nozawa (#0455), non confirmées comme interviews formelles; langue inconnue et aucune transcription locale. L’audit média a trouvé 15 MP3, mais aucun fichier vidéo/sous-titre transcript; aucune STT/API n’a été lancée. Les 291 notices Kanzenshuu sont un index secondaire, non les transcriptions japonaises originales. Voir `data/catalogues/kanzenshuu/README.md`.
 

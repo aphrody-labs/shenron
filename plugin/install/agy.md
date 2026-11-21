@@ -71,7 +71,7 @@ Puis ajoute `~/.bun/bin` au `PATH` de la session et vérifie `bun --version`.
      tar.exe -xzf "$env:TEMP\shenron-plugin.tar.gz" -C "$HOME\.shenron-plugin"
      ```
 
-2. `agy plugin validate ~/.shenron-plugin/shenron` : attendu 7 skills, 3 agents et
+2. `agy plugin validate ~/.shenron-plugin/shenron` : attendu 10 skills, 3 agents et
    1 serveur MCP. Sinon, arrête cette étape et signale l'écart.
 3. Si `agy plugin list` montre déjà `shenron`, lance `agy plugin uninstall shenron`, puis
    dans tous les cas `agy plugin install ~/.shenron-plugin/shenron` (agy en copie le
@@ -83,7 +83,7 @@ Puis ajoute `~/.bun/bin` au `PATH` de la session et vérifie `bun --version`.
 
 ## 4. MCP Shenron
 
-Le binaire `shenron-mcp` lancé sans argument est le serveur MCP stdio d'Shenron.
+Le binaire `shenron-mcp` lancé sans argument est le serveur MCP stdio de Shenron.
 
 1. Si `agy mcp list` ne montre pas `shenron`, lance `agy mcp add shenron shenron-mcp`. S'il
    existe déjà, ne le touche pas.
@@ -153,8 +153,7 @@ système, `address_as` vide.
 
 1. `agy plugin list` : `shenron` présent, avec les composants `skills`, `agents` et
    `mcpServers`.
-2. `agy mcp list` : `shenron` présent et actif (et `shenron` seulement s'il a été
-   ajouté à la main à l'étape 3).
+2. `agy mcp list` : `shenron` présent et actif (serveur stdio de l'étape 4).
 3. Pose la question test « Qui a créé Dragon Ball ? » en appelant un outil du MCP
    `shenron` (recherche du site) ; attendu : Akira Toriyama, avec sa source. Si le MCP ne
    répond pas, dis-le : n'invente pas la réponse.
@@ -168,9 +167,8 @@ système, `address_as` vide.
    un jeton porteur valide), vérifie la présence de `dragonball.a2a_send`, `dbfr_deposit` et des
    outils `dragonball.admin_*` selon le build. Un appelant anonyme reçoit uniquement le catalogue filtré en lecture ; les effectifs peuvent évoluer.
    Rapporte le palier obtenu (anonyme ou élevé) et le nombre d'outils, sans afficher aucun jeton.
-6. Affiche un récapitulatif en tableau : Shenron (version avant, après), Bun, CLI `m3` et kit
-   `~/.shenron-kit` (paquets installés ou refusés), plugin (version {{version}}), MCP
-   `shenron` et `shenron`, palier MCP (anonyme ou élevé), agent home (`~/.gemini/shenron/`),
+6. Affiche un récapitulatif en tableau : Shenron (version avant, après), Bun, plugin (version
+   {{version}}), MCP `shenron`, palier MCP (anonyme ou élevé), agent home (`~/.gemini/shenron/`),
    bloc de `GEMINI.md` (créé, remplacé ou ajouté), profil, questions test (et leurs temps),
    pair A2A, Shenron Studio s'il a été installé, et toute étape en échec.
 

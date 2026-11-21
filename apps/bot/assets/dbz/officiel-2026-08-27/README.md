@@ -1,12 +1,14 @@
 # Weekly Character Showcase — illustrations officielles
 
+État du dépôt : ce dossier ne contient plus que ce README (ni images ni `manifest.json` suivis par Git ni présents sur disque) ; les chiffres ci-dessous décrivent le lot du 2026-08-27.
+
 **2 517 images, 327 Mo** moissonnées le 2026-08-27 sur le site officiel Dragon Ball
 via l'API CMS du site (`cmsapi-frontend.dragon-ball-official.com`) : les
 **266 chroniques « Weekly Character Showcase »**, une par personnage, avec
 leur artwork couleur de Toriyama, leur illustration de référence et leurs
 extraits (planches manga pour l'ère Toriyama, images d'épisode pour Super).
 `manifest.json` porte, pour chaque image, son URL source, son rôle et
-l'appariement proposé avec `db_characters` quand il est sûr (95 fiches). C'est exactement le registre relevé dans `DESIGN.md` (« Ce que montre
+l'appariement proposé avec `db_characters` quand il est sûr (95 fiches). C'est exactement le registre relevé dans `docs/reference/DESIGN.md`, supprimé du dépôt (commit 172cebb7) (« Ce que montre
 une illustration de Toriyama ») : aplats, contour d'épaisseur variable, aucun
 décor.
 

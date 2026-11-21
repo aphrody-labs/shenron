@@ -1,7 +1,7 @@
 # Synchronisation du plugin
 
 Le paquet installé reste autonome. Ces commandes concernent le mainteneur
-disposant du checkout Shenron et du runtime Bun d'Shenron.
+disposant du checkout Shenron et du runtime Bun.
 
 ```sh
 bun scripts/plugin/sync.ts --check

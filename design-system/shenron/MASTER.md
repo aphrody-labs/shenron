@@ -2,7 +2,7 @@
 
 Rules for every surface of dragonballfr.com and its native shells (`tv.`, wiki, admin, manga, games). A page file in `pages/<surface>.md` overrides this file where they conflict.
 
-Sources: measured palette `packages/ui/src/tokens.ts`, generated outputs of `bun packages/ui/scripts/generate-palette.ts` (CSS scales, `docs/design/contrast-report.md`, `crates/shenron-theme/themes/shenron.json`), UX rules from the `ui-ux-pro-max` skill database (queried 2026-11-19). That database's generic palette (indigo/green "Dark Mode (OLED)") is not used: the colours below are measured on Toriyama's manga, colour editions and anime frames.
+Sources: measured palette `packages/ui/src/tokens.ts`, generated outputs of `bun packages/ui/scripts/generate-palette.ts` (CSS scales, `docs/design/contrast-report.md`, `shenron.json` in `crates/shenron-theme/themes` of aphrody-labs/wiki), UX rules from the `ui-ux-pro-max` skill database (queried 2026-11-19). That database's generic palette (indigo/green "Dark Mode (OLED)") is not used: the colours below are measured on Toriyama's manga, colour editions and anime frames.
 
 ## Rendering targets
 

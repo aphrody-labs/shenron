@@ -10,15 +10,11 @@
 
 **Commands**
 
-```sh
-bun run --cwd packages/discord-kit build
-bun run --cwd packages/discord-kit test
-bun run --cwd packages/discord-kit typecheck
-```
+The package defines no scripts: the root `just check` and `just test` cover it.
 
 <!-- catalog:end -->
 
-Shared Discord bot core kit, published as `@aphrody/shenron-discord-kit` and used by the Shenron and Rose Griffon bots.
+Shared Discord bot core kit, private workspace package `@aphrody/shenron-discord-kit`, used by the Shenron and Rose Griffon bots.
 
 ## Features
 

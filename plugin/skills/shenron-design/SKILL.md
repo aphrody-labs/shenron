@@ -6,7 +6,7 @@ description: "Conçoit ou modifie l'interface Shenron (CSS DBZ, jetons, Tailwind
 # Design system Shenron
 
 Appliquer le [contrat partagé](../../references/execution.md). Référence complète :
-`docs/products/design-system.md` (dépôt Shenron).
+`design-system/shenron/MASTER.md` (dépôt Shenron).
 
 1. **Choisir la couche** : valeur brute surchargeable → primitive `--dbz-*` ; alias d'usage →
    `@theme inline` de `packages/ui/src/styles.css`, toujours `var(--dbz-*, <défaut>)` ; style de
