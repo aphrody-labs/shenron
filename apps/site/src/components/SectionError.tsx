@@ -16,16 +16,17 @@ import { useT } from "@/components/T";
 export function SectionError({
   error,
   reset,
-  title,
+  titleKey,
   backHref,
-  backLabel,
+  backKey,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
-  /** Ce qui n'a pas pu s'afficher, en clair. */
-  title: string;
+  /** Clé du catalogue : ce qui n'a pas pu s'afficher, en clair. */
+  titleKey: string;
   backHref: string;
-  backLabel: string;
+  /** Clé du catalogue : libellé du lien de retour. */
+  backKey: string;
 }) {
   const t = useT();
   useEffect(() => {
@@ -34,8 +35,10 @@ export function SectionError({
 
   return (
     <div className="mx-auto w-full max-w-[640px] px-6 py-24 text-center">
-      <p className="font-scouter text-[11px] tracking-[0.4em] text-fuchsia-300">❯ ANOMALIE ❮</p>
-      <h1 className="mt-4 font-display text-2xl font-bold text-white">{title}</h1>
+      <p className="font-scouter text-[11px] tracking-[0.4em] text-fuchsia-300">
+        ❯ {t("error.anomaly")} ❮
+      </p>
+      <h1 className="mt-4 font-display text-2xl font-bold text-white">{t(titleKey)}</h1>
       <p className="mt-3 text-white/60">{t("error.lead")}</p>
       {error.digest && (
         <p className="mt-4 font-mono text-[11px] text-white/50">
@@ -47,7 +50,7 @@ export function SectionError({
           {t("error.retry")}
         </button>
         <Link href={backHref} className="dbz-button-ghost !text-xs">
-          {backLabel}
+          {t(backKey)}
         </Link>
       </div>
     </div>

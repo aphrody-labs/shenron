@@ -334,7 +334,7 @@ export default function AccountPage() {
                     {g.name}
                   </p>
                   <p className="text-xs text-zinc-500">
-                    {g.owner && "👑 "}
+                    {g.owner && "propriétaire · "}
                     {g.approximate_member_count?.toLocaleString("fr-FR") ?? "?"} membres
                     {g.isCurrent && " · serveur du bot"}
                   </p>

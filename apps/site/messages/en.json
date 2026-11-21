@@ -810,7 +810,7 @@
     "statZeni": "Zeni",
     "statAchievements": "Achievements",
     "statItems": "Items",
-    "fusionWith": "✦ Fused with {name}"
+    "fusionWith": "Fused with {name}"
   },
   "settings": {
     "eyebrow": "Member account",
@@ -865,7 +865,29 @@
   "error": {
     "lead": "Display failed. It's often temporary, and trying again is usually enough.",
     "retry": "Try again",
-    "digest": "digest: {digest}"
+    "digest": "digest: {digest}",
+    "anomaly": "Anomaly",
+    "section": {
+      "adminAi": "The AI cockpit could not be displayed",
+      "leaderboard": "The leaderboard could not be displayed",
+      "news": "The Journal could not be displayed",
+      "profile": "The profile could not be displayed",
+      "rankings": "The rankings could not be displayed",
+      "shop": "The shop could not be displayed",
+      "canon": "The canon check could not be displayed",
+      "episodes": "The episodes could not be displayed",
+      "games": "The games could not be displayed",
+      "manga": "The manga could not be displayed",
+      "movies": "The movies could not be displayed",
+      "sagas": "The sagas could not be displayed"
+    },
+    "back": {
+      "admin": "Admin dashboard",
+      "leaderboard": "The leaderboard",
+      "canon": "Ask another question",
+      "episodes": "Back to the episodes",
+      "movies": "Back to the movies"
+    }
   },
   "history": {
     "resume": "To resume",

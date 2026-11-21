@@ -2,6 +2,7 @@
 // View moved from Shenron's wiki/DragonRadarSearch.tsx (691e28e).
 "use client";
 import { useState, useEffect, useMemo, useId, type ComponentType, type ReactNode } from "react";
+import { Scale, Tv } from "lucide-react";
 import { DragonRadar, Livre, Kame } from "../icones";
 import { useDragonRadar, type RadarTransport, type SearchScope } from "./use-dragon-radar";
 import { radarText, type DragonRadarMessages } from "./dragon-radar-messages";
@@ -272,7 +273,7 @@ export function DragonRadarSearch({
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-xl">⚖️</span>
+                    <Scale className="size-5 shrink-0" aria-hidden />
                     <span
                       className="font-mono text-xs font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full"
                       style={{ backgroundColor: `${canonData.color}30`, color: canonData.color }}
@@ -394,7 +395,7 @@ export function DragonRadarSearch({
             (results.episodes.length > 0 || results.movies.length > 0) && (
               <section className="space-y-4">
                 <div className="flex items-center gap-2 border-b border-white/10 pb-2">
-                  <span className="text-xl">📺</span>
+                  <Tv className="size-5 shrink-0" aria-hidden />
                   <h3 className="font-saiyan text-xl text-white tracking-wider">
                     {t("animeHeading", { count: results.episodes.length + results.movies.length })}
                   </h3>

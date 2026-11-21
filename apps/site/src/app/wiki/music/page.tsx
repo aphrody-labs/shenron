@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Music } from "lucide-react";
 import { dbUniverse } from "@/lib/db-universe";
 import { SoundtracksGrid } from "@/components/wiki/SoundtracksGrid";
 import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
@@ -36,7 +37,7 @@ export default async function SoundtracksIndexPage() {
     >
       <div className="rounded-2xl border border-white/10 bg-gradient-to-r from-rose-950/20 via-black/40 to-transparent p-5 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <span className="text-2xl">🎵</span>
+          <Music className="size-6 shrink-0" aria-hidden />
           <div>
             <h2 className="text-sm font-bold text-white">
               Discographie & Thèmes Musicaux Officiels

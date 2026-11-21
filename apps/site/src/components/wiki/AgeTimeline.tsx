@@ -141,7 +141,7 @@ export function AgeTimeline({ events }: { events: TimelineEvent[] }) {
                 </div>
 
                 {ev.source_ref && (
-                  <span className="text-[11px] text-white/40 italic">📖 {ev.source_ref}</span>
+                  <span className="text-[11px] text-white/40 italic">{ev.source_ref}</span>
                 )}
               </div>
 

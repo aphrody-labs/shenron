@@ -10,7 +10,7 @@
     "attachmentOnly": "Je ne lis que le texte des messages privés : écris-moi ta question."
   },
   "interaction": {
-    "failed": "❌ La commande a rencontré une erreur interne. Réessaie dans un instant.",
+    "failed": "La commande a rencontré une erreur interne. Réessaie dans un instant.",
     "unknown": "Commande inconnue ou expirée. Recharge Discord (Ctrl+R) pour actualiser la liste.",
     "paginationExpired": "Cette pagination a expiré. Relance la commande pour reprendre la lecture."
   },
@@ -22,17 +22,17 @@
     "sleepcall_end": "☀️ Fin du sleepcall dans <#{channelId}> : {duration} · {participantsLabel} · {xp} XP gagnés au total."
   },
   "titles": {
-    "welcome": "🌟 Nouveau combattant !",
-    "farewell": "👋 Au revoir guerrier",
-    "level_up": "🚀 Nouveau palier atteint !",
-    "achievement_unlocked": "🏆 Accomplissement débloqué",
-    "first_message": "🏆 Accomplissement débloqué",
-    "daily_quest": "🎯 Quête quotidienne",
-    "anti_link_jail": "⛓️ Jail automatique",
-    "jail_expired": "🕊️ Libération",
-    "giveaway_winner": "🎁 Tirage au sort",
-    "vocal_tempo_created": "🔊 Vocal éphémère créé",
-    "vocal_tempo_destroyed": "🔇 Vocal éphémère supprimé"
+    "welcome": "Nouveau combattant !",
+    "farewell": "Au revoir guerrier",
+    "level_up": "Nouveau palier atteint !",
+    "achievement_unlocked": "Accomplissement débloqué",
+    "first_message": "Accomplissement débloqué",
+    "daily_quest": "Quête quotidienne",
+    "anti_link_jail": "Jail automatique",
+    "jail_expired": "Libération",
+    "giveaway_winner": "Tirage au sort",
+    "vocal_tempo_created": "Vocal éphémère créé",
+    "vocal_tempo_destroyed": "Vocal éphémère supprimé"
   },
   "achievements": {
     "names": {

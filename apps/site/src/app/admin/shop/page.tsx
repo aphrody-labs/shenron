@@ -883,13 +883,13 @@ function ShopItemEditor({
               onChange={(e) => setDraft({ ...draft, type: e.target.value as ShopItem["type"] })}
             >
               <optgroup label="Distinctions (Unifié)">
-                <option value="title">📜 Titre honorifique</option>
-                <option value="badge">🏅 Badge d&apos;emblème</option>
+                <option value="title">Titre honorifique</option>
+                <option value="badge">Badge d&apos;emblème</option>
               </optgroup>
               <optgroup label="Profil & Style">
                 <option value="card">札 Carte de profil</option>
                 <option value="banner">旗 Bannière</option>
-                <option value="color">🎨 Couleur (rôle)</option>
+                <option value="color">Couleur (rôle)</option>
               </optgroup>
             </select>
           </div>

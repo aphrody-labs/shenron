@@ -58,5 +58,12 @@
   "playerSeek": "再生位置",
   "playerVolume": "音量",
   "playerSpeed": "再生速度",
-  "playerSubtitles": "字幕"
+  "playerSubtitles": "字幕",
+  "playerPlay": "再生",
+  "playerPause": "一時停止",
+  "playerMute": "ミュート",
+  "playerUnmute": "ミュート解除",
+  "playerFullscreen": "全画面表示",
+  "playerExitFullscreen": "全画面表示を終了",
+  "playerSeekTo": "{seconds} 秒へ移動"
 }

@@ -58,5 +58,12 @@
   "playerSeek": "Position de lecture",
   "playerVolume": "Volume",
   "playerSpeed": "Vitesse de lecture",
-  "playerSubtitles": "Sous-titres"
+  "playerSubtitles": "Sous-titres",
+  "playerPlay": "Lire",
+  "playerPause": "Mettre en pause",
+  "playerMute": "Couper le son",
+  "playerUnmute": "Rétablir le son",
+  "playerFullscreen": "Plein écran",
+  "playerExitFullscreen": "Quitter le plein écran",
+  "playerSeekTo": "Aller à {seconds} s"
 }

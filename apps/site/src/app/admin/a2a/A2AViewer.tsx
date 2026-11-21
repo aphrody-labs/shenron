@@ -194,7 +194,7 @@ export function A2AViewer() {
       {/* Formulaire d'envoi d'ordres A2A */}
       <div className="p-5 rounded-xl border border-border bg-card/40 space-y-4">
         <h3 className="font-semibold text-base flex items-center gap-2">
-          <span>⚡ Console d'Ordres A2A (Dispatch Déterministe)</span>
+          <span>Console d'Ordres A2A (Dispatch Déterministe)</span>
         </h3>
         <form onSubmit={handleSend} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -250,7 +250,7 @@ export function A2AViewer() {
                 disabled={sending || !instruction.trim()}
                 className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold px-4 py-2 rounded-lg text-sm transition disabled:opacity-50"
               >
-                {sending ? "Transmission en cours..." : "🚀 Émettre l'Ordre A2A"}
+                {sending ? "Transmission en cours..." : "Émettre l'Ordre A2A"}
               </button>
             </div>
           </div>
@@ -279,7 +279,7 @@ export function A2AViewer() {
       <div className="space-y-3">
         <div className="flex items-center justify-between">
           <h3 className="font-semibold text-base flex items-center gap-2">
-            <span>📡 Flux des Enveloppes A2A (.coord)</span>
+            <span>Flux des Enveloppes A2A (.coord)</span>
             {loaded && (
               <span className="text-xs text-muted-foreground">
                 ({filteredEnvelopes.length} messages)

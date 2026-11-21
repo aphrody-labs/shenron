@@ -215,6 +215,7 @@ export const HyperFramesPlayer: React.FC<HyperFramesPlayerProps> = ({
           <button
             type="button"
             onClick={togglePlay}
+            aria-label={t("playerPlay")}
             className="absolute inset-0 m-auto w-20 h-20 rounded-full flex items-center justify-center transition-transform hover:scale-110 active:scale-95 cursor-pointer backdrop-blur-sm"
             style={{
               backgroundColor: "rgba(224, 96, 0, 0.85)",
@@ -236,7 +237,7 @@ export const HyperFramesPlayer: React.FC<HyperFramesPlayerProps> = ({
             <button
               type="button"
               key={pt.timeSec}
-              aria-label={`Seek to ${Math.round(pt.timeSec)}s`}
+              aria-label={t("playerSeekTo", { seconds: Math.round(pt.timeSec) })}
               onClick={() => handleSeek(pt.timeSec)}
               className="flex-1 cursor-pointer transition-colors hover:bg-amber-400 rounded-sm border-0 p-0"
               style={{
@@ -274,6 +275,7 @@ export const HyperFramesPlayer: React.FC<HyperFramesPlayerProps> = ({
             <button
               type="button"
               onClick={togglePlay}
+              aria-label={isPlaying ? t("playerPause") : t("playerPlay")}
               className="p-2 rounded-full hover:bg-white/10 text-white transition-colors"
             >
               {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
@@ -283,7 +285,8 @@ export const HyperFramesPlayer: React.FC<HyperFramesPlayerProps> = ({
             <button
               type="button"
               onClick={() => stepFrame(-1)}
-              title="Previous Frame (<)"
+              aria-label={t("timelinePreviousFrame")}
+              title={`${t("timelinePreviousFrame")} (<)`}
               className="p-1.5 rounded hover:bg-white/10 text-slate-300 font-mono text-xs flex items-center gap-1"
             >
               <SkipBack className="w-3.5 h-3.5" />
@@ -292,7 +295,8 @@ export const HyperFramesPlayer: React.FC<HyperFramesPlayerProps> = ({
             <button
               type="button"
               onClick={() => stepFrame(1)}
-              title="Next Frame (>)"
+              aria-label={t("timelineNextFrame")}
+              title={`${t("timelineNextFrame")} (>)`}
               className="p-1.5 rounded hover:bg-white/10 text-slate-300 font-mono text-xs flex items-center gap-1"
             >
               <span>+1F</span>
@@ -304,6 +308,7 @@ export const HyperFramesPlayer: React.FC<HyperFramesPlayerProps> = ({
               <button
                 type="button"
                 onClick={toggleMute}
+                aria-label={isMuted || volume === 0 ? t("playerUnmute") : t("playerMute")}
                 className="p-1.5 rounded-full hover:bg-white/10 text-slate-300"
               >
                 {isMuted || volume === 0 ? (
@@ -378,6 +383,7 @@ export const HyperFramesPlayer: React.FC<HyperFramesPlayerProps> = ({
             <button
               type="button"
               onClick={toggleFullscreen}
+              aria-label={isFullscreen ? t("playerExitFullscreen") : t("playerFullscreen")}
               className="p-2 rounded-full hover:bg-white/10 text-slate-300 transition-colors"
             >
               {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}

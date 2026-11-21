@@ -6,9 +6,9 @@ export default function Error(props: { error: Error & { digest?: string }; reset
   return (
     <SectionError
       {...props}
-      title="Les films n'ont pas pu s'afficher"
+      titleKey="error.section.movies"
       backHref="/wiki/movies"
-      backLabel="Retour aux films"
+      backKey="error.back.movies"
     />
   );
 }

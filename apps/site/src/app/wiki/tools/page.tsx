@@ -1,3 +1,4 @@
+import { Star } from "lucide-react";
 import { dbUniverse } from "@/lib/db-universe";
 import { WikiIndexPage } from "@/components/wiki/WikiIndexPage";
 import { pageHero } from "@/lib/banner-config";
@@ -110,8 +111,8 @@ export default async function ToolsPage() {
                       <h3 className="min-w-0 break-words text-xl font-bold text-white transition-colors group-hover:text-dbz-orange">
                         {tool.name.split("/")[1] || tool.name}
                       </h3>
-                      <span className="scouter-text shrink-0 text-xs text-dbz-orange">
-                        ⭐ {tool.stars}
+                      <span className="scouter-text inline-flex shrink-0 items-center gap-1 text-xs text-dbz-orange">
+                        <Star className="size-3" aria-hidden /> {tool.stars}
                       </span>
                     </div>
                     <p className="text-[10px] font-bold text-white/50 uppercase tracking-widest mb-3">

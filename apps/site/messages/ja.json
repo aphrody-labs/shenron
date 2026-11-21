@@ -810,7 +810,7 @@
     "statZeni": "ゼニー",
     "statAchievements": "実績",
     "statItems": "アイテム",
-    "fusionWith": "✦ {name}とフュージョン"
+    "fusionWith": "{name}とフュージョン"
   },
   "settings": {
     "eyebrow": "メンバーアカウント",
@@ -865,7 +865,29 @@
   "error": {
     "lead": "表示に失敗しました。多くの場合、それは一時的なものであり、通常は再試行するだけで十分です。",
     "retry": "もう一度やり直してください",
-    "digest": "ダイジェスト: {digest}"
+    "digest": "ダイジェスト: {digest}",
+    "anomaly": "異常",
+    "section": {
+      "adminAi": "AI コックピットを表示できませんでした",
+      "leaderboard": "ランキングを表示できませんでした",
+      "news": "ジャーナルを表示できませんでした",
+      "profile": "プロフィールを表示できませんでした",
+      "rankings": "ランキングを表示できませんでした",
+      "shop": "ショップを表示できませんでした",
+      "canon": "正史の確認を表示できませんでした",
+      "episodes": "エピソードを表示できませんでした",
+      "games": "ゲームを表示できませんでした",
+      "manga": "マンガを表示できませんでした",
+      "movies": "映画を表示できませんでした",
+      "sagas": "サーガを表示できませんでした"
+    },
+    "back": {
+      "admin": "管理ダッシュボード",
+      "leaderboard": "ランキング",
+      "canon": "別の質問をする",
+      "episodes": "エピソード一覧へ戻る",
+      "movies": "映画一覧へ戻る"
+    }
   },
   "history": {
     "resume": "再開するには",

@@ -348,7 +348,7 @@ export function CanonGameView({ initialChapterId = 6 }: { initialChapterId?: num
           <div className="flex flex-col items-center justify-center text-center">
             {gameState.beamClashActive ? (
               <div className="px-4 py-2 rounded-xl border border-sky-400/50 bg-sky-950/90 text-sky-200 font-black animate-pulse shadow-lg text-sm md:text-base">
-                ⚡ BEAM CLASH ! MITRAILLEZ [J] / [K] ! ⚡
+                Beam Clash ! Mitraillez [J] / [K] !
               </div>
             ) : gameState.comboCount > 1 ? (
               <div className="animate-bounce">

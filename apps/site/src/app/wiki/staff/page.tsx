@@ -9,7 +9,7 @@ import { buildUnifiedStaffCatalog } from "@/lib/unified-staff-catalog";
 import { withVerifiedImages } from "@/lib/wikimedia-images";
 import { dbUniverse } from "@/lib/db-universe";
 import { ogMeta } from "@/lib/og";
-import { Sparkles, Award, ArrowRight } from "lucide-react";
+import { Sparkles, Award, ArrowRight, Mic, Music, Crown } from "lucide-react";
 
 export const revalidate = 3600;
 
@@ -194,7 +194,7 @@ export default async function StaffHubPage({
           href="/wiki/staff?tier=voice"
           className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/40 p-4 transition-colors hover:border-purple-500/40 hover:bg-purple-950/20"
         >
-          <span className="text-2xl">🎙️</span>
+          <Mic className="size-6 shrink-0" aria-hidden />
           <div>
             <div className="text-xs font-bold text-white">Annuaire des Voix &amp; Seiyū</div>
             <div className="text-[11px] text-white/50">Casting VO et VF complet</div>
@@ -205,7 +205,7 @@ export default async function StaffHubPage({
           href="/wiki/music"
           className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/40 p-4 transition-colors hover:border-rose-500/40 hover:bg-rose-950/20"
         >
-          <span className="text-2xl">🎵</span>
+          <Music className="size-6 shrink-0" aria-hidden />
           <div>
             <div className="text-xs font-bold text-white">Discographie &amp; OST</div>
             <div className="text-[11px] text-white/50">Génériques et musiques de combat</div>
@@ -216,7 +216,7 @@ export default async function StaffHubPage({
           href="/wiki/toriyama"
           className="flex items-center gap-3 rounded-2xl border border-white/10 bg-black/40 p-4 transition-colors hover:border-orange-500/40 hover:bg-orange-950/20"
         >
-          <span className="text-2xl">👑</span>
+          <Crown className="size-6 shrink-0" aria-hidden />
           <div>
             <div className="text-xs font-bold text-white">Akira Toriyama</div>
             <div className="text-[11px] text-white/50">Anthologie et déclarations vérifiées</div>

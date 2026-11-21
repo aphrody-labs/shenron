@@ -58,5 +58,12 @@
   "playerSeek": "Seek",
   "playerVolume": "Volume",
   "playerSpeed": "Playback speed",
-  "playerSubtitles": "Subtitles"
+  "playerSubtitles": "Subtitles",
+  "playerPlay": "Play",
+  "playerPause": "Pause",
+  "playerMute": "Mute",
+  "playerUnmute": "Unmute",
+  "playerFullscreen": "Full screen",
+  "playerExitFullscreen": "Exit full screen",
+  "playerSeekTo": "Seek to {seconds} s"
 }

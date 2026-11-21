@@ -473,7 +473,7 @@
         "all": "Tous les tomes"
       },
       "databooks": {
-        "title": "Guides, Databooks & Archives",
+        "title": "Guides, databooks et archives",
         "badge": "Daizenshuu & Secrets",
         "all": "Tous les databooks"
       }
@@ -810,7 +810,7 @@
     "statZeni": "Zénis",
     "statAchievements": "Succès",
     "statItems": "Objets",
-    "fusionWith": "✦ Fusion avec {name}"
+    "fusionWith": "Fusion avec {name}"
   },
   "settings": {
     "eyebrow": "Compte membre",
@@ -865,7 +865,29 @@
   "error": {
     "lead": "L'affichage a échoué. C'est souvent passager, et réessayer suffit en général.",
     "retry": "Réessayer",
-    "digest": "digest : {digest}"
+    "digest": "digest : {digest}",
+    "anomaly": "Anomalie",
+    "section": {
+      "adminAi": "Le cockpit IA n'a pas pu s'afficher",
+      "leaderboard": "Le classement n'a pas pu s'afficher",
+      "news": "Le Journal n'a pas pu s'afficher",
+      "profile": "Le profil n'a pas pu s'afficher",
+      "rankings": "Les classements n'ont pas pu s'afficher",
+      "shop": "La boutique n'a pas pu s'afficher",
+      "canon": "La vérification de canonicité n'a pas pu s'afficher",
+      "episodes": "Les épisodes n'ont pas pu s'afficher",
+      "games": "Les jeux n'ont pas pu s'afficher",
+      "manga": "Le manga n'a pas pu s'afficher",
+      "movies": "Les films n'ont pas pu s'afficher",
+      "sagas": "Les sagas n'ont pas pu s'afficher"
+    },
+    "back": {
+      "admin": "Tableau de bord admin",
+      "leaderboard": "Le classement",
+      "canon": "Reposer une question",
+      "episodes": "Retour aux épisodes",
+      "movies": "Retour aux films"
+    }
   },
   "history": {
     "resume": "Reprendre",
@@ -3684,7 +3706,7 @@
     "renewalSubject": "Paiement reçu pour votre abonnement DBFR VIP",
     "renewalBody": "Bonjour {name}, nous confirmons le paiement de {amount} pour le renouvellement de votre abonnement DBFR VIP. Gérer votre abonnement : {billingUrl}. Référence : {reference}. Ce message confirme le paiement ; ce n’est ni une facture ni un reçu fiscal.",
     "paymentFailedSubject": "Action requise pour votre abonnement DBFR VIP",
-    "paymentFailedBody": "Bonjour {name}, le dernier paiement de votre abonnement DBFR VIP n’a pas abouti. Vérifiez votre moyen de paiement auprès du prestataire : {billingUrl}. Référence : {reference}."
+    "paymentFailedBody": "Le dernier paiement de votre abonnement DBFR VIP n’a pas abouti. Vérifiez votre moyen de paiement auprès du prestataire : {billingUrl}. Référence : {reference}."
   },
   "vie": {
     "empty": {

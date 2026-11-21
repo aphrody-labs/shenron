@@ -10,7 +10,7 @@
     "attachmentOnly": "プライベートメッセージはテキストのみ読みます。質問を文章で送ってください。"
   },
   "interaction": {
-    "failed": "❌ コマンドの実行中に内部エラーが発生しました。しばらくしてからもう一度お試しください。",
+    "failed": "コマンドの実行中に内部エラーが発生しました。しばらくしてからもう一度お試しください。",
     "unknown": "不明または期限切れのコマンドです。Discord を再読み込み（Ctrl+R）して一覧を更新してください。",
     "paginationExpired": "このページ送りは期限切れです。コマンドをもう一度実行して続きを読んでください。"
   },
@@ -22,17 +22,17 @@
     "sleepcall_end": "☀️ <#{channelId}> のスリープコールが終了しました：{duration} ・ {participantsLabel} ・ 合計 {xp} XP を獲得。"
   },
   "titles": {
-    "welcome": "🌟 新たな戦士！",
-    "farewell": "👋 さらば、戦士よ",
-    "level_up": "🚀 新しい段階に到達！",
-    "achievement_unlocked": "🏆 実績を解除",
-    "first_message": "🏆 実績を解除",
-    "daily_quest": "🎯 デイリークエスト",
-    "anti_link_jail": "⛓️ 自動投獄",
-    "jail_expired": "🕊️ 釈放",
-    "giveaway_winner": "🎁 抽選",
-    "vocal_tempo_created": "🔊 一時ボイスチャンネルを作成",
-    "vocal_tempo_destroyed": "🔇 一時ボイスチャンネルを削除"
+    "welcome": "新たな戦士！",
+    "farewell": "さらば、戦士よ",
+    "level_up": "新しい段階に到達！",
+    "achievement_unlocked": "実績を解除",
+    "first_message": "実績を解除",
+    "daily_quest": "デイリークエスト",
+    "anti_link_jail": "自動投獄",
+    "jail_expired": "釈放",
+    "giveaway_winner": "抽選",
+    "vocal_tempo_created": "一時ボイスチャンネルを作成",
+    "vocal_tempo_destroyed": "一時ボイスチャンネルを削除"
   },
   "achievements": {
     "names": {

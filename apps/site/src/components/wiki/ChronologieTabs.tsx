@@ -29,7 +29,7 @@ export function ChronologieTabs({
                 : "text-white/60 hover:text-white"
             }`}
           >
-            📺 Ordre des Œuvres ({mediaItems.length} médias)
+            Ordre des Œuvres ({mediaItems.length} médias)
           </button>
           <button
             type="button"

@@ -8,9 +8,9 @@ export default function Error(props: { error: Error & { digest?: string }; reset
   return (
     <SectionError
       {...props}
-      title="Le cockpit IA n'a pas pu s'afficher"
+      titleKey="error.section.adminAi"
       backHref="/admin/dashboard"
-      backLabel="Tableau de bord admin"
+      backKey="error.back.admin"
     />
   );
 }

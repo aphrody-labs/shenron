@@ -16,9 +16,9 @@ export default function Error(props: { error: Error & { digest?: string }; reset
   return (
     <SectionError
       {...props}
-      title="La vérification de canonicité n'a pas pu s'afficher"
+      titleKey="error.section.canon"
       backHref="/wiki/canon"
-      backLabel="Reposer une question"
+      backKey="error.back.canon"
     />
   );
 }

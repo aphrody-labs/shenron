@@ -6,9 +6,9 @@ export default function Error(props: { error: Error & { digest?: string }; reset
   return (
     <SectionError
       {...props}
-      title="Le profil n'a pas pu s'afficher"
+      titleKey="error.section.profile"
       backHref="/leaderboard"
-      backLabel="Le classement"
+      backKey="error.back.leaderboard"
     />
   );
 }
