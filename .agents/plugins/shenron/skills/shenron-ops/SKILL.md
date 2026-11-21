@@ -1,13 +1,11 @@
 ---
 name: shenron-ops
-description: Operational actions, health checks, and deployment verification for the Shenron monorepo platform.
+description: Gate and deploy-plan commands of the Shenron repository (type check, lint, format, tests, deploy lanes).
 ---
 
-# Shenron Operations (`shenron-ops`)
+# shenron-ops
 
-## Actions
-
-- **Type Check**: Run `bun check` across all packages and apps.
-- **Code Lint & Format**: Run `just lint` and `just format-check`.
-- **Unit & Integration Tests**: Run `just test`.
-- **Deploy Plan & Lanes**: Run `just deploy-plan` to inspect affected zero-downtime activation lanes.
+- Type check: `just check`.
+- Lint and format: `just lint`, `just format-check`.
+- Tests: `just test`.
+- Affected deploy lanes: `just deploy-plan`.

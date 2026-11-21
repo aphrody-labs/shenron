@@ -1,8 +1,3 @@
-# Instructions agents
+# packages/config
 
-Unité modulaire `@aphrody/shenron-config` du monorepo Shenron.
-
-- Le code et les identifiants restent en anglais ; la documentation reste en français.
-- Utiliser Bun Shenron pour les scripts, tests et builds.
-- Respecter le contrat workspace du dépôt parent et ne jamais inclure de secrets, données privées ou artefacts générés.
-- Vérifier le diff et les tests propres à cette unité avant de commiter.
+Commandes et règles du dossier: `README.md`. Règles du dépôt: `AGENTS.md` à la racine.

@@ -28,8 +28,7 @@ Ce fichier ne duplique ni l’objectif ni les preuves :
   une séquence validée aux événements Dragon Pixel. Conversion réelle
   planche → atlas/GIF et consommateur Canvas qualifiés ; les icônes SVG
   vectorisées, maillages 3D reconstruits et nouveaux VFX restent des lots distincts,
-  détaillés dans [le plan moteur](docs/reference/root/PLAN.md#assets-manga-rustwasm--demande-du-18-octobre-2026)
-  et [la matrice des capacités](packages/engine/README.md#capacités-et-portes--18-octobre-2026).
+  détaillés dans [le plan moteur](docs/reference/root/PLAN.md#assets-manga-rustwasm--demande-du-18-octobre-2026).
 
 - Hero immersif livré sous `1e9193db` : quatre frames HD CDN, logo/Kinto'un,
   introduction CMS et accès Beerus. Chrome réel 1440/390 : images chargées,

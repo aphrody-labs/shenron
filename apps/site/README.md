@@ -1,6 +1,6 @@
 # @aphrody/shenron-site
 
-Site dragonballfr.com actuel (Next.js 16, pages fr/en/ja, wiki, lecteurs). Le site Leptos décrit dans `docs/decisions/0001-pile-du-site.md` le remplace.
+Site dragonballfr.com actuel (Next.js 16, pages fr/en/ja, wiki, lecteurs). Remplacement prévu : ADR 0008 (`gpui-kit`), conflit ouvert avec l'ADR 0009 (Leptos), voir `docs/plans/base-ui-vers-gpui.md`.
 
 ## Commandes
 
@@ -17,8 +17,8 @@ Les tests utilisent `bun test`. Lancer `test` avant tout commit qui touche ce do
 
 ## Règles du dossier
 
-- Aucune nouvelle dépendance de pile (Next, Tailwind, Base UI): le dossier est en fin de vie.
-- Textes visibles dans `apps/site/messages/{fr,en,ja}.json`, jamais en dur.
+- Aucune nouvelle dépendance de pile (Next, Tailwind, Base UI): le dossier sera remplacé.
+- Textes visibles dans `apps/site/messages/{fr,en,ja}.json` et `apps/site/messages/<espace>/{fr,en,ja}.json`, jamais en dur.
 - Migrations dans `apps/site/src/db/migrations`; `db:push` est interdit.
 
 Règles générales: `AGENTS.md` à la racine.

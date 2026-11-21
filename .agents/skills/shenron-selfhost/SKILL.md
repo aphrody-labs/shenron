@@ -13,18 +13,18 @@ Read `docs/decisions/0009-auto-hebergement-rust-integral.md` first, then the run
 
 | Need | Source |
 |---|---|
-| Step status and evidence | `.claude/goal.json` (steps 0 to 8), `migration/rust.toml` |
-| Release without SSH | `docs/runbooks/deployd.md`, `crates/shenron-deployd` |
-| Edge replacing nginx | `crates/shenron-edge`, `deploy/edge/` |
+| Step status and evidence | `.claude/goal.json` (steps 0 to 8) |
+| Release without SSH | `docs/runbooks/deployd.md`, `../wiki/crates/shenron-deployd` |
+| Edge replacing nginx | `../wiki/crates/shenron-edge`, `deploy/edge/` |
 | CDN origin replacing R2 and the Worker | `docs/runbooks/cdn-garage-cutover.md`, `deploy/garage/` |
 | Claude on Postgres, Redis and Dragon Ball context | `docs/runbooks/shenron-mcp-admin.md` |
 | Dated dependency versions | `docs/research/` (re-run the survey before pinning) |
-| Bun and Rust pins | `package.json#packageManager`, `rust-toolchain.toml`, `bun scripts/deploy/environment.ts --check` |
+| Bun and Rust pins | `package.json#packageManager`, `../wiki/rust-toolchain.toml`, `bun scripts/deploy/environment.ts --check` |
 
 ## Rules that bit before
 
 - A prd change takes the deploy lock (`flock`, path in `AGENTS.md`) and notifies live sessions first. Rose Griffon shares prd: never touch its units.
-- Rust builds run on fr1 only, niced when load is high (`nice -n 19 ionice -c3`, `-j2`); check load before starting a build and never start a second one on the same target dir.
+- Rust is built in `aphrody-labs/wiki` on fr1 only, niced when load is high (`nice -n 19 ionice -c3`, `-j2`); check load before starting a build and never start a second one on the same target dir.
 - A step is `done` only after proof on the public origin: rendered screenshot, broken images, failed requests, console errors, checked API bodies. A green HTTP status is not proof. A release that exists only in a repo is `in_progress`.
 - Commit by explicit path (`git commit -- <paths>`): another agent's staged files are swept into a plain `git commit` of the shared index. No stash, no reset, no `git add -A`, gitleaks before every push.
 - Cutovers (CDN, edge) wait for the new path to serve the traffic class first; the old path stays until parity is measured (`scripts/ops/cdn-parity.ts`, `scripts/ops/edge-header-diff.ts`).

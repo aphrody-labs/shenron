@@ -1,60 +1,28 @@
 ---
 name: filmcraft
-description: Video editing, timeline manipulation, clip cutting, audio mixing, rendering, and export automation using FilmCraft CLI and MCP server. Use when the user asks to edit video, cut clips, export sequence, inspect timeline, or automate FilmCraft.
+description: Edit timelines, cut clips, render frames and export sequences with the FilmCraft CLI (`filmcraft-cli`) and its MCP server. Use when the user asks to edit video, cut clips, export a sequence, inspect a timeline or automate FilmCraft.
 ---
 
 # FilmCraft
 
-FilmCraft is a professional, GPU-accelerated video editing engine and NLE suite.
-It provides a CLI (ilmcraft-cli) and an MCP server (ilmcraft) for complete headless and interactive timeline automation.
+Source: `github.com/aphrody-labs/filmcraft` (no copy in this repository). `filmcraft-cli` drives the headless engine, or the running app with `--bridge`. `filmcraft-cli --help` is the authority for options.
 
-## Features & Capabilities
+## CLI
 
-- **Command Execution**: Execute any timeline or engine command via ilmcraft-cli exec <command_id> [params...].
-- **Media Inspection**: Probe video, audio, and image assets (ilmcraft-cli probe <media_file>).
-- **Rendering**: Render exact timeline frames to high-resolution PNG (ilmcraft-cli render --seconds <time> --out <frame.png>).
-- **Sequence Export**: Hardware-accelerated and software multi-codec export (H.264, HEVC, ProRes, DNxHR, AV1, APV, MXF, MP4, WebM) via ilmcraft-cli export <out_path> [--preset <preset>] [--format <format>].
-- **Batch Processing**: Run automation scripts via ilmcraft-cli run <script.jsonl>.
-- **Live GUI Bridge**: Connect to an interactive running desktop session using --bridge 127.0.0.1:<PORT>.
-
-## Common CLI Workflows
-
-`ash
-
-# Inspect active sequence and project tree
-
-filmcraft-cli --demo inspect
-
-# List all available commands and presets
-
-filmcraft-cli commands --json
-filmcraft-cli export --list-presets
-
-# Import media assets
-
-filmcraft-cli --project myproject.fcproj import video.mp4 audio.wav
-
-# Cut / Razor at specific timestamp
-
-filmcraft-cli --project myproject.fcproj exec timeline.razor seconds=12.5
-
-# Render a snapshot frame
-
+```sh
+filmcraft-cli --demo inspect                       # project tree and active sequence as JSON
+filmcraft-cli commands --json                      # every command id with its parameters
+filmcraft-cli export --list-presets                # export presets
+filmcraft-cli --project p.fcproj import a.mp4 b.wav
+filmcraft-cli --project p.fcproj --save exec timeline.razor seconds=12.5
+filmcraft-cli --project p.fcproj run script.jsonl  # one {"id","params"} per line
 filmcraft-cli --demo render --seconds 3.0 --out preview.png
+filmcraft-cli --demo export out.mp4 --format h264 --quality 85
+filmcraft-cli probe media.mp4                      # media info as JSON
+```
 
-# Export full timeline to H.264 MP4
+`--bridge 127.0.0.1:<PORT>` sends commands to a running app started with `filmcraft --control <PORT>`; it cannot be combined with `--project` or `--demo`, and `render` is headless only.
 
-filmcraft-cli --demo export output.mp4 --format h264 --quality 85
-`
+## MCP server
 
-## MCP Tools Integration
-
-When running under the agent via MCP (ilmcraft), the server exposes:
-
-- engine_execute: Run any timeline, project, or sequence command.
-- project_inspect: Inspect media pool, tracks, clips, and timeline status.
--
-
-ender_frame: Retrieve high-fidelity visual feedback of the active timeline.
-
-- export_sequence: Automate final rendering pipelines.
+`filmcraft-cli mcp` (add `--bridge 127.0.0.1:<PORT>` for the live app, `--demo` or `--project` for headless). Tools: `command_list`, `command_run`, `command_batch`, `doc_inspect`, `project_inspect`, `sequence_inspect`, `media_import`, `render_frame`, `render_preview`, and the `ui_*` tools in bridge mode. Export runs through `command_run` with `file.exportMedia` or through `filmcraft-cli export`.

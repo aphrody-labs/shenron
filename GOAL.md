@@ -49,10 +49,10 @@ interactif ; automatiser le remplissage du wiki par sessions Codex `gpt-5.6-luna
 avec preuves primaires et relecture indépendante ; installer le plugin Aphrody
 et son MCP dans Codex. La demande explicite de synchronisation Git, merge, déploiement complet et
 mise à jour des paquets autorise la livraison site/bot via Infra et la publication
-des bibliothèques publiques auditées. Le propriétaire a ensuite explicitement autorisé
-DBXV2 public en production ; `@aphrody/shenron-dbxv2@1.4.7` est publié et vérifié.
-Les secrets, bases privées et sessions Steam restent hors paquet ; la version publiée
-n'est pas la preuve d'un jeu WASM ou d'un streaming qualifié.
+des bibliothèques publiques auditées. DBXV2 public en production est autorisé ;
+`@aphrody/shenron-dbxv2@1.4.7` est publié. Les secrets, bases privées et sessions Steam
+restent hors paquet ; la version publiée n'est pas la preuve d'un jeu WASM ou d'un
+streaming qualifié.
 Demandes ajoutées ensuite : trier `/catalog/archive_movies` et `/catalog/archive_images`
 avec une sélection Dragon Ball réellement qualifiée et des filtres cohérents, puis
 corriger les GitHub Actions et workflows depuis leurs échecs réels.
@@ -87,10 +87,6 @@ commune puis vérifié sur la page réellement servie. Le moteur local et ses ga
 restent sous leur propriétaire ; la demande ne permet pas de déduire une nouvelle
 architecture distante multi-utilisateur.
 
-0. Demande propriétaire du 13 octobre livrée (contrôle du 15 octobre dans l’ancien `REPRISE.md`, voir plus haut) :
-   accueil, catalogue épisodes/sagas, cinq GIF, aperçus et téléchargements servis par
-   la release `88ac0d23`. La prochaine image commune reste coordonnée avec le dashboard.
-
 1. Maintenir la collecte privée des sources officielles avec provenance, robots, sitemaps,
    budgets et couverture explicitement qualifiés.
 2. Livrer les lecteurs manga, databooks et vidéo avec tests navigateur réels ; distinguer
@@ -110,8 +106,8 @@ architecture distante multi-utilisateur.
 - Secrets, bases, corpus, modèles, captures complètes et cookies restent protégés.
 - Une annonce ne prouve pas une lecture ; un HTTP 200 ne prouve pas un rendu ou une lecture.
 - DNSSEC, délégation, TLS, cache et rollback sont des contrôles séparés.
-- Outils imposés par le propriétaire : `bun check`, `bun lint`, `bun fmt`, `bun n2b`
-  selon le besoin ; `tsc` et `oxlint` bannis, y compris par invocation indirecte.
+- Outils imposés par le propriétaire : `bun check`, `bun lint`, `bun fmt` selon le besoin ;
+  `tsc` et `oxlint` bannis, y compris par invocation indirecte.
 
 ## Prochain travail
 

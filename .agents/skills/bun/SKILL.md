@@ -12,7 +12,7 @@ Version: `bun --version` (the machine runs a canary; do not copy a version numbe
 
 - typecheck: `bun check` (not tsc/tsgo; native, all cores) · lint: `bun lint [--fix]` · format: `bun fmt`, `--check`, `--staged` (not prettier/biome)
 - tests: `bun test` (not vitest/jest) · bundle: `bun build` · standalone executable: `bun compile` or `bun build --compile` (not vite/esbuild/pkg)
-- JS/TS scripts and tooling: `Bun.$`, `Bun.spawn`, `fetch`, `Bun.Glob`, `Bun.file/write` (not node or pwsh). This rule covers JS/TS only: the language follows the domain (AGENTS.md section 4: Rust at the core, Python for ML, AI, research and reverse engineering, Go for deploy and cloud, C/C++ for C/C++ ecosystems).
+- JS/TS scripts and tooling: `Bun.$`, `Bun.spawn`, `fetch`, `Bun.Glob`, `Bun.file/write` (not node or pwsh). This rule covers JS/TS only; Rust lives in `aphrody-labs/wiki` (`AGENTS.md`).
 - native: `bun:ffi` (dlopen, cc) · data: `bun:sqlite`, `Bun.SQL`, `Bun.redis`, `Bun.s3`
 
 ## Windows
@@ -23,4 +23,4 @@ Version: `bun --version` (the machine runs a canary; do not copy a version numbe
 ## References
 
 - [references/zero-dep.md](references/zero-dep.md): zero `bunx`, empty `dependencies`, `bun check` without `@types/bun`, canonical package.json/tsconfig, replacement table, code idioms, verification checklist.
-- [references/ffi.md](references/ffi.md): `bun:ffi` bridge to the C ABI (`packages/core/src/ffi.ts`).
+- [references/ffi.md](references/ffi.md): `bun:ffi` bridge to the C ABI (`packages/native`).

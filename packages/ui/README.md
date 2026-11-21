@@ -1,6 +1,6 @@
 # @aphrody/shenron-ui
 
-Couche UI actuelle: système de design Dragon Ball, composants du site, lecteurs, primitives d'admin, éditeur Koharu. Les crates Rust de `docs/decisions/0001-pile-du-site.md` la remplacent.
+Couche UI actuelle: système de design Dragon Ball, composants du site, lecteurs, primitives d'admin, éditeur Koharu. `gpui-kit` (ADR 0008) la remplace.
 
 ## Commandes
 

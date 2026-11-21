@@ -24,7 +24,7 @@ if (refused) {
   // generate-only, PostgreSQL est appliqué par le pipeline shenron-infra.
   throw new Error(
     `drizzle.config.bot.ts : « drizzle-kit ${refused} » refusé — le schéma bot est generate-only. ` +
-      "Les migrations PostgreSQL passent par le runbook shenron-infra (docs/operations/INFRA-DELEGATION.md).",
+      "Les migrations PostgreSQL suivent docs/operations/AUTO-DEPLOY.md, section Migrations.",
   );
 }
 

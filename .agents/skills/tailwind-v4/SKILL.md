@@ -16,12 +16,12 @@ description: Tailwind CSS v4 conventions for the Shenron site (CSS-first config 
 - `@theme inline` does not emit variables on `:root`; where a raw variable is needed at
   runtime, it is re-declared further down in `globals.css` — follow that existing pattern.
 
-## Design rules (from AGENTS.md, non-negotiable)
+## Design rules
 
 - Components in `components/kit/`: surface + 1 px border, 12 px radius (`rounded-xl`),
   gold hover, **no drop shadow**, no hard-coded emoji.
 - Reuse existing classes (`.dbz-button`, `.dbz-panel`, `.btn`, `.input`) before inventing
-  utilities chains; the admin-only `components/ui/*` (Base UI) style is not the site style.
+  utilities chains; the Base UI wrappers of `packages/ui/src/components/*` (admin and Koharu editors) are not the site style. Icons and text rules: `design-system/shenron/MASTER.md`.
 
 ## v4 pitfalls
 

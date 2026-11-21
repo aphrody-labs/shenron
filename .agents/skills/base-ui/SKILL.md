@@ -1,16 +1,16 @@
 ---
 name: base-ui
-description: Base UI (@base-ui/react) usage in the Shenron site — unstyled accessible primitives wrapped by shadcn "base-nova" components in apps/site/src/components/ui. Use when adding, editing or debugging a component that imports @base-ui/react, when touching apps/site/src/components/ui/*, or when running `shadcn add` in apps/site.
+description: Base UI (@base-ui/react) usage in Shenron — unstyled accessible primitives wrapped in packages/ui/src/components and packages/m3-primitives. Use when adding, editing or debugging a component that imports @base-ui/react.
 ---
 
 # Base UI in Shenron
 
 ## Scope (read first)
 
-- `apps/site/src/components/ui/*` wraps `@base-ui/react` with `cva` + shadcn tokens
-  (`bg-primary`, `ring`, `destructive`). It serves **only the admin article editor**
-  (`app/admin/posts/`). It is not the site design system — see the header of
-  `components/ui/button.tsx`.
+- `packages/ui/src/components/*` wraps `@base-ui/react` with `cva` + semantic tokens
+  (`bg-primary`, `ring`, `destructive`). It serves the admin article editor
+  (`app/admin/posts/`) and the Koharu editor, not the public site design system — see the
+  header of `packages/ui/src/components/button.tsx`. `packages/m3-primitives/src` holds the other Base UI wrappers.
 - Public pages use `components/kit/` and the `.dbz-*` classes / `--color-dbz-*` tokens in
   `src/app/globals.css` (see the `tailwind-v4` skill). Do not spread `<Button>` to public pages.
 
@@ -25,8 +25,7 @@ description: Base UI (@base-ui/react) usage in the Shenron site — unstyled acc
 4. Portal-based parts (Popover, Select, Menu, Dialog, Tooltip) need `*.Portal` + `*.Positioner`
    (or `Backdrop`/`Popup` for dialogs); keep them in client components (`"use client"`).
 5. Component scaffolding: use `@aphrody/shenron-m3-tokens` tokens and native M3/Fluent primitives (semantic HTML/CSS). Do not invoke bunx or external npm generators.
-6. Design-system rule from `AGENTS.md` still applies to anything user-facing: 1 px border,
-   12 px radius, gold hover, no drop shadow, no hard-coded emoji.
+6. User-facing rules: `design-system/shenron/MASTER.md` and the `tailwind-v4` skill.
 
 ## Current API reference
 

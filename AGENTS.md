@@ -24,12 +24,13 @@ Shenron is the platform behind dragonballfr.com: web portal, Discord bot, API, e
 
 ## Rules
 
-- Commit directly on `main` in logical commits; run gitleaks before every push. Never `git add -A`, stash or reset on a shared tree. Commit with `git commit -- <paths>`: a plain `git commit` takes every file other agents have staged in the shared index (43 renames were swept into one commit on 2026-11-19). `git pull --rebase` refuses while the tree has unstaged edits: `git fetch`, then push only when behind is 0.
+- Commit directly on `main` in logical commits; run gitleaks before every push. Never `git add -A`, stash or reset on a shared tree. Commit with `git commit -- <paths>`: a plain `git commit` takes every file other agents have staged in the shared index. `git pull --rebase` refuses while the tree has unstaged edits: `git fetch`, then push only when behind is 0.
 - Tags: `v*` triggers `release.yml`; snapshots use `session-<date>-<sha>`.
 - The Bun pin lives in `package.json#packageManager` and `deploy/environment.json`; `bun scripts/deploy/environment.ts --check` fails on drift. The release version source is the root `package.json` (`scripts/release/check-version.ts`).
 - fr1 is shared and often loaded (load above 90 on 12 cores was measured): one heavy build at a time, and clean only build outputs you created. Garage replicates every object on each node: check `df` before a mirror or rebalance, and cap the rate, since an uncapped resync to prd (about 1.3 GB/min over WireGuard) cut its inbound UDP and returned 504 on the public site.
 - Rust is built in `aphrody-labs/wiki` (on `fr1` or its CI), never here. Never run bare `bun test` at the root: `bun test <package>`.
-- Secrets: never print, log or commit values; only `.env.example` is committed.
+- Secrets: never print, log or commit values; only `.env.example` is committed. No private data or generated artifact in a tracked file (a generated file is fixed at its generator).
+- Bun only, at the pinned version; no Node, npm, yarn or pnpm. Code identifiers and comments in English, documentation in French (agent contracts in English). Heavy builds run on `fr1`, never on the workstation. Per-package `AGENTS.md` files add only what is specific to their directory.
 - Proof is a screenshot of the rendered page or a checked API response, never an HTTP status alone.
 - User-facing text goes through the i18n catalogues; no emoji, no AI attribution in code, docs or commits.
 - Commands: `just` (see `justfile`): `just check`, `just test`, `just deploy-check`.

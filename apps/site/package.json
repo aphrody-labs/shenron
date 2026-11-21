@@ -21,7 +21,7 @@
     "wiki:repair-interviews": "bun scripts/repair-interview-databook-links.ts",
     "manga:populate": "bun scripts/populate-manga-pages.ts",
     "db:migrate": "drizzle-kit migrate",
-    "db:push": "echo \"db:push est interdit : migrations via le runbook shenron-infra (docs/architecture/STACK.md D5)\" >&2 && exit 1",
+    "db:push": "echo \"db:push est interdit : migrations via docs/operations/AUTO-DEPLOY.md, section Migrations\" >&2 && exit 1",
     "db:studio": "drizzle-kit studio",
     "db:generate": "drizzle-kit generate",
     "typecheck": "bun check && bun check -p tsconfig.tests.json"
