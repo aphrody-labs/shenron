@@ -15,7 +15,7 @@
  *   drawIcon               pictograms measured on the manga (`icons.ts`)
  *
  * Every function takes localized texts and returns a `RenderedCard`; a missing avatar or
- * background never throws. See `docs/products/bot-discord-refonte.md` section 4.4.
+ * background never throws. See `172cebb7^:docs/products/bot-discord-refonte.md` section 4.4.
  */
 export type { CardFormat, ImageSource, RenderOptions, RenderedCard } from "./types";
 export {

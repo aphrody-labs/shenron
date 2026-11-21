@@ -86,7 +86,7 @@ try {
     chapter_number: number | string;
     volume_number: number | string;
   }[];
-  // postgres-js returns bigint as strings: Number() everything (docs/products/wiki-editorial.md).
+  // postgres-js returns bigint as strings: Number() everything (172cebb7^:docs/products/wiki-editorial.md).
   const volumeOf = new Map(
     chapterVolumes.map((c) => [`${c.series}:${Number(c.chapter_number)}`, Number(c.volume_number)]),
   );

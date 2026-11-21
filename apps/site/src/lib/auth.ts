@@ -98,7 +98,7 @@ export function buildAuthOptions(deps: SiteAuthDeps) {
   return {
     appName: "DBFR",
     // Dynamic baseURL avec allowlist → cookie domain = host courant.
-    // S2 (docs/architecture/STACK.md §2.2) : aucun hôte joker (un hôte de confiance
+    // S2 (172cebb7^:docs/architecture/STACK.md §2.2) : aucun hôte joker (un hôte de confiance
     // joker = redirection ouverte) ; localhost n'existe que hors production.
     // Doc: https://better-auth.com/docs/guides/dynamic-base-url
     baseURL: {

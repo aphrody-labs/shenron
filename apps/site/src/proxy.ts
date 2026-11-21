@@ -158,7 +158,7 @@ export async function proxy(request: NextRequest) {
   if (request.nextUrl.pathname.startsWith("/api/")) return NextResponse.next();
 
   // Rediriger vers le domaine unique canonique si la requête provient d'un autre hôte,
-  // tout en autorisant localhost en local. S2 (docs/architecture/STACK.md §2.2) : tout hôte
+  // tout en autorisant localhost en local. S2 (172cebb7^:docs/architecture/STACK.md §2.2) : tout hôte
   // de preview ou d'alias hérité est redirigé.
   if (
     host &&

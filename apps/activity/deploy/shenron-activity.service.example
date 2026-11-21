@@ -4,7 +4,7 @@
 #
 # Livrable : le binaire unique de `bun run --filter @aphrody/shenron-activity-app compile --target linux-x64`
 # (dist/bin/shenron-activity), ou `bun src/main.ts` avec dist/client à côté.
-# Variables : docs/operations/ENV.md (« Serveur de l'Activité »), dans un fichier en 600.
+# Variables : 172cebb7^:docs/operations/ENV.md (« Serveur de l'Activité »), dans un fichier en 600.
 
 [Unit]
 Description=Shenron Activity server (Arène Shenron)

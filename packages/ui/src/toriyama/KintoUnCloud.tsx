@@ -1,6 +1,6 @@
 /**
  * KintoUnCloud — le Kinto-Un à taille libre (largeur × hauteur), sur la géométrie
- * MESURÉE de `toriyama-svg/kinto-un` (cf. `docs/reference/kinto-un-analyse-visuelle.md`).
+ * MESURÉE de `toriyama-svg/kinto-un` (cf. `172cebb7^:docs/reference/kinto-un-analyse-visuelle.md`).
  *
  * Il portait jusqu'ici sa propre silhouette — sept points annoncés « mesurés »
  * sans source, deux volutes posées à la main et une ombre découpée par un

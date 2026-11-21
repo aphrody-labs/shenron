@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Service routes between the Arène Shenron Activity server and the bot
- * (docs/products/bot-discord-refonte.md §7.2, lot A3). Runtime class: `pure`.
+ * (172cebb7^:docs/products/bot-discord-refonte.md §7.2, lot A3). Runtime class: `pure`.
  *
  * The Activity never credits anything: at the end of a round it signs a settlement receipt
  * (`@aphrody/shenron-activity/quiz`, HMAC-SHA256 under `SHENRON_ACTIVITY_SECRET`) and posts it to

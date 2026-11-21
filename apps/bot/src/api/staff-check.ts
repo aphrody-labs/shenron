@@ -5,7 +5,7 @@ import { baAccount } from "~/db/schema";
 import { botStaffPolicy } from "~/lib/env";
 
 /**
- * Bot staff policy (S1, docs/architecture/STACK.md §2.2).
+ * Bot staff policy (S1, 172cebb7^:docs/architecture/STACK.md §2.2).
  *
  * Staff = OWNER_ID ∪ OWNER_IDS ∪ BOT_DEV_ID ∪ OAUTH_ALLOWED_USERS
  * (`staffPolicyFromEnv(env, "bot")`): exactly the whitelist the Discord logins

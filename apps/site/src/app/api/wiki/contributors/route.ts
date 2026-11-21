@@ -3,7 +3,7 @@
  *
  * Expose les auteurs, éditeurs, scénaristes, animateurs, seiyū et compositeurs
  * depuis bot.contributors et bot.contributor_credits, conformément à la Phase 3
- * de docs/architecture/architecture-refonte-wiki-dragon-ball.md.
+ * de 172cebb7^:docs/architecture/architecture-refonte-wiki-dragon-ball.md.
  *
  * Query params supportés :
  *   - q : terme de recherche (nom, kanji, romaji, biographie)

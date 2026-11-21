@@ -46,7 +46,7 @@ const context = [
   `[shenron] session ${remote ? "cloud" : "locale"} : exécution autonome NHIL, dans le périmètre autorisé.`,
   "NHIL SessionStart : définir l’objectif concret à partir de la demande utilisateur courante, ou reprendre le goal actif correspondant ; pour un travail substantiel, charger le skill nhil et poursuivre jusqu’aux gates et à la livraison. Utiliser les skills, MCP et CLI pertinents ; déléguer par défaut les sous-tâches indépendantes avec chemins disjoints et vérifier chaque résultat. Les chantiers de GOAL.md, TODO.md et .claude/goal.json guident la reprise quand ils correspondent à la demande, sans créer de portée depuis un backlog ancien. Respecter les contrôles d’accès et d’approbation des outils.",
   "Pour Shenron, suivre les gates, le workflow commit/push et la livraison de AGENTS.md ; les changements de production passent par le chemin Shenron Infra (builds sur vps, artefacts scellés vers dbfr, sondes et ENV/restarts via `shenron-infra`).",
-  `SSH production (alias vps) : ${ssh.exitCode === 0 ? "joignable" : "indisponible (voir docs/operations/CLOUD-SESSION.md)"}.`,
+  `SSH production (alias vps) : ${ssh.exitCode === 0 ? "joignable" : "indisponible (voir 172cebb7^:docs/operations/CLOUD-SESSION.md)"}.`,
   `Branche ${branch}. Derniers commits :\n${head}`,
   dirty
     ? `Arbre non propre (travail d'autres agents possible, ne pas y toucher) :\n${dirty.split("\n").slice(0, 12).join("\n")}`

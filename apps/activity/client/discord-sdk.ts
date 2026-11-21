@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-/** `ActivitySdk` over the real Embedded App SDK (docs/products/bot-discord-refonte.md §3.3). */
+/** `ActivitySdk` over the real Embedded App SDK (172cebb7^:docs/products/bot-discord-refonte.md §3.3). */
 import { DiscordSDK } from "@discord/embedded-app-sdk";
 import type { ActivitySdk } from "./sdk";
 

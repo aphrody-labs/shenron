@@ -2,7 +2,7 @@
 //
 // uiux-rules.ts — static UI/UX Pro Max rules applied to one server-rendered HTML document.
 // Rule ids follow the global ui-ux-pro-max skill (accessibility, layout, performance, forms), plus
-// the duplicate-UI rules born from the 2026-10-30 home and wiki cleanup (docs/development/uiux-audit.md).
+// the duplicate-UI rules born from the 2026-10-30 home and wiki cleanup (172cebb7^:docs/development/uiux-audit.md).
 // The rendered checks (overflow, touch targets, focus) live in uiux-audit.ts (--render).
 
 export type Severity = "critical" | "high" | "medium";

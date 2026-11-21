@@ -1,5 +1,5 @@
 /**
- * S5 (docs/architecture/STACK.md D14) : garde d'écriture de `/api/a2a`, proxy vers `shenron a2a serve`.
+ * S5 (172cebb7^:docs/architecture/STACK.md D14) : garde d'écriture de `/api/a2a`, proxy vers `shenron a2a serve`.
  * L'amont Rust est simulé par un serveur Bun local (SHENRON_A2A_URL).
  */
 import { afterAll, afterEach, beforeEach, describe, expect, mock, test } from "bun:test";

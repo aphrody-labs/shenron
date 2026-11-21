@@ -16,7 +16,7 @@
  *
  * A development bot token comes from `SHENRON_BOT_DEV_TOKEN` (or `DISCORD_TOKEN_DEV` already in the
  * private store); without it the bot file is written without any gateway token.
- * See docs/operations/DEV-LOCAL.md.
+ * See 172cebb7^:docs/operations/DEV-LOCAL.md.
  */
 import { chmod, mkdir } from "node:fs/promises";
 import { randomBytes } from "node:crypto";

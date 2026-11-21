@@ -47,7 +47,7 @@ export interface SessionPayload {
 }
 
 /**
- * Avertissement S10 (docs/architecture/STACK.md §2.2), émis une fois par processus quand la
+ * Avertissement S10 (172cebb7^:docs/architecture/STACK.md §2.2), émis une fois par processus quand la
  * clé HMAC retombe sur API_ADMIN_TOKEN. Ne contient jamais de valeur.
  */
 export const SESSION_SECRET_FALLBACK_WARNING =

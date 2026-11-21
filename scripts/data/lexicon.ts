@@ -14,7 +14,7 @@
  *   - `packages/lexicon/src/terms.generated.ts`: the data embedded by `@aphrody/shenron-lexicon/data`;
  *   - `data/lexique-db-canonique.json`: the legacy `{ ja, fr, kind, length }[]` read by the
  *     consumers not yet on `@aphrody/shenron-lexicon` or `shenron-lexicon` (end of life:
- *     docs/architecture/lexicon.md).
+ *     172cebb7^:docs/architecture/lexicon.md).
  * The Rust crate `shenron-lexicon` embeds `terms.json` itself (`include_str!`).
  *
  * `import` rebuilt `terms.json` from the legacy file once (2026-10-05): rows grouped by French

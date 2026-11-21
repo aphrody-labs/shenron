@@ -17,7 +17,7 @@ const manifest = JSON.parse(readFileSync(join(PKG_DIR, "package.json"), "utf8"))
   private: boolean;
 };
 
-/** Exports and runtime classes of docs/architecture/STACK.md §3.6. */
+/** Exports and runtime classes of 172cebb7^:docs/architecture/STACK.md §3.6. */
 const RUNTIME: Record<string, string> = {
   "./contract": "pure",
   "./client": "pure",
@@ -91,7 +91,7 @@ function bareImports(key: string): { file: string; specifier: string; typeOnly: 
 }
 
 describe("@aphrody/shenron-api manifest", () => {
-  test("exports and runtime classes of docs/architecture/STACK.md §3.6, no root export", () => {
+  test("exports and runtime classes of 172cebb7^:docs/architecture/STACK.md §3.6, no root export", () => {
     expect(manifest.exports).not.toHaveProperty(".");
     expect(Object.keys(manifest.exports).toSorted()).toEqual(Object.keys(RUNTIME).toSorted());
     expect(manifest.shenron.runtime).toEqual(RUNTIME);

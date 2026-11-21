@@ -31,7 +31,7 @@ export function getDbxv2Runtime(env: Dbxv2EnvInput = currentEnv()): Dbxv2Runtime
   if (!status.enabled) {
     throw new Dbxv2DisabledError(
       `DBXV2 is disabled: ${describeDisabledReason(status.reason)}. ` +
-        "Set DBXV2_SERVER_URL and DBXV2_TOKEN (see docs/products/dbxv2-plugin.md).",
+        "Set DBXV2_SERVER_URL and DBXV2_TOKEN (see 172cebb7^:docs/products/dbxv2-plugin.md).",
     );
   }
   const key = `${status.config.baseUrl}\n${status.config.token}`;

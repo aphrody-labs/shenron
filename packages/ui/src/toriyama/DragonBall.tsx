@@ -49,7 +49,7 @@
  *
  * Le dégradé est conservé COMME dégradé : c'est, avec la pastille de numéro de
  * tome, le seul endroit du support qui n'est pas un aplat franc
- * (cf. `docs/reference/couverture-analyse-visuelle.md`).
+ * (cf. `172cebb7^:docs/reference/couverture-analyse-visuelle.md`).
  */
 
 import {

@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * Question bank generated from the canonical Dragon Ball lexicon (`data/lexicon/terms.json`, the
- * one ja/fr/en lexicon of Shenron, see docs/architecture/lexicon.md). It asks only what the lexicon
+ * one ja/fr/en lexicon of Shenron, see 172cebb7^:docs/architecture/lexicon.md). It asks only what the lexicon
  * states: how a term is written in another language. No fact is added: every prompt, answer and
  * wrong choice is a lexicon form.
  *

@@ -1,6 +1,6 @@
 /**
  * SenzuBean — Senzu bean, drawn from the measured geometry of `toriyama-svg/senzu`
- * (colour edition, cf. `docs/reference/senzu-analyse-visuelle.md`): ellipse,
+ * (colour edition, cf. `172cebb7^:docs/reference/senzu-analyse-visuelle.md`): ellipse,
  * straight hilum, two flat tones and ink, tilted like the bean in Goku's palm.
  */
 

@@ -4,7 +4,7 @@
  *
  * Shared by the manual scripts (`scripts/ops/sync-bot-runtime-*.ts`) and the bot's periodic
  * synchronisation (`apps/bot/src/services/ReplicaSyncService.ts`). See
- * docs/operations/sync-bot-runtime.md.
+ * 172cebb7^:docs/operations/sync-bot-runtime.md.
  */
 export * from "./values";
 export * from "./types";

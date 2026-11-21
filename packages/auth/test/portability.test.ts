@@ -12,7 +12,7 @@ import {
 
 const pkgDir = Bun.fileURLToPath(new URL("..", import.meta.url));
 
-/** docs/architecture/STACK.md §3.3. */
+/** 172cebb7^:docs/architecture/STACK.md §3.3. */
 const EXPECTED: Record<string, string> = {
   ".": "server",
   "./origins": "pure",

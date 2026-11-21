@@ -11,7 +11,7 @@ console.error(
   [
     "Full Color importer disabled: its former SushiScan source has no verified rights or edition provenance.",
     "Use a reviewed source manifest with verified assets, hashes, printed-page mapping, and documented ingestion rights.",
-    "See docs/guides/sources-ingestion-soshuhen-kanzenshuu.md.",
+    "See 172cebb7^:docs/guides/sources-ingestion-soshuhen-kanzenshuu.md.",
   ].join("\n"),
 );
 process.exitCode = 1;

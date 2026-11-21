@@ -6,7 +6,7 @@
  * next one (`xpProgress().span`), so a result weighs the same at every level of the curve and
  * a game can never skip a tier on its own. The award is never multiplied: the role, race, night
  * and Zenkai multipliers belong to messages and voice (2026-10-22 inflation, see
- * `docs/operations/bot-economie-incidents.md`), and the sum of the game XP over a rolling 24 h
+ * `172cebb7^:docs/operations/bot-economie-incidents.md`), and the sum of the game XP over a rolling 24 h
  * is capped at a share of the current span.
  */
 import { XP_MAX, getLevelThresholds, xpProgress } from "~/lib/xp";

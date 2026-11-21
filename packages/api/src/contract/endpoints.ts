@@ -809,7 +809,7 @@ export const ENDPOINTS: readonly EndpointSpec[] = Object.values(endpoints);
 
 /**
  * Public routes served by the historical bot code (`apps/bot/src/api/server.ts`).
- * They keep priority over the Hono application (docs/architecture/STACK.md D7).
+ * They keep priority over the Hono application (172cebb7^:docs/architecture/STACK.md D7).
  */
 export const LEGACY_PUBLIC_PATHS: readonly string[] = [
   "/health",

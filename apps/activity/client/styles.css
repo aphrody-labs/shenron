@@ -4,7 +4,7 @@
  *
  * Colours come from the design tokens of @aphrody/shenron-ui (`--dbz-*`, written into the bundle by
  * scripts/build.ts from `@aphrody/shenron-ui/tokens`), so the Activity follows the site palette.
- * Manner of the site and of the covers (docs/products/design-system.md): thick black outlines, flat
+ * Manner of the site and of the covers (172cebb7^:docs/products/design-system.md): thick black outlines, flat
  * fills, hard offset shadows, an orange accent, the Kinto'un cloud. The text face is Shenron Text,
  * the one the site ships; Japanese falls back to the system CJK fonts of the Discord client.
  */

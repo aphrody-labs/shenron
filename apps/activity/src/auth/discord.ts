@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Discord side of sign-in (docs/products/bot-discord-refonte.md §3.3):
+ * Discord side of sign-in (172cebb7^:docs/products/bot-discord-refonte.md §3.3):
  *
  *   client: sdk.commands.authorize()  -> code
  *   server: POST /oauth2/token        -> access token  (the client secret never leaves this process)

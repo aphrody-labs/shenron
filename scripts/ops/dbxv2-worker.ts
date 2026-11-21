@@ -1,6 +1,6 @@
 // Travailleur du serveur prive DBXV2 : execute les appels natifs (synchrones) hors du fil HTTP.
 // Chaque worker ouvre sa propre instance du backend ; aucune donnee de jeu n'est conservee ici.
-// Doc : docs/operations/dbxv2-serve.md
+// Doc : 172cebb7^:docs/operations/dbxv2-serve.md
 import { isMainThread, parentPort, workerData } from "node:worker_threads";
 
 export interface IndexEntry {

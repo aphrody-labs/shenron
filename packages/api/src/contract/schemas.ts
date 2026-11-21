@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Response and request schemas of the Shenron HTTP contract (docs/architecture/STACK.md §3.6).
+ * Response and request schemas of the Shenron HTTP contract (172cebb7^:docs/architecture/STACK.md §3.6).
  *
  * Runtime class: `pure` — only `zod` and `@aphrody/shenron-db/constants`. Every
  * response schema carries `.meta({ id })`, which the OpenAPI generator turns

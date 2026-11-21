@@ -1,5 +1,5 @@
 /**
- * Montage de `@aphrody/shenron-api` dans le `Bun.serve` du bot (B14, S9 — docs/architecture/STACK.md §2.2, D7).
+ * Montage de `@aphrody/shenron-api` dans le `Bun.serve` du bot (B14, S9 — 172cebb7^:docs/architecture/STACK.md §2.2, D7).
  *
  * - Les routes historiques gardent la priorité : Bun résout la table `routes`
  *   avant `fetch`, et le repli n'est consulté qu'après tous les préfixes

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * `@aphrody/shenron-pipeline/ai/config` — the single resolver of Shenron's AI configuration
- * (docs/architecture/STACK.md §3.4, docs/operations/ENV.md).
+ * (172cebb7^:docs/architecture/STACK.md §3.4, 172cebb7^:docs/operations/ENV.md).
  *
  * Runtime class: `pure`. Environment names follow the shenron-infra local AI
  * contract v1 (`config/local-ai.json`): the canonical

@@ -88,7 +88,7 @@ export function botAuthBaseUrl(
 }
 
 /**
- * B10 (docs/architecture/STACK.md §2.2) : fournisseur Discord aligné sur le preset partagé —
+ * B10 (172cebb7^:docs/architecture/STACK.md §2.2) : fournisseur Discord aligné sur le preset partagé —
  * `prompt: "consent"`, portées supplémentaires dédoublonnées (`identify` et
  * `email` sont déjà ajoutées par Better Auth), e-mail de substitution pour les
  * comptes phone-only.

@@ -8,7 +8,7 @@
  *    and `ALLOW-FROM` is obsolete. Embedding is controlled by CSP `frame-ancestors` alone;
  *  - the CSP must allow what the Activity really uses and nothing else: its own scripts and styles,
  *    its own WebSocket, Discord avatars on the Discord CDN, and the Discord API host.
- * (docs/products/bot-discord-refonte.md §3.3, §7.2.)
+ * (172cebb7^:docs/products/bot-discord-refonte.md §3.3, §7.2.)
  */
 
 /** Origins that may frame the Activity: the Discord clients and the proxy host of Activities. */

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 //
 // check-workspace-packages.ts — conformance and dependency graph of the @aphrody/shenron-* packages
-// (docs/architecture/STACK.md §4.3). Thin CLI over @aphrody/shenron-config/guards.
+// (172cebb7^:docs/architecture/STACK.md §4.3). Thin CLI over @aphrody/shenron-config/guards.
 //
 // Usage:
 //   bun scripts/audit/check-workspace-packages.ts                       # all checks, fail on violations missing from the baseline
@@ -13,7 +13,7 @@
 //
 // Baseline: scripts/audit/check-workspace-packages.baseline.json (beside this file), two sections:
 //   transitional  must be empty at the end of Phase 1 (--strict enforces it)
-//   phase2        each entry cites a ticket of docs/architecture/STACK.md §7.3; listed on every run
+//   phase2        each entry cites a ticket of 172cebb7^:docs/architecture/STACK.md §7.3; listed on every run
 // A baseline entry that no longer matches a violation is stale: warning only.
 // Checks reported as `warn` never fail (none since wave 5: the "use client" reach is an error).
 
@@ -40,7 +40,7 @@ const ROOT = resolve(import.meta.dir, "../..");
 const BASELINE_FILE = join(import.meta.dir, "check-workspace-packages.baseline.json");
 
 /**
- * Workspace packages checked against docs/architecture/STACK.md, all with every check: the
+ * Workspace packages checked against 172cebb7^:docs/architecture/STACK.md, all with every check: the
  * framework packages (§3.1–3.7) and the consumer packages (§3.8).
  */
 const PACKAGES: Readonly<Record<string, string>> = {
@@ -70,7 +70,7 @@ const FFI_OWNER = "@aphrody/shenron-native";
 const FFI_RULES: ReadonlySet<string> = new Set(["bun-ffi", "dlopen"]);
 
 /**
- * Allowed @aphrody/shenron-* edges (docs/architecture/STACK.md §4.1). `dev` edges are allowed only
+ * Allowed @aphrody/shenron-* edges (172cebb7^:docs/architecture/STACK.md §4.1). `dev` edges are allowed only
  * in devDependencies. Anything not listed is forbidden.
  */
 const ALLOWED_EDGES: Readonly<
@@ -179,7 +179,7 @@ const EDGE_SUBPATHS: Readonly<Record<string, Readonly<Record<string, readonly st
   },
 };
 
-/** Imports forbidden in a `"use client"` module (docs/architecture/STACK.md §4.2). */
+/** Imports forbidden in a `"use client"` module (172cebb7^:docs/architecture/STACK.md §4.2). */
 const CLIENT_FORBIDDEN = [
   "@aphrody/shenron-db/postgres-js",
   "@aphrody/shenron-db/sql",
@@ -752,7 +752,7 @@ if (WRITE_BASELINE) {
   const next: Baseline = {
     $comment:
       baseline.$comment ??
-      "Pre-existing check:packages violations. `transitional` must be empty at the end of Phase 1 (--strict); `phase2` entries cite a docs/architecture/STACK.md §7.3 ticket. The baseline may only shrink after wave 1.",
+      "Pre-existing check:packages violations. `transitional` must be empty at the end of Phase 1 (--strict); `phase2` entries cite a 172cebb7^:docs/architecture/STACK.md §7.3 ticket. The baseline may only shrink after wave 1.",
     transitional,
     phase2: phase2.toSorted((a, b) => a.id.localeCompare(b.id)),
   };

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Configuration of the Activity server, read once from the environment (docs/operations/ENV.md,
+ * Configuration of the Activity server, read once from the environment (172cebb7^:docs/operations/ENV.md,
  * section "Activité Discord"). A missing secret disables the capability that needs it, never the
  * whole server: `/health` reports what is available.
  */

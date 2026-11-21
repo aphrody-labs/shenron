@@ -26,7 +26,7 @@ import { verifyActingUser } from "./user-auth";
  *   3. **Cookie session HMAC** (`shenron_session=<signed>`) — flow legacy
  *      `/auth/login` (token) ou `/auth/discord` (manuel).
  *
- * S1 (docs/architecture/STACK.md §2.2) : une session Better Auth ou un cookie hérité
+ * S1 (172cebb7^:docs/architecture/STACK.md §2.2) : une session Better Auth ou un cookie hérité
  * `source=discord` n'ouvre l'admin que si le compte Discord est encore dans la
  * politique staff du bot (`staffPolicyFromEnv(env, "bot")`) ; sinon 403. Le
  * cookie hérité `source=token` (issu du jeton admin) reste accepté tel quel.

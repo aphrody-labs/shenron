@@ -2,7 +2,7 @@
 /**
  * Noise meter: how many public messages the bot posts, per channel and per type.
  *
- * It is the success criterion of the redesign (`docs/products/bot-discord-refonte.md` §1): the
+ * It is the success criterion of the redesign (`172cebb7^:docs/products/bot-discord-refonte.md` §1): the
  * public messages the bot posts outside editorial content (news, TikTok, giveaways, games in
  * progress) must drop at least five-fold, measured before and after by the same counter.
  *

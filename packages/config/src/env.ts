@@ -65,7 +65,7 @@ export const ENV_ALIASES = {
 } as const satisfies Record<string, readonly [string, string]>;
 
 /**
- * Variables of the Arène Shenron Activity (docs/operations/ENV.md, section "Activité").
+ * Variables of the Arène Shenron Activity (172cebb7^:docs/operations/ENV.md, section "Activité").
  * Names only: the secret and the token are read by their owners at call time.
  */
 export const ACTIVITY_ENV = {

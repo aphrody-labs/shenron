@@ -25,7 +25,7 @@ export const LOCALES = ["fr", "en", "ja"] as const;
 export type Locale = (typeof LOCALES)[number];
 
 /**
- * Quiz categories (docs/products/bot-discord-refonte.md G1). `techniques` and `transformations` are
+ * Quiz categories (172cebb7^:docs/products/bot-discord-refonte.md G1). `techniques` and `transformations` are
  * separate so that a host can pick one; the embedded lexicon bank fills the lexicon-backed ones, the
  * wiki and databook relation facts fill `volumes` and `databooks`.
  */

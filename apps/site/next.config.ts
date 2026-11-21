@@ -148,7 +148,7 @@ const nextConfig: NextConfig = {
     // active ce mode afin de réduire le pic mémoire au prix d'un build plus lent.
     // Sans effet sur le chemin Turbopack habituel.
     webpackMemoryOptimizations: true,
-    // Type-check via the TypeScript 7 native CLI (fixed decision 1, docs/architecture/STACK.md).
+    // Type-check via the TypeScript 7 native CLI (fixed decision 1, 172cebb7^:docs/architecture/STACK.md).
     useTypeScriptCli: true,
     // Parallélisme de la génération statique — soupape mémoire éprouvée du build sur VPS.
     cpus: process.env.BUILD_CPUS ? Number(process.env.BUILD_CPUS) : 1,

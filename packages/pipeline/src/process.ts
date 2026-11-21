@@ -2,7 +2,7 @@
 /**
  * Child processes for the Shenron CLI wrappers, on `node:child_process` (runtime class
  * `server`): Bun scripts, the bot and the routes of the site's Next server all run them, and
- * no `Bun.*` global reaches a module the site bundles (docs/architecture/STACK.md §4.2).
+ * no `Bun.*` global reaches a module the site bundles (172cebb7^:docs/architecture/STACK.md §4.2).
  */
 import { spawn, spawnSync, type ChildProcess } from "node:child_process";
 import { accessSync, constants, statSync } from "node:fs";

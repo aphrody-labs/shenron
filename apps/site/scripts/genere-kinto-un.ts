@@ -8,7 +8,7 @@
  *   safari-pinned-tab.svg     silhouette monochrome (mask-icon)
  *
  * Rien n'est décalqué : seules les MESURES relevées sur les cels Toei sont
- * reprises (cf. docs/reference/kinto-un-analyse-visuelle.md). Les favicons raster se
+ * reprises (cf. 172cebb7^:docs/reference/kinto-un-analyse-visuelle.md). Les favicons raster se
  * font ensuite avec `bun scripts/genere-icones.ts`.
  *
  * Usage :

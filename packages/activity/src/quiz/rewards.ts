@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Bounded rewards of the Quiz Budokai (docs/products/bot-discord-refonte.md, G1 and G8).
+ * Bounded rewards of the Quiz Budokai (172cebb7^:docs/products/bot-discord-refonte.md, G1 and G8).
  *
  * The rules are deliberately small and closed:
  *  - zeni only. There is no XP field anywhere in this module or in the receipt, and no multiplier
- *    (neither a role's, nor a race's): the 2026-10-22 incident (docs/operations/bot-economie-incidents.md)
+ *    (neither a role's, nor a race's): the 2026-10-22 incident (172cebb7^:docs/operations/bot-economie-incidents.md)
  *    came from role multipliers applied to game gains;
  *  - a room round pays the podium only (60, 40, 20 by default), and nothing when fewer than two
  *    eligible players took part, so playing alone or with idle accounts earns nothing;

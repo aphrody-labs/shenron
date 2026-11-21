@@ -15,7 +15,7 @@
  * MCP URL, an unwritable conversation store. Nothing here throws for a missing capability.
  *
  * The caller passes the environment (`process.env` in an entry point): nothing is read at
- * module load. Variables are listed in docs/architecture/STACK.md §3.6.
+ * module load. Variables are listed in 172cebb7^:docs/architecture/STACK.md §3.6.
  */
 import { createPublicRagPort } from "./rag";
 export { sendSmtpEmail } from "./smtp-email";

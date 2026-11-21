@@ -2,7 +2,7 @@
 // Serveur PRIVE a la demande des CPK de Dragon Ball Xenoverse 2 (donnees Bandai Namco / Dimps :
 // jamais public, jamais commite). Aucun parseur ici : toutes les operations viennent du paquet
 // @aphrody/shenron-dbxv2 (bun-distribution, branche `os`), charge par chemin (DBXV2_PKG_DIR).
-// Doc : docs/operations/dbxv2-serve.md
+// Doc : 172cebb7^:docs/operations/dbxv2-serve.md
 import { createHash, timingSafeEqual } from "node:crypto";
 import { existsSync } from "node:fs";
 import { mkdir, readdir, rename, rm, stat, utimes } from "node:fs/promises";

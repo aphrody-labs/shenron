@@ -1,5 +1,5 @@
 /**
- * English-identifier guard (decision D3 of `docs/products/bot-discord-refonte.md`): command,
+ * English-identifier guard (decision D3 of `172cebb7^:docs/products/bot-discord-refonte.md`): command,
  * group, option and choice-value identifiers are English; French and Japanese live in
  * `nameLocalizations` / `descriptionLocalizations`.
  *

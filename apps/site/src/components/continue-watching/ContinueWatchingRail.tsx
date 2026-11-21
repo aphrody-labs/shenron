@@ -7,7 +7,7 @@
  * and renders `null` on the server and on first client paint so cached HTML never diverges.
  *
  * Mounted on `/watchlist` and above the episode browser of `/wiki/episodes`; see
- * docs/products/streaming-replica-etat.md.
+ * 172cebb7^:docs/products/streaming-replica-etat.md.
  */
 import { useEffect, useState } from "react";
 import { Croix } from "@aphrody/shenron-ui/icones";

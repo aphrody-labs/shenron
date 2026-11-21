@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
  * `/arena`: opens the Arène Shenron Activity (the multiplayer Budokai quiz) in the member's voice
- * channel (docs/products/bot-discord-refonte.md §7, lot A3).
+ * channel (172cebb7^:docs/products/bot-discord-refonte.md §7, lot A3).
  *
  * Two doors lead to the same launch:
  *

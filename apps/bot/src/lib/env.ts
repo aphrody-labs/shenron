@@ -205,7 +205,7 @@ export type Env = typeof env;
 
 /**
  * Source d'env de la politique staff du bot (`staffPolicyFromEnv(env, "bot")`,
- * docs/architecture/STACK.md D6), recomposée depuis les valeurs validées ci-dessus (lue à
+ * 172cebb7^:docs/architecture/STACK.md D6), recomposée depuis les valeurs validées ci-dessus (lue à
  * chaque appel : les tests et le rechargement de config mutent `env`).
  */
 export function botStaffEnv(): StaffEnvSource {

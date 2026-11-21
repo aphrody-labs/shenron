@@ -10,7 +10,7 @@ import {
 } from "@aphrody/shenron-config/net";
 
 /**
- * Gardes de requête de l'API du bot (S3, S4, S5 — docs/architecture/STACK.md §2.2).
+ * Gardes de requête de l'API du bot (S3, S4, S5 — 172cebb7^:docs/architecture/STACK.md §2.2).
  * Fonctions pures : aucune lecture d'environnement ni état global au chargement.
  */
 

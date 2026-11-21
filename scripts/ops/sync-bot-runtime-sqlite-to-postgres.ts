@@ -15,7 +15,7 @@
  * checkpointed entry point to it.
  *
  * Without `--apply` nothing is written: the run prints the gap per table (`--dry-run` says so
- * explicitly). Usage and flags: see `usage()` and docs/operations/sync-bot-runtime.md.
+ * explicitly). Usage and flags: see `usage()` and 172cebb7^:docs/operations/sync-bot-runtime.md.
  */
 import {
   chmodSync,

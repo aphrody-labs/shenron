@@ -1,5 +1,5 @@
 /**
- * A2A write guard (S5, decision D14 of docs/architecture/STACK.md).
+ * A2A write guard (S5, decision D14 of 172cebb7^:docs/architecture/STACK.md).
  *
  * Runtime class `server` (`node:crypto`, synchronous). The caller injects the
  * environment and the configured token; nothing is read at module load.

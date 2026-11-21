@@ -33,7 +33,7 @@ const SUBPATHS = [
 const INTERNAL_PURE_SOURCES = ["./src/ai/training-hashes.ts", "./src/ai/canon-eval.ts"];
 
 describe("@aphrody/shenron-pipeline/ai manifest", () => {
-  test("exports every subpath of docs/architecture/STACK.md §3.4 with its runtime class", () => {
+  test("exports every subpath of 172cebb7^:docs/architecture/STACK.md §3.4 with its runtime class", () => {
     expect(
       Object.keys(manifest.exports)
         .filter((key) => key === "./ai" || key.startsWith("./ai/"))

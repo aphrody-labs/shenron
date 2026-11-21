@@ -1,5 +1,5 @@
 /**
- * Montage de `@aphrody/shenron-api` dans le site (B14 — docs/architecture/STACK.md §2.2, D7) :
+ * Montage de `@aphrody/shenron-api` dans le site (B14 — 172cebb7^:docs/architecture/STACK.md §2.2, D7) :
  * mêmes routes additives que le bot (`/api/public/wiki/categories`,
  * `/api/public/wiki/{category}[/{idOrSlug}]`, `/api/public/openapi.json`),
  * servies par le catch-all `app/api/public/[...route]/route.ts` sur la base

@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 /**
- * Settlement of the Arène Shenron Activity rounds (docs/products/bot-discord-refonte.md §7.2, lot A3).
+ * Settlement of the Arène Shenron Activity rounds (172cebb7^:docs/products/bot-discord-refonte.md §7.2, lot A3).
  *
  *   POST /api/activity/settle           the signed receipt of a finished round -> what was paid
  *   GET  /api/activity/budget/:userId   the daily game budget left to a member
