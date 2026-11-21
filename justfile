@@ -16,7 +16,7 @@ default:
 [group('all')]
 check: typecheck
 
-# Lint everything: oxlint on apps, packages and scripts
+# Lint everything: native bun lint on apps, packages and scripts
 [group('all')]
 lint: bun-lint
 
@@ -50,7 +50,7 @@ ci: drift typecheck bun-lint bun-test test-scripts
 install:
     BUN_INSTALL_GLOBAL_STORE=0 bun install --frozen-lockfile
 
-# bun check on the 13 packages, then scripts/
+# bun check on every workspace that defines a typecheck script
 [group('bun')]
 typecheck:
     bun scripts/testing/native-quality.ts check
@@ -58,7 +58,7 @@ typecheck:
 # bun lint on apps, packages and scripts
 [group('bun')]
 bun-lint:
-    bun x oxlint -c .oxlintrc.json apps packages scripts
+    bun scripts/testing/native-quality.ts lint
 
 # bun test of every package (live suites excluded)
 [group('bun')]
